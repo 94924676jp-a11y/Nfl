@@ -78,6 +78,10 @@ def arm_name(blend, cap):
 #: A week needs this many prior weeks of current-season evidence before it is evaluated, so the
 #: current-season term is not built on one game.
 MIN_PRIOR_WEEKS = 4
+#: DIAGNOSTIC SINK. When a list, evaluate() appends one tuple per scored player-week:
+#: (season, week, arm_label, gsis, position, projection, actual). Off by default; it changes no
+#: number and exists so a change's error can be decomposed by who it landed on.
+PER_PLAYER_SINK = None
 
 #: Inclusive week range to evaluate, as a one-element list so the CLI can set it. The default
 #: starts after MIN_PRIOR_WEEKS. EVALUATING EARLY WEEKS SEPARATELY MATTERS: a constant selected on
@@ -536,6 +540,9 @@ def evaluate(panel, pos_of, seasons, arms, max_weeks=None):
                 xs = [proj[g] for g in common]
                 ys = [actual[g] for g in common]
                 n = len(common)
+                if PER_PLAYER_SINK is not None:
+                    PER_PLAYER_SINK.extend((season, week, label, g, season_pos.get(g), proj[g], actual[g])
+                                           for g in common)
                 mae = sum(abs(a - b) for a, b in zip(xs, ys)) / n
                 rmse = math.sqrt(sum((a - b) ** 2 for a, b in zip(xs, ys)) / n)
                 by_proj = sorted(common, key=lambda g: -proj[g])

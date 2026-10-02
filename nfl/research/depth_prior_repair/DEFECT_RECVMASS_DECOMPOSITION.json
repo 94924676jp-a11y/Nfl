@@ -1,0 +1,146 @@
+{
+ "ARTIFACT": "DEFECT_RECVMASS_DECOMPOSITION",
+ "arm": "1.0",
+ "n_weeks": 28,
+ "universe": "RB/WR/TE player-weeks scored by the forward chain (players who appeared)",
+ "by_actual": {
+  "actual==0": {
+   "n": 445,
+   "mae_legacy": 2.195,
+   "mae_fixed": 2.431,
+   "diff": 0.236,
+   "week_blocked_se": 0.023,
+   "mean_proj_legacy": 2.19,
+   "mean_proj_fixed": 2.43,
+   "mean_actual": 0.0
+  },
+  "(0,5]": {
+   "n": 2250,
+   "mae_legacy": 3.029,
+   "mae_fixed": 3.259,
+   "diff": 0.23,
+   "week_blocked_se": 0.014,
+   "mean_proj_legacy": 3.28,
+   "mean_proj_fixed": 3.58,
+   "mean_actual": 2.56
+  },
+  "(5,15]": {
+   "n": 2372,
+   "mae_legacy": 5.783,
+   "mae_fixed": 6.019,
+   "diff": 0.236,
+   "week_blocked_se": 0.024,
+   "mean_proj_legacy": 7.42,
+   "mean_proj_fixed": 8.03,
+   "mean_actual": 9.28
+  },
+  ">15": {
+   "n": 1130,
+   "mae_legacy": 11.671,
+   "mae_fixed": 11.101,
+   "diff": -0.57,
+   "week_blocked_se": 0.035,
+   "mean_proj_legacy": 11.49,
+   "mean_proj_fixed": 12.45,
+   "mean_actual": 22.53
+  }
+ },
+ "by_legacy_projection": {
+  "<=median(3.5)": {
+   "n": 3112,
+   "mae_legacy": 4.844,
+   "mae_fixed": 4.811,
+   "diff": -0.032,
+   "week_blocked_se": 0.003,
+   "mean_proj_legacy": 0.97,
+   "mean_proj_fixed": 1.06,
+   "mean_actual": 5.44
+  },
+  "(median,p80(12.8)]": {
+   "n": 1866,
+   "mae_legacy": 5.532,
+   "mae_fixed": 5.658,
+   "diff": 0.126,
+   "week_blocked_se": 0.032,
+   "mean_proj_legacy": 7.82,
+   "mean_proj_fixed": 8.66,
+   "mean_actual": 9.27
+  },
+  "(p80,p95(19.3)]": {
+   "n": 933,
+   "mae_legacy": 7.273,
+   "mae_fixed": 7.616,
+   "diff": 0.344,
+   "week_blocked_se": 0.035,
+   "mean_proj_legacy": 15.78,
+   "mean_proj_fixed": 16.97,
+   "mean_actual": 14.08
+  },
+  ">p95": {
+   "n": 311,
+   "mae_legacy": 8.247,
+   "mae_fixed": 8.526,
+   "diff": 0.28,
+   "week_blocked_se": 0.103,
+   "mean_proj_legacy": 21.38,
+   "mean_proj_fixed": 22.51,
+   "mean_actual": 18.89
+  }
+ },
+ "by_sign": {
+  "legacy_over_projected": {
+   "n": 2412,
+   "mae_legacy": 4.248,
+   "mae_fixed": 4.976,
+   "diff": 0.728,
+   "week_blocked_se": 0.032,
+   "mean_proj_legacy": 9.33,
+   "mean_proj_fixed": 10.06,
+   "mean_actual": 5.08
+  },
+  "legacy_under_projected": {
+   "n": 3810,
+   "mae_legacy": 6.43,
+   "mae_fixed": 6.112,
+   "diff": -0.318,
+   "week_blocked_se": 0.015,
+   "mean_proj_legacy": 4.32,
+   "mean_proj_fixed": 4.73,
+   "mean_actual": 10.75
+  }
+ },
+ "by_position": {
+  "RB": {
+   "n": 1874,
+   "mae_legacy": 5.79,
+   "mae_fixed": 5.834,
+   "diff": 0.044,
+   "week_blocked_se": 0.01,
+   "mean_proj_legacy": 6.98,
+   "mean_proj_fixed": 7.25,
+   "mean_actual": 9.29
+  },
+  "WR": {
+   "n": 2798,
+   "mae_legacy": 6.092,
+   "mae_fixed": 6.197,
+   "diff": 0.105,
+   "week_blocked_se": 0.015,
+   "mean_proj_legacy": 6.29,
+   "mean_proj_fixed": 6.95,
+   "mean_actual": 8.99
+  },
+  "TE": {
+   "n": 1550,
+   "mae_legacy": 4.419,
+   "mae_fixed": 4.527,
+   "diff": 0.108,
+   "week_blocked_se": 0.031,
+   "mean_proj_legacy": 5.34,
+   "mean_proj_fixed": 5.97,
+   "mean_actual": 6.87
+  }
+ },
+ "READING": "The repair improves rows where the player scored above 15 (-0.57) and rows the legacy under-projected (-0.32), and worsens rows the legacy already over-projected (+0.73). The top fifth of receiver projections sat 12 per cent ABOVE their realised means while the layer as a whole sat 27 per cent below: the receiver layer is over-concentrated at the top and short in the middle. Reallocating the ghost targets in proportion to existing shares amplifies that shape. The defect is the within-club allocation shape (depth concentration / claim blend), which is measurable and belongs to a declared arm (B1/B2), not a constant to tune tonight. The quarterback repair stands on football grounds; it did not create this shape, it exposed it.",
+ "NOT_VALIDATION": "exploratory, development data; PROJECTION_SYSTEM_STATE unchanged"
+}

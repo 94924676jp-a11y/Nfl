@@ -1,0 +1,665 @@
+{
+ "arrays": {
+  "dk_scoring/dk_points": {
+   "dtype": "float64",
+   "sha256": "65155123a00da0815e5dc6105a092d7620f701e687374fdbf8a8cc0038363f69",
+   "shape": [
+    41,
+    2000
+   ]
+  },
+  "dst/dk_points": {
+   "dtype": "int16",
+   "sha256": "32e50ec08cbb507747d2828c1175d7fa541697024ef722fa3f960c4eb17ce584",
+   "shape": [
+    2,
+    2000
+   ]
+  },
+  "kicking/dk_points": {
+   "dtype": "int16",
+   "sha256": "9dbe44e2b3eb2047f231a687b515b53ea8639dc395f631bbd1fde967cfe4dfac",
+   "shape": [
+    2,
+    2000
+   ]
+  },
+  "qb/att": {
+   "dtype": "int16",
+   "sha256": "d5be54c4573d57c3458351f587c68c64922716e044d9f0258ac9fe6c9b8d90c6",
+   "shape": [
+    41,
+    2000
+   ]
+  },
+  "qb/ptd": {
+   "dtype": "int16",
+   "sha256": "3c36c67a8bc998d1f9952202bc3bac6d42f64268f07744a82de63a584278726f",
+   "shape": [
+    41,
+    2000
+   ]
+  },
+  "qb/pyds": {
+   "dtype": "float64",
+   "sha256": "88f97d8e614e17b1ac9b9e0678d1debde1fe9cc031c1b6cb77876ee7cf21b99d",
+   "shape": [
+    41,
+    2000
+   ]
+  },
+  "receiving/receiving_td": {
+   "dtype": "int16",
+   "sha256": "f1ec6637348e2b8087e2eff27fe12ef193a070561679d7b06747ac5c1d823345",
+   "shape": [
+    41,
+    2000
+   ]
+  },
+  "receiving/receiving_yards": {
+   "dtype": "float64",
+   "sha256": "143cd3d95117f9c3c9ff65bf24f8a2ec6a6249110a1ef30c917b5c6d77fe7626",
+   "shape": [
+    41,
+    2000
+   ]
+  },
+  "receiving/receptions": {
+   "dtype": "int16",
+   "sha256": "081667c3e91b89ace1bb0d061b0e3d92eb38e00404830270be26d5220a5bf128",
+   "shape": [
+    41,
+    2000
+   ]
+  },
+  "receiving/targets": {
+   "dtype": "int16",
+   "sha256": "d4964eb87ea7d4b8649d00526115150ba4ecd29b71610e80eb82dc5a4a0b285d",
+   "shape": [
+    41,
+    2000
+   ]
+  },
+  "rushing/carries": {
+   "dtype": "int16",
+   "sha256": "767f76f1af03924b8d7a81116dfb1baf17a225e406658debee0f9b2ecb9682a7",
+   "shape": [
+    41,
+    2000
+   ]
+  },
+  "rushing/rushing_td": {
+   "dtype": "int16",
+   "sha256": "5201bdab037f5c2192fc8892d32cae978704273f3840640ff2b0b0ccae2be262",
+   "shape": [
+    41,
+    2000
+   ]
+  },
+  "rushing_total/rushing_yards": {
+   "dtype": "float64",
+   "sha256": "5dd466052be026bff625a482ee58af98b64534acc61d6cf4b245fedeca3ba02e",
+   "shape": [
+    41,
+    2000
+   ]
+  }
+ },
+ "content_digest": "e6ad7147f1ef8f1802b22dcf9c03dd16ac3349753cb6281a537a2d3c6cae6e90",
+ "draw_artifact_version": "nfl-draw-artifact-1",
+ "draw_index_semantics": {
+  "across_rows": "INDEPENDENT_STREAMS_COLUMN_ALIGNED",
+  "note": "column j is the same iteration of one row's stream for every metric of that row, so cross-metric dependence on this axis is real. Rows are seeded independently, so a CROSS-ROW correlation read off the same axis measures the generator's lack of coupling, not a football quantity.",
+  "within_row_across_metrics": "SAME_SIMULATED_WORLD"
+ },
+ "file": {
+  "bytes": 780386,
+  "name": "player_draws.npz",
+  "sha256": "d22d9e92acef1c8b14b0a395e14cd07140e958b9bf906ecfb23213f4f4c7bd0d"
+ },
+ "game_id": "2026_04_PIT_CLE",
+ "layers": {
+  "dk_scoring": {
+   "metrics": [
+    "dk_points"
+   ],
+   "rng_stream": "joint",
+   "row_axis": "gsis_id",
+   "row_ids": [
+    "00-0023459",
+    "00-0036862",
+    "00-0038710",
+    "00-0037382",
+    "00-0036775",
+    "00-0039386",
+    "00-0041131",
+    "00-0039626",
+    "00-0035640",
+    "00-0038558",
+    "00-0041037",
+    "00-0033537",
+    "00-0040704",
+    "00-0040162",
+    "00-0038396",
+    "00-0041489",
+    "00-0040663",
+    "00-0040782",
+    "00-0036165",
+    "00-0038794",
+    "00-0037228",
+    "00-0036407",
+    "00-0040218",
+    "00-0041087",
+    "00-0041547",
+    "00-0041397",
+    "00-0041263",
+    "00-0038409",
+    "00-0039920",
+    "00-0034771",
+    "00-0039275",
+    "00-0031595",
+    "00-0036252",
+    "00-0036894",
+    "00-0040784",
+    "00-0040466",
+    "00-0041398",
+    "00-0033757",
+    "00-0039739",
+    "00-0040668",
+    "00-0035594"
+   ],
+   "row_teams": [
+    "PIT",
+    "PIT",
+    "CLE",
+    "PIT",
+    "PIT",
+    "CLE",
+    "CLE",
+    "PIT",
+    "PIT",
+    "PIT",
+    "CLE",
+    "CLE",
+    "CLE",
+    "CLE",
+    "CLE",
+    "PIT",
+    "CLE",
+    "CLE",
+    "PIT",
+    "CLE",
+    "PIT",
+    "CLE",
+    "CLE",
+    "CLE",
+    "CLE",
+    "PIT",
+    "PIT",
+    "PIT",
+    "CLE",
+    "PIT",
+    "CLE",
+    "CLE",
+    "PIT",
+    "PIT",
+    "CLE",
+    "CLE",
+    "PIT",
+    "PIT",
+    "PIT",
+    "CLE",
+    "PIT"
+   ],
+   "shape": [
+    41,
+    2000
+   ],
+   "spec_version": "showdown-family-1"
+  },
+  "dst": {
+   "metrics": [
+    "dk_points"
+   ],
+   "rng_stream": "joint",
+   "row_axis": "team",
+   "row_ids": [
+    "CLE",
+    "PIT"
+   ],
+   "shape": [
+    2,
+    2000
+   ],
+   "spec_version": "showdown-family-1"
+  },
+  "kicking": {
+   "metrics": [
+    "dk_points"
+   ],
+   "rng_stream": "kicker",
+   "row_axis": "gsis_id",
+   "row_ids": [
+    "00-0038428",
+    "00-0031136"
+   ],
+   "row_teams": [
+    "CLE",
+    "PIT"
+   ],
+   "shape": [
+    2,
+    2000
+   ],
+   "spec_version": "showdown-family-1"
+  },
+  "qb": {
+   "metrics": [
+    "att",
+    "ptd",
+    "pyds"
+   ],
+   "rng_stream": "joint",
+   "row_axis": "gsis_id",
+   "row_ids": [
+    "00-0023459",
+    "00-0036862",
+    "00-0038710",
+    "00-0037382",
+    "00-0036775",
+    "00-0039386",
+    "00-0041131",
+    "00-0039626",
+    "00-0035640",
+    "00-0038558",
+    "00-0041037",
+    "00-0033537",
+    "00-0040704",
+    "00-0040162",
+    "00-0038396",
+    "00-0041489",
+    "00-0040663",
+    "00-0040782",
+    "00-0036165",
+    "00-0038794",
+    "00-0037228",
+    "00-0036407",
+    "00-0040218",
+    "00-0041087",
+    "00-0041547",
+    "00-0041397",
+    "00-0041263",
+    "00-0038409",
+    "00-0039920",
+    "00-0034771",
+    "00-0039275",
+    "00-0031595",
+    "00-0036252",
+    "00-0036894",
+    "00-0040784",
+    "00-0040466",
+    "00-0041398",
+    "00-0033757",
+    "00-0039739",
+    "00-0040668",
+    "00-0035594"
+   ],
+   "row_teams": [
+    "PIT",
+    "PIT",
+    "CLE",
+    "PIT",
+    "PIT",
+    "CLE",
+    "CLE",
+    "PIT",
+    "PIT",
+    "PIT",
+    "CLE",
+    "CLE",
+    "CLE",
+    "CLE",
+    "CLE",
+    "PIT",
+    "CLE",
+    "CLE",
+    "PIT",
+    "CLE",
+    "PIT",
+    "CLE",
+    "CLE",
+    "CLE",
+    "CLE",
+    "PIT",
+    "PIT",
+    "PIT",
+    "CLE",
+    "PIT",
+    "CLE",
+    "CLE",
+    "PIT",
+    "PIT",
+    "CLE",
+    "CLE",
+    "PIT",
+    "PIT",
+    "PIT",
+    "CLE",
+    "PIT"
+   ],
+   "shape": [
+    41,
+    2000
+   ],
+   "spec_version": "showdown-family-1"
+  },
+  "receiving": {
+   "metrics": [
+    "receiving_td",
+    "receiving_yards",
+    "receptions",
+    "targets"
+   ],
+   "rng_stream": "joint",
+   "row_axis": "gsis_id",
+   "row_ids": [
+    "00-0023459",
+    "00-0036862",
+    "00-0038710",
+    "00-0037382",
+    "00-0036775",
+    "00-0039386",
+    "00-0041131",
+    "00-0039626",
+    "00-0035640",
+    "00-0038558",
+    "00-0041037",
+    "00-0033537",
+    "00-0040704",
+    "00-0040162",
+    "00-0038396",
+    "00-0041489",
+    "00-0040663",
+    "00-0040782",
+    "00-0036165",
+    "00-0038794",
+    "00-0037228",
+    "00-0036407",
+    "00-0040218",
+    "00-0041087",
+    "00-0041547",
+    "00-0041397",
+    "00-0041263",
+    "00-0038409",
+    "00-0039920",
+    "00-0034771",
+    "00-0039275",
+    "00-0031595",
+    "00-0036252",
+    "00-0036894",
+    "00-0040784",
+    "00-0040466",
+    "00-0041398",
+    "00-0033757",
+    "00-0039739",
+    "00-0040668",
+    "00-0035594"
+   ],
+   "row_teams": [
+    "PIT",
+    "PIT",
+    "CLE",
+    "PIT",
+    "PIT",
+    "CLE",
+    "CLE",
+    "PIT",
+    "PIT",
+    "PIT",
+    "CLE",
+    "CLE",
+    "CLE",
+    "CLE",
+    "CLE",
+    "PIT",
+    "CLE",
+    "CLE",
+    "PIT",
+    "CLE",
+    "PIT",
+    "CLE",
+    "CLE",
+    "CLE",
+    "CLE",
+    "PIT",
+    "PIT",
+    "PIT",
+    "CLE",
+    "PIT",
+    "CLE",
+    "CLE",
+    "PIT",
+    "PIT",
+    "CLE",
+    "CLE",
+    "PIT",
+    "PIT",
+    "PIT",
+    "CLE",
+    "PIT"
+   ],
+   "shape": [
+    41,
+    2000
+   ],
+   "spec_version": "showdown-family-1"
+  },
+  "rushing": {
+   "metrics": [
+    "carries",
+    "rushing_td"
+   ],
+   "rng_stream": "joint",
+   "row_axis": "gsis_id",
+   "row_ids": [
+    "00-0023459",
+    "00-0036862",
+    "00-0038710",
+    "00-0037382",
+    "00-0036775",
+    "00-0039386",
+    "00-0041131",
+    "00-0039626",
+    "00-0035640",
+    "00-0038558",
+    "00-0041037",
+    "00-0033537",
+    "00-0040704",
+    "00-0040162",
+    "00-0038396",
+    "00-0041489",
+    "00-0040663",
+    "00-0040782",
+    "00-0036165",
+    "00-0038794",
+    "00-0037228",
+    "00-0036407",
+    "00-0040218",
+    "00-0041087",
+    "00-0041547",
+    "00-0041397",
+    "00-0041263",
+    "00-0038409",
+    "00-0039920",
+    "00-0034771",
+    "00-0039275",
+    "00-0031595",
+    "00-0036252",
+    "00-0036894",
+    "00-0040784",
+    "00-0040466",
+    "00-0041398",
+    "00-0033757",
+    "00-0039739",
+    "00-0040668",
+    "00-0035594"
+   ],
+   "row_teams": [
+    "PIT",
+    "PIT",
+    "CLE",
+    "PIT",
+    "PIT",
+    "CLE",
+    "CLE",
+    "PIT",
+    "PIT",
+    "PIT",
+    "CLE",
+    "CLE",
+    "CLE",
+    "CLE",
+    "CLE",
+    "PIT",
+    "CLE",
+    "CLE",
+    "PIT",
+    "CLE",
+    "PIT",
+    "CLE",
+    "CLE",
+    "CLE",
+    "CLE",
+    "PIT",
+    "PIT",
+    "PIT",
+    "CLE",
+    "PIT",
+    "CLE",
+    "CLE",
+    "PIT",
+    "PIT",
+    "CLE",
+    "CLE",
+    "PIT",
+    "PIT",
+    "PIT",
+    "CLE",
+    "PIT"
+   ],
+   "shape": [
+    41,
+    2000
+   ],
+   "spec_version": "showdown-family-1"
+  },
+  "rushing_total": {
+   "metrics": [
+    "rushing_yards"
+   ],
+   "rng_stream": "joint",
+   "row_axis": "gsis_id",
+   "row_ids": [
+    "00-0023459",
+    "00-0036862",
+    "00-0038710",
+    "00-0037382",
+    "00-0036775",
+    "00-0039386",
+    "00-0041131",
+    "00-0039626",
+    "00-0035640",
+    "00-0038558",
+    "00-0041037",
+    "00-0033537",
+    "00-0040704",
+    "00-0040162",
+    "00-0038396",
+    "00-0041489",
+    "00-0040663",
+    "00-0040782",
+    "00-0036165",
+    "00-0038794",
+    "00-0037228",
+    "00-0036407",
+    "00-0040218",
+    "00-0041087",
+    "00-0041547",
+    "00-0041397",
+    "00-0041263",
+    "00-0038409",
+    "00-0039920",
+    "00-0034771",
+    "00-0039275",
+    "00-0031595",
+    "00-0036252",
+    "00-0036894",
+    "00-0040784",
+    "00-0040466",
+    "00-0041398",
+    "00-0033757",
+    "00-0039739",
+    "00-0040668",
+    "00-0035594"
+   ],
+   "row_teams": [
+    "PIT",
+    "PIT",
+    "CLE",
+    "PIT",
+    "PIT",
+    "CLE",
+    "CLE",
+    "PIT",
+    "PIT",
+    "PIT",
+    "CLE",
+    "CLE",
+    "CLE",
+    "CLE",
+    "CLE",
+    "PIT",
+    "CLE",
+    "CLE",
+    "PIT",
+    "CLE",
+    "PIT",
+    "CLE",
+    "CLE",
+    "CLE",
+    "CLE",
+    "PIT",
+    "PIT",
+    "PIT",
+    "CLE",
+    "PIT",
+    "CLE",
+    "CLE",
+    "PIT",
+    "PIT",
+    "CLE",
+    "CLE",
+    "PIT",
+    "PIT",
+    "PIT",
+    "CLE",
+    "PIT"
+   ],
+   "shape": [
+    41,
+    2000
+   ],
+   "spec_version": "showdown-family-1"
+  }
+ },
+ "n_draw_cells": 910000,
+ "n_draws": 2000,
+ "n_layers": 7,
+ "n_matrices": 13,
+ "rng": {
+  "generator": "numpy.random.default_rng (PCG64)",
+  "seed": 20261001,
+  "seed_protocol": "showdown_draws.SEED, one stream"
+ },
+ "run_id": "2026_04_PIT_CLE:PROJ_V1_FOOTBALL_ONLY_JOINT_CENTRED_2000"
+}

@@ -176,7 +176,23 @@ def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED,
         return mo
     model = mo.value if hasattr(mo, 'value') else mo
 
-    spec = {'total_line': env['total_line'], 'home_spread': env['home_spread'], 'clubs': []}
+    # THE SCORING CENTRE FOLLOWS THE PROJECTION'S ARM. A projection built football-only carries its
+    # centre; the simulator then draws every world around it with the residuals measured around that
+    # centre, and the captured lines are not read. A market-arm projection keeps the incumbent path.
+    scoring = {'basis': 'MARKET_LINES', 'total_line': env['total_line'], 'home_spread': env['home_spread']}
+    if proj.get('market_arm') == 'FOOTBALL_ONLY':
+        from nfl.sim import football_points as FP
+        fp = FP.load()
+        c = (proj.get('football_centre') or {}).get(f'{away}@{home}')
+        if not fp or not c:
+            return Outcome.fail('FOOTBALL_CENTRE_MISSING', 'the projection declares the football-only arm but carries no centre for this game')
+        scoring = {'basis': 'FOOTBALL_ONLY_OWN_OFFENCE_BLEND', 'total_line': c['total'], 'home_spread': c['home_margin'],
+                   'home_expected': c['home_expected'], 'away_expected': c['away_expected'],
+                   'residuals': 'FOOTBALL_POINTS.json empirical_residuals (around the football centre; home-field carried in the margin mean)',
+                   'total_residual_sd': fp['total_residual']['sd'], 'margin_residual_sd': fp['margin_residual']['sd']}
+        model.total_res = fp['empirical_residuals']['total']
+        model.margin_res = fp['empirical_residuals']['margin']
+    spec = {'total_line': scoring['total_line'], 'home_spread': scoring['home_spread'], 'clubs': []}
     for club in (home, away):
         players = _shares(rows, club)
         if not any(p['position'] == 'QB' for p in players):
@@ -255,6 +271,8 @@ def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED,
             'share_family': (o.value or {}).get('share_family'),
         },
         'simulator_detail': o.detail or o.code,
+        'scoring_centre': scoring,
+        'market_arm': proj.get('market_arm', 'MARKET'),
         'volume_centre': (o.value.get('volume_centre')
                           or {'mode': sim_game.VOLUME_CENTRE_INCUMBENT,
                               'MEANING': 'the simulator drew its own club volume from its '

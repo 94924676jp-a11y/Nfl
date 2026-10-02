@@ -598,3 +598,128 @@ quarter more targets than the projection); dispersion is unchanged (median SD ra
 pairwise correlation is unchanged (mean |Δ| 0.025); 27 of 78 lineups and 22 per cent of slot
 exposure turn over. Not promoted: the arm is sealed descriptively as `PROJ_V1_JOINT_CENTRED_QBTGT_2000`
 so the first pre-kickoff seal of a future game is comparable, and grading decides.
+
+---
+
+## 14. The three remaining items: receiving mass, the football-only arm, the slate rerun
+
+### 14.1 DEFECT-RECVMASS decomposed (owner item 1)
+
+Paired on 7,144 identical player-weeks (arm 1.0, 28 held-out weeks, per-player rows kept by a
+diagnostic sink in the forward chain), `nfl/research/depth_prior_repair/DEFECT_RECVMASS_DECOMPOSITION.json`:
+
+| RB/WR/TE rows by … | n | MAE legacy → repaired | mean proj legacy → repaired | mean actual |
+|---|---|---|---|---|
+| actual = 0 | 445 | 2.20 → 2.43 (+0.24) | 2.19 → 2.43 | 0.00 |
+| actual in (0, 5] | 2,250 | 3.03 → 3.26 (+0.23) | 3.28 → 3.58 | 2.56 |
+| actual in (5, 15] | 2,372 | 5.78 → 6.02 (+0.24) | 7.42 → 8.03 | 9.28 |
+| actual > 15 | 1,130 | 11.67 → 11.10 (**−0.57**) | 11.49 → 12.45 | 22.53 |
+| legacy projection in (p80, p95] | 933 | 7.27 → 7.62 (+0.34) | 15.78 → 16.97 | **14.08** |
+| legacy projection > p95 | 311 | 8.25 → 8.53 (+0.28) | 21.38 → 22.51 | **18.89** |
+| legacy over-projected rows | 2,412 | 4.25 → 4.98 (+0.73) | 9.33 → 10.06 | 5.08 |
+| legacy under-projected rows | 3,810 | 6.43 → 6.11 (**−0.32**) | 4.32 → 4.73 | 10.75 |
+
+**Reading.** The repair helps exactly where a projection should help, the big games and the
+under-projected rows, and hurts the rows the legacy already over-projected. The top fifth of
+receiver projections sat 12 per cent *above* their realised means while the layer as a whole sat 27
+per cent below. The receiver layer is over-concentrated at the top and short in the middle, and
+reallocating the ghost targets in proportion to existing shares amplifies that shape. The defect is
+the within-club allocation shape (depth concentration and the claim blend), which is measurable and
+belongs to a declared arm (B1/B2); it is not a constant to tune tonight, and it is not a reason to
+keep an impossible allocation. The quarterback repair did not create this shape; it exposed it.
+
+### 14.2 The football-only arm (owner item 2): what was removed and what replaced it
+
+`MARKET_ARM = 'FOOTBALL_ONLY'` in `proj_v1` is a declared candidate arm beside the incumbent, not a
+swap. Every feed §5 identified is replaced:
+
+| Entry point | Incumbent | Football-only arm |
+|---|---|---|
+| volume layer `market_response` | measured response to total/favoured-by deviation | **NOT_APPLIED** (state recorded per club) |
+| club touchdown pool regressor | captured implied total, fit of TD on actual points | club's **football expected points**, fit of TD on that same centre (slope 0.0945, intercept 0.232, n 2,718) |
+| DST points-allowed centre and spread | opponent's implied total; residuals around the **league mean** | opponent's football expected points; residuals around **that centre** (sd 9.92, n 12,934) |
+| simulator scoring worlds | total line and spread, residuals around the lines (sd 13.38 / 13.20) | football total and margin, residuals around them (sd **14.02 / 13.84**, home field **+2.30** carried in the margin mean) |
+| kicker | never read the market | unchanged, and a test asserts it |
+
+The centre is `nfl/sim/football_points.py`: a club's own-offence points per game, current season
+through week W−1 weighted by its games plus the prior season weighted by the volume layer's declared
+four pseudo-games, forward-only, measured over 6,467 games 2001–2025. No new coefficient. No
+opponent adjustment (owner item 9) and no weather (item 10), both declared. The residuals are wider
+than the market's, as they must be: the market knows more, and this arm does not pretend otherwise.
+Tonight's centre without reading a line: CLE 17.09, PIT 20.92, total 38.01, margin −3.82 before the
+measured home field; the captured lines were 17.75 / 20.75 / 38.5 / −3.0. That is a sanity check,
+not evidence.
+
+**Tests** (`nfl/tests/test_football_only_arm.py`): the centre module never reads a sportsbook field
+(AST); under the arm, moving every line in the environment by +7 and −7 leaves every player, kicker,
+DST, club-volume and touchdown number byte-identical; **the control**: under the incumbent arm the
+same perturbation moves the DST and the touchdown pool, so the test can see the dependence it
+guards against; kickers are identical across arms; the draws builder draws around the football centre
+with the football residuals when the projection declares the arm.
+
+### 14.3 The slate rerun under the arm (owner item 3): three arms, one benchmark
+
+All on the DEFECT-QBTGT-repaired projection, 2,000 joint draws, seed 20261001, 78 entries through
+the real entry point with the draws gate measuring (`DRAWS_CLUB_VOLUME_MEASURED`, centred mode within
+tolerance). Projections are the unconditional `dk_points`; draw means are the simulator's. FC is the
+owner-supplied 7 PM post-inactives benchmark and nothing else.
+
+| player | delivered proj | market+repair proj | **football-only proj** | market centred draw | **football centred draw** | FC |
+|---|---|---|---|---|---|---|
+| Deshaun Watson QB | 16.33 | 16.31 | 16.69 | 18.27 | 18.34 | 20.81 |
+| Aaron Rodgers QB | 14.37 | 14.36 | 14.86 | 16.79 | 16.96 | 16.90 |
+| Jaylen Warren RB | 20.38 | 20.37 | 20.15 | 19.34 | 18.88 | 17.15 |
+| DK Metcalf WR | 11.52 | 11.56 | 12.28 | 13.35 | 13.87 | 13.38 |
+| Harold Fannin Jr. TE | 10.07 | 11.87 | 12.08 | 12.55 | 12.77 | 13.19 |
+| Quinshon Judkins RB | 10.45 | 11.18 | 11.23 | 14.03 | 14.05 | 10.62 |
+| Pat Freiermuth TE | 11.10 | 11.14 | 11.65 | 11.30 | 11.65 | 7.85 |
+| Chris Boswell K | 8.65 | 8.65 | 8.65 | 8.98 | 8.98 | 6.25 |
+| Steelers DST | 9.37 | 9.37 | 9.50 | 8.12 | 8.21 | 8.61 |
+| Browns DST | 6.18 | 6.18 | 6.19 | 6.95 | 7.72 | 6.21 |
+| Andre Szmyt K | 6.54 | 6.54 | 6.54 | 6.90 | 6.90 | 5.73 |
+
+**What the arm changes, mechanically.** Removing the market moves the quarterbacks up 0.4–0.5
+(the touchdown fit on the football centre runs 0.0945 per point against the incumbent's fit fed with
+a lower implied total), moves the Steelers DST 0.13 and the Browns DST 0.01 in projection (the football
+centre is within a point of the lines tonight, which is a sanity check and nothing more), moves the
+kickers not at all, and leaves club volume unscaled (PIT pass attempts 35.7 → 37.1 because the
+favoured-by response no longer trims them). The centred simulator reconciles every club quantity to
+the arm's own projection within 0.5. Dispersion is the measured football residuals, which are wider
+than the market's; the Browns DST draw mean rises to 7.72 because the points-allowed residuals around
+the PIT centre are the conditional set, not the league-mean set.
+
+**Portfolio.** 78 legal distinct lineups, both clubs, no inactive rostered, max combined exposure
+exactly 50%. The 50% cap binds for the same five players under every arm (Judkins, Rodgers, Watson,
+Warren, Metcalf at 39/78), so the arms differ only in the middle of the board and the captain mix:
+
+| player | football-only | market centred | delivered | Δ vs market | Δ vs delivered |
+|---|---|---|---|---|---|
+| Fannin | 35 | 34 | 39 | +1 | −4 |
+| Freiermuth | 38 | 36 | 33 | +2 | +5 |
+| Steelers DST | 31 | 34 | 29 | −3 | +2 |
+| Concepcion | 28 | 34 | 29 | −6 | −1 |
+| Boswell | 26 | 29 | 28 | −3 | −2 |
+| Browns DST | 28 | 24 | 27 | +4 | +1 |
+| Szmyt | 22 | 18 | 23 | +4 | −1 |
+| Roman Wilson | 18 | 14 | 19 | +4 | −1 |
+
+Per-player exposure turnover: football vs market-centred 4.7%, football vs delivered 3.4%,
+market-centred vs delivered 5.3%. Captain: Warren 14 (18 under market, 20 delivered), Watson 11,
+Judkins 8, Freiermuth 7.
+
+**A correction to every lineup-turnover figure reported before this section.** The upload CSV has
+five columns all named FLEX, which `csv.DictReader` collapses to one, so the "27 of 78" and "22 of
+78" figures in §13 and the earlier report compared the captain and a single flex slot. Over all six
+slots, 73–76 of 78 lineups differ in every pairwise comparison, including market-centred against
+delivered. With overlap constraints and 78 entries, lineup identity is near-total turnover by
+construction and says nothing; the per-player exposure figures above are the measure.
+
+**Exposure board (football-only arm, full).** `nfl/research/showdown_live/2026_04_PIT_CLE/PROJ_V1_FOOTBALL_ONLY_JOINT_CENTRED_2000/`
+holds the seal; the CSV is `DK_SHOWDOWN_UPLOAD_FOOTBALL_ONLY_CENTRED.csv` beside the delivered one.
+Every rostered player with projection, draw mean, overall / CPT / FLEX counts is in
+`EXPOSURE_FOOTBALL_ONLY.json` in the same directory.
+
+**Status.** The game is over; all three seals are descriptive (`prospective_evidence False`). The
+football-only arm is registered under its own identity so the first pre-kickoff seal of a future game
+grades arm against arm on the row ledger (PROGRAM-5). Nothing is promoted; `PROJECTION_SYSTEM_STATE`
+is `NOT_VALIDATED`; FC is a benchmark, not truth, and no number here is evidence of edge.

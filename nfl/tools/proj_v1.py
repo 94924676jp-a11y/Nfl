@@ -129,6 +129,15 @@ EFFECTIVELY_ZERO = 0.05
 #: Pseudo-games of last season's team volume mixed into this season's measured volume. DECLARED:
 #: two games of pace is a thin estimate and a club's offence does not reset in September.
 TEAM_VOLUME_PRIOR_GAMES = 4.0
+#: WHICH SCORING CENTRE THE PROJECTION IS BUILT ON. 'MARKET' is the incumbent: the captured implied
+#: totals feed the touchdown pool and the DST points-allowed centre, and the volume layer applies its
+#: measured market response. 'FOOTBALL_ONLY' is the declared candidate arm (owner directive
+#: 2026-10-02): every one of those feeds is replaced by nfl/sim/football_points -- a club's own
+#: scoring blend, the touchdown fit on that centre, points-allowed residuals around the opponent's
+#: centre -- and the market response is NOT_APPLIED. The captured market environment is still
+#: carried in the artifact, labelled for downstream comparison only. A test proves the arm's
+#: projections do not move when every line in the environment is perturbed.
+MARKET_ARM = 'MARKET'       # 'MARKET' (incumbent) | 'FOOTBALL_ONLY' (candidate arm)
 
 CONSTANTS_PROVENANCE = {
     'PRIOR_WEIGHT_CAP': (PRIOR_WEIGHT_CAP,
@@ -155,7 +164,7 @@ SLATE_WEEK = 3
 _MR = None
 
 
-def team_volume(panel, env):
+def team_volume(panel, env, market_response_enabled=True):
     """Per-game club volume, blended across seasons and scaled by the market implied total.
 
     A share is a share OF A CLUB, so the denominator has to be that club's own volume. The
@@ -227,6 +236,15 @@ def team_volume(panel, env):
         # figure V0 would have used is recorded alongside it for comparison.
         scale = 1.0
         would_have = (imp / league_mean) if (imp and league_mean) else None
+        if not market_response_enabled:
+            out[club] = {**{f'proj_{f}': v for f, v in blend.items()}, **{f'{f}_pg': v for f, v in blend.items()},
+                         'state': 'OK', 'market_response_state': 'NOT_APPLIED_FOOTBALL_ONLY_ARM',
+                         'market_response': {'state': 'NOT_APPLIED_FOOTBALL_ONLY_ARM'},
+                         'blend_weights': {'current_season_games': n_cur, 'prior_season_pseudo_games': TEAM_VOLUME_PRIOR_GAMES},
+                         'weeks_observed_2026': n_cur, 'weeks_observed_prior_season': len(prv),
+                         'volume_scale_applied': 1.0, 'implied_total': None,
+                         'WHY_NOT_SCALED': 'football-only arm: no market enters the volume layer'}
+            continue
         cm = (market_response.club_market(_MR['team_game'], club, FORECAST_SEASON, SLATE_WEEK)
               if _MR else None)
         row = {'state': 'OK', 'weeks_observed_2026': n_cur,
@@ -1092,11 +1110,37 @@ def build():
         if (_row.get('predicted_lineup_context') or {}).get('in_predicted_starting_group'):
             pred_feed_clubs[_row.get('team')] += 1
     ip = int_rate(panel, pos_of)['int_per_attempt']
-    tv_all, implied, league_mean = team_volume(panel, post['environment'].get('games') or {})
+    market_games = post['environment'].get('games') or {}
+    football_centre = None
+    if MARKET_ARM == 'FOOTBALL_ONLY':
+        # THE ARM REPLACES THE ENVIRONMENT'S SCORING NUMBERS WITH THE FOOTBALL CENTRE and keeps the
+        # captured market only as a labelled downstream comparison. Field names are kept so every
+        # consumer below reads the same keys; what they carry is declared in the artifact.
+        from nfl.sim import football_points as _FP
+        fp = _FP.load()
+        if not fp:
+            return Outcome.blocked('FOOTBALL_POINTS_ABSENT', 'build nfl/sim/football_points.py first', cause=Cause.DATA)
+        table = _FP.club_points_table(_FP._rows())
+        games_env, football_centre = {}, {}
+        for game, e in market_games.items():
+            if '@' not in game:
+                continue
+            away, home = game.split('@')
+            c = _FP.centre_for_game(home, away, FORECAST_SEASON, SLATE_WEEK, table=table)
+            if c is None:
+                return Outcome.blocked('FOOTBALL_CENTRE_ABSENT', f'{game}: no scoring history for a club', cause=Cause.DATA)
+            games_env[game] = {**{k: v for k, v in e.items() if k not in ('home_implied', 'away_implied', 'total_line', 'home_spread')},
+                               'home_implied': c['home_expected'], 'away_implied': c['away_expected'],
+                               'total_line': c['total'], 'home_spread': c['home_margin'], 'SCORING_BASIS': c['BASIS']}
+            football_centre[game] = c
+        env_games = games_env
+    else:
+        env_games = market_games
+    tv_all, implied, league_mean = team_volume(panel, env_games, market_response_enabled=(MARKET_ARM != 'FOOTBALL_ONLY'))
 
-    # opponent implied total, for the defence/special-teams points-allowed term
+    # opponent expected points, for the defence/special-teams points-allowed term
     opponent_implied = {}
-    for game, e in (post['environment'].get('games') or {}).items():
+    for game, e in env_games.items():
         if '@' not in game:
             continue
         away, home = game.split('@')
@@ -1107,6 +1151,14 @@ def build():
         _dst_art, dst_spread, dst_rates = dst_built
     else:
         _dst_art, dst_spread, dst_rates = None, {'state': 'NOT_ESTIMATED'}, {}
+    if MARKET_ARM == 'FOOTBALL_ONLY':
+        # points-allowed residuals around the OPPONENT's football centre (conditional), replacing the
+        # DST layer's league-mean set; the touchdown fit on the football centre replaces the fit fed
+        # with the implied total
+        dst_spread = {'state': 'MEASURED', 'residuals': fp['empirical_residuals']['points_allowed'],
+                      'n_club_games': fp['points_allowed_residual']['n'], 'sd': fp['points_allowed_residual']['sd'],
+                      'CENTRE': 'opponent football expected points (nfl/sim/FOOTBALL_POINTS.json)'}
+        pto = dict(fp['td_fit'])
 
     # OPEN IDENTITY CONFLICTS ARE NOT PROJECTED. A declared rule, applied here rather than
     # detected afterwards: projecting a name whose football identity is unsettled assigns
@@ -1385,6 +1437,11 @@ def build():
             'rates_artifact': {'points_to_td': pto, 'pass_share': pass_share},
             'implied': implied, 'league_mean_implied': league_mean,
             'opponent_implied': opponent_implied,
+            'market_arm': MARKET_ARM,
+            'IMPLIED_MEANS': ('FOOTBALL_EXPECTED_POINTS: own-offence blend, no sportsbook input' if MARKET_ARM == 'FOOTBALL_ONLY'
+                              else 'captured sportsbook implied totals'),
+            'football_centre': football_centre,
+            'market_environment_DOWNSTREAM_COMPARISON_ONLY': (market_games if MARKET_ARM == 'FOOTBALL_ONLY' else None),
             'dst_residual_spread': {k: v for k, v in (dst_spread or {}).items()
                                     if k != 'residuals'},
             'explanation_check': decomp_check}

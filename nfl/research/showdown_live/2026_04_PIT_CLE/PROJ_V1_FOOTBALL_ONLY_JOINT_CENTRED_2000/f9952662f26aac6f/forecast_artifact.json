@@ -1,0 +1,205 @@
+{
+ "PROJECTION_SYSTEM_STATE": "NOT_VALIDATED",
+ "artifact": "SHOWDOWN_FORECAST_ARTIFACT",
+ "availability_vintage": {
+  "official_inactives_sha256": "5ccd12c5d73eaf899a0273a992238c1455705eb317f67aa8d9c489c145cb5192",
+  "state_built_at_utc": "2026-10-01T23:06:52.698876+00:00",
+  "status_applied": "REPORTED_INACTIVE_HIGH_CONFIDENCE"
+ },
+ "code_identity": {
+  "nfl.sim.game": "fd1401e34625510c",
+  "nfl.tools.football_sanity": "d9e3bbb20113e8fd",
+  "nfl.tools.kicker_model": "3372b0aa50b3f3c5",
+  "nfl.tools.player_prior": "30007119e661c44f",
+  "nfl.tools.proj_v1": "f65b3843e7df639a",
+  "nfl.tools.role_state_history": "a523a92973ce7a9e",
+  "nfl.tools.showdown_draws": "6848fc6422285d06",
+  "nfl.tools.showdown_slate_state": "7571f1f02e5a5798",
+  "nfl.tools.showdown_to_portfolio": "66afa8c2e168853e"
+ },
+ "code_identity_sha256": "96d70bf66733674d9f502f1a10083fd2ad7c6b5c22ed44558d931ea7de8df71e",
+ "data_cutoff": {
+  "blob": "nfl/research/postgame/pbp_2026.79b02496d26004ee.csv.gz",
+  "retrieved_at": "2026-10-01T21:25:08.679929+00:00",
+  "retrieved_at_basis": "FILE_MTIME",
+  "season": 2026,
+  "sha16": "79b02496d26004ee",
+  "week_span": [
+   1,
+   3
+  ]
+ },
+ "depth_vintage": {
+  "MEANING": "this family ranks depth from panel usage (role_state_history.pregame_depth); no depth-chart capture is read, so the depth vintage is the play-by-play blob",
+  "basis": "USAGE_DERIVED_FROM_PANEL",
+  "blob": "nfl/research/postgame/pbp_2026.79b02496d26004ee.csv.gz",
+  "sha16": "79b02496d26004ee"
+ },
+ "draw_artifact": {
+  "content_digest": "e6ad7147f1ef8f1802b22dcf9c03dd16ac3349753cb6281a537a2d3c6cae6e90",
+  "file": "player_draws.npz",
+  "file_sha256": "d22d9e92acef1c8b14b0a395e14cd07140e958b9bf906ecfb23213f4f4c7bd0d",
+  "manifest": "player_draws_manifest.json",
+  "n_draws": 2000,
+  "per_stat_layers": "PRESENT",
+  "source_dk_draws_sha256": "4d1191517c3cad25b7ba643ada0d0d3429272063ae675a68b7030767a03e5c57"
+ },
+ "eligibility_reason": "sealed after kickoff: DESCRIPTIVE ONLY. The football-only arm (MARKET_ARM=FOOTBALL_ONLY: no sportsbook price in the touchdown pool, the DST centre, the volume layer or the scoring worlds; centre and residuals from nfl/sim/FOOTBALL_POINTS.json) on the DEFECT-QBTGT-repaired projection, centred simulator. Registers the arm identity so the first PRE-kickoff seal of a future game is comparable arm-against-arm on the row ledger; counts as no prospective evidence itself.",
+ "game_id": "2026_04_PIT_CLE",
+ "information_set": {
+  "newest_observation": "2026-10-01T23:08:34.609165+00:00",
+  "observed_before": "2026-10-01T23:08:34.609165+00:00"
+ },
+ "kickoff_utc": "2026-10-02T00:15:00Z",
+ "model_configuration": "PROJ_V1_FOOTBALL_ONLY_JOINT_CENTRED_2000",
+ "model_family": "SHOWDOWN_PROJ_V1_JOINT_SIM",
+ "projection_artifact": {
+  "path": "nfl/dfs/salaries/SHOWDOWN_TONIGHT_PROJ_FOOTBALL_ONLY.json",
+  "sha256": "35de920def1301189ca30eb6a552975473d867305452b36e0de021c0d876bf57"
+ },
+ "prospective_eligible": false,
+ "prospective_evidence": false,
+ "roster_vintage": [
+  {
+   "path": "nfl/vintage/weekly_rosters.0a6374ac8901e8d5.raw.csv.gz",
+   "retrieved_at": "2026-09-23T18:39:24.266078+00:00",
+   "retrieved_at_basis": "FILE_MTIME",
+   "sha256": "863597fa3b3da6d2b6257ee06310d97bc0e328274167d810603ce11f64b94633"
+  },
+  {
+   "path": "nfl/vintage/weekly_rosters.0efeaede1505ab6e.raw.csv.gz",
+   "retrieved_at": "2026-09-24T15:47:44.102146+00:00",
+   "retrieved_at_basis": "FILE_MTIME",
+   "sha256": "ab4dcabd84781c817645ff4dbf8c6a8c3fc2a4a124dd27e30a0dd8faedf9781a"
+  },
+  {
+   "path": "nfl/vintage/weekly_rosters.35f0cce3182f6081.raw.csv.gz",
+   "retrieved_at": "2026-09-23T18:39:24.270078+00:00",
+   "retrieved_at_basis": "FILE_MTIME",
+   "sha256": "a6b0aa6e799de6db6ccda909f2632887795450c4c4c2241fb8a6e89a606712d4"
+  },
+  {
+   "path": "nfl/vintage/weekly_rosters.4d49285b77f14384.raw.csv.gz",
+   "retrieved_at": "2026-09-23T18:39:24.274078+00:00",
+   "retrieved_at_basis": "FILE_MTIME",
+   "sha256": "28dc5012b245ad6f4e7e983d7c0f333a76efbacada7866d4785ff70e6477a127"
+  },
+  {
+   "path": "nfl/vintage/weekly_rosters.698183b8ab2a09fa.raw.csv.gz",
+   "retrieved_at": "2026-09-23T18:39:24.278078+00:00",
+   "retrieved_at_basis": "FILE_MTIME",
+   "sha256": "9b19af548c1bb99ef367cfd5d3020a62a4168976c81cf5aa6073b75099e286d3"
+  },
+  {
+   "path": "nfl/vintage/weekly_rosters.6ff9a4981106676c.raw.csv.gz",
+   "retrieved_at": "2026-09-23T18:39:24.278078+00:00",
+   "retrieved_at_basis": "FILE_MTIME",
+   "sha256": "a105a5226d3af0913091db5c5fa215d1f97973d7f01cc8db9c85c39dfd41802e"
+  },
+  {
+   "path": "nfl/vintage/weekly_rosters.73f1d36a204ec591.raw.csv.gz",
+   "retrieved_at": "2026-09-23T18:39:24.282078+00:00",
+   "retrieved_at_basis": "FILE_MTIME",
+   "sha256": "9219b5ebe65dcd59979007ca832a529ecc05254149ba5c7cfd8926d8c8397a40"
+  },
+  {
+   "path": "nfl/vintage/weekly_rosters.8bcf6ee6af93cc8b.raw.csv.gz",
+   "retrieved_at": "2026-09-23T18:39:24.286078+00:00",
+   "retrieved_at_basis": "FILE_MTIME",
+   "sha256": "c4d9f73749986cc4e700bde61a8888ea2b28395eac126f18cc6fea6f98f31342"
+  },
+  {
+   "path": "nfl/vintage/weekly_rosters.b4dbf4d2090ae3ff.raw.csv.gz",
+   "retrieved_at": "2026-09-23T18:39:24.290078+00:00",
+   "retrieved_at_basis": "FILE_MTIME",
+   "sha256": "f894b2f8ae5e5f69f6ee600680e2a94f2d1015cdb8e4ab173b954d56e3b1660d"
+  },
+  {
+   "path": "nfl/vintage/weekly_rosters.bdab6ecee12d44a4.raw.csv.gz",
+   "retrieved_at": "2026-09-23T18:39:24.290078+00:00",
+   "retrieved_at_basis": "FILE_MTIME",
+   "sha256": "4ee189a4283850a3d4a4582427e391c20ca2849af6e85660fa4d70f274fa463f"
+  },
+  {
+   "path": "nfl/vintage/weekly_rosters.f7e970be65f97694.raw.csv.gz",
+   "retrieved_at": "2026-09-23T18:39:24.294078+00:00",
+   "retrieved_at_basis": "FILE_MTIME",
+   "sha256": "da5c9900807cc99104ccb665f8c62528926b2678b78d47d36db67528ddbb181e"
+  }
+ ],
+ "source_captures": [
+  {
+   "retrieved_at": "2026-10-01T21:25:08.679929+00:00",
+   "sha256": "79b02496d26004ee",
+   "source": "play_by_play_panel"
+  },
+  {
+   "retrieved_at": "2026-10-01T21:14:44.378098+00:00",
+   "sha256": "67229d912fd7ed058ad2c44bcac9b1f142039c9508591a1dbddc030825c8a2eb",
+   "source": "dk_export"
+  },
+  {
+   "retrieved_at": "2026-10-01T23:08:34.609165+00:00",
+   "sha256": "5ccd12c5d73eaf899a0273a992238c1455705eb317f67aa8d9c489c145cb5192",
+   "source": "official_inactives"
+  },
+  {
+   "retrieved_at": "2026-09-23T18:39:24.266078+00:00",
+   "sha256": "863597fa3b3da6d2b6257ee06310d97bc0e328274167d810603ce11f64b94633",
+   "source": "weekly_rosters"
+  },
+  {
+   "retrieved_at": "2026-09-24T15:47:44.102146+00:00",
+   "sha256": "ab4dcabd84781c817645ff4dbf8c6a8c3fc2a4a124dd27e30a0dd8faedf9781a",
+   "source": "weekly_rosters"
+  },
+  {
+   "retrieved_at": "2026-09-23T18:39:24.270078+00:00",
+   "sha256": "a6b0aa6e799de6db6ccda909f2632887795450c4c4c2241fb8a6e89a606712d4",
+   "source": "weekly_rosters"
+  },
+  {
+   "retrieved_at": "2026-09-23T18:39:24.274078+00:00",
+   "sha256": "28dc5012b245ad6f4e7e983d7c0f333a76efbacada7866d4785ff70e6477a127",
+   "source": "weekly_rosters"
+  },
+  {
+   "retrieved_at": "2026-09-23T18:39:24.278078+00:00",
+   "sha256": "9b19af548c1bb99ef367cfd5d3020a62a4168976c81cf5aa6073b75099e286d3",
+   "source": "weekly_rosters"
+  },
+  {
+   "retrieved_at": "2026-09-23T18:39:24.278078+00:00",
+   "sha256": "a105a5226d3af0913091db5c5fa215d1f97973d7f01cc8db9c85c39dfd41802e",
+   "source": "weekly_rosters"
+  },
+  {
+   "retrieved_at": "2026-09-23T18:39:24.282078+00:00",
+   "sha256": "9219b5ebe65dcd59979007ca832a529ecc05254149ba5c7cfd8926d8c8397a40",
+   "source": "weekly_rosters"
+  },
+  {
+   "retrieved_at": "2026-09-23T18:39:24.286078+00:00",
+   "sha256": "c4d9f73749986cc4e700bde61a8888ea2b28395eac126f18cc6fea6f98f31342",
+   "source": "weekly_rosters"
+  },
+  {
+   "retrieved_at": "2026-09-23T18:39:24.290078+00:00",
+   "sha256": "f894b2f8ae5e5f69f6ee600680e2a94f2d1015cdb8e4ab173b954d56e3b1660d",
+   "source": "weekly_rosters"
+  },
+  {
+   "retrieved_at": "2026-09-23T18:39:24.290078+00:00",
+   "sha256": "4ee189a4283850a3d4a4582427e391c20ca2849af6e85660fa4d70f274fa463f",
+   "source": "weekly_rosters"
+  },
+  {
+   "retrieved_at": "2026-09-23T18:39:24.294078+00:00",
+   "sha256": "da5c9900807cc99104ccb665f8c62528926b2678b78d47d36db67528ddbb181e",
+   "source": "weekly_rosters"
+  }
+ ],
+ "spec_version": "showdown-family-1",
+ "written_at": "2026-10-02T06:44:36Z",
+ "written_at_basis": "LIVE_CLOCK"
+}
