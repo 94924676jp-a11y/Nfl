@@ -382,3 +382,48 @@ concentrating on the leader. A 0.651 share is high against the 0.451 norm, thoug
 primary backup is out would legitimately sit above that norm. So this remains the **most likely place
 tonight's board is over-concentrated**, the direction agrees with FC's 17.15, and it is not
 demonstrated. Establishing it would need a study framed on rank-2 absences, which does not exist.
+
+---
+
+## 11. Two projection/simulation inconsistencies, exposed by retaining per-world stat lines
+
+The simulator now keeps each world's stat line (`simulate_game(retain_stats=True)`, written to a
+hashed numpy sidecar beside the draws). Comparing those worlds with the projection that fed them
+found two separate inconsistencies.
+
+### 11a. QB (and gadget) carries never reached the worlds — FIXED (`d85c1384`)
+
+`showdown_draws._shares()` fed `carry_share` to running backs only. The projection had allocated
+club carries across QB/RB/WR/TE; the simulator reallocated them to backs. Measured on W4: Deshaun
+Watson drew **0.0 carries / 0.0 rush yards** against a 6.17 / 29.4 projection; Quinshon Judkins drew
+13.85 DK against a 10.45 projection. One guard widened; Watson's worlds now carry 6.21 / 27.7,
+Judkins 13.42, Warren 19.86 (from 20.41). The pinned W4 artifacts are untouched; this applies to the
+next sealed slate as a declared treatment.
+
+### 11b. The simulator draws its own club volume — OPEN, needs a ruling
+
+With carries restored, QB draw means moved *above* projection (Watson 18.67 vs 16.33) because the
+joint simulator draws club volume from its own market-response model, not the projection's
+`team_volume` — and that surplus had been masking the missing rushing. Means over 2,000 worlds
+against the projection's club totals:
+
+| Club | pass attempts | carries | targets |
+|---|--:|--:|--:|
+| PIT | −2.8% | **+9.8%** | **+11.7%** |
+| CLE | **+7.1%** | −0.8% | +1.1% |
+
+The sanity gate validates the projection against its club totals; the optimizer ranks on the draws;
+the two carry different club volumes. That is exactly the contradiction class the gate exists to
+refuse — but refusing it blocks the pipeline on an unanswered design question, so for now it is
+**measured on every run** (`football_sanity.measure_draws`, carried on the status board as
+`draws_consistency`) rather than refused.
+
+**Decision needed:** which club volume is authoritative?
+- *Projection's `team_volume`* (recommended): it is what the gate validates and what the board shows;
+  the simulator would centre its club draws on it and contribute only dispersion and joint
+  structure. This is a model change to the simulator's volume layer → a declared candidate arm,
+  compared on the row ledger, not a swap.
+- *Simulator's own volume*: then the projection's club totals are not the model's, the gate is
+  validating the wrong object, and the board's point projections should be the draw means.
+
+Until ruled, the board carries both numbers and names the gap.
