@@ -175,6 +175,10 @@ DET_BUF = dict(
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description='prospective evaluation ledger')
     ap.add_argument('--register-det-buf', action='store_true')
+    ap.add_argument('--register-json', default=None,
+                    help='register ONE block from a JSON file carrying block_id, game_id, '
+                         'forecast_identity, sealed_inputs, scope and notes. The hardcoded '
+                         'DET_BUF flag was the only way to register before this.')
     ap.add_argument('--audit', action='store_true')
     a = ap.parse_args(argv)
     rc = 0
@@ -182,7 +186,17 @@ def main(argv=None) -> int:
         o = register(**DET_BUF)
         print(f'{o.state.value}[{o.code}] {o.detail}')
         rc |= 0 if o.state is State.PASS else 1
-    if a.audit or a.register_det_buf:
+    if a.register_json:
+        spec = json.loads(pathlib.Path(a.register_json).read_text())
+        need = {'block_id', 'game_id', 'forecast_identity', 'sealed_inputs', 'scope'}
+        missing = sorted(need - set(spec))
+        if missing:
+            print(f'FAIL[REGISTER_SPEC_INCOMPLETE] missing {missing}')
+            return 1
+        o = register(**{k: spec[k] for k in need}, notes=spec.get('notes', ''))
+        print(f'{o.state.value}[{o.code}] {o.detail}')
+        rc |= 0 if o.state is State.PASS else 1
+    if a.audit or a.register_det_buf or a.register_json:
         o = audit()
         print(f'{o.state.value}[{o.code}] {o.detail}')
         c = AC.claim(LEDGER, schema=['block_id'], label=LEDGER.name)

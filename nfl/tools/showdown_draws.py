@@ -186,7 +186,7 @@ def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED) -> O
             'dst_id': (S.player_key(dst['name'], club) if dst else None),
         })
 
-    o = sim_game.simulate_game(model, spec, n_sims=n_sims, seed=seed)
+    o = sim_game.simulate_game(model, spec, n_sims=n_sims, seed=seed, retain_stats=True)
     if o.state.value != 'PASS':
         return o
     draws = {k: list(v) for k, v in o.value['draws'].items()}
@@ -234,6 +234,20 @@ def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED) -> O
                             'joint simulator and kicker draws from measured attempt and make rates.'),
         'draws': draws,
     }
+    # PER-STAT WORLDS GO IN A NUMPY SIDECAR, NOT THE JSON. 2,000 worlds x 45 players x 10 stats
+    # is ~11 MB as text and ~2 MB compressed; the JSON stays the small, diffable object it is and
+    # the sidecar is named and hashed from it so the two cannot drift apart unnoticed.
+    import hashlib
+    import numpy as np
+    sd = o.value.get('stat_draws') or {}
+    side = OUT.with_name(OUT.stem + '_STATS.npz')
+    if sd:
+        np.savez_compressed(side, **{k: np.asarray(v, dtype=np.float64) for k, v in sd.items()})
+        art['stat_draws_sidecar'] = {
+            'path': S._rel(side), 'sha256': hashlib.sha256(side.read_bytes()).hexdigest(),
+            'STAT_FIELDS': list(o.value.get('STAT_FIELDS') or ()),
+            'STATS_NOT_DRAWN': list(o.value.get('STATS_NOT_DRAWN') or ()),
+            'n_players': len(sd), 'keyed_by': 'name|club, same keys as draws'}
     OUT.write_text(json.dumps(art, separators=(',', ':'), default=str))
     means = {k: round(sum(v) / len(v), 3) for k, v in draws.items()}
     return Outcome.ok('SHOWDOWN_DRAWS_BUILT', art, f'{len(draws)} players, {n_sims} draws each',
@@ -248,8 +262,28 @@ def main() -> int:
     ap.add_argument('--projections', default='nfl/dfs/salaries/SHOWDOWN_TONIGHT_PROJ.json')
     ap.add_argument('--state', default='nfl/dfs/salaries/SHOWDOWN_TONIGHT_STATE.json')
     ap.add_argument('--n-sims', type=int, default=N_SIMS)
+    ap.add_argument('--seal', action='store_true',
+                    help='after building, seal projection + draws into the Showdown family lane '
+                         '(nfl/research/showdown_live) with a LIVE clock; refused if kickoff has passed')
+    ap.add_argument('--export', default='nfl/dfs/salaries/raw/DKEntries_PIT_CLE_SHOWDOWN_2026W4.csv')
+    ap.add_argument('--inactives', default='nfl/dfs/salaries/raw/OFFICIAL_INACTIVES_PIT_CLE_2026W4.json')
+    ap.add_argument('--model-configuration', default='PROJ_V1_JOINT')
     a = ap.parse_args()
     o = build(a.projections, a.state, n_sims=a.n_sims)
+    if o.state.value == 'PASS' and a.seal:
+        import datetime as _dt
+        from nfl.prospective import showdown_family as SF
+        st = json.loads(pathlib.Path(a.state).read_text())
+        ko = _dt.datetime.fromisoformat(st['kickoff_et_naive']).replace(
+            tzinfo=SF.ZoneInfo('America/New_York')).astimezone(_dt.timezone.utc)
+        now = _dt.datetime.now(_dt.timezone.utc)
+        sealed = SF.seal(st['game_id'], proj_path=a.projections, draws_path=str(OUT), state_path=a.state,
+                         export_path=a.export, inactives_path=a.inactives,
+                         kickoff_utc=ko.isoformat().replace('+00:00', 'Z'),
+                         written_at=now.isoformat().replace('+00:00', 'Z'), written_at_basis='LIVE_CLOCK',
+                         prospective_evidence=(now < ko), model_configuration=f'{a.model_configuration}_{a.n_sims}',
+                         reason=('' if now < ko else 'sealed after kickoff: descriptive only'))
+        print('SEAL', sealed.state.value, sealed.code, (sealed.detail or '')[:120])
     print(o.state.value, o.code)
     print(' ', o.detail)
     for k, v in (o.evidence or {}).items():

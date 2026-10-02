@@ -29,6 +29,7 @@ from __future__ import annotations
 
 import datetime as dt
 import glob
+from zoneinfo import ZoneInfo  # noqa: F401  (used by callers to convert kickoff)
 import hashlib
 import inspect
 import json
@@ -167,6 +168,14 @@ def seal(game_id: str, *, proj_path, draws_path, state_path, export_path, inacti
         if o.state is not State.PASS:
             return o
     per_stat = 'ABSENT_AT_SEAL_TIME'
+    if not (stat_draws and stat_fields) and draws.get('stat_draws_sidecar'):
+        # The draws artifact names its own sidecar and its hash; load only if the bytes match.
+        sc = draws['stat_draws_sidecar']
+        sp = _REPO / sc['path']
+        if sp.exists() and _file_sha(sp) == sc.get('sha256'):
+            z = np.load(sp)
+            stat_draws = {k: z[k] for k in z.files}
+            stat_fields = tuple(sc.get('STAT_FIELDS') or ())
     if stat_draws and stat_fields:
         # stat_draws: {name|club: [(...STAT_FIELDS...), ...]} -> layers the grader's MAP names
         lay = {'qb': {'att': 'pass_att', 'pyds': 'pass_yards', 'ptd': 'pass_td'},
@@ -183,7 +192,8 @@ def seal(game_id: str, *, proj_path, draws_path, state_path, export_path, inacti
                 m = []
                 for g in rows_g:
                     sd = stat_draws.get(key_of.get(g))
-                    m.append([t[idx[field]] for t in sd] if sd else [0.0] * n_draws)
+                    # numpy arrays have no truth value; test presence by length
+                    m.append([t[idx[field]] for t in sd] if (sd is not None and len(sd)) else [0.0] * n_draws)
                 mats[metric] = np.asarray(m)
             o = ds.add_layer(layer, rows_g, mats, spec_version=SPEC_VERSION,
                              rng_stream='joint', row_teams=gsis_teams)
