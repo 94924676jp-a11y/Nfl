@@ -244,10 +244,6 @@ def _dirichlet_split(total: float, weights, rng, conc: float) -> list[float]:
     if total <= 0 or tot <= 0:
         return [0.0] * len(weights)
     draws = []
-    # Per-world stat lines, kept ONLY when asked: the DK number is a collapse of these and the
-    # grader needs the parts. Column order is STAT_FIELDS. Completions and interceptions are not
-    # drawn by this simulator and are NOT here; a grader must report them NOT_IN_DRAWS, never 0.
-    stat_draws = collections.defaultdict(list)
     for w in weights:
         a = max(1e-6, conc * w / tot)
         draws.append(rng.gammavariate(a, 1.0))
@@ -281,6 +277,10 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
                                cause=Cause.DATA)
     home, away = clubs[0], clubs[1]
     draws: dict = {p['id']: [] for c in clubs for p in c['players']}
+    # Per-world stat lines, kept ONLY when asked: the DK number is a collapse of these and the
+    # grader needs the parts. Column order is STAT_FIELDS. Completions and interceptions are not
+    # drawn by this simulator and are NOT here; a grader must report them NOT_IN_DRAWS, never 0.
+    stat_draws = collections.defaultdict(list)
     for c in clubs:
         if c.get('dst_id'):
             draws[c['dst_id']] = []
