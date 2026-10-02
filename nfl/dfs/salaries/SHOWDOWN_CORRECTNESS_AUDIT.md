@@ -134,14 +134,14 @@ from declared missing components rather than from broken state — see §7.
 
 ## 5. Governance finding: sportsbook data DOES enter the proprietary projection
 
-You are right, and it is confirmed by reading the code and measuring the magnitude. Four distinct
-entry points:
+You are right, and it is confirmed by reading the code and measuring the magnitude. **Three** distinct entry points, not the four I first reported — the kicker claim was wrong and is
+corrected below:
 
 | Path | How the market enters | Magnitude on tonight's game |
 |---|---|---|
 | `team_volume` → `market_response.adjust` | measured regression of volume on the **deviation** of this week's line from the baseline line, betas 0.1516 (total) and 0.1767 (favoured-by) at 6.0 and 5.5 standard errors, capped at 20% (cap not binding) | **small**: PIT plays 79.6471 → 79.4633 (−0.18, −0.23%); CLE 79.6639 → 79.9294 (+0.27, +0.33%) |
 | club **touchdown pool** | expected club touchdowns regressed on the implied total; the module's own note says "the market enters once, in the touchdown pool" | **material** — this is the load-bearing dependence |
-| `kicker_model.project(club_implied=…, opponent_implied=…)` | kicker attempts conditioned on implied totals | **material** |
+| ~~`kicker_model.project`~~ | **NOT market-dependent — I was wrong about this.** The function *accepts* `club_implied` and `opponent_implied` and **never references either one in its body** (verified by AST: neither name appears among the Names used). Kicker points come entirely from measured per-club attempt rates by distance band plus league make rates. These are dead parameters that advertise a dependence which does not exist — which is exactly how I got it wrong, by reading the signature instead of the body. | **none** |
 | `dst_model` `centre_implied_allowed` | points-allowed distribution centred on the opponent's implied total | **material** |
 
 Our implied totals are PIT 20.75 / CLE 17.75 (total 38.5, our captured environment). FC uses
@@ -149,7 +149,7 @@ PIT 20.25 / CLE 17.75 (total 38.0). The half-point difference is the known stale
 side only.
 
 **I have not removed this, and that is deliberate.** Removing the market from team volume, the
-touchdown pool, the kicker and the DST would change every projection in the system, including every
+touchdown pool and the DST would change every projection in the system, including every
 number validated in earlier work. It is not a defect repair — the code contains an explicit,
 documented design argument for why the market enters exactly once — it is a change to what the model
 *is*, it cannot be validated in the time before lock, and it conflicts with a documented prior
@@ -157,8 +157,16 @@ decision. Under the escalation rule that makes it **owner-only**: it changes wha
 evidence and it is irreversible for every downstream baseline.
 
 What I can say with measurement: on tonight's game the *volume* dependence is under 0.35% of plays,
-so removing that one path alone would move tonight's board negligibly. The touchdown-pool, kicker
-and DST dependencies are the ones that would move numbers materially.
+so removing that one path alone would move tonight's board negligibly. The **touchdown pool**
+(`td_rates.expected_team_td(implied_total, …)`) and the **DST points-allowed centre**
+(`pa_expectation`, which forms the whole distribution as `implied_allowed + residual` over measured
+residuals) are the two that would move numbers materially. The kicker needs no change at all.
+
+**Correction, stated plainly because it changes your conclusion.** My first report to you named four
+market entry points and called the kicker "material". That was wrong: I read `project`'s signature
+and inferred a dependence that its body does not have. There are three, and the kicker is not one of
+them. The consequence is that one fewer layer needs rebuilding if you decide to go football-only,
+and the Boswell gap to FC has a different explanation — see §7.
 
 Recommended sequencing when you decide: build the football-only variant as a **declared second arm**,
 compare it against the current arm on the same slate, and promote only on evidence — not as a
@@ -200,7 +208,7 @@ now largely agree on the number**, which is the strongest evidence that the repa
 | Steelers DST | 9.37 | 8.61 | +0.76 | — / DST1 | DST event rates; ours is market-centred on implied allowed |
 | Andre Szmyt | 6.54 | 5.73 | +0.81 | — / K1 | kicker attempt assumptions |
 | DK Metcalf | 11.52 | 13.38 | −1.86 | 1 / WR1 | agree on depth. Missing opponent adjustment; TD expectation |
-| Chris Boswell | 8.65 | 6.25 | +2.40 | — / K1 | **kicker attempt assumptions** — our attempts are conditioned on PIT's implied total, which is also the half-point stale side |
+| Chris Boswell | 8.65 | 6.25 | +2.40 | — / K1 | **kicker attempt assumptions, and NOT market-driven** (corrected): our attempts come from PIT's measured per-club attempt rates by distance band blended across 2025/2026, plus league make rates. The gap is a genuine disagreement about how often Pittsburgh kicks, not a market artefact |
 | Rodgers | 14.37 | 16.90 | −2.53 | 1 / QB1 | residual after repair: no opponent adjustment, interception/TD expectation |
 | Darnell Washington | 3.49 | 6.08 | −2.59 | 2 / **TE1** | **depth disagreement** — FC has him TE1, we have him TE2 behind Freiermuth |
 | Denzel Boston | 7.39 | 10.41 | −3.02 | 2 / **WR1** | **depth disagreement on the CLE receiver room** |
@@ -246,7 +254,7 @@ I am not going to represent this audit as complete. It is not. Honest status:
 | 8 | Teammate-absence redistribution | **AUDITED** — it is proportional renormalisation, not a measured redistribution curve, and §6 says so precisely. I did not look for `REDISTRIBUTION_STUDY.json` |
 | 9 | Opponent adjustment | **AUDITED** — confirmed NOT_MODELLED for offence, and confirmed DST is asymmetric (it does use opponent info). Nothing invented |
 | 10 | Weather | **AUDITED** — carried, not projected. Nothing invented |
-| 11 | Kicker model | **PARTIAL** — confirmed kicker attempts are conditioned on implied totals, which is a market dependence. The per-distance-band attempt/make decomposition is **not extracted** |
+| 11 | Kicker model | **PARTIAL** — established the kicker is **not** market-dependent (dead parameters; see §5 correction), so no rebuild is needed. The per-distance-band attempt/make decomposition is **not extracted** |
 | 12 | DST model | **PARTIAL** — confirmed `centre_implied_allowed` is market-derived. **Not rebuilt** (same owner-only reason as item 4) |
 | 13 | Decomposition for every material FC gap | **DONE** (§7) |
 | 14 | Projection units, conditional vs unconditional | **DONE** (§7 final paragraph). The four-state test is **not written** |
@@ -259,8 +267,8 @@ I am not going to represent this audit as complete. It is not. Honest status:
 
 **Acceptance verdict.** Of your twenty acceptance conditions, the mechanical and selection ones all
 pass. Three do not: the current weekly roster is not selected (blocked on bytes I cannot obtain),
-sportsbook data remains in the proprietary prediction, and the DST points-allowed centre remains
-market-derived. **By your own stated conditions this slate is therefore not "final".** The portfolio
+sportsbook data remains in the proprietary prediction (team volume and the touchdown pool), and
+the DST points-allowed centre remains market-derived. **By your own stated conditions this slate is therefore not "final".** The portfolio
 is legal, validated, internally coherent and built from repaired state — but it is not built from a
 system that satisfies condition 20, and I am not going to call it final when you defined the word.
 
