@@ -576,3 +576,25 @@ the old derivation pointed at week 3 eight days after it was played. `nfl-availa
 status generator checked out the default branch and pushed `HEAD:main`; both now check out and push
 `capture-prod` (D24-R2). The definitions still have to live on the default branch, which this branch is
 not: **they take effect only once merged.**
+
+### 13.5 The two arms through the real entry point, measured on the board
+
+The armed gate had been inert where it mattered: `main()` handed `run()` the per-player draws map,
+`run()` tried to read it as a file path, swallowed the error and measured an empty document, so every
+board said `DRAWS_SIDECAR_ABSENT`. That is the defect class in Phase 1 of the briefing, in the gate
+built to catch it. `run()` now takes the draws artifact (`draws_doc`), `main()` passes it, a map without
+its artifact is named `DRAWS_DOC_NOT_SUPPLIED_TO_GATE`, and a test drives a drifted centred artifact
+through `run()` and asserts the refusal.
+
+Both arms on the repaired projection, 2,000 draws, same seed, 78 entries, through `run()`:
+
+| arm | run | draws state | CLE pass / carries / targets vs projection | PIT |
+|---|---|---|---|---|
+| incumbent | DELIVERED | measured, mode `SIMULATOR_OWN_REGRESSION` | +6.7% / −0.4% / **+22.9%** | −4.5% / +10.2% / +10.3% |
+| centred | DELIVERED | measured, mode `PROJECTION`, within tolerance | −0.4% / +1.8% / −0.5% | −0.8% / +1.5% / −0.8% |
+
+Player means move by up to −1.5 DK points (Fannin, Concepcion: the incumbent was giving CLE a
+quarter more targets than the projection); dispersion is unchanged (median SD ratio 0.99); top-12
+pairwise correlation is unchanged (mean |Δ| 0.025); 27 of 78 lineups and 22 per cent of slot
+exposure turn over. Not promoted: the arm is sealed descriptively as `PROJ_V1_JOINT_CENTRED_QBTGT_2000`
+so the first pre-kickoff seal of a future game is comparable, and grading decides.
