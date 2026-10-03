@@ -3758,3 +3758,20 @@ A Saturday board captured after 18:20Z is comparable against the Saturday seal o
 Sunday reseal; after that, only a board captured after the new seal is compared. A board captured
 before the current seal is refused by name, which is the rule working. Every seal is kept in
 `DK_2026W4_EARLY_SEAL_HISTORY.jsonl`.
+
+### 2026-10-03 — Week 4: two more requests (roster moves, QB starters), and what the audit found
+
+4. **Week-4 roster capture** (nflverse `weekly_rosters` 2026 week 4, or the clubs' 53-man lists) for the
+   16 Early Only clubs. DraftKings' pool places eight players on clubs our week-1-3 capture does not
+   (J.J. McCarthy NYG, Will Levis NYJ, Dare Ogunbowale HOU, Coleman Owen GB, Chandler Brayboy NE,
+   Brock Lampe BUF, Cody Hardy NYJ, Shedrick Jackson BAL). All project under 2 DK points, so no lineup
+   moves on them; the capture is still stale and the audit says so.
+5. **Starting quarterback confirmation** for CHI (we start Tyson Bagent behind Caleb Williams, OUT)
+   and TB (Jalon Daniels behind Baker Mayfield, OUT; Brett Rypien signed this week, identity
+   unresolved here). Club announcement or league-cited report, with its time. Feed it to
+   `classic_prelock.py --confirmed-starters` as `{"CHI": "<name>", "TB": "<name>"}`. Bagent is 16% of
+   the 150-max, 35% of the 20-max and 2 of 3 entries, so this is the single largest pre-lock risk.
+
+Audit (nfl/dfs/salaries/DK_2026W4_EARLY_AUDIT.json): accounting PASS on all 16 clubs; 11 sampled role
+cards match an independent play-by-play recount; yards props blocked for CHI, JAX, NYG, NYJ, PHI, TB
+(receiving vs passing yards gap over 5%, largest where the QB-receiver pairing changed this week).

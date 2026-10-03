@@ -1,0 +1,173 @@
+{
+ "ARTIFACT": "CLASSIC_PIPELINE_RUN",
+ "slate_id": "2026W4",
+ "as_of": "2026-10-03T20:11:04Z",
+ "inactives_file": null,
+ "started_utc": "2026-10-03T20:11:04.985505+00:00",
+ "snapshot": {
+  "dir": "nfl/dfs/salaries/runs/2026W4/20261003T201104Z",
+  "files": [
+   "STATE.json",
+   "PROJ.json",
+   "DRAWS.json",
+   "RESEARCH_BOOK.json",
+   "PORTFOLIOS.json",
+   "UPLOAD.csv",
+   "PROP_DIAGNOSTIC.json",
+   "OWNER_BOARD.json",
+   "SEAL.json"
+  ]
+ },
+ "stages": [
+  {
+   "stage": "state",
+   "cmd": [
+    "python3.12",
+    "nfl/tools/classic_slate_state.py",
+    "2026W4",
+    "--as-of",
+    "2026-10-03T20:11:04Z"
+   ],
+   "rc": 0,
+   "result": "  path: nfl/dfs/salaries/DK_2026W4_EARLY_STATE.json",
+   "seconds": 4.3,
+   "stderr_tail": ""
+  },
+  {
+   "stage": "run",
+   "cmd": [
+    "python3.12",
+    "nfl/tools/classic_slate_run.py",
+    "2026W4"
+   ],
+   "rc": 0,
+   "result": "PASS[CLASSIC_SLATE_DRAWN] 400 players x 2000 worlds over 8 games; sanity PASS[FOOTBALL_SANITY_PASS]",
+   "seconds": 103.2,
+   "stderr_tail": ""
+  },
+  {
+   "stage": "book",
+   "cmd": [
+    "python3.12",
+    "nfl/tools/classic_research_book.py",
+    "2026W4"
+   ],
+   "rc": 0,
+   "result": "PASS[RESEARCH_BOOK_BUILT] 8 games, 395 cards, accounting PASS",
+   "seconds": 4.6,
+   "stderr_tail": ""
+  },
+  {
+   "stage": "portfolios",
+   "cmd": [
+    "python3.12",
+    "nfl/opt/classic_portfolio.py",
+    "2026W4"
+   ],
+   "rc": 0,
+   "result": "PASS[CLASSIC_PORTFOLIOS_BUILT] MAX150 150/150, MAX20 20/20, MAX3 3/3",
+   "seconds": 569.0,
+   "stderr_tail": ""
+  },
+  {
+   "stage": "verify",
+   "cmd": [
+    "python3.12",
+    "nfl/tools/classic_upload_verify.py",
+    "2026W4"
+   ],
+   "rc": 0,
+   "result": "}",
+   "seconds": 0.1,
+   "stderr_tail": ""
+  },
+  {
+   "stage": "book_with_exposures",
+   "cmd": [
+    "python3.12",
+    "nfl/tools/classic_research_book.py",
+    "2026W4"
+   ],
+   "rc": 0,
+   "result": "PASS[RESEARCH_BOOK_BUILT] 8 games, 395 cards, accounting PASS",
+   "seconds": 4.7,
+   "stderr_tail": ""
+  },
+  {
+   "stage": "board",
+   "cmd": [
+    "python3.12",
+    "nfl/tools/classic_owner_board.py",
+    "2026W4"
+   ],
+   "rc": 0,
+   "result": "PASS[CLASSIC_OWNER_BOARD_BUILT] 411 players, {'viable': 91, 'role-dependent': 10, 'thin': 33, 'unresolved': 3, 'inactive': 11, 'non-playable': 263}; FC attached separately; portfolio yes",
+   "seconds": 0.6,
+   "stderr_tail": ""
+  },
+  {
+   "stage": "fc",
+   "cmd": [
+    "python3.12",
+    "nfl/tools/classic_fc_compare.py",
+    "2026W4"
+   ],
+   "rc": 0,
+   "result": "PASS[FC_COMPARISON_ATTACHED] 249 joined, 1 FC-only, 43 material gaps",
+   "seconds": 0.1,
+   "stderr_tail": ""
+  },
+  {
+   "stage": "props",
+   "cmd": [
+    "python3.12",
+    "nfl/tools/classic_prop_compare.py",
+    "2026W4"
+   ],
+   "rc": 1,
+   "result": "BLOCKED[PROPS_NO_HARD_ROCK_BOARD] no Hard Rock board for this slate is held; requested from the networked agent in docs/AGENT_OUTBOX.md",
+   "seconds": 0.4,
+   "stderr_tail": ""
+  },
+  {
+   "stage": "audit",
+   "cmd": [
+    "python3.12",
+    "nfl/tools/classic_production_audit.py",
+    "2026W4"
+   ],
+   "rc": 0,
+   "result": "PASS[AUDIT_COMPLETE] accounting PASS; 13 flag(s); yards-blocked teams ['CHI', 'JAX', 'NYG', 'NYJ', 'PHI', 'TB']; reproducibility FAIL",
+   "seconds": 6.1,
+   "stderr_tail": ""
+  },
+  {
+   "stage": "changes",
+   "cmd": [
+    "python3.12",
+    "nfl/tools/classic_change_log.py",
+    "2026W4"
+   ],
+   "rc": 0,
+   "result": "PASS[CHANGE_LOG_BUILT] 50 player rows; lineups kept MAX150 1/150, MAX20 1/20, MAX3 1/3",
+   "seconds": 0.1,
+   "stderr_tail": ""
+  },
+  {
+   "stage": "page",
+   "cmd": [
+    "python3.12",
+    "nfl/tools/classic_owner_page.py",
+    "2026W4",
+    "--out",
+    "/tmp/claude-0/-home-user-mlb-prop-system-v7/8de98087-4781-5a10-ae09-ef74590f8116/scratchpad/week4-early-slate-desk.html"
+   ],
+   "rc": 0,
+   "result": "wrote /tmp/claude-0/-home-user-mlb-prop-system-v7/8de98087-4781-5a10-ae09-ef74590f8116/scratchpad/week4-early-slate-desk.html",
+   "seconds": 0.1,
+   "stderr_tail": ""
+  }
+ ],
+ "STATE": "COMPLETE",
+ "finished_utc": "2026-10-03T20:22:38.225690+00:00"
+}
