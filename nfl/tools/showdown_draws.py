@@ -278,6 +278,11 @@ def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED,
                               'MEANING': 'the simulator drew its own club volume from its '
                                          'measured regression on implied points'}),
         'kickers': kickers,
+        # Per-world football, carried through only when the simulator retained it (the projection-
+        # centred arm always does). Large; a caller that does not need it may drop it.
+        'stat_draws': o.value.get('stat_draws'), 'STAT_FIELDS': o.value.get('STAT_FIELDS'),
+        'STATS_NOT_DRAWN': o.value.get('STATS_NOT_DRAWN'),
+        'club_worlds': o.value.get('club_worlds'), 'world_points': o.value.get('world_points'),
         'NOT_SYNTHESISED': ('no draw is derived from a projected mean. Player draws come from the '
                             'joint simulator and kicker draws from measured attempt and make rates.'),
         'draws': draws,
@@ -296,7 +301,10 @@ def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED,
             'STAT_FIELDS': list(o.value.get('STAT_FIELDS') or ()),
             'STATS_NOT_DRAWN': list(o.value.get('STATS_NOT_DRAWN') or ()),
             'n_players': len(sd), 'keyed_by': 'name|club, same keys as draws'}
-    OUT.write_text(json.dumps(art, separators=(',', ':'), default=str))
+    heavy = ('stat_draws', 'club_worlds', 'world_points')
+    OUT.write_text(json.dumps({**{k: v for k, v in art.items() if k not in heavy},
+                               'PER_WORLD_FOOTBALL': 'returned to the caller, not written here'},
+                              separators=(',', ':'), default=str))
     means = {k: round(sum(v) / len(v), 3) for k, v in draws.items()}
     return Outcome.ok('SHOWDOWN_DRAWS_BUILT', art, f'{len(draws)} players, {n_sims} draws each',
                       path=S._rel(OUT), n_players=len(draws), n_sims=n_sims, seed=seed,

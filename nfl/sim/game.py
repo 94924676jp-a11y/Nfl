@@ -283,6 +283,7 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
     # drawn by this simulator and are NOT here; a grader must report them NOT_IN_DRAWS, never 0.
     stat_draws = collections.defaultdict(list)
     club_worlds = collections.defaultdict(list)   # (pa, ra, targets, throwaways) per club per world
+    world_points = []                             # (home points, away points) per world, retained only
     for c in clubs:
         if c.get('dst_id'):
             draws[c['dst_id']] = []
@@ -307,6 +308,8 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
                 pts[a] = 0.0
         if abs((pts[home['club']] + pts[away['club']]) - total) > TOL:
             violations.append(('TOTAL', si))
+        if retain_stats:
+            world_points.append((pts[home['club']], pts[away['club']]))
         if abs((pts[home['club']] - pts[away['club']]) - margin) > 1e-6 and min(pts.values()) > 0:
             violations.append(('MARGIN', si))
 
@@ -535,6 +538,10 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
         'IDENTITIES_HELD': ['total', 'margin', 'volume', 'yards', 'touchdowns']
                            + (['pass_attempts_eq_targets_plus_throwaways'] if _throwaway_rates else []),
         'club_worlds': ({k: v for k, v in club_worlds.items()} if retain_stats else None),
+        # the score of every world, so a game story, a trailing/leading split or a stack's
+        # correlation can be read off the SAME worlds the draws came from. Output only.
+        'world_points': ({'home': home['club'], 'away': away['club'], 'points': world_points}
+                         if retain_stats else None),
         'level_offsets': dict(_level_offsets or {}), 'throwaway_rates': dict(_throwaway_rates or {}),
         'DST_SOURCE': ('drawn from the opponent\'s simulated points in the same world. Sacks, '
                        'takeaways, defensive and return touchdowns and safeties come from the '
