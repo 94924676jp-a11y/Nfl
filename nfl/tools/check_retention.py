@@ -226,8 +226,13 @@ def assert_no_orphan_blobs_scoped(blob_names, manifest_lines, marker) -> Outcome
             f"that no recorded observation produced are not capture evidence, "
             f"whatever directory they sit in.",
             n_orphans=len(orphans), orphans=orphans[:20])
-    return Outcome.ok("NO_ORPHAN_BLOBS", value=len(named.value),
-                      detail="every stored blob is named by an observation")
+    # OWNER RULE 1 (2026-10-02): the census is over the stored blobs. Zero blobs
+    # censused is BLOCKED/EMPTY_INPUT; blobs no row names stay the FAIL above.
+    return Outcome.measured("NO_ORPHAN_BLOBS", len(named.value),
+                            n_measured=len(set(blob_names)),
+                            what="stored blobs checked against manifest rows",
+                            detail="every stored blob is named by an observation",
+                            n_blobs=len(set(blob_names)), n_named=len(named.value))
 
 
 def assert_no_new_orphan(before_blobs, after_blobs, manifest_lines,
@@ -242,6 +247,19 @@ def assert_no_new_orphan(before_blobs, after_blobs, manifest_lines,
     filesystem instead: the blob set before, the blob set after, and the
     manifest as it now stands.
     """
+    # OWNER RULE 1 (2026-10-02): "what THIS run added" is undefined without a
+    # before-image. An empty `before_blobs` is the no-snapshot case this tool
+    # prints VACUOUS for, and it is BLOCKED/EMPTY_INPUT here rather than a PASS
+    # that compared the whole store against nothing. A real before-image with
+    # no additions IS a measurement (two snapshots compared, delta empty) and
+    # passes with n_measured = the blobs examined for newness.
+    if not before_blobs:
+        return Outcome.blocked(
+            "NO_NEW_ORPHAN_BLOB_EMPTY_INPUT",
+            "no before-image of the blob store was supplied, so no blob can be "
+            "classified as added by this run. Nothing was measured.",
+            cause=Cause.EMPTY_INPUT, n_measured=0, what="before-image blobs",
+            missing="before_blobs")
     named = named_blobs(manifest_lines, marker)
     if named.state is not State.PASS:
         return named
@@ -258,9 +276,12 @@ def assert_no_new_orphan(before_blobs, after_blobs, manifest_lines,
             f"hand.",
             n_added=len(added), n_new_orphans=len(new_orphans),
             new_orphans=new_orphans[:20])
-    return Outcome.ok("NO_NEW_ORPHAN_BLOB", value=len(added),
-                      detail=f"{len(added)} blob(s) added, every one named by "
-                             f"a manifest row")
+    return Outcome.measured("NO_NEW_ORPHAN_BLOB", len(added),
+                            n_measured=len(set(after_blobs)),
+                            what="blobs examined for newness against the before-image",
+                            detail=f"{len(added)} blob(s) added, every one named by "
+                                   f"a manifest row",
+                            n_added=len(added), n_before=len(set(before_blobs)))
 
 
 def assert_rows_accompany_blobs(before_blobs, after_blobs,
@@ -271,6 +292,16 @@ def assert_rows_accompany_blobs(before_blobs, after_blobs,
     lost runs actually violated, stated in the same terms the incident is
     recorded in, so a future reader can match the code to the history.
     """
+    # OWNER RULE 1 (2026-10-02): same rule as R9 -- no before-image, no delta,
+    # no verdict. BLOCKED/EMPTY_INPUT names the missing input.
+    if not before_blobs:
+        return Outcome.blocked(
+            "ROWS_ACCOMPANY_BLOBS_EMPTY_INPUT",
+            "no before-image of the blob store was supplied, so the blobs this "
+            "run added cannot be counted against the rows it appended. Nothing "
+            "was measured.",
+            cause=Cause.EMPTY_INPUT, n_measured=0, what="before-image blobs",
+            missing="before_blobs")
     added_blobs = set(after_blobs) - set(before_blobs)
     added_rows = len(after_rows) - len(before_rows)
     if added_blobs and added_rows <= 0:
@@ -284,9 +315,12 @@ def assert_rows_accompany_blobs(before_blobs, after_blobs,
             f"not recoverable.",
             n_added_blobs=len(added_blobs), n_added_rows=added_rows,
             added_blobs=sorted(added_blobs)[:20])
-    return Outcome.ok("ROWS_ACCOMPANY_BLOBS", value=added_rows,
-                      detail=f"{len(added_blobs)} blob(s) added alongside "
-                             f"{added_rows} manifest row(s)")
+    return Outcome.measured("ROWS_ACCOMPANY_BLOBS", added_rows,
+                            n_measured=len(set(after_blobs)),
+                            what="blobs examined for newness against the before-image",
+                            detail=f"{len(added_blobs)} blob(s) added alongside "
+                                   f"{added_rows} manifest row(s)",
+                            n_added_blobs=len(added_blobs), n_added_rows=added_rows)
 
 
 # Which checks gate a capture run. Everything else is printed, never hidden.
@@ -367,6 +401,7 @@ def main(argv=None) -> int:
         return 0
 
     bad = False
+    unmeasured = []
     print("RET-001 retention check  (stores: " + ", ".join(names) + ")")
     for name in names:
         cfg = STORES[name]
@@ -395,10 +430,13 @@ def main(argv=None) -> int:
             # and "no new orphan" compare the whole store against itself. The
             # old tool printed `before 0 after 2` and let the checks read as
             # PASS anyway.
+            # OWNER RULE 1 (2026-10-02): the guards now refuse this input
+            # themselves (BLOCKED/EMPTY_INPUT), and the verdict below reads
+            # NOT_MEASURED rather than "holds" when a gated check saw nothing.
             print("    NOTE: no before-state supplied. The delta checks below "
-                  "compare against an EMPTY prior store, so R4/R5/R9/R10 are "
-                  "vacuous here and their PASS means only 'not measured'. Use "
-                  "--snapshot-to before the run to make them real.")
+                  "have an EMPTY prior store to compare against, so R4/R5/R9/R10 "
+                  "are VACUOUS here: they report BLOCKED/EMPTY_INPUT, never PASS. "
+                  "Use --snapshot-to before the run to make them real.")
 
         for code, label, out in _store_checks(name, before_blobs, after_blobs,
                                               before_rows, after_rows, marker):
@@ -407,17 +445,30 @@ def main(argv=None) -> int:
             mark = out.state.value
             suffix = ""
             if vacuous:
-                suffix = "   [VACUOUS: no before-state]"
+                suffix = "   [VACUOUS: no before-state -- not measured]"
             elif not gated:
                 suffix = "   [reported, not gating]"
             print(f"    {mark:<15}{code:<6}{label:<44}{out.code}{suffix}")
             if out.state in (State.FAIL, State.BLOCKED):
                 print(f"        {out.detail}")
-                if gated and not vacuous:
-                    bad = True
-    print("\n  RET-001 " + ("VIOLATED" if bad else "holds")
-          + f"  (gate={args.gate})")
-    return 1 if bad else 0
+                if gated:
+                    # OWNER RULE 1 (2026-10-02): a gated check that saw no
+                    # input is neither a violation nor a pass. It is recorded
+                    # as unmeasured and the verdict says so.
+                    if out.non_evidentiary:
+                        unmeasured.append(f"{name}:{code}:{out.code}")
+                    else:
+                        bad = True
+    if bad:
+        verdict, rc = "VIOLATED" + (f" (and unmeasured: {', '.join(unmeasured)})"
+                                    if unmeasured else ""), 1
+    elif unmeasured:
+        verdict, rc = ("NOT_MEASURED (gated checks that saw no input: "
+                       + ", ".join(unmeasured) + ")"), 3
+    else:
+        verdict, rc = "holds", 0
+    print(f"\n  RET-001 {verdict}  (gate={args.gate})")
+    return rc
 
 
 if __name__ == "__main__":

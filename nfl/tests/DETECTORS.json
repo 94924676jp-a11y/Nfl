@@ -3,6 +3,111 @@
  "RULE": "OWNER RULE 2 (2026-10-02): every detector listed here must have at least one positive control (nfl/tests/_controls.observe / positive_control) that ran and tripped under nfl/tests/run_suite.py. Unlisted refusal codes are reported by the census in DETECTOR_VALIDATION.json, never ignored.",
  "detectors": [
   {
+   "detector": "coordination.mode:set_mode:MODE_PINNED_BY_OWNER",
+   "kind": "raised",
+   "where": "coordination/mode.py"
+  },
+  {
+   "detector": "coordination.mode_guard:decide:deny",
+   "kind": "hook-decision",
+   "where": "coordination/mode_guard.py"
+  },
+  {
+   "detector": "coordination.orchestrator.locks:enforce_mode_boundary:MODE_BOUNDARY_VIOLATED",
+   "kind": "raised",
+   "where": "coordination/orchestrator/locks.py"
+  },
+  {
+   "detector": "coordination.orchestrator.locks:mode_boundary:NOT_EXECUTED",
+   "kind": "dict-state",
+   "where": "coordination/orchestrator/locks.py"
+  },
+  {
+   "detector": "coordination.orchestrator.locks:mode_boundary:VIOLATED",
+   "kind": "dict-state",
+   "where": "coordination/orchestrator/locks.py"
+  },
+  {
+   "detector": "coordination.refresh_state:certify_test_surface:NOT_CERTIFIED",
+   "kind": "dict-state",
+   "where": "coordination/refresh_state.py"
+  },
+  {
+   "detector": "coordination.refresh_state:certify_test_surface:NOT_EXECUTED",
+   "kind": "dict-state",
+   "where": "coordination/refresh_state.py"
+  },
+  {
+   "detector": "coordination.refresh_state:governance_fields:GOVERNANCE_GATES_NOT_MEASURED",
+   "kind": "dict-state",
+   "where": "coordination/refresh_state.py"
+  },
+  {
+   "detector": "coordination.validate_coordination:check_log:LOG_EMPTY_INPUT",
+   "kind": "state",
+   "where": "coordination/validate_coordination.py"
+  },
+  {
+   "detector": "coordination.validate_coordination:check_queue:ACCEPTANCE_TESTS_EMPTY_INPUT",
+   "kind": "state",
+   "where": "coordination/validate_coordination.py"
+  },
+  {
+   "detector": "nfl.capture.availability:assert_manifest_append_only:MANIFEST_APPEND_ONLY_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/capture/availability.py"
+  },
+  {
+   "detector": "nfl.capture.availability:assert_no_discharge:NO_DISCHARGE_CLAIMED_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/capture/availability.py"
+  },
+  {
+   "detector": "nfl.capture.availability:assert_no_orphan_blobs:NO_ORPHAN_BLOBS_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/capture/availability.py"
+  },
+  {
+   "detector": "nfl.capture.availability:assert_no_vintage_deleted:NO_VINTAGE_DELETED_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/capture/availability.py"
+  },
+  {
+   "detector": "nfl.capture.delivered_injuries:verify_package:DELIVERED_PACKAGE_VERIFIED_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/capture/delivered_injuries.py"
+  },
+  {
+   "detector": "nfl.capture.payload_contract:check_csv:PAYLOAD_CONTRACT_NOT_EXECUTED",
+   "kind": "dict-state",
+   "where": "nfl/capture/payload_contract.py"
+  },
+  {
+   "detector": "nfl.capture.payload_contract:check_html:PAYLOAD_CONTRACT_NOT_EXECUTED",
+   "kind": "dict-state",
+   "where": "nfl/capture/payload_contract.py"
+  },
+  {
+   "detector": "nfl.capture.payload_contract:check_json:PAYLOAD_CONTRACT_NOT_EXECUTED",
+   "kind": "dict-state",
+   "where": "nfl/capture/payload_contract.py"
+  },
+  {
+   "detector": "nfl.dfs.history.store:assert_completeness:DFS_COMPLETENESS_NOT_EXECUTED",
+   "kind": "dict-state",
+   "where": "nfl/dfs/history/store.py"
+  },
+  {
+   "detector": "nfl.dfs.history.store:rehydrate:DFS_ARCHIVE_VERIFIED_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/dfs/history/store.py"
+  },
+  {
+   "detector": "nfl.dfs.identity_crosswalk:assert_complete:CROSSWALK_EMPTY_INPUT",
+   "kind": "raised",
+   "where": "nfl/dfs/identity_crosswalk.py"
+  },
+  {
    "detector": "nfl.dfs.lineup_integrity:check:LINEUP_CAPTAIN_COUNT",
    "kind": "raised",
    "where": "nfl/dfs/lineup_integrity.py"
@@ -18,6 +123,46 @@
    "where": "nfl/dfs/lineup_integrity.py"
   },
   {
+   "detector": "nfl.dfs.salaries.build_postinactives_package:assert_no_inactive_in_playable:INACTIVE_GATE_CLUBS_UNPARSED",
+   "kind": "dict-state",
+   "where": "nfl/dfs/salaries/build_postinactives_package.py"
+  },
+  {
+   "detector": "nfl.dfs.salaries.build_postinactives_package:assert_no_inactive_in_playable:INACTIVE_GATE_EMPTY_INPUT",
+   "kind": "dict-state",
+   "where": "nfl/dfs/salaries/build_postinactives_package.py"
+  },
+  {
+   "detector": "nfl.dfs.salaries.build_postinactives_package:assert_shared_draws:DK_SHARED_DRAWS_EMPTY_INPUT",
+   "kind": "dict-state",
+   "where": "nfl/dfs/salaries/build_postinactives_package.py"
+  },
+  {
+   "detector": "nfl.dfs.salaries.postinactives_board:assert_no_inactive_survived:INACTIVE_AUDIT_EMPTY_INPUT",
+   "kind": "outcome-code",
+   "where": "nfl/dfs/salaries/postinactives_board.py"
+  },
+  {
+   "detector": "nfl.postgame.join_provenance:audit_rows:JOIN_PROVENANCE_AUDIT_NOT_EXECUTED",
+   "kind": "dict-state",
+   "where": "nfl/postgame/join_provenance.py"
+  },
+  {
+   "detector": "nfl.postgame.ledger:audit:LEDGER_AUDIT_CLEAN_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/postgame/ledger.py"
+  },
+  {
+   "detector": "nfl.product.board_pointer:_no_mixed_versions:SINGLE_VERSION_BOARD_EMPTY_INPUT",
+   "kind": "outcome-code",
+   "where": "nfl/product/board_pointer.py"
+  },
+  {
+   "detector": "nfl.product.model_health:assert_ranking_admissible:HEALTH_NOT_MEASURED",
+   "kind": "flag",
+   "where": "nfl/product/model_health.py"
+  },
+  {
    "detector": "nfl.product.quality_gates:evaluate:QUALITY_GATES_EVALUATED_NOTHING",
    "kind": "outcome-code",
    "where": "nfl/product/quality_gates.py:976"
@@ -26,6 +171,11 @@
    "detector": "nfl.product.quality_gates:evaluate:QUALITY_GATES_INPUT_MISSING",
    "kind": "outcome-code",
    "where": "nfl/product/quality_gates.py:963"
+  },
+  {
+   "detector": "nfl.product.quality_gates:verdict:QUALITY_VERDICT_EMPTY_INPUT",
+   "kind": "dict-state",
+   "where": "nfl/product/quality_gates.py"
   },
   {
    "detector": "nfl.production.adjustment_registry:assert_consumer:ADJUSTMENT_CONSUMER_NOT_PERMITTED",
@@ -388,6 +538,46 @@
    "where": "nfl/production/lineage.py"
   },
   {
+   "detector": "nfl.production.nonqb.accounting:assert_no_double_counted_qb_carries:QB_CARRY_CONTAINMENT_EMPTY_INPUT",
+   "kind": "outcome-code",
+   "where": "nfl/production/nonqb/accounting.py"
+  },
+  {
+   "detector": "nfl.production.nonqb.accounting:reconcile_nonqb:NONQB_ACCOUNTING_VACUOUS",
+   "kind": "outcome-code",
+   "where": "nfl/production/nonqb/accounting.py"
+  },
+  {
+   "detector": "nfl.production.nonqb.accounting:reconcile_rushing:NONQB_ACCOUNTING_VACUOUS",
+   "kind": "outcome-code",
+   "where": "nfl/production/nonqb/accounting.py"
+  },
+  {
+   "detector": "nfl.production.nonqb.current_season_evidence:assert_pit:CURRENT_SEASON_EVIDENCE_PIT_EMPTY_INPUT",
+   "kind": "outcome-code",
+   "where": "nfl/production/nonqb/current_season_evidence.py"
+  },
+  {
+   "detector": "nfl.production.nonqb.eligibility:assert_implementations_exist:IMPLEMENTATIONS_PRESENT_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/production/nonqb/eligibility.py"
+  },
+  {
+   "detector": "nfl.production.nonqb.eligibility:assert_no_stale_labels:NO_STALE_GOVERNANCE_LABELS_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/production/nonqb/eligibility.py"
+  },
+  {
+   "detector": "nfl.production.nonqb.layers:assert_publishable:NO_TEST_ONLY_DATA_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/production/nonqb/layers.py"
+  },
+  {
+   "detector": "nfl.production.nonqb.readiness:game_readiness:GAME_READINESS_NOT_EXECUTED",
+   "kind": "dict-state",
+   "where": "nfl/production/nonqb/readiness.py"
+  },
+  {
    "detector": "nfl.production.nonqb.readiness:lawful_injuries_rows:INJURIES_NO_LAWFUL_ROWS",
    "kind": "outcome-code",
    "where": "nfl/production/nonqb/readiness.py:189"
@@ -421,6 +611,16 @@
    "detector": "nfl.production.nonqb.readiness:team_readiness:READINESS_CLOCK_UNRESOLVED",
    "kind": "dict-state",
    "where": "nfl/production/nonqb/readiness.py"
+  },
+  {
+   "detector": "nfl.production.nonqb.role_invariants:check:ROLE_ORDERING_INPUT_INCOMPLETE",
+   "kind": "outcome-code",
+   "where": "nfl/production/nonqb/role_invariants.py"
+  },
+  {
+   "detector": "nfl.production.nonqb.role_invariants:check:ROLE_ORDERING_NO_COMPARABLE_PAIRS",
+   "kind": "outcome-code",
+   "where": "nfl/production/nonqb/role_invariants.py"
   },
   {
    "detector": "nfl.production.ownership_audit:audit:OWNERSHIP_AUDIT_NO_APPLICATIONS",
@@ -628,6 +828,11 @@
    "where": "nfl/production/qb_v1.py"
   },
   {
+   "detector": "nfl.production.review.slate_report:assert_player_review_complete:PLAYER_REVIEW_COMPLETE_EMPTY_INPUT",
+   "kind": "outcome-code",
+   "where": "nfl/production/review/slate_report.py"
+  },
+  {
    "detector": "nfl.production.run_archive:archive:ARCHIVED_NAME_COLLISION",
    "kind": "outcome-code",
    "where": "nfl/production/run_archive.py:170"
@@ -663,11 +868,6 @@
    "where": "nfl/production/run_archive.py"
   },
   {
-   "detector": "nfl.production.run_archive:verify_current:CURRENT_MATCHES_ARCHIVE_EMPTY_INPUT",
-   "kind": "measured-suffix",
-   "where": "nfl/production/run_archive.py"
-  },
-  {
    "detector": "nfl.production.run_archive:verify_current:CURRENT_PATHS_AHEAD_OF_ARCHIVE",
    "kind": "outcome-code",
    "where": "nfl/production/run_archive.py:285"
@@ -678,9 +878,65 @@
    "where": "nfl/production/run_archive.py:269"
   },
   {
+   "detector": "nfl.production.run_archive:verify_current:SEALED_RUN_INTACT_EMPTY_INPUT",
+   "kind": "propagated-refusal",
+   "note": "verify_current returns verify()'s refusal unchanged when the sealed run does not verify, so the code a caller sees on an empty seal is SEALED_RUN_INTACT_EMPTY_INPUT; its own CURRENT_MATCHES_ARCHIVE_EMPTY_INPUT is unreachable (found by the rule-2 validator, 2026-10-02)",
+   "where": "nfl/production/run_archive.py"
+  },
+  {
    "detector": "nfl.production.stat_contract:reconcile_with_product_registry:COUNT_REGISTRY_AGREES_EMPTY_INPUT",
    "kind": "measured-suffix",
    "where": "nfl/production/stat_contract.py"
+  },
+  {
+   "detector": "nfl.production.universe.allocation:assert_allocation_conserves:ALLOCATION_EMPTY_INPUT",
+   "kind": "outcome-code",
+   "where": "nfl/production/universe/allocation.py"
+  },
+  {
+   "detector": "nfl.production.universe.allocation:assert_allocation_conserves:CONSUMING_SET_EMPTY",
+   "kind": "outcome-code",
+   "where": "nfl/production/universe/allocation.py"
+  },
+  {
+   "detector": "nfl.production.universe.allocation:assert_redistribution_supported:REDISTRIBUTION_EMPTY_INPUT",
+   "kind": "outcome-code",
+   "where": "nfl/production/universe/allocation.py"
+  },
+  {
+   "detector": "nfl.production.universe.chronology:certify:CHRONOLOGY_NO_SOURCES",
+   "kind": "outcome-code",
+   "where": "nfl/production/universe/chronology.py"
+  },
+  {
+   "detector": "nfl.production.universe.chronology:check_freshness:FRESHNESS_NO_SOURCES",
+   "kind": "outcome-code",
+   "where": "nfl/production/universe/chronology.py"
+  },
+  {
+   "detector": "nfl.production.universe.participation:assert_participation_supports_allocation:ALLOCATING_SET_EMPTY",
+   "kind": "outcome-code",
+   "where": "nfl/production/universe/participation.py"
+  },
+  {
+   "detector": "nfl.production.universe.participation:assert_participation_supports_allocation:PARTICIPATION_GATE_EMPTY_INPUT",
+   "kind": "outcome-code",
+   "where": "nfl/production/universe/participation.py"
+  },
+  {
+   "detector": "nfl.production.universe.participation:assess:PARTICIPATION_EMPTY_INPUT",
+   "kind": "outcome-code",
+   "where": "nfl/production/universe/participation.py"
+  },
+  {
+   "detector": "nfl.production.universe.role_state:assert_role_state_supported:PUBLISHABLE_SET_EMPTY",
+   "kind": "outcome-code",
+   "where": "nfl/production/universe/role_state.py"
+  },
+  {
+   "detector": "nfl.production.universe.role_state:assert_role_state_supported:ROLE_STATE_EMPTY_INPUT",
+   "kind": "outcome-code",
+   "where": "nfl/production/universe/role_state.py"
   },
   {
    "detector": "nfl.production.verdict:assess:PRODUCT_VERDICT_EMPTY_INPUT",
@@ -738,9 +994,34 @@
    "where": "nfl/prospective/q9shadow/injury_completeness.py"
   },
   {
+   "detector": "nfl.schema.player_draw:validate:DRAW_SET_EMPTY_INPUT",
+   "kind": "outcome-code",
+   "where": "nfl/schema/player_draw.py"
+  },
+  {
    "detector": "nfl.tests.run_suite:main:NOT_EXECUTED",
    "kind": "harness-verdict",
    "where": "nfl/tests/run_suite.py"
+  },
+  {
+   "detector": "nfl.tools.capture_release:assert_allowlisted:CAPTURE_RELEASE_PATHS_ALLOWLISTED_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/tools/capture_release.py"
+  },
+  {
+   "detector": "nfl.tools.check_retention:assert_no_new_orphan:NO_NEW_ORPHAN_BLOB_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/tools/check_retention.py"
+  },
+  {
+   "detector": "nfl.tools.check_retention:assert_no_orphan_blobs_scoped:NO_ORPHAN_BLOBS_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/tools/check_retention.py"
+  },
+  {
+   "detector": "nfl.tools.check_retention:assert_rows_accompany_blobs:ROWS_ACCOMPANY_BLOBS_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/tools/check_retention.py"
   },
   {
    "detector": "nfl.tools.football_sanity:assess:CLUB_CARRIES_NOT_RECONCILED",
@@ -808,7 +1089,7 @@
    "where": "nfl/tools/football_sanity.py"
   },
   {
-   "detector": "nfl.tools.football_sanity:measure_draws:DRAWS_DOC_NOT_SUPPLIED",
+   "detector": "nfl.tools.football_sanity:measure_draws:DRAWS_DOC_NOT_SUPPLIED_TO_GATE",
    "kind": "dict-state",
    "where": "nfl/tools/football_sanity.py"
   },
@@ -816,6 +1097,51 @@
    "detector": "nfl.tools.football_sanity:measure_draws:SIMULATOR_OWN_REGRESSION",
    "kind": "dict-state",
    "where": "nfl/tools/football_sanity.py"
+  },
+  {
+   "detector": "nfl.tools.projection_guards:assert_established_role_not_shrunk_down:ESTABLISHED_ROLE_PRESERVED_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/tools/projection_guards.py"
+  },
+  {
+   "detector": "nfl.tools.projection_guards:assert_positional_coverage:ALL_POSITIONS_COVERED_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/tools/projection_guards.py"
+  },
+  {
+   "detector": "nfl.tools.projection_guards:assert_td_rate_not_raw_count:TD_RATE_HAS_A_FLOOR_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/tools/projection_guards.py"
+  },
+  {
+   "detector": "nfl.tools.projection_source:assert_fallback_is_labelled:FALLBACK_LABELLED_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/tools/projection_source.py"
+  },
+  {
+   "detector": "nfl.tools.projection_source:assert_no_position_silently_dropped:ALL_POSITIONS_PRESENT_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/tools/projection_source.py"
+  },
+  {
+   "detector": "nfl.tools.projection_source:assert_no_silent_zero:NO_SILENT_ZERO_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/tools/projection_source.py"
+  },
+  {
+   "detector": "nfl.tools.reconcile_t90_obligations:measure:T90_RECONCILIATION_NOT_EXECUTED",
+   "kind": "dict-state",
+   "where": "nfl/tools/reconcile_t90_obligations.py"
+  },
+  {
+   "detector": "nfl.tools.state_compare:assert_no_row_dropped:DK_ROWS_PRESERVED_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/tools/state_compare.py"
+  },
+  {
+   "detector": "nfl.tools.state_compare:assert_no_unauthorised_promotion:NO_UNAUTHORISED_PROMOTION_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/tools/state_compare.py"
   },
   {
    "detector": "nfl.tools.suite_progress:summarise:NOT_EXECUTED",
@@ -863,6 +1189,51 @@
    "where": "nfl/tools/sync_captures.py:116"
   },
   {
+   "detector": "nfl.tools.sync_captures:verify_blob:SYNC_BLOB_HASH_NOT_RECORDED",
+   "kind": "outcome-code",
+   "where": "nfl/tools/sync_captures.py"
+  },
+  {
+   "detector": "nfl.tools.verify_capture_deployment:_model_path_checks:MODEL_PATH_CHECK_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/tools/verify_capture_deployment.py"
+  },
+  {
+   "detector": "nfl.tools.verify_capture_deployment:_model_path_checks:MODEL_PATH_CHECK_NOT_EXECUTED",
+   "kind": "dict-state",
+   "where": "nfl/tools/verify_capture_deployment.py"
+  },
+  {
+   "detector": "nfl.tools.verify_capture_deployment:_surface_digest_check:SURFACE_DIGEST_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "nfl/tools/verify_capture_deployment.py"
+  },
+  {
+   "detector": "nfl.truth.run_input:assert_consumable:PINNED_EVIDENCE_NOT_VERIFIED",
+   "kind": "raised",
+   "where": "nfl/truth/run_input.py"
+  },
+  {
+   "detector": "nfl.truth.run_input:verify:RUN_INPUT_VERIFY_NOT_EXECUTED",
+   "kind": "dict-state",
+   "where": "nfl/truth/run_input.py"
+  },
+  {
+   "detector": "sportsplatform.governance.assumption:assert_promotable:PROMOTION_VERDICT_EMPTY_INPUT",
+   "kind": "outcome-code",
+   "where": "sportsplatform/governance/assumption.py"
+  },
+  {
+   "detector": "sportsplatform.governance.assumption:assert_promotable:PROMOTION_VERDICT_UNEVIDENCED_ASSUMPTION",
+   "kind": "outcome-code",
+   "where": "sportsplatform/governance/assumption.py"
+  },
+  {
+   "detector": "sportsplatform.governance.commit_claim:verify_staged:COMMIT_CLAIM_VERIFIED_EMPTY_INPUT",
+   "kind": "measured-suffix",
+   "where": "sportsplatform/governance/commit_claim.py"
+  },
+  {
    "detector": "sportsplatform.governance.outcome:Outcome.measured:X_EMPTY_INPUT",
    "kind": "measured-suffix",
    "where": "sportsplatform/governance/outcome.py"
@@ -873,6 +1244,6 @@
    "where": "sportsplatform/governance/outcome.py"
   }
  ],
- "n_detectors": 174,
+ "n_detectors": 248,
  "spec_version": "detectors-1"
 }

@@ -221,8 +221,15 @@ def test_G_a_falsified_critical_assumption_blocks_promotion():
     check('G and the refusal says the output is unchanged',
           'model output is unchanged' in o.detail, o.detail[:90])
     other = AS.assert_promotable([bad], consumer='someone_else')
-    check('G a consumer that does not depend on it is NOT blocked',
-          other.state is State.PASS, f'{other.state}[{other.code}]')
+    # OWNER RULE 1 (2026-10-02): this consumer selects zero assumptions, so the
+    # gate has examined nothing about it. That used to read PASS; it is now a
+    # named EMPTY_INPUT refusal -- and, as before, NOT the falsified block.
+    check('G a consumer that does not depend on it is not blocked by it: the gate '
+          'refuses as EMPTY_INPUT, never CODE_BLOCKED',
+          other.state is State.BLOCKED and other.code == AS.CODE_EMPTY
+          and other.evidence['cause'] == 'EMPTY_INPUT'
+          and other.evidence['falsified_critical'] == [],
+          f'{other.state}[{other.code}]')
     mat = AS.settle(_valid(id='MAT', criticality=AS.MATERIAL),
                     status=AS.FALSIFIED, evidence={'n': 9}).value
     warn = AS.assert_promotable([mat], consumer='consumer')
@@ -242,8 +249,13 @@ def test_H_the_block_reaches_the_real_production_path():
           and g.code == AS.CODE_BLOCKED,
           f'{g.code if g is not None else "no gate"}')
     g2 = ADJ._assumption_gate('team_volume', ADJ.PRODUCTION)
-    check('H and does not block a layer no falsified assumption names',
-          g2 is not None and g2.state is State.PASS,
+    # OWNER RULE 1 (2026-10-02): `team_volume` is named by no assumption at all
+    # (DEF-090), so the gate selects nothing. It used to answer PASS; it now
+    # answers BLOCKED/EMPTY_INPUT, which is still not the falsified block.
+    check('H and does not block for a falsified reason a layer no assumption names: '
+          'the gate refuses as EMPTY_INPUT, not CODE_BLOCKED',
+          g2 is not None and g2.state is State.BLOCKED and g2.code == AS.CODE_EMPTY
+          and g2.evidence.get('cause') == 'EMPTY_INPUT',
           f'{g2.code if g2 is not None else "no gate"}')
     g3 = ADJ._assumption_gate('nfl.production.nonqb.cs2_state', ADJ.RESEARCH)
     check('H research purpose is not gated by it', g3 is None)

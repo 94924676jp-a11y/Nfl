@@ -94,6 +94,23 @@ def validate(ds: DrawSet) -> Outcome:
             f'position is undeclared, not clean.', cause=Cause.GOVERNANCE,
             position=ds.position)
 
+    # OWNER RULE 1 (2026-10-02): a draw set with n_draws=0 and zero-length
+    # arrays validated DRAW_SET_VALID -- every per-draw check (length,
+    # non-negativity, ordering) is vacuously true of no draws. Nothing was
+    # measured, so this is EMPTY_INPUT, named apart from the schema FAILs below.
+    try:
+        n_draws = int(ds.n_draws)
+    except (TypeError, ValueError):
+        n_draws = 0
+    if n_draws <= 0:
+        return Outcome.blocked(
+            'DRAW_SET_EMPTY_INPUT',
+            f'{ds.position} {ds.player_id}: n_draws={ds.n_draws!r}. A draw '
+            f'set with no draws has nothing to check per draw index; it has '
+            f'not validated, it has not been measured.',
+            cause=Cause.EMPTY_INPUT, n_draws=ds.n_draws,
+            n_fields_present=len(ds.stats or {}))
+
     missing = [f for f in need if f not in ds.stats]
     if missing:
         return Outcome.fail(
@@ -156,6 +173,9 @@ def validate(ds: DrawSet) -> Outcome:
             'quantity, or the model starts optimising a scoring system rather '
             'than football.')
 
-    return Outcome.ok('DRAW_SET_VALID', value=ds.as_dict(),
-                      detail=f'{ds.position} {ds.player_id}: {ds.n_draws} '
-                             f'draws, {len(need)} fields, trace complete')
+    # OWNER RULE 1 (2026-10-02): the PASS carries the count it validated over.
+    return Outcome.measured(
+        'DRAW_SET_VALID', ds.as_dict(), n_measured=n_draws,
+        what=f'{ds.position} {ds.player_id} draws checked per index',
+        detail=f'{ds.position} {ds.player_id}: {ds.n_draws} '
+               f'draws, {len(need)} fields, trace complete')

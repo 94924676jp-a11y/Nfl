@@ -49,6 +49,7 @@ from nfl.production import candidate_mode as CAND                 # noqa: E402
 from nfl.production.nonqb import eligibility as ELIG              # noqa: E402
 from nfl.production.nonqb import layers as LY                     # noqa: E402
 from nfl.production.nonqb import vintage_selector as VS           # noqa: E402
+from nfl.tests._controls import observe                           # noqa: E402
 
 PASSED = FAILED = 0
 
@@ -157,6 +158,7 @@ class _OpenGate:
 def test_the_zero_argument_call_still_answers_exactly_as_it_did():
     """Four live call sites pass no context. None of them may change meaning."""
     o = AUTH.may_publish()
+    observe('nfl.production.authorization:may_publish:NFL1_NOT_AUTHORIZED', o)
     check('publication is still REFUSED while NFL-1 is NOT AUTHORIZED',
           o.state is State.BLOCKED and o.code == 'NFL1_NOT_AUTHORIZED', o.code)
     check('  the refusal still carries the gate state it read',
@@ -343,6 +345,7 @@ def test_undecided_is_distinguishable_from_allow_and_from_refuse():
     check('a metric clearing every settled rule is ALLOWED',
           allow.state is State.PASS
           and allow.code == 'PUBLICATION_AUTHORIZED', str(allow))
+    observe('nfl.production.authorization:may_publish:PUBLICATION_RULE_UNDECIDED', undec)
     check('a metric whose governing rule is unset is DEFERRED, not PASS',
           undec.state is State.DEFERRED
           and undec.code == 'PUBLICATION_RULE_UNDECIDED', str(undec)[:160])
@@ -588,9 +591,37 @@ def test_the_context_must_name_the_run_and_the_metric():
 
 def test_a_malformed_context_is_refused_rather_than_coerced():
     o = AUTH.may_publish({'metric': 'receiving/receiving_yards'})
+    observe('nfl.production.authorization:may_publish:PUBLICATION_CONTEXT_MALFORMED', o)
     check('a bare dict is refused by name',
           o.state is State.FAIL
           and o.code == 'PUBLICATION_CONTEXT_MALFORMED', o.code)
+
+
+def test_positive_controls_unsupplied_facts_and_an_incomplete_metric_origin():
+    """OWNER RULE 2: the two refusals no other test drives, each tripped by name."""
+    with _OpenGate():
+        o = AUTH.may_publish(AUTH.context(**_clean_facts(
+            eligibility=_hypothetically_eligible(),
+            spec_version='a-frozen-spec-naming-no-governance-state',
+            hard_invariants=AUTH.NOT_SUPPLIED)))
+    observe('nfl.production.authorization:may_publish:PUBLICATION_FACTS_NOT_SUPPLIED', o)
+    check('a metric that would be ALLOWED but whose hard-invariant facts were never supplied '
+          'is BLOCKED by name, not authorized on an unanswered question',
+          o.state is State.BLOCKED and o.code == 'PUBLICATION_FACTS_NOT_SUPPLIED', str(o)[:160])
+    # The origin table is compared against the product contract. Remove one row from a COPY-restored
+    # module table and the comparison must refuse; the table is put back whatever happens.
+    saved = dict(AUTH.METRIC_ORIGIN)
+    try:
+        del AUTH.METRIC_ORIGIN[next(iter(AUTH.METRIC_ORIGIN))]
+        o2 = AUTH.assert_metric_origin_complete()
+    finally:
+        AUTH.METRIC_ORIGIN.clear()
+        AUTH.METRIC_ORIGIN.update(saved)
+    observe('nfl.production.authorization:assert_metric_origin_complete:METRIC_ORIGIN_INCOMPLETE', o2)
+    check('a SUPPORTED metric with no producing layer is refused by name',
+          o2.state is State.FAIL and o2.code == 'METRIC_ORIGIN_INCOMPLETE', o2.code)
+    check('  and the real table is complete once restored',
+          AUTH.assert_metric_origin_complete().code == 'METRIC_ORIGIN_COMPLETE')
 
 
 if __name__ == '__main__':

@@ -19,6 +19,7 @@ if _ROOT not in sys.path:
 
 from sportsplatform.governance.outcome import State                # noqa: E402
 from nfl.production.nonqb import shared_pass as SP                 # noqa: E402
+from nfl.tests._controls import observe                            # noqa: E402
 
 PASSED = FAILED = 0
 XL1 = os.path.join(_ROOT, 'nfl', 'research', 'xl1')
@@ -379,6 +380,7 @@ def test_K_allocation_share_leak_guard():
     # SEEDED VIOLATION: p2 is allocated 0.3 and cannot be forecast.
     bad = QBACC.reconcile_allocation_share(
         alloc, {'AAA': ['p1'], 'BBB': ['q1']})
+    observe('nfl.production.qb_accounting:reconcile_allocation_share:QB_ALLOCATION_SHARE_UNCONSUMED', bad)
     check('share allocated to an unforecastable passer is REFUSED',
           bad.state is State.FAIL
           and bad.code == 'QB_ALLOCATION_SHARE_UNCONSUMED',
@@ -454,6 +456,7 @@ def test_M_own4_allocated_mass_is_conserved_per_draw():
           and o2.evidence.get('nothing_fitted') is True)
     # SEEDED VIOLATION 2: no donor anywhere. Must refuse, never invent.
     o3 = QBACC.conserve_allocated_mass(target, np.zeros(m), seed)
+    observe('nfl.production.qb_accounting:conserve_allocated_mass:QB_COMPOSITION_NO_DONOR_DRAW', o3)
     check('a row with no non-zero draw at all is REFUSED by name',
           o3.state is State.FAIL
           and o3.code == 'QB_COMPOSITION_NO_DONOR_DRAW',
@@ -461,6 +464,8 @@ def test_M_own4_allocated_mass_is_conserved_per_draw():
     check('the refusal carries the mass it declined to invent',
           abs(o3.evidence['allocated_dropbacks_at_risk'] - 37.0 * m) < 1e-6,
           str(o3.evidence.get('allocated_dropbacks_at_risk')))
+    observe('nfl.production.qb_accounting:conserve_allocated_mass:MASS_CONSERVATION_SHAPE_MISMATCH',
+            QBACC.conserve_allocated_mass(np.zeros(5), np.zeros(7), seed))
     check('a shape mismatch is refused rather than broadcast',
           QBACC.conserve_allocated_mass(np.zeros(5), np.zeros(7),
                                         seed).code

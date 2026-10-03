@@ -155,7 +155,7 @@ def test_03_run_archive_seal_with_no_files():
                   refused(o) and o.evidence['cause'] == 'EMPTY_INPUT', _desc(o))
             RA.CURRENT.write_text(json.dumps({'run_id': 'r0'}))
             o = RA.verify_current()
-            observe('nfl.production.run_archive:verify_current:CURRENT_MATCHES_ARCHIVE_EMPTY_INPUT', o)
+            observe('nfl.production.run_archive:verify_current:SEALED_RUN_INTACT_EMPTY_INPUT', o)
             check('  and verify_current carries that refusal through instead of matching',
                   refused(o), _desc(o))
             # negative control: one real sealed file whose bytes still hash

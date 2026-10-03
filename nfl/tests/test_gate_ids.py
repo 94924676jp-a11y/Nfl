@@ -12,6 +12,7 @@ if str(_REPO) not in sys.path:
 from nfl.production import gate_ids as G                            # noqa: E402
 from nfl.production import ownership_audit as OA                    # noqa: E402
 from sportsplatform.governance.outcome import State                 # noqa: E402
+from nfl.tests._controls import observe                             # noqa: E402
 
 PASSED = 0
 FAILED = 0
@@ -34,6 +35,7 @@ def test_A_identity_is_the_name():
     check('a declared gate resolves by name', o.state is State.PASS,
           f'{o.state}[{o.code}]')
     bad = G.get('11')
+    observe('nfl.production.gate_ids:get:UNKNOWN_GATE_ID', bad)
     check('a bare number does NOT resolve',
           bad.state is State.FAIL and bad.code == 'UNKNOWN_GATE_ID',
           f'{bad.state}[{bad.code}]')
@@ -76,6 +78,7 @@ def test_C_ownership_gate_matches_the_audit():
 def test_D_readiness_is_four_states_not_one():
     print('\nD. the composite is withdrawn')
     w = G.readiness('WEEK2_OAS1_FIT_READY_TO_EXECUTE')
+    observe('nfl.production.gate_ids:readiness:READINESS_STATE_WITHDRAWN', w)
     check('the old composite REFUSES rather than returning a value',
           w.state is State.FAIL and w.code == 'READINESS_STATE_WITHDRAWN',
           f'{w.state}[{w.code}]')
@@ -90,6 +93,18 @@ def test_D_readiness_is_four_states_not_one():
     c = G.readiness('COLD_START_VALIDATION')
     check('  COLD_START_VALIDATION = NOT_EVALUATED, never PASS',
           c.value == G.NOT_EVALUATED, str(c.value))
+
+
+def test_D2_positive_controls_unknown_scope_and_unknown_readiness_name():
+    print('\nD2. OWNER RULE 2 positive controls: an unknown scope and an unknown readiness name refuse by name')
+    o = G.assert_scope_allowed('NOT_A_SCOPE')
+    observe('nfl.production.gate_ids:assert_scope_allowed:UNKNOWN_SCOPE', o)
+    check('a scope the registry does not declare is refused',
+          o.state is State.FAIL and o.code == 'UNKNOWN_SCOPE', f'{o.state}[{o.code}]')
+    r = G.readiness('NOT_A_READINESS_STATE')
+    observe('nfl.production.gate_ids:readiness:UNKNOWN_READINESS_STATE', r)
+    check('a readiness name neither declared nor withdrawn is refused',
+          r.state is State.FAIL and r.code == 'UNKNOWN_READINESS_STATE', f'{r.state}[{r.code}]')
 
 
 def test_E_spec_and_preflight_ready_do_not_imply_executable():

@@ -21,6 +21,7 @@ if _ROOT not in sys.path:
 
 from sportsplatform.governance.outcome import Cause, State            # noqa: E402
 from nfl.production import coherence_certificate as CC                # noqa: E402
+from nfl.tests._controls import observe                                # noqa: E402
 
 PASSED = FAILED = 0
 
@@ -61,6 +62,7 @@ def test_A_guard_then_downstream_mutation_is_REFUSED():
     # ---- SHAPE 1: MUTATED IN PLACE, one cell, after the guard ran.
     arrays['qb/pyds'][1, 7] += 1.0
     v = CC.verify(cert.value, arrays, rid)
+    observe('nfl.production.coherence_certificate:verify:COHERENCE_CERTIFICATE_BROKEN', v)
     check('  an IN-PLACE mutation of ONE cell is caught',
           v.state is State.FAIL and v.code == CC.CODE_BROKEN,
           f'{v.state}[{v.code}]')
@@ -153,10 +155,12 @@ def test_D_identity_is_inside_the_digest():
 def test_E_an_empty_or_missing_certificate_refuses():
     print('\nE. a certificate that verifies against anything is worse than none')
     arrays, rid = _world()
+    observe('nfl.production.coherence_certificate:certify:COHERENCE_CERTIFICATE_EMPTY', CC.certify({}))
     check('certifying nothing is BLOCKED',
           CC.certify({}).state is State.BLOCKED
           and CC.certify({}).code == CC.CODE_EMPTY)
     v = CC.verify({}, arrays, rid)
+    observe('nfl.production.coherence_certificate:verify:COHERENCE_CERTIFICATE_MISSING', v)
     check('  verifying with no certificate is BLOCKED, never PASS',
           v.state is State.BLOCKED and v.code == CC.CODE_MISSING,
           f'{v.state}[{v.code}]')

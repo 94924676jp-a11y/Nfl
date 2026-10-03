@@ -1,0 +1,54 @@
+diff --git a/nfl/production/review/gate.py b/nfl/production/review/gate.py
+index 9579b304..908c0cd7 100644
+--- a/nfl/production/review/gate.py
++++ b/nfl/production/review/gate.py
+@@ -78,6 +78,8 @@ VERDICTS = (PASS, PASS_WITH_WARNINGS, BLOCKED)
+ # --- refusals that are not verdicts ---------------------------------------
+ PLAYER_REVIEW_NOT_RUN = 'PLAYER_REVIEW_NOT_RUN'
+ PLAYER_REVIEW_STALE = 'PLAYER_REVIEW_STALE'
++# OWNER RULE 1 (2026-10-02): a review that was handed no dossier reviewed nobody.
++PLAYER_REVIEW_NO_DOSSIERS = 'PLAYER_REVIEW_NO_DOSSIERS'
+ 
+ # --- codes this module adds to the audit's own ----------------------------
+ C_INACTIVE_IN_POOL = 'INACTIVE_PLAYER_IN_SIMULATION_OR_OPTIMIZER_POOL'
+@@ -758,10 +760,39 @@ def evaluate(report: Optional[Dict[str, Any]], *,
+ 
+     blocking = [r for r in rows if r['disposition'] == 'BLOCKING']
+     warnings = [r for r in rows if r['disposition'] == 'WARNING']
++    cov = report.get('coverage', {})
++    if not dby and not blocking:
++        # OWNER RULE 1 (2026-10-02): with zero dossiers and no conflict to
++        # weigh, `rows` was empty and this issued PLAYER_REVIEW_PASS -- a
++        # verdict that nobody on the slate is blocked, reached by reviewing
++        # nobody. A blocking conflict found with no dossier behind it stays
++        # the true refusal it already was; this is the case where nothing at
++        # all was examined.
++        return Outcome.blocked(
++            PLAYER_REVIEW_NO_DOSSIERS,
++            f'no player dossier was supplied to the gate and no conflict was '
++            f'raised, so no player was reviewed. A slate of nobody has not '
++            f'passed review; it has not been reviewed.',
++            cause=Cause.EMPTY_INPUT, n_dossiers=0, n_conflicts=len(rows),
++            reviewed_player_count=cov.get('n_universe'),
++            value={'verdict': BLOCKED, 'spec_version': SPEC_VERSION,
++                   'refusal_code': PLAYER_REVIEW_NO_DOSSIERS,
++                   'cause': Cause.EMPTY_INPUT.value,
++                   'reviewed_player_count': cov.get('n_universe'),
++                   'publishable_player_count': cov.get('n_publishable'),
++                   'optimizer_pool_count': len(pool),
++                   'blocking_conflict_count': 0, 'warning_count': 0,
++                   'conflicts': rows,
++                   'run_identity': {
++                       'run_id': (report.get('projection_source') or {}
++                                  ).get('run_id'),
++                       'slate_key': report.get('slate_key'),
++                       'information_cut': report.get('information_cut'),
++                       'reviewed_draw_digest': reviewed,
++                       'consumed_draw_digest': projection_digest}})
+     verdict = (BLOCKED if blocking
+                else (PASS_WITH_WARNINGS if warnings else PASS))
+ 
+-    cov = report.get('coverage', {})
+     value = {
+         'verdict': verdict,
+         'spec_version': SPEC_VERSION,

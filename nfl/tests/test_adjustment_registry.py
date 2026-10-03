@@ -34,6 +34,7 @@ if _ROOT not in sys.path:
 
 from sportsplatform.governance.outcome import Cause, State               # noqa: E402
 from nfl.production import adjustment_registry as AR                     # noqa: E402
+from nfl.tests._controls import observe                                  # noqa: E402
 
 PASSED = FAILED = 0
 NOT_EXECUTED = []
@@ -102,6 +103,7 @@ def test_B_the_double_is_refused_before_publication():
     f.apply(ADJ, OWNER_LAYER, PERTURBATION)
     before = f.value
     r = f.apply(ADJ, OWNER_LAYER, PERTURBATION)
+    observe('nfl.production.adjustment_registry:assert_may_apply:ADJUSTMENT_ALREADY_APPLIED', r)
     check('the SECOND application is REFUSED',
           r.state is State.FAIL and r.code == AR.ALREADY_APPLIED,
           f'{r.state}[{r.code}]')
@@ -134,6 +136,7 @@ def test_C_the_refusal_is_not_an_accident_of_another_guard():
     check('with the registry bypassed, the frame really is double-counted',
           abs(f.value - 1.50) < 1e-12, str(f.value))
     a = AR.audit_frame(f.tags, label='bypassed')
+    observe('nfl.production.adjustment_registry:audit_frame:ADJUSTMENT_ALREADY_APPLIED', a)
     check('  and the SEAL-TIME audit catches it independently',
           a.state is State.FAIL and a.code == AR.ALREADY_APPLIED,
           f'{a.state}[{a.code}]')
@@ -146,22 +149,29 @@ def test_D_owner_and_lineage_refusals():
     print('\nD. the other three HARD refusals')
     f = Frame(1.0)
     r = f.apply(ADJ, 'receiving', PERTURBATION)
+    observe('nfl.production.adjustment_registry:assert_may_apply:ADJUSTMENT_OWNER_MISMATCH', r)
     check('a NON-OWNER layer is refused',
           r.state is State.FAIL and r.code == AR.OWNER_MISMATCH,
           f'{r.state}[{r.code}]')
     check('  and the frame did not move', abs(f.value - 1.0) < 1e-12)
     r = AR.assert_may_apply(ADJ, calling_layer=OWNER_LAYER, frame_tags=None)
+    observe('nfl.production.adjustment_registry:assert_may_apply:ADJUSTMENT_LINEAGE_UNKNOWN', r)
     check('a frame with UNKNOWN lineage is refused',
           r.state is State.FAIL and r.code == AR.LINEAGE_UNKNOWN,
           f'{r.state}[{r.code}]')
     check('  because an absent tag and an empty tag are different states',
           'different states' in r.detail, r.detail[:90])
+    g = AR.get('not_a_real_adjustment')
+    observe('nfl.production.adjustment_registry:get:UNREGISTERED_ADJUSTMENT', g)
+    check('the registry lookup itself refuses an unregistered id',
+          g.state is State.FAIL and g.code == AR.UNREGISTERED, f'{g.state}[{g.code}]')
     r = AR.assert_may_apply('not_a_real_adjustment', calling_layer=OWNER_LAYER,
                             frame_tags=[])
     check('an UNREGISTERED adjustment is refused',
           r.state is State.FAIL and r.code == AR.UNREGISTERED,
           f'{r.state}[{r.code}]')
     a = AR.audit_frame(['not_a_real_adjustment'], label='x')
+    observe('nfl.production.adjustment_registry:audit_frame:UNREGISTERED_ADJUSTMENT', a)
     check('  and the seal audit refuses it too', a.state is State.FAIL
           and a.code == AR.UNREGISTERED, f'{a.state}[{a.code}]')
 
@@ -213,6 +223,17 @@ def test_F_oas1_pass_and_rush_are_separate_ids():
           ok.state is State.PASS, f'{ok.state}[{ok.code}]')
 
 
+def test_F2_positive_control_a_NOT_AVAILABLE_adjustment_cannot_be_read():
+    print('\nF2. OWNER RULE 2 positive control: reading a declared-but-absent adjustment is refused')
+    absent = sorted(a for a, v in AR.ADJUSTMENTS.items() if v['status'] == AR.NOT_AVAILABLE)
+    check('the registry declares at least one NOT_AVAILABLE adjustment', bool(absent), str(absent))
+    if absent:
+        c = AR.assert_consumer(absent[0], consumer='diagnostics')
+        observe('nfl.production.adjustment_registry:assert_consumer:ADJUSTMENT_NOT_PRODUCTION_APPROVED', c)
+        check(f'  {absent[0]}: a consumer is refused because there is no estimate to read',
+              c.state is State.FAIL and c.code == AR.NOT_PRODUCTION_APPROVED, f'{c.state}[{c.code}]')
+
+
 def test_G_every_entry_declares_the_required_fields():
     print('\nG. the registry answers the question it exists for')
     req = ('owner', 'producer', 'applied_at', 'permitted_consumers',
@@ -250,6 +271,7 @@ def test_H_research_only_status_is_enforced_not_merely_declared():
     for aid in ('opponent_pass_strength_v1', 'opponent_rush_strength_v1'):
         r = AR.assert_may_apply(aid, calling_layer=OWNER_LAYER, frame_tags=[],
                                 purpose=AR.PRODUCTION)
+        observe('nfl.production.adjustment_registry:assert_may_apply:ADJUSTMENT_NOT_PRODUCTION_APPROVED', r)
         check(f'{aid}: the OWNING layer is refused under the production purpose',
               r.state is State.FAIL and r.code == AR.NOT_PRODUCTION_APPROVED,
               f'{r.state}[{r.code}]')
@@ -261,6 +283,7 @@ def test_H_research_only_status_is_enforced_not_merely_declared():
               ok.state is State.PASS and ok.code == AR.OK,
               f'{ok.state}[{ok.code}]')
         c = AR.assert_consumer(aid, consumer='team_volume')
+        observe('nfl.production.adjustment_registry:assert_consumer:ADJUSTMENT_CONSUMER_NOT_PERMITTED', c)
         check('  team_volume may NOT READ it either, though it is the applying '
               'layer', c.state is State.FAIL
               and c.code == AR.CONSUMER_NOT_PERMITTED, f'{c.state}[{c.code}]')

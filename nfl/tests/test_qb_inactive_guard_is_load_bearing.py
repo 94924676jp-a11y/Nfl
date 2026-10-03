@@ -47,6 +47,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from bypass import guard_bypassed                               # noqa: E402
 from nfl.production import qb_accounting as QBACC               # noqa: E402
+from nfl.tests._controls import observe                         # noqa: E402
 from sportsplatform.governance.outcome import Outcome, State    # noqa: E402
 
 PASSED = FAILED = 0
@@ -85,6 +86,7 @@ def _draws(out_db=0.0, out_att=0.0, n=8):
 
 def test_no_list_is_DEFERRED_not_PASS():
     o = QBACC.assert_inactive_qbs_own_nothing(_draws(), _rows(), None)
+    observe('nfl.production.qb_accounting:assert_inactive_qbs_own_nothing:QB_INACTIVE_OWNERSHIP_NOT_ESTABLISHED', o)
     check('no inactive list does not pass', o.state is not State.PASS, str(o.state))
     check('it is DEFERRED', o.state is State.DEFERRED, str(o.state))
     check('with QB_INACTIVE_OWNERSHIP_NOT_ESTABLISHED',
@@ -113,6 +115,7 @@ def test_a_clean_list_passes():
 
 def test_a_violation_fails():
     o = QBACC.assert_inactive_qbs_own_nothing(_draws(out_db=1.0), _rows(), [OUT])
+    observe('nfl.production.qb_accounting:assert_inactive_qbs_own_nothing:QB_INACTIVE_STILL_OWNS_DROPBACKS', o)
     check('an inactive QB owning a dropback fails', o.state is State.FAIL,
           f'{o.state} {o.code}')
     check('with QB_INACTIVE_STILL_OWNS_DROPBACKS',

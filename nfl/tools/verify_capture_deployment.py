@@ -27,6 +27,14 @@ from nfl.tools import capture_release as CR                        # noqa: E402
 
 PROD = 'capture-prod'
 CAPTURE_WORKFLOWS = ('nfl-capture.yml', 'nfl-t90.yml')
+
+# OWNER RULE 1 (2026-10-02): a check row carrying one of these causes did not
+# run on evidence. It is neither a pass nor a true failure, and the verdict
+# distinguishes it: DEPLOYMENT_NOT_VERIFIED, never DEPLOYED_AND_VERIFIED.
+NON_EVIDENTIARY = ('EMPTY_INPUT', 'NOT_EXECUTED', 'INCOMPLETE')
+VERIFIED = 'DEPLOYED_AND_VERIFIED'
+NOT_DEPLOYED = 'NOT_DEPLOYED'
+NOT_VERIFIED = 'DEPLOYMENT_NOT_VERIFIED'
 MODEL_PREFIXES = ('nfl/production/', 'nfl/research/', 'nfl/prospective/',
                   'nfl/product/')
 
@@ -86,6 +94,100 @@ def _wf_write_targets(wf):
         for m in re.finditer(r'git\s+pull\s+[^\n]*?origin\s+(\S+)', body):
             out.append(_wf_resolve(m.group(1), wf))
     return out
+
+
+def _surface_digest_check(deployed: dict, want: dict) -> dict:
+    """The surface comparison as one check row.
+
+    OWNER RULE 1 (2026-10-02). This used to be `not differing and not absent`,
+    which is True when `want` is empty or nothing could be read from the
+    deployed branch: the digest check then PASSED having compared no file. A
+    comparison over zero files is BLOCKED/EMPTY_INPUT, carried on the row as
+    code SURFACE_DIGEST_EMPTY_INPUT and cause EMPTY_INPUT.
+    """
+    absent = sorted(k for k, v in deployed.items() if v is None)
+    compared = sorted(k for k, v in deployed.items()
+                      if v is not None and want.get(k))
+    differing = sorted(k for k in compared if deployed[k] != want[k])
+    name = 'the deployed surface digest matches the approved release'
+    if not compared:
+        return {'check': name, 'ok': False, 'code': 'SURFACE_DIGEST_EMPTY_INPUT',
+                'cause': 'EMPTY_INPUT', 'n_compared': 0,
+                'n_surface_files': len(deployed), 'n_approved_digests': len(want),
+                'detail': ('nothing compared: ' + str(len(deployed)) + ' surface '
+                           'file(s), ' + str(len(want)) + ' approved digest(s), '
+                           + str(len(absent)) + ' absent on the deployed branch. '
+                           'A digest check that read no file has not verified '
+                           'the surface.')}
+    ok = not differing and not absent
+    return {'check': name, 'ok': ok, 'n_compared': len(compared),
+            'detail': str(differing) if ok or differing else
+            str(len(absent)) + ' surface file(s) absent: ' + str(absent)}
+
+
+def _model_path_checks(parent, remote_sha, changed) -> list:
+    """The two deployed-path checks as rows.
+
+    OWNER RULE 1 (2026-10-02). Without a release parent commit or a remote tip
+    the diff cannot be taken; the old code skipped both checks silently and
+    the verdict read DEPLOYED_AND_VERIFIED with them never run. They are now
+    recorded as NOT_EXECUTED. `changed` is the diff's path list when it ran.
+    """
+    names = ('no model/research/prospective/product path is deployed',
+             '  and every deployed path is allowlisted')
+    if not (parent and remote_sha):
+        why = ('the approved release records no prod_parent_sha'
+               if not parent else 'the remote ' + PROD + ' tip is unknown')
+        return [{'check': n, 'ok': False, 'code': 'MODEL_PATH_CHECK_NOT_EXECUTED',
+                 'cause': 'NOT_EXECUTED',
+                 'detail': 'NOT_EXECUTED: ' + why + ', so the deployed diff '
+                           'could not be taken'} for n in names]
+    if not changed:
+        # An empty diff examines no path. "No model path among zero paths" is
+        # BLOCKED/EMPTY_INPUT, not a clean deployment.
+        return [{'check': n, 'ok': False, 'code': 'MODEL_PATH_CHECK_EMPTY_INPUT',
+                 'cause': 'EMPTY_INPUT', 'n_changed': 0,
+                 'detail': 'EMPTY_INPUT: the diff between the release parent and '
+                           'the deployed tip names no path, so no path was checked'}
+                for n in names]
+    leaked = sorted(p for p in changed
+                    if any(p.startswith(m) for m in MODEL_PREFIXES))
+    al = CR.assert_allowlisted(changed)
+    rows = [{'check': names[0], 'ok': not leaked, 'detail': str(leaked),
+             'n_changed': len(changed)}]
+    row = {'check': names[1], 'ok': al.state.name == 'PASS', 'code': al.code,
+           'detail': str(len(changed)) + ' changed path(s): ' + al.code}
+    if al.non_evidentiary:
+        row['cause'] = (al.evidence or {}).get('cause')
+    rows.append(row)
+    return rows
+
+
+def _verdict(res: dict) -> dict:
+    """Fold the check rows into the verdict, keeping unmeasured apart from failed."""
+    failed = [c for c in res['checks'] if not c['ok']]
+    unmeasured = [c for c in failed if c.get('cause') in NON_EVIDENTIARY]
+    true_failed = [c for c in failed if c.get('cause') not in NON_EVIDENTIARY]
+    res['n_checks'] = len(res['checks'])
+    res['n_failed'] = len(true_failed)
+    res['failed'] = [c['check'] for c in true_failed]
+    res['n_unmeasured'] = len(unmeasured)
+    res['unmeasured'] = [{'check': c['check'], 'cause': c['cause'],
+                          'code': c.get('code')} for c in unmeasured]
+    if true_failed:
+        res['verdict'] = NOT_DEPLOYED
+    elif unmeasured:
+        res['verdict'] = NOT_VERIFIED
+        res['cause'] = sorted({c['cause'] for c in unmeasured})
+    elif not res['checks']:
+        res['verdict'] = NOT_VERIFIED
+        res['cause'] = ['EMPTY_INPUT']
+        res['n_unmeasured'] = 1
+        res['unmeasured'] = [{'check': 'any check at all', 'cause': 'EMPTY_INPUT',
+                              'code': 'NO_CHECKS_RAN'}]
+    else:
+        res['verdict'] = VERIFIED
+    return res
 
 
 def verify(remote='origin', default_branch='main'):
@@ -180,13 +282,15 @@ def verify(remote='origin', default_branch='main'):
         deployed[relpath] = (hashlib.sha256(blob.encode()).hexdigest()
                              if blob is not None else None)
     absent = sorted(k for k, v in deployed.items() if v is None)
-    rec('every approved surface file exists on the deployed branch',
-        not absent, str(absent))
+    if deployed:
+        rec('every approved surface file exists on the deployed branch',
+            not absent, str(absent))
+    else:
+        rec('every approved surface file exists on the deployed branch', False,
+            'NOT_EXECUTED: the capture surface lists no file',
+            code='SURFACE_EXISTENCE_EMPTY_INPUT', cause='EMPTY_INPUT')
     want = rel.get('capture_surface') or {}
-    differing = sorted(k for k, v in deployed.items()
-                       if v is not None and want.get(k) and v != want[k])
-    rec('the deployed surface digest matches the approved release',
-        not differing and not absent, str(differing))
+    res['checks'].append(_surface_digest_check(deployed, want))
 
     # WITHOUT THIS THE WHOLE GATE IS INERT. Measured 2026-09-15: a clean
     # capture-prod checkout answered NO_APPROVED_CAPTURE_RELEASE, so every
@@ -230,29 +334,18 @@ def verify(remote='origin', default_branch='main'):
         'payload_contract' in cv and 'check_csv' in cv and 'check_json' in cv)
 
     parent = rel.get('prod_parent_sha')
+    changed = None
     if parent and remote_sha:
         d = _git('diff', '--name-only', parent, prod_ref)
         changed = [ln.strip() for ln in d.stdout.splitlines() if ln.strip()]
-        leaked = sorted(p for p in changed
-                        if any(p.startswith(m) for m in MODEL_PREFIXES))
-        rec('no model/research/prospective/product path is deployed',
-            not leaked, str(leaked))
-        rec('  and every deployed path is allowlisted',
-            bool(changed)
-            and CR.assert_allowlisted(changed).state.name == 'PASS',
-            str(len(changed)) + ' changed path(s)')
+    res['checks'].extend(_model_path_checks(parent, remote_sha, changed))
 
     rec('allowlist refuses traversal',
         not CR.path_is_allowed('nfl/capture/../production/layers.py')
         and not CR.path_is_allowed('../outside.py')
         and not CR.path_is_allowed('/etc/passwd'))
 
-    failed = [c for c in res['checks'] if not c['ok']]
-    res['n_checks'] = len(res['checks'])
-    res['n_failed'] = len(failed)
-    res['failed'] = [c['check'] for c in failed]
-    res['verdict'] = 'DEPLOYED_AND_VERIFIED' if not failed else 'NOT_DEPLOYED'
-    return res
+    return _verdict(res)
 
 
 def main(argv=None):
@@ -262,7 +355,8 @@ def main(argv=None):
     a = ap.parse_args(argv)
     r = verify(a.remote, a.default_branch)
     for c in r['checks']:
-        mark = 'ok  ' if c['ok'] else 'FAIL'
+        mark = ('ok  ' if c['ok'] else
+                'N/M ' if c.get('cause') in NON_EVIDENTIARY else 'FAIL')
         line = '  ' + mark + ' ' + c['check']
         if c.get('detail'):
             line += '  ' + str(c['detail'])
@@ -272,7 +366,11 @@ def main(argv=None):
           + ' -> ' + r['verdict'])
     if r['failed']:
         print('failed: ' + str(r['failed']))
-    return 0 if r['verdict'] == 'DEPLOYED_AND_VERIFIED' else 1
+    if r.get('unmeasured'):
+        print('not measured: ' + str([u['check'] for u in r['unmeasured']]))
+    if r['verdict'] == VERIFIED:
+        return 0
+    return 3 if r['verdict'] == NOT_VERIFIED else 1
 
 
 if __name__ == '__main__':

@@ -199,9 +199,15 @@ def verify_package(root) -> Outcome:
             mismatched=sorted(mismatched)[:20], missing=sorted(missing)[:20],
             n_mismatched=len(mismatched), n_missing=len(missing))
 
-    return Outcome.ok(
+    # OWNER RULE 1 (2026-10-02): "0 mismatched, 0 missing" over zero hashed
+    # files is a package nothing was verified in. A manifest listing no raw
+    # file and a checksums.json covering no file is BLOCKED/EMPTY_INPUT
+    # (code DELIVERED_PACKAGE_VERIFIED_EMPTY_INPUT), never VERIFIED.
+    return Outcome.measured(
         'DELIVERED_PACKAGE_VERIFIED',
-        value={'manifest': manifest, 'checksums': checksums, 'root': str(root)},
+        {'manifest': manifest, 'checksums': checksums, 'root': str(root)},
+        n_measured=n_raw + n_ck, what='delivered files hashed against their declared digest',
+        detail=f'{n_raw} raw file(s) and {n_ck} checksummed file(s) hash as declared',
         spec_version=SPEC_VERSION, n_manifest_entries=len(manifest),
         n_raw_verified=n_raw, n_checksums_verified=n_ck,
         n_fetch_errors=sum(1 for e in manifest if e.get('error')))

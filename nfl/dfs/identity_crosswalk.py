@@ -57,7 +57,16 @@ def normalise(name: str) -> str:
 
 
 class CrosswalkError(RuntimeError):
-    """Raised when an input cannot support a crosswalk at all."""
+    """Raised when an input cannot support a crosswalk at all.
+
+    `code` names the refusal (UPPER_SNAKE) and `cause` says whether it was a
+    measured finding or a non-evidentiary input; both are None on the generic
+    input refusals that predate OWNER RULE 1.
+    """
+
+    def __init__(self, message, *, code=None, cause=None):
+        super().__init__(message)
+        self.code, self.cause = code, cause
 
 
 def _index_roster(snapshot: dict) -> tuple[dict[str, dict[str, list[dict]]], int]:
@@ -152,6 +161,19 @@ def assert_complete(artifact: dict) -> None:
     directly rather than relaxing this.
     """
     counts = artifact["counts"]
+    # OWNER RULE 1 (2026-10-02): an artifact with no entries (counts == {}) used to
+    # return None here, i.e. PASS the acceptance gate, because "every non-DST row
+    # resolved" is vacuously true of zero rows. `crosswalk()` refuses an empty DK
+    # slice, but this gate is also fed artifacts read back from disk, where an empty
+    # one is exactly the shape a broken writer leaves. Zero rows is EMPTY_INPUT,
+    # named apart from the true incompleteness failure below.
+    n_entries = sum(int(v) for v in counts.values())
+    if n_entries <= 0 or not artifact.get("entries"):
+        raise CrosswalkError(
+            f"CROSSWALK_EMPTY_INPUT: the crosswalk carries {n_entries} entry(ies) "
+            f"(entries={len(artifact.get('entries') or [])}); nothing was resolved, "
+            f"so completeness was not measured. Cause EMPTY_INPUT, not a pass.",
+            code="CROSSWALK_EMPTY_INPUT", cause="EMPTY_INPUT")
     bad = {
         k: v
         for k, v in counts.items()
@@ -159,7 +181,8 @@ def assert_complete(artifact: dict) -> None:
     }
     if bad:
         detail = ", ".join(f"{k}={v}" for k, v in sorted(bad.items()))
-        raise CrosswalkError(f"crosswalk incomplete: {detail}")
+        raise CrosswalkError(f"crosswalk incomplete: {detail}",
+                             code="CROSSWALK_INCOMPLETE", cause="DATA")
 
 
 def load_dk_slice(path: Path) -> list[dict]:

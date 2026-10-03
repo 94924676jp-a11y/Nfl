@@ -33,6 +33,7 @@ from nfl.production import qb_accounting as ACC                    # noqa: E402
 from nfl.production import qb_v1 as QBV1                           # noqa: E402
 from nfl.production import run_forecast as RUN                     # noqa: E402
 from nfl.tests.bypass import assert_guard_is_load_bearing          # noqa: E402
+from nfl.tests._controls import observe                            # noqa: E402
 
 PASSED = FAILED = 0
 TMP = pathlib.Path(tempfile.mkdtemp())
@@ -95,6 +96,7 @@ def test_01_sack_double_counting():
     print('\n1. sack double counting')
     D = clean(); D['sacks'] = D['sacks'] + 1        # sacks counted twice
     o = ACC.reconcile_draws(D)
+    observe('nfl.production.qb_accounting:reconcile_draws:QB_DRAW_ACCOUNTING_VIOLATED', o)
     check('adding a sack outside the dropback budget is REFUSED',
           o.state is State.FAIL
           and o.code == 'QB_DRAW_ACCOUNTING_VIOLATED', o.code)
@@ -171,6 +173,7 @@ def test_05_incomplete_player_set():
     print('\n5. an incomplete QB player set')
     D = clean(); D.pop('drush')
     o = ACC.reconcile_draws(D)
+    observe('nfl.production.qb_accounting:reconcile_draws:QB_ACCOUNTING_INPUT_INCOMPLETE', o)
     check('a draw set missing a field is BLOCKED, never PASS',
           o.state is State.BLOCKED
           and o.code == 'QB_ACCOUNTING_INPUT_INCOMPLETE', o.code)
@@ -180,6 +183,7 @@ def test_05_incomplete_player_set():
     o = ACC.reconcile_draws({k: np.zeros((0, 0)) for k in
                              ('db', 'att', 'sacks', 'scr', 'cmp', 'ptd',
                               'int', 'drush', 'rush_opp', 'rtd')})
+    observe('nfl.production.qb_accounting:reconcile_draws:QB_ACCOUNTING_EMPTY', o)
     check('  an EMPTY draw set is an error, not a reconciliation',
           o.state is State.BLOCKED and o.code == 'QB_ACCOUNTING_EMPTY', o.code)
     o = QBV1.forecast([], 2024, [])
@@ -187,6 +191,7 @@ def test_05_incomplete_player_set():
           o.state is State.BLOCKED
           and o.code == 'STAGE_NOT_IMPLEMENTED', o.code)
     o = ACC.reconcile_team(clean(n=6), rows(n=5))
+    observe('nfl.production.qb_accounting:reconcile_team:QB_ACCOUNTING_SHAPE_MISMATCH', o)
     check('  a frame/draw shape mismatch is REFUSED, not reconciled anyway',
           o.state is State.FAIL
           and o.code == 'QB_ACCOUNTING_SHAPE_MISMATCH', o.code)
@@ -198,6 +203,7 @@ def test_06_qb_rush_against_team_rush():
     budget = {(2024, 1, 'NE'): np.zeros(D['db'].shape[1]),
               (2024, 1, 'SEA'): np.zeros(D['db'].shape[1])}
     o = ACC.reconcile_team(D, R, team_rush_draws=budget)
+    observe('nfl.production.qb_accounting:reconcile_team:QB_RUSHES_EXCEED_TEAM_RUSH_DRAWS', o)
     check('QB rush opportunities above the carries layer draw are REFUSED',
           o.state is State.FAIL
           and o.code == 'QB_RUSHES_EXCEED_TEAM_RUSH_DRAWS', o.code)
@@ -221,6 +227,7 @@ def test_07_cross_layer_mismatch():
     print('\n7. passing/receiving yard and TD mismatch')
     D = clean()
     o = ACC.reconcile_cross_layer(D)
+    observe('nfl.production.qb_accounting:reconcile_cross_layer:CROSS_LAYER_RECONCILIATION_NOT_RUN', o)
     check('with no receiving layer the check is DEFERRED, never PASS',
           o.state is State.DEFERRED
           and o.code == 'CROSS_LAYER_RECONCILIATION_NOT_RUN', o.code)
@@ -229,15 +236,18 @@ def test_07_cross_layer_mismatch():
           and o.evidence['owed']['exception_to_preserve']['n_explained_by_'
                                                           'lateral'] == 75)
     o = ACC.reconcile_cross_layer(D, receiving=D['pyds'] + 3.0)
+    observe('nfl.production.qb_accounting:reconcile_cross_layer:PASSING_YARDS_RECEIVING_YARDS_MISMATCH', o)
     check('a passing/receiving yard mismatch is REFUSED',
           o.state is State.FAIL
           and o.code == 'PASSING_YARDS_RECEIVING_YARDS_MISMATCH', o.code)
     o = ACC.reconcile_cross_layer(D, receiving=D['pyds'],
                                   receiving_td=D['ptd'] + 1)
+    observe('nfl.production.qb_accounting:reconcile_cross_layer:PASSING_TD_RECEIVING_TD_MISMATCH', o)
     check('a passing TD / receiving TD mismatch is REFUSED, with NO exception',
           o.state is State.FAIL
           and o.code == 'PASSING_TD_RECEIVING_TD_MISMATCH', o.code)
     o = ACC.reconcile_cross_layer(D, receiving=D['pyds'][:2])
+    observe('nfl.production.qb_accounting:reconcile_cross_layer:CROSS_LAYER_SHAPE_MISMATCH', o)
     check('  and a shape mismatch is refused rather than broadcast away',
           o.state is State.FAIL
           and o.code == 'CROSS_LAYER_SHAPE_MISMATCH', o.code)

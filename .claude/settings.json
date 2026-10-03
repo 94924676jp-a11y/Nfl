@@ -1,0 +1,16 @@
+{
+ "hooks": {
+  "PreToolUse": [
+   {
+    "matcher": "Edit|Write|MultiEdit|NotebookEdit|Bash",
+    "hooks": [
+     {
+      "type": "command",
+      "command": "python3.12 \"$CLAUDE_PROJECT_DIR\"/coordination/mode_guard.py",
+      "timeout": 20
+     }
+    ]
+   }
+  ]
+ }
+}

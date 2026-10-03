@@ -33,6 +33,7 @@ if str(_REPO) not in sys.path:
 from nfl.production import ownership_audit as OA                   # noqa: E402
 from nfl.production import adjustment_registry as AR               # noqa: E402
 from sportsplatform.governance.outcome import State                # noqa: E402
+from nfl.tests._controls import observe                            # noqa: E402
 
 PASSED = 0
 FAILED = 0
@@ -150,6 +151,7 @@ def test_F_an_unreviewed_candidate_site_REFUSES():
     try:
         OA.DISPOSITIONS.clear()
         o = OA.audit()
+        observe('nfl.production.ownership_audit:audit:OWNERSHIP_AUDIT_UNREVIEWED_SITE', o)
         check('with no dispositions recorded, the audit FAILS',
               o.state is State.FAIL
               and o.code == 'OWNERSHIP_AUDIT_UNREVIEWED_SITE',
@@ -167,6 +169,56 @@ def test_F_an_unreviewed_candidate_site_REFUSES():
     check('  but does not PASS either: zero applying sites is nothing measured, not ownership',
           o.state is State.BLOCKED and o.code == 'OWNERSHIP_AUDIT_NO_APPLICATIONS'
           and o.evidence.get('cause') == 'EMPTY_INPUT', f'{o.state}[{o.code}]')
+
+
+def test_F2_positive_controls_no_files_unparseable_and_not_verified():
+    """OWNER RULE 2. The scan root is pointed at a sandbox INSIDE the repo tree (the audit
+    reports paths relative to it) and restored whatever happens; nothing under nfl/ is edited."""
+    import shutil
+    import tempfile
+    print('\nF2. an empty scan, an unparseable module and a bypassed application each refuse by name')
+    repo = pathlib.Path(_REPO)
+    tmp = pathlib.Path(tempfile.mkdtemp(dir=str(repo / 'nfl' / 'production'), prefix='_oa_ctrl_'))
+    saved_root = OA.SCAN_ROOT
+    saved_disp = dict(OA.DISPOSITIONS)
+    try:
+        OA.SCAN_ROOT = str(tmp.relative_to(repo)) + '/nothing_here'
+        o = OA.audit()
+        observe('nfl.production.ownership_audit:audit:OWNERSHIP_AUDIT_NO_FILES', o)
+        check('a scan root holding no module is BLOCKED, not clean',
+              o.state is State.BLOCKED and o.code == 'OWNERSHIP_AUDIT_NO_FILES', f'{o.state}[{o.code}]')
+        OA.SCAN_ROOT = str(tmp.relative_to(repo))
+        (tmp / 'bad.py').write_text('def (:\n')
+        o = OA.audit()
+        observe('nfl.production.ownership_audit:audit:OWNERSHIP_AUDIT_UNPARSEABLE', o)
+        check('a module the audit cannot parse FAILS the audit',
+              o.state is State.FAIL and o.code == 'OWNERSHIP_AUDIT_UNPARSEABLE', f'{o.state}[{o.code}]')
+        (tmp / 'bad.py').unlink()
+        (tmp / 'bypass.py').write_text(BYPASS)
+        rel = str((tmp / 'bypass.py').relative_to(repo))
+        first = OA.audit()
+        for u in (first.evidence or {}).get('unreviewed') or []:
+            OA.DISPOSITIONS[(u['adjustment_id'], rel)] = {
+                'verdict': 'APPLIED' if u['adjustment_id'] == 'pace_v1'
+                else 'DECLARATION_NOT_APPLICATION',
+                'evidence': 'test control: the BYPASS source applies pace_v1 without the registry',
+                'read_on': '2026-10-02'}
+        o = OA.audit()
+        observe('nfl.production.ownership_audit:audit:OWNERSHIP_NOT_VERIFIED', o)
+        check('an application read as APPLIED that never calls the registry leaves ownership '
+              'NOT verified', o.state is State.FAIL and o.code == 'OWNERSHIP_NOT_VERIFIED',
+              f'{o.state}[{o.code}]')
+        check('  with pace_v1 REGISTERED_BUT_BYPASSED',
+              ((o.evidence or {}).get('rows') or {}).get('pace_v1', {}).get('audit_state')
+              == OA.REGISTERED_BUT_BYPASSED,
+              str(((o.evidence or {}).get('rows') or {}).get('pace_v1', {}).get('audit_state')))
+    finally:
+        OA.SCAN_ROOT = saved_root
+        OA.DISPOSITIONS.clear()
+        OA.DISPOSITIONS.update(saved_disp)
+        shutil.rmtree(tmp, ignore_errors=True)
+    check('  and the real audit is back to its own verdict afterwards',
+          OA.audit().code == 'OWNERSHIP_AUDIT_NO_APPLICATIONS')
 
 
 def test_G_the_audit_over_the_real_tree():

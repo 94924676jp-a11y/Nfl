@@ -106,11 +106,18 @@ def test_the_ranking_gate_works_and_is_still_not_wired():
           blocked and blocked[0].get('blocked_by_health')
           == ['DISPERSION_COLLAPSE'],
           str(blocked[0].get('blocked_by_health') if blocked else None))
-    check('a metric absent from the health table is NOT blocked',
-          MH.assert_ranking_admissible(
-              [{'metric': 'unknown_metric'}], health)[0] != [],
-          'silence in the health table is not a warning; whether it SHOULD be '
-          'is the product decision this guard is waiting on')
+    # OWNER RULE 1 (2026-10-02): this pinned the opposite -- a metric with no
+    # health row was KEPT, so the ranking admitted exactly the rows whose
+    # health nobody measured. Silence in the health table is now a refusal
+    # named HEALTH_NOT_MEASURED with cause EMPTY_INPUT, distinct from a warning.
+    kept_u, blocked_u = MH.assert_ranking_admissible(
+        [{'metric': 'unknown_metric'}], health)
+    check('a metric absent from the health table is blocked as HEALTH_NOT_MEASURED '
+          '(EMPTY_INPUT), not admitted on silence',
+          kept_u == [] and blocked_u
+          and blocked_u[0].get('blocked_by_health') == [MH.HEALTH_NOT_MEASURED]
+          and blocked_u[0].get('blocked_cause') == 'EMPTY_INPUT',
+          f'kept={kept_u} blocked={blocked_u}')
 
 
 def test_the_superseded_one_is_superseded_in_fact():

@@ -3609,3 +3609,58 @@ changed on `claude/nfl-greenfield-architecture-stsxmk` and are inert until merge
 Merging to `main` is the owner's call. Until then the baseline `nfl-capture.yml` keeps running every
 30 minutes (confirmed: run 1197 at 04:56Z today, success) and `nfl/tools/sync_captures.py` brings its
 captures into this branch verified. Nothing here needs network from this agent.
+
+### 2026-10-02 — GOV-1/2/3: three governance controls, and what was read as ratified
+
+The owner approved the patch surface ("Yes.") for the three controls: (1) nothing measured cannot
+PASS, (2) every detector carries a demonstrated trip case, (3) BUILD / VERIFY / OPERATE / RESEARCH
+modes with enforceable write boundaries. Two things in that approval are recorded here so the owner
+can object if the reading was too wide:
+
+- **The mode table was read as ratified as written.** It is now `coordination/MODE_POLICY.json`,
+  enforced by `coordination/orchestrator/locks.mode_boundary` (retrospective, run_suite's first
+  step and `coordination/mode.py check`) and `coordination/mode_guard.py` (prospective, a PreToolUse
+  hook registered in `.claude/settings.json`). The file is listed in `PROTECTED_PATHS`: agents may
+  not edit it; the owner amends it. The table says what each mode may write; the owner's own rule
+  that BUILD may not self-certify is enforced in `refresh_state` (test_surface is marked current only
+  from a VERIFY-mode suite row at the current head).
+- **The mode in force today is none.** No `mode` block exists in `PROJECT_STATE.json` yet, so the
+  boundary reports NOT_EXECUTED rather than CLEAN (rule 1 applied to rule 3) and the hook makes no
+  decision. The owner can pin a mode with `mode_declared: {"mode": "...", "reason": "..."}` in
+  PROJECT_STATE.json; an agent sets the measured mode with `python3.12 coordination/mode.py set
+  <MODE> --reason "..."`, which is refused while a pin exists and always logs a HANDOFF row.
+
+**Hook caveat, stated plainly.** This session's project directory is the MLB repository, so the NFL
+hook cannot fire in this session. Its firing is proven by pipe-test (`test_mode_boundaries.py`
+test 5: synthesized PreToolUse JSON for an OPERATE write to `nfl/sim/game.py` returns `deny`). Live
+firing is proven the first time a session is rooted in this repository.
+
+**Rule 2 reports the true state and it is red.** `nfl/tests/DETECTORS.json` lists every refusal code
+in the seed modules (174 at seed, growing as rule-1 sites are repaired). The suite now FAILS on any
+listed detector without a control that ran and tripped in that run. Controls are being tagged; until
+every listed detector has one, `SUITE FAIL` is the rule working, not a regression. Detectors that
+cannot be tripped by any constructible input are reported with the reason -- that is a finding about
+the detector (unreachable refusal), not something to hide by delisting.
+
+**The broader operating-system proposal (constitution, per-run manifests, typed agent contracts,
+independent verifiers, claim-evidence graph, two-model-of-reality rule, mutation authority levels,
+adversarial verifier, command-center OPERATE output, self-measurement) is NOT started**, per the
+owner's instruction to prove these three controls first and prepare the constitution / agent-authority
+rewrite separately for ratification. It is the next item after the proof.
+
+#### Two owner items raised by the rule-1 sweep (2026-10-03)
+
+1. **`nfl/production/review/gate.py` is PROTECTED and has a rule-1 defect.** `evaluate()` with zero
+   dossiers and no conflict returns `PLAYER_REVIEW_PASS`: a slate of nobody passes review. The
+   repair (BLOCKED `PLAYER_REVIEW_NO_DOSSIERS`, cause EMPTY_INPUT) is at
+   `coordination/EVIDENCE/proposals/2026-10-02_review_gate_rule1.patch`, reverted from the tree
+   because the path is propose-only. `test_non_evidentiary_refusal_production_b` test 17 pins the
+   defect by name until the owner applies it.
+2. **The assumption gate on adjustments (DEF-090).** `sportsplatform.governance.assumption.assert_promotable`
+   now refuses with `PROMOTION_VERDICT_EMPTY_INPUT` when no governed assumption names the consumer,
+   and today that is every adjustment layer. `adjustment_registry.assert_may_apply` carries this on
+   the verdict as `assumption_gate: NOT_EXAMINED` and decides on the registry record and frame
+   lineage alone; a true gate FAIL still refuses. The alternative, refusing every production
+   adjustment until each layer registers its assumptions, is fail-closed and would stop the
+   adjustment path outright. That is the owner's call; the current behaviour is recorded and tested,
+   not hidden.

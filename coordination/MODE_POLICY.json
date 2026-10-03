@@ -1,0 +1,60 @@
+{
+ "ARTIFACT": "MODE_POLICY",
+ "spec_version": "mode-policy-1",
+ "proposed_on": "2026-10-02",
+ "status": "PROPOSED_FOR_OWNER_RATIFICATION -- enforced as written until the owner amends it; the table is the authority boundary and is the owner's to change",
+ "RULE": "A path may be written in a mode only if it matches one of the mode's may_write patterns and none of its may_not_write patterns; deny wins. Matching is the orchestrator's _match: exact, directory prefix, or fnmatch. BUILD may change architecture but may not self-certify: PROJECT_STATE.test_surface is marked current only from a suite run recorded in VERIFY mode at the current head. VERIFY may not alter the implementation it certifies. RESEARCH may not promote: no production path and no default-switch line. OPERATE freezes all code during a live slate and writes artifacts only.",
+ "reads_mode_from": "coordination/PROJECT_STATE.json: mode_declared (owner statement, pins the mode; an agent may not change it) else mode.mode (measured, set only through coordination/mode.py which appends a HANDOFF_LOG row)",
+ "always_denied": [
+  "coordination/OWNER_DECISIONS.md",
+  "coordination/AUTOMATION_POLICY.json",
+  "coordination/orchestrator/MODELS.json",
+  "coordination/MODE_POLICY.json",
+  ".github/workflows/"
+ ],
+ "modes": {
+  "BUILD": {
+   "meaning": "may change architecture; may not self-certify",
+   "may_write": ["*"],
+   "may_not_write": ["nfl/tests/_suite_progress.jsonl", "nfl/tests/DETECTOR_VALIDATION.json"],
+   "writes_by_the_runner_are_exempt": ["nfl/tests/_suite_progress.jsonl", "nfl/tests/DETECTOR_VALIDATION.json", "nfl/tests/_control_hits.jsonl"],
+   "self_certification": "REFUSED: refresh_state and claude_finalize do not mark PROJECT_STATE.test_surface current from a BUILD-mode suite row"
+  },
+  "VERIFY": {
+   "meaning": "attempts to break what was built; cannot repair it",
+   "may_write": [
+    "nfl/tests/",
+    "sportsplatform/*/test_*.py",
+    "sportsplatform/*/*/test_*.py",
+    "nfl/research/*/*.md",
+    "nfl/research/*/*/*.md",
+    "coordination/EVIDENCE/",
+    "coordination/HANDOFF_LOG.jsonl",
+    "docs/AGENT_OUTBOX.md"
+   ],
+   "may_not_write": ["nfl/tests/run_suite.py", "nfl/tests/_controls.py", "nfl/tests/DETECTORS.json"],
+   "note": "the runner, the registry and the manifest define what counts as proof and are implementation, not verification"
+  },
+  "OPERATE": {
+   "meaning": "live slate; production architecture frozen; artifact outputs only",
+   "may_write": [
+    "nfl/dfs/salaries/*.json", "nfl/dfs/salaries/*.csv", "nfl/dfs/salaries/*.md", "nfl/dfs/salaries/*.npz",
+    "nfl/production/runs/",
+    "nfl/production/READINESS.json", "nfl/production/SUNDAY_RUN_REPORT.json",
+    "nfl/vintage/", "nfl/vintage_manifest.jsonl",
+    "nfl/research/showdown_live/", "nfl/research/live/",
+    "coordination/*.jsonl", "coordination/EVIDENCE/", "docs/AGENT_OUTBOX.md",
+    "nfl/tests/_suite_progress.jsonl", "nfl/tests/DETECTOR_VALIDATION.json"
+   ],
+   "may_not_write": ["*.py", "nfl/sim/", "nfl/tools/", "nfl/production/", "nfl/prospective/", "sportsplatform/", "nfl/tests/", ".github/", "coordination/*.json", "coordination/orchestrator/"],
+   "note": "nfl/production/runs/ and the two JSON reports are artifact outputs and are allowed despite the nfl/production/ denial: an explicit allow on a non-code artifact path wins over a directory denial only when the allow is the more specific pattern (see mode.py: specificity = pattern length)"
+  },
+  "RESEARCH": {
+   "meaning": "may explore; cannot promote",
+   "may_write": ["nfl/research/", "nfl/tests/", "nfl/derived/", "coordination/HANDOFF_LOG.jsonl", "docs/AGENT_OUTBOX.md"],
+   "may_not_write": ["nfl/production/", "nfl/tools/proj_v1.py", "nfl/sim/game.py", "nfl/prospective/registries.py", "coordination/PROJECT_STATE.json", "nfl/tests/run_suite.py"],
+   "forbidden_diff_lines": ["MARKET_ARM =", "CROSS_FIELD_PRIOR_SCOPE =", "LEGACY_CROSS_FIELD_PRIOR =", "DEPTH_TABLE_FIELD ="],
+   "note": "a default-switch line changed anywhere is a promotion, whatever file it sits in"
+  }
+ }
+}

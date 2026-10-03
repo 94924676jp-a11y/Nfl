@@ -19,8 +19,11 @@ assumption gate cannot refuse a production action today:
      names are short -- `team_volume`, `line_play`, `coverage`, `game_state`,
      `team_environment` -- while `downstream_dependencies` holds dotted module
      paths and SCREAMING_CASE candidate names. The intersection is EMPTY, so
-     `mine` is always empty, so the gate always returns PASS. Even if (1) were
-     fixed, the gate would still pass on everything.
+     `mine` is always empty, so the gate never examines anything. Even if (1)
+     were fixed, the gate would still judge nothing. (OWNER RULE 1, 2026-10-02:
+     `assert_promotable` now refuses an empty selection as BLOCKED/EMPTY_INPUT
+     instead of returning PASS; the wiring defect is unchanged and the tests
+     below pin its honest shape.)
 
 THE ASYMMETRY IS THE INTERESTING PART, and it is why this went unnoticed.
 `nfl/production/assumptions/run_audit.py` also calls the guard, and there the
@@ -118,11 +121,20 @@ def test_untested_is_not_passed():
 
 
 def test_an_unknown_consumer_passes_vacuously():
-    """The mechanism behind reason (2), shown in one line."""
+    """The mechanism behind reason (2), shown in one line.
+
+    OWNER RULE 1 (2026-10-02): this used to pin the vacuous PASS itself. A
+    consumer no assumption names selects zero records, and a gate that examined
+    nothing may not say NOT_BLOCKED. It now refuses with cause EMPTY_INPUT --
+    which is still not a verdict about the consumer, and still proves reason
+    (2): the join selected nothing.
+    """
+    # OWNER RULE 1 (2026-10-02): converted from a pin of the vacuous PASS.
     o = AS.assert_promotable(AR.all_assumptions(),
                              consumer='a_layer_no_assumption_names')
-    check('a consumer no assumption names is NOT blocked',
-          o.state is State.PASS, f'{o.state} {o.code}')
+    check('a consumer no assumption names is refused as EMPTY_INPUT, not passed',
+          o.state is State.BLOCKED and o.code == AS.CODE_EMPTY
+          and o.evidence.get('cause') == 'EMPTY_INPUT', f'{o.state} {o.code}')
     check('because zero assumptions were selected',
           o.evidence.get('n_assumptions') == 0,
           str(o.evidence.get('n_assumptions')))
@@ -143,15 +155,27 @@ def test_the_two_registries_share_no_consumer_identifier():
 
 
 def test_every_adjustment_layer_passes_the_gate_vacuously():
-    """Not one adjustment can be blocked by an assumption today."""
-    blocked = []
+    """Not one adjustment can be JUDGED by an assumption today.
+
+    OWNER RULE 1 (2026-10-02): before the rule, every layer came back PASS
+    with n_assumptions=0 and this test pinned that. Now every layer comes back
+    BLOCKED/EMPTY_INPUT for the same reason -- the join selects nothing -- and
+    that is the honest shape of DEF-090: the gate cannot find a falsified
+    assumption for any layer because it cannot find ANY assumption for any
+    layer. What is asserted is that no layer is refused for a MEASURED reason
+    (CODE_BLOCKED / CODE_UNTESTED); the refusal every layer gets is the
+    non-evidentiary one.
+    """
+    # OWNER RULE 1 (2026-10-02): converted from a pin of the vacuous PASS.
+    judged = []
     for layer in sorted(_applied_at()):
         o = AS.assert_promotable(AR.all_assumptions(), consumer=layer,
                                  require_tested=False)
-        if o.state is not State.PASS:
-            blocked.append((layer, o.code))
-    check('no adjustment layer is blocked by the assumption gate',
-          not blocked, str(blocked))
+        if o.code in (AS.CODE_BLOCKED, AS.CODE_UNTESTED) \
+                or o.evidence.get('cause') != 'EMPTY_INPUT':
+            judged.append((layer, o.state.value, o.code))
+    check('no adjustment layer is refused by the assumption gate for a measured '
+          'reason; each gets the EMPTY_INPUT refusal', not judged, str(judged))
     check('and that is because each selects zero assumptions, not because '
           'each is sound',
           all(AS.assert_promotable(AR.all_assumptions(), consumer=l,

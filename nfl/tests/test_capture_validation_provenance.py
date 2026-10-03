@@ -54,6 +54,7 @@ if str(_REPO) not in sys.path:
 from nfl.production import fixture_assembler as FA                 # noqa: E402
 from nfl.production import run_forecast as RUN                     # noqa: E402
 from sportsplatform.governance.outcome import State                # noqa: E402
+from nfl.tests._controls import observe                            # noqa: E402
 
 # TALLY NAMES THE SUITE RUNNER RECOGNISES. `_P, _F` -- the names this module
 # first used -- are not in run_suite._TALLY, so `tally(mod)` returned None,
@@ -183,6 +184,7 @@ def test_the_assembler_measures_hashes_rather_than_copying_them():
 
 def test_fabricated_hashes_are_refused_on_a_real_run():
     cv, s = _cv(_args(), _base_fx(source_hashes=_fake_hashes()))
+    observe('nfl.production.fixture_assembler:verify_declared:DECLARED_CAPTURES_UNVERIFIED', cv)
     ok(cv and cv['state'] == 'BLOCKED'
        and cv['code'] == 'DECLARED_CAPTURES_UNVERIFIED',
        f'four fabricated hashes for the four required sources are REFUSED: '
@@ -231,6 +233,23 @@ def test_an_assembled_fixture_passes_and_the_pass_says_why():
         'required'],
        'and it names the required set it checked, so a reader need not '
        'recompute it')
+
+
+def test_positive_controls_the_assembler_refuses_by_name():
+    """OWNER RULE 2: a cut before any capture, an unparseable game id and a club the declared
+    roster does not carry are each refused with their own code."""
+    o = FA.assemble('2000-01-01T00:00:00Z')
+    observe('nfl.production.fixture_assembler:assemble:FIXTURE_SOURCES_UNAVAILABLE', o)
+    ok(o.state is State.BLOCKED and o.code == 'FIXTURE_SOURCES_UNAVAILABLE',
+       f'a cut before any capture existed cannot assemble: {o.state.name}[{o.code}]')
+    g = FA.assemble_game(CUT, 2026, 2, 'not-a-game-id')
+    observe('nfl.production.fixture_assembler:assemble_game:GAME_ID_UNPARSEABLE', g)
+    ok(g.state is State.FAIL and g.code == 'GAME_ID_UNPARSEABLE',
+       f'a game id that is not season_week_away_home is refused: {g.state.name}[{g.code}]')
+    r = FA.assemble_game(CUT, 2026, 2, '2026_02_XXX_YYY')
+    observe('nfl.production.fixture_assembler:assemble_game:ROSTER_CLUB_ABSENT', r)
+    ok(r.state is State.BLOCKED and r.code == 'ROSTER_CLUB_ABSENT',
+       f'clubs the declared roster vintage does not name are refused: {r.state.name}[{r.code}]')
 
 
 def test_one_tampered_byte_is_caught():

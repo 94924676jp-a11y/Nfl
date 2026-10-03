@@ -56,6 +56,7 @@ from sportsplatform.governance.outcome import Outcome, State           # noqa: E
 from nfl.prospective.q9shadow import candidate as CAND                 # noqa: E402
 from nfl.prospective.q9shadow import complete as COMPLETE              # noqa: E402
 from nfl.prospective.q9shadow import g0a as G0A                        # noqa: E402
+from nfl.tests._controls import observe                                # noqa: E402
 from nfl.prospective.q9shadow import ledger as LED                     # noqa: E402
 from nfl.prospective.q9shadow import live_features as LF               # noqa: E402
 from nfl.prospective.q9shadow import seal as SEAL
@@ -545,6 +546,7 @@ def test_13_g0a_remaining_item_is_named_not_waived():
     check('it is declared independent of the other blockers',
           len(d['independent_of']) >= 2)
     o = G0A.check()
+    observe('nfl.prospective.q9shadow.g0a:check:G0A_ITEM_NOT_CLEARED', o)
     check('the programmatic check is BLOCKED, not PASS',
           o.state is State.BLOCKED and o.code == 'G0A_ITEM_NOT_CLEARED',
           f'{o.state.value}[{o.code}]')

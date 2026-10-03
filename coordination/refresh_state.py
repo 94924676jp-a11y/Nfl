@@ -37,6 +37,42 @@ def git(*a):
                           text=True).stdout.strip()
 
 
+GATE_FIELDS = ('G0A', 'NFL_1')
+
+
+def governance_fields(o) -> dict:
+    """The governance block, read from may_publish()'s evidence and nothing else.
+
+    OWNER RULE 1 (2026-10-02). This used to read `g.get('G0A') or '11/12'` and
+    `g.get('NFL_1') or 'NOT AUTHORIZED'`: a literal where a measurement
+    belongs. PROJECT_STATE.json's reading rule is that every field not ending
+    `_declared` is MEASURED from the tree, and "a field nobody measured is
+    null, never a plausible default". A default is neither an owner statement
+    nor a measurement, and the specific defaults here were the live values, so
+    a broken gate read would have written the right answer for the wrong
+    reason forever. Now: a gate reading that is absent is `None` in the
+    fields, plus a `governance_<GATE>_error` entry that `apply` carries into
+    the written state's `measurement_errors`, naming what was not measured.
+
+    Returns {'state', 'fields', 'errors'}; state is GOVERNANCE_MEASURED or
+    GOVERNANCE_GATES_NOT_MEASURED.
+    """
+    g = (getattr(o, 'evidence', None) or {}).get('gates') or {}
+    fields = {'may_publish': o.state.name, 'may_publish_code': o.code}
+    errors = {}
+    for k in GATE_FIELDS:
+        v = g.get(k)
+        fields[k] = v if v not in (None, '') else None
+        if fields[k] is None:
+            errors[f'governance_{k}_error'] = (
+                f'NOT_MEASURED: may_publish() evidence carried no gates.{k} '
+                f'reading (gates={sorted(g) or "absent"}); recorded as null, '
+                f'no default substituted')
+    return {'state': ('GOVERNANCE_GATES_NOT_MEASURED' if errors
+                      else 'GOVERNANCE_MEASURED'),
+            'fields': fields, 'errors': errors}
+
+
 def measure() -> dict:
     """Everything this script is willing to claim, and where it came from."""
     out = {
@@ -48,11 +84,12 @@ def measure() -> dict:
     try:
         from nfl.production import authorization as A
         o = A.may_publish()
-        g = (o.evidence or {}).get('gates') or {}
-        out['governance'] = {
-            'may_publish': o.state.name, 'may_publish_code': o.code,
-            'G0A': g.get('G0A') or '11/12',
-            'NFL_1': g.get('NFL_1') or 'NOT AUTHORIZED'}
+        # OWNER RULE 1 (2026-10-02): the gate readings used to default to
+        # '11/12' / 'NOT AUTHORIZED' here; governance_fields() now records
+        # null plus a measurement_errors entry when a reading is absent.
+        gov = governance_fields(o)
+        out['governance'] = gov['fields']
+        out.update(gov['errors'])
     except Exception as e:                                   # noqa: BLE001
         out['governance_error'] = f'{type(e).__name__}: {e}'
     try:
@@ -87,7 +124,52 @@ def measure() -> dict:
                                       if not m['working_tree_matches']]}
     except Exception as e:                                   # noqa: BLE001
         out['q9_error'] = f'{type(e).__name__}: {e}'
+    try:
+        out['test_surface_measured'] = certify_test_surface(out['head_commit'])
+    except Exception as e:                                   # noqa: BLE001
+        out['test_surface_error'] = f'{type(e).__name__}: {e}'
     return out
+
+
+def certify_test_surface(head: str) -> dict:
+    """OWNER RULE 3 (2026-10-02): BUILD may not self-certify.
+
+    The test surface is marked CURRENT only from the runner's own verdict row (suite_done) for a
+    FULL run whose mode was VERIFY and whose head is this head. Anything else is recorded with the
+    reason it does not certify. No row at all is NOT_EXECUTED, not CURRENT.
+    """
+    import json as _json
+    p = REPO / 'nfl' / 'tests' / '_suite_progress.jsonl'
+    rows = []
+    if p.exists():
+        for ln in p.read_text().splitlines():
+            try:
+                r = _json.loads(ln)
+            except ValueError:
+                continue
+            if r.get('phase') == 'suite_done':
+                rows.append(r)
+    if not rows:
+        return {'certification': 'NOT_EXECUTED', 'cause': 'EMPTY_INPUT',
+                'why': 'no suite_done verdict row exists; nothing certifies the surface'}
+    last = rows[-1]
+    why = []
+    if last.get('mode') != 'VERIFY':
+        why.append(f"run mode was {last.get('mode')!r}, not VERIFY (a BUILD-mode run is self-certification)")
+    if (last.get('head') or '')[:7] != (head or '')[:7]:
+        why.append(f"run head {str(last.get('head'))[:7]} is not this head {str(head)[:7]}")
+    if last.get('verdict') != 'PASS':
+        why.append(f"run verdict was {last.get('verdict')}")
+    if not last.get('n_modules') or last.get('n_checks_executed', 0) <= 0:
+        why.append('run executed nothing')
+    rec = {'last_verdict_row': {k: last.get(k) for k in ('run_id', 'verdict', 'n_modules',
+                                                          'n_checks_executed', 'n_failing',
+                                                          'mode', 'mode_boundary', 'head')}}
+    if why:
+        rec.update({'certification': 'NOT_CERTIFIED', 'why': why})
+    else:
+        rec.update({'certification': 'CURRENT', 'certified_head': head, 'certified_by_mode': 'VERIFY'})
+    return rec
 
 
 def apply(doc: dict, m: dict) -> list:
@@ -112,6 +194,13 @@ def apply(doc: dict, m: dict) -> list:
         put(['integrity_registries', kk], vv)
     for kk, vv in (m.get('q9_measured') or {}).items():
         put(['q9', kk], vv)
+    ts = m.get('test_surface_measured')
+    if ts:
+        put(['test_surface', 'certification'], ts.get('certification'))
+        put(['test_surface', 'certification_detail'], ts)
+        put(['test_surface', 'stale'], ts.get('certification') != 'CURRENT')
+        if ts.get('certification') == 'CURRENT':
+            put(['test_surface', 'last_full_run_commit'], (ts.get('certified_head') or '')[:7])
     errs = {k: v for k, v in m.items() if k.endswith('_error')}
     if errs:
         # A MEASUREMENT THAT FAILED IS RECORDED, NEVER DROPPED. A field that

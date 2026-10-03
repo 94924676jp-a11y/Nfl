@@ -1,7 +1,7 @@
 {
   "artifact": "DK_WEEK3_PROJECTION_SOURCE_LEDGER",
   "spec_version": "projection-source-1",
-  "generated_at_utc": "2026-09-29T20:29:32Z",
+  "generated_at_utc": "2026-10-03T05:04:00Z",
   "slate_projection_mode": "EXTERNAL_FC_FALLBACK",
   "MODE_AUTHORISATION": {
     "authorised_today": [
@@ -24,19 +24,28 @@
       "state": "PASS",
       "code": "NO_SILENT_ZERO",
       "detail": "457 records, no unavailable projection shown as zero",
-      "evidence": {}
+      "evidence": {
+        "n_measured": 457,
+        "what": "projection records examined"
+      }
     },
     "fallback_labelled": {
       "state": "PASS",
       "code": "FALLBACK_LABELLED",
       "detail": "every external number is marked non-proprietary with its source",
-      "evidence": {}
+      "evidence": {
+        "n_measured": 457,
+        "what": "projection records examined"
+      }
     },
     "no_position_dropped": {
       "state": "PASS",
       "code": "ALL_POSITIONS_PRESENT",
       "detail": "5 positions represented: ['DST', 'QB', 'RB', 'TE', 'WR']",
-      "evidence": {}
+      "evidence": {
+        "n_measured": 5,
+        "what": "positions in the player universe"
+      }
     }
   },
   "readiness_matrix": [

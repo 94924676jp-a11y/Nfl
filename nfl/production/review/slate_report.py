@@ -180,6 +180,24 @@ def assert_player_review_complete(report: Dict[str, Any], *,
     """
     resolved = set(resolved_conflict_codes or ())
     cov = report.get('coverage', {})
+    n_dossier_files = sum(1 for k in (report.get('player_files') or {})
+                          if k.startswith('player_dossiers/'))
+    if not cov.get('n_universe') and not n_dossier_files:
+        # OWNER RULE 1 (2026-10-02): a report with no dossier in it had no
+        # missing player, no blocking conflict, and reached
+        # PLAYER_REVIEW_COMPLETE -- or raised formatting None as a float,
+        # which is the same vacuity read as a crash. Zero reviewed players
+        # is not complete coverage; it is no review.
+        return Outcome.blocked(
+            'PLAYER_REVIEW_COMPLETE_EMPTY_INPUT',
+            f'the report carries {cov.get("n_universe") or 0} reviewed '
+            f'player(s) and {n_dossier_files} dossier file(s). Completeness '
+            f'over nobody is not completeness; nothing was reviewed.',
+            cause=Cause.EMPTY_INPUT, n_universe=cov.get('n_universe') or 0,
+            n_dossier_files=0,
+            n_publishable=(len(set(publishable_ids))
+                           if publishable_ids is not None
+                           else cov.get('n_publishable')))
     missing = list(cov.get('publishable_without_dossier') or [])
     if publishable_ids is not None:
         # Re-derive rather than trust the stored number: a report that says

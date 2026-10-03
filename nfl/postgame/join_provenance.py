@@ -132,10 +132,13 @@ def audit_rows(rows, *, stat: str = 'dk_points') -> dict:
     real signal and not an error in any single row.
     """
     by_join, anonymous, zeros = {}, [], {}
+    n_rows, n_graded = 0, 0
     for r in rows or ():
+        n_rows += 1
         st = (r.get('stats') or {}).get(stat) or {}
         if st.get('state') != 'GRADED':
             continue
+        n_graded += 1
         prov = r.get('join_provenance') or {}
         j = prov.get('join') or 'UNDECLARED'
         by_join[j] = by_join.get(j, 0) + 1
@@ -147,7 +150,18 @@ def audit_rows(rows, *, stat: str = 'dk_points') -> dict:
             zeros[b] = zeros.get(b, 0) + 1
             if b == 'UNDECLARED':
                 anonymous.append(r.get('player'))
+    if n_graded == 0:
+        # OWNER RULE 1 (2026-10-02): no rows, or rows none of which were GRADED
+        # for `stat`, returned clean=True -- nothing anonymous because nothing
+        # was tallied. `clean` is None here, not True: absence of a finding is
+        # not a finding of absence.
+        return {'spec_version': SPEC_VERSION, 'by_join': {},
+                'graded_zeros_by_basis': {}, 'anonymous': [],
+                'clean': None, 'state': 'JOIN_PROVENANCE_AUDIT_NOT_EXECUTED',
+                'cause': 'EMPTY_INPUT', 'stat': stat,
+                'n_rows': n_rows, 'n_graded': 0}
     return {'spec_version': SPEC_VERSION, 'by_join': by_join,
             'graded_zeros_by_basis': zeros,
             'anonymous': sorted(x for x in anonymous if x),
-            'clean': not anonymous}
+            'clean': not anonymous, 'state': 'JOIN_PROVENANCE_AUDIT_MEASURED',
+            'stat': stat, 'n_rows': n_rows, 'n_graded': n_graded}

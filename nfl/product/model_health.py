@@ -95,6 +95,11 @@ WARNINGS = {
         'is measured on survivors.',
 }
 
+# OWNER RULE 1 (2026-10-02): the reason a row leaves the ranking when its
+# metric has NO health row at all. Not a member of WARNINGS, deliberately:
+# a warning is a measured condition and this is the absence of a measurement.
+HEALTH_NOT_MEASURED = 'HEALTH_NOT_MEASURED'
+
 # Thresholds, declared here rather than inline so they are reviewable.
 SKEW_THRESHOLD = 0.70
 MIN_N_FOR_A_WARNING = 8
@@ -210,11 +215,19 @@ def assert_ranking_admissible(rows, health):
     and the reason travels with it, because a large disagreement produced by a
     layer under a health warning is evidence about the layer, not a candidate.
     """
-    by_metric = {h['metric']: h for h in health}
+    by_metric = {h['metric']: h for h in (health or ())}
     kept, blocked = [], []
     for r in rows:
         h = by_metric.get(r.get('metric'))
-        if h and not h['ranking_eligible']:
+        if h is None:
+            # OWNER RULE 1 (2026-10-02): a metric with no health row -- or an
+            # empty health table -- was KEPT, so a ranking admitted exactly
+            # the rows whose health nobody measured. Silence in the health
+            # table is not a clean bill; the row leaves the ranking with the
+            # absence named, and it is distinct from a measured warning.
+            blocked.append({**r, 'blocked_by_health': [HEALTH_NOT_MEASURED],
+                            'blocked_cause': 'EMPTY_INPUT'})
+        elif not h['ranking_eligible']:
             blocked.append({**r, 'blocked_by_health': h['warnings']})
         else:
             kept.append(r)

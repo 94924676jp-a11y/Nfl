@@ -65,6 +65,18 @@ def assert_pit(rows, *, before_week: int) -> Outcome:
     Deliberately does not trust the filter that produced `rows`.
     """
     weeks = sorted({int(w) for (w, _t, _p) in rows}) if rows else []
+    if not weeks:
+        # OWNER RULE 1 (2026-10-02): no rows meant no leaked week, and this
+        # returned CURRENT_SEASON_EVIDENCE_IS_POINT_IN_TIME over nothing. A
+        # point-in-time certificate for evidence that does not exist is not a
+        # certificate; `collect` already names a week-1 absence separately.
+        return Outcome.blocked(
+            'CURRENT_SEASON_EVIDENCE_PIT_EMPTY_INPUT',
+            f'no usage rows were supplied, so no week could be tested '
+            f'against the forecast week {before_week}. Nothing leaked because '
+            f'nothing was there, which is not the same as nothing leaking.',
+            cause=Cause.EMPTY_INPUT, n_rows=0, before_week=int(before_week),
+            weeks_present=[], max_week_used=None)
     leaked = [w for w in weeks if w >= int(before_week)]
     if leaked:
         return Outcome.fail(

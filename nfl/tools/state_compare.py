@@ -126,9 +126,12 @@ def assert_no_row_dropped(pre_players, post_players):
             f'{len(lost)} DK rows present in PRE are absent from POST. A player who '
             f'stops appearing has not been ruled out, he has been lost.',
             lost=lost[:40], n_lost=len(lost), n_gained=len(gained))
-    return Outcome.ok('DK_ROWS_PRESERVED', len(post_ids),
-                      f'{len(pre_ids)} PRE rows, {len(post_ids)} POST rows, none lost',
-                      n_pre=len(pre_ids), n_post=len(post_ids), n_gained=len(gained))
+    # OWNER RULE 1 (2026-10-02): the rows whose survival is checked are PRE's. An empty PRE
+    # has nothing to lose and is BLOCKED/EMPTY_INPUT, not PRESERVED.
+    return Outcome.measured('DK_ROWS_PRESERVED', len(post_ids), n_measured=len(pre_ids),
+                            what='PRE rows checked for survival into POST',
+                            detail=f'{len(pre_ids)} PRE rows, {len(post_ids)} POST rows, none lost',
+                            n_pre=len(pre_ids), n_post=len(post_ids), n_gained=len(gained))
 
 
 def assert_no_unauthorised_promotion(transitions):
@@ -148,9 +151,12 @@ def assert_no_unauthorised_promotion(transitions):
             f'tier that status requires. Comparing two files is not a source of '
             f'authority and must not become one.',
             violations=bad[:40], n_violations=len(bad))
-    return Outcome.ok('NO_UNAUTHORISED_PROMOTION', len(transitions),
-                      f'{len(transitions)} transitions, none promoted beyond its tier',
-                      n_transitions=len(transitions))
+    # OWNER RULE 1 (2026-10-02): zero transitions examined is BLOCKED/EMPTY_INPUT for THIS guard.
+    # (That nothing moved is a finding of the comparison, not evidence about promotion.)
+    return Outcome.measured('NO_UNAUTHORISED_PROMOTION', len(transitions),
+                            n_measured=len(transitions), what='availability transitions examined',
+                            detail=f'{len(transitions)} transitions, none promoted beyond its tier',
+                            n_transitions=len(transitions))
 
 
 # --- the comparison ----------------------------------------------------------
@@ -228,7 +234,11 @@ def compare(pre, post):
     football = [a for a in availability if a['transition_class'] != RELABEL]
     relabels = [a for a in availability if a['transition_class'] == RELABEL]
     promo = assert_no_unauthorised_promotion(availability)
-    if promo.state is not State.PASS:
+    # OWNER RULE 1 (2026-10-02): a slate where no status moved gives this guard nothing to
+    # examine. Its BLOCKED/EMPTY_INPUT is carried in the report's `guards` block as what it is
+    # and is never rewritten as PASS; only a true FAIL (or an evidentiary refusal) stops the
+    # report, because the report's own counts are the measurement that nothing moved.
+    if promo.state is not State.PASS and not promo.non_evidentiary:
         return promo
 
     by_class = {}

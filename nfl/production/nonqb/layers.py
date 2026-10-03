@@ -870,4 +870,10 @@ def assert_publishable(*outcomes) -> Outcome:
             f'{len(tainted)} layer(s) consumed a TEST-ONLY fixture: '
             f'{tainted}. A fixture may exercise the engine and may never '
             f'reach a forecast artifact.', tainted=tainted)
-    return Outcome.ok('NO_TEST_ONLY_DATA', value=len(outcomes))
+    # OWNER RULE 1 (2026-10-02): called with no layer outcomes this returned
+    # NO_TEST_ONLY_DATA with value=0. A run nobody handed to the gate has not
+    # been shown clean; it has not been inspected.
+    return Outcome.measured(
+        'NO_TEST_ONLY_DATA', value=len(outcomes), n_measured=len(outcomes),
+        what='layer outcomes inspected for a TEST-ONLY fixture',
+        detail=f'{len(outcomes)} layer outcome(s), none from a fixture')

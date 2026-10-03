@@ -101,17 +101,20 @@ def test_the_club_parse_decides_which_ids_are_even_considered():
     check('and that club\'s ids were not checked',
           g['n_inactive_ids_checked'] == 0,
           'the count makes the narrow scope visible instead of implicit')
-    # A game_id that does not split into four parts yields NO clubs, so the
-    # intersection is empty and the gate reports PASS while checking nothing.
-    # RECORDED, NOT ENDORSED: the count is what reveals it.
+    # OWNER RULE 1 (2026-10-02): a game_id that does not split into four parts
+    # yields NO clubs, so the intersection was never computed. This used to be
+    # "RECORDED, NOT ENDORSED": the gate reported PASS and the zero count was
+    # the only warning. A PASS over an unparsed input is the collapse the rule
+    # forbids, so it is now a named INCOMPLETE refusal, never PASS.
     bad = [_run([BUF], game_id='garbage')]
     gb = B.assert_no_inactive_in_playable(bad, {'BUF': [BUF]}, {})
     check('a malformed game_id checks zero ids',
           gb['n_inactive_ids_checked'] == 0, str(gb['n_inactive_ids_checked']))
-    check('...and still reports PASS, which the count is the only warning of',
-          gb['state'] == 'PASS',
-          'a PASS over an empty intersection is not a clean board; the '
-          'n_inactive_ids_checked field is what distinguishes them')
+    check('...and is refused as INCOMPLETE (clubs unparsed), never reported PASS',
+          gb['state'] == 'INCOMPLETE_INACTIVE_GATE_CLUBS_UNPARSED'
+          and gb['cause'] == 'INCOMPLETE'
+          and gb['unparsed_game_ids'] == ['garbage'],
+          f"{gb['state']} -- a PASS over an empty intersection is not a clean board")
 
 
 # --------------------------------------------------------- assert_shared_draws

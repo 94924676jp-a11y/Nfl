@@ -117,10 +117,14 @@ def assert_no_inactive_in_playable(runs, inactive_by_club, roster) -> dict:
     """THE GATE. Checks EMITTED rows, not the fixture's intent."""
     survivors = []
     checked = 0
+    runs = list(runs or ())
+    unparsed = []
     for r in runs:
         emitted = set(r['stats'])
         parts = (r['game_id'] or '').split('_')
         clubs = (parts[2], parts[3]) if len(parts) >= 4 else ()
+        if not clubs:
+            unparsed.append(r['game_id'])
         ids = {i for c in clubs for i in inactive_by_club.get(c, [])}
         checked += len(ids)
         for pid in sorted(emitted & ids):
@@ -142,12 +146,45 @@ def assert_no_inactive_in_playable(runs, inactive_by_club, roster) -> dict:
                 'method': 'no official inactive declarations were supplied '
                           'for this slate, so no intersection was computed. '
                           'The board is NOT certified inactive-clean.'}
+    n_emitted = sum(len(r['stats']) for r in runs)
+    if not runs or n_emitted == 0:
+        # OWNER RULE 1 (2026-10-02): zero runs, or runs that emitted no player
+        # row, returned PASS "0 officially inactive players in playable board"
+        # -- nothing survived because nothing was on the board. A board with
+        # no rows has not been checked; it is EMPTY_INPUT, not clean.
+        return {'state': 'INACTIVE_GATE_NOT_EXECUTED', 'cause': 'EMPTY_INPUT',
+                'code': 'INACTIVE_GATE_EMPTY_INPUT',
+                'n_runs': len(runs), 'n_inactive_ids_checked': 0,
+                'n_emitted_player_rows': 0, 'survivors': [],
+                'method': f'{len(runs)} run(s) carrying 0 emitted player rows '
+                          f'were handed to the gate, so no row was intersected '
+                          f'with the official inactive list. Nothing was '
+                          f'certified.'}
+    if unparsed:
+        # OWNER RULE 1 (2026-10-02): a game_id that does not split into four
+        # parts yields NO clubs, so its inactive set was empty and the run
+        # "passed" with n_inactive_ids_checked=0. The earlier test recorded
+        # that as "PASS, which the count is the only warning of". It is not a
+        # PASS: the input the gate needed (the clubs) went unparsed, so the
+        # intersection for that run was never computed. INCOMPLETE, by name.
+        return {'state': 'INCOMPLETE_INACTIVE_GATE_CLUBS_UNPARSED',
+                'cause': 'INCOMPLETE',
+                'code': 'INACTIVE_GATE_CLUBS_UNPARSED',
+                'n_runs': len(runs), 'n_runs_unparsed': len(unparsed),
+                'unparsed_game_ids': unparsed,
+                'n_inactive_ids_checked': checked,
+                'n_emitted_player_rows': n_emitted, 'survivors': survivors,
+                'method': f'{len(unparsed)} of {len(runs)} run(s) carry a '
+                          f'game_id that does not parse into two clubs, so '
+                          f'their emitted rows were never intersected with any '
+                          f'inactive list. The gate ran on part of its input.'}
     return {'state': 'FAIL' if survivors else 'PASS',
             'code': ('OFFICIALLY_INACTIVE_PLAYER_IN_PLAYABLE_BOARD'
                      if survivors
                      else '0_OFFICIALLY_INACTIVE_PLAYERS_IN_PLAYABLE_BOARD'),
+            'n_runs': len(runs),
             'n_inactive_ids_checked': checked,
-            'n_emitted_player_rows': sum(len(r['stats']) for r in runs),
+            'n_emitted_player_rows': n_emitted,
             'survivors': survivors,
             'method': 'intersection of officially-declared ids with the '
                       'gsis_id row_ids the runs actually emitted'}
@@ -156,6 +193,8 @@ def assert_no_inactive_in_playable(runs, inactive_by_club, roster) -> dict:
 def assert_shared_draws(runs) -> dict:
     """DK-scored players must be players the football layers emitted."""
     bad = []
+    runs = list(runs or ())
+    n_dk_rows_checked = 0
     for r in runs:
         L = r['manifest'].get('layers') or {}
         # EVERY DK-BEARING LAYER, DISCOVERED. Reading `dk_scoring` alone made
@@ -169,15 +208,31 @@ def assert_shared_draws(runs) -> dict:
         foot = set()
         for ln in PLAYER_LAYERS:
             foot |= set((L.get(ln) or {}).get('row_ids') or [])
+        n_dk_rows_checked += len(dk)
         extra = sorted(dk - foot)
         if extra:
             bad.append({'game_id': r['game_id'], 'dk_only_rows': extra})
+    method = ('one npz per game feeds both adapters; every dk_scoring '
+              'row_id must appear in a per-player football layer')
+    if not runs or n_dk_rows_checked == 0:
+        # OWNER RULE 1 (2026-10-02): zero runs, or runs whose DK-bearing layers
+        # carried no row_ids, returned PASS with the "identical football draws"
+        # code -- `dk - foot` over an empty `dk` is empty, so nothing was ever
+        # unbacked because nothing was ever checked. That is EMPTY_INPUT, not a
+        # verified sharing of draws.
+        return {'state': 'DK_SHARED_DRAWS_NOT_EXECUTED', 'cause': 'EMPTY_INPUT',
+                'code': 'DK_SHARED_DRAWS_EMPTY_INPUT',
+                'n_runs': len(runs), 'n_dk_rows_checked': 0,
+                'offenders': [], 'method': method,
+                'why': (f'{len(runs)} run(s) and 0 DK-bearing row_ids were '
+                        f'examined; a check that saw no DK row has not shown '
+                        f'that DK rows are backed by football draws.')}
     return {'state': 'FAIL' if bad else 'PASS',
             'code': ('DK_ROWS_NOT_BACKED_BY_FOOTBALL_DRAWS' if bad
                      else 'DFS_AND_PROP_OUTPUTS_SHARE_IDENTICAL_FOOTBALL_DRAWS'),
+            'n_runs': len(runs), 'n_dk_rows_checked': n_dk_rows_checked,
             'offenders': bad,
-            'method': 'one npz per game feeds both adapters; every dk_scoring '
-                      'row_id must appear in a per-player football layer'}
+            'method': method}
 
 
 # ======================================================================= DFS

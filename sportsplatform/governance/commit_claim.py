@@ -101,9 +101,14 @@ def verify_staged(expect_paths, *, repo=None, label='staging') -> Outcome:
             f'that does not exist stages zero files, not all the others -- so '
             f'a partially wrong add is a completely empty one.',
             cause=Cause.GOVERNANCE, reason=NOT_STAGED, **ev)
-    return Outcome.ok(CODE_OK, value=sorted(staged),
-                      detail=f'{label}: {len(want)} expected path(s) staged',
-                      **ev)
+    # OWNER RULE 1 (2026-10-02): `verify_staged([])` returned COMMIT_CLAIM_VERIFIED
+    # with "0 expected path(s) staged" -- nothing was missing because nothing was
+    # expected. An expectation of no paths verifies no staging; it is EMPTY_INPUT
+    # (code COMMIT_CLAIM_VERIFIED_EMPTY_INPUT), not a verified claim.
+    return Outcome.measured(
+        CODE_OK, sorted(staged), n_measured=len(want),
+        what=f'{label}: expected paths checked against the index',
+        detail=f'{label}: {len(want)} expected path(s) staged', **ev)
 
 
 def verify_commit(sha='HEAD', *, expect_paths=(), reported_as=None, repo=None,

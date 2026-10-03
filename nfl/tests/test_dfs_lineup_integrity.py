@@ -36,6 +36,7 @@ from nfl.dfs.lineup_integrity import (  # noqa: E402
     candidates_for,
     check,
 )
+from nfl.tests._controls import observe  # noqa: E402
 
 PASSED = FAILED = BLOCKED = 0
 
@@ -144,11 +145,13 @@ def test_structural_rules():
         check([], pool=pool)
         chk('an empty lineup raises', False, 'it was accepted')
     except LineupRefusal as e:
+        observe('nfl.dfs.lineup_integrity:check:LINEUP_EMPTY', e.code)
         chk('an empty lineup raises', e.code == 'LINEUP_EMPTY')
     try:
         check(_toy_lineup()[:5], pool=pool)
         chk('five slots raises', False, 'it was accepted')
     except LineupRefusal as e:
+        observe('nfl.dfs.lineup_integrity:check:LINEUP_WRONG_SIZE', e.code)
         chk('five slots raises', e.code == 'LINEUP_WRONG_SIZE')
     two_cpt = _toy_lineup()
     two_cpt[1]['slot'] = 'CPT'
@@ -156,6 +159,7 @@ def test_structural_rules():
         check(two_cpt, pool=pool)
         chk('two captains raises', False, 'it was accepted')
     except LineupRefusal as e:
+        observe('nfl.dfs.lineup_integrity:check:LINEUP_CAPTAIN_COUNT', e.code)
         chk('two captains raises', e.code == 'LINEUP_CAPTAIN_COUNT')
 
     rich = {n: {'team': 'GB', 'CPT': 20000, 'FLEX': 15000} for n in _toy()}

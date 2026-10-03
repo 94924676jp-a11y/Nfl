@@ -146,7 +146,12 @@ def build_sandbox(*, eng=None, res=None, autonomy=True, policy_over=None,
         indent=1))
     (coord / 'OWNER_DECISIONS.md').write_text(
         '# Owner decisions\n\n## D-01 sandbox\n\nA decision does not expire.\n')
-    (coord / 'HANDOFF_LOG.jsonl').write_text('')
+    # OWNER RULE 1 (2026-10-02): validate_coordination refuses a log with no rows
+    # (LOG_EMPTY_INPUT). A new log starts with its SCHEMA row, as the live one does.
+    (coord / 'HANDOFF_LOG.jsonl').write_text(json.dumps(
+        {'kind': 'SCHEMA', 'note': 'sandbox log; required on every non-SCHEMA line: '
+                                   'timestamp, actor, task_id, from_status, to_status'})
+        + '\n')
 
     # BOTH queues are seeded. The validator refuses an empty queue -- "an
     # empty queue reads like nothing to do and is indistinguishable from a

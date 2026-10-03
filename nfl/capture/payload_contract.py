@@ -24,12 +24,21 @@ most expensive defects live:
        meaningful column blank.
 
 So each source DECLARES where its entities live, and this module goes and
-looks. A source that declares nothing keeps its old behaviour exactly, which is
-what makes this safe to add incrementally rather than in one flag day.
+looks.
 
-Returns (ok, code, evidence). `ok=False` is a DEBT -- the source published
-nothing yet -- never an error: SOURCE_HAS_NO_ROWS_YET is the same verdict
-capture_vintage already used for an unpublished page.
+OWNER RULE 1 (2026-10-02). A source that declares nothing used to pass
+unconditionally -- an empty payload included -- because "nothing declared"
+was read as "nothing to check". That is a validator returning ok=True having
+measured nothing. It now returns ok=False with code
+PAYLOAD_CONTRACT_NOT_EXECUTED (evidence state/cause NOT_EXECUTED), which is
+distinct from SOURCE_HAS_NO_ROWS_YET (the contract ran and found no rows) and
+from SCHEMA_COLUMNS_ABSENT (the contract ran and the document is wrong). The
+remedy is a declaration in nfl/capture/registry.py read from a real sample,
+never a guessed one.
+
+Returns (ok, code, evidence). `ok=False` with CODE_EMPTY is a DEBT -- the
+source published nothing yet -- never an error: SOURCE_HAS_NO_ROWS_YET is the
+same verdict capture_vintage already used for an unpublished page.
 """
 import csv as _csv
 import io
@@ -40,6 +49,15 @@ import io
 SPEC_VERSION = 'payload_contract/1.0.0'
 
 CODE_EMPTY = 'SOURCE_HAS_NO_ROWS_YET'
+#: OWNER RULE 1 (2026-10-02): the contract had no declaration to execute.
+CODE_NOT_EXECUTED = 'PAYLOAD_CONTRACT_NOT_EXECUTED'
+
+
+def _not_executed(declaration: str, **ev) -> tuple:
+    """A check with nothing declared did not run. It cannot say ok=True."""
+    return False, CODE_NOT_EXECUTED, {declaration: None, 'state': CODE_NOT_EXECUTED,
+                                      'cause': 'NOT_EXECUTED', 'n_measured': 0,
+                                      'missing_declaration': declaration, **ev}
 
 
 def json_entities(doc, path):
@@ -72,7 +90,8 @@ def json_entities(doc, path):
 def check_json(doc, spec):
     path = tuple(getattr(spec, 'payload_path', ()) or ())
     if not path:
-        return True, None, {'payload_path': None}
+        # OWNER RULE 1 (2026-10-02): no payload_path, no entity count, no PASS.
+        return _not_executed('payload_path')
     ents = json_entities(doc, path)
     n = len(ents or [])
     ev = {'payload_path': list(path), 'n_entities': n}
@@ -86,7 +105,9 @@ def check_csv(text, spec):
     req = tuple(getattr(spec, 'required_columns', ()) or ())
     anyof = tuple(getattr(spec, 'substantive_any_of', ()) or ())
     if not req and not anyof:
-        return True, None, {'required_columns': None}
+        # OWNER RULE 1 (2026-10-02): no required_columns and no
+        # substantive_any_of means no column was ever looked at.
+        return _not_executed('required_columns', substantive_any_of=None)
     rows = list(_csv.reader(io.StringIO(text)))
     rows = [r for r in rows if any(c.strip() for c in r)]
     if not rows:
@@ -124,7 +145,8 @@ def check_html(text, spec):
     """D20's check, restated here so all three kinds read from one place."""
     want = tuple(getattr(spec, 'row_container', ()) or ())
     if not want:
-        return True, None, {'row_container': None}
+        # OWNER RULE 1 (2026-10-02): no row_container declared, nothing looked for.
+        return _not_executed('row_container')
     low = text.lower()
     hit = [c for c in want if c.lower() in low]
     ev = {'row_container': list(want), 'row_container_found': hit}

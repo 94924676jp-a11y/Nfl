@@ -282,10 +282,13 @@ def test_e_the_contracts_are_load_bearing():
                                   dataclasses.replace(spec, payload_path=()))
     check('with payload_path declared, the empty document is refused',
           not live_ok)
-    check('with it stripped, the same document passes again',
-          stub_ok,
-          'if this is not True the refusal came from somewhere else and this '
-          'test proves nothing about payload_path')
+    # OWNER RULE 1 (2026-10-02): with the declaration stripped the check does not pass; it does
+    # not RUN. ok=False with PAYLOAD_CONTRACT_NOT_EXECUTED is distinct from the refusal above,
+    # which is what this bypass test needs to show: the refusal came from payload_path.
+    stub_ok, stub_code, _ = PC.check_json(empty, dataclasses.replace(spec, payload_path=()))
+    check('with it stripped, the same document is NOT_EXECUTED, not refused and not passed',
+          stub_ok is False and stub_code == PC.CODE_NOT_EXECUTED,
+          f'{stub_code}: if the refusal survives the strip it came from somewhere other than payload_path')
 
     csvspec = reg.BY_NAME['depth_charts']
     ch = _blobs('depth_charts', 'csv')
@@ -305,22 +308,29 @@ def test_e_the_contracts_are_load_bearing():
     body = '\n'.join(blanked)
     check('  with required_columns declared, the blanked csv is refused',
           not PC.check_csv(body, csvspec)[0])
-    check('  with them stripped, it passes again',
-          PC.check_csv(body, dataclasses.replace(
-              csvspec, required_columns=(), substantive_any_of=()))[0])
+    ok_s, code_s, _ = PC.check_csv(body, dataclasses.replace(
+        csvspec, required_columns=(), substantive_any_of=()))
+    # OWNER RULE 1 (2026-10-02): stripped, the contract is NOT_EXECUTED rather than passed.
+    check('  with them stripped, the same csv is NOT_EXECUTED, not refused and not passed',
+          ok_s is False and code_s == PC.CODE_NOT_EXECUTED, str(code_s))
 
 
 def test_f_an_undeclared_source_is_unaffected():
-    """Safe to adopt incrementally, and that must be demonstrated not assumed."""
-    print('\nF. a source that declares nothing keeps its old behaviour')
+    """OWNER RULE 1 (2026-10-02): a source that declares nothing is not checked, and says so."""
+    print('\nF. a source that declares nothing is NOT_EXECUTED, never passed')
     bare = dataclasses.replace(reg.BY_NAME['depth_charts'],
                                required_columns=(), substantive_any_of=())
     ok, code, ev = PC.check_csv('a,b,c\n,,\n', bare)
-    check('an undeclared csv source is not refused', ok, f'{code} {ev}')
+    # OWNER RULE 1 (2026-10-02): an undeclared source used to pass unconditionally. A contract
+    # with nothing declared has not run: ok=False, PAYLOAD_CONTRACT_NOT_EXECUTED, cause NOT_EXECUTED,
+    # and it is NOT the schema refusal (SCHEMA_COLUMNS_ABSENT) nor the empty verdict.
+    check('an undeclared csv source is NOT_EXECUTED (neither refused for schema nor passed)',
+          ok is False and code == PC.CODE_NOT_EXECUTED and ev.get('cause') == 'NOT_EXECUTED', f'{code} {ev}')
     barej = dataclasses.replace(reg.BY_NAME['espn_injuries_json'],
                                 payload_path=())
     ok2, code2, _ = PC.check_json({'anything': []}, barej)
-    check('an undeclared json source is not refused', ok2, str(code2))
+    check('an undeclared json source is NOT_EXECUTED (neither refused nor passed)',
+          ok2 is False and code2 == PC.CODE_NOT_EXECUTED, str(code2))
 
 
 if __name__ == '__main__':

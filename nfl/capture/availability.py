@@ -240,6 +240,16 @@ def assert_no_discharge(record: dict) -> Outcome:
     obligation than that job was, and a record that grew a `discharges` key
     would be indistinguishable from one that had earned it.
     """
+    # OWNER RULE 1 (2026-10-02): an empty record claims nothing because it says
+    # nothing. PASSing it would be a verdict about a record this guard never
+    # saw; the honest state is BLOCKED/EMPTY_INPUT with the count that was read.
+    if not record:
+        return Outcome.blocked(
+            "NO_DISCHARGE_CLAIMED_EMPTY_INPUT",
+            "the availability record is empty, so there is no claim to inspect. "
+            "Nothing was measured; this is not a finding that no discharge was "
+            "claimed.",
+            cause=Cause.EMPTY_INPUT, n_measured=0, what="availability record keys")
     claimed = (record.get("discharges") or record.get("discharge_claims")
                or record.get("serves_kinds") or record.get("execution_target"))
     if claimed:
@@ -249,8 +259,8 @@ def assert_no_discharge(record: dict) -> Outcome:
             f"event-anchored, is not attributed to a game, and may not "
             f"discharge a T-90 target or any injury/inactives capture kind.",
             source=record.get("source"))
-    return Outcome.ok("NO_DISCHARGE_CLAIMED", value=True,
-                      source=record.get("source"))
+    return Outcome.measured("NO_DISCHARGE_CLAIMED", True, n_measured=len(record),
+                            what="availability record keys", source=record.get("source"))
 
 
 # ==========================================================================
@@ -623,8 +633,15 @@ def assert_no_vintage_deleted(before: "set|list", after: "set|list") -> Outcome:
             f"earlier one. This deletion is not recoverable from upstream, "
             f"because upstream overwrites.",
             n_lost=len(lost), lost=lost[:20])
-    return Outcome.ok("NO_VINTAGE_DELETED", value=len(after - before),
-                      detail=f"{len(before)} preserved, {len(after - before)} added")
+    # OWNER RULE 1 (2026-10-02): the vintages whose survival this checks are
+    # `before`. With no prior vintage there is nothing whose deletion could be
+    # detected, and check_retention's no-before-state run lands exactly here --
+    # it used to print PASS and label it VACUOUS. Now it is BLOCKED/EMPTY_INPUT.
+    return Outcome.measured("NO_VINTAGE_DELETED", len(after - before),
+                            n_measured=len(before),
+                            what="prior vintages checked for survival",
+                            detail=f"{len(before)} preserved, {len(after - before)} added",
+                            n_preserved=len(before), n_added=len(after - before))
 
 
 def assert_manifest_append_only(before_lines: list, after_lines: list) -> Outcome:
@@ -651,9 +668,15 @@ def assert_manifest_append_only(before_lines: list, after_lines: list) -> Outcom
                 f"source looked like at an instant that will not recur; "
                 f"editing it destroys the only copy.",
                 row=i + 1)
-    return Outcome.ok("MANIFEST_APPEND_ONLY", value=len(after) - len(before),
-                      detail=f"{len(before)} preserved, "
-                             f"{len(after) - len(before)} appended")
+    # OWNER RULE 1 (2026-10-02): the rows whose preservation this checks are
+    # `before`. A prefix test over zero prior rows compares nothing, so it is
+    # BLOCKED/EMPTY_INPUT, not a PASS that happens to carry a count of zero.
+    return Outcome.measured("MANIFEST_APPEND_ONLY", len(after) - len(before),
+                            n_measured=len(before),
+                            what="prior manifest rows checked for preservation",
+                            detail=f"{len(before)} preserved, "
+                                   f"{len(after) - len(before)} appended",
+                            n_preserved=len(before), n_appended=len(after) - len(before))
 
 
 def assert_no_orphan_blobs(blob_names: "set|list", manifest_lines: list) -> Outcome:
@@ -687,5 +710,10 @@ def assert_no_orphan_blobs(blob_names: "set|list", manifest_lines: list) -> Outc
             f"Bytes that no observation produced are not prospective vintage "
             f"evidence, whatever directory they are sitting in.",
             n_orphans=len(orphans), orphans=orphans[:20])
-    return Outcome.ok("NO_ORPHAN_BLOBS", value=len(named),
-                      detail=f"every stored blob is named by an observation")
+    # OWNER RULE 1 (2026-10-02): the census is over the stored blobs. A store
+    # with no blobs has had nothing censused; "no orphans among zero files" is
+    # BLOCKED/EMPTY_INPUT. Blobs with no naming row remain the true FAIL above.
+    return Outcome.measured("NO_ORPHAN_BLOBS", len(named), n_measured=len(set(blob_names)),
+                            what="stored blobs checked against manifest rows",
+                            detail="every stored blob is named by an observation",
+                            n_blobs=len(set(blob_names)), n_named=len(named))

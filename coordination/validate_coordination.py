@@ -43,10 +43,18 @@ DECISIONS = 'OWNER_DECISIONS.md'
 LOG = 'HANDOFF_LOG.jsonl'
 
 _v: list = []
+#: What was measured, so the VALID line can say how much it looked at.
+_n: dict = {}
 
 
 def bad(code, detail):
     _v.append((code, detail))
+
+
+def reset():
+    """Clear the violation and count registers (for a caller running twice)."""
+    _v.clear()
+    _n.clear()
 
 
 def _load(name):
@@ -87,6 +95,7 @@ def check_queue(name, cfg):
                            f'like "nothing to do" and is indistinguishable '
                            f'from a broken writer.')
         return
+    _n['tasks'] = _n.get('tasks', 0) + len(tasks)
     seen, active = set(), []
     for t in tasks:
         tid = t.get('task_id', '<no id>')
@@ -101,6 +110,19 @@ def check_queue(name, cfg):
         if st not in STATUSES:
             bad('TASK_STATUS_UNKNOWN',
                 f'{name}:{tid} status {st!r} is not one of {STATUSES}')
+
+        # OWNER RULE 1 (2026-10-02): a task whose acceptance_tests is [] (or
+        # not a list) passed every check here, because no check read it. An
+        # acceptance list with nothing in it means the task cannot be judged
+        # finished by anyone, so it is EMPTY_INPUT, refused by name.
+        if 'acceptance_tests' in t:
+            at = t.get('acceptance_tests')
+            if not isinstance(at, list) or not at:
+                bad('ACCEPTANCE_TESTS_EMPTY_INPUT',
+                    f'{name}:{tid} acceptance_tests={at!r}: an empty or '
+                    f'non-list acceptance set gives nothing to judge the '
+                    f'task against, so it cannot be validated (cause '
+                    f'EMPTY_INPUT)')
 
         auth = t.get('authorized')
         if not isinstance(auth, bool):
@@ -207,9 +229,11 @@ def check_log():
     if not p.exists():
         bad('LOG_MISSING', f'{LOG} does not exist')
         return
+    n_rows = n_events = 0
     for i, line in enumerate(p.read_text().splitlines(), 1):
         if not line.strip():
             continue
+        n_rows += 1
         try:
             row = json.loads(line)
         except Exception as e:                               # noqa: BLE001
@@ -217,6 +241,7 @@ def check_log():
             continue
         if row.get('kind') == 'SCHEMA':
             continue
+        n_events += 1
         for f in ('timestamp', 'actor', 'task_id', 'from_status',
                   'to_status'):
             if f not in row:
@@ -225,6 +250,55 @@ def check_log():
             v = row.get(f)
             if v is not None and v not in STATUSES:
                 bad('LOG_STATUS_UNKNOWN', f'{LOG}:{i} {f}={v!r}')
+    _n['log_rows'] = n_rows
+    _n['log_events'] = n_events
+    if n_rows == 0:
+        # OWNER RULE 1 (2026-10-02): a HANDOFF_LOG.jsonl with no rows at all
+        # passed this check -- the loop had nothing to refuse. A log that was
+        # not parsed was not validated; reporting it VALID would make an
+        # empty file and a verified log the same claim. EMPTY_INPUT, by name.
+        # A log carrying its SCHEMA row and no events yet is a parsed, governed
+        # log with a measured event count of zero, and is reported as such.
+        bad('LOG_EMPTY_INPUT',
+            f'{LOG} carries no rows: nothing was parsed, so the log was not '
+            f'validated (cause EMPTY_INPUT). A new log starts with its SCHEMA '
+            f'row.')
+
+
+def check_mode():
+    """OWNER RULE 3 (2026-10-02): the mode block, when present, must be one of the four modes and
+    carry its provenance; a pinned mode_declared must be a mode. Absence is reported, not refused:
+    the mode system reports NOT_EXECUTED on its own until the owner or an agent sets one."""
+    try:
+        import sys as _s
+        _r = str(pathlib.Path(__file__).resolve().parents[1])
+        if _r not in _s.path:
+            _s.path.insert(0, _r)
+        from coordination import mode as M
+        sp = HERE / 'PROJECT_STATE.json'
+        doc = json.loads(sp.read_text()) if sp.exists() else None
+    except Exception as e:                                   # noqa: BLE001
+        bad('MODE_UNREADABLE', f'{type(e).__name__}: {e}')
+        return
+    if not isinstance(doc, dict):
+        # a sandbox or a checkout with no state file: the mode is unset, not invalid
+        print('  mode: NONE (no PROJECT_STATE.json; boundary NOT_EXECUTED)')
+        return
+    for key in ('mode', 'mode_declared'):
+        v = doc.get(key)
+        if v is None:
+            continue
+        m = v.get('mode') if isinstance(v, dict) else v
+        if m not in M.MODES:
+            bad('MODE_UNKNOWN', f'PROJECT_STATE.{key} names {m!r}, not one of {M.MODES}')
+        if key == 'mode' and isinstance(v, dict):
+            for f in ('since_commit', 'since_utc', 'set_by', 'reason'):
+                if not v.get(f):
+                    bad('MODE_RECORD_INCOMPLETE', f'PROJECT_STATE.mode lacks {f}; a mode with no '
+                                                  f'provenance is a label, not a state')
+    cur = M.read(doc)
+    print(f"  mode: {cur['mode'] or 'NONE (boundary NOT_EXECUTED)'}"
+          + (f" (pinned by owner)" if cur['pinned'] else ''))
 
 
 def main():
@@ -232,13 +306,16 @@ def main():
         check_queue(name, cfg)
     check_decisions()
     check_log()
+    check_mode()
     if _v:
         print(f'COORDINATION_INVALID: {len(_v)} violation(s)\n')
         for code, detail in _v:
             print(f'  {code}: {detail}')
         return 1
-    print('COORDINATION_VALID: queues, decisions and handoff log are '
-          'internally consistent')
+    print(f'COORDINATION_VALID: queues, decisions and handoff log are '
+          f'internally consistent ({_n.get("tasks", 0)} task(s), '
+          f'{_n.get("log_rows", 0)} log row(s) of which '
+          f'{_n.get("log_events", 0)} event(s))')
     return 0
 
 

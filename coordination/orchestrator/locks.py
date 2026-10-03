@@ -279,6 +279,66 @@ def enforce_protected_paths(changed, worker) -> None:
             escalation=C.Escalation.GOVERNANCE_CONFLICT, paths=hits)
 
 
+# ------------------------------------------------------ OWNER RULE 3 (2026-10-02): modes
+def _policy():
+    import json
+    return json.loads((_pl.Path(__file__).resolve().parents[1] / 'MODE_POLICY.json').read_text())
+
+
+def _specificity(pattern: str) -> int:
+    return len(pattern.rstrip('/').replace('*', ''))
+
+
+def mode_boundary(changed, mode, diff: str = '', policy: dict | None = None) -> dict:
+    """Which of `changed` the mode forbids. A dict, so the runner and the hook share one judge.
+
+    state: CLEAN | VIOLATED | NOT_EXECUTED (no mode in force, so nothing was judged -- that is
+    not CLEAN). Deny wins over allow unless the allow is the more specific pattern; the always_denied
+    list and PROTECTED_PATHS are denied in every mode.
+    """
+    pol = policy or _policy()
+    if mode not in pol['modes']:
+        return {'state': 'NOT_EXECUTED', 'mode': mode, 'cause': 'EMPTY_INPUT',
+                'why': 'no mode is in force, so no boundary was judged', 'violations': []}
+    rules = pol['modes'][mode]
+    always = list(pol.get('always_denied', ())) + list(C.PROTECTED_PATHS)
+    exempt = set(rules.get('writes_by_the_runner_are_exempt', ()))
+    viol = []
+    for p in sorted(set(changed or ())):
+        if p in exempt:
+            continue
+        hard = [a for a in always if _match(p, a)]
+        if hard:
+            viol.append({'path': p, 'rule': 'always_denied', 'pattern': hard[0]})
+            continue
+        allows = [a for a in rules.get('may_write', ()) if a == '*' or _match(p, a)]
+        denies = [d for d in rules.get('may_not_write', ()) if _match(p, d)]
+        if not allows:
+            viol.append({'path': p, 'rule': 'not_in_may_write', 'pattern': None})
+        elif denies and max(map(_specificity, denies)) >= max(map(_specificity, allows)):
+            viol.append({'path': p, 'rule': 'may_not_write', 'pattern': max(denies, key=_specificity)})
+    for needle in rules.get('forbidden_diff_lines', ()):
+        for ln in (diff or '').splitlines():
+            if ln[:1] in '+-' and ln[1:].lstrip().startswith(needle):
+                viol.append({'path': '<diff>', 'rule': 'forbidden_diff_line', 'pattern': needle,
+                             'line': ln[:120]})
+                break
+    return {'state': 'VIOLATED' if viol else 'CLEAN', 'mode': mode, 'n_changed': len(set(changed or ())),
+            'violations': viol}
+
+
+def enforce_mode_boundary(changed, mode, diff: str = '') -> dict:
+    """Raise MODE_BOUNDARY_VIOLATED naming mode, path and rule; return the judgement otherwise."""
+    o = mode_boundary(changed, mode, diff)
+    if o['state'] == 'VIOLATED':
+        raise Refusal(
+            'MODE_BOUNDARY_VIOLATED',
+            f'mode {mode} forbids {[v["path"] for v in o["violations"]]}: '
+            + '; '.join(f'{v["path"]} ({v["rule"]} {v["pattern"]})' for v in o['violations'][:8]),
+            escalation=C.Escalation.GOVERNANCE_CONFLICT, **o)
+    return o
+
+
 #: Phrases that, appearing in a worker's PROPOSED state change, mean it has
 #: reached for a decision reserved to the owner. Matched on the worker's
 #: structured output, never used as the only control -- the mechanical checks

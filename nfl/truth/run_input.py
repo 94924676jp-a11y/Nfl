@@ -185,7 +185,17 @@ def verify(pinned: dict, *, root: pathlib.Path, required_max_age_h=None) -> dict
     """
     cut = _iso(pinned['cutoff_utc'])
     out, verdicts = {}, {}
-    for fam, e in pinned['entries'].items():
+    entries = pinned.get('entries') or {}
+    required = list(pinned.get('required_families') or ())
+    if not entries:
+        # OWNER RULE 1 (2026-10-02): a pinned set with no entries verified
+        # ok=True -- `required_failures` was empty because no family was ever
+        # looked at. `ok` is None here, never True: nothing was verified.
+        return {'per_family': {}, 'verdicts': {}, 'required_failures': {},
+                'ok': None, 'state': 'RUN_INPUT_VERIFY_NOT_EXECUTED',
+                'cause': 'EMPTY_INPUT', 'n_families_verified': 0,
+                'required_families': required}
+    for fam, e in entries.items():
         rel = e.get('blob') or e.get('raw_blob')
         p = root / rel if rel else None
         if p is None or not p.exists():
@@ -241,6 +251,16 @@ def verify(pinned: dict, *, root: pathlib.Path, required_max_age_h=None) -> dict
 
 def assert_consumable(pinned: dict, report: dict) -> None:
     """Raise unless every REQUIRED family verified FRESH. No partial runs."""
+    # OWNER RULE 1 (2026-10-02): `verify` now returns ok=None when it had no
+    # entries to look at. That is not a failed verification and must not be
+    # reported as one: the refusal names the report as never executed.
+    if report.get('ok') is None:
+        raise RunInputRefusal(
+            'PINNED_EVIDENCE_NOT_VERIFIED',
+            f'the verification report is {report.get("state")!r} (cause '
+            f'{report.get("cause")!r}): no family was verified, so the '
+            f'evidence set is neither consumable nor known to be bad. The '
+            f'run stops here.')
     if report['ok']:
         return
     raise RunInputRefusal(

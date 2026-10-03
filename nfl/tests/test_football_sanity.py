@@ -16,6 +16,7 @@ if str(_REPO) not in sys.path:
 
 from nfl.tools import football_sanity as FS  # noqa: E402
 from nfl.tests import _registry  # noqa: E402
+from nfl.tests._controls import observe  # noqa: E402
 
 RESULTS = []
 
@@ -71,45 +72,68 @@ def _clean_passes():
     return f"{o.code}: {o.detail}"
 
 
-def _refuses(mutate, code):
+def _drive(mutate):
+    """Mutate a clean artifact and assess it. The assertion is in `_refused`, after `observe`."""
     a = _clean(); mutate(a)
-    o = FS.assess(a, absent={'Out Guy'})
+    return FS.assess(a, absent={'Out Guy'})
+
+
+def _flag(o, code):
+    """The flag code the gate recorded for `code`, or the Outcome code if it did not flag it."""
+    return code if code in ((o.evidence or {}).get('problems') or {}) else o.code
+
+
+def _refused(o, code):
     assert o.state.name == 'FAIL' and o.code == FS.FAIL_CODE, (o.state.name, o.code)
     probs = o.evidence['problems']
     assert code in probs, (code, sorted(probs))
     return f"{code}: {probs[code][0][:110]}"
 
 
+def _refuses(mutate, code):
+    return _refused(_drive(mutate), code)
+
+
 @check('confirmed starter + backup appearance penalty -> STARTER_CARRIES_APPEARANCE_PENALTY')
 def _starter_penalised():
     def m(a): a['rows']['q1']['appearance_adjustment'] = {
         'applied': True, 'depth_rank': 1, 'reason': 'NOT_PREDICTED_STARTER'}
-    return _refuses(m, FS.STARTER_PENALISED)
+    o = _drive(m)
+    observe('nfl.tools.football_sanity:assess:STARTER_CARRIES_APPEARANCE_PENALTY', _flag(o, FS.STARTER_PENALISED))
+    return _refused(o, FS.STARTER_PENALISED)
 
 
 @check('rank-1 QB + NOT_PREDICTED_STARTER -> RANK1_QB_NOT_PREDICTED_STARTER (the W4 defect)')
 def _rank1_not_starter():
     def m(a): a['rows']['q1']['appearance_adjustment'] = {
         'applied': True, 'depth_rank': 1, 'reason': 'NOT_PREDICTED_STARTER'}
-    return _refuses(m, FS.RANK1_NOT_STARTER)
+    o = _drive(m)
+    observe('nfl.tools.football_sanity:assess:RANK1_QB_NOT_PREDICTED_STARTER', _flag(o, FS.RANK1_NOT_STARTER))
+    return _refused(o, FS.RANK1_NOT_STARTER)
 
 
 @check('club pass attempts not reconciling with QB allocation -> CLUB_PASS_ATTEMPTS_NOT_RECONCILED')
 def _pass_unreconciled():
     def m(a): a['rows']['q1']['pass_attempts'] = 24.0
-    return _refuses(m, FS.PASS_ATT_UNRECONCILED)
+    o = _drive(m)
+    observe('nfl.tools.football_sanity:assess:CLUB_PASS_ATTEMPTS_NOT_RECONCILED', _flag(o, FS.PASS_ATT_UNRECONCILED))
+    return _refused(o, FS.PASS_ATT_UNRECONCILED)
 
 
 @check('club carries not reconciling -> CLUB_CARRIES_NOT_RECONCILED')
 def _carries_unreconciled():
     def m(a): a['team_volume']['BBB']['proj_rush_attempts'] = 30.0
-    return _refuses(m, FS.CARRIES_UNRECONCILED)
+    o = _drive(m)
+    observe('nfl.tools.football_sanity:assess:CLUB_CARRIES_NOT_RECONCILED', _flag(o, FS.CARRIES_UNRECONCILED))
+    return _refused(o, FS.CARRIES_UNRECONCILED)
 
 
 @check('club targets not reconciling -> CLUB_TARGETS_NOT_RECONCILED')
 def _targets_unreconciled():
     def m(a): a['rows']['w2']['targets'] = 2.0
-    return _refuses(m, FS.TARGETS_UNRECONCILED)
+    o = _drive(m)
+    observe('nfl.tools.football_sanity:assess:CLUB_TARGETS_NOT_RECONCILED', _flag(o, FS.TARGETS_UNRECONCILED))
+    return _refused(o, FS.TARGETS_UNRECONCILED)
 
 
 @check('inactive player carrying positive opportunity -> INACTIVE_PLAYER_HAS_OPPORTUNITY')
@@ -117,13 +141,17 @@ def _inactive_opportunity():
     def m(a):
         a['rows']['x1'].update({'dk_points': 4.0, 'targets': 3.0, 'projection_state': 'PROJECTED'})
         a['team_volume']['AAA']['proj_targets'] = 21.0
-    return _refuses(m, FS.INACTIVE_OPPORTUNITY)
+    o = _drive(m)
+    observe('nfl.tools.football_sanity:assess:INACTIVE_PLAYER_HAS_OPPORTUNITY', _flag(o, FS.INACTIVE_OPPORTUNITY))
+    return _refused(o, FS.INACTIVE_OPPORTUNITY)
 
 
 @check('role above declared ceiling without reason -> ROLE_ABOVE_CEILING_WITHOUT_REASON')
 def _above_ceiling():
     def m(a): a['rows']['t1'].update({'role_band': 'ALPHA', 'askable_ceiling': 'ROTATIONAL'})
-    return _refuses(m, FS.ABOVE_CEILING)
+    o = _drive(m)
+    observe('nfl.tools.football_sanity:assess:ROLE_ABOVE_CEILING_WITHOUT_REASON', _flag(o, FS.ABOVE_CEILING))
+    return _refused(o, FS.ABOVE_CEILING)
 
 
 @check('role above ceiling WITH a recorded cap_reason is allowed')
@@ -139,7 +167,9 @@ def _above_ceiling_with_reason():
 @check('a projected row at exactly 0.0 -> ZERO_WITHOUT_NAMED_STATE (the kicker defect)')
 def _zero_unnamed():
     def m(a): a['rows']['k1']['dk_points'] = 0.0
-    return _refuses(m, FS.ZERO_UNNAMED)
+    o = _drive(m)
+    observe('nfl.tools.football_sanity:assess:ZERO_WITHOUT_NAMED_STATE', _flag(o, FS.ZERO_UNNAMED))
+    return _refused(o, FS.ZERO_UNNAMED)
 
 
 @check('missing input on a projected row -> MISSING_INPUT_READ_AS_ZERO')
@@ -147,13 +177,17 @@ def _missing_as_zero():
     def m(a):
         a['rows']['w1']['targets'] = None
         a['team_volume']['AAA']['proj_targets'] = 9.0
-    return _refuses(m, FS.MISSING_AS_ZERO)
+    o = _drive(m)
+    observe('nfl.tools.football_sanity:assess:MISSING_INPUT_READ_AS_ZERO', _flag(o, FS.MISSING_AS_ZERO))
+    return _refused(o, FS.MISSING_AS_ZERO)
 
 
 @check('a club without a projected kicker or DST -> KICKER_OR_DST_MISSING')
 def _unit_missing():
     def m(a): del a['rows']['d2']
-    return _refuses(m, FS.UNIT_MISSING)
+    o = _drive(m)
+    observe('nfl.tools.football_sanity:assess:KICKER_OR_DST_MISSING', _flag(o, FS.UNIT_MISSING))
+    return _refused(o, FS.UNIT_MISSING)
 
 
 @check('every contradiction is reported, not just the first')
@@ -179,6 +213,7 @@ def _real_artifact():
     delivered = json.loads((_REPO / 'nfl/dfs/salaries/SHOWDOWN_TONIGHT_PROJ.json').read_text())
     o = FS.assess(delivered, absent=set(inact), clubs=('PIT', 'CLE'))
     probs = (o.evidence or {}).get('problems') or {}
+    observe('nfl.tools.football_sanity:assess:QB_TARGETS_ABOVE_CEILING_WITHOUT_REASON', _flag(o, FS.QB_RECEIVER_VOLUME))
     assert o.state.name == 'FAIL' and list(probs) == [FS.QB_RECEIVER_VOLUME], (o.code, probs)
     assert probs[FS.QB_RECEIVER_VOLUME] == ['Deshaun Watson (CLE QB): 5.04 projected targets above the '
                                             '1.0 ceiling, no reason'], probs
@@ -234,6 +269,8 @@ def _draws_measure():
         np.savez_compressed(tmp / 'S.npz', **{'QB One|AAA': q, 'Back One|AAA': r, 'Wide One|AAA': w})
         dd = {'stat_draws_sidecar': {'path': 'S.npz', 'STAT_FIELDS': fields}}
         m = FS.measure_draws(art, dd, repo_root=tmp)
+        # No volume_centre declared: the measurement names the simulator's own regression as the centre.
+        observe('nfl.tools.football_sanity:measure_draws:SIMULATOR_OWN_REGRESSION', m.get('volume_centre_mode'))
         assert m['state'] == FS.DRAWS_MEASURED, m
         aaa = m['per_club']['AAA']
         assert abs(aaa['pass_attempts']['ratio_minus_one'] - round(30.0 / 30.5 - 1, 4)) < 1e-6, aaa
@@ -242,6 +279,29 @@ def _draws_measure():
         return f"absent -> {FS.DRAWS_SIDECAR_ABSENT}; present -> AAA pass {aaa['pass_attempts']}"
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
+
+@check('OWNER RULE 2 positive controls: no rows, non-QB pass attempts above the ceiling, and a '
+       'draws doc the gate was never handed are each refused by name')
+def _positive_controls_remaining_refusals():
+    o = FS.assess({'rows': {}, 'team_volume': {}}, absent=())
+    observe('nfl.tools.football_sanity:assess:FOOTBALL_SANITY_NO_ROWS', o)
+    assert o.state.name == 'FAIL' and o.code == 'FOOTBALL_SANITY_NO_ROWS', (o.state.name, o.code)
+
+    def m(a):
+        # 2.5 attempts on a receiver: above the one-attempt club ceiling; the club total follows so
+        # the reconciliation check does not fire instead of the ceiling check.
+        a['rows']['w1']['pass_attempts'] = 2.5
+        a['team_volume']['AAA']['proj_pass_attempts'] = 33.0
+    o2 = _drive(m)
+    observe('nfl.tools.football_sanity:assess:NON_QB_PASS_ATTEMPTS_ABOVE_CEILING', _flag(o2, FS.NON_QB_PASS_ATTEMPTS))
+    _refused(o2, FS.NON_QB_PASS_ATTEMPTS)
+
+    dm = FS.measure_draws(_clean(), {'DRAWS_DOC_NOT_SUPPLIED': 'the caller handed the map and not the artifact'})
+    observe('nfl.tools.football_sanity:measure_draws:DRAWS_DOC_NOT_SUPPLIED_TO_GATE', dm)
+    assert dm['state'] == FS.DRAWS_DOC_NOT_SUPPLIED, dm
+    return (f"NO_ROWS -> {o.code}; non-QB attempts -> {FS.NON_QB_PASS_ATTEMPTS}; "
+            f"draws doc absent -> {dm['state']}")
+
 
 _EMITTED = _registry.emit(globals(), RESULTS)
 

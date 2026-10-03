@@ -134,9 +134,15 @@ def audit(path=None) -> Outcome:
             'LEDGER_MALFORMED',
             f'{len(bad)} malformed block(s), {len(orphan)} graded without a '
             f'registration', cause=Cause.GOVERNANCE, **ev)
-    return Outcome.ok('LEDGER_AUDIT_CLEAN', value=rows,
-                      detail=f'{len(rows)} block(s), {len(ev["awaiting"])} '
-                             f'awaiting outcome', **ev)
+    # OWNER RULE 1 (2026-10-02): a ledger with zero blocks -- or no file at all,
+    # which `load` reads as [] -- audited LEDGER_AUDIT_CLEAN: no block was
+    # malformed and none was graded unregistered because there were none. An
+    # audit over nothing is EMPTY_INPUT, not clean.
+    ev['path_exists'] = p.exists()
+    return Outcome.measured('LEDGER_AUDIT_CLEAN', rows, n_measured=len(rows),
+                            what=f'ledger blocks audited in {p.name}',
+                            detail=f'{len(rows)} block(s), {len(ev["awaiting"])} '
+                                   f'awaiting outcome', **ev)
 
 
 #: The DET @ BUF block. Registered with the result UNKNOWN to this repository:

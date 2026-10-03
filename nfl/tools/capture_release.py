@@ -147,6 +147,7 @@ def path_is_allowed(path: str) -> bool:
 
 def assert_allowlisted(paths) -> Outcome:
     """Refuse a promotion carrying anything outside the capture surface."""
+    paths = list(paths or ())
     bad = sorted(p for p in paths if not path_is_allowed(p))
     if bad:
         return Outcome.fail(
@@ -157,8 +158,12 @@ def assert_allowlisted(paths) -> Outcome:
             f'capture door.',
             rejected=bad, n_rejected=len(bad),
             allowed_prefixes=list(ALLOWED_PREFIXES))
-    return Outcome.ok('CAPTURE_RELEASE_PATHS_ALLOWLISTED',
-                      value=sorted(paths), n_paths=len(paths))
+    # OWNER RULE 1 (2026-10-02): zero paths checked against the allowlist is
+    # BLOCKED/EMPTY_INPUT (CAPTURE_RELEASE_PATHS_ALLOWLISTED_EMPTY_INPUT), not
+    # ALLOWLISTED. "No diff" must not read as "nothing to check".
+    return Outcome.measured('CAPTURE_RELEASE_PATHS_ALLOWLISTED', sorted(paths),
+                            n_measured=len(paths), what='paths checked against the capture allowlist',
+                            n_paths=len(paths))
 
 
 def diff_paths(from_ref: str, to_ref: str) -> Outcome:

@@ -431,7 +431,7 @@ GAME_STATES = (
     # produced a blank board for a game 51 hours away. READY-prefixed because
     # every consumer tests startswith('READY'); the projection is EARLY and
     # the artifact says so.
-    'READY_BY_EARLY_VINTAGE_NO_LEAGUE_REPORT',
+    'NOT_READY_NO_LEAGUE_REPORT',   # was READY_BY_EARLY_VINTAGE_NO_LEAGUE_REPORT until 2026-10-02 (rule 1)
     'INJURY_REPORT_NOT_YET_FILED',     # a team has no row for this week at all
     'INJURY_REPORT_INCOMPLETE',        # rows exist, a contract field is unfilled
     'INJURY_REPORT_STALE',             # the feed moved on, this block did not
@@ -726,16 +726,24 @@ def team_readiness(season: int, week: int, team: str, kickoff_utc=None,
         if not seen:
             return {
                 'team': team,
-                'state': 'READY_BY_EARLY_VINTAGE_NO_LEAGUE_REPORT',
+                # OWNER RULE 1 (2026-10-02). This read READY_BY_EARLY_VINTAGE_NO_LEAGUE_REPORT
+                # and game_readiness executed on any READY* prefix, so a league with no injury
+                # report at all was executable. Zero rows is not readiness; it is the absence
+                # of the input readiness is computed from. The vintage stays EARLY and the
+                # reason stays, so nothing downstream reads this as "everyone is healthy".
+                'state': 'NOT_READY_NO_LEAGUE_REPORT',
+                'cause': 'EMPTY_INPUT',
                 'reason': f'NO club has an injuries row for {season} week '
                           f'{week} in any capture'
                           + (f' retrieved at or before {cut.isoformat()}'
                              if cut is not None else '')
                           + f'. The report does not exist yet rather than '
                             f'{team} being silent about it, so this is an '
-                            f'EARLY vintage. It is NEVER read as absence of '
+                            f'EARLY vintage: the ABSENCE OF A REPORT, not a '
+                            f'report of absence. It is NEVER read as absence of '
                             f'injury: every player keeps the availability '
-                            f'uncertainty his own evidence carries.',
+                            f'uncertainty his own evidence carries, and nothing '
+                            f'is READY on it.',
                 'n_rows': 0, 'newest_capture': None,
                 'projection_vintage': 'EARLY',
                 'league_wide_absence': True,
@@ -845,6 +853,21 @@ def game_readiness(season: int = 2026, week: int = 1, games=None,
                     'week': week, 'fatal': f'{p.code}: {p.detail}',
                     'games': []}
         games = sorted({c.game_id: c.kickoff_utc for c in p.value}.items())
+    games = list(games)
+    if not games:
+        # OWNER RULE 1 (2026-10-02): an empty game list produced n_games=0,
+        # n_executable=0 and no refusal, and a consumer counting ready games
+        # read "nothing blocked". No game was judged; the slate was absent.
+        return {'artifact': 'NONQB_GAME_READINESS', 'season': season,
+                'week': week, 'written_at': written_at,
+                'state': 'GAME_READINESS_NOT_EXECUTED', 'cause': 'EMPTY_INPUT',
+                'reason': f'no game was supplied or planned for {season} week '
+                          f'{week}, so no team readiness was computed. Zero '
+                          f'games ready is not a slate with nothing blocking '
+                          f'it; it is no slate.',
+                'slate_as_of': None, 'n_games': 0, 'n_executable': 0,
+                'state_counts': {}, 'stale_hours': STALE_HOURS,
+                'states_defined': list(GAME_STATES), 'games': []}
     out, counts = [], collections.Counter()
     for gid, ko in games:
         away, home = gid.split('_')[2:4]

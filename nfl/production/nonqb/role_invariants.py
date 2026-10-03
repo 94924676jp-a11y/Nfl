@@ -52,6 +52,8 @@ SE_MULTIPLE = 2.0
 CODE_INVERSION = 'ROLE_APPEARANCE_INVERSION'
 CODE_OK = 'ROLE_ORDERING_CONSISTENT'
 CODE_INPUT = 'ROLE_ORDERING_INPUT_INCOMPLETE'
+# OWNER RULE 1 (2026-10-02): no comparable pair is EMPTY_INPUT, never CODE_OK.
+CODE_NO_PAIRS = 'ROLE_ORDERING_NO_COMPARABLE_PAIRS'
 
 
 def se_diff(p1: float, p2: float, n: int) -> float:
@@ -80,9 +82,12 @@ def check(p_zero, depth, *, n_draws, teams, names=None, excused=None,
     excused = dict(excused or {})
     missing_depth = sorted(set(p_zero) - set(depth))
     if not p_zero:
-        return Outcome.fail(
+        # OWNER RULE 1 (2026-10-02): this refused, but as a FAIL, which reads
+        # as a measured ordering defect. No probabilities is EMPTY_INPUT.
+        return Outcome.blocked(
             CODE_INPUT, f'{label}: no probabilities supplied. An empty check '
-                        f'is not a passed check.', cause=Cause.DATA)
+                        f'is not a passed check.', cause=Cause.EMPTY_INPUT,
+            spec_version=SPEC_VERSION, n_players=0, n_ordered_pairs=0)
     no_team = sorted(pid for pid in p_zero
                      if pid in depth and not teams.get(pid))
     if no_team:
@@ -155,6 +160,17 @@ def check(p_zero, depth, *, n_draws, teams, names=None, excused=None,
             f'(rank {worst["behind_rank"]}) at {worst["behind_p_zero"]:.4f}, '
             f'{worst["se_multiples"]:.1f} SE apart.',
             cause=Cause.DATA, inversions=inversions, **ev)
+    if n_pairs == 0:
+        # OWNER RULE 1 (2026-10-02): a board whose rooms hold no two ranked
+        # players (one man per club-position, or ranks from two clubs) formed
+        # no pair, found no inversion, and returned ROLE_ORDERING_CONSISTENT.
+        # Zero comparisons is not a consistent ordering; it is no ordering.
+        return Outcome.blocked(
+            CODE_NO_PAIRS,
+            f'{label}: {len(p_zero)} player(s) across {len(rooms)} room(s) '
+            f'form no ordered pair, so no depth ordering was compared. Two '
+            f'clubs are two scales and one man is no ordering.',
+            cause=Cause.EMPTY_INPUT, **ev)
     return Outcome.ok(
         CODE_OK, value=[],
         detail=f'{label}: {n_pairs} ordered pair(s) across {len(rooms)} '

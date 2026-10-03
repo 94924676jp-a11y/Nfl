@@ -22,6 +22,7 @@ if _ROOT not in sys.path:
 from sportsplatform.governance.outcome import State                  # noqa: E402
 from nfl.production import candidate_mode as CM                      # noqa: E402
 from nfl.production import qb_accounting as QBACC                    # noqa: E402
+from nfl.tests._controls import observe                              # noqa: E402
 from nfl.production.nonqb import appearance_r7 as R7                  # noqa: E402
 from nfl.production.nonqb import appearance_r8 as R8                  # noqa: E402
 from nfl.production.nonqb import layers as LY                        # noqa: E402
@@ -123,6 +124,7 @@ def test_a_missing_budget_refuses_rather_than_checking_nothing():
     o = QBACC.reconcile_team(D, rows,
                              team_dropback_draws={'SF': np.array([10.0, 12.0])},
                              integer_level=True)
+    observe('nfl.production.qb_accounting:reconcile_team:QB_TEAM_DROPBACK_BUDGET_KEY_MISMATCH', o)
     check('a team with no budget is a named refusal',
           o.state is State.FAIL and
           o.code == 'QB_TEAM_DROPBACK_BUDGET_KEY_MISMATCH',
@@ -150,9 +152,124 @@ def test_apportionment_still_closes_by_construction():
 def test_shares_that_do_not_cover_the_budget_are_refused():
     o = QBACC.apportion_dropbacks(np.array([17.0]), np.array([[0.6], [0.3]]),
                                   ['a', 'b'])
+    observe('nfl.production.qb_accounting:apportion_dropbacks:APPORTION_SHARE_DOES_NOT_COVER_BUDGET', o)
     check('an uncovered budget refuses rather than renormalising',
           o.state is State.FAIL and
           o.code == 'APPORTION_SHARE_DOES_NOT_COVER_BUDGET', o.code)
+
+
+def _coherent_draws(n=3, m=8, seed=11):
+    """A small draw set satisfying every predeclared QB identity."""
+    rng = np.random.default_rng(seed)
+    db = rng.integers(20, 40, (n, m)).astype(float)
+    sacks = np.minimum(db, 2.0)
+    scr = np.minimum(db - sacks, 1.0)
+    att = db - sacks - scr
+    cmp_ = np.floor(att * 0.6)
+    drush = np.ones((n, m))
+    ro = scr + drush
+    return {'db': db, 'att': att, 'sacks': sacks, 'scr': scr, 'cmp': cmp_,
+            'ptd': np.zeros((n, m)), 'int': np.zeros((n, m)), 'pyds': cmp_ * 10.0,
+            'drush': drush, 'rush_opp': ro, 'ryds': ro * 4.0, 'rtd': np.zeros((n, m))}
+
+
+def test_positive_controls_every_remaining_qb_accounting_refusal_trips():
+    """OWNER RULE 2. Each refusal in qb_accounting that no other suite drives is driven here
+    with an input known to violate it, and the code it returns is recorded."""
+    D = _coherent_draws()
+    n, m = D['db'].shape
+    rows = _rows([('SF', 'a'), ('SF', 'b'), ('LA', 'c')])
+    # reconcile_draws
+    bad = dict(D); bad['sacks'] = bad['sacks'] + 1.0
+    o = QBACC.reconcile_draws(bad)
+    observe('nfl.production.qb_accounting:reconcile_draws:QB_DRAW_ACCOUNTING_VIOLATED', o)
+    check('a sack outside the dropback budget violates the per-draw identities',
+          o.state is State.FAIL and o.code == 'QB_DRAW_ACCOUNTING_VIOLATED', o.code)
+    o = QBACC.reconcile_draws({k: v for k, v in D.items() if k != 'drush'})
+    observe('nfl.production.qb_accounting:reconcile_draws:QB_ACCOUNTING_INPUT_INCOMPLETE', o)
+    check('a missing identity field is BLOCKED, not skipped',
+          o.state is State.BLOCKED and o.code == 'QB_ACCOUNTING_INPUT_INCOMPLETE', o.code)
+    o = QBACC.reconcile_draws({k: np.zeros((0, 0)) for k in D})
+    observe('nfl.production.qb_accounting:reconcile_draws:QB_ACCOUNTING_EMPTY', o)
+    check('zero draw cells is an error, not a reconciliation',
+          o.state is State.BLOCKED and o.code == 'QB_ACCOUNTING_EMPTY', o.code)
+    # reconcile_team
+    o = QBACC.reconcile_team(D, rows[:2])
+    observe('nfl.production.qb_accounting:reconcile_team:QB_ACCOUNTING_SHAPE_MISMATCH', o)
+    check('rows against a different draw-row count is refused',
+          o.state is State.FAIL and o.code == 'QB_ACCOUNTING_SHAPE_MISMATCH', o.code)
+    o = QBACC.reconcile_team({k: np.zeros((0, m)) for k in D}, [])
+    observe('nfl.production.qb_accounting:reconcile_team:QB_ACCOUNTING_EMPTY', o)
+    check('no team-game at all is BLOCKED, not a pass over nothing',
+          o.state is State.BLOCKED and o.code == 'QB_ACCOUNTING_EMPTY', o.code)
+    o = QBACC.reconcile_team(D, rows, team_rush_draws={'XX': np.full(m, 50.0)})
+    observe('nfl.production.qb_accounting:reconcile_team:QB_TEAM_RUSH_BUDGET_KEY_MISMATCH', o)
+    check('a rush budget keyed to no row team is refused rather than checking nothing',
+          o.state is State.FAIL and o.code == 'QB_TEAM_RUSH_BUDGET_KEY_MISMATCH', o.code)
+    o = QBACC.reconcile_team(D, rows, team_rush_draws={'SF': np.zeros(m), 'LA': np.zeros(m)})
+    observe('nfl.production.qb_accounting:reconcile_team:QB_RUSHES_EXCEED_TEAM_RUSH_DRAWS', o)
+    check('QB rushes above a zero team rush draw are refused',
+          o.state is State.FAIL and o.code == 'QB_RUSHES_EXCEED_TEAM_RUSH_DRAWS', o.code)
+    o = QBACC.reconcile_team(D, rows, team_dropback_draws={'SF': np.full(m + 1, 60.0),
+                                                           'LA': np.full(m + 1, 60.0)})
+    observe('nfl.production.qb_accounting:reconcile_team:CROSS_DRAW_INDEX_MISMATCH', o)
+    check('a budget on a different draw index is refused, not compared across indices',
+          o.state is State.FAIL and o.code == 'CROSS_DRAW_INDEX_MISMATCH', o.code)
+    # reconcile_team_volume
+    o = QBACC.reconcile_team_volume(D, rows[:2], team_dropback_draws={'SF': np.full(m, 99.0)})
+    observe('nfl.production.qb_accounting:reconcile_team_volume:QB_ACCOUNTING_SHAPE_MISMATCH', o)
+    check('team volume: a row/draw count mismatch is refused',
+          o.state is State.FAIL and o.code == 'QB_ACCOUNTING_SHAPE_MISMATCH', o.code)
+    o = QBACC.reconcile_team_volume(D, [{'gsis_id': g} for g in 'abc'],
+                                    team_dropback_draws={'SF': np.full(m, 99.0)})
+    observe('nfl.production.qb_accounting:reconcile_team_volume:QB_ACCOUNTING_EMPTY', o)
+    check('team volume: rows that name no team cannot be reconciled against a team quantity',
+          o.state is State.FAIL and o.code == 'QB_ACCOUNTING_EMPTY', o.code)
+    o = QBACC.reconcile_team_volume(D, rows, team_dropback_draws={'SF': np.full(m - 1, 99.0),
+                                                                  'LA': np.full(m - 1, 99.0)})
+    observe('nfl.production.qb_accounting:reconcile_team_volume:CROSS_DRAW_INDEX_MISMATCH', o)
+    check('team volume: a budget on a different draw index is refused',
+          o.state is State.FAIL and o.code == 'CROSS_DRAW_INDEX_MISMATCH', o.code)
+    # reconcile_cross_layer
+    o = QBACC.reconcile_cross_layer(D)
+    observe('nfl.production.qb_accounting:reconcile_cross_layer:CROSS_LAYER_RECONCILIATION_NOT_RUN', o)
+    check('no receiving draws: DEFERRED by name', o.state is State.DEFERRED, o.code)
+    o = QBACC.reconcile_cross_layer(D, receiving=D['pyds'][:1])
+    observe('nfl.production.qb_accounting:reconcile_cross_layer:CROSS_LAYER_SHAPE_MISMATCH', o)
+    check('receiving draws of another shape are refused',
+          o.state is State.FAIL and o.code == 'CROSS_LAYER_SHAPE_MISMATCH', o.code)
+    o = QBACC.reconcile_cross_layer(D, receiving=D['pyds'] + 2.0)
+    observe('nfl.production.qb_accounting:reconcile_cross_layer:PASSING_YARDS_RECEIVING_YARDS_MISMATCH', o)
+    check('passing yards that do not equal receiving yards are refused',
+          o.state is State.FAIL and o.code == 'PASSING_YARDS_RECEIVING_YARDS_MISMATCH', o.code)
+    o = QBACC.reconcile_cross_layer(D, receiving=D['pyds'], receiving_td=D['ptd'] + 1.0)
+    observe('nfl.production.qb_accounting:reconcile_cross_layer:PASSING_TD_RECEIVING_TD_MISMATCH', o)
+    check('passing TD that do not equal receiving TD are refused',
+          o.state is State.FAIL and o.code == 'PASSING_TD_RECEIVING_TD_MISMATCH', o.code)
+    # reconcile_allocation_share
+    o = QBACC.reconcile_allocation_share({'SF': {'pids': ['a', 'b'], 'shares': np.ones((3, m))}},
+                                         {'SF': ['a', 'b']})
+    observe('nfl.production.qb_accounting:reconcile_allocation_share:QB_ALLOCATION_SHAPE_MISMATCH', o)
+    check('shares that cannot be attributed to the named passers are refused',
+          o.state is State.FAIL and o.code == 'QB_ALLOCATION_SHAPE_MISMATCH', o.code)
+    # apportion_dropbacks
+    N = np.array([17.0, 21.0])
+    o = QBACC.apportion_dropbacks(N, np.array([[0.5, 0.5, 0.5], [0.5, 0.5, 0.5]]), ['a', 'b'])
+    observe('nfl.production.qb_accounting:apportion_dropbacks:APPORTION_SHAPE_MISMATCH', o)
+    check('shares on a different draw axis than the budget are refused',
+          o.state is State.FAIL and o.code == 'APPORTION_SHAPE_MISMATCH', o.code)
+    o = QBACC.apportion_dropbacks(N, np.array([[0.5, 0.5], [0.5, 0.5]]), ['a'])
+    observe('nfl.production.qb_accounting:apportion_dropbacks:APPORTION_PID_MISMATCH', o)
+    check('one pid for two share rows is refused',
+          o.state is State.FAIL and o.code == 'APPORTION_PID_MISMATCH', o.code)
+    o = QBACC.apportion_dropbacks(N, np.zeros((0, 2)), [])
+    observe('nfl.production.qb_accounting:apportion_dropbacks:APPORTION_NO_QUARTERBACK', o)
+    check('a budget with nobody to receive it is refused, never an empty apportionment',
+          o.state is State.FAIL and o.code == 'APPORTION_NO_QUARTERBACK', o.code)
+    o = QBACC.apportion_dropbacks(N, np.array([[1.2, 1.2], [-0.2, -0.2]]), ['a', 'b'])
+    observe('nfl.production.qb_accounting:apportion_dropbacks:APPORTION_NEGATIVE_SHARE', o)
+    check('a negative share is refused by name',
+          o.state is State.FAIL and o.code == 'APPORTION_NEGATIVE_SHARE', o.code)
 
 
 # ============================================ B. the synthesis

@@ -625,6 +625,7 @@ def assert_role_state_supported(role_rows, *, publishable_ids=None,
     certifying a board nobody described is the same green-with-nothing-
     underneath failure the coverage gate was corrected for.
     """
+    role_rows = list(role_rows or ())
     if universe_rows is not None:
         pop = downstream_population(universe_rows)
         publishable_ids = (pop | set(publishable_ids or ())
@@ -651,6 +652,27 @@ def assert_role_state_supported(role_rows, *, publishable_ids=None,
                           'team': r['team'], 'role': r['role'],
                           'why': r['role_unsupported_why']}
                          for r in unsupported])
+    # OWNER RULE 1 (2026-10-02): an empty role table, or a declared-but-empty
+    # publishable set, left `offenders` empty and the gate returned
+    # ROLE_STATE_SUPPORTED_FOR_PUBLISHABLE_SET (certified=True) having tested
+    # no player. A set of nobody is not a set of supported players.
+    if not role_rows:
+        return Outcome.blocked(
+            'ROLE_STATE_EMPTY_INPUT',
+            'no role rows were assigned, so there is no role state to test '
+            'the publishable set against.', cause=Cause.EMPTY_INPUT,
+            n_rows=0, population_source=population_source,
+            n_publishable=len(set(publishable_ids)))
+    if not set(publishable_ids):
+        return Outcome.blocked(
+            'PUBLISHABLE_SET_EMPTY',
+            f'{len(role_rows)} role row(s) were assigned and '
+            f'{len(unsupported)} are unsupported, but the population to '
+            f'test is empty ({population_source}). A gate over nobody '
+            f'certifies nobody; it has not examined a board.',
+            cause=Cause.EMPTY_INPUT, n_rows=len(role_rows),
+            population_source=population_source, n_publishable=0,
+            n_unsupported=len(unsupported))
     offenders = [idx[p] for p in sorted(set(publishable_ids)) if p in idx]
     if offenders:
         return Outcome.fail(

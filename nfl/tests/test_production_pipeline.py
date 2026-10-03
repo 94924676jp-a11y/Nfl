@@ -14,6 +14,7 @@ from nfl.production import refusal as RF                          # noqa: E402
 from nfl.production import pipeline as PL                         # noqa: E402
 from nfl.production import joint as JT                            # noqa: E402
 from nfl.tests.bypass import assert_guard_is_load_bearing         # noqa: E402
+from nfl.tests._controls import observe                           # noqa: E402
 import numpy as np                                                # noqa: E402
 
 PASSED = FAILED = 0
@@ -244,7 +245,12 @@ def test_13_joint_production_baseline():
           len(JT.NEUTRAL_COUPLINGS) >= 3
           and any('2024' in x for x in JT.NEUTRAL_COUPLINGS))
     o4 = JT.reconcile_team_total(np.array([[1.]]), np.array([1., 2.]))
+    observe('nfl.production.joint:reconcile_team_total:JOINT_SHAPE_MISMATCH', o4)
     check('a shape mismatch is refused, not broadcast', o4.state is State.FAIL)
+    o5 = JT.couple_through_volume(np.array([[.3, .4]]), np.array([30., 40., 50.]))
+    observe('nfl.production.joint:couple_through_volume:JOINT_SHAPE_MISMATCH', o5)
+    check('  and coupling shares to a volume of a different draw count is refused by name',
+          o5.state is State.FAIL and o5.code == 'JOINT_SHAPE_MISMATCH', o5.code)
 
 
 def test_14_authorization_guard():

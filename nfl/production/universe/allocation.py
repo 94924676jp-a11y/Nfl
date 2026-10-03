@@ -298,6 +298,25 @@ def assert_allocation_conserves(alloc_outcome, *,
     rows = alloc_outcome.value or []
     ev = alloc_outcome.evidence or {}
     clubs = ev.get('clubs') or {}
+    # OWNER RULE 1 (2026-10-02): with no allocation rows there were no club
+    # compositions to sum, `problems` stayed empty, and a declared consuming
+    # set (even an empty one) reached ALLOCATION_CONSERVES over zero
+    # compositions. A sum over nothing is not a conserved sum.
+    if not rows or not clubs:
+        return Outcome.blocked(
+            'ALLOCATION_EMPTY_INPUT',
+            f'the allocation outcome {alloc_outcome.code} carries '
+            f'{len(rows)} row(s) over {len(clubs)} club(s); there is no '
+            f'composition whose sum could be checked.',
+            cause=Cause.EMPTY_INPUT, n_rows=len(rows), n_clubs=len(clubs),
+            alloc_outcome_code=alloc_outcome.code)
+    if consuming_ids is not None and not set(consuming_ids):
+        return Outcome.blocked(
+            'CONSUMING_SET_EMPTY',
+            f'{len(rows)} allocation row(s) exist but the consumer declared '
+            f'an EMPTY set of players it will read. Certifying a composition '
+            f'for nobody certifies nothing.',
+            cause=Cause.EMPTY_INPUT, n_rows=len(rows), n_consuming=0)
     problems = []
     for club, v in clubs.items():
         s = sum(r['share_renormalised'] for r in rows
@@ -392,6 +411,20 @@ def assert_redistribution_supported(alloc_outcome, *,
     clubs = ev.get('clubs') or {}
     rows = alloc_outcome.value or []
     room = ev.get('room')
+
+    # OWNER RULE 1 (2026-10-02): with no clubs in the allocation there was no
+    # reassigned mass to inspect, `offenders` stayed empty, and the gate
+    # returned NO_REDISTRIBUTION_REQUIRED (certified=True) over zero rooms.
+    # No room retaining its mass is not every room retaining its mass.
+    if not clubs or not rows:
+        return Outcome.blocked(
+            'REDISTRIBUTION_EMPTY_INPUT',
+            f'the allocation outcome {alloc_outcome.code} carries '
+            f'{len(rows)} row(s) over {len(clubs)} club(s) for room '
+            f'{room!r}; there is no reassigned mass whose destination could '
+            f'be questioned.',
+            cause=Cause.EMPTY_INPUT, n_rows=len(rows), n_clubs=len(clubs),
+            room=room, alloc_outcome_code=alloc_outcome.code)
 
     offenders = []
     for club, v in sorted(clubs.items()):

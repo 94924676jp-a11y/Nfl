@@ -20,6 +20,7 @@ from nfl.production.nonqb import accounting as ACC                # noqa: E402
 from nfl.production.nonqb import layers as LY                     # noqa: E402
 from nfl.production.nonqb import player_record as PR              # noqa: E402
 from nfl.production.nonqb import readiness as RD                  # noqa: E402
+from nfl.tests._controls import observe                           # noqa: E402
 
 PASSED = FAILED = 0
 IDS = ['p1', 'p2', 'p3']
@@ -241,9 +242,13 @@ def test_C_rushing_accounting_identities_are_load_bearing():
 
     e = ACC.reconcile_rushing(np.zeros((0, 0)), np.zeros((0, 0)),
                               np.zeros((0, 0)), np.zeros((0, 0)), [], [])
-    check('an empty rushing draw set FAILS rather than passing vacuously',
-          e.state is State.FAIL and e.code == 'NONQB_ACCOUNTING_VACUOUS',
-          f'{e.state.value}[{e.code}]')
+    # OWNER RULE 1 (2026-10-02): this pinned the vacuous refusal as a FAIL. An
+    # absent draw set is EMPTY_INPUT, distinct from an identity that did not hold.
+    check('an empty rushing draw set is BLOCKED/EMPTY_INPUT rather than passing '
+          'vacuously -- and not a FAIL, which would read as a measured break',
+          e.state is State.BLOCKED and e.code == 'NONQB_ACCOUNTING_VACUOUS'
+          and e.evidence.get('cause') == 'EMPTY_INPUT',
+          f'{e.state.value}[{e.code}] cause={e.evidence.get("cause")}')
 
 
 def test_C_qb_double_count_is_measured_not_reconciled():
@@ -292,6 +297,7 @@ def test_D_qb_team_volume_guard_bites():
           f'{na.state.value}[{na.code}]')
     mm = QBACC.reconcile_team_volume(
         D, rows, team_dropback_draws={'AAA': np.full(m - 1, 70.0)})
+    observe('nfl.production.qb_accounting:reconcile_team_volume:CROSS_DRAW_INDEX_MISMATCH', mm)
     check('  a mismatched draw width is a named refusal',
           mm.state is State.FAIL and mm.code == 'CROSS_DRAW_INDEX_MISMATCH',
           f'{mm.state.value}[{mm.code}]')
@@ -458,6 +464,7 @@ def test_F_chronology_and_staleness_are_separate_states():
     """
     o = RD.team_readiness(2026, 1, 'NE',
                           kickoff_utc='2026-09-01T00:00:00Z')
+    observe('nfl.production.nonqb.readiness:team_readiness:NOT_READY_NO_LEAGUE_REPORT', o)
     # OWNER RULE 1 (2026-10-02): the absence of a report is EMPTY_INPUT, and nothing
     # is READY on it. The state names the absence and carries the cause.
     check('a clock that excludes every capture reports ABSENCE, not a '
@@ -474,6 +481,55 @@ def test_F_chronology_and_staleness_are_separate_states():
           'INJURY_REPORT_CHRONOLOGY_FAILURE' in RD.GAME_STATES)
     check('  staleness is a different state with a declared bound',
           RD.STALE_HOURS > 0 and 'INJURY_REPORT_STALE' in RD.GAME_STATES)
+
+
+def test_F2_positive_controls_every_readiness_refusal_trips():
+    """OWNER RULE 2. Each team_readiness refusal state is driven by an input known to violate it.
+
+    The first three are driven through the real captures. The last two -- a capture retrieved
+    after the clock, and a block the feed has moved past -- cannot be produced from lawful data
+    (selection excludes them by construction), so the report history the function reads is
+    stubbed for one call each and restored."""
+    print('\nF2. readiness positive controls')
+    o = RD.team_readiness(2026, 1, 'ZZZ')
+    observe('nfl.production.nonqb.readiness:team_readiness:READINESS_CLOCK_UNRESOLVED', o)
+    check('no kickoff resolvable and no written_at: the clock is UNRESOLVED, not unbounded',
+          o['state'] == 'READINESS_CLOCK_UNRESOLVED', o['state'])
+    o = RD.team_readiness(2026, 1, 'ZZZ', kickoff_utc='2026-09-14T16:30:00Z')
+    observe('nfl.production.nonqb.readiness:team_readiness:INJURY_REPORT_NOT_YET_FILED', o)
+    check('a club with no row while others have filed is NOT_YET_FILED',
+          o['state'] == 'INJURY_REPORT_NOT_YET_FILED', o['state'])
+    o = RD.team_readiness(2026, 1, 'NE', kickoff_utc='2026-09-10T00:20:00Z')
+    observe('nfl.production.nonqb.readiness:team_readiness:INJURY_REPORT_INCOMPLETE', o)
+    check('NE at the Thursday-night kickoff has rows with no report_status: INCOMPLETE',
+          o['state'] == 'INJURY_REPORT_INCOMPLETE', f"{o['state']} on {o.get('n_rows')} row(s)")
+    saved = RD.team_report_history
+
+    def _history(newest_capture, newest_overall):
+        def fake(season, week, as_of=None):
+            return ({'ZZZ': {'newest_capture': newest_capture, 'n_rows': 3, 'blob': 'control',
+                             'population': {'report_status': 3, 'practice_status': 3,
+                                            'practice_primary_injury': 3}}},
+                    newest_overall)
+        return fake
+    try:
+        RD.team_report_history = _history('2026-09-15T00:00:00Z', '2026-09-15T00:00:00Z')
+        o = RD.team_readiness(2026, 1, 'ZZZ', kickoff_utc='2026-09-14T16:30:00Z')
+        observe('nfl.production.nonqb.readiness:team_readiness:INJURY_REPORT_CHRONOLOGY_FAILURE', o)
+        check('a block retrieved after kickoff handed back by selection is a CHRONOLOGY_FAILURE',
+              o['state'] == 'INJURY_REPORT_CHRONOLOGY_FAILURE', o['state'])
+        RD.team_report_history = _history('2026-09-10T00:00:00Z', '2026-09-14T00:00:00Z')
+        o = RD.team_readiness(2026, 1, 'ZZZ', kickoff_utc='2026-09-14T16:30:00Z')
+        observe('nfl.production.nonqb.readiness:team_readiness:INJURY_REPORT_STALE', o)
+        check(f'a block {RD.STALE_HOURS:g}h+ older than the feed refresh is STALE',
+              o['state'] == 'INJURY_REPORT_STALE', o['state'])
+    finally:
+        RD.team_report_history = saved
+    o = RD.lawful_injuries_rows(2099, as_of='2026-09-14T16:30:00Z')
+    observe('nfl.production.nonqb.readiness:lawful_injuries_rows:INJURIES_NO_LAWFUL_ROWS', o)
+    check('lawful captures carrying no row for the season are an empty feed, refused by name',
+          o.state is State.BLOCKED and o.code == 'INJURIES_NO_LAWFUL_ROWS',
+          f'{o.state.value}[{o.code}]')
 
 
 # ================================================= week 2
@@ -497,6 +553,82 @@ def test_G_both_future_requirements_are_named():
           f['requirements']['pbp_participation_2026']['state'] == 'SATISFIED')
 
 
+def test_H2_positive_controls_every_derived_refusal_trips():
+    """OWNER RULE 2 for nfl.production.derived. Module globals are stubbed for one call each
+    and restored; the real cache and the research tree are not touched."""
+    import pathlib
+    import shutil
+    import sys
+    import tempfile
+    import types
+    print('\nH2. derived positive controls')
+    saved_hashes = DV.research_tree_hashes
+    try:
+        DV.research_tree_hashes = lambda: {}
+        o = DV.assert_research_tree_unchanged(lambda: 'ran')
+    finally:
+        DV.research_tree_hashes = saved_hashes
+    observe('nfl.production.derived:assert_research_tree_unchanged:RESEARCH_TREE_SNAPSHOT_EMPTY', o)
+    check('a snapshot that hashed no file proves nothing and is refused',
+          o.state is State.FAIL and o.code == 'RESEARCH_TREE_SNAPSHOT_EMPTY', o.code)
+    tmp = pathlib.Path(tempfile.mkdtemp(prefix='derived_ctrl_'))
+    try:
+        o = DV.verify(tmp)
+        observe('nfl.production.derived:verify:DERIVED_ARTIFACTS_UNVERIFIED', o)
+        check('an empty directory does not verify against the frozen set',
+              o.state is State.FAIL and o.code == 'DERIVED_ARTIFACTS_UNVERIFIED', o.code)
+        saved_art = DV.ARTIFACTS
+        try:
+            DV.ARTIFACTS = ()
+            o = DV.verify(tmp)
+        finally:
+            DV.ARTIFACTS = saved_art
+        observe('nfl.production.derived:verify:DERIVED_ARTIFACTS_VERIFIED_EMPTY_INPUT', o)
+        check('verifying zero artifacts is EMPTY_INPUT, never VERIFIED',
+              o.state is State.BLOCKED and o.code == 'DERIVED_ARTIFACTS_VERIFIED_EMPTY_INPUT', o.code)
+        saved_ready, saved_cache = DV._READY, DV.cache_dir
+        try:
+            DV._READY = None
+            DV.cache_dir = lambda: tmp / 'no_cache_here'
+            o = DV.artifacts(build_if_missing=False)
+        finally:
+            DV._READY, DV.cache_dir = saved_ready, saved_cache
+        observe('nfl.production.derived:artifacts:DERIVED_ARTIFACTS_NOT_BUILT', o)
+        check('an absent cache with building refused is BLOCKED by name',
+              o.state is State.BLOCKED and o.code == 'DERIVED_ARTIFACTS_NOT_BUILT', o.code)
+        check('  and the refusal carries the cache verdict it wrapped',
+              'DERIVED_CACHE_ABSENT' in (o.detail or ''), (o.detail or '')[:80])
+        # build() imports the regeneration module by name at call time; a stub stands in for one
+        # call each so a raising stage and a non-identical artifact are both seen to refuse.
+        saved_mod = sys.modules.get('regenerate')
+        try:
+            stub = types.ModuleType('regenerate')
+            def _raise(work):
+                raise RuntimeError('control: staging failed')
+            stub.stage_inputs = _raise
+            sys.modules['regenerate'] = stub
+            o = DV.build(dest=tmp / 'dest1')
+            observe('nfl.production.derived:build:DERIVED_BUILD_FAILED', o)
+            check('a build whose stage raises is DERIVED_BUILD_FAILED, not an exception',
+                  o.state is State.FAIL and o.code == 'DERIVED_BUILD_FAILED', o.code)
+            stub.stage_inputs = lambda work: ({}, {})
+            stub.regenerate = lambda work, spec: {
+                'control.pkl': {'byte_identical': False, 'path': str(tmp / 'never')}}
+            o = DV.build(dest=tmp / 'dest2')
+            observe('nfl.production.derived:build:DERIVED_ARTIFACT_HASH_MISMATCH', o)
+            check('an artifact that does not reproduce byte-identically is refused, not cached',
+                  o.state is State.FAIL and o.code == 'DERIVED_ARTIFACT_HASH_MISMATCH', o.code)
+        finally:
+            if saved_mod is not None:
+                sys.modules['regenerate'] = saved_mod
+            else:
+                sys.modules.pop('regenerate', None)
+        check('  neither control placed anything in a cache',
+              not (tmp / 'dest1').exists() and not (tmp / 'dest2').exists())
+    finally:
+        shutil.rmtree(tmp, ignore_errors=True)
+
+
 # ================================================= research immutability
 def test_H_production_does_not_write_into_the_research_tree():
     print('\nH. production leaves nfl/research byte-identical')
@@ -518,6 +650,7 @@ def test_H_production_does_not_write_into_the_research_tree():
         return 'seeded'
     try:
         bad = DV.assert_research_tree_unchanged(_mutate)
+        observe('nfl.production.derived:assert_research_tree_unchanged:RESEARCH_TREE_MUTATED', bad)
         check('  and a seeded mutation IS caught',
               bad.state is State.FAIL and bad.code == 'RESEARCH_TREE_MUTATED',
               f'{bad.state.value}[{bad.code}]')

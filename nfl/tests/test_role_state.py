@@ -286,8 +286,13 @@ def test_the_gate_fails_blocks_and_passes_for_the_right_reasons():
        'and the blocked outcome still carries the count it could not clear')
 
     g4 = RS.assert_role_state_supported(rows, publishable_ids=set())
-    ok(g4.state is State.PASS,
-       'an explicitly empty publishable set is a valid result, not a failure')
+    # OWNER RULE 1 (2026-10-02): this pinned a PASS over an empty publishable
+    # set -- a gate certifying nobody. It is refused as EMPTY_INPUT, which is
+    # neither a PASS nor a FAIL: nothing was examined.
+    ok(g4.state is State.BLOCKED and g4.code == 'PUBLISHABLE_SET_EMPTY'
+       and g4.evidence.get('cause') == 'EMPTY_INPUT',
+       f'an explicitly empty publishable set is refused as EMPTY_INPUT, not '
+       f'certified and not failed: {g4.state.name}[{g4.code}]')
 
 
 def test_zz_every_check_passed():

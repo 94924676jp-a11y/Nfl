@@ -301,12 +301,34 @@ def assert_may_apply(adjustment_id: str, *, calling_layer: str,
     # Nothing is rewritten: the layer's output stands exactly as it is and
     # stays quotable as what it is. What is refused is letting it through.
     ga = _assumption_gate(calling_layer, purpose)
+    # OWNER RULE 1 (2026-10-02): the assumption gate now distinguishes "a critical assumption
+    # blocks" (a true FAIL, refused here) from "no assumption names this layer, so the gate
+    # examined nothing" (BLOCKED/EMPTY_INPUT -- DEF-090: every adjustment layer today). The second
+    # is not a clearance and is not claimed as one: it is carried on the verdict by name, and the
+    # verdict's own measured inputs (registry record, frame lineage, owner) decide. Whether an
+    # un-governed layer should be refused outright is an owner decision recorded in the outbox.
     if ga is not None and ga.state is not State.PASS:
-        return Outcome.fail(
-            ga.code, f'{adjustment_id!r}: {ga.detail}',
-            cause=Cause.GOVERNANCE,
-            assumption_evidence={k: v for k, v in ga.evidence.items()
-                                 if k != 'cause'}, **ev)
+        if getattr(ga, 'non_evidentiary', False):
+            ev['assumption_gate'] = {
+                'state': 'NOT_EXAMINED', 'code': ga.code,
+                'cause': ga.evidence.get('cause'),
+                'n_assumptions': ga.evidence.get('n_assumptions'),
+                'MEANING': ('no governed assumption names this layer; the gate looked at '
+                            'nothing and clears nothing. This verdict rests on the registry '
+                            'record and the frame lineage alone.')}
+        else:
+            return Outcome.fail(
+                ga.code, f'{adjustment_id!r}: {ga.detail}',
+                cause=Cause.GOVERNANCE,
+                assumption_evidence={k: v for k, v in ga.evidence.items()
+                                     if k != 'cause'}, **ev)
+    elif ga is not None:
+        ev['assumption_gate'] = {'state': 'CLEARED', 'code': ga.code,
+                                 'n_assumptions': ga.evidence.get('n_assumptions')}
+    else:
+        ev['assumption_gate'] = {'state': 'NOT_EXECUTED',
+                                 'MEANING': 'the gate did not run (non-production purpose or '
+                                            'import failure); nothing about assumptions is claimed'}
 
     if calling_layer != a['applied_at']:
         return Outcome.fail(

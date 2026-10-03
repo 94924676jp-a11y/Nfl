@@ -23,6 +23,7 @@ from nfl.production import world_clock as W  # noqa: E402
 from sportsplatform.governance.outcome import State  # noqa: E402
 
 from nfl.tests import _registry  # noqa: E402
+from nfl.tests._controls import observe  # noqa: E402
 
 RESULTS = []
 
@@ -115,6 +116,7 @@ def t_gate_fails_when_world_ahead():
     assert caught_up.state is State.PASS, caught_up
     behind_at = '2026-11-15'
     o = W.semantic_freshness(as_of=behind_at)
+    observe('nfl.production.world_clock:semantic_freshness:EVIDENCE_BEHIND_THE_WORLD', o)
     assert o.state is State.FAIL, o
     assert o.code == 'EVIDENCE_BEHIND_THE_WORLD', o.code
     ev = o.evidence
@@ -161,6 +163,7 @@ def t_leakage_schedule_seeded():
     target = next(r for r in rows if r['gameday'] > '2026-10-01')
     target['home_score'] = '31'
     o = W.assert_no_post_cutoff_outcomes('2026-10-01', rows=rows, team_game_rows=[])
+    observe('nfl.production.world_clock:assert_no_post_cutoff_outcomes:POST_CUTOFF_OUTCOME_PRESENT', o)
     assert o.state is State.FAIL, o
     assert o.code == 'POST_CUTOFF_OUTCOME_PRESENT', o.code
     assert o.evidence['by_field'].get('home_score') == 1, o.evidence['by_field']
@@ -199,6 +202,7 @@ def t_pending_vs_zero():
 def t_leakage_vacuous_refused():
     rows = _sched()
     o = W.assert_no_post_cutoff_outcomes('2099-01-01', rows=rows, team_game_rows=[])
+    observe('nfl.production.world_clock:assert_no_post_cutoff_outcomes:LEAKAGE_CHECK_VACUOUS', o)
     assert o.state is State.BLOCKED, o
     assert o.code == 'LEAKAGE_CHECK_VACUOUS', o.code
     return f'{o.code} rather than a green tick over zero rows'
@@ -211,6 +215,33 @@ def t_fields_named_explicitly():
     assert len(W.TEAM_GAME_OUTCOME_FIELDS) >= 10, len(W.TEAM_GAME_OUTCOME_FIELDS)
     return (f'{len(W.SCHEDULE_OUTCOME_FIELDS)} schedule and '
             f'{len(W.TEAM_GAME_OUTCOME_FIELDS)} TEAM_GAME fields named, not inferred')
+
+
+@check('OWNER RULE 2 positive controls: every refusal the clock can emit is driven and trips')
+def t_positive_controls_every_refusal_trips():
+    rows = _sched()
+    # A season the schedule does not carry is an empty schedule, which is an error, not a season.
+    o = W.schedule(season=1900)
+    observe('nfl.production.world_clock:schedule:WORLD_CLOCK_SCHEDULE_EMPTY', o)
+    assert o.state is State.FAIL and o.code == 'WORLD_CLOCK_SCHEDULE_EMPTY', o
+    # An as-of day before the first kickoff has nothing completed to be behind.
+    o = W.latest_completed_in_world(rows, as_of='2026-01-01')
+    observe('nfl.production.world_clock:latest_completed_in_world:WORLD_CLOCK_NO_COMPLETED_GAME', o)
+    assert o.state is State.BLOCKED and o.code == 'WORLD_CLOCK_NO_COMPLETED_GAME', o
+    # No schedule row to date the warehouse's scores against: the evidence frontier cannot be located.
+    o = W.latest_completed_in_evidence([])
+    observe('nfl.production.world_clock:latest_completed_in_evidence:WORLD_CLOCK_NO_SCORED_EVIDENCE', o)
+    assert o.state is State.BLOCKED and o.code == 'WORLD_CLOCK_NO_SCORED_EVIDENCE', o
+    # The warehouse artifact absent: pointed at a path that does not exist, restored afterwards.
+    saved = W.TEAM_GAME
+    try:
+        W.TEAM_GAME = pathlib.Path('/nonexistent/TEAM_GAME_does_not_exist.json')
+        o = W.latest_completed_in_evidence(rows)
+    finally:
+        W.TEAM_GAME = saved
+    observe('nfl.production.world_clock:latest_completed_in_evidence:WORLD_CLOCK_NO_TEAM_GAME', o)
+    assert o.state is State.BLOCKED and o.code == 'WORLD_CLOCK_NO_TEAM_GAME', o
+    return 'SCHEDULE_EMPTY, NO_COMPLETED_GAME, NO_SCORED_EVIDENCE, NO_TEAM_GAME each tripped by name'
 
 
 _EMITTED = _registry.emit(globals(), RESULTS)

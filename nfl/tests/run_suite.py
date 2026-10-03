@@ -361,6 +361,13 @@ def main(argv=None):
     # OWNER RULE 2 (2026-10-02): every positive control a test records (nfl/tests/_controls)
     # is stamped with THIS run's id, in this process and in own-process children, so the
     # validation at the end of the run counts only controls that ran in it.
+    # OWNER RULE 3 (2026-10-02): the first step of every run judges the mode boundary over the
+    # working tree and the diff since the mode was set, with the same judge the hook uses. A
+    # VIOLATED boundary fails the run; no mode in force is NOT_EXECUTED, reported, not a pass.
+    mode_boundary = _mode_boundary()
+    print(f"mode: {mode_boundary.get('mode')}  boundary {mode_boundary['state']}"
+          + (f"  violations {[v['path'] for v in mode_boundary['violations'][:6]]}"
+             if mode_boundary.get('violations') else ''))
     os.environ['NFL_SUITE_RUN_ID'] = _RUN_ID
     os.environ.setdefault('NFL_CONTROL_HITS', os.path.join(ROOT, 'nfl/tests/_control_hits.jsonl'))
     _emit({'phase': 'suite_start', 'n_modules': len(files), 'order': order_note,
@@ -603,10 +610,15 @@ def main(argv=None):
         print(f"detectors: {det['n_detectors']} listed, "
               + ', '.join(f'{k} {v}' for k, v in sorted(det['counts'].items()))
               + f"  -> {det['verdict']}")
+    if mode_boundary['state'] == 'VIOLATED':
+        problems.append('MODE_BOUNDARY_VIOLATED: mode ' + str(mode_boundary['mode']) + ' forbids '
+                        + ', '.join(f"{v['path']} ({v['rule']} {v['pattern']})"
+                                    for v in mode_boundary['violations'][:12]))
     bad = (n_check_fail + n_raise + n_fn_zero + n_unrecognised_tally
            + len(n_not_executed)
            + sum(p.startswith('VACUOUS') for p in problems)
-           + sum(p.startswith('DETECTORS UNVALIDATED') for p in problems))
+           + sum(p.startswith('DETECTORS UNVALIDATED') for p in problems)
+           + sum(p.startswith('MODE_BOUNDARY_VIOLATED') for p in problems))
     # OWNER RULE 1 (2026-10-02). A run that executed nothing has not passed. Before this, an
     # `--only` pattern matching no module printed SUITE PASS on 0 modules and 0 checks, and the
     # log holds three such runs. NOT_EXECUTED is its own verdict with its own exit code (3), so
@@ -620,7 +632,8 @@ def main(argv=None):
            'n_checks_executed': n_executed, 'n_failing': n_check_fail, 'n_raised': n_raise,
            'n_zero_check_fns': n_fn_zero, 'n_not_executed_modules': len(n_not_executed),
            'detectors': ({'verdict': det['verdict'], **det['counts']} if det else None),
-           'mode': _project_mode(), 'head': _head_commit()})
+           'mode': _project_mode(), 'mode_boundary': mode_boundary['state'],
+           'head': _head_commit()})
     if verdict == 'NOT_EXECUTED':
         print(f'SUITE NOT_EXECUTED  ({len(files)} module(s), {n_executed} check(s) executed): '
               f'nothing ran, so nothing passed and nothing failed.')
@@ -645,6 +658,18 @@ def _validate_detectors(files, full_run: bool) -> dict:
                 'verdict': 'VALIDATION_NOT_EXECUTED',
                 'rows': [{'detector': '<validator>', 'status': 'UNVALIDATED_VALIDATOR_RAISED',
                           'error': f'{type(e).__name__}: {e}'}]}
+
+
+def _mode_boundary() -> dict:
+    try:
+        from coordination import mode as M
+        from coordination.orchestrator import locks as L
+        cur = M.read()
+        since = (cur['record'] or {}).get('since_commit')
+        return L.mode_boundary(M.changed_paths(since), cur['mode'], diff=M.diff_text(since))
+    except Exception as e:  # noqa: BLE001
+        return {'state': 'NOT_EXECUTED', 'mode': None, 'violations': [],
+                'why': f'{type(e).__name__}: {e}'}
 
 
 def _project_mode():

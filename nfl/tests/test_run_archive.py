@@ -27,6 +27,7 @@ if str(_REPO) not in sys.path:
 from nfl.production import run_archive as RA  # noqa: E402
 
 from nfl.tests import _registry  # noqa: E402
+from nfl.tests._controls import observe  # noqa: E402
 
 RESULTS = []
 
@@ -95,6 +96,7 @@ def t_no_overwrite():
         o1 = RA.archive('S', when=when)
         assert o1.state.name == 'PASS', f'{o1.code}: {o1.detail}'
         o2 = RA.archive('S', when=when)
+        observe('nfl.production.run_archive:archive:RUN_ALREADY_SEALED', o2)
         assert o2.state.name == 'FAIL' and o2.code == 'RUN_ALREADY_SEALED', o2.code
         return o1.value['run_id']
     rid = _with_repo_outputs(body)
@@ -106,6 +108,7 @@ def t_hole_refused():
     def body(tmp, src, outs):
         (_REPO / outs[1]).unlink()
         o = RA.archive('S')
+        observe('nfl.production.run_archive:archive:RUN_OUTPUT_MISSING_OR_EMPTY', o)
         assert o.state.name == 'FAIL' and o.code == 'RUN_OUTPUT_MISSING_OR_EMPTY', o.code
         assert any(m['why'] == 'ABSENT' for m in o.evidence['missing'])
         (_REPO / outs[1]).write_text('')
@@ -133,6 +136,7 @@ def t_tamper_detected():
         with gzip.open(f, 'wb') as fh:
             fh.write(content + b' ')
         v = RA.verify(rid)
+        observe('nfl.production.run_archive:verify:SEALED_RUN_HAS_CHANGED', v)
         assert v.state.name == 'FAIL' and v.code == 'SEALED_RUN_HAS_CHANGED', v.code
         assert v.evidence['moved'] and v.evidence['moved'][0]['file'] == f.name, (
             'the digest is of the UNCOMPRESSED content, so editing the content must be detected '
@@ -165,6 +169,7 @@ def t_current_deferred():
         assert RA.verify_current().state.name == 'PASS'
         (_REPO / outs[0]).write_text(json.dumps({'i': 0, 'rebuilt': True}))
         o = RA.verify_current()
+        observe('nfl.production.run_archive:verify_current:CURRENT_PATHS_AHEAD_OF_ARCHIVE', o)
         assert o.state.name == 'DEFERRED' and o.code == 'CURRENT_PATHS_AHEAD_OF_ARCHIVE', o.code
         assert o.evidence['drifted'][0]['why'] == 'REBUILT_SINCE_ARCHIVE'
         assert 'archive the current run' in str(o.evidence.get('owed'))
@@ -172,6 +177,37 @@ def t_current_deferred():
     _with_repo_outputs(body)
     return ('a rebuild between runs is the normal state, so it is an outstanding debt rather than a '
             'failure or a pass')
+
+
+@check('OWNER RULE 2 positive controls: no runs directory, an unsealed run, no CURRENT.json and a '
+       'basename collision each refuse by name')
+def t_positive_controls_remaining_refusals():
+    def body(tmp, src, outs):
+        # Nothing archived yet: RUNS does not exist, so there is no list and no CURRENT.
+        li = RA.list_runs()
+        observe('nfl.production.run_archive:list_runs:NO_RUNS_DIRECTORY', li)
+        assert li.state.name == 'BLOCKED' and li.code == 'NO_RUNS_DIRECTORY', li.code
+        vc = RA.verify_current()
+        observe('nfl.production.run_archive:verify_current:NO_CURRENT_RUN', vc)
+        assert vc.state.name == 'BLOCKED' and vc.code == 'NO_CURRENT_RUN', vc.code
+        # A run directory without a seal is not a sealed run.
+        (RA.RUNS / 'unsealed_run').mkdir(parents=True)
+        v = RA.verify('unsealed_run')
+        observe('nfl.production.run_archive:verify:RUN_NOT_SEALED', v)
+        assert v.state.name == 'BLOCKED' and v.code == 'RUN_NOT_SEALED', v.code
+        # Two outputs sharing a basename would archive to one name and silently lose one.
+        other = src / 'other'
+        other.mkdir()
+        twin = other / pathlib.Path(outs[0]).name
+        twin.write_text(json.dumps({'twin': True}))
+        RA.RUN_OUTPUTS = tuple(outs) + (str(twin.relative_to(_REPO)),)
+        o = RA.archive('S')
+        observe('nfl.production.run_archive:archive:ARCHIVED_NAME_COLLISION', o)
+        assert o.state.name == 'FAIL' and o.code == 'ARCHIVED_NAME_COLLISION', o.code
+        assert o.evidence['collision'] == pathlib.Path(outs[0]).name + '.gz', o.evidence
+        return True
+    _with_repo_outputs(body)
+    return 'NO_RUNS_DIRECTORY, NO_CURRENT_RUN, RUN_NOT_SEALED and ARCHIVED_NAME_COLLISION each tripped'
 
 
 @check('the real archive exists, is intact, and matches the live outputs')

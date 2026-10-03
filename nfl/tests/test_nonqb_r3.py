@@ -418,9 +418,13 @@ def test_g_nonqb_accounting_is_load_bearing():
     v = ACC.reconcile_nonqb(np.zeros((0, 0)), np.zeros((0, 0)),
                             np.zeros((0, 0)), np.zeros((0, 0)),
                             np.zeros((0, 0)), [], [])
-    check('an empty draw set FAILS rather than passing vacuously',
-          v.state is State.FAIL and v.code == 'NONQB_ACCOUNTING_VACUOUS',
-          f'{v.state.value}[{v.code}]')
+    # OWNER RULE 1 (2026-10-02): this pinned the vacuous refusal as a FAIL. An
+    # absent draw set is EMPTY_INPUT, distinct from an identity that did not hold.
+    check('an empty draw set is BLOCKED/EMPTY_INPUT rather than passing vacuously '
+          '-- and not a FAIL, which would read as a measured break',
+          v.state is State.BLOCKED and v.code == 'NONQB_ACCOUNTING_VACUOUS'
+          and v.evidence.get('cause') == 'EMPTY_INPUT',
+          f'{v.state.value}[{v.code}] cause={v.evidence.get("cause")}')
 
     seeds = {}
     b = {k: (x.copy() if hasattr(x, 'copy') else x) for k, x in base.items()}

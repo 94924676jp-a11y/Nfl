@@ -34,6 +34,8 @@ if _P4C not in sys.path:
 from sportsplatform.governance.outcome import State                  # noqa: E402
 from nfl.production import eligibility_gate as EG                    # noqa: E402
 from nfl.production.nonqb import layers as LY                        # noqa: E402
+from nfl.tests._controls import observe                              # noqa: E402
+from sportsplatform.governance.outcome import Outcome                # noqa: E402
 
 PASSED = FAILED = 0
 
@@ -172,6 +174,7 @@ def test_a_posthoc_roster_status_is_refused_not_used():
                         kickoff_utc=KICKOFF, observed_before=CUTOFF)
     finally:
         RS.status_map = real
+    observe('nfl.production.eligibility_gate:snapshot:ELIGIBILITY_POSTHOC_STATUS', o)
     check('an INA status is refused by name',
           o.state is State.FAIL and o.code == 'ELIGIBILITY_POSTHOC_STATUS',
           f'{o.state.value}[{o.code}]')
@@ -197,6 +200,7 @@ def test_equal_rank_disagreement_refuses():
                         suspensions={pid: 'seeded conflict'})
     finally:
         EG.injury_designations = real
+    observe('nfl.production.eligibility_gate:snapshot:ELIGIBILITY_AUTHORITY_CONFLICT', o)
     check('equal-rank conflict is a refusal, not a silent precedence',
           o.state is State.FAIL
           and o.code == 'ELIGIBILITY_AUTHORITY_CONFLICT',
@@ -206,6 +210,7 @@ def test_equal_rank_disagreement_refuses():
 def test_an_empty_injury_slice_is_an_error_not_a_clean_bill():
     o = EG.injury_designations(SEASON, WEEK, ['XXX'], kickoff_utc=KICKOFF,
                                observed_before=CUTOFF)
+    observe('nfl.production.eligibility_gate:injury_designations:ELIGIBILITY_INJURY_SLICE_EMPTY', o)
     check('zero rows in scope refuses rather than returning {}',
           o.state is State.BLOCKED
           and o.code == 'ELIGIBILITY_INJURY_SLICE_EMPTY',
@@ -252,6 +257,7 @@ def test_a_player_the_snapshot_never_saw_is_refused():
     snap = EG.snapshot(SEASON, WEEK, list(TEAMS), players[:10],
                        kickoff_utc=KICKOFF, observed_before=CUTOFF)
     cs = EG.choice_set(players, snap)
+    observe('nfl.production.eligibility_gate:choice_set:CHOICE_SET_PLAYER_NOT_IN_SNAPSHOT', cs)
     check('a partly-governed pool is refused, not partly governed',
           cs.state is State.FAIL
           and cs.code == 'CHOICE_SET_PLAYER_NOT_IN_SNAPSHOT',
@@ -299,6 +305,7 @@ def test_the_invariant_checker_fails_on_a_seeded_violation():
         return
     man, arrays = _sealed()
     o = EG.assert_zero_opportunity_over_draws(man['layers'], arrays, [KELCE])
+    observe('nfl.production.eligibility_gate:assert_zero_opportunity_over_draws:ZERO_OPPORTUNITY_VIOLATED', o)
     if not check('the checker refuses',
                  o.state is State.FAIL and o.code == 'ZERO_OPPORTUNITY_VIOLATED',
                  f'{o.state.value}[{o.code}]'):
@@ -315,6 +322,7 @@ def test_a_check_with_no_player_axis_is_not_a_pass():
     only_team = {k: v for k, v in man['layers'].items()
                  if v.get('row_axis') == 'team'}
     o = EG.assert_zero_opportunity_over_draws(only_team, arrays, [KELCE])
+    observe('nfl.production.eligibility_gate:assert_zero_opportunity_over_draws:ZERO_OPPORTUNITY_NO_PLAYER_AXIS', o)
     check('team-axis-only layers refuse rather than return a vacuous green',
           o.state is State.FAIL
           and o.code == 'ZERO_OPPORTUNITY_NO_PLAYER_AXIS',
@@ -324,6 +332,7 @@ def test_a_check_with_no_player_axis_is_not_a_pass():
 def test_an_empty_ineligible_set_is_blocked_not_passed():
     man, arrays = _sealed()
     o = EG.assert_zero_opportunity_over_draws(man['layers'], arrays, [])
+    observe('nfl.production.eligibility_gate:assert_zero_opportunity_over_draws:ZERO_OPPORTUNITY_NOTHING_TO_CHECK', o)
     check('nothing to check is BLOCKED, never PASS',
           o.state is State.BLOCKED
           and o.code == 'ZERO_OPPORTUNITY_NOTHING_TO_CHECK',
@@ -549,6 +558,7 @@ def test_a_determination_cannot_be_given_a_scenario_weight():
     if not check('there is a determined player to try', bool(det)):
         return
     sc = EG.scenarios(snap, weights={det[0]: 0.5})
+    observe('nfl.production.eligibility_gate:scenarios:SCENARIO_WEIGHTS_A_DETERMINATION', sc)
     check('weighting a determination is refused',
           sc.state is State.FAIL
           and sc.code == 'SCENARIO_WEIGHTS_A_DETERMINATION',
@@ -579,6 +589,7 @@ def test_supplied_weights_build_discrete_worlds_that_sum_to_one():
 
 def test_no_clock_is_a_refusal():
     o = EG.injury_designations(SEASON, WEEK, list(TEAMS))
+    observe('nfl.production.eligibility_gate:injury_designations:ELIGIBILITY_NO_CLOCK', o)
     check('selecting a vintage without a cutoff is refused',
           o.state is State.BLOCKED and o.code == 'ELIGIBILITY_NO_CLOCK',
           f'{o.state.value}[{o.code}]')
@@ -588,6 +599,7 @@ def test_an_unidentified_player_is_refused():
     o = EG.snapshot(SEASON, WEEK, list(TEAMS),
                     [{'gsis_id': '', 'team': 'KC', 'position': 'WR'}],
                     kickoff_utc=KICKOFF, observed_before=CUTOFF)
+    observe('nfl.production.eligibility_gate:snapshot:ELIGIBILITY_IDENTITY_UNRESOLVED', o)
     check('a player with no gsis_id is refused, never name-matched',
           o.state is State.FAIL
           and o.code == 'ELIGIBILITY_IDENTITY_UNRESOLVED',
@@ -597,9 +609,105 @@ def test_an_unidentified_player_is_refused():
 def test_an_empty_pool_is_a_refusal():
     o = EG.snapshot(SEASON, WEEK, list(TEAMS), [], kickoff_utc=KICKOFF,
                     observed_before=CUTOFF)
+    observe('nfl.production.eligibility_gate:snapshot:ELIGIBILITY_NO_PLAYERS', o)
     check('an empty pool is a refusal, not an eligibility finding',
           o.state is State.FAIL and o.code == 'ELIGIBILITY_NO_PLAYERS',
           f'{o.state.value}[{o.code}]')
+
+
+def test_positive_controls_every_remaining_eligibility_refusal_trips():
+    """OWNER RULE 2. Every refusal this gate can emit that no check above drives, driven by an
+    input known to violate it. Two of them (a selected blob missing from disk, every lawful vintage
+    unreadable) are reached by pointing the module's repository root at a path that holds nothing,
+    for one call each, restored afterwards."""
+    # ---- first_seen
+    o = EG.first_seen(SEASON, WEEK, list(TEAMS), kickoff_utc=None)
+    observe('nfl.production.eligibility_gate:first_seen:ELIGIBILITY_NO_CLOCK', o)
+    check('first_seen without a cutoff is refused',
+          o.state is State.BLOCKED and o.code == 'ELIGIBILITY_NO_CLOCK', f'{o.state.value}[{o.code}]')
+    o = EG.first_seen(SEASON, WEEK, list(TEAMS), kickoff_utc='2000-01-01T00:00:00Z')
+    observe('nfl.production.eligibility_gate:first_seen:ELIGIBILITY_NO_LAWFUL_INJURY_VINTAGE', o)
+    check('a cut before any injury capture has no lawful vintage',
+          o.state is State.BLOCKED and o.code == 'ELIGIBILITY_NO_LAWFUL_INJURY_VINTAGE',
+          f'{o.state.value}[{o.code}]')
+    saved_repo = EG._REPO
+    try:
+        EG._REPO = pathlib.Path('/nonexistent/eligibility_control_root')
+        o = EG.first_seen(SEASON, WEEK, list(TEAMS), kickoff_utc=KICKOFF, observed_before=CUTOFF)
+        o2 = EG.injury_designations(SEASON, WEEK, list(TEAMS), kickoff_utc=KICKOFF,
+                                    observed_before=CUTOFF)
+    finally:
+        EG._REPO = saved_repo
+    observe('nfl.production.eligibility_gate:first_seen:ELIGIBILITY_NO_READABLE_INJURY_VINTAGE', o)
+    check('every lawful vintage missing from disk is refused, not read as empty',
+          o.state is State.BLOCKED and o.code == 'ELIGIBILITY_NO_READABLE_INJURY_VINTAGE',
+          f'{o.state.value}[{o.code}]')
+    observe('nfl.production.eligibility_gate:injury_designations:ELIGIBILITY_INJURY_BLOB_MISSING', o2)
+    check('a selected injury blob that is not on disk is refused by name',
+          o2.state is State.BLOCKED and o2.code == 'ELIGIBILITY_INJURY_BLOB_MISSING',
+          f'{o2.state.value}[{o2.code}]')
+    # ---- snapshot
+    o = EG.snapshot(SEASON, WEEK, list(TEAMS),
+                    [{'gsis_id': '00-0000001', 'team': 'KC', 'position': 'WR'},
+                     {'gsis_id': '00-0000001', 'team': 'KC', 'position': 'WR'}],
+                    kickoff_utc=KICKOFF, observed_before=CUTOFF)
+    observe('nfl.production.eligibility_gate:snapshot:ELIGIBILITY_DUPLICATE_PLAYER', o)
+    check('a gsis_id appearing twice in the pool is refused',
+          o.state is State.FAIL and o.code == 'ELIGIBILITY_DUPLICATE_PLAYER', f'{o.state.value}[{o.code}]')
+    # ---- choice_set / scenarios on a refused upstream
+    upstream = Outcome.fail('ELIGIBILITY_NO_PLAYERS', 'control: upstream refused')
+    cs = EG.choice_set([], upstream)
+    observe('nfl.production.eligibility_gate:choice_set:BLOCKED_UPSTREAM_ELIGIBILITY', cs)
+    check('choice_set on a refused snapshot is BLOCKED upstream',
+          cs.state is State.BLOCKED and cs.code == 'BLOCKED_UPSTREAM_ELIGIBILITY',
+          f'{cs.state.value}[{cs.code}]')
+    sc = EG.scenarios(upstream)
+    observe('nfl.production.eligibility_gate:scenarios:BLOCKED_UPSTREAM_ELIGIBILITY', sc)
+    check('scenarios on a refused snapshot are BLOCKED upstream',
+          sc.state is State.BLOCKED and sc.code == 'BLOCKED_UPSTREAM_ELIGIBILITY',
+          f'{sc.state.value}[{sc.code}]')
+    # ---- choice_set where every player is removed: a snapshot row shaped as the gate writes one
+    pid = '00-0000002'
+    row = {'gsis_id': pid, 'team': 'KC', 'position': 'WR', 'status': 'INJURY_OUT',
+           'simulation_eligibility': EG.EXCLUDED_DETERMINISTIC, 'authority': 'control',
+           'authority_rank': 2, 'known_from': CUTOFF, 'known_by_no_later_than': CUTOFF,
+           'hours_known_before_kickoff': 6.0, 'content_hash': 'control', 'reason': 'control'}
+    all_out = Outcome.ok('ELIGIBILITY_SNAPSHOT', value={pid: row})
+    cs = EG.choice_set([{'gsis_id': pid, 'team': 'KC', 'position': 'WR'}], all_out)
+    observe('nfl.production.eligibility_gate:choice_set:CHOICE_SET_EMPTY', cs)
+    check('a pool from which every player is removed is refused, not allocated to nobody',
+          cs.state is State.FAIL and cs.code == 'CHOICE_SET_EMPTY', f'{cs.state.value}[{cs.code}]')
+    # ---- scenarios: an unknown player and a weight that is not a probability
+    players = _pool(ROSTER_PREKICK, TEAMS)
+    snap = EG.snapshot(SEASON, WEEK, list(TEAMS), players, kickoff_utc=KICKOFF,
+                       observed_before=CUTOFF)
+    sc = EG.scenarios(snap, weights={'00-NOBODY': 0.5})
+    observe('nfl.production.eligibility_gate:scenarios:SCENARIO_UNKNOWN_PLAYER', sc)
+    check('a weighted player the snapshot never saw is refused',
+          sc.state is State.FAIL and sc.code == 'SCENARIO_UNKNOWN_PLAYER', f'{sc.state.value}[{sc.code}]')
+    live = [p for p, r in snap.value.items()
+            if r['simulation_eligibility'] == EG.IN_CHOICE_SET][:1]
+    if check('an in-pool player exists for the out-of-range weight control', bool(live)):
+        sc = EG.scenarios(snap, weights={live[0]: 1.5})
+        observe('nfl.production.eligibility_gate:scenarios:SCENARIO_WEIGHT_OUT_OF_RANGE', sc)
+        check('a weight above one is not a probability and is refused',
+              sc.state is State.FAIL and sc.code == 'SCENARIO_WEIGHT_OUT_OF_RANGE',
+              f'{sc.state.value}[{sc.code}]')
+    # ---- the zero-opportunity invariant: no layers, a declared matrix absent, a shape that lies
+    o = EG.assert_zero_opportunity_over_draws({}, {}, ['00-0000003'])
+    observe('nfl.production.eligibility_gate:assert_zero_opportunity_over_draws:ZERO_OPPORTUNITY_NO_LAYERS', o)
+    check('no layers at all is a refusal, not a vacuous pass',
+          o.state is State.FAIL and o.code == 'ZERO_OPPORTUNITY_NO_LAYERS', f'{o.state.value}[{o.code}]')
+    layers = {'receiving': {'row_axis': 'gsis_id', 'row_ids': ['00-0000003'], 'metrics': ['targets']}}
+    o = EG.assert_zero_opportunity_over_draws(layers, {}, ['00-0000003'])
+    observe('nfl.production.eligibility_gate:assert_zero_opportunity_over_draws:ZERO_OPPORTUNITY_MATRIX_MISSING', o)
+    check('a declared metric with no matrix supplied is refused',
+          o.state is State.FAIL and o.code == 'ZERO_OPPORTUNITY_MATRIX_MISSING', f'{o.state.value}[{o.code}]')
+    o = EG.assert_zero_opportunity_over_draws(layers, {'receiving/targets': np.zeros((3, 4))},
+                                              ['00-0000003'])
+    observe('nfl.production.eligibility_gate:assert_zero_opportunity_over_draws:ZERO_OPPORTUNITY_SHAPE_MISMATCH', o)
+    check('a matrix whose rows do not match the declared row ids is refused',
+          o.state is State.FAIL and o.code == 'ZERO_OPPORTUNITY_SHAPE_MISMATCH', f'{o.state.value}[{o.code}]')
 
 
 def test_zz_every_check_passed():

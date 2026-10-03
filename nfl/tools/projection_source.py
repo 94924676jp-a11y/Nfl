@@ -186,8 +186,10 @@ def assert_no_silent_zero(records):
             'PROJECTION_UNAVAILABLE_RENDERED_AS_ZERO',
             f'{len(bad)} unavailable projections carry a numeric zero: {bad[:8]}',
             players=bad[:40], n=len(bad))
-    return Outcome.ok('NO_SILENT_ZERO', len(records),
-                      f'{len(records)} records, no unavailable projection shown as zero')
+    # OWNER RULE 1 (2026-10-02): zero records examined is BLOCKED/EMPTY_INPUT, not NO_SILENT_ZERO.
+    return Outcome.measured('NO_SILENT_ZERO', len(records), n_measured=len(records),
+                            what='projection records examined',
+                            detail=f'{len(records)} records, no unavailable projection shown as zero')
 
 
 def assert_fallback_is_labelled(records):
@@ -204,8 +206,10 @@ def assert_fallback_is_labelled(records):
             'EXTERNAL_PROJECTION_NOT_LABELLED',
             f'{len(bad)} fallback records could be mistaken for proprietary output: '
             f'{bad[:8]}', players=bad[:40], n=len(bad))
-    return Outcome.ok('FALLBACK_LABELLED', len(records),
-                      'every external number is marked non-proprietary with its source')
+    # OWNER RULE 1 (2026-10-02): zero records examined is BLOCKED/EMPTY_INPUT, not LABELLED.
+    return Outcome.measured('FALLBACK_LABELLED', len(records), n_measured=len(records),
+                            what='projection records examined',
+                            detail='every external number is marked non-proprietary with its source')
 
 
 def assert_no_position_silently_dropped(records, players):
@@ -220,8 +224,11 @@ def assert_no_position_silently_dropped(records, players):
             f'{lost}. A position must degrade to PROJECTION_UNAVAILABLE, never vanish.',
             lost=lost)
     counts = collections.Counter(r['position'] for r in records)
-    return Outcome.ok('ALL_POSITIONS_PRESENT', dict(counts),
-                      f'{len(have)} positions represented: {sorted(have)}')
+    # OWNER RULE 1 (2026-10-02): the question is asked of the positions in the universe. An empty
+    # universe is BLOCKED/EMPTY_INPUT, not ALL_POSITIONS_PRESENT.
+    return Outcome.measured('ALL_POSITIONS_PRESENT', dict(counts), n_measured=len(want),
+                            what='positions in the player universe',
+                            detail=f'{len(have)} positions represented: {sorted(have)}')
 
 
 def readiness_matrix(records, players):

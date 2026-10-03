@@ -88,6 +88,9 @@ CODE_INVALID = 'ASSUMPTION_RECORD_INVALID'
 CODE_BLOCKED = 'PROMOTION_BLOCKED_BY_FALSIFIED_ASSUMPTION'
 CODE_UNTESTED = 'PROMOTION_BLOCKED_BY_UNTESTED_CRITICAL_ASSUMPTION'
 CODE_BAD_MOVE = 'ASSUMPTION_STATUS_MOVE_REFUSED'
+#: OWNER RULE 1 (2026-10-02): the two non-evidentiary refusals of assert_promotable.
+CODE_EMPTY = 'PROMOTION_VERDICT_EMPTY_INPUT'
+CODE_UNEVIDENCED = 'PROMOTION_VERDICT_UNEVIDENCED_ASSUMPTION'
 
 #: Fields that must be present and non-empty on every record.
 REQUIRED = ('id', 'claim', 'estimand', 'population', 'test', 'falsifier',
@@ -198,6 +201,40 @@ def assert_promotable(assumptions, *, consumer, require_tested=True) -> Outcome:
     """
     mine = [a for a in assumptions
             if consumer in a.downstream_dependencies]
+    # OWNER RULE 1 (2026-10-02): a consumer that no assumption names selected
+    # zero records and returned PROMOTION_NOT_BLOCKED_BY_ASSUMPTIONS -- nothing
+    # was falsified because nothing was examined (DEF-090 documents that this
+    # is every adjustment layer today). That verdict said nothing about the
+    # consumer; it is EMPTY_INPUT. Likewise a settled (SUPPORTED/FALSIFIED)
+    # record whose evidence is empty is a label with no measurement behind it:
+    # it cannot support a promotion verdict either way. Both are refused by
+    # name, apart from the true FAILs below, and nothing is rewritten.
+    if not mine:
+        return Outcome.blocked(
+            CODE_EMPTY,
+            f'{consumer}: no governed assumption names this consumer in its '
+            f'downstream_dependencies, so zero assumptions were examined. A '
+            f'gate that selected nothing has not cleared the consumer; it '
+            f'has not looked.',
+            cause=Cause.EMPTY_INPUT, spec_version=SPEC_VERSION,
+            consumer=consumer, n_assumptions=0,
+            n_assumptions_in_registry=len(list(assumptions)),
+            falsified_critical=[], untested_critical=[],
+            falsified_material=[])
+    unevidenced = [a for a in mine
+                   if a.status in (SUPPORTED, FALSIFIED) and not a.evidence]
+    if unevidenced:
+        return Outcome.blocked(
+            CODE_UNEVIDENCED,
+            f'{consumer}: {len(unevidenced)} assumption(s) carry a settled '
+            f'status with no evidence attached -- '
+            f'{[a.id for a in unevidenced]}. A status that nothing measured '
+            f'cannot decide a promotion in either direction.',
+            cause=Cause.EMPTY_INPUT, spec_version=SPEC_VERSION,
+            consumer=consumer, n_assumptions=len(mine),
+            unevidenced=[a.id for a in unevidenced],
+            falsified_critical=[], untested_critical=[],
+            falsified_material=[])
     falsified = [a for a in mine
                  if a.status == FALSIFIED and a.criticality == CRITICAL]
     untested = [a for a in mine

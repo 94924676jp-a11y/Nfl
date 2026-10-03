@@ -100,9 +100,15 @@ def test_D_ranks_from_two_clubs_may_not_be_pooled():
                  teams={'buf_rb1': 'BUF', 'det_rb1': 'DET'},
                  names={'buf_rb1': 'James Cook', 'det_rb1': 'Jahmyr Gibbs'},
                  label='two clubs')
-    check('D Cook against Gibbs is not an inversion, it is two scales',
-          o.state is State.PASS and o.evidence['n_ordered_pairs'] == 0,
-          f'{o.state}[{o.code}] pairs={o.evidence["n_ordered_pairs"]}')
+    # OWNER RULE 1 (2026-10-02): this pinned a PASS over zero ordered pairs.
+    # Two clubs are two scales, so no pair forms -- and no comparison is not
+    # a consistent ordering. The refusal is EMPTY_INPUT, never CODE_OK.
+    check('D Cook against Gibbs is not an inversion, it is two scales -- and zero '
+          'comparable pairs is refused as EMPTY_INPUT, not passed as CONSISTENT',
+          o.state is State.BLOCKED and o.code == RI.CODE_NO_PAIRS
+          and o.evidence.get('cause') == 'EMPTY_INPUT'
+          and o.evidence['n_ordered_pairs'] == 0,
+          f'{o.state}[{o.code}] pairs={o.evidence.get("n_ordered_pairs")}')
     missing = RI.check(pz, depth, n_draws=N, teams={'buf_rb1': 'BUF'},
                        label='no club')
     check('D a player with a rank and no club is refused, not pooled',
@@ -112,9 +118,12 @@ def test_D_ranks_from_two_clubs_may_not_be_pooled():
 
 def test_E_an_empty_check_is_not_a_passed_check():
     o = RI.check({}, {}, n_draws=N, teams={}, label='nothing')
-    check('E no probabilities is a refusal',
-          o.state is State.FAIL and o.code == RI.CODE_INPUT,
-          f'{o.state}[{o.code}]')
+    # OWNER RULE 1 (2026-10-02): this pinned the refusal as a FAIL, which reads
+    # as a measured ordering defect. No probabilities is BLOCKED/EMPTY_INPUT.
+    check('E no probabilities is a refusal -- BLOCKED with cause EMPTY_INPUT, not a FAIL',
+          o.state is State.BLOCKED and o.code == RI.CODE_INPUT
+          and o.evidence.get('cause') == 'EMPTY_INPUT',
+          f'{o.state}[{o.code}] cause={o.evidence.get("cause")}')
 
 
 def test_F_an_excused_starter_is_reported_not_counted():

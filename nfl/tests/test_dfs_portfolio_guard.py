@@ -19,6 +19,7 @@ if str(_REPO) not in sys.path:
 from nfl.production.dfs import portfolio_guard as PG                # noqa: E402
 from nfl.production.dfs import projection_confidence as PC          # noqa: E402
 from sportsplatform.governance.outcome import Cause, State          # noqa: E402
+from nfl.tests._controls import observe                             # noqa: E402
 
 PASSED = 0
 FAILED = 0
@@ -76,6 +77,7 @@ def test_A_the_delivered_portfolio_is_refused():
     check('the fixture is the real 40-lineup portfolio', len(lu) == 40,
           str(len(lu)))
     o = PG.authorize(lu, TAGS, label='DET_BUF_2026W2 delivered')
+    observe('nfl.production.dfs.portfolio_guard:audit:PORTFOLIO_EXPOSURE_DRIVEN_BY_KNOWN_DEFECT', o)
     check('it is REFUSED', o.state is State.FAIL
           and o.code == PG.CODE_DEFECT_DRIVEN, f'{o.state}[{o.code}]')
     check('  with cause GOVERNANCE',
@@ -143,6 +145,7 @@ def test_D_a_blocked_player_cannot_appear_at_all():
            'flex': ['Josh Allen', 'Amon-Ra St. Brown', 'Jared Goff',
                     'Sam LaPorta', 'Skyler Bell']}] * 40
     o = PG.authorize(lu, TAGS, label='with an inactive')
+    observe('nfl.production.dfs.portfolio_guard:audit:PORTFOLIO_CONTAINS_BLOCKED_PLAYER', o)
     check('the portfolio is refused', o.state is State.FAIL
           and o.code == PG.CODE_BLOCKED_PLAYER, f'{o.state}[{o.code}]')
     check('  naming Skyler Bell',
@@ -156,6 +159,7 @@ def test_E_an_untagged_player_is_a_refusal_not_a_default():
            'flex': ['Josh Allen', 'Amon-Ra St. Brown', 'Jared Goff',
                     'Sam LaPorta', 'Nobody At All']}] * 40
     o = PG.authorize(lu, TAGS, label='untagged')
+    observe('nfl.production.dfs.portfolio_guard:audit:PORTFOLIO_CONTAINS_UNTAGGED_PLAYER', o)
     check('the portfolio is refused', o.state is State.FAIL
           and o.code == PG.CODE_UNTAGGED, f'{o.state}[{o.code}]')
     check('  naming the untagged player',
@@ -169,6 +173,7 @@ def test_F_an_override_must_carry_evidence():
     o = PG.authorize(lu, TAGS, overrides={'Ray Davis': '   ',
                                           'Frank Gore Jr.': '  '},
                      label='empty override')
+    observe('nfl.production.dfs.portfolio_guard:audit:PORTFOLIO_OVERRIDE_CARRIES_NO_EVIDENCE', o)
     check('an override with no evidence is refused by name',
           o.state is State.FAIL and o.code == PG.CODE_OVERRIDE_UNEVIDENCED,
           f'{o.state}[{o.code}]')
@@ -200,6 +205,14 @@ def test_F_an_override_must_carry_evidence():
     check('  and the evidence string survives into the audit row',
           bool((o2.value or {}).get('Ray Davis', {}).get('override')),
           str((o2.value or {}).get('Ray Davis')))
+
+
+def test_G_positive_control_an_empty_portfolio_is_refused():
+    print('\nG. OWNER RULE 2 positive control: an empty portfolio is not a portfolio that passed')
+    o = PG.audit([], TAGS, label='empty')
+    observe('nfl.production.dfs.portfolio_guard:audit:PORTFOLIO_EMPTY', o)
+    check('an empty lineup list is refused by name', o.state is State.FAIL
+          and o.code == 'PORTFOLIO_EMPTY', f'{o.state}[{o.code}]')
 
 
 def test_zz_every_check_passed():

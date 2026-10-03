@@ -28,6 +28,7 @@ if _ROOT not in sys.path:
 
 from sportsplatform.governance.outcome import State           # noqa: E402
 from nfl.production import qb_accounting as QBACC             # noqa: E402
+from nfl.tests._controls import observe                       # noqa: E402
 
 PASSED = FAILED = 0
 
@@ -48,6 +49,7 @@ def test_a_stretched_draw_is_refused():
     target = np.array([20.0, 18.0, 22.0])
     drawn = np.array([1.0, 18.0, 21.0])
     o = QBACC.measure_composition_amplification(target, drawn)
+    observe('nfl.production.qb_accounting:measure_composition_amplification:QB_COMPOSITION_RATE_FIDELITY_UNVERIFIED', o)
     assert check('a stretched composition FAILs', o.state is State.FAIL,
                  f'{o.state}[{o.code}]')
     assert check('  it names rate fidelity, not mass',
@@ -99,6 +101,7 @@ def test_empty_and_dead_cells_are_not_a_pass():
 def test_shape_mismatch_refuses():
     o = QBACC.measure_composition_amplification(
         np.array([1.0, 2.0]), np.array([1.0]))
+    observe('nfl.production.qb_accounting:measure_composition_amplification:AMPLIFICATION_SHAPE_MISMATCH', o)
     assert check('a shape mismatch is a named failure',
                  o.state is State.FAIL
                  and o.code == 'AMPLIFICATION_SHAPE_MISMATCH', o.code)

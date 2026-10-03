@@ -88,6 +88,22 @@ def certify(information_cut, run_started_at, sources=None) -> Outcome:
             cause=Cause.GOVERNANCE,
             information_cut=information_cut, run_started_at=run_started_at)
 
+    # OWNER RULE 1 (2026-10-02): a sources map that was SUPPLIED and is empty
+    # (a universe that named no evidence family) reached CHRONOLOGY_CERTIFIED
+    # with all three invariants "asserted" and zero vintages inspected. No
+    # vintage before the cut is not every vintage before the cut. `None` is
+    # different: it is run_chain's declared clock-only precheck, and the
+    # certificate it returns now says which invariants it did NOT execute.
+    if sources is not None and not sources:
+        return Outcome.blocked(
+            'CHRONOLOGY_NO_SOURCES',
+            'an empty sources map was supplied, so no vintage clock could be '
+            'placed against the information cut. The two run clocks order '
+            'correctly or not, but a certificate over zero evidence families '
+            'certifies no evidence.', cause=Cause.EMPTY_INPUT,
+            n_sources_checked=0, information_cut=cut.isoformat(),
+            run_started_at=ran.isoformat())
+
     violations = []
     lead_s = (cut - ran).total_seconds()
     if lead_s > 0:
@@ -125,17 +141,26 @@ def certify(information_cut, run_started_at, sources=None) -> Outcome:
                     cut - t).total_seconds() / 3600.0
         per_source[fam] = rec
 
+    clock_invariant = ['information_cut <= run_started_at']
+    vintage_invariants = [
+        'every vintage retrieved_at <= information_cut',
+        'every vintage published_at <= information_cut where present',
+    ]
     val = {
         'spec_version': SPEC_VERSION,
         'information_cut': cut.isoformat(),
         'run_started_at': ran.isoformat(),
         'cut_is_before_run_by_seconds': -lead_s,
         'sources': per_source,
-        'invariants_asserted': [
-            'information_cut <= run_started_at',
-            'every vintage retrieved_at <= information_cut',
-            'every vintage published_at <= information_cut where present',
-        ],
+        'n_sources_checked': len(per_source),
+        # OWNER RULE 1 (2026-10-02): only an invariant that ran is asserted.
+        # The clock-only precheck (sources=None) asserts one and names the two
+        # it did not execute, instead of claiming all three over nothing.
+        'invariants_asserted': (clock_invariant + vintage_invariants
+                                if per_source else clock_invariant),
+        'invariants_not_executed': ([] if per_source else vintage_invariants),
+        'vintage_invariants_state': ('EXECUTED' if per_source
+                                     else 'NOT_EXECUTED'),
     }
     if violations:
         return Outcome.blocked(
@@ -163,11 +188,14 @@ def check_freshness(information_cut, sources) -> Outcome:
             f'{information_cut!r} is not a timestamp, so no age can be '
             f'measured against it.', cause=Cause.GOVERNANCE)
     if not sources:
+        # OWNER RULE 1 (2026-10-02): this refused, but as DEPENDENCY, which
+        # reads as "an upstream stage did not run". The map is simply empty:
+        # EMPTY_INPUT, with the count, so a reader knows nothing was aged.
         return Outcome.blocked(
             'FRESHNESS_NO_SOURCES',
             'no evidence families were supplied, so there is nothing whose '
             'freshness could be established. An empty check is not a passing '
-            'check.', cause=Cause.DEPENDENCY)
+            'check.', cause=Cause.EMPTY_INPUT, n_families=0)
 
     rows, failing = [], []
     for fam, src in sorted(sources.items()):

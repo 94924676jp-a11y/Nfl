@@ -158,6 +158,7 @@ def assert_no_inactive_survived(rows, inactive_ids, evidence) -> Outcome:
     With no official inactive evidence this returns BLOCKED, not PASS. An
     empty inactive list and a verified-empty one are different facts.
     """
+    rows = list(rows or ())
     if not evidence:
         return Outcome.blocked(
             'NO_OFFICIAL_INACTIVE_EVIDENCE',
@@ -165,12 +166,25 @@ def assert_no_inactive_survived(rows, inactive_ids, evidence) -> Outcome:
             'game, so the board CANNOT be certified inactive-clean. This is '
             'not the same as having verified that no inactive player is '
             'present.', cause=Cause.DATA, n_rows=len(rows))
+    if not rows:
+        # OWNER RULE 1 (2026-10-02): an empty board returned the PASS code
+        # "0 officially inactive players in final playable board" with
+        # n_rows=0 -- no inactive survived because nothing was on the board to
+        # survive. A board with no rows has not been certified inactive-clean;
+        # it has not been checked.
+        return Outcome.blocked(
+            'INACTIVE_AUDIT_EMPTY_INPUT',
+            'the board carries 0 rows, so no playable row was checked against '
+            'the official inactive list. Nothing survived because nothing was '
+            'examined; this is not a clean board.',
+            cause=Cause.EMPTY_INPUT, n_rows=0,
+            n_inactive_checked=len(set(inactive_ids or ())))
     survivors = [r for r in rows
                  if r.get('gsis_id') in set(inactive_ids)
                  and r.get('dk_points_mean') is not None]
     if survivors:
         return Outcome.fail(
-            'OFFICIALLY_INACTIVE_PLAYER_IN_PLAYABLE_BOARD', Cause.DATA,
+            'OFFICIALLY_INACTIVE_PLAYER_IN_PLAYABLE_BOARD',
             f'{len(survivors)} officially inactive player(s) carry a playable '
             f'projection. Publication is refused.',
             survivors=[{'gsis_id': r['gsis_id'], 'player': r.get('player')}

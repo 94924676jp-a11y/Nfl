@@ -126,6 +126,26 @@ def store_raw(raw: bytes, *, contest: C.DFSContestIdentity,
 def assert_completeness(*, n_entries_held: int,
                         declared_field_size: Optional[int]) -> Dict[str, str]:
     """COMPLETE only when both numbers exist and agree."""
+    # OWNER RULE 1 (2026-10-02): zero entries held against a declared field of
+    # zero satisfied `n_entries_held == declared_field_size` and returned
+    # COMPLETE. Two zeros agreeing is not a captured field; it is nothing
+    # measured. Zero entries held is EMPTY_INPUT whatever the declaration says,
+    # and a declared field of zero is a declaration of nothing. Both are
+    # reported as COMPLETENESS_UNKNOWN with state/cause named, never COMPLETE.
+    # A positive count against a None field size keeps its own UNKNOWN branch
+    # below: that one was measured and the declaration is what is missing.
+    if not n_entries_held or (declared_field_size is not None
+                              and not declared_field_size):
+        return {'completeness': C.COMPLETENESS_UNKNOWN,
+                'state': 'DFS_COMPLETENESS_NOT_EXECUTED',
+                'cause': 'EMPTY_INPUT',
+                'n_entries_held': int(n_entries_held or 0),
+                'declared_field_size': declared_field_size,
+                'why': f'{int(n_entries_held or 0)} entry(ies) held against a '
+                       f'declared field of {declared_field_size!r}: a zero on '
+                       f'either side means no field was captured, so '
+                       f'completeness was not measured. Two zeros agreeing is '
+                       f'not COMPLETE.'}
     if declared_field_size is None:
         return {'completeness': C.COMPLETENESS_UNKNOWN,
                 'why': f'{n_entries_held} entry(ies) held and the contest\'s '
@@ -206,7 +226,11 @@ def rehydrate(path, *, root=None) -> Outcome:
             f'cannot be verified is a story about a file.',
             value={'missing': missing, 'mismatched': bad,
                    'verified': checked})
-    return Outcome.ok(
+    # OWNER RULE 1 (2026-10-02): a manifest listing zero artifacts came back
+    # DFS_ARCHIVE_VERIFIED with n_verified=0 -- every file hashed true because
+    # there were no files. An archive nobody could check has not been verified;
+    # it is EMPTY_INPUT.
+    return Outcome.measured(
         'DFS_ARCHIVE_VERIFIED',
         {'manifest_hash': doc.get('manifest_hash'),
          'contest_key': doc.get('contest_key'),
@@ -214,5 +238,8 @@ def rehydrate(path, *, root=None) -> Outcome:
          'snapshot_type': doc.get('snapshot_type'),
          'n_verified': len(checked), 'verified': checked,
          'document': doc},
+        n_measured=len(checked),
+        what=f'raw artifacts rehashed for {doc.get("contest_key")}',
         detail=f'{len(checked)} artifact(s) hash true for '
-               f'{doc.get("contest_key")}')
+               f'{doc.get("contest_key")}',
+        manifest_path=str(p))

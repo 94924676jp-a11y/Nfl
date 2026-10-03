@@ -264,6 +264,18 @@ def assess(role_rows, *, budget=None, snap_rows=None) -> Outcome:
             'state': RESOLVED if abs(unresolved) == 0.0 else INCOMPLETE,
         }
 
+    if not rows:
+        # OWNER RULE 1 (2026-10-02): with no role row in an opportunity room
+        # there were no clubs, `open_clubs` was empty, and this returned
+        # PARTICIPATION_RESOLVED with n_rows=0. Zero players' participation is
+        # not resolved participation; nothing was accounted against the budget.
+        return Outcome.blocked(
+            'PARTICIPATION_EMPTY_INPUT',
+            'no role row sits in a carries, targets or dropbacks room, so no '
+            'club\'s snap budget was accounted. A budget nobody drew on has '
+            'not been resolved; it has not been examined.',
+            cause=Cause.EMPTY_INPUT, spec_version=SPEC_VERSION,
+            n_rows=0, budget=budget, budget_evidence=bev)
     open_clubs = [c for c, v in clubs.items() if v['state'] != RESOLVED]
     ev = dict(
         spec_version=SPEC_VERSION, budget=budget, budget_evidence=bev,
@@ -332,6 +344,24 @@ def assert_participation_supports_allocation(
     # as what it is -- a proposal -- and never replaces it.
     applied = governed
     proposed = max_unresolved_fraction
+    # OWNER RULE 1 (2026-10-02): with no participation rows, or with an
+    # allocating set that names nobody, `offenders` and `open_clubs` were both
+    # empty and the gate reached its PASS (or its tolerance refusal) having
+    # tested no player. Nothing to divide among is not a certified denominator.
+    if not rows:
+        return Outcome.blocked(
+            'PARTICIPATION_GATE_EMPTY_INPUT',
+            f'the participation outcome {part_outcome.code} carries no rows, '
+            f'so there is no participation to test an allocating set against.',
+            cause=Cause.EMPTY_INPUT, n_rows=0,
+            part_outcome_code=part_outcome.code)
+    if allocating_ids is not None and not set(allocating_ids):
+        return Outcome.blocked(
+            'ALLOCATING_SET_EMPTY',
+            f'{len(rows)} participation row(s) exist but the allocator '
+            f'declared an EMPTY set to divide among. A gate over nobody '
+            f'certifies nobody.', cause=Cause.EMPTY_INPUT, n_rows=len(rows),
+            n_allocating=0)
     if allocating_ids is None:
         missing = ['allocating_ids']
         return Outcome.blocked(

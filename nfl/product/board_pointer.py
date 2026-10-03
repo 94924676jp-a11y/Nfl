@@ -242,6 +242,19 @@ def _no_mixed_versions(board_dir) -> Outcome:
     except (OSError, ValueError) as e:
         return Outcome.blocked('BOARD_UNREADABLE', str(e), cause=Cause.DATA,
                                spec_version=SPEC_VERSION, path=str(d))
+    players = board.get('players') or []
+    if not players or not board.get('run_id'):
+        # OWNER RULE 1 (2026-10-02): a board with no player row joined every
+        # one of its zero rows to the manifest, and a board whose run_id is
+        # None matched a manifest whose run_id is None, so this returned
+        # SINGLE_VERSION_BOARD over nothing. One run of nobody is not one run.
+        return Outcome.blocked(
+            'SINGLE_VERSION_BOARD_EMPTY_INPUT',
+            f'{d}: {len(players)} board row(s), run_id '
+            f'{board.get("run_id")!r}. There is no row whose version could '
+            f'be checked against the manifest.', cause=Cause.EMPTY_INPUT,
+            n_players=len(players), run_id=board.get('run_id'),
+            spec_version=SPEC_VERSION, path=str(d))
     problems = []
     if board.get('run_id') != man.get('run_id'):
         problems.append(f'board run_id {board.get("run_id")!r} != manifest '

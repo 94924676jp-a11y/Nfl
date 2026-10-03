@@ -113,7 +113,12 @@ def build_sandbox(root: _pl.Path, which_pass: int) -> _pl.Path:
     (coord / 'OWNER_DECISIONS.md').write_text(
         '# Owner decisions\n\n## D-01 proof sandbox\n\nA decision does not '
         'expire.\n')
-    (coord / 'HANDOFF_LOG.jsonl').write_text('')
+    # OWNER RULE 1 (2026-10-02): validate_coordination refuses a log with no rows
+    # (LOG_EMPTY_INPUT). A new log starts with its SCHEMA row, as the live one does.
+    (coord / 'HANDOFF_LOG.jsonl').write_text(json.dumps(
+        {'kind': 'SCHEMA', 'note': 'sandbox log; required on every non-SCHEMA line: '
+                                   'timestamp, actor, task_id, from_status, to_status'})
+        + '\n')
 
     base = {'priority': 1, 'depends_on': [], 'created_by': 'owner',
             'result_path': None, 'commit_sha': None, 'blocks': [],

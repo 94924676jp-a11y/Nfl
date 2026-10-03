@@ -33,6 +33,7 @@ from nfl.production.state import availability as AV                   # noqa: E4
 
 import test_audit_migration as AM                                     # noqa: E402
 import test_dossier_migration as T                                    # noqa: E402
+import test_review_enforcement as TRE                                 # noqa: E402
 
 PASSED = FAILED = 0
 SLATE, CUT = '2026_02_CAR_ATL', '2026-09-22T23:00:00Z'
@@ -308,6 +309,12 @@ def test_the_widened_code_keeps_its_name_and_states_its_meaning():
        'the frame regardless of the row\'s size')
 
 
+def _one_dossier():
+    """One reviewed dossier with no projection, built without the roster vintage."""
+    return TRE.DOS.build_dossiers(universe_rows=[TRE.mk_row('ONE')],
+                                  information_cut=TRE.CUT).value['dossiers']
+
+
 # -- 5. refusals ------------------------------------------------------------
 def test_refusal_states_are_preserved():
     g = G.evaluate(None)
@@ -324,8 +331,16 @@ def test_refusal_states_are_preserved():
     g = G.evaluate(rep2, projection_digest='beef')
     ok(g.code == G.PLAYER_REVIEW_STALE and G.verdict_of(g) == G.BLOCKED,
        f'a review of a different run -> {g.code}')
+    # OWNER RULE 1 (2026-10-02): this pinned a PASS from a matching digest
+    # over a review that held no dossier. The digest match is tested over one
+    # reviewed dossier; with none the gate is refused as EMPTY_INPUT.
     g = G.evaluate(rep2, projection_digest='dead')
-    ok(G.verdict_of(g) == G.PASS, f'and a matching digest passes: {g.code}')
+    ok(g.code == G.PLAYER_REVIEW_NO_DOSSIERS and G.verdict_of(g) == G.BLOCKED
+       and g.evidence.get('cause') == 'EMPTY_INPUT',
+       f'a matching digest over no dossier is refused as EMPTY_INPUT: {g.code}')
+    g = G.evaluate(rep2, projection_digest='dead', dossiers=_one_dossier())
+    ok(G.verdict_of(g) == G.PASS,
+       f'and a matching digest over a reviewed dossier passes: {g.code}')
 
 
 def test_an_unknown_conflict_code_still_blocks():
@@ -358,8 +373,19 @@ def test_a_conflict_with_no_dossier_still_blocks():
 def test_require_pass_and_write_gate_are_unweakened():
     rep = {'conflicts': [], 'projection_source': {'digests': {}},
            'coverage': {}}
-    g = G.evaluate(rep)
-    ok(G.require_pass(g).state.name == 'PASS', 'a PASS permits optimization')
+    # OWNER RULE 1 (2026-10-02): this pinned PLAYER_REVIEW_PASS from a gate
+    # handed no dossier -- a review of nobody permitting optimization. A PASS
+    # now needs a reviewed dossier; the empty call is refused as EMPTY_INPUT.
+    empty = G.evaluate(rep)
+    ok(empty.state.name == 'BLOCKED' and empty.code == G.PLAYER_REVIEW_NO_DOSSIERS
+       and empty.evidence.get('cause') == 'EMPTY_INPUT'
+       and G.require_pass(empty).state.name == 'FAIL',
+       f'a gate handed no dossier is refused as EMPTY_INPUT and permits nothing: '
+       f'{empty.state.name}[{empty.code}]')
+    ds = _one_dossier()
+    g = G.evaluate(rep, dossiers=ds)
+    ok(G.require_pass(g).state.name == 'PASS',
+       f'a PASS over {len(ds)} reviewed dossier(s) permits optimization')
     bad = G.evaluate(None)
     r = G.require_pass(bad)
     ok(r.state.name == 'FAIL'

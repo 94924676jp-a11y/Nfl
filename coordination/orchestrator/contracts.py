@@ -146,6 +146,7 @@ PROTECTED_PATHS = (
     'coordination/OWNER_DECISIONS.md',
     'coordination/AUTOMATION_POLICY.json',
     'coordination/orchestrator/MODELS.json',
+    'coordination/MODE_POLICY.json',   # OWNER RULE 3 (2026-10-02): the authority boundary is the owner's to amend
     'nfl/production/authorization.py',
     'nfl/production/review/gate.py',
     '.github/workflows/',

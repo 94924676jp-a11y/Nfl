@@ -109,11 +109,15 @@ def reconcile_nonqb(share, other, team_volume, player_opportunity,
     # is the failure mode this project pays for most often, and an accounting
     # module that reports PASS on an empty draw set is exactly that.
     if S.ndim != 2 or S.size == 0 or not g:
-        return Outcome.fail(
+        # OWNER RULE 1 (2026-10-02): this refused, but as a FAIL, which reads
+        # as "the draws were bad". They were absent. BLOCKED/EMPTY_INPUT keeps
+        # FAIL meaning an identity that was checked and did not hold.
+        return Outcome.blocked(
             'NONQB_ACCOUNTING_VACUOUS',
             f'nothing to reconcile: share has shape {S.shape} over '
             f'{len(g)} group(s). A check that examined no cell has not '
-            f'passed.', shape=list(S.shape), n_groups=len(g))
+            f'passed.', cause=Cause.EMPTY_INPUT, shape=list(S.shape),
+            n_groups=len(g), n_cells_checked=0)
     n, m = S.shape
     for name, arr in (('other', O), ('team_volume', V)):
         if arr.shape != (len(g), m):
@@ -309,10 +313,14 @@ def reconcile_rushing(carry_share, carry_other, team_carries,
     C = np.asarray(player_carries, np.float64)
     g = _groups(starts, counts)
     if S.ndim != 2 or S.size == 0 or not g:
-        return Outcome.fail(
+        # OWNER RULE 1 (2026-10-02): was a FAIL; an absent draw set is
+        # EMPTY_INPUT, distinct from a rushing identity that was checked and
+        # did not hold.
+        return Outcome.blocked(
             'NONQB_ACCOUNTING_VACUOUS',
             f'nothing to reconcile: carry share has shape {S.shape} over '
-            f'{len(g)} group(s)', shape=list(S.shape))
+            f'{len(g)} group(s)', cause=Cause.EMPTY_INPUT,
+            shape=list(S.shape), n_groups=len(g), n_cells_checked=0)
     n, m = S.shape
     viol, ev = [], {'n_players': n, 'n_draws': m, 'n_groups': len(g),
                     'n_cells_checked': int(n * m),
@@ -399,17 +407,29 @@ def assert_no_double_counted_qb_carries(rb_carries, other_carries,
     and it is refused here rather than reconciled, because reconciling it would
     mean choosing which of two legitimate draws to shrink.
     """
-    rb = np.asarray(rb_carries, np.float64).sum(0)
+    rb_a = np.asarray(rb_carries, np.float64)
     oc = np.asarray(other_carries, np.float64)
     tc = np.asarray(team_carries, np.float64)
     qb = np.asarray(qb_rush, np.float64)
+    # OWNER RULE 1 (2026-10-02): over zero draws `excess.mean()` is NaN and
+    # this returned QB_CARRY_CONTAINMENT_MEASURED with a NaN "measurement".
+    # Nothing was measured; say so with the count rather than a float.
+    n_cells = int(min(a.size for a in (rb_a, oc, tc, qb)))
+    if n_cells == 0:
+        return Outcome.blocked(
+            'QB_CARRY_CONTAINMENT_EMPTY_INPUT',
+            f'no draw cell to measure: rb {rb_a.shape}, other {oc.shape}, '
+            f'team {tc.shape}, qb {qb.shape}. An excess over nothing is NaN, '
+            f'not a measurement.', cause=Cause.EMPTY_INPUT, n_measured=0)
+    rb = rb_a.sum(0)
     naive = rb + oc + qb
     excess = naive - tc
-    return Outcome.ok(
+    return Outcome.measured(
         'QB_CARRY_CONTAINMENT_MEASURED',
         value={'mean_excess_if_summed': float(excess.mean()),
                'mean_team_carries': float(tc.mean()),
                'relative_excess': float(excess.mean() / max(tc.mean(), 1e-9))},
+        n_measured=int(excess.size), what='draw cells of RB+OTHER+QB vs team',
         detail='RB + OTHER is already the team carry count. This reports what '
                'adding the QB draw on top would inflate it by; no production '
                'path forms that sum.',

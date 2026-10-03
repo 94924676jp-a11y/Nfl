@@ -152,8 +152,10 @@ def assert_established_role_not_shrunk_down(records):
             f'That is the signature of shrinking toward a population mean that includes '
             f'reserves. Shrink toward the player, not the position.',
             violations=worst, n_violations=len(bad))
-    return Outcome.ok('ESTABLISHED_ROLE_PRESERVED', len(records),
-                      'no established role was projected below its observed share')
+    # OWNER RULE 1 (2026-10-02): zero records examined is BLOCKED/EMPTY_INPUT, not PRESERVED.
+    return Outcome.measured('ESTABLISHED_ROLE_PRESERVED', len(records), n_measured=len(records),
+                            what='projection records examined',
+                            detail='no established role was projected below its observed share')
 
 
 def assert_td_rate_not_raw_count(records):
@@ -185,8 +187,10 @@ def assert_td_rate_not_raw_count(records):
             f'{len(bad)} player(s) with real opportunity volume carry a touchdown '
             f'expectation of zero. A zero count over two games is not a zero rate.',
             violations=bad[:10], n_violations=len(bad))
-    return Outcome.ok('TD_RATE_HAS_A_FLOOR', len(records),
-                      'no player with real volume carries a zero touchdown expectation')
+    # OWNER RULE 1 (2026-10-02): zero records examined is BLOCKED/EMPTY_INPUT, not a floor held.
+    return Outcome.measured('TD_RATE_HAS_A_FLOOR', len(records), n_measured=len(records),
+                            what='projection records examined',
+                            detail='no player with real volume carries a zero touchdown expectation')
 
 
 #: Measured appearance rate for a club's second quarterback, from nfl/derived/USAGE_HISTORY over
@@ -281,9 +285,12 @@ def assert_no_stale_replacement_role(records, players, predicted_starters):
             n_violations=len(bad),
             rules=['ABOVE_OWN_STARTER (all positions)',
                    f'BACKUP_QB_ABOVE_MEASURED_APPEARANCE_RATE ({QB2_APPEARANCE_RATE})'])
-    return Outcome.ok('ROLE_STATE_CONSUMED', len(records),
-                      'no non-starter is projected above his own club predicted starter, and no '
-                      'backup quarterback exceeds the measured rank-2 appearance rate')
+    # OWNER RULE 1 (2026-10-02): zero records examined is BLOCKED/EMPTY_INPUT, not CONSUMED.
+    return Outcome.measured('ROLE_STATE_CONSUMED', len(records), n_measured=len(records),
+                            what='projection records examined',
+                            detail='no non-starter is projected above his own club predicted '
+                                   'starter, and no backup quarterback exceeds the measured '
+                                   'rank-2 appearance rate')
 
 
 def assert_positional_coverage(records, players, required=ROSTERABLE):
@@ -305,8 +312,12 @@ def assert_positional_coverage(records, players, required=ROSTERABLE):
             f'projections. A position with no component is a hole in the product, not a '
             f'slate property.',
             missing=missing, counts=dict(have))
-    return Outcome.ok('ALL_POSITIONS_COVERED', dict(have),
-                      f'every rosterable position has proprietary coverage: {dict(have)}')
+    # OWNER RULE 1 (2026-10-02): the coverage question is asked of the rosterable positions ON
+    # THIS SLATE. A universe with none of them is BLOCKED/EMPTY_INPUT, not COVERED.
+    n_required_present = sum(1 for p in required if p in present)
+    return Outcome.measured('ALL_POSITIONS_COVERED', dict(have), n_measured=n_required_present,
+                            what='rosterable positions present on the slate',
+                            detail=f'every rosterable position has proprietary coverage: {dict(have)}')
 
 
 def assert_cold_start_identity_resolved(records, players, conflicts):
@@ -329,8 +340,11 @@ def assert_cold_start_identity_resolved(records, players, conflicts):
             'PROJECTION_ON_UNRESOLVED_IDENTITY',
             f'{len(bad)} player(s) with an OPEN identity conflict carry a projection',
             violations=bad, n_violations=len(bad))
-    return Outcome.ok('IDENTITY_RESOLVED_BEFORE_PROJECTION', len(unresolved),
-                      f'{len(unresolved)} unresolved identity/identities, none projected')
+    # OWNER RULE 1 (2026-10-02): zero records examined is BLOCKED/EMPTY_INPUT, not RESOLVED.
+    return Outcome.measured('IDENTITY_RESOLVED_BEFORE_PROJECTION', len(unresolved),
+                            n_measured=len(records), what='projection records examined',
+                            detail=f'{len(unresolved)} unresolved identity/identities, none projected',
+                            n_unresolved=len(unresolved))
 
 
 def assert_concentration_classified(audit, threshold=40.0):
@@ -353,9 +367,12 @@ def assert_concentration_classified(audit, threshold=40.0):
             f'{len(missing)} player(s) above {threshold}% exposure carry no verdict with '
             f'enumerated football support: {missing}',
             missing=missing, n=len(missing))
-    return Outcome.ok('CONCENTRATION_CLASSIFIED', len(heavy),
-                      f'{len(heavy)} players above {threshold}% exposure, each with a '
-                      f'verdict and its supports')
+    # OWNER RULE 1 (2026-10-02): an audit with no exposure table has had nobody's concentration
+    # examined. BLOCKED/EMPTY_INPUT, not CLASSIFIED. Zero heavy players over a real table passes.
+    return Outcome.measured('CONCENTRATION_CLASSIFIED', len(heavy), n_measured=len(exp),
+                            what='players with an exposure entry',
+                            detail=f'{len(heavy)} players above {threshold}% exposure, each with a '
+                                   f'verdict and its supports', n_heavy=len(heavy))
 
 
 def run_all(records, players, external, predicted_starters, conflicts, audit=None):

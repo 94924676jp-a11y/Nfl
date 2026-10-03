@@ -973,11 +973,17 @@ def evaluate(board_dir, *, inactives=None, names=None) -> Outcome:
     for fn in _SOFT_GATES:
         findings.extend(fn(board, manifest, draws))
     if not findings:
-        return Outcome.fail(
+        # OWNER RULE 1 (2026-10-02): this refused, but as a FAIL, which reads
+        # as a board that was measured and found bad. Nothing was measured:
+        # zero findings from every gate is EMPTY_INPUT, under the same code.
+        return Outcome.blocked(
             'QUALITY_GATES_EVALUATED_NOTHING',
             f'{board_dir} produced zero findings. A gate set that measured '
             f'nothing has not passed anything; an empty result here is an '
-            f'error, not a clean board.', spec_version=SPEC_VERSION)
+            f'error, not a clean board.', cause=Cause.EMPTY_INPUT,
+            n_findings=0, n_hard_gates=len(GATES),
+            n_players=len(board.get('players') or []),
+            spec_version=SPEC_VERSION)
     v = verdict(findings, board)
     return Outcome.ok('QUALITY_GATES_EVALUATED', value=v,
                       detail=f'{len(findings)} finding(s) over '
@@ -992,6 +998,39 @@ def evaluate(board_dir, *, inactives=None, names=None) -> Outcome:
 def verdict(findings, board=None) -> dict:
     """Compose findings into per-family and board product states."""
     board = board or {}
+    findings = list(findings or ())
+    if not findings:
+        # OWNER RULE 1 (2026-10-02): an empty finding list had nothing fired
+        # and nothing unevaluable, so this composed PRELIMINARY with "every
+        # HARD gate evaluated and passed". No gate produced a finding; the
+        # board is WITHHELD and the record says why in its own state.
+        absent = {k: dict(v) for k, v in ABSENT_FAMILIES.items()}
+        for k in absent:
+            absent[k]['verification'] = verify_absent_families()[k]
+        return {
+            'spec_version': SPEC_VERSION,
+            'run_id': board.get('run_id'), 'game_id': board.get('game_id'),
+            'state': 'QUALITY_VERDICT_EMPTY_INPUT', 'cause': 'EMPTY_INPUT',
+            'board_state': WITHHELD,
+            'why': ('no gate finding was supplied, so no HARD gate was '
+                    'evaluated. A verdict composed over zero findings is '
+                    'EMPTY_INPUT, not a clean board, and the board is '
+                    'withheld.'),
+            'publication_state': 'PRELIMINARY_PROVISIONAL',
+            'publication_state_note':
+                'FINAL is not reachable without an authoritative inactive '
+                'list. No gate result and no green suite can raise it.',
+            'hard_fired': [], 'hard_insufficient_evidence': [],
+            'soft_flags': [], 'quarantined_families': {},
+            'rows_withheld': [], 'unavailable_families': absent,
+            'counts': {'findings': 0, 'hard': 0, 'hard_fired': 0,
+                       'hard_insufficient_evidence': 0, 'soft': 0,
+                       'soft_fired': 0},
+            'soft_never_changes_anything':
+                'a SOFT diagnostic flags for review. It does not quarantine, '
+                'withhold, rescale, clip or floor anything, and no yardage '
+                'floor exists anywhere in this module.',
+        }
     hard = [f for f in findings if f['class'] == HARD]
     soft = [f for f in findings if f['class'] == SOFT]
     fired = [f for f in hard if f['state'] == FIRED]

@@ -238,10 +238,21 @@ def test_a_measured_claim_on_unmeasured_evidence_blocks():
 def test_not_checked_is_not_a_pass():
     rep = {'conflicts': [], 'projection_source': {'digests': {}},
            'coverage': {}}
-    g = GATE.evaluate(rep)
+    # OWNER RULE 1 (2026-10-02): this pinned a PASS verdict from a gate handed
+    # no dossier. The verdict is now issued over one reviewed dossier, and the
+    # dossier-less call is refused as EMPTY_INPUT rather than passed.
+    empty = GATE.evaluate(rep)
+    ok(empty.state.name == 'BLOCKED' and empty.code == GATE.PLAYER_REVIEW_NO_DOSSIERS
+       and empty.evidence.get('cause') == 'EMPTY_INPUT',
+       f'with no dossier at all the gate is refused as EMPTY_INPUT, not passed: '
+       f'{empty.state.name}[{empty.code}]')
+    one = TRE.DOS.build_dossiers(
+        universe_rows=[TRE.mk_row('ONE')],
+        information_cut=TRE.CUT).value['dossiers']
+    g = GATE.evaluate(rep, dossiers=one)
     v = GATE.payload(g)
     ok(v['verdict'] == GATE.PASS,
-       'without the requirement a verdict is still issued')
+       'without the requirement a verdict is still issued over a reviewed dossier')
     ok(all(s == IC.NOT_CHECKED for s in v['integrity']['coverage'].values()),
        f'but every invariant reads NOT_CHECKED, visibly: '
        f'{v["integrity"]["coverage"]}')

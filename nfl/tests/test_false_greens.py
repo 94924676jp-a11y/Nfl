@@ -131,8 +131,19 @@ def test_a_run_cannot_claim_a_cut_it_has_not_reached():
        f'a cut before its run certifies: {good.code}')
     ok(good.value['cut_is_before_run_by_seconds'] > 0,
        'and the certificate carries the margin')
-    ok(len(good.value['invariants_asserted']) == 3,
-       'three invariants are asserted by name, not implied')
+    # OWNER RULE 1 (2026-10-02): this pinned three invariants "asserted" by a
+    # call that inspected no vintage. The clock-only precheck asserts the one
+    # it ran and names the two it did not execute; an EMPTY sources map is
+    # refused outright.
+    ok(good.value['invariants_asserted'] == ['information_cut <= run_started_at']
+       and len(good.value['invariants_not_executed']) == 2
+       and good.value['vintage_invariants_state'] == 'NOT_EXECUTED',
+       'the clock-only precheck asserts one invariant by name and names the two '
+       'vintage invariants it did not execute')
+    nosrc = CH.certify(CUT, RAN, sources={})
+    ok(nosrc.state is State.BLOCKED and nosrc.code == 'CHRONOLOGY_NO_SOURCES'
+       and nosrc.evidence.get('cause') == 'EMPTY_INPUT',
+       f'an empty sources map is refused as EMPTY_INPUT, not certified: {nosrc.code}')
 
     after = CH.certify(CUT, RAN, sources={
         'injuries': {'retrieved_at': '2026-09-21T20:00:00Z'}})
@@ -151,8 +162,10 @@ def test_a_run_cannot_claim_a_cut_it_has_not_reached():
     # The real run, end to end.
     c = _ctx()
     live = CH.certify(CUT, RAN, sources=c['uni'].evidence['sources'])
-    ok(live.state is State.PASS,
-       f'the corrected Monday chain certifies: {live.code}')
+    ok(live.state is State.PASS and len(live.value['invariants_asserted']) == 3
+       and live.value['n_sources_checked'] > 0,
+       f'the corrected Monday chain certifies all three invariants over '
+       f'{live.value.get("n_sources_checked")} source(s): {live.code}')
 
 
 # --- 3. TOLERANCE ----------------------------------------------------------

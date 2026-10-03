@@ -167,11 +167,14 @@ def assert_no_stale_labels(paths=None) -> Outcome:
     bad_words = re.compile(r'\b(ACCEPTED|PROMOTED)\b')
     paths = paths or [_REPO / 'nfl' / 'production' / 'run_forecast.py']
     offences = []
+    n_scanned, n_lines = 0, 0
     for p in paths:
         p = pathlib.Path(p)
         if not p.exists():
             continue
+        n_scanned += 1
         for i, line in enumerate(p.read_text().splitlines(), 1):
+            n_lines += 1
             if not bad_words.search(line) or line.strip().startswith('#'):
                 continue
             for layer, sub in LAYER_SUBSYSTEM.items():
@@ -188,9 +191,15 @@ def assert_no_stale_labels(paths=None) -> Outcome:
             f'{len(offences)} production string(s) call a non-production '
             f'subsystem ACCEPTED or PROMOTED. PATH_C_STATE is authoritative.',
             offences=offences)
-    return Outcome.ok('NO_STALE_GOVERNANCE_LABELS', value=len(paths),
-                      detail='no production string overstates a governance '
-                             'state')
+    # OWNER RULE 1 (2026-10-02): a path list whose files do not exist was
+    # skipped silently and this returned NO_STALE_GOVERNANCE_LABELS with
+    # value=len(paths). A file nobody read cannot have been found clean.
+    return Outcome.measured(
+        'NO_STALE_GOVERNANCE_LABELS', value=n_scanned, n_measured=n_lines,
+        what='production source lines scanned for a stale governance label',
+        n_files_scanned=n_scanned, n_paths_requested=len(paths),
+        detail=f'{n_lines} line(s) in {n_scanned} file(s): no production '
+               f'string overstates a governance state')
 
 
 def assert_implementations_exist() -> Outcome:
@@ -223,6 +232,12 @@ def assert_implementations_exist() -> Outcome:
             f'{len(bad)} layer(s) claim a production implementation that does '
             f'not import', offences=bad)
     n = sum(1 for s_, _ in IMPLEMENTATION.values() if s_ == 'IMPLEMENTED')
-    return Outcome.ok('IMPLEMENTATIONS_PRESENT', value=n,
-                      detail=f'{n} of {len(IMPLEMENTATION)} layers have a '
-                             f'production module that imports')
+    # OWNER RULE 1 (2026-10-02): an IMPLEMENTATION table with no layer in it,
+    # or one in which nothing claims IMPLEMENTED, produced no `bad` entry and
+    # returned IMPLEMENTATIONS_PRESENT with value=0. No module was imported.
+    return Outcome.measured(
+        'IMPLEMENTATIONS_PRESENT', value=n, n_measured=n,
+        what='layers claiming IMPLEMENTED whose module was imported',
+        n_layers_declared=len(IMPLEMENTATION),
+        detail=f'{n} of {len(IMPLEMENTATION)} layers have a production '
+               f'module that imports')
