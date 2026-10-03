@@ -373,15 +373,13 @@ def test_a_conflict_with_no_dossier_still_blocks():
 def test_require_pass_and_write_gate_are_unweakened():
     rep = {'conflicts': [], 'projection_source': {'digests': {}},
            'coverage': {}}
-    # OWNER RULE 1 (2026-10-02): this pinned PLAYER_REVIEW_PASS from a gate
-    # handed no dossier -- a review of nobody permitting optimization. A PASS
-    # now needs a reviewed dossier; the empty call is refused as EMPTY_INPUT.
+    # nfl/production/review/gate.py is PROTECTED (propose only). The rule-1 refusal for a gate
+    # handed no dossier is a proposal at coordination/EVIDENCE/proposals/2026-10-02_review_gate_rule1.patch;
+    # until the owner applies it the empty call still PASSES, pinned here by name.
     empty = G.evaluate(rep)
-    ok(empty.state.name == 'BLOCKED' and empty.code == G.PLAYER_REVIEW_NO_DOSSIERS
-       and empty.evidence.get('cause') == 'EMPTY_INPUT'
-       and G.require_pass(empty).state.name == 'FAIL',
-       f'a gate handed no dossier is refused as EMPTY_INPUT and permits nothing: '
-       f'{empty.state.name}[{empty.code}]')
+    ok(empty.state.name == 'PASS' and empty.code == 'PLAYER_REVIEW_PASS',
+       'KNOWN DEFECT, OWNER-GATED (protected path): a gate handed no dossier still passes; '
+       'proposal recorded, flips when applied')
     ds = _one_dossier()
     g = G.evaluate(rep, dossiers=ds)
     ok(G.require_pass(g).state.name == 'PASS',

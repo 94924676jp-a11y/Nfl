@@ -102,10 +102,15 @@ def test_the_forecast_week_ITSELF_is_refused():
 
 def test_empty_rows_are_not_a_leak_but_are_not_evidence_either():
     o = CSE.assert_pit([], before_week=3)
-    check('no rows is not reported as a leak', o.state is State.PASS,
-          f'{o.state} {o.code}')
+    # OWNER RULE 1 (2026-10-02): no rows used to PASS the PIT check, a verdict of "no leak"
+    # reached by examining nothing. It is now BLOCKED/EMPTY_INPUT: not a leak (never FAIL), and
+    # not evidence of a clean cut either.
+    check('no rows is not reported as a leak', o.state is not State.FAIL, f'{o.state} {o.code}')
+    check('  and it is not reported as a clean cut either: BLOCKED with cause EMPTY_INPUT',
+          o.state is State.BLOCKED and o.evidence.get('cause') == 'EMPTY_INPUT'
+          and o.code.endswith('EMPTY_INPUT'), f'{o.state} {o.code}')
     check('and max_week_used is None rather than 0',
-          (o.value or {}).get('max_week_used') is None, str(o.value))
+          ((o.value or {}) or o.evidence).get('max_week_used') is None, str(o.value))
 
 
 # ============================== the protected action, via a real caller frame

@@ -240,9 +240,13 @@ from nfl.production.nonqb import current_season_team_volume as TV
           str(sorted(r['defined_in'].split('/')[-1] for r in pub)))
     comp = [r for r in c['rows'] if r['guard'] == 'assert_complete']
     check('assert_complete likewise', len(comp) == 2, f'{len(comp)} row(s)')
+    # OWNER RULE 2 (2026-10-02): identity_crosswalk.assert_complete now has a positive control
+    # in nfl/tests, so the census sees a TEST caller (NO_PROD_CALLER) where it saw none
+    # (NO_CALLER_AT_ALL). Either reading says the same thing this check exists for: the
+    # uncalled guard is not wired into production and is not hidden behind the one that is.
     check('and the uncalled one is no longer hidden behind the wired one',
-          {r['reachability'] for r in comp}
-          == {'EXTERNALLY_CALLED', 'NO_CALLER_AT_ALL'},
+          {r['reachability'] for r in comp} in ({'EXTERNALLY_CALLED', 'NO_CALLER_AT_ALL'},
+                                                 {'EXTERNALLY_CALLED', 'NO_PROD_CALLER'}),
           str({r['defined_in'].split('/')[-1]: r['reachability']
                for r in comp}))
 

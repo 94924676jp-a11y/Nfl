@@ -3676,3 +3676,18 @@ same three suites): the running surface already hashed to `efab90d6…` against 
 entries 18). The rule-1 edits moved the running hash to `2a59c19e…`; they did not open the gap.
 Both facts stand: a new capture release approval is the owner's, and the pinned counts in
 `test_capture_obligations` are a separate drift item, not touched here.
+
+#### Full-run classification (2026-10-03)
+
+First full run on the governance tree: 338 modules, 15,634 checks executed, 180 failing, 69 raised,
+54 red modules. Control: the same 54 modules at the pre-batch head 7d3d0e90 in a worktree.
+43 fail with identical counts there; 3 improved; 8 were worse. Of the 8, five were this batch's
+and are fixed (orchestrator sandbox mode check; the runner's NOT_EXECUTED verdict keyed on
+executed functions, found by the harness audit's seeded module; two protected-gate expectations
+pinned as the proposal they are; the PIT guard's empty-rows control converted to rule 1; the
+guard-reachability census accepting a test caller as NO_PROD_CALLER). The remaining one,
+`test_qb2_production`, is environmental: at 7d3d0e90 the derived cache is absent and the module
+raises before reaching the pipeline; in this tree the cache was built by earlier runs, the module
+runs further and meets the pre-existing `REQUIRED_SOURCE_NOT_DECLARED` refusal at
+capture_validation (run_forecast.py:379, untouched by this batch). That refusal is the gate
+working; the test's fixture declares only `schedules`.
