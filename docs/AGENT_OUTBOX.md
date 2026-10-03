@@ -3664,3 +3664,15 @@ rewrite separately for ratification. It is the next item after the proof.
    adjustment until each layer registers its assumptions, is fail-closed and would stop the
    adjustment path outright. That is the owner's call; the current behaviour is recorded and tested,
    not hidden.
+
+#### Correction (2026-10-03): the capture-surface mismatch predates the rule-1 edits
+
+The GOV-1/2/3 commit message says the rule-1 edits under `nfl/capture/` make
+`test_capture_deployment_integrity` and `test_capture_prod_deployment` report
+`CAPTURE_EXECUTOR_SURFACE_MISMATCH`. Measured at the previous head (8f3a9c38, a worktree run of the
+same three suites): the running surface already hashed to `efab90d6…` against approved release
+`CAPREL-361a020a66c673b8`'s `8094370a…`, with the same 1 + 5 failing checks, and
+`test_capture_obligations` already carried the same 4 (orphan count 51 vs the pinned 48; T-90 cron
+entries 18). The rule-1 edits moved the running hash to `2a59c19e…`; they did not open the gap.
+Both facts stand: a new capture release approval is the owner's, and the pinned counts in
+`test_capture_obligations` are a separate drift item, not touched here.
