@@ -109,11 +109,21 @@ def _num(v):
         return v
 
 
-def load():
+#: Every FC export this module has been handed, by slate. Week 3 stays the default.
+SOURCES = {
+    '2026W3': (SRC, RETRIEVED, SOURCE_NAME),
+    '2026W4': (_REPO / 'nfl/dfs/salaries/raw/THIRDPARTY_players_EARLY_ONLY_2026W4_CONTEXT_ONLY.csv',
+               '2026-10-03 17:02Z, delivered by the owner (pre-inactives)',
+               'FantasyCruncher DraftKings NFL 2026 week 4 Early Only export'),
+}
+
+
+def load(slate_id: str = '2026W3'):
     """FC rows keyed by (name, team), each value wrapped and labelled."""
     guard = assert_no_proprietary_importer()
     if guard.state.value != 'PASS':
         return guard
+    SRC, RETRIEVED, SOURCE_NAME = SOURCES[slate_id]
     if not SRC.exists():
         return Outcome.blocked('FC_EXPORT_ABSENT', f'{SRC.name} not in tree',
                                cause=Cause.DATA)
@@ -127,7 +137,8 @@ def load():
     missing = [f for f in ('Player', 'Team', 'Pos', 'Salary', 'FC Proj') if f not in idx]
     if missing:
         return Outcome.fail('FC_EXPORT_SCHEMA', f'export lacks {missing}')
-    out, digest = {}, _digest()
+    import hashlib as _h
+    out, digest = {}, _h.sha256(SRC.read_bytes()).hexdigest()
     for r in rows[hdr_i + 1:]:
         if len(r) <= idx['Player'] or not r[idx['Player']].strip():
             continue
@@ -166,11 +177,18 @@ FC_TO_DK = {
     ('Velus Jones', 'SEA'): 'Velus Jones Jr.',
     ('Lew Nichols III', 'PIT'): 'Lew Nichols',
     ('Andrew Ogletree', 'IND'): 'Drew Ogletree',
+    # 2026 week 4 Early Only: FC spelling -> the DK export's spelling, same club and position.
+    ('Kenneth Gainwell', 'TB'): 'Kenny Gainwell',
+    ('Mitchell Tinsley', 'CIN'): 'Mitch Tinsley',
+    ('Gardner Minshew', 'ARI'): 'Gardner Minshew II',
+    # ('Ed Williams', 'JAC') is NOT aliased: DK prices only CJ Williams at JAX WR, and a different
+    # first name is not established as the same person.
 }
-FC_TEAM_TO_DK = {'JAC': 'JAX'}
+FC_TEAM_TO_DK = {'JAC': 'JAX', 'LAR': 'LA'}
 DST_NAME = re.compile(r'^(Bengals|Texans|Seahawks|Panthers|Steelers|Giants|Titans|'
                       r'Bills|Browns|Patriots|Lions|Chiefs|Commanders|Jets|Dolphins|'
-                      r'Chargers|Colts|Jaguars)$')
+                      r'Chargers|Colts|Jaguars|Bears|Ravens|Rams|Cardinals|Packers|Eagles|'
+                      r'Buccaneers|Cowboys)$')
 
 
 def join_to_dk(fc_rows, dk_players):
