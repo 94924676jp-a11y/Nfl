@@ -163,6 +163,16 @@
    "where": "nfl/dfs/salaries/postinactives_board.py"
   },
   {
+   "detector": "nfl.opt.classic_portfolio:load:PORTFOLIO_DRAWS_NOT_FROM_THIS_PROJECTION",
+   "kind": "outcome-code",
+   "where": "nfl/opt/classic_portfolio.py"
+  },
+  {
+   "detector": "nfl.opt.classic_portfolio:load:PORTFOLIO_REFUSES_MARKET_ARM",
+   "kind": "outcome-code",
+   "where": "nfl/opt/classic_portfolio.py"
+  },
+  {
    "detector": "nfl.opt.classic_portfolio:research_book_gate:PORTFOLIO_NO_RESEARCH_BOOK",
    "kind": "outcome-code",
    "where": "nfl/opt/classic_portfolio.py"
@@ -1054,7 +1064,22 @@
    "where": "nfl/tools/check_retention.py"
   },
   {
+   "detector": "nfl.tools.classic_prelock:evaluate:AWAITING_OFFICIAL_INACTIVES",
+   "kind": "outcome-code",
+   "where": "nfl/tools/classic_prelock.py"
+  },
+  {
+   "detector": "nfl.tools.classic_prelock:evaluate:RERUN_REQUIRED",
+   "kind": "outcome-code",
+   "where": "nfl/tools/classic_prelock.py"
+  },
+  {
    "detector": "nfl.tools.classic_prop_compare:compare:PROPS_NO_HARD_ROCK_BOARD",
+   "kind": "outcome-code",
+   "where": "nfl/tools/classic_prop_compare.py"
+  },
+  {
+   "detector": "nfl.tools.classic_prop_compare:compare:PROPS_PROJECTION_CHANGED_AFTER_SEAL",
    "kind": "outcome-code",
    "where": "nfl/tools/classic_prop_compare.py"
   },
@@ -1072,6 +1097,11 @@
    "detector": "nfl.tools.classic_upload_verify:verify:UPLOAD_VERIFY_VIOLATIONS",
    "kind": "outcome-code",
    "where": "nfl/tools/classic_upload_verify.py"
+  },
+  {
+   "detector": "nfl.tools.fc_context:assert_no_proprietary_importer:FC_READ_FROM_PROPRIETARY_CONTEXT",
+   "kind": "outcome-code",
+   "where": "nfl/tools/fc_context.py"
   },
   {
    "detector": "nfl.tools.football_sanity:assess:CLUB_CARRIES_NOT_RECONCILED",
@@ -1294,6 +1324,6 @@
    "where": "sportsplatform/governance/outcome.py"
   }
  ],
- "n_detectors": 254,
+ "n_detectors": 260,
  "spec_version": "detectors-1"
 }

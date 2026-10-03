@@ -348,7 +348,13 @@ def report(chosen_lus, M, ids, meta, T):
     }
 
 
-def build(slate_id: str, *, seed: int = 20261004, write: bool = True) -> Outcome:
+def build(slate_id: str, *, seed: int = 20261004, write: bool = True, exclude=(), tag: str = '') -> Outcome:
+    """`exclude`: DK ids removed from every candidate pool (a sensitivity run). `tag`: write to
+    nfl/dfs/salaries/sensitivity/ under that tag instead of the production files, which a tagged
+    or excluding run never touches."""
+    if exclude and not tag:
+        return Outcome.fail('PORTFOLIO_EXCLUSION_NEEDS_TAG',
+                            'a run with players removed must not write the production portfolio')
     lo = load(slate_id)
     if lo.state.value != 'PASS':
         return lo
@@ -372,7 +378,11 @@ def build(slate_id: str, *, seed: int = 20261004, write: bool = True) -> Outcome
 
     pools = {}
     for kind in ('STANDARD', 'CONVICTION'):
-        pools[kind] = pool_filter(kind, ids, M, meta)
+        idx_, exc_ = pool_filter(kind, ids, M, meta)
+        if exclude:
+            drop = {i for i in idx_ if ids[i] in set(exclude)}
+            idx_ = [i for i in idx_ if i not in drop]
+        pools[kind] = (idx_, exc_)
     cand_cache = {}
     out_contests, all_ok = [], True
     for c in contests:
@@ -423,8 +433,14 @@ def build(slate_id: str, *, seed: int = 20261004, write: bool = True) -> Outcome
         'contests': out_contests,
         'NOT_SUBMITTED': 'nothing is uploaded or entered; the owner entries file is not modified',
     }
+    doc['sensitivity'] = {'exclude': sorted(exclude), 'tag': tag} if (exclude or tag) else None
     P = _paths(slate_id)
     up = OUT_DIR / f'DK_{slate_id}_EARLY_UPLOAD.csv'
+    if tag:
+        sd = OUT_DIR / 'sensitivity'
+        sd.mkdir(exist_ok=True)
+        P = {**P, 'out': sd / f'DK_{slate_id}_EARLY_PORTFOLIOS.{tag}.json'}
+        up = sd / f'DK_{slate_id}_EARLY_UPLOAD.{tag}.csv'
     if write:
         P['out'].write_text(json.dumps(doc, indent=1, default=str))
     if write and not all_ok and up.exists():
@@ -451,8 +467,10 @@ def build(slate_id: str, *, seed: int = 20261004, write: bool = True) -> Outcome
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument('slate_id')
+    ap.add_argument('--exclude', default='', help='comma-separated DK ids removed from every pool (needs --tag)')
+    ap.add_argument('--tag', default='', help='write to nfl/dfs/salaries/sensitivity/ under this tag')
     a = ap.parse_args()
-    o = build(a.slate_id)
+    o = build(a.slate_id, exclude=tuple(x for x in a.exclude.split(',') if x), tag=a.tag)
     print(f'{o.state.value}[{o.code}] {o.detail}')
     return 0 if o.state.value == 'PASS' else 1
 
