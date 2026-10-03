@@ -135,6 +135,27 @@ def decompose(card, market, parts, line, stats_row, fields, ys, margin):
     return out
 
 
+#: DECLARED: a team's yards props are blocked when receivers' yards and the QB's passing yards
+#: disagree by more than this fraction inside the projection (see classic_production_audit).
+YARDS_CLOSURE_TOL = 0.05
+YARDS_MARKETS = {'player_passing_yards', 'player_receiving_yards', 'player_rushing_+_receiving_yards'}
+
+
+def team_gates(book, proj, state):
+    """Per-team and slate-wide conditions every elevated prop must meet (owner priority 15)."""
+    slate = {'team_accounting_pass': (book.get('ACCOUNTING') or {}).get('state') == 'PASS',
+             'no_sportsbook_in_projection': proj.get('market_arm') == 'FOOTBALL_ONLY',
+             'official_inactives_applied': (state.get('official_inactives') or {}).get('STATE') == 'APPLIED',
+             'availability_as_of': (state.get('injury_report') or {}).get('retrieved_at')}
+    teams = {}
+    for g in book['games'].values():
+        for club, t in g['teams'].items():
+            yc = t['accounting']['yards_closure_DIAGNOSTIC_NOT_A_GATE']
+            gap = abs(yc['gap'] or 0) / (yc['qbs_pass_yards'] or 1)
+            teams[club] = {'yards_closure_gap': round(gap, 4), 'yards_props_open': gap <= YARDS_CLOSURE_TOL}
+    return slate, teams
+
+
 def low_quality(card):
     u, s = card['uncertainty'], card['status']
     return bool(u['role_confidence'] in ('LOW', None) or s['designation'] in ('QUESTIONABLE', 'DOUBTFUL')
@@ -147,6 +168,11 @@ def compare(slate_id, boards):
         return so
     S = so.value
     seal, book, stats, meta = S['seal'], S['book'], S['stats'], S['meta']
+    proj = json.loads((OUT_DIR / f'DK_{slate_id}_EARLY_PROJ.json').read_text())
+    state = json.loads((OUT_DIR / f'DK_{slate_id}_EARLY_STATE.json').read_text())
+    if hashlib.sha256((OUT_DIR / f'DK_{slate_id}_EARLY_PROJ.json').read_bytes()).hexdigest() != seal.get('projection_sha256'):
+        return Outcome.fail('PROPS_PROJECTION_CHANGED_AFTER_SEAL', 'the projection on disk is not the sealed one')
+    slate_gate, team_gate = team_gates(book, proj, state)
     fields, ys = list(meta['fields']), meta['yard_scale']
     kix = {k: i for i, k in enumerate(meta['keys'])}
     gix = {g['game_id']: i for i, g in enumerate(meta['games'])}
@@ -159,7 +185,17 @@ def compare(slate_id, boards):
         pathlib.Path(p) for p in glob.glob(str(PH.RAW_DIR / 'HR_*_BOARD_*.csv')))
     games_by_clubs = {frozenset((g['away'], g['home'])): gid for gid, g in book['games'].items()}
     rows, refused = [], []
+    newest = {}
     for f in files:
+        m_ = re.match(r'HR_([A-Z]{2,3})_([A-Z]{2,3})_BOARD_(.+)\.csv$', f.name)
+        if m_:
+            k_ = frozenset(m_.groups()[:2])
+            newest[k_] = max(newest.get(k_, ''), m_.group(3))
+    for f in files:
+        m_ = re.match(r'HR_([A-Z]{2,3})_([A-Z]{2,3})_BOARD_(.+)\.csv$', f.name)
+        if m_ and m_.group(3) != newest.get(frozenset(m_.groups()[:2])):
+            refused.append({'file': f.name, 'why': 'STALE_CAPTURE_A_NEWER_BOARD_EXISTS'})
+            continue
         m = re.match(r'HR_([A-Z]{2,3})_([A-Z]{2,3})_BOARD_', f.name)
         clubs = frozenset(m.groups()) if m else None
         gid = games_by_clubs.get(clubs) or games_by_clubs.get(frozenset({'LA' if c == 'LAR' else c for c in clubs or ()}))
@@ -205,6 +241,14 @@ def compare(slate_id, boards):
             margin = (pts_g[:, 0] - pts_g[:, 1]) * (1 if club == book['games'][gid]['home'] else -1)
             gap = (p_over - book_p) if book_p is not None else None
             lq = low_quality(card)
+            tg = team_gate.get(club, {})
+            gates = {'stat_distribution_exists': True, 'identity_resolved': True,
+                     'availability_current': slate_gate['official_inactives_applied'],
+                     'role_established': not lq, 'team_accounting_pass': slate_gate['team_accounting_pass'],
+                     'stat_accounting_pass': (mk not in YARDS_MARKETS) or tg.get('yards_props_open', False),
+                     'capture_current': True, 'post_seal': True,
+                     'no_sportsbook_in_projection': slate_gate['no_sportsbook_in_projection']}
+            blocked_by = [k_ for k_, v_ in gates.items() if not v_]
             rows.append({
                 'game_id': gid, 'player': card['name'], 'team': club, 'position': card['position'],
                 'market': mk, 'hard_rock_line': line, 'is_main': main,
@@ -216,13 +260,15 @@ def compare(slate_id, boards):
                 'p_over': round(p_over, 4), 'p_under': round(p_under, 4), 'p_push': round(float(push), 4),
                 'hard_rock_no_vig_p_over': round(book_p, 4) if book_p is not None else None,
                 'gap_p_over': round(gap, 4) if gap is not None else None,
-                'evidence_low_quality': lq,
-                'ATTENTION': bool(gap is not None and abs(gap) >= ATTENTION_GAP and not lq),
+                'evidence_low_quality': lq, 'quality_gates': gates, 'blocked_by': blocked_by,
+                'ATTENTION': bool(gap is not None and abs(gap) >= ATTENTION_GAP and not blocked_by),
                 'decomposition': decompose(card, mk, parts, line, st, fields, ys, margin),
             })
     doc = {'ARTIFACT': 'CLASSIC_PROP_DIAGNOSTIC', 'slate_id': slate_id,
            'built_at_utc': dt.datetime.now(dt.timezone.utc).isoformat(), 'seal': seal,
            'boards': [f.name for f in files], 'n_rows': len(rows), 'n_attention': sum(r['ATTENTION'] for r in rows),
+           'slate_gates': slate_gate, 'team_gates': team_gate,
+           'n_blocked_by_gate': sum(1 for r in rows if r['blocked_by']),
            'ATTENTION_GAP': (ATTENTION_GAP, 'declared reading threshold, not a measured edge'),
            'NOT_A_RECOMMENDATION': 'PROJECTION_SYSTEM_STATE is NOT_VALIDATED. No row is a bet.',
            'rows': sorted(rows, key=lambda r: -abs(r['gap_p_over'] or 0)), 'refused': refused}

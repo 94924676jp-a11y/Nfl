@@ -26,12 +26,18 @@ def _cards(book):
 
 def reasons(book, port, draws):
     cards = _cards(book)
+    dsts = {t['dst']['dk_id']: (club, t, t['dst']) for g in book['games'].values()
+            for club, t in g['teams'].items() if t.get('dst')}
     by_pos = collections.defaultdict(list)
     for dk, (_g, _c, _t, c) in cards.items():
         d = c['projection'].get('distribution') or {}
         if d.get('dk_mean') is not None and c['salary']:
             by_pos[c['position']].append((dk, d['dk_mean'] / (c['salary'] / 1000), d.get('p90') or 0))
     value_rank, ceil_rank = {}, {}
+    for dk, (_c, _t, c) in dsts.items():
+        d = c['projection'].get('distribution') or {}
+        if d.get('dk_mean') is not None and c['salary']:
+            by_pos['DST'].append((dk, d['dk_mean'] / (c['salary'] / 1000), d.get('p90') or 0))
     for pos, lst in by_pos.items():
         for i, (dk, _v, _c) in enumerate(sorted(lst, key=lambda t: -t[1]), 1):
             value_rank[dk] = (i, len(lst))
@@ -57,7 +63,22 @@ def reasons(book, port, draws):
         lus[con['profile']] = [[s['dk_id'] for s in lu['slots']] for lu in con['lineups']]
     players, unexplained = [], []
     for dk, ex in expo.items():
-        if max(ex.values()) < MATERIAL_EXPOSURE or dk not in cards:
+        if max(ex.values()) < MATERIAL_EXPOSURE:
+            continue
+        if dk in dsts:
+            club, t, c = dsts[dk]
+            pa = c['points_allowed_simulated']
+            why = [f"opponent {c['opponent']} scores {pa['mean']} on average in our worlds; "
+                   f"held to 6 or fewer in {pa['p_allow_6_or_fewer']:.0%}"]
+            vr = value_rank.get(dk)
+            if vr and vr[0] <= max(3, vr[1] // 5):
+                why.append(f"salary efficiency: #{vr[0]} of {vr[1]} DST")
+            if c['observed_2026'].get('sack_rate') is not None:
+                why.append(f"2026 sack rate {c['observed_2026']['sack_rate']:.1%} (context; sacks are not drawn separately)")
+            players.append({'player': c['name'], 'team': club, 'position': 'DST', 'salary': c['salary'], 'exposure': ex,
+                            'why': why, 'risk': ['defensive and return TDs not modelled: the DST number is a floor']})
+            continue
+        if dk not in cards:
             continue
         gid, club, t, c = cards[dk]
         pr, m = c['projection'], c['measured_2026']

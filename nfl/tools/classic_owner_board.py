@@ -109,6 +109,11 @@ def reason_and_risk(r, p, cls):
     return '; '.join(bits), '; '.join(risk) or 'none named'
 
 
+def portfolio_is_current(port, current_sha: dict) -> bool:
+    """A portfolio lends its exposures to the board only when built from these exact state, projection and draws."""
+    return bool(port) and (port.get('inputs_sha256') or {}) == current_sha
+
+
 def build(slate_id: str, *, write: bool = True) -> Outcome:
     st = json.loads(_p(None, slate_id, 'STATE.json').read_text())
     proj = json.loads(_p(None, slate_id, 'PROJ.json').read_text())
@@ -119,7 +124,7 @@ def build(slate_id: str, *, write: bool = True) -> Outcome:
     if port:
         now = {k: hashlib.sha256(_p(None, slate_id, f'{k.upper()}.json').read_bytes()).hexdigest()
                for k in ('state', 'proj', 'draws')}
-        if port.get('inputs_sha256') != now:
+        if not portfolio_is_current(port, now):
             # A portfolio from another projection must not lend its exposures to this board.
             stale_port, port = port.get('built_at_utc'), None
     expo = collections.defaultdict(dict)

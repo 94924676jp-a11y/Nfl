@@ -50,11 +50,17 @@ def _fixture(td):
     gw = {'2026_04_JAX_CIN': {'world_points': {'home': 'CIN', 'away': 'JAX',
                                                'points': [(24 + rng.normal(0, 9), 24 + rng.normal(0, 9)) for _ in range(n)]}}}
     R._write_worlds(td / 'DK_T_EARLY_WORLDS.npz', worlds, gw, 'projsha')
-    book = {'games': {'2026_04_JAX_CIN': {'away': 'JAX', 'home': 'CIN', 'teams': {'CIN': {'home': True, 'players': [
-        _card('Joe Burrow', 'QB'), _card("Ja'Marr Chase", 'WR'), _card('Chase Brown', 'RB', conf='LOW')]}}}}}
+    yc = {'gap': 4.0, 'qbs_pass_yards': 260.0}
+    book = {'ACCOUNTING': {'state': 'PASS'},
+            'games': {'2026_04_JAX_CIN': {'away': 'JAX', 'home': 'CIN', 'teams': {'CIN': {
+                'home': True, 'accounting': {'yards_closure_DIAGNOSTIC_NOT_A_GATE': yc}, 'players': [
+                    _card('Joe Burrow', 'QB'), _card("Ja'Marr Chase", 'WR'), _card('Chase Brown', 'RB', conf='LOW')]}}}}}
     (td / 'DK_T_EARLY_RESEARCH_BOOK.json').write_text(json.dumps(book))
+    (td / 'DK_T_EARLY_PROJ.json').write_text(json.dumps({'market_arm': 'FOOTBALL_ONLY'}))
+    (td / 'DK_T_EARLY_STATE.json').write_text(json.dumps({'official_inactives': {'STATE': 'APPLIED'},
+                                                           'injury_report': {'retrieved_at': ['2026-10-04T15:40:00Z']}}))
     sh = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()  # noqa: E731
-    (td / 'DK_T_EARLY_SEAL.json').write_text(json.dumps({
+    (td / 'DK_T_EARLY_SEAL.json').write_text(json.dumps({'projection_sha256': sh(td / 'DK_T_EARLY_PROJ.json'),
         'written_at': '2026-10-03T18:20:00+00:00', 'kickoff_utc': '2026-10-04T17:00:00+00:00',
         'worlds_sha256': sh(td / 'DK_T_EARLY_WORLDS.npz'), 'research_book_sha256': sh(td / 'DK_T_EARLY_RESEARCH_BOOK.json')}))
     b = td / 'HR_JAX_CIN_BOARD_2026-10-04T1500Z.csv'
@@ -117,6 +123,64 @@ def test_03_no_board_for_the_slate_is_blocked():
         C.OUT_DIR = old
     observe('nfl.tools.classic_prop_compare:compare:PROPS_NO_HARD_ROCK_BOARD', o)
     check('positive control: a board for another game leaves the slate with no board', o.code == 'PROPS_NO_HARD_ROCK_BOARD', o.code)
+
+
+def _run(td, board):
+    old = C.OUT_DIR
+    C.OUT_DIR = td
+    try:
+        o = C.compare('T', [str(board)])
+        return o, json.loads((td / 'DK_T_EARLY_PROP_DIAGNOSTIC.json').read_text()) if (td / 'DK_T_EARLY_PROP_DIAGNOSTIC.json').exists() else None
+    finally:
+        C.OUT_DIR = old
+
+
+def test_04_quality_gates_block_attention():
+    td = pathlib.Path(tempfile.mkdtemp())
+    board = _fixture(td)
+    o, doc = _run(td, board)
+    r = {(x['market'], x['player']): x for x in doc['rows']}[('player_passing_yards', 'Joe Burrow')]
+    check('negative control: every gate open for a closed, current, sealed row', r['blocked_by'] == [], r['blocked_by'])
+    # inactives not applied -> availability not current
+    (td / 'DK_T_EARLY_STATE.json').write_text(json.dumps({'official_inactives': {'STATE': 'NOT_YET_PUBLISHED'}}))
+    o, doc = _run(td, board)
+    r = {(x['market'], x['player']): x for x in doc['rows']}[('player_passing_yards', 'Joe Burrow')]
+    check('positive control: before official inactives, nothing can be elevated',
+          'availability_current' in r['blocked_by'] and not r['ATTENTION'], r['blocked_by'])
+    # a non-closing team blocks its yards props only
+    td2 = pathlib.Path(tempfile.mkdtemp())
+    board2 = _fixture(td2)
+    b = json.loads((td2 / 'DK_T_EARLY_RESEARCH_BOOK.json').read_text())
+    b['games']['2026_04_JAX_CIN']['teams']['CIN']['accounting']['yards_closure_DIAGNOSTIC_NOT_A_GATE']['gap'] = 40.0
+    (td2 / 'DK_T_EARLY_RESEARCH_BOOK.json').write_text(json.dumps(b))
+    s = json.loads((td2 / 'DK_T_EARLY_SEAL.json').read_text())
+    s['research_book_sha256'] = hashlib.sha256((td2 / 'DK_T_EARLY_RESEARCH_BOOK.json').read_bytes()).hexdigest()
+    (td2 / 'DK_T_EARLY_SEAL.json').write_text(json.dumps(s))
+    o, doc = _run(td2, board2)
+    rows = {(x['market'], x['player']): x for x in doc['rows']}
+    check('positive control: a 15% yards non-closure blocks the passing-yards prop',
+          'stat_accounting_pass' in rows[('player_passing_yards', 'Joe Burrow')]['blocked_by'])
+    check('  and the receiving-yards prop', 'stat_accounting_pass' in rows[('player_receiving_yards', "Ja'Marr Chase")]['blocked_by'])
+    # a projection changed after the seal is refused outright
+    (td2 / 'DK_T_EARLY_PROJ.json').write_text(json.dumps({'market_arm': 'MARKET'}))
+    o, _ = _run(td2, board2)
+    observe('nfl.tools.classic_prop_compare:compare:PROPS_PROJECTION_CHANGED_AFTER_SEAL', o)
+    check('positive control: a projection that changed after the seal (here, to a market arm) is refused',
+          o.code == 'PROPS_PROJECTION_CHANGED_AFTER_SEAL', o.code)
+    # stale capture: an older board for the same game
+    td3 = pathlib.Path(tempfile.mkdtemp())
+    board3 = _fixture(td3)
+    newer = td3 / 'HR_JAX_CIN_BOARD_2026-10-04T1600Z.csv'
+    newer.write_text(board3.read_text())
+    old = C.OUT_DIR
+    C.OUT_DIR = td3
+    try:
+        C.compare('T', [str(board3), str(newer)])
+        doc = json.loads((td3 / 'DK_T_EARLY_PROP_DIAGNOSTIC.json').read_text())
+    finally:
+        C.OUT_DIR = old
+    check('positive control: an older board for the same game is refused as stale',
+          any(x.get('file') == board3.name and x['why'] == 'STALE_CAPTURE_A_NEWER_BOARD_EXISTS' for x in doc['refused']))
 
 
 def test_zz_every_check_passed():

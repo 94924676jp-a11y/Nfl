@@ -11,6 +11,7 @@ BLOCKED or STALE_OR_PENDING item and the upload file verified with zero violatio
 from __future__ import annotations
 
 import argparse
+import collections
 import html
 import json
 import pathlib
@@ -188,6 +189,60 @@ def reasoning_section(r):
     <h3>Stack shapes built</h3><p class="fine">WR1/TE1/RB1 are ranks by projected targets inside the club.</p><div class="cols">{shapes}</div>"""
 
 
+KNOWN_DEFECTS = [
+    'Receiving yards and QB passing yards do not close inside the projection for six clubs (over 5%): CHI, JAX, NYG, NYJ, PHI, TB. '
+    'Yards props for those clubs are blocked; DFS is unaffected beyond the yardage itself.',
+    'Touchdown counts in the simulation are not reconciled to the projection\'s touchdown account: QB passing TDs run up to '
+    '+0.38 per game (Josh Allen\'s simulated mean is 2.7 points above our projection).',
+    'The simulator has no player-specific efficiency of its own; each player\'s yards per opportunity is re-centred on the '
+    'projection in every world (declared step).',
+    'The game centre is each offence\'s own scoring history; the opposing defence does not enter any projected number.',
+    'Roster capture covers weeks 1-3; eight fringe players moved clubs since (all projected under 2 points).',
+]
+
+
+def audit_section(a, pre):
+    if not a:
+        return '<p class="missing">No production audit for these inputs.</p>'
+    y = a['yards_closure']['per_team']
+    yrows = ''.join(f"<tr><td>{e(c)}</td><td class=\"n\">{v['qb_passing_yards_mean']}</td><td class=\"n\">{v['sum_receiving_yards_mean']}</td>"
+                    f"<td class=\"n {'dn' if v['prop_gate'] != 'OPEN' else ''}\">{v['difference']:+.1f}</td><td class=\"n\">{v['percent_difference']:+.1f}%</td>"
+                    f"<td class=\"n\">{v['efficiency']['qb_yards_per_attempt']}</td><td class=\"n\">{v['efficiency']['receivers_imply_qb_ypa']}</td>"
+                    f"<td>{'yards props blocked' if v['prop_gate'] != 'OPEN' else 'open'}</td></tr>" for c, v in y.items())
+    acc = a['accounting']
+    flags = collections.Counter(f['kind'] for f in a['contradictions'])
+    sim = a['simulator']
+    res = ''.join(f"<li>{e(x['player'])} ({e(x['team'])} {e(x['pos'])}): projection {x['projection']}, simulated {x['sim_mean']} ({x['abs_diff']:+.2f})</li>"
+                  for x in sim['dk_top20_positive'][:5] + sim['dk_top20_negative'][:3])
+    rd = a['role_dependent']
+    rdl = []
+    for nm_, v in rd.items():
+        txt = f"{nm_}: exposure {', '.join(f'{k} {pct(x)}' for k, x in v['current_exposure'].items())}; starter evidence {v['starter_evidence']}; club confirmation {v['club_confirmation']}."
+        ir = v.get('if_removed')
+        if isinstance(ir, dict):
+            txt += ' Without him: ' + '; '.join(f"{k} keeps {t['lineups_unchanged']}/{t['of']} lineups" for k, t in ir['lineup_turnover'].items())
+        else:
+            txt += ' Removal run: not completed.'
+        rdl.append(txt)
+    rep = a['reproducibility']
+    st = a['stadiums']['games']
+    roof = ''.join(f"<li>{e(g.split('_')[-2])} @ {e(g.split('_')[-1])}: {e(v['stadium'])}, {e(v['roof'])}, {e(v['surface'])}. Weather not captured.</li>" for g, v in st.items())
+    return f"""
+    <div class="grid2">
+      <div><h4>Team accounting</h4><p>{e(acc['state'])} for all {len(acc['per_team'])} clubs (attempts, targets, carries, touchdowns; absent players carry no volume).</p></div>
+      <div><h4>Contradictions</h4><ul>{_li([f'{k}: {v}' for k, v in flags.items()])}</ul></div>
+      <div><h4>Role-card check</h4><p>{len(a['role_cards']['sampled'])} sampled cards; independent play-by-play recount matches: {a['role_cards']['all_usage_match']}.</p></div>
+      <div><h4>Reproducibility</h4><p>{e(rep['state'])}{(' (' + e(rep.get('why', '')) + ')') if rep.get('why') else ''}</p></div>
+    </div>
+    <h3>Chart-only quarterbacks</h3><ul class="fine">{_li(rdl)}</ul>
+    <p class="fine">Pre-lock check: {e((pre or {}).get('code', 'not run'))}. A starter change, an inactive player in a lineup, or a Questionable player resolving forces a rerun.</p>
+    <h3>Passing yards vs receiving yards</h3>
+    <p class="fine">Volume closes exactly. The gap is two independent efficiency estimates for the same yards, largest where the quarterback-receiver pairing changed this week (backup QBs at CHI and TB; missing pass catchers at PHI, NYJ, JAX). Not resolved; yards props for clubs over 5% are blocked.</p>
+    <div class="scroll"><table><thead><tr><th>Club</th><th>QB pass yds</th><th>Receivers' yds</th><th>Gap</th><th>%</th><th>QB yds/att</th><th>Receivers imply</th><th>Props</th></tr></thead><tbody>{yrows}</tbody></table></div>
+    <h3>Simulated mean vs projection, largest gaps</h3><ul class="fine">{res}</ul>
+    <h3>Stadiums</h3><ul class="fine">{roof}</ul>"""
+
+
 def build(slate_id):
     b = _load(slate_id, 'OWNER_BOARD')
     if b is None:
@@ -196,6 +251,9 @@ def build(slate_id):
     ver = _load(slate_id, 'UPLOAD_VERIFY')
     ch = _load(slate_id, 'CHANGES')
     book = _load(slate_id, 'RESEARCH_BOOK')
+    audit = _load(slate_id, 'AUDIT')
+    pre = _load(slate_id, 'PRELOCK')
+    rch = _load(slate_id, 'RUN_CHANGES')
     props = _load(slate_id, 'PROP_DIAGNOSTIC')
     seal = _load(slate_id, 'SEAL')
     rd = b['readiness']
@@ -221,7 +279,7 @@ def build(slate_id):
     gaps = ''.join(f'''<tr><td>{e(g['player'])}</td><td>{e(g['team'])}</td><td>{e(g['pos'])}</td>
       <td class="n">{g['ours_sim_mean']:.1f}</td><td class="n">{g['fc_proj']:.1f}</td>
       <td class="n {'up' if g['diff'] > 0 else 'dn'}">{g['diff']:+.1f}</td><td>{e(g['our_role'])}</td>
-      <td>{e(g['our_key_reason'])}</td></tr>''' for g in sorted(b.get('fc_comparison', []),
+      <td>{e(g['our_key_reason'])}</td><td>{e('; '.join(g.get('likely_source') or []))}</td></tr>''' for g in sorted(b.get('fc_comparison', []),
                                                                 key=lambda g: -abs(g['diff']))[:30])
     changes = ''.join(f'<li><b>{e(x["what"])}</b> {e(x["detail"])}</li>' for x in (ch or {}).get('changes', [])) \
         or '<li class="missing">No change log artifact.</li>'
@@ -241,7 +299,28 @@ def build(slate_id):
         prop_html = ('<p class="missing">No Hard Rock board for these eight games is held yet. It was requested from the '
                      'networked agent. Our prop distributions are frozen in the research book and the stored worlds '
                      f"(sealed {e((seal or {}).get('written_at', '')[:16])}Z); any price captured before that time is refused.</p>")
+    if props and props.get('n_rows'):
+        prop_html += f"<p class=\"fine\">Blocked by a quality gate: {props.get('n_blocked_by_gate')} rows.</p>"
+    tg = (props or {}).get('team_gates') or {}
+    blocked_teams = sorted(c for c, v in tg.items() if not v.get('yards_props_open'))
+    if blocked_teams:
+        prop_html += f"<p class=\"fine\">Yards props blocked for {e(', '.join(blocked_teams))} (yards non-closure).</p>"
+    run_changes = ''
+    if rch and isinstance(rch.get('players'), list):
+        run_changes = ''.join(f"<tr><td>{e(x['player'])}</td><td>{e(x['team'])}</td><td class=\"n\">{x['old_proj']}</td><td class=\"n\">{x['new_proj']}</td>"
+                              f"<td class=\"n\">{x['change']:+.2f}</td><td>{e(x['cause'])}</td><td class=\"n\">{pct(x['old_150'])} → {pct(x['new_150'])}</td>"
+                              f"<td class=\"n\">{pct(x['old_20'])} → {pct(x['new_20'])}</td></tr>" for x in rch['players'][:30])
+        run_changes = ('<h3>Since the previous run</h3><p class="fine">' + e(', '.join(f"{k}: {v['lineups_kept']}/{v['of']} lineups kept" for k, v in rch['contests'].items()))
+                       + '</p><div class="scroll"><table><thead><tr><th>Player</th><th>Team</th><th>Old</th><th>New</th><th>Change</th><th>Cause</th><th>150-max</th><th>20-max</th></tr></thead><tbody>'
+                       + run_changes + '</tbody></table></div>')
+    st_ = _load(slate_id, 'STATE') or {}
+    evid = [f"injury report retrieved {', '.join(x[:16] for x in (st_.get('injury_report') or {}).get('retrieved_at', []))}Z",
+            f"depth chart capture {((book or {}).get('evidence') or {}).get('depth_chart_capture')}",
+            f"play-by-play weeks {', '.join(((book or {}).get('evidence') or {}).get('pbp', {}).get('weeks', {}))}",
+            f"snap counts weeks {((book or {}).get('evidence') or {}).get('snap_counts', {}).get('weeks_used')}",
+            f"official inactives: {(st_.get('official_inactives') or {}).get('STATE', 'unknown')}"]
     return TEMPLATE.format(
+        audit=audit_section(audit, pre), evidence=lst(evid), defects=lst(KNOWN_DEFECTS), run_changes=run_changes,
         research=research_section(book), reasoning=reasoning_section(b.get('dfs_reasoning')),
         accounting=e(acc_state), props=prop_html,
         status=status, status_cls='ok' if ready else 'bad', why=lst(why), built=e(b['built_at_utc'][:16] + 'Z'),
@@ -348,6 +427,12 @@ code {{ font-family: var(--mono); font-size: .85em; word-break: break-all; }}
   </section>
 
   <section class="block">
+    <h2>Evidence and audit</h2>
+    <ul class="fine">{evidence}</ul>
+    {audit}
+  </section>
+
+  <section class="block">
     <h2>Why each player is in</h2>
     <p class="fine">Every reason comes from the research book or the joint simulation: role, volume, injury context, salary efficiency, ceiling, stack correlation.</p>
     {reasoning}
@@ -392,15 +477,21 @@ code {{ font-family: var(--mono); font-size: .85em; word-break: break-all; }}
   <section class="block">
     <h2>Where we disagree with FantasyCruncher</h2>
     <p class="fine">{n_gaps} material gaps (at least 3 points, or 30% on projections of 8+). Largest 30 shown. A gap is a reason to look again at our inputs, never a correction.</p>
-    <div class="scroll"><table><thead><tr><th>Player</th><th>Team</th><th>Pos</th><th>Ours</th><th>FC</th><th>Gap</th><th>Our role</th><th>Our reason</th></tr></thead><tbody>{gaps}</tbody></table></div>
+    <div class="scroll"><table><thead><tr><th>Player</th><th>Team</th><th>Pos</th><th>Ours</th><th>FC</th><th>Gap</th><th>Our role</th><th>Our reason</th><th>Likely source</th></tr></thead><tbody>{gaps}</tbody></table></div>
   </section>
 
   <section class="block">
     <h2>What changed today</h2>
+    {run_changes}
     <ul class="changes">{changes}</ul>
     <div class="scroll"><table><thead><tr><th>Player</th><th>Team</th><th>Pos</th><th>Role band</th><th>Before</th><th>After</th><th>Change</th></tr></thead><tbody>{moved}</tbody></table></div>
     <p class="fine">Depth-rule moves above are projection changes. Below, the simulated mean before and after the efficiency step; the projection itself did not change.</p>
     <div class="scroll"><table><thead><tr><th>Player</th><th>Team</th><th>Pos</th><th>Our projection</th><th>Simulated before</th><th>Simulated after</th></tr></thead><tbody>{simmoves}</tbody></table></div>
+  </section>
+
+  <section class="block">
+    <h2>Known defects</h2>
+    <ul class="fine">{defects}</ul>
   </section>
 
   <section class="block">

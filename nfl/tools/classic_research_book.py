@@ -729,8 +729,35 @@ def build(slate_id: str, *, write: bool = True) -> Outcome:
                     if len(v) == len(qv) and v.std() > 0 and qv.std() > 0:
                         corr.append({'with': c['name'], 'pos': c['position'], 'r': _f(np.corrcoef(qv, v)[0, 1], 3)})
                 corr.sort(key=lambda x: -x['r'])
+            # ---------------------------------------------------------------- DST card
+            dst_card = None
+            drow = next(((dk, r) for dk, r in rows.items() if r['team'] == club and r.get('position') == 'DST'), None)
+            if drow:
+                dk, r = drow
+                k = f"{r['name']}|{r['team']}"
+                own_d = DU.get(club, {})
+                og = max(1, own_d.get('games', 0))
+                pa_allowed = opp_pts
+                dst_card = {
+                    'key': k, 'dk_id': dk, 'name': r['name'], 'team': club, 'position': 'DST', 'salary': r.get('salary'),
+                    'projection': {'dk_projection': _f(r.get('dk_points')), 'distribution': dk_dist(k)},
+                    'opponent': opp,
+                    'points_allowed_simulated': {'mean': _f(pa_allowed.mean(), 1), **_q(pa_allowed),
+                                                 'p_allow_6_or_fewer': _f((pa_allowed <= 6).mean(), 3),
+                                                 'p_allow_28_or_more': _f((pa_allowed >= 28).mean(), 3)},
+                    'observed_2026': {'games': own_d.get('games', 0),
+                                      'sacks_pg': _f(own_d.get('sacks', 0) / og, 2),
+                                      'sack_rate': _f(own_d.get('sacks', 0) / own_d['dropbacks_faced'], 3) if own_d.get('dropbacks_faced') else None,
+                                      'explosive_pass_rate_allowed': _f(own_d.get('explosive_pass_allowed', 0) / own_d['pass_att_faced'], 3) if own_d.get('pass_att_faced') else None},
+                    'components': {'sacks': 'NOT_DECOMPOSED', 'takeaways': 'NOT_DECOMPOSED',
+                                   'defensive_and_return_tds': 'NOT_MODELLED (DST projection is a floor)',
+                                   'points_allowed': 'drawn: the opponent\'s simulated score in the same world',
+                                   'WHY': 'nfl/sim/game.py draws DST points from the opponent\'s points in each world'},
+                    'uncertainty': {'role_confidence': 'N/A', 'conflicts': []}}
             teams[club] = {
-                'club': club, 'opponent': opp, 'home': is_home,
+                'club': club, 'opponent': opp, 'home': is_home, 'dst': dst_card,
+                'kicker': {'declared': [nm(x) for x in chart.get('PK', [])[:1]],
+                           'ON_THIS_SLATE': 'NO: DraftKings Classic has no K slot; kickers are not projected here'},
                 'environment': {'expected_points': _f(centre.get('home_expected' if is_home else 'away_expected'), 1),
                                 'proj_pass_attempts': _f(tv['proj_pass_attempts'], 1),
                                 'proj_rush_attempts': _f(tv['proj_rush_attempts'], 1),
