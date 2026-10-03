@@ -1,0 +1,1426 @@
+{
+ "ARTIFACT": "CLASSIC_CHANGE_LOG",
+ "slate_id": "2026W4",
+ "written_at_utc": "2026-10-03T18:26:01.660998+00:00",
+ "projection_before_sha256": "96190f851b5620fdc547def598a335424c51b2526a26b18624689f6b01144d8a",
+ "projection_after_sha256": "02400ce982eb8c16a7ac1e4c20599e930acf09886d985739323e79eda56406f0",
+ "changes": [
+  {
+   "what": "Quarterback order now comes from the captured depth chart.",
+   "detail": "A starter reported OUT no longer keeps rank 1; the next healthy QB on the chart gets starter evidence, labelled as chart-based and not club-confirmed (Tyson Bagent CHI, Jalon Daniels TB). This cleared the sanity-gate failure where non-QBs carried pass attempts."
+  },
+  {
+   "what": "Running back, receiver and tight end rank is now the better of usage history and the club chart.",
+   "detail": "Usage history ranked returning starters by the weeks they missed: Puka Nacua and Nico Collins (1 of 3 weeks played) were rank 3 and projected about 11 points. The chart lists each as WR1. No player's rank gets worse, but club volume is shared, so incumbents lose share: Davante Adams, Matthew Golden, Mack Hollins and Kalif Raymond moved down a band."
+  },
+  {
+   "what": "Projections use the football-only arm.",
+   "detail": "No sportsbook spread, total or implied team total enters the touchdown pool or the defense number. This arm is a declared candidate and is not validated."
+  },
+  {
+   "what": "Simulated players now keep their own efficiency.",
+   "detail": "The simulator gave every player league-average yards per target, carry and attempt, and never drew interceptions. That pushed backup-priced quarterbacks up by about 3 points (Bagent, Daniels, Brissett) and pulled elite receivers down by up to 6 (Zay Flowers, CeeDee Lamb). Each player's yards in every simulated world are now re-centred on his projected yards per opportunity, interceptions are drawn at the projection's measured rate, and DK points are recomputed from that stat line. The largest gap between a simulated mean and our projection fell from 6.0 to 2.7 points; what remains is touchdown count."
+  },
+  {
+   "what": "A game research book now comes before any lineup.",
+   "detail": "Every game has a dossier: depth chart against measured 2026 usage, target trees, RB rooms, offensive line, opponent context, injury cascades, game stories from the simulated scores, and accounting checks. Lineups are refused unless the book exists for the same projection and its accounting passes."
+  },
+  {
+   "what": "Each material exposure carries a football reason.",
+   "detail": "Role, volume share, goal-line and red-zone work, salary efficiency, ceiling rank and stack correlation, from the research book and the joint simulation. A player without a reason would be listed as unexplained."
+  },
+  {
+   "what": "Hard Rock props are sealed before any price is read.",
+   "detail": "The projection and simulated worlds are hashed and time-stamped. The prop comparison reads prices only through the price-history check, which refuses any price captured before that time or after kickoff, and computes every probability from the stored worlds."
+  },
+  {
+   "what": "The upload file is written only for a full, legal portfolio, and is checked independently.",
+   "detail": "A separate verifier re-reads the upload file against DraftKings' own pool and your entries: slot eligibility, salary, entry-to-contest mapping, reported-OUT players, duplicate lineups and how many lineups a smaller contest shares with a larger one."
+  }
+ ],
+ "n_players_moved": 109,
+ "largest_moves": [
+  {
+   "name": "Puka Nacua",
+   "team": "LA",
+   "pos": "WR",
+   "band_before": "ROTATIONAL",
+   "band_after": "ALPHA",
+   "before": 11.78,
+   "after": 22.77,
+   "delta": 10.99
+  },
+  {
+   "name": "Nico Collins",
+   "team": "HOU",
+   "pos": "WR",
+   "band_before": "ROTATIONAL",
+   "band_after": "ALPHA",
+   "before": 10.48,
+   "after": 20.82,
+   "delta": 10.34
+  },
+  {
+   "name": "Romeo Doubs",
+   "team": "NE",
+   "pos": "WR",
+   "band_before": "ROTATIONAL",
+   "band_after": "ALPHA",
+   "before": 5.38,
+   "after": 13.05,
+   "delta": 7.67
+  },
+  {
+   "name": "Christian Watson",
+   "team": "GB",
+   "pos": "WR",
+   "band_before": "SECONDARY",
+   "band_after": "ALPHA",
+   "before": 14.09,
+   "after": 19.66,
+   "delta": 5.58
+  },
+  {
+   "name": "Matthew Golden",
+   "team": "GB",
+   "pos": "WR",
+   "band_before": "ALPHA",
+   "band_after": "SECONDARY",
+   "before": 16.93,
+   "after": 11.51,
+   "delta": -5.41
+  },
+  {
+   "name": "Zach Ertz",
+   "team": "PHI",
+   "pos": "TE",
+   "band_before": "ROTATIONAL",
+   "band_after": "SECONDARY",
+   "before": 5.84,
+   "after": 10.72,
+   "delta": 4.88
+  },
+  {
+   "name": "Davante Adams",
+   "team": "LA",
+   "pos": "WR",
+   "band_before": "ALPHA",
+   "band_after": "SECONDARY",
+   "before": 21.69,
+   "after": 16.93,
+   "delta": -4.76
+  },
+  {
+   "name": "Kalif Raymond",
+   "team": "CHI",
+   "pos": "WR",
+   "band_before": "SECONDARY",
+   "band_after": "ROTATIONAL",
+   "before": 12.38,
+   "after": 7.67,
+   "delta": -4.7
+  },
+  {
+   "name": "Tahj Brooks",
+   "team": "CIN",
+   "pos": "RB",
+   "band_before": "FRINGE",
+   "band_after": "ROTATIONAL",
+   "before": 1.21,
+   "after": 5.8,
+   "delta": 4.59
+  },
+  {
+   "name": "Mack Hollins",
+   "team": "NE",
+   "pos": "WR",
+   "band_before": "ALPHA",
+   "band_after": "SECONDARY",
+   "before": 15.21,
+   "after": 10.84,
+   "delta": -4.37
+  },
+  {
+   "name": "Zay Flowers",
+   "team": "BAL",
+   "pos": "WR",
+   "band_before": "SECONDARY",
+   "band_after": "ALPHA",
+   "before": 17.33,
+   "after": 21.49,
+   "delta": 4.16
+  },
+  {
+   "name": "Rasheen Ali",
+   "team": "BAL",
+   "pos": "RB",
+   "band_before": "FRINGE",
+   "band_after": "ROTATIONAL",
+   "before": 1.29,
+   "after": 5.21,
+   "delta": 3.91
+  },
+  {
+   "name": "Rome Odunze",
+   "team": "CHI",
+   "pos": "WR",
+   "band_before": "ROTATIONAL",
+   "band_after": "SECONDARY",
+   "before": 6.21,
+   "after": 9.91,
+   "delta": 3.69
+  },
+  {
+   "name": "Isaiah Davis",
+   "team": "NYJ",
+   "pos": "RB",
+   "band_before": "FRINGE",
+   "band_after": "ROTATIONAL",
+   "before": 3.0,
+   "after": 6.56,
+   "delta": 3.57
+  },
+  {
+   "name": "Jakobi Meyers",
+   "team": "JAX",
+   "pos": "WR",
+   "band_before": "ROTATIONAL",
+   "band_after": "SECONDARY",
+   "before": 7.76,
+   "after": 11.01,
+   "delta": 3.24
+  },
+  {
+   "name": "Brian Thomas Jr.",
+   "team": "JAX",
+   "pos": "WR",
+   "band_before": "SECONDARY",
+   "band_after": "ROTATIONAL",
+   "before": 8.56,
+   "after": 5.35,
+   "delta": -3.2
+  }
+ ],
+ "all_moves": [
+  {
+   "name": "Puka Nacua",
+   "team": "LA",
+   "pos": "WR",
+   "band_before": "ROTATIONAL",
+   "band_after": "ALPHA",
+   "before": 11.78,
+   "after": 22.77,
+   "delta": 10.99
+  },
+  {
+   "name": "Nico Collins",
+   "team": "HOU",
+   "pos": "WR",
+   "band_before": "ROTATIONAL",
+   "band_after": "ALPHA",
+   "before": 10.48,
+   "after": 20.82,
+   "delta": 10.34
+  },
+  {
+   "name": "Romeo Doubs",
+   "team": "NE",
+   "pos": "WR",
+   "band_before": "ROTATIONAL",
+   "band_after": "ALPHA",
+   "before": 5.38,
+   "after": 13.05,
+   "delta": 7.67
+  },
+  {
+   "name": "Christian Watson",
+   "team": "GB",
+   "pos": "WR",
+   "band_before": "SECONDARY",
+   "band_after": "ALPHA",
+   "before": 14.09,
+   "after": 19.66,
+   "delta": 5.58
+  },
+  {
+   "name": "Matthew Golden",
+   "team": "GB",
+   "pos": "WR",
+   "band_before": "ALPHA",
+   "band_after": "SECONDARY",
+   "before": 16.93,
+   "after": 11.51,
+   "delta": -5.41
+  },
+  {
+   "name": "Zach Ertz",
+   "team": "PHI",
+   "pos": "TE",
+   "band_before": "ROTATIONAL",
+   "band_after": "SECONDARY",
+   "before": 5.84,
+   "after": 10.72,
+   "delta": 4.88
+  },
+  {
+   "name": "Davante Adams",
+   "team": "LA",
+   "pos": "WR",
+   "band_before": "ALPHA",
+   "band_after": "SECONDARY",
+   "before": 21.69,
+   "after": 16.93,
+   "delta": -4.76
+  },
+  {
+   "name": "Kalif Raymond",
+   "team": "CHI",
+   "pos": "WR",
+   "band_before": "SECONDARY",
+   "band_after": "ROTATIONAL",
+   "before": 12.38,
+   "after": 7.67,
+   "delta": -4.7
+  },
+  {
+   "name": "Tahj Brooks",
+   "team": "CIN",
+   "pos": "RB",
+   "band_before": "FRINGE",
+   "band_after": "ROTATIONAL",
+   "before": 1.21,
+   "after": 5.8,
+   "delta": 4.59
+  },
+  {
+   "name": "Mack Hollins",
+   "team": "NE",
+   "pos": "WR",
+   "band_before": "ALPHA",
+   "band_after": "SECONDARY",
+   "before": 15.21,
+   "after": 10.84,
+   "delta": -4.37
+  },
+  {
+   "name": "Zay Flowers",
+   "team": "BAL",
+   "pos": "WR",
+   "band_before": "SECONDARY",
+   "band_after": "ALPHA",
+   "before": 17.33,
+   "after": 21.49,
+   "delta": 4.16
+  },
+  {
+   "name": "Rasheen Ali",
+   "team": "BAL",
+   "pos": "RB",
+   "band_before": "FRINGE",
+   "band_after": "ROTATIONAL",
+   "before": 1.29,
+   "after": 5.21,
+   "delta": 3.91
+  },
+  {
+   "name": "Rome Odunze",
+   "team": "CHI",
+   "pos": "WR",
+   "band_before": "ROTATIONAL",
+   "band_after": "SECONDARY",
+   "before": 6.21,
+   "after": 9.91,
+   "delta": 3.69
+  },
+  {
+   "name": "Isaiah Davis",
+   "team": "NYJ",
+   "pos": "RB",
+   "band_before": "FRINGE",
+   "band_after": "ROTATIONAL",
+   "before": 3.0,
+   "after": 6.56,
+   "delta": 3.57
+  },
+  {
+   "name": "Jakobi Meyers",
+   "team": "JAX",
+   "pos": "WR",
+   "band_before": "ROTATIONAL",
+   "band_after": "SECONDARY",
+   "before": 7.76,
+   "after": 11.01,
+   "delta": 3.24
+  },
+  {
+   "name": "Brian Thomas Jr.",
+   "team": "JAX",
+   "pos": "WR",
+   "band_before": "SECONDARY",
+   "band_after": "ROTATIONAL",
+   "before": 8.56,
+   "after": 5.35,
+   "delta": -3.2
+  },
+  {
+   "name": "Konata Mumpfield",
+   "team": "LA",
+   "pos": "WR",
+   "band_before": "SECONDARY",
+   "band_after": "ROTATIONAL",
+   "before": 6.32,
+   "after": 3.24,
+   "delta": -3.08
+  },
+  {
+   "name": "Ted Hurst III",
+   "team": "TB",
+   "pos": "WR",
+   "band_before": "SECONDARY",
+   "band_after": "ROTATIONAL",
+   "before": 6.93,
+   "after": 3.9,
+   "delta": -3.02
+  },
+  {
+   "name": "Jared Wayne",
+   "team": "HOU",
+   "pos": "WR",
+   "band_before": "SECONDARY",
+   "band_after": "ROTATIONAL",
+   "before": 5.79,
+   "after": 2.85,
+   "delta": -2.95
+  },
+  {
+   "name": "Marvin Harrison Jr.",
+   "team": "ARI",
+   "pos": "WR",
+   "band_before": "ROTATIONAL",
+   "band_after": "SECONDARY",
+   "before": 3.56,
+   "after": 6.47,
+   "delta": 2.91
+  },
+  {
+   "name": "Samaje Perine",
+   "team": "CIN",
+   "pos": "RB",
+   "band_before": "ROTATIONAL",
+   "band_after": "ROTATIONAL",
+   "before": 4.2,
+   "after": 1.44,
+   "delta": -2.76
+  },
+  {
+   "name": "Chris Godwin Jr.",
+   "team": "TB",
+   "pos": "WR",
+   "band_before": "ROTATIONAL",
+   "band_after": "SECONDARY",
+   "before": 5.73,
+   "after": 8.45,
+   "delta": 2.72
+  },
+  {
+   "name": "Kendrick Bourne",
+   "team": "ARI",
+   "pos": "WR",
+   "band_before": "SECONDARY",
+   "band_after": "ROTATIONAL",
+   "before": 7.57,
+   "after": 4.87,
+   "delta": -2.7
+  },
+  {
+   "name": "Rashod Bateman",
+   "team": "BAL",
+   "pos": "WR",
+   "band_before": "PRIMARY",
+   "band_after": "SECONDARY",
+   "before": 10.09,
+   "after": 7.46,
+   "delta": -2.64
+  },
+  {
+   "name": "Xavier Hutchinson",
+   "team": "HOU",
+   "pos": "WR",
+   "band_before": "PRIMARY",
+   "band_after": "SECONDARY",
+   "before": 9.14,
+   "after": 6.6,
+   "delta": -2.55
+  },
+  {
+   "name": "Chris Moore",
+   "team": "BAL",
+   "pos": "WR",
+   "band_before": "ROTATIONAL",
+   "band_after": "FRINGE",
+   "before": 2.83,
+   "after": 0.3,
+   "delta": -2.53
+  },
+  {
+   "name": "Justice Hill",
+   "team": "BAL",
+   "pos": "RB",
+   "band_before": "ROTATIONAL",
+   "band_after": "ROTATIONAL",
+   "before": 3.57,
+   "after": 1.28,
+   "delta": -2.29
+  },
+  {
+   "name": "Devontez Walker",
+   "team": "BAL",
+   "pos": "WR",
+   "band_before": "FRINGE",
+   "band_after": "ROTATIONAL",
+   "before": 0.02,
+   "after": 2.31,
+   "delta": 2.29
+  },
+  {
+   "name": "Johnny Mundt",
+   "team": "PHI",
+   "pos": "TE",
+   "band_before": "SECONDARY",
+   "band_after": "ROTATIONAL",
+   "before": 4.21,
+   "after": 1.99,
+   "delta": -2.21
+  },
+  {
+   "name": "Matt Hibner",
+   "team": "BAL",
+   "pos": "TE",
+   "band_before": "ROTATIONAL",
+   "band_after": "ROTATIONAL",
+   "before": 2.75,
+   "after": 0.55,
+   "delta": -2.2
+  },
+  {
+   "name": "DeMario Douglas",
+   "team": "NE",
+   "pos": "WR",
+   "band_before": "SECONDARY",
+   "band_after": "ROTATIONAL",
+   "before": 6.39,
+   "after": 4.26,
+   "delta": -2.13
+  },
+  {
+   "name": "Kene Nwangwu",
+   "team": "NYJ",
+   "pos": "RB",
+   "band_before": "FRINGE",
+   "band_after": "FRINGE",
+   "before": 3.62,
+   "after": 1.78,
+   "delta": -1.84
+  },
+  {
+   "name": "Durham Smythe",
+   "team": "BAL",
+   "pos": "TE",
+   "band_before": "ROTATIONAL",
+   "band_after": "SECONDARY",
+   "before": 0.35,
+   "after": 1.91,
+   "delta": 1.56
+  },
+  {
+   "name": "Ray Davis",
+   "team": "BUF",
+   "pos": "RB",
+   "band_before": "ROTATIONAL",
+   "band_after": "FRINGE",
+   "before": 1.92,
+   "after": 0.5,
+   "delta": -1.42
+  },
+  {
+   "name": "Dalton Schultz",
+   "team": "HOU",
+   "pos": "TE",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 15.86,
+   "after": 14.47,
+   "delta": -1.39
+  },
+  {
+   "name": "Devin Singletary",
+   "team": "NYG",
+   "pos": "RB",
+   "band_before": "ROTATIONAL",
+   "band_after": "FRINGE",
+   "before": 1.53,
+   "after": 0.16,
+   "delta": -1.37
+  },
+  {
+   "name": "Dontayvion Wicks",
+   "team": "PHI",
+   "pos": "WR",
+   "band_before": "SECONDARY",
+   "band_after": "SECONDARY",
+   "before": 15.59,
+   "after": 14.27,
+   "delta": -1.32
+  },
+  {
+   "name": "Tyrone Tracy Jr.",
+   "team": "NYG",
+   "pos": "RB",
+   "band_before": "FRINGE",
+   "band_after": "ROTATIONAL",
+   "before": 0.16,
+   "after": 1.25,
+   "delta": 1.09
+  },
+  {
+   "name": "Chase Brown",
+   "team": "CIN",
+   "pos": "RB",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 15.8,
+   "after": 14.89,
+   "delta": -0.91
+  },
+  {
+   "name": "Chip Trayanum",
+   "team": "NYJ",
+   "pos": "RB",
+   "band_before": "FRINGE",
+   "band_after": "FRINGE",
+   "before": 1.11,
+   "after": 0.23,
+   "delta": -0.88
+  },
+  {
+   "name": "Tyler Higbee",
+   "team": "LA",
+   "pos": "TE",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 11.75,
+   "after": 10.94,
+   "delta": -0.81
+  },
+  {
+   "name": "Ty Johnson",
+   "team": "BUF",
+   "pos": "RB",
+   "band_before": "ROTATIONAL",
+   "band_after": "ROTATIONAL",
+   "before": 4.12,
+   "after": 4.87,
+   "delta": 0.75
+  },
+  {
+   "name": "Ameer Abdullah",
+   "team": "JAX",
+   "pos": "RB",
+   "band_before": "ROTATIONAL",
+   "band_after": "FRINGE",
+   "before": 0.79,
+   "after": 0.09,
+   "delta": -0.71
+  },
+  {
+   "name": "Parker Washington",
+   "team": "JAX",
+   "pos": "WR",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 20.89,
+   "after": 21.56,
+   "delta": 0.67
+  },
+  {
+   "name": "Ja'Marr Chase",
+   "team": "CIN",
+   "pos": "WR",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 20.28,
+   "after": 19.66,
+   "delta": -0.62
+  },
+  {
+   "name": "Kyren Williams",
+   "team": "LA",
+   "pos": "RB",
+   "band_before": "PRIMARY",
+   "band_after": "PRIMARY",
+   "before": 19.12,
+   "after": 18.52,
+   "delta": -0.6
+  },
+  {
+   "name": "LeQuint Allen Jr.",
+   "team": "JAX",
+   "pos": "RB",
+   "band_before": "ROTATIONAL",
+   "band_after": "ROTATIONAL",
+   "before": 0.85,
+   "after": 1.44,
+   "delta": 0.59
+  },
+  {
+   "name": "Brock Lampe",
+   "team": "BUF",
+   "pos": "RB",
+   "band_before": "FRINGE",
+   "band_after": "FRINGE",
+   "before": 0.16,
+   "after": 0.75,
+   "delta": 0.59
+  },
+  {
+   "name": "Dare Ogunbowale",
+   "team": "HOU",
+   "pos": "RB",
+   "band_before": "FRINGE",
+   "band_after": "ROTATIONAL",
+   "before": 0.97,
+   "after": 1.52,
+   "delta": 0.56
+  },
+  {
+   "name": "Derrick Henry",
+   "team": "BAL",
+   "pos": "RB",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 17.39,
+   "after": 17.93,
+   "delta": 0.54
+  },
+  {
+   "name": "David Montgomery",
+   "team": "HOU",
+   "pos": "RB",
+   "band_before": "PRIMARY",
+   "band_after": "PRIMARY",
+   "before": 13.3,
+   "after": 12.77,
+   "delta": -0.53
+  },
+  {
+   "name": "Josh Williams",
+   "team": "TB",
+   "pos": "RB",
+   "band_before": "FRINGE",
+   "band_after": "FRINGE",
+   "before": 0.69,
+   "after": 0.19,
+   "delta": -0.5
+  },
+  {
+   "name": "Tanner Hudson",
+   "team": "CIN",
+   "pos": "TE",
+   "band_before": "ROTATIONAL",
+   "band_after": "FRINGE",
+   "before": 0.51,
+   "after": 0.02,
+   "delta": -0.49
+  },
+  {
+   "name": "Quintin Morris",
+   "team": "JAX",
+   "pos": "TE",
+   "band_before": "SECONDARY",
+   "band_after": "ROTATIONAL",
+   "before": 1.88,
+   "after": 1.4,
+   "delta": -0.48
+  },
+  {
+   "name": "Erick All Jr.",
+   "team": "CIN",
+   "pos": "TE",
+   "band_before": "FRINGE",
+   "band_after": "ROTATIONAL",
+   "before": 0.02,
+   "after": 0.48,
+   "delta": 0.45
+  },
+  {
+   "name": "Brenton Strange",
+   "team": "JAX",
+   "pos": "TE",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 10.02,
+   "after": 10.45,
+   "delta": 0.43
+  },
+  {
+   "name": "Cade Stover",
+   "team": "HOU",
+   "pos": "TE",
+   "band_before": "ROTATIONAL",
+   "band_after": "FRINGE",
+   "before": 0.45,
+   "after": 0.02,
+   "delta": -0.43
+  },
+  {
+   "name": "Sean Tucker",
+   "team": "TB",
+   "pos": "RB",
+   "band_before": "FRINGE",
+   "band_after": "ROTATIONAL",
+   "before": 1.04,
+   "after": 1.46,
+   "delta": 0.42
+  },
+  {
+   "name": "British Brooks",
+   "team": "HOU",
+   "pos": "RB",
+   "band_before": "FRINGE",
+   "band_after": "FRINGE",
+   "before": 0.52,
+   "after": 0.12,
+   "delta": -0.4
+  },
+  {
+   "name": "Elijah Moore",
+   "team": "PHI",
+   "pos": "WR",
+   "band_before": "FRINGE",
+   "band_after": "FRINGE",
+   "before": 4.71,
+   "after": 4.36,
+   "delta": -0.36
+  },
+  {
+   "name": "Foster Moreau",
+   "team": "HOU",
+   "pos": "TE",
+   "band_before": "SECONDARY",
+   "band_after": "SECONDARY",
+   "before": 3.96,
+   "after": 3.6,
+   "delta": -0.36
+  },
+  {
+   "name": "Makai Lemon",
+   "team": "PHI",
+   "pos": "WR",
+   "band_before": "ROTATIONAL",
+   "band_after": "ROTATIONAL",
+   "before": 5.21,
+   "after": 4.86,
+   "delta": -0.35
+  },
+  {
+   "name": "Emeka Egbuka",
+   "team": "TB",
+   "pos": "WR",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 12.96,
+   "after": 13.29,
+   "delta": 0.33
+  },
+  {
+   "name": "Drake Maye",
+   "team": "NE",
+   "pos": "QB",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 19.14,
+   "after": 18.83,
+   "delta": -0.31
+  },
+  {
+   "name": "Rhamondre Stevenson",
+   "team": "NE",
+   "pos": "RB",
+   "band_before": "PRIMARY",
+   "band_after": "PRIMARY",
+   "before": 13.0,
+   "after": 12.69,
+   "delta": -0.31
+  },
+  {
+   "name": "Woody Marks",
+   "team": "HOU",
+   "pos": "RB",
+   "band_before": "SECONDARY",
+   "band_after": "SECONDARY",
+   "before": 6.26,
+   "after": 5.97,
+   "delta": -0.29
+  },
+  {
+   "name": "TreVeyon Henderson",
+   "team": "NE",
+   "pos": "RB",
+   "band_before": "SECONDARY",
+   "band_after": "SECONDARY",
+   "before": 6.28,
+   "after": 5.99,
+   "delta": -0.28
+  },
+  {
+   "name": "Cade Otton",
+   "team": "TB",
+   "pos": "TE",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 11.08,
+   "after": 11.36,
+   "delta": 0.28
+  },
+  {
+   "name": "James Cook III",
+   "team": "BUF",
+   "pos": "RB",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 17.98,
+   "after": 18.25,
+   "delta": 0.27
+  },
+  {
+   "name": "Brevin Jordan",
+   "team": "HOU",
+   "pos": "TE",
+   "band_before": "FRINGE",
+   "band_after": "FRINGE",
+   "before": 0.02,
+   "after": 0.29,
+   "delta": 0.27
+  },
+  {
+   "name": "David Martin-Robinson",
+   "team": "TEN",
+   "pos": "TE",
+   "band_before": "FRINGE",
+   "band_after": "ROTATIONAL",
+   "before": 0.23,
+   "after": 0.46,
+   "delta": 0.23
+  },
+  {
+   "name": "LaJohntay Wester",
+   "team": "BAL",
+   "pos": "WR",
+   "band_before": "FRINGE",
+   "band_after": "FRINGE",
+   "before": 0.24,
+   "after": 0.02,
+   "delta": -0.22
+  },
+  {
+   "name": "Trey McBride",
+   "team": "ARI",
+   "pos": "TE",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 20.03,
+   "after": 19.81,
+   "delta": -0.22
+  },
+  {
+   "name": "Joe Burrow",
+   "team": "CIN",
+   "pos": "QB",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 19.82,
+   "after": 19.6,
+   "delta": -0.21
+  },
+  {
+   "name": "Tucker Kraft",
+   "team": "GB",
+   "pos": "TE",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 10.45,
+   "after": 10.64,
+   "delta": 0.2
+  },
+  {
+   "name": "Hunter Henry",
+   "team": "NE",
+   "pos": "TE",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 9.34,
+   "after": 9.54,
+   "delta": 0.2
+  },
+  {
+   "name": "Jeremiyah Love",
+   "team": "ARI",
+   "pos": "RB",
+   "band_before": "PRIMARY",
+   "band_after": "PRIMARY",
+   "before": 13.06,
+   "after": 12.88,
+   "delta": -0.19
+  },
+  {
+   "name": "Michael Wilson",
+   "team": "ARI",
+   "pos": "WR",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 15.86,
+   "after": 15.68,
+   "delta": -0.17
+  },
+  {
+   "name": "Mike Gesicki",
+   "team": "CIN",
+   "pos": "TE",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 13.56,
+   "after": 13.39,
+   "delta": -0.17
+  },
+  {
+   "name": "Tee Higgins",
+   "team": "CIN",
+   "pos": "WR",
+   "band_before": "SECONDARY",
+   "band_after": "SECONDARY",
+   "before": 13.09,
+   "after": 12.93,
+   "delta": -0.16
+  },
+  {
+   "name": "Roschon Johnson",
+   "team": "CHI",
+   "pos": "RB",
+   "band_before": "FRINGE",
+   "band_after": "ROTATIONAL",
+   "before": 1.81,
+   "after": 1.95,
+   "delta": 0.14
+  },
+  {
+   "name": "Garrett Wilson",
+   "team": "NYJ",
+   "pos": "WR",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 22.36,
+   "after": 22.22,
+   "delta": -0.14
+  },
+  {
+   "name": "Jalen Hurts",
+   "team": "PHI",
+   "pos": "QB",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 18.31,
+   "after": 18.44,
+   "delta": 0.13
+  },
+  {
+   "name": "Bhayshul Tuten",
+   "team": "JAX",
+   "pos": "RB",
+   "band_before": "PRIMARY",
+   "band_after": "PRIMARY",
+   "before": 15.76,
+   "after": 15.9,
+   "delta": 0.13
+  },
+  {
+   "name": "Andrew Beck",
+   "team": "NYJ",
+   "pos": "RB",
+   "band_before": "FRINGE",
+   "band_after": "FRINGE",
+   "before": 0.13,
+   "after": 0.0,
+   "delta": -0.13
+  },
+  {
+   "name": "Kayshon Boutte",
+   "team": "HOU",
+   "pos": "WR",
+   "band_before": "FRINGE",
+   "band_after": "FRINGE",
+   "before": 1.32,
+   "after": 1.2,
+   "delta": -0.12
+  },
+  {
+   "name": "Cam Skattebo",
+   "team": "NYG",
+   "pos": "RB",
+   "band_before": "PRIMARY",
+   "band_after": "PRIMARY",
+   "before": 14.56,
+   "after": 14.67,
+   "delta": 0.11
+  },
+  {
+   "name": "J'Mari Taylor",
+   "team": "JAX",
+   "pos": "RB",
+   "band_before": "FRINGE",
+   "band_after": "FRINGE",
+   "before": 0.0,
+   "after": 0.11,
+   "delta": 0.11
+  },
+  {
+   "name": "Josh Allen",
+   "team": "BUF",
+   "pos": "QB",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 24.61,
+   "after": 24.71,
+   "delta": 0.1
+  },
+  {
+   "name": "Blake Corum",
+   "team": "LA",
+   "pos": "RB",
+   "band_before": "SECONDARY",
+   "band_after": "SECONDARY",
+   "before": 4.37,
+   "after": 4.27,
+   "delta": -0.1
+  },
+  {
+   "name": "Malik Nabers",
+   "team": "NYG",
+   "pos": "WR",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 12.78,
+   "after": 12.88,
+   "delta": 0.1
+  },
+  {
+   "name": "Luther Burden III",
+   "team": "CHI",
+   "pos": "WR",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 16.57,
+   "after": 16.47,
+   "delta": -0.1
+  },
+  {
+   "name": "Darius Cooper",
+   "team": "PHI",
+   "pos": "WR",
+   "band_before": "FRINGE",
+   "band_after": "FRINGE",
+   "before": 1.27,
+   "after": 1.17,
+   "delta": -0.1
+  },
+  {
+   "name": "Colston Loveland",
+   "team": "CHI",
+   "pos": "TE",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 9.69,
+   "after": 9.59,
+   "delta": -0.1
+  },
+  {
+   "name": "Isaiah Likely",
+   "team": "NYG",
+   "pos": "TE",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 12.17,
+   "after": 12.27,
+   "delta": 0.1
+  },
+  {
+   "name": "Braelon Allen",
+   "team": "NYJ",
+   "pos": "RB",
+   "band_before": "SECONDARY",
+   "band_after": "SECONDARY",
+   "before": 9.41,
+   "after": 9.49,
+   "delta": 0.09
+  },
+  {
+   "name": "Dalton Kincaid",
+   "team": "BUF",
+   "pos": "TE",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 15.35,
+   "after": 15.26,
+   "delta": -0.09
+  },
+  {
+   "name": "Colby Parkinson",
+   "team": "LA",
+   "pos": "TE",
+   "band_before": "ROTATIONAL",
+   "band_after": "SECONDARY",
+   "before": 2.68,
+   "after": 2.77,
+   "delta": 0.09
+  },
+  {
+   "name": "Tyler Allgeier",
+   "team": "ARI",
+   "pos": "RB",
+   "band_before": "SECONDARY",
+   "band_after": "SECONDARY",
+   "before": 4.84,
+   "after": 4.77,
+   "delta": -0.07
+  },
+  {
+   "name": "DJ Moore",
+   "team": "BUF",
+   "pos": "WR",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 14.91,
+   "after": 14.85,
+   "delta": -0.07
+  },
+  {
+   "name": "Mark Andrews",
+   "team": "BAL",
+   "pos": "TE",
+   "band_before": "ALPHA",
+   "band_after": "ALPHA",
+   "before": 11.85,
+   "after": 11.78,
+   "delta": -0.07
+  },
+  {
+   "name": "Kenyon Sadiq",
+   "team": "NYJ",
+   "pos": "TE",
+   "band_before": "SECONDARY",
+   "band_after": "SECONDARY",
+   "before": 10.07,
+   "after": 10.0,
+   "delta": -0.07
+  },
+  {
+   "name": "Jonnu Smith",
+   "team": "GB",
+   "pos": "TE",
+   "band_before": "SECONDARY",
+   "band_after": "SECONDARY",
+   "before": 3.59,
+   "after": 3.66,
+   "delta": 0.07
+  },
+  {
+   "name": "Payne Durham",
+   "team": "TB",
+   "pos": "TE",
+   "band_before": "SECONDARY",
+   "band_after": "SECONDARY",
+   "before": 2.69,
+   "after": 2.76,
+   "delta": 0.07
+  },
+  {
+   "name": "Jawhar Jordan",
+   "team": "HOU",
+   "pos": "RB",
+   "band_before": "FRINGE",
+   "band_after": "FRINGE",
+   "before": 0.06,
+   "after": 0.0,
+   "delta": -0.06
+  },
+  {
+   "name": "Frank Gore Jr.",
+   "team": "BUF",
+   "pos": "RB",
+   "band_before": "FRINGE",
+   "band_after": "FRINGE",
+   "before": 0.0,
+   "after": 0.06,
+   "delta": 0.06
+  },
+  {
+   "name": "Skyy Moore",
+   "team": "GB",
+   "pos": "WR",
+   "band_before": "ROTATIONAL",
+   "band_after": "ROTATIONAL",
+   "before": 2.87,
+   "after": 2.93,
+   "delta": 0.06
+  },
+  {
+   "name": "A.J. Brown",
+   "team": "NE",
+   "pos": "WR",
+   "band_before": "FRINGE",
+   "band_after": "FRINGE",
+   "before": 2.84,
+   "after": 2.91,
+   "delta": 0.06
+  },
+  {
+   "name": "Tutu Atwell",
+   "team": "LA",
+   "pos": "WR",
+   "band_before": "FRINGE",
+   "band_after": "FRINGE",
+   "before": 0.83,
+   "after": 0.78,
+   "delta": -0.05
+  }
+ ],
+ "simulation_moves": [
+  {
+   "name": "Zay Flowers",
+   "team": "BAL",
+   "pos": "WR",
+   "projection": 21.49,
+   "sim_before": 15.54,
+   "sim_after": 21.84
+  },
+  {
+   "name": "CeeDee Lamb",
+   "team": "DAL",
+   "pos": "WR",
+   "projection": 23.3,
+   "sim_before": 18.59,
+   "sim_after": 23.08
+  },
+  {
+   "name": "Dalton Kincaid",
+   "team": "BUF",
+   "pos": "TE",
+   "projection": 15.26,
+   "sim_before": 12.82,
+   "sim_after": 16.63
+  },
+  {
+   "name": "Lamar Jackson",
+   "team": "BAL",
+   "pos": "QB",
+   "projection": 21.78,
+   "sim_before": 19.8,
+   "sim_after": 23.33
+  },
+  {
+   "name": "Jacoby Brissett",
+   "team": "ARI",
+   "pos": "QB",
+   "projection": 16.19,
+   "sim_before": 18.99,
+   "sim_after": 15.57
+  },
+  {
+   "name": "Cam Ward",
+   "team": "TEN",
+   "pos": "QB",
+   "projection": 12.95,
+   "sim_before": 15.07,
+   "sim_after": 11.88
+  },
+  {
+   "name": "Jalon Daniels",
+   "team": "TB",
+   "pos": "QB",
+   "projection": 14.03,
+   "sim_before": 17.35,
+   "sim_after": 14.41
+  },
+  {
+   "name": "Davante Adams",
+   "team": "LA",
+   "pos": "WR",
+   "projection": 16.93,
+   "sim_before": 14.1,
+   "sim_after": 17.0
+  },
+  {
+   "name": "Christian Watson",
+   "team": "GB",
+   "pos": "WR",
+   "projection": 19.66,
+   "sim_before": 16.26,
+   "sim_after": 19.12
+  },
+  {
+   "name": "Jameis Winston",
+   "team": "NYG",
+   "pos": "QB",
+   "projection": 13.11,
+   "sim_before": 15.72,
+   "sim_after": 13.07
+  },
+  {
+   "name": "Puka Nacua",
+   "team": "LA",
+   "pos": "WR",
+   "projection": 22.77,
+   "sim_before": 20.27,
+   "sim_after": 22.8
+  },
+  {
+   "name": "Romeo Doubs",
+   "team": "NE",
+   "pos": "WR",
+   "projection": 13.05,
+   "sim_before": 11.29,
+   "sim_after": 13.81
+  },
+  {
+   "name": "Chase Brown",
+   "team": "CIN",
+   "pos": "RB",
+   "projection": 14.89,
+   "sim_before": 17.68,
+   "sim_after": 15.26
+  },
+  {
+   "name": "MarShawn Lloyd",
+   "team": "GB",
+   "pos": "RB",
+   "projection": 11.12,
+   "sim_before": 13.06,
+   "sim_after": 10.74
+  },
+  {
+   "name": "Parker Washington",
+   "team": "JAX",
+   "pos": "WR",
+   "projection": 21.56,
+   "sim_before": 19.36,
+   "sim_after": 21.6
+  },
+  {
+   "name": "Tee Higgins",
+   "team": "CIN",
+   "pos": "WR",
+   "projection": 12.93,
+   "sim_before": 11.54,
+   "sim_after": 13.75
+  }
+ ]
+}

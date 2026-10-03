@@ -3711,6 +3711,50 @@ for the rest of the build, which proceeds on the captures synced at 20261003T150
    Per row: player, team, market, line, over/under price, book timestamp, capture timestamp,
    game, market id. Append-only into the Hard Rock price history store (seal-before-price:
    the proprietary board for week 4 is frozen before these are read).
-3. **Weather** for the five outdoor games (NE@BUF, TEN@BAL, JAX@CIN, ARI@NYG, NYJ@CHI;
-   DAL@HOU, LAR@PHI, GB@TB as reported): kickoff-hour wind, precipitation, temperature, with the
-   forecast's own issue time. Recorded as context; the model has no validated weather term.
+3. **Weather** for the seven open-air games (NE@BUF, TEN@BAL, JAX@CIN, LAR@PHI, ARI@NYG, GB@TB,
+   NYJ@CHI; DAL@HOU is under a retractable roof, so record its roof status if reported):
+   kickoff-hour wind, precipitation, temperature, with the forecast's own issue time. Recorded as
+   context; the model has no validated weather term. *(Corrected 2026-10-03: this item first said
+   five outdoor games and listed PHI and TB as covered. Both are open-air stadiums.)*
+
+### 2026-10-03 — Week 4: two defects found while building the portfolios, one declared step
+
+1. **The simulator has no player efficiency.** `nfl/sim/game.py` (USAGE_FIRST yards block) draws
+   every player's yards per target and per carry as a league club draw plus a league player
+   deviation, with no player-specific centre. `showdown_draws._shares` passes shares, catch rate
+   and TD shares, not efficiency. Measured on the week-4 draws: simulated mean minus projection
+   from -5.95 (Zay Flowers) to +3.33 (Jalon Daniels), Monte Carlo SE about 0.2. Low-efficiency
+   spot-start quarterbacks were inflated (Bagent +2.9, Daniels +3.3, Brissett +2.8) and the
+   portfolio's top quarterback was Bagent in every contest.
+2. **The projection does not close on club passing yards.** Receivers' projected receiving yards
+   minus the quarterbacks' projected passing yards, per club: CHI +38.0, PHI -38.7, TB +19.9,
+   NYJ -19.7, JAX +16.5, others within about 12. The simulator enforces QB yards = receivers'
+   yards in every world, so a player-efficiency centre cannot be added to the simulator until the
+   projection closes this, and which side anchors (QB efficiency or receiver efficiency) is a
+   modelling question with no evidence yet. Not fixed tonight.
+3. **Declared step, switchable:** `classic_slate_run.anchor_means` rescales each player's draws
+   so the mean is his `dk_points_if_plays` (owner ruling 2026-10-02: the projection is the
+   expected-value centre). Correlations and each player's coefficient of variation are unchanged.
+   The raw gap per player is kept in the draws artifact under `player_mean_anchor`. Off with
+   `--player-mean-anchor NONE`. The unanchored portfolio is kept for comparison in the owner
+   package. This is a stopgap for (1), not a validation of anything.
+
+### 2026-10-03 — Week 4: Hard Rock capture must FOLLOW our seal (sequence for Sunday)
+
+The football distributions are now sealed (`nfl/dfs/salaries/DK_2026W4_EARLY_SEAL.json`, written
+2026-10-03T18:20Z; projection and stored-worlds hashes inside). `classic_prop_compare.py` reads prices
+only through `price_history.comparable()`, which refuses a price captured before the seal or after
+kickoff. So the order on Sunday matters, and it is:
+
+1. You capture **official inactives** for the 16 clubs (~15:30Z) and push them.
+2. This agent re-runs state -> projection -> worlds -> research book; the book writes a **new seal**
+   (only if the projection or worlds changed). The new `written_at` is posted in this file.
+3. You capture the **Hard Rock board** for the 8 games *after* that `written_at`, in the board
+   format `price_history.load_board` reads (`HR_<AWAY>_<HOME>_BOARD_<UTC>.csv`: market, selection,
+   points, is_main, over, under, price, ts_utc, age_min, flag, over_id, under_id, price_id,
+   player_id, team_id), into `nfl/market/raw/`.
+
+A Saturday board captured after 18:20Z is comparable against the Saturday seal only until the
+Sunday reseal; after that, only a board captured after the new seal is compared. A board captured
+before the current seal is refused by name, which is the rule working. Every seal is kept in
+`DK_2026W4_EARLY_SEAL_HISTORY.jsonl`.
