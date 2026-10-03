@@ -163,6 +163,21 @@
    "where": "nfl/dfs/salaries/postinactives_board.py"
   },
   {
+   "detector": "nfl.opt.classic_portfolio:research_book_gate:PORTFOLIO_NO_RESEARCH_BOOK",
+   "kind": "outcome-code",
+   "where": "nfl/opt/classic_portfolio.py"
+  },
+  {
+   "detector": "nfl.opt.classic_portfolio:research_book_gate:PORTFOLIO_REFUSES_ACCOUNTING_FAILURE",
+   "kind": "outcome-code",
+   "where": "nfl/opt/classic_portfolio.py"
+  },
+  {
+   "detector": "nfl.opt.classic_portfolio:research_book_gate:PORTFOLIO_RESEARCH_BOOK_STALE",
+   "kind": "outcome-code",
+   "where": "nfl/opt/classic_portfolio.py"
+  },
+  {
    "detector": "nfl.postgame.join_provenance:audit_rows:JOIN_PROVENANCE_AUDIT_NOT_EXECUTED",
    "kind": "dict-state",
    "where": "nfl/postgame/join_provenance.py"
@@ -1039,9 +1054,24 @@
    "where": "nfl/tools/check_retention.py"
   },
   {
+   "detector": "nfl.tools.classic_prop_compare:compare:PROPS_NO_HARD_ROCK_BOARD",
+   "kind": "outcome-code",
+   "where": "nfl/tools/classic_prop_compare.py"
+  },
+  {
    "detector": "nfl.tools.classic_slate_state:_next_healthy_context:DEPTH_CHART_NEXT_HEALTHY_AFTER_REPORTED_OUT",
    "kind": "dict-state",
    "where": "nfl/tools/classic_slate_state.py"
+  },
+  {
+   "detector": "nfl.tools.classic_upload_verify:verify:UPLOAD_VERIFY_EMPTY_INPUT",
+   "kind": "outcome-code",
+   "where": "nfl/tools/classic_upload_verify.py"
+  },
+  {
+   "detector": "nfl.tools.classic_upload_verify:verify:UPLOAD_VERIFY_VIOLATIONS",
+   "kind": "outcome-code",
+   "where": "nfl/tools/classic_upload_verify.py"
   },
   {
    "detector": "nfl.tools.football_sanity:assess:CLUB_CARRIES_NOT_RECONCILED",
@@ -1264,6 +1294,6 @@
    "where": "sportsplatform/governance/outcome.py"
   }
  ],
- "n_detectors": 248,
+ "n_detectors": 254,
  "spec_version": "detectors-1"
 }
