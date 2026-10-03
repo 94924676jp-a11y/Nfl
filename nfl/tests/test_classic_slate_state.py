@@ -60,6 +60,33 @@ def test_02_next_healthy_gets_starter_evidence_only_behind_an_out_starter():
           C.NEXT_HEALTHY_TIER not in ('OWNER_RELAYED_CONFIRMED_STARTER', 'CONFIRMED_INACTIVE'))
 
 
+CHART_POS = {'LA': {'order': ['Q'], 'by_pos': {'WR': ['PUKA', 'ADAMS', 'M'], 'TE': []},
+                    'dt': 'd', 'capture_id': 'c'}}
+USAGE = {'PUKA': {'pregame_rank': 3}, 'ADAMS': {'pregame_rank': 1}, 'M': {'pregame_rank': 2},
+         'X': {'pregame_rank': 4}}
+
+
+def test_03_skill_rank_is_the_better_of_usage_and_chart():
+    r = C._qb_rank('WR', 'LA', 'PUKA', CHART_POS, USAGE)
+    check('positive control: returning WR1, usage rank 3, chart rank 1 -> rank 1', r == 1, str(r))
+    r = C._qb_rank('WR', 'LA', 'ADAMS', CHART_POS, USAGE)
+    check('  negative control: usage 1 beats chart 2 -> rank 1, never demoted to 2', r == 1, str(r))
+    r = C._qb_rank('WR', 'LA', 'M', CHART_POS, USAGE)
+    check('  usage 2, chart 3 -> 2 (the chart never worsens a rank)', r == 2, str(r))
+    r = C._qb_rank('WR', 'LA', 'X', CHART_POS, USAGE)
+    check('  off the chart -> usage rank unchanged', r == 4, str(r))
+    r = C._qb_rank('WR', 'LA', 'M', CHART_POS, USAGE, out_gsis={'PUKA', 'ADAMS'})
+    check('  chart rank counts only receivers not reported out', r == 1, str(r))
+    r = C._qb_rank('TE', 'LA', 'NOBODY', CHART_POS, {})
+    check('  no usage and no chart rank -> None, not zero and not rank 1', r is None, str(r))
+    r = C._qb_rank('WR', 'NYJ', 'PUKA', CHART, USAGE)
+    check('  a club chart with no position block falls back to usage', r == 3, str(r))
+    for g in USAGE:
+        u = USAGE[g]['pregame_rank']
+        check(f'  invariant: rank({g}) <= usage rank {u}',
+              C._qb_rank('WR', 'LA', g, CHART_POS, USAGE) <= u)
+
+
 def test_zz_every_check_passed():
     """The module's own counter, re-raised so a failure turns this module RED."""
     if FAILED:

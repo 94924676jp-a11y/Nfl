@@ -67,7 +67,20 @@ def _qb_rank(pos, team, gsis, qb_chart, depth, out_gsis=()):
     if pos == 'QB' and team in qb_chart:
         order = [g for g in qb_chart[team]['order'] if g not in out_gsis]
         return (order.index(gsis) + 1) if gsis in order else len(order) + 1
-    return (depth.get(gsis) or {}).get('pregame_rank') if gsis else None
+    usage = (depth.get(gsis) or {}).get('pregame_rank') if gsis else None
+    chart = None
+    if gsis and team in qb_chart and pos in qb_chart[team].get('by_pos', {}):
+        order = [g for g in qb_chart[team]['by_pos'][pos] if g not in out_gsis]
+        chart = (order.index(gsis) + 1) if gsis in order else None
+    # THE BETTER OF THE TWO, NEVER THE WORSE. Usage history ranks a returning starter by the weeks
+    # he missed (2026 week 4: Puka Nacua and Nico Collins played 1 of 3 weeks, usage rank 3, and the
+    # clubs' own charts list each WR1). Taking the minimum lifts only a player the club's current
+    # chart ranks higher than his usage, so no player's RANK ever worsens. His teammates' BANDS and
+    # shares can still fall: ALPHA is limited to one per club and position and volume is allocated
+    # zero-sum, so lifting a club's chart WR1 moves the incumbent down (week 4 measured: Davante
+    # Adams, Matthew Golden, Mack Hollins, Kalif Raymond). That is the rule working, not a side effect.
+    ranks = [r for r in (usage, chart) if isinstance(r, int)]
+    return min(ranks) if ranks else None
 
 
 def _next_healthy_context(pos, team, gsis, qb_chart, out_gsis):
@@ -153,10 +166,15 @@ def captured_qb_depth(as_of: str) -> dict:
         q = [x for x in rows if x['team'] == club and x.get('pos_abb') == 'QB']
         if not q:
             continue
-        last = max(x['dt'] for x in q)
+        last = max(x['dt'] for x in rows if x['team'] == club)
         order = [x['gsis_id'] for x in sorted((x for x in q if x['dt'] == last),
                                               key=lambda x: int(x['pos_rank']))]
-        out[club] = {'order': order, 'dt': last, 'capture_id': best[0]}
+        by_pos = {}
+        for pos in ('RB', 'WR', 'TE'):
+            by_pos[pos] = [x['gsis_id'] for x in sorted(
+                (x for x in rows if x['team'] == club and x.get('pos_abb') == pos and x['dt'] == last),
+                key=lambda x: int(x['pos_rank']))]
+        out[club] = {'order': order, 'by_pos': by_pos, 'dt': last, 'capture_id': best[0]}
     return out
 
 
@@ -265,7 +283,9 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
             'depth_detail': ((depth.get(gsis) or {}) if gsis else {}),
             'depth_source': (('DEPTH_CHART_CAPTURED ' + qb_chart[team]['capture_id'])
                              if pos == 'QB' and team in qb_chart else
-                             'PREGAME_USAGE_HISTORY'),
+                             'MIN(PREGAME_USAGE_HISTORY, DEPTH_CHART_CAPTURED)' if pos in ('RB', 'WR', 'TE')
+                             else 'PREGAME_USAGE_HISTORY'),
+            'depth_usage_rank': ((depth.get(gsis) or {}).get('pregame_rank') if gsis else None),
             'current_availability': {
                 'status': status, 'tier': tier, 'designation': designation if ir is not None else None,
                 'practice_status': (ir or {}).get('practice_status'),
@@ -309,8 +329,9 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
         'official_inactives': {'n_supplied': len(officials), 'STATUS_IF_SUPPLIED': AV.REPORTED_INACTIVE_HIGH_CONFIDENCE,
                                'CAPTURED_DOCUMENT': None,
                                'STATE': 'NOT_YET_PUBLISHED' if not officials else 'APPLIED'},
-        'depth': {'source': 'role_state_history.pregame_depth for every position except QB; QB order from '
-                            'the newest captured depth chart lawful at as_of (see captured_qb_depth)',
+        'depth': {'source': ('QB: rank on the newest captured depth chart lawful at as_of, among QBs not '
+                             'reported out. RB/WR/TE: the better of the usage-history rank '
+                             '(role_state_history.pregame_depth) and the captured chart rank. DST: none.'),
                   'qb_chart': {c: {'dt': v['dt'], 'capture_id': v['capture_id']} for c, v in qb_chart.items()
                                if c in teams},
                   'arm': 'PREGAME -- completed weeks only for usage; current-week capture for QB order',
