@@ -110,7 +110,11 @@ def _today(as_of=None) -> dt.date:
         return as_of.date()
     if isinstance(as_of, dt.date):
         return as_of
-    return dt.date.fromisoformat(str(as_of))
+    t = str(as_of)
+    # A full UTC timestamp is the shape every other clock in this tree passes; take its date.
+    if 'T' in t:
+        return dt.datetime.fromisoformat(t.replace('Z', '+00:00')).date()
+    return dt.date.fromisoformat(t)
 
 
 def latest_completed_in_world(rows, as_of=None) -> Outcome:
@@ -218,6 +222,62 @@ def semantic_freshness(as_of=None, rows=None) -> Outcome:
         missing_games=missing_games[:20],
         WOULD_RESOLVE_IT=('a play-by-play and schedule pull covering the missing weeks. That needs '
                           'bytes from outside this checkout and is the other agent\'s to fetch.'))
+
+
+def for_target(season: int, week: int, as_of=None, rows=None) -> Outcome:
+    """Does our evidence hold every game a week-`week` forecast consumes?
+
+    `semantic_freshness` asks whether evidence reaches the WORLD, and the world's latest week counts
+    as completed once any game in it is played. On the Saturday before a Sunday slate, Thursday's
+    game of the SAME week makes it fail -- for a slate whose projections read only weeks < `week`.
+    Wired into readiness as-is it would refuse every Sunday after a Thursday game, a false red that
+    teaches people to ignore it. This is the slate-relative question, per GAME, not per week max:
+    every game of an earlier week whose calendar day is before `as_of` must carry a score in the
+    warehouse. Same-week games already played are reported and do not block, because the model's
+    current-season state for week W is built through week W-1.
+    """
+    if rows is None:
+        sc = schedule(season)
+        if sc.state.value != 'PASS':
+            return sc
+        rows = sc.value
+    day = _today(as_of).isoformat()
+    need = [r for r in rows if str(r.get('season', season)) == str(season)
+            and int(r['week']) < int(week) and r.get('gameday') and r['gameday'] < day]
+    if not need:
+        return Outcome.blocked(
+            'SLATE_FRESHNESS_EMPTY_INPUT',
+            f'no game of {season} weeks < {week} has a calendar day before {day}; there is nothing '
+            f'the week-{week} forecast consumes, so freshness was not measured.',
+            cause=Cause.EMPTY_INPUT, season=season, week=week, as_of=day)
+    if not TEAM_GAME.exists():
+        return Outcome.blocked('WORLD_CLOCK_NO_TEAM_GAME', f'{TEAM_GAME} missing', cause=Cause.DATA)
+    art = json.loads(TEAM_GAME.read_text())
+    tg = art['rows'] if isinstance(art['rows'], list) else list(art['rows'].values())
+    scored = {}
+    for r in tg:
+        if r.get('season') == season and isinstance(r.get('points'), (int, float)):
+            scored[r.get('game_id')] = scored.get(r.get('game_id'), 0) + 1
+    missing = sorted(r['game_id'] for r in need if scored.get(r['game_id'], 0) < 2)
+    same_week_played = sorted(r['game_id'] for r in rows
+                              if int(r['week']) == int(week) and r.get('gameday')
+                              and r['gameday'] < day)
+    ev = {'season': season, 'target_week': week, 'as_of': day, 'n_games_consumed': len(need),
+          'n_games_scored': len(need) - len(missing), 'missing_games': missing[:40],
+          'same_week_games_already_played': same_week_played,
+          'SAME_WEEK_NOTE': ('games of the target week already played are not inputs to the week-'
+                             f'{week} forecast and do not block it')}
+    if missing:
+        return Outcome.fail(
+            'EVIDENCE_BEHIND_THE_SLATE',
+            f'{len(missing)} of {len(need)} game(s) the week-{week} forecast consumes carry no score '
+            f'in the warehouse: {missing[:6]}. The forecast would rest on a world that is gone.',
+            cause=Cause.DATA, **ev)
+    return Outcome.measured('EVIDENCE_COVERS_THE_SLATE', ev, n_measured=len(need),
+                            what=f'{season} games before week {week} checked for a score',
+                            detail=f'all {len(need)} game(s) of weeks < {week} are scored; '
+                                   f'{len(same_week_played)} same-week game(s) already played, not consumed',
+                            **ev)
 
 
 def assert_no_post_cutoff_outcomes(cutoff, as_of=None, rows=None, team_game_rows=None) -> Outcome:

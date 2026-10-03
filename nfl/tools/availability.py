@@ -356,10 +356,26 @@ NAME_ALIASES = {
     ('James Cook', 'BUF'): 'James Cook III',
     ('KC Concepcion', 'CLE'): 'KC Concepcion Jr.',
     ('Demario Douglas', 'NE'): 'DeMario Douglas',
+    # 2026 week 4 Early Only (DraftKings short or nickname -> the formal name the captured weekly
+    # roster 20261003T150307Z carries for the SAME club and position, status ACT). Each target
+    # resolves to exactly one gsis_id in player_prior.name_index(); none is a fuzzy match.
+    ('Nick Singleton', 'TEN'): 'Nicholas Singleton',   # 00-0040886 RB
+    ('Joshua Palmer', 'BUF'): 'Josh Palmer',           # 00-0036988 WR
+    ('Hollywood Brown', 'PHI'): 'Marquise Brown',      # 00-0035662 WR
+    ('CJ Williams', 'JAX'): 'C.J. Williams',           # 00-0041106 WR
+    ('Matt Hibner', 'BAL'): 'Matthew Hibner',          # 00-0040879 TE
 }
 
 #: Relayed names that could not be resolved and must stay unresolved, with the reason.
 UNRESOLVED_RELAYED_NAMES = {
+    ('Brett Rypien', 'TB'): (
+        'priced by DraftKings on TB for 2026 week 4 and absent from every captured TB roster through '
+        'week 3 (QBs there: Baker Mayfield, Easton Stick, Jalon Daniels). A week-4 signing after '
+        'Mayfield\'s thumb injury is the likely story; it is not established, so he is not projected. '
+        'TB\'s week-4 starting quarterback is UNRESOLVED.'),
+    ('Mitch Tinsley', 'CIN'): ('priced by DraftKings on CIN; on no captured CIN roster. Not projected.'),
+    ('Al-Jay Henderson', 'NYJ'): ('on the captured NYJ roster as DEV (practice squad) with no gsis_id. '
+                                  'Not projected.'),
     ('Matthew McClain', 'NYJ'): (
         'no Matthew McClain in the DK 457. The universe carries Malik McClain NYJ WR '
         '3000. Probably a first-name slip, but not established, so not renamed. '

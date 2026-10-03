@@ -959,6 +959,16 @@
    "where": "nfl/production/world_clock.py:277"
   },
   {
+   "detector": "nfl.production.world_clock:for_target:EVIDENCE_BEHIND_THE_SLATE",
+   "kind": "outcome-code",
+   "where": "nfl/production/world_clock.py"
+  },
+  {
+   "detector": "nfl.production.world_clock:for_target:SLATE_FRESHNESS_EMPTY_INPUT",
+   "kind": "outcome-code",
+   "where": "nfl/production/world_clock.py"
+  },
+  {
    "detector": "nfl.production.world_clock:latest_completed_in_evidence:WORLD_CLOCK_NO_SCORED_EVIDENCE",
    "kind": "outcome-code",
    "where": "nfl/production/world_clock.py:155"
@@ -1027,6 +1037,11 @@
    "detector": "nfl.tools.check_retention:assert_rows_accompany_blobs:ROWS_ACCOMPANY_BLOBS_EMPTY_INPUT",
    "kind": "measured-suffix",
    "where": "nfl/tools/check_retention.py"
+  },
+  {
+   "detector": "nfl.tools.classic_slate_state:_next_healthy_context:DEPTH_CHART_NEXT_HEALTHY_AFTER_REPORTED_OUT",
+   "kind": "dict-state",
+   "where": "nfl/tools/classic_slate_state.py"
   },
   {
    "detector": "nfl.tools.football_sanity:assess:CLUB_CARRIES_NOT_RECONCILED",
@@ -1249,6 +1264,6 @@
    "where": "sportsplatform/governance/outcome.py"
   }
  ],
- "n_detectors": 245,
+ "n_detectors": 248,
  "spec_version": "detectors-1"
 }

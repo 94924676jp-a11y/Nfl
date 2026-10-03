@@ -3691,3 +3691,26 @@ raises before reaching the pipeline; in this tree the cache was built by earlier
 runs further and meets the pre-existing `REQUIRED_SOURCE_NOT_DECLARED` refusal at
 capture_validation (run_forecast.py:379, untouched by this batch). That refusal is the gate
 working; the test's fixture declares only `schedules`.
+
+### 2026-10-03 — REQUEST to the networked agent: Week 4 Early Only (8 games, 1:00 PM ET Sun 2026-10-04)
+
+The owner is playing DraftKings Classic Early Only. Games, from DraftKings' own entries export:
+NE@BUF, TEN@BAL, JAX@CIN, DAL@HOU, LAR@PHI, ARI@NYG, GB@TB, NYJ@CHI (nflverse ids 2026_04_NE_BUF,
+2026_04_TEN_BAL, 2026_04_JAX_CIN, 2026_04_DAL_HOU, 2026_04_LAR_PHI, 2026_04_ARI_NYG, 2026_04_GB_TB,
+2026_04_NYJ_CHI). Lock 2026-10-04T17:00Z. This agent has no network; these are yours, not blockers
+for the rest of the build, which proceeds on the captures synced at 20261003T150307Z.
+
+1. **Official inactives** for those 16 clubs, from the NFL.com inactives page and team sites, as
+   they post (~15:30Z Sunday). Same capture shape as `official_inactives` 20260917T234100Z
+   (raw HTML + parsed rows with gsis_id where resolvable). The deployed T-90 workflow is pinned to
+   September and will not fetch them; `nfl-t90.yml` for week 4 sits on this branch, inert until
+   the owner merges it.
+2. **Hard Rock Bet board** for the same 8 games only, two captures: one now (Saturday) and one
+   after inactives. Game markets (spread, moneyline, total, team totals) and player markets
+   (pass yds/att/TD/INT, rush yds/att, rec yds, receptions, anytime TD, alternates where shown).
+   Per row: player, team, market, line, over/under price, book timestamp, capture timestamp,
+   game, market id. Append-only into the Hard Rock price history store (seal-before-price:
+   the proprietary board for week 4 is frozen before these are read).
+3. **Weather** for the five outdoor games (NE@BUF, TEN@BAL, JAX@CIN, ARI@NYG, NYJ@CHI;
+   DAL@HOU, LAR@PHI, GB@TB as reported): kickoff-hour wind, precipitation, temperature, with the
+   forecast's own issue time. Recorded as context; the model has no validated weather term.

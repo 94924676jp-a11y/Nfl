@@ -71,6 +71,44 @@ EARLY_KICKOFF = '09/20/2026 01:00PM ET'
 #: rather than a rule we reconstruct.
 FLEX_SLOTS = ('RB/FLEX', 'WR/FLEX', 'TE/FLEX')
 
+#: Every Early Only slate this module has been handed, keyed by slate id. A week is a PARAMETER:
+#: the week-3 pins above stay as the default so every existing caller behaves exactly as before,
+#: and a new week is a new row here rather than an edited constant. The declared hash is of the
+#: uncompressed bytes and is checked on every read (`sha256_matches_declared`).
+SLATES = {
+    '2026W3': {'entries_blob': ENTRIES_BLOB, 'entries_sha': ENTRIES_SHA,
+               'salary_blob': SALARY_BLOB, 'kickoff': EARLY_KICKOFF},
+    '2026W4': {'entries_blob': _REPO / 'nfl' / 'vintage' / 'dk_entries.ddddf790bfd2bf65.csv.gz',
+               'entries_sha': None,   # filled below from the manifest row, never typed in
+               'salary_blob': _REPO / 'nfl' / 'vintage' / 'dk_salaries_early.da5fd2511ea37072.csv.gz',
+               'kickoff': '10/04/2026 01:00PM ET'},
+}
+
+
+def _manifest_sha(blob) -> str | None:
+    """The uncompressed sha256 the vintage manifest recorded for `blob`, or None."""
+    rel = str(pathlib.Path(blob).resolve().relative_to(_REPO))
+    found = None
+    with open(_REPO / 'nfl' / 'vintage_manifest.jsonl') as fh:
+        for ln in fh:
+            if rel not in ln:
+                continue
+            try:
+                v = (json.loads(ln).get('value') or {})
+            except ValueError:
+                continue
+            if v.get('blob') == rel and v.get('sha256'):
+                found = v['sha256']
+    return found
+
+
+def slate_files(slate_id: str) -> dict:
+    """The declared files for one slate, with the entries hash read from the manifest."""
+    d = dict(SLATES[slate_id])
+    if not d.get('entries_sha'):
+        d['entries_sha'] = _manifest_sha(d['entries_blob'])
+    return d
+
 _GAME = re.compile(r'^([A-Z]{2,3})@([A-Z]{2,3})\s+(.*)$')
 
 
@@ -85,9 +123,9 @@ def _read(blob, sha_declared):
     return raw, sha, sha == sha_declared
 
 
-def entries(blob=None) -> Outcome:
+def entries(blob=None, sha_declared=None) -> Outcome:
     """The owner's contest entries: one row per entry, with its lineup."""
-    raw, sha, ok = _read(blob or ENTRIES_BLOB, ENTRIES_SHA)
+    raw, sha, ok = _read(blob or ENTRIES_BLOB, sha_declared or ENTRIES_SHA)
     rows = list(csv.reader(raw.decode('utf-8-sig').splitlines()))
     hdr = rows[0]
     out = []
@@ -123,9 +161,9 @@ def entries(blob=None) -> Outcome:
         by_fee=dict(fees), total_entered=round(total, 2))
 
 
-def pool(blob=None) -> Outcome:
+def pool(blob=None, sha_declared=None) -> Outcome:
     """The contest player pool, with DraftKings' own IDs and roster slots."""
-    raw, sha, ok = _read(blob or ENTRIES_BLOB, ENTRIES_SHA)
+    raw, sha, ok = _read(blob or ENTRIES_BLOB, sha_declared or ENTRIES_SHA)
     rows = list(csv.reader(raw.decode('utf-8-sig').splitlines()))
     hi = next((i for i, r in enumerate(rows)
                if len(r) > 14 and (r[14] or '').strip() == 'Position'), None)
