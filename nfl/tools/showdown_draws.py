@@ -163,7 +163,7 @@ def kicker_draws(club, n_sims, rng) -> Outcome:
 
 
 def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED,
-          volume_centre: str = None) -> Outcome:
+          volume_centre: str = None, n_calib: int = None) -> Outcome:
     proj = json.loads(pathlib.Path(proj_path).read_text())
     state = json.loads(pathlib.Path(state_path).read_text())
     rows = list(proj['rows'].values())
@@ -224,7 +224,7 @@ def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED,
                 return Outcome.fail('VOLUME_CENTRE_PROJECTION_ABSENT',
                                     f'{club}: team_volume lacks proj_pass_attempts/'
                                     f'proj_rush_attempts/proj_targets', club=club)
-        o = sim_game.simulate_game_centred(model, spec, centre, n_sims=n_sims, seed=seed)
+        o = sim_game.simulate_game_centred(model, spec, centre, n_sims=n_sims, seed=seed, n_calib=n_calib)
     elif volume_centre in (None, sim_game.VOLUME_CENTRE_INCUMBENT):
         o = sim_game.simulate_game(model, spec, n_sims=n_sims, seed=seed, retain_stats=True)
     else:

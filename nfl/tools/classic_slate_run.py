@@ -236,8 +236,12 @@ def run(slate_id: str, *, n_sims: int = 2000, player_mean_anchor: str = ANCHOR_E
         sp = td / f'{gid}.state.json'
         sp.write_text(json.dumps(sl))
         SD.OUT = td / f'{gid}.draws.json'
+        # CALIBRATE ON THE FULL DRAW COUNT. The default calibrates on 1,000 worlds and then judges the
+        # final 2,000 against the final's own SE only, so calibration noise can push a club just
+        # outside 3 SE: measured 2026W4 GB@TB, GB rush attempts gap 0.92 vs tolerance 0.87 at 1,000;
+        # -0.03 at 2,000. Precision is raised; the reconciliation gate is unchanged.
         o = SD.build(str(P['proj']), str(sp), n_sims=n_sims, seed=SEED + i,
-                     volume_centre=sim_game.VOLUME_CENTRE_PROJECTION)
+                     volume_centre=sim_game.VOLUME_CENTRE_PROJECTION, n_calib=n_sims)
         if o.state.value != 'PASS':
             per_game[gid] = {'state': o.state.value, 'code': o.code, 'detail': o.detail}
             continue

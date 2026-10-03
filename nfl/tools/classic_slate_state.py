@@ -58,6 +58,8 @@ def out_path(slate_id: str) -> pathlib.Path:
 
 
 NEXT_HEALTHY_TIER = 'DEPTH_CHART_NEXT_HEALTHY_AFTER_REPORTED_OUT'
+#: highest chart rank that may lift a player who has NO usage history (see _qb_rank)
+NO_USAGE_CHART_LIFT_LIMIT = {'RB': 2, 'TE': 2, 'WR': 4}
 
 
 def _qb_rank(pos, team, gsis, qb_chart, depth, out_gsis=()):
@@ -79,6 +81,15 @@ def _qb_rank(pos, team, gsis, qb_chart, depth, out_gsis=()):
     # shares can still fall: ALPHA is limited to one per club and position and volume is allocated
     # zero-sum, so lifting a club's chart WR1 moves the incumbent down (week 4 measured: Davante
     # Adams, Matthew Golden, Mack Hollins, Kalif Raymond). That is the rule working, not a side effect.
+    # A CHART ALONE LIFTS ONLY INTO THE SLOTS A FORMATION USES, PLUS ONE. The rule above exists for
+    # players WITH usage history who missed weeks. A player with no usage at all, ranked RB3 on a
+    # chart while RB1 and RB2 are healthy, has no evidence of an offensive role -- typically he is
+    # inactive or special-teams only. Measured on week 4 before this guard: Tahj Brooks (CIN RB3,
+    # 0 carries in 2026) and Rasheen Ali (BAL RB3) were lifted to ROTATIONAL at ~5-6 DK points each,
+    # taking volume from an RB2 with measured carries. DECLARED limit: one RB and one TE start, three
+    # WRs start, so a no-usage player is lifted only to RB2, TE2 or WR4.
+    if usage is None and isinstance(chart, int) and chart > NO_USAGE_CHART_LIFT_LIMIT.get(pos, 0):
+        chart = None
     ranks = [r for r in (usage, chart) if isinstance(r, int)]
     return min(ranks) if ranks else None
 

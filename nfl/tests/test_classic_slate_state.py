@@ -87,6 +87,21 @@ def test_03_skill_rank_is_the_better_of_usage_and_chart():
               C._qb_rank('WR', 'LA', g, CHART_POS, USAGE) <= u)
 
 
+def test_04_a_chart_alone_lifts_only_into_formation_slots():
+    chart = {'CIN': {'order': [], 'by_pos': {'RB': ['B', 'P', 'T'], 'WR': ['1', '2', '3', '4', '5']}, 'dt': 'd', 'capture_id': 'c'}}
+    usage = {'B': {'pregame_rank': 1}, 'P': {'pregame_rank': 2}}
+    r = C._qb_rank('RB', 'CIN', 'T', chart, usage)
+    check('positive control: a no-usage RB3 behind two healthy backs gets no rank from the chart', r is None, str(r))
+    r = C._qb_rank('RB', 'CIN', 'T', chart, usage, out_gsis={'B'})
+    check('  negative control: with RB1 out the same back is next man up (RB2) and is lifted', r == 2, str(r))
+    r = C._qb_rank('WR', 'CIN', '4', chart, {})
+    check('  a no-usage WR4 is lifted (three WRs start, one spare)', r == 4, str(r))
+    r = C._qb_rank('WR', 'CIN', '5', chart, {})
+    check('  a no-usage WR5 is not', r is None, str(r))
+    r = C._qb_rank('RB', 'CIN', 'T', chart, {'T': {'pregame_rank': 3}})
+    check('  a player WITH usage history keeps the better of usage and chart', r == 3, str(r))
+
+
 def test_zz_every_check_passed():
     """The module's own counter, re-raised so a failure turns this module RED."""
     if FAILED:
