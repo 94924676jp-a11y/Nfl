@@ -3775,3 +3775,24 @@ before the current seal is refused by name, which is the rule working. Every sea
 Audit (nfl/dfs/salaries/DK_2026W4_EARLY_AUDIT.json): accounting PASS on all 16 clubs; 11 sampled role
 cards match an independent play-by-play recount; yards props blocked for CHI, JAX, NYG, NYJ, PHI, TB
 (receiving vs passing yards gap over 5%, largest where the QB-receiver pairing changed this week).
+
+### 2026-10-03 — Authoritative full suite at 54a3d19e (clean worktree), classified against 776cce7e
+
+| | 776cce7e (control) | 54a3d19e (authoritative) |
+|---|---|---|
+| modules | 340 | 348 |
+| test functions | 3,518 | 3,561 |
+| checks | 15,477 | 15,633 |
+| failing checks | 167 | 166 |
+| raised | 135 | 135 |
+| blocked functions | 36 | 36 |
+| zero-check functions | 1 | 1 |
+| detectors not executed (unvalidated) | 9 of 248 | 9 of 260 |
+| red modules | 58 | 58 (same set) |
+
+New failures introduced: 0 (no module newly red, none worse; test_system_state 6 -> 5). Every
+classic_* module passes. Path-adjacent red modules: test_role_state_history and
+test_football_only_arm fail only in a clean checkout (absent derived caches) and pass in the
+production tree (9/9 and 6/6 checks); test_v1_draw_artifact is the incumbent run_forecast capture
+declaration; test_showdown_family is the showdown product; test_draw_coherence is a docstring check.
+None blocks the Early Only path. SUITE FAIL stands: the repository is not green.
