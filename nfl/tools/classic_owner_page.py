@@ -397,6 +397,7 @@ select:focus-visible, input:focus-visible, th:focus-visible {{ outline: 2px soli
 .grid2 ul, .changes {{ margin: 6px 0 0; padding-left: 18px; }}
 .changes li {{ margin-bottom: 6px; }}
 .missing {{ color: var(--warn); }}
+.wrap h1, .wrap h2, .wrap h3, .wrap p, .wrap li, .wrap summary {{ overflow-wrap: anywhere; min-width: 0; }}
 details.game {{ background: var(--panel); border: 1px solid var(--line); padding: 10px 14px; }}
 details.game > summary {{ cursor: pointer; font-size: 1rem; }}
 details.game[open] {{ display: grid; gap: 12px; }}
