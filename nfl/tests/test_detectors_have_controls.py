@@ -62,7 +62,8 @@ def test_02_every_detector_names_something_that_exists():
         if f'def {head}(' not in src and f'class {head}' not in src:
             missing_fn.append(d['detector'])
         # measured() derives its code as <caller code>_EMPTY_INPUT; the caller's code is in source
-        probe = code[:-len('_EMPTY_INPUT')] if d.get('kind') == 'measured-suffix' and code.endswith('_EMPTY_INPUT') else code
+        probe = code[:-len('_EMPTY_INPUT')] if d.get('kind') in ('measured-suffix', 'propagated-refusal') \
+            and code.endswith('_EMPTY_INPUT') else code
         if probe not in src and d.get('kind') not in ('harness-verdict', 'summary-text', 'state'):
             missing_code.append(d['detector'])
     check('every detector module exists', not missing_mod, str(missing_mod[:5]))

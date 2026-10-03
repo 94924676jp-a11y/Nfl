@@ -39,6 +39,7 @@ from __future__ import annotations
 
 import ast
 import datetime as dt
+import re as _re
 import functools
 import glob
 import json
@@ -51,6 +52,8 @@ TESTS = ROOT / 'nfl' / 'tests'
 MANIFEST = TESTS / 'DETECTORS.json'
 VALIDATION = TESTS / 'DETECTOR_VALIDATION.json'
 HITS_DEFAULT = TESTS / '_control_hits.jsonl'
+
+_DETECTOR_RE = _re.compile(r'^[a-z_][a-z0-9_.]*:[A-Za-z_][A-Za-z0-9_.]*:[A-Za-z][A-Za-z0-9_]+$')
 
 VALIDATED = 'VALIDATED'
 NO_CONTROL = 'UNVALIDATED_NO_CONTROL'
@@ -158,11 +161,19 @@ def declared_controls(test_glob: str = 'nfl/tests/test_*.py') -> dict[str, list[
                         out.setdefault(d.args[0].value, []).append(
                             {'module': rel, 'function': node.name, 'line': node.lineno,
                              'form': 'decorator'})
+                calls_observe = any(isinstance(sub, ast.Call) and _name(sub.func) == 'observe'
+                                    for sub in ast.walk(node))
+                if not calls_observe:
+                    continue
+                # A control names its detector somewhere in its body: as observe()'s literal
+                # argument, or as a string constant held in a tuple the loop hands to observe.
+                # Every string constant in the function shaped like <module>:<function>:<CODE>
+                # counts; a name that is never observed at run time shows up as NOT_EXECUTED in
+                # validate(), so a stray constant cannot validate anything by itself.
                 for sub in ast.walk(node):
-                    if isinstance(sub, ast.Call) and _name(sub.func) == 'observe' \
-                            and sub.args and isinstance(sub.args[0], ast.Constant) \
-                            and isinstance(sub.args[0].value, str):
-                        out.setdefault(sub.args[0].value, []).append(
+                    if isinstance(sub, ast.Constant) and isinstance(sub.value, str) \
+                            and _DETECTOR_RE.match(sub.value):
+                        out.setdefault(sub.value, []).append(
                             {'module': rel, 'function': node.name, 'line': sub.lineno,
                              'form': 'observe'})
     return out
@@ -225,14 +236,19 @@ def validate(rid: str | None, ran_modules, full_run: bool, write: bool = True) -
                      'controls_declared': controls,
                      'observations': [{k: h[k] for k in ('module', 'function', 'got', 'tripped')}
                                       for h in obs]})
+    # What fails THIS run: every UNVALIDATED row on a full run; on a partial run only a control
+    # that ran in it and did not trip, or a control module that ran and recorded nothing. A
+    # detector with no control at all is a global fact, reported on every run and failing the
+    # full run, which is the authoritative statement of rule 2.
+    blocking = [r for r in rows if r['status'].startswith('UNVALIDATED')
+                and (full_run or r['status'] in (DID_NOT_TRIP, NOT_EXECUTED))]
     unlisted = census(manifest)
     doc = {'ARTIFACT': 'DETECTOR_VALIDATION', 'spec_version': 'detector-validation-1',
-           'run_id': rid, 'full_run': bool(full_run),
+           'run_id': rid, 'full_run': bool(full_run), 'blocking': [r['detector'] for r in blocking],
            'written_at_utc': dt.datetime.now(dt.timezone.utc).isoformat(timespec='seconds'),
            'n_detectors': len(rows), 'counts': counts,
            'verdict': ('ALL_VALIDATED' if counts.get(VALIDATED, 0) == len(rows)
-                       else 'PARTIAL_RUN' if (not full_run and all(
-                           r['status'] in (VALIDATED, NOT_IN_RUN) for r in rows))
+                       else 'PARTIAL_RUN_CLEAN' if (not full_run and not blocking)
                        else 'UNVALIDATED_DETECTORS_PRESENT'),
            'rows': rows,
            'census': unlisted,

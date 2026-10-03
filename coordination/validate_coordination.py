@@ -270,11 +270,14 @@ def check_mode():
     carry its provenance; a pinned mode_declared must be a mode. Absence is reported, not refused:
     the mode system reports NOT_EXECUTED on its own until the owner or an agent sets one."""
     try:
-        import sys as _s
-        _r = str(pathlib.Path(__file__).resolve().parents[1])
-        if _r not in _s.path:
-            _s.path.insert(0, _r)
-        from coordination import mode as M
+        import importlib.util as _ilu
+        mp = HERE / 'mode.py'
+        if not mp.exists():
+            print('  mode: NONE (no mode.py beside this validator; boundary NOT_EXECUTED)')
+            return
+        spec = _ilu.spec_from_file_location('coordination_mode', mp)
+        M = _ilu.module_from_spec(spec)
+        spec.loader.exec_module(M)
         sp = HERE / 'PROJECT_STATE.json'
         doc = json.loads(sp.read_text()) if sp.exists() else None
     except Exception as e:                                   # noqa: BLE001

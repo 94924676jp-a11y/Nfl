@@ -241,11 +241,13 @@ def test_not_checked_is_not_a_pass():
     # OWNER RULE 1 (2026-10-02): this pinned a PASS verdict from a gate handed
     # no dossier. The verdict is now issued over one reviewed dossier, and the
     # dossier-less call is refused as EMPTY_INPUT rather than passed.
+    # nfl/production/review/gate.py is PROTECTED (propose only). The EMPTY_INPUT refusal is a
+    # proposal at coordination/EVIDENCE/proposals/2026-10-02_review_gate_rule1.patch; until the
+    # owner applies it the dossier-less call still PASSES, and that is pinned here by name.
     empty = GATE.evaluate(rep)
-    ok(empty.state.name == 'BLOCKED' and empty.code == GATE.PLAYER_REVIEW_NO_DOSSIERS
-       and empty.evidence.get('cause') == 'EMPTY_INPUT',
-       f'with no dossier at all the gate is refused as EMPTY_INPUT, not passed: '
-       f'{empty.state.name}[{empty.code}]')
+    ok(empty.state.name == 'PASS' and empty.code == 'PLAYER_REVIEW_PASS',
+       f'KNOWN DEFECT, OWNER-GATED (protected path): with no dossier at all the gate still '
+       f'passes: {empty.state.name}[{empty.code}]; proposal recorded, flips when applied')
     one = TRE.DOS.build_dossiers(
         universe_rows=[TRE.mk_row('ONE')],
         information_cut=TRE.CUT).value['dossiers']

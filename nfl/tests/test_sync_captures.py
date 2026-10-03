@@ -13,6 +13,7 @@ if str(_REPO) not in sys.path:
 
 from nfl.tools import sync_captures as SC  # noqa: E402
 from nfl.tests import _registry  # noqa: E402
+from nfl.tests._controls import observe  # noqa: E402
 
 RESULTS = []
 
@@ -58,6 +59,7 @@ def _fork_conflict():
     local = [shared, _row('L', 'a', 'nfl/vintage/same.gz', b'local bytes')]
     remote = [shared, _row('R', 'a', 'nfl/vintage/same.gz', b'remote bytes')]
     o = SC.plan(local, remote)
+    observe('nfl.tools.sync_captures:plan:SYNC_BLOB_CONFLICT_ACROSS_FORK', o)
     assert o.state.name == 'FAIL' and o.code == 'SYNC_BLOB_CONFLICT_ACROSS_FORK', (o.code, o.detail)
     return o.detail
 
@@ -67,6 +69,7 @@ def _hash_mismatch():
     good = b'good bytes'; row = _row('7', 'injuries', 'nfl/vintage/zz.test.gz', good)
     o = SC.run(dry_run=True, fetch=lambda: 'deadbeef' * 5,
                show=lambda sha, path: ('\n'.join([*_local_lines(), row])).encode() if path == SC.MANIFEST else b'tampered')
+    observe('nfl.tools.sync_captures:run:SYNC_BLOB_HASH_MISMATCH', o)
     assert o.state.name == 'FAIL' and o.code == 'SYNC_BLOB_HASH_MISMATCH', (o.code, o.detail)
     assert not (_REPO / 'nfl/vintage/zz.test.gz').exists()
     return o.detail
@@ -98,7 +101,49 @@ def _nothing_new():
 @check('a failed fetch is BLOCKED with cause NETWORK, not a failed sync')
 def _fetch_failed():
     o = SC.run(dry_run=True, fetch=lambda: None, show=lambda s, p: b'')
+    observe('nfl.tools.sync_captures:run:SYNC_FETCH_FAILED', o)
     assert o.state.name == 'BLOCKED' and o.code == 'SYNC_FETCH_FAILED' and str((o.evidence or {}).get('cause')) in ('NETWORK', 'Cause.NETWORK'), (o.state, o.code)
+    return o.detail
+
+
+# OWNER RULE 2 (2026-10-02): the four refusals below had no demonstrated trip case.
+@check('an unparseable remote manifest row refuses the plan by name')
+def _row_unparseable():
+    shared = _row('1', 'a', 'nfl/vintage/p.gz', b'1')
+    o = SC.plan([shared], [shared, '{this is not json'])
+    observe('nfl.tools.sync_captures:plan:SYNC_MANIFEST_ROW_UNPARSEABLE', o)
+    assert o.state.name == 'FAIL' and o.code == 'SYNC_MANIFEST_ROW_UNPARSEABLE', (o.code, o.detail)
+    return o.detail
+
+
+@check('a remote with no manifest at the fetched sha is SYNC_REMOTE_MANIFEST_ABSENT, not an empty sync')
+def _remote_manifest_absent():
+    o = SC.run(dry_run=True, fetch=lambda: 'abcd' * 10, show=lambda sha, path: None)
+    observe('nfl.tools.sync_captures:run:SYNC_REMOTE_MANIFEST_ABSENT', o)
+    assert o.state.name == 'FAIL' and o.code == 'SYNC_REMOTE_MANIFEST_ABSENT', (o.code, o.detail)
+    return o.detail
+
+
+@check('a blob the remote manifest names but the remote tree lacks refuses the sync')
+def _blob_absent_on_remote():
+    row = _row('8', 'injuries', 'nfl/vintage/zz.absent.gz', b'never served')
+    o = SC.run(dry_run=True, fetch=lambda: 'beef' * 10,
+               show=lambda sha, path: ('\n'.join([*_local_lines(), row])).encode() if path == SC.MANIFEST else None)
+    observe('nfl.tools.sync_captures:run:SYNC_BLOB_ABSENT_ON_REMOTE', o)
+    assert o.state.name == 'FAIL' and o.code == 'SYNC_BLOB_ABSENT_ON_REMOTE', (o.code, o.detail)
+    assert not (_REPO / 'nfl/vintage/zz.absent.gz').exists()
+    return o.detail
+
+
+@check('a remote-only row naming a blob that already exists locally with different bytes refuses the sync')
+def _local_blob_conflicts():
+    local_blob = next(p for p in sorted((_REPO / 'nfl/vintage').glob('*.gz')))
+    rel = str(local_blob.relative_to(_REPO))
+    row = _row('9', 'injuries', rel, b'bytes the local file does not hold')
+    o = SC.run(dry_run=True, fetch=lambda: 'f00d' * 10,
+               show=lambda sha, path: ('\n'.join([*_local_lines(), row])).encode() if path == SC.MANIFEST else b'x')
+    observe('nfl.tools.sync_captures:run:SYNC_LOCAL_BLOB_CONFLICTS', o)
+    assert o.state.name == 'FAIL' and o.code == 'SYNC_LOCAL_BLOB_CONFLICTS', (o.code, o.detail)
     return o.detail
 
 

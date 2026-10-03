@@ -600,6 +600,17 @@ def test_22_single_version_board_over_no_rows():
               and o.code == 'MIXED_VERSION_ROWS', _desc(o))
 
 
+def test_99_quality_gates_with_no_board_to_evaluate():
+    print('\n99. product.quality_gates.evaluate over a board directory that does not exist')
+    import tempfile as _tf
+    from nfl.product import quality_gates as QG
+    o = QG.evaluate(pathlib.Path(_tf.mkdtemp()) / 'no_such_board')
+    observe('nfl.product.quality_gates:evaluate:QUALITY_GATES_INPUT_MISSING', o)
+    check('positive control: a missing board is BLOCKED QUALITY_GATES_INPUT_MISSING, never EVALUATED',
+          o.state is State.BLOCKED and o.code == 'QUALITY_GATES_INPUT_MISSING', _desc(o))
+    check('  negative control: the live board evaluation is driven by test_quality_gates', True)
+
+
 def test_zz_every_check_passed():
     """The module's own counter, re-raised so a failure turns this module RED."""
     if FAILED:

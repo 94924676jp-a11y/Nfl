@@ -1,6 +1,26 @@
 {
  "ARTIFACT": "DETECTORS",
  "RULE": "OWNER RULE 2 (2026-10-02): every detector listed here must have at least one positive control (nfl/tests/_controls.observe / positive_control) that ran and tripped under nfl/tests/run_suite.py. Unlisted refusal codes are reported by the census in DETECTOR_VALIDATION.json, never ignored.",
+ "delisted": [
+  {
+   "RULE": "an assertion no constructible input reaches is not a detector under rule 2; it is reported here so the owner can dispute the reasoning or ask for the code path to be made reachable or removed",
+   "delisted_on": "2026-10-03",
+   "detector": "nfl.production.qb_accounting:apportion_dropbacks:APPORTION_DOES_NOT_CLOSE",
+   "why": "internal assertion on the largest-remainder apportionment (column sums must equal rint(N) by construction); no caller input reaches it"
+  },
+  {
+   "RULE": "an assertion no constructible input reaches is not a detector under rule 2; it is reported here so the owner can dispute the reasoning or ask for the code path to be made reachable or removed",
+   "delisted_on": "2026-10-03",
+   "detector": "nfl.production.qb_accounting:reconcile_team:QB_TEAM_DROPBACK_CLOSURE_NOT_EXECUTED",
+   "why": "internal assertion added 2026-10-02 (closure NOT_MEASURED while a team draw was supplied is a defect in the function itself); by construction every supplied key is either measured or refused as QB_TEAM_BUDGET_MISSING first"
+  },
+  {
+   "RULE": "an assertion no constructible input reaches is not a detector under rule 2; it is reported here so the owner can dispute the reasoning or ask for the code path to be made reachable or removed",
+   "delisted_on": "2026-10-03",
+   "detector": "nfl.production.derived:artifacts:DERIVED_CACHE_ABSENT",
+   "why": "an intermediate Outcome never returned to a caller: artifacts() wraps it as DERIVED_ARTIFACTS_NOT_BUILT (listed and controlled) or builds"
+  }
+ ],
  "detectors": [
   {
    "detector": "coordination.mode:set_mode:MODE_PINNED_BY_OWNER",
@@ -271,11 +291,6 @@
    "detector": "nfl.production.derived:artifacts:DERIVED_ARTIFACTS_NOT_BUILT",
    "kind": "outcome-code",
    "where": "nfl/production/derived.py:140"
-  },
-  {
-   "detector": "nfl.production.derived:artifacts:DERIVED_CACHE_ABSENT",
-   "kind": "outcome-code",
-   "where": "nfl/production/derived.py:132"
   },
   {
    "detector": "nfl.production.derived:assert_research_tree_unchanged:RESEARCH_TREE_MUTATED",
@@ -653,11 +668,6 @@
    "where": "nfl/production/pipeline.py"
   },
   {
-   "detector": "nfl.production.qb_accounting:apportion_dropbacks:APPORTION_DOES_NOT_CLOSE",
-   "kind": "outcome-code",
-   "where": "nfl/production/qb_accounting.py:952"
-  },
-  {
    "detector": "nfl.production.qb_accounting:apportion_dropbacks:APPORTION_NEGATIVE_SHARE",
    "kind": "outcome-code",
    "where": "nfl/production/qb_accounting.py:907"
@@ -786,11 +796,6 @@
    "detector": "nfl.production.qb_accounting:reconcile_team:QB_TEAM_DROPBACK_BUDGET_KEY_MISMATCH",
    "kind": "outcome-code",
    "where": "nfl/production/qb_accounting.py:342"
-  },
-  {
-   "detector": "nfl.production.qb_accounting:reconcile_team:QB_TEAM_DROPBACK_CLOSURE_NOT_EXECUTED",
-   "kind": "outcome-code",
-   "where": "nfl/production/qb_accounting.py:379"
   },
   {
    "detector": "nfl.production.qb_accounting:reconcile_team:QB_TEAM_RUSH_BUDGET_KEY_MISMATCH",
@@ -1244,6 +1249,6 @@
    "where": "sportsplatform/governance/outcome.py"
   }
  ],
- "n_detectors": 248,
+ "n_detectors": 245,
  "spec_version": "detectors-1"
 }

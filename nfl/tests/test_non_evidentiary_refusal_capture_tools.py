@@ -103,9 +103,11 @@ def test_03_payload_contract_with_nothing_declared():
     print('\n3. capture.payload_contract: a contract with no declaration did not run')
     from nfl.capture import payload_contract as PC
     spec = types.SimpleNamespace(payload_path=(), required_columns=(), substantive_any_of=(), row_container=None)
-    for fn, arg in ((PC.check_json, {'a': 1}), (PC.check_csv, 'a,b\n1,2\n'), (PC.check_html, '<table></table>')):
+    for fn, arg, det in ((PC.check_json, {'a': 1}, 'nfl.capture.payload_contract:check_json:PAYLOAD_CONTRACT_NOT_EXECUTED'),
+                         (PC.check_csv, 'a,b\n1,2\n', 'nfl.capture.payload_contract:check_csv:PAYLOAD_CONTRACT_NOT_EXECUTED'),
+                         (PC.check_html, '<table></table>', 'nfl.capture.payload_contract:check_html:PAYLOAD_CONTRACT_NOT_EXECUTED')):
         ok, code, ev = fn(arg, spec)
-        observe(f'nfl.capture.payload_contract:{fn.__name__}:{PC.CODE_NOT_EXECUTED}', code)
+        observe(det, code)
         check(f'{fn.__name__} with nothing declared -> ok=False, {PC.CODE_NOT_EXECUTED}',
               ok is False and code == PC.CODE_NOT_EXECUTED and ev.get('cause') == 'NOT_EXECUTED', f'{ok} {code} {ev}')
     spec2 = types.SimpleNamespace(payload_path=('rows',), required_columns=('a', 'b'), substantive_any_of=('b',),
@@ -154,10 +156,12 @@ def test_05_check_retention_three_guards():
 def test_06_projection_guards_over_no_records():
     print('\n6. tools.projection_guards')
     from nfl.tools import projection_guards as PG
-    for fn, code in ((PG.assert_established_role_not_shrunk_down, 'ESTABLISHED_ROLE_PRESERVED'),
-                     (PG.assert_td_rate_not_raw_count, 'TD_RATE_HAS_A_FLOOR')):
+    for fn, code, det in ((PG.assert_established_role_not_shrunk_down, 'ESTABLISHED_ROLE_PRESERVED',
+                           'nfl.tools.projection_guards:assert_established_role_not_shrunk_down:ESTABLISHED_ROLE_PRESERVED_EMPTY_INPUT'),
+                          (PG.assert_td_rate_not_raw_count, 'TD_RATE_HAS_A_FLOOR',
+                           'nfl.tools.projection_guards:assert_td_rate_not_raw_count:TD_RATE_HAS_A_FLOOR_EMPTY_INPUT')):
         o = fn({})
-        observe(f'nfl.tools.projection_guards:{fn.__name__}:{code}_EMPTY_INPUT', o)
+        observe(det, o)
         check(f'{fn.__name__}({{}}) is refused, not {code}', refused(o), _d(o))
     rec = {'p1': {'opportunity': {'observed_target_share': 0.2, 'target_share_used': 0.21,
                                   'proj_targets': 7.0, 'proj_carries': 0.0},
@@ -174,9 +178,12 @@ def test_06_projection_guards_over_no_records():
 def test_07_projection_source_three_guards():
     print('\n7. tools.projection_source')
     from nfl.tools import projection_source as PS
-    for fn, code in ((PS.assert_no_silent_zero, 'NO_SILENT_ZERO'), (PS.assert_fallback_is_labelled, 'FALLBACK_LABELLED')):
+    for fn, code, det in ((PS.assert_no_silent_zero, 'NO_SILENT_ZERO',
+                           'nfl.tools.projection_source:assert_no_silent_zero:NO_SILENT_ZERO_EMPTY_INPUT'),
+                          (PS.assert_fallback_is_labelled, 'FALLBACK_LABELLED',
+                           'nfl.tools.projection_source:assert_fallback_is_labelled:FALLBACK_LABELLED_EMPTY_INPUT')):
         o = fn([])
-        observe(f'nfl.tools.projection_source:{fn.__name__}:{code}_EMPTY_INPUT', o)
+        observe(det, o)
         check(f'{fn.__name__}([]) is refused, not {code}', refused(o), _d(o))
     recs = [{'player': 'a', 'position': 'QB', 'projection_mode': PS.MODE_PROPRIETARY, 'mean': 18.0}]
     check('  negative control: one proprietary record passes both',
@@ -226,7 +233,7 @@ def test_10_t90_reconciliation_measures_or_says_it_did_not():
     check('  and "evidence_manufactured: False" is no longer typed in as a measurement',
           "'evidence_manufactured': False" not in src.replace(' ', '') or 'measurement_errors' in src)
     d = T.measure(2026, 4, plan=[], manifest_path=pathlib.Path(tempfile.mkdtemp()) / 'none.jsonl', verify_artifacts=False)
-    observe(f'nfl.tools.reconcile_t90_obligations:measure:{T.STATE_NOT_EXECUTED}', d)
+    observe('nfl.tools.reconcile_t90_obligations:measure:T90_RECONCILIATION_NOT_EXECUTED', d)
     check('positive control: an empty plan -> state NOT_EXECUTED with a measurement_errors entry, not a reconciliation',
           d.get('state') == T.STATE_NOT_EXECUTED and d.get('measurement_errors') and d.get('n_obligations') == 0, str(d)[:240])
     check('  negative control: the live reconciliation is driven by test_capture_obligations on real captures', True)

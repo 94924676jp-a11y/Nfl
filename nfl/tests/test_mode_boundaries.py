@@ -57,7 +57,7 @@ def test_01_every_mode_has_a_positive_and_a_negative_control():
     print('\n1. the boundary judge, per mode')
     for mode, (bad, good) in CASES.items():
         o = L.mode_boundary(bad, mode)
-        observe(f'coordination.orchestrator.locks:mode_boundary:VIOLATED', o)
+        observe('coordination.orchestrator.locks:mode_boundary:VIOLATED', o)
         check(f'{mode}: forbidden {bad} -> VIOLATED naming each path',
               o['state'] == 'VIOLATED' and {v['path'] for v in o['violations']} == set(bad), str(o))
         o = L.mode_boundary(good, mode)

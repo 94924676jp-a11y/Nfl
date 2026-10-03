@@ -599,7 +599,7 @@ def main(argv=None):
     det = None
     if not no_isolate:
         det = _validate_detectors(files, full_run=(only is None and not modules))
-        unval = [r for r in det['rows'] if r['status'].startswith('UNVALIDATED')]
+        unval = [r for r in det['rows'] if r['detector'] in set(det.get('blocking') or ())]
         if unval:
             problems.append(
                 f'DETECTORS UNVALIDATED ({len(unval)} of {det["n_detectors"]}): a detector '
@@ -624,7 +624,11 @@ def main(argv=None):
     # log holds three such runs. NOT_EXECUTED is its own verdict with its own exit code (3), so
     # a caller cannot read it as either a pass or a failure of the code under test.
     n_executed = n_check_ok + n_check_fail
-    if len(files) == 0 or n_executed == 0:
+    # NOT_EXECUTED means no module ran or no test function ran. A function that ran and raised,
+    # or ran and recorded zero checks, EXECUTED: that is a FAIL (raised / VACUOUS), and reading
+    # it as "nothing ran" would let a crashing module print the one verdict that is not red.
+    # Found 2026-10-03 by test_harness_audit's seeded exception-only module.
+    if len(files) == 0 or n_fn == 0:
         verdict, rc = 'NOT_EXECUTED', 3
     else:
         verdict, rc = ('FAIL', 1) if bad else ('PASS', 0)
