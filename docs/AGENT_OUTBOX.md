@@ -3852,3 +3852,14 @@ For weeks 1-4 2026 (and 2024-2025 for history), all 32 clubs: per player per gam
 participation, slot/outside/inline alignment, personnel grouping on each snap, pass-block snaps, RB
 routes, red-zone and goal-line snaps. Source and retrieval time with each file. See
 docs/NFL_POSTLOCK_ROADMAP_2026W4.md. Not needed before lock.
+
+### 2026-10-04 22:xxZ — Week 4 postgame: results needed (grader built, refusing until they arrive)
+
+`nfl/postgame/classic_week.py` grades the locked Week-4 Early Only state (lock commit 039cfd0e, upload
+bf50aaee…) and refuses until it holds results. Needed, each as the raw file with its source and capture time:
+1. nflverse `stats_player_week_2026.csv` (player_stats release) including week 4 for the 16 Early Only
+   clubs; the def_* and special_teams_tds columns let us score the DSTs ourselves.
+2. nflverse `games.csv` with week-4 final scores (DST points allowed).
+3. Optional: week-4 snap counts and participation/route data for the role audit.
+The owner supplies the three DraftKings contest-standings exports (196208416 / 196208417 / 196208418).
+This machine cannot reach the nflverse release files (404 through the proxy).

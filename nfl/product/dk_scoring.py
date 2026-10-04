@@ -109,3 +109,31 @@ def summarise(x, thresholds=()):
                                   / n))}
                              for t in thresholds]
     return out
+
+
+# ---------------------------------------------------------------------------------------------------
+# REALISED-ONLY RULES (added 2026-10-04 for postgame grading). Published DraftKings NFL classic rules
+# the forward simulator does not draw. They score ACTUALS; nothing in the projection path calls them.
+TWO_PT_CONVERSION = 2.0
+OFFENSIVE_RETURN_TD = 6.0        # punt/kick return or own-fumble-recovery TD by an offensive player
+DST_SACK = 1.0
+DST_INTERCEPTION = 2.0
+DST_FUMBLE_RECOVERY = 2.0
+DST_TD = 6.0                     # any return / defensive TD
+DST_SAFETY = 2.0
+DST_BLOCKED_KICK = 2.0
+DST_2PT_RETURN = 2.0
+#: points allowed -> DST points (upper bound inclusive)
+DST_POINTS_ALLOWED = ((0, 10.0), (6, 7.0), (13, 4.0), (20, 1.0), (27, 0.0), (34, -1.0), (10 ** 6, -4.0))
+
+
+def realised_extra_points(*, two_pt=0.0, return_td=0.0) -> float:
+    return two_pt * TWO_PT_CONVERSION + return_td * OFFENSIVE_RETURN_TD
+
+
+def dst_points(*, points_allowed, sacks=0.0, ints=0.0, fumble_recoveries=0.0, tds=0.0,
+               safeties=0.0, blocked_kicks=0.0, two_pt_returns=0.0) -> float:
+    pa = next(v for ub, v in DST_POINTS_ALLOWED if points_allowed <= ub)
+    return (pa + sacks * DST_SACK + ints * DST_INTERCEPTION + fumble_recoveries * DST_FUMBLE_RECOVERY
+            + tds * DST_TD + safeties * DST_SAFETY + blocked_kicks * DST_BLOCKED_KICK
+            + two_pt_returns * DST_2PT_RETURN)
