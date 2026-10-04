@@ -73,6 +73,10 @@ def gates(slate, out_dir=OUT_DIR):
     oi = (st.get('official_inactives') or {}).get('STATE')
     g['EVIDENCE'] = {'ok': oi in FINAL_EVIDENCE_STATES, 'state': oi,
                      'packet_id': (st.get('official_inactives') or {}).get('packet_id')}
+    clubs = sorted({c for g in (st.get('games') or {}).values() for c in (g['away'], g['home'])})
+    have = set((st.get('official_inactives') or {}).get('clubs_with_full_list') or ())
+    g['EVERY_CLUB_HAS_ITS_INACTIVE_LIST'] = {'ok': bool(clubs) and set(clubs) <= have,
+                                             'missing': sorted(set(clubs) - have)}
     stale = [k for k, p in (port.get('inputs') or {}).items()
              if not (_REPO / p).exists() or _sha(_REPO / p) != (port.get('inputs_sha256') or {}).get(k)]
     g['PORTFOLIO_ON_CURRENT_INPUTS'] = {'ok': not stale and bool(port.get('inputs')), 'stale': stale}

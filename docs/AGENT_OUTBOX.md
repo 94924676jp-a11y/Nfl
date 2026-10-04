@@ -3821,3 +3821,14 @@ written to `nfl/dfs/salaries/evidence/<packet_id>.json` and run as
    OFFICIAL_CAPTURED packet for all 16 clubs. The full rerun took **16.6 minutes** in rehearsal
    (`nfl/dfs/salaries/DK_2026W4_EARLY_REHEARSAL.json`), so a packet landing by about **12:15 ET** leaves
    time to run, verify and hand the owner the FINAL files before 13:00 ET lock.
+
+### 2026-10-04 15:55Z — LOCK-CRITICAL: game-day inactives, 16 clubs, needed now (lock 17:00Z)
+
+This machine cannot reach the sources the owner named (egress proxy blocks www.rotowire.com and x.com).
+Please capture, verbatim with retrieval time:
+- https://www.rotowire.com/football/lineups.php: the inactive list for each of BAL, TEN, BUF, NE, CHI, NYJ,
+  CIN, JAX, HOU, DAL, NYG, ARI, PHI, TB, GB (RotoWire = aggregation of the official lists, cite as such);
+- https://x.com/sarahbarshop/status/2106770137592557697: the LA Rams inactives (RotoWire not yet showing LA).
+Write it in the paste format of `nfl/tools/sunday_paste.py` (one `CLUB: name, name` line per club, a
+`SOURCE:` line before each source; `CLUB: none` when a club lists no one). Applying it and the full rerun
+take about 17 minutes, so it is needed by 16:30Z to leave review time before lock.

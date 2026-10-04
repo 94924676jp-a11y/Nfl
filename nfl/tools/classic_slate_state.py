@@ -395,6 +395,8 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
              'packet_id': evidence_packet['packet_id'], 'packet_sha256': evidence_packet.get('_sha256'),
              'source': evidence_packet['source'], 'source_detail': evidence_packet.get('source_detail'),
              'received_at': evidence_packet['received_at'], 'complete_clubs': sorted(complete_clubs),
+             'clubs_with_full_list': sorted(set(evidence_packet.get('clubs_with_full_list') or ()) | complete_clubs),
+             'off_pool_inactives': len(evidence_packet.get('off_pool') or ()),
              'n_players': len(pres), 'n_inactive': sum(1 for v in pres.values() if v['claim'] == 'INACTIVE'),
              'n_active': sum(1 for v in pres.values() if v['claim'] == 'ACTIVE'),
              'starters': {c: {k: v.get(k) for k in ('name', 'starter_state', 'evidence_tier', 'relayed_by', 'received_at')}

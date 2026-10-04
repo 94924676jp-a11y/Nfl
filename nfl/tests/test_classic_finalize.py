@@ -35,11 +35,12 @@ def _sha(p):
     return hashlib.sha256(p.read_bytes()).hexdigest()
 
 
-def _world(td, oi_state='APPLIED_OWNER_RELAYED', prelock='NO_RERUN_REQUIRED', repro='PASS'):
+def _world(td, oi_state='APPLIED_OWNER_RELAYED', prelock='NO_RERUN_REQUIRED', repro='PASS', lists=('A', 'H')):
     d = pathlib.Path(td)
     w = lambda n, v: (d / f'DK_T_EARLY_{n}').write_text(v if isinstance(v, str) else json.dumps(v))  # noqa: E731
-    w('STATE.json', {'built_at_utc': '2026-10-04T14:40:00+00:00',
-                     'official_inactives': {'STATE': oi_state, 'packet_id': 'pk', 'source': 'OWNER_RELAYED'}})
+    w('STATE.json', {'built_at_utc': '2026-10-04T14:40:00+00:00', 'games': {'G': {'away': 'A', 'home': 'H'}},
+                     'official_inactives': {'STATE': oi_state, 'packet_id': 'pk', 'source': 'OWNER_RELAYED',
+                                            'clubs_with_full_list': lists}})
     w('PROJ.json', {'rows': {}})
     (d / 'DK_T_EARLY_WORLDS.npz').write_bytes(b'worlds')
     w('DRAWS.json', {'d': 1})
@@ -96,6 +97,13 @@ def test_03_each_chain_gate_refuses():
     (d / 'DK_T_EARLY_UPLOAD.csv').write_text(HEAD + '\n')
     check('positive control: upload edited after verification -> refused',
           'UPLOAD_VERIFIED' in F.finalize('T', d).evidence['failed'])
+
+
+def test_03b_a_club_without_its_list_refuses():
+    d = _world(tempfile.mkdtemp(), lists=('A',))
+    o = F.finalize('T', d)
+    check('positive control: one club has no game-day list -> refused on EVERY_CLUB_HAS_ITS_INACTIVE_LIST',
+          'EVERY_CLUB_HAS_ITS_INACTIVE_LIST' in o.evidence['failed'], o.detail)
 
 
 def test_04_a_stale_final_is_moved_aside():
