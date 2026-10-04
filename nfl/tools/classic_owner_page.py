@@ -254,7 +254,8 @@ def staging_section(slate_id):
                    f"<td class=\"fine\">{e(lim.get(k, ''))}</td></tr>" for k, v in sc['readiness_table'].items())
     inputs = ''.join(f"<li><b>{e(k.replace('_', ' '))}</b>: {e(v['state'])}"
                      + (f" ({e(', '.join(x['player'] for x in v['players']))})" if v.get('players') else '')
-                     + (f" (chart starter {e(v['chart_starter'])})" if v.get('chart_starter') else '') + '</li>'
+                     + (f" (chart starter {e(v['chart_starter'])})" if v.get('chart_starter') else '')
+                     + (f": {e(v['starter'])}, {e(v.get('evidence_tier') or '')}" if v.get('starter') else '') + '</li>'
                      for k, v in ((si or {}).get('slots') or {}).items())
     scen = ''
     for x in (sn or {}).get('scenarios', []):
@@ -270,6 +271,15 @@ def staging_section(slate_id):
     checked = [x['player'] for x in (sn or {}).get('scenarios', []) if not x.get('material')]
     fin_line = (f"FINAL files: <b>{e((fin or {}).get('STATE', 'NOT BUILT'))}</b>"
                 + (f" (waiting on {e(', '.join(fin.get('failed_gates', [])))})" if fin and fin.get('failed_gates') else ''))
+    mr = _load(slate_id, 'MATERIAL_RESEARCH')
+    mr_html = ''
+    if mr:
+        flagged = [r for r in mr['rows'] if r['RESEARCH_VERDICT'] in ('NEEDS_REVIEW', 'INPUT_DEFECT_FOUND')]
+        mr_html = (f"<h3>Material-player research</h3><p class=\"fine\">{mr['n_material']} players reviewed against held evidence: "
+                   + e(', '.join(f"{k.replace('_', ' ').lower()} {v}" for k, v in mr['verdicts'].items()))
+                   + '. No projection was changed by this review.</p>'
+                   + ('<ul class="fine">' + ''.join(f"<li><b>{e(r['player'])}</b> ({e(r['team'])}) {e(r['RESEARCH_VERDICT'])}: {e(r['WHY'])}</li>" for r in flagged) + '</ul>'
+                      if flagged else ''))
     return f"""<p class="fine">{fin_line}. Saturday's lineups are preserved unchanged as PRE_INACTIVES_BASELINE
     (nfl/dfs/salaries/baseline_2026W4_pre_inactives/). Nothing on this page is Sunday-final until the FINAL files exist.</p>
     <div class="scroll"><table><thead><tr><th>Component</th><th>State</th><th>Declared limitation</th></tr></thead><tbody>{rows}</tbody></table></div>
@@ -277,7 +287,8 @@ def staging_section(slate_id):
     <h3>If an open question resolves against us</h3>
     <p class="fine">Scenario map only; it changes nothing until real evidence arrives. Exposure is 150-max / 20-max / 3-entry.</p>
     <div class="scroll"><table><thead><tr><th>Player</th><th>Team</th><th>Open question</th><th>Exposure</th><th>If he is out</th><th>Why material</th></tr></thead><tbody>{scen}</tbody></table></div>
-    <p class="fine">Checked and not material: {e(', '.join(checked) or 'none')}.</p>"""
+    <p class="fine">Checked and not material: {e(', '.join(checked) or 'none')}.</p>
+    {mr_html}"""
 
 
 def build(slate_id):

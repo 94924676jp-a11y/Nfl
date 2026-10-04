@@ -50,7 +50,7 @@ def test_02_every_sunday_slot_is_named_and_awaiting():
     si = S.sunday_inputs('T', {'STATE': STATE, 'AUDIT': AUDIT})
     sl = si['slots']
     want = {'OFFICIAL_INACTIVES': 'AWAITING_OFFICIAL_INACTIVES', 'QUESTIONABLE_PLAYER_STATUS': 'UNRESOLVED_QUESTIONABLE',
-            'WEEK4_ROSTER_REFRESH': 'AWAITING_FRESH_CAPTURE', 'HARD_ROCK_BOARD': 'AWAITING_POST_SEAL_CAPTURE',
+            'WEEK4_ROSTER_REFRESH': 'AWAITING_FRESH_CAPTURE', 'HARD_ROCK_BOARD': 'AWAITING_POST_FINAL_SEAL',
             'WEATHER': 'AWAITING_CURRENT_WEATHER', 'CHI_STARTING_QB': 'ROLE_DEPENDENT_AWAITING_CONFIRMATION'}
     check("every slot carries the owner's placeholder state", {k: sl[k]['state'] for k in want} == want,
           {k: sl.get(k, {}).get('state') for k in want})

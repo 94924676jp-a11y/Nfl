@@ -98,7 +98,7 @@ def main() -> int:
         pk = lo.value
         ina = [x['name'] for x in pk.get('players') or [] if x['status'] == 'INACTIVE']
         act = [x['name'] for x in pk.get('players') or [] if x['status'] == 'ACTIVE']
-        con = dict(pk.get('starters') or {})
+        con = {c: (v['name'] if isinstance(v, dict) else v) for c, v in (pk.get('starters') or {}).items()}
     o = evaluate(st, port, ina, con, act)
     (OUT_DIR / f'DK_{a.slate_id}_EARLY_PRELOCK.json').write_text(json.dumps(
         {'ARTIFACT': 'CLASSIC_PRELOCK', 'slate_id': a.slate_id, 'checked_at_utc': dt.datetime.now(dt.timezone.utc).isoformat(),

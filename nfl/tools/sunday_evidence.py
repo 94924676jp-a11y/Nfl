@@ -12,8 +12,17 @@ A packet is a JSON file:
         {"name": "Zay Flowers", "team": "BAL", "status": "ACTIVE" | "INACTIVE",
          "cited": "OFFICIAL_RELEASE" | "AGGREGATOR" | "SECONDHAND", "note": "..."}
       ],
-      "starters": {"CHI": "Tyson Bagent", "TB": "Jalon Daniels"}
+      "starters": {"CHI": "Tyson Bagent",                                    # bare name = SECONDHAND
+                   "TB": {"name": "Jalon Daniels", "cited": "OFFICIAL_RELEASE", "note": "...",
+                          "received_at": "..."}}
     }
+
+A STARTER carries its own citation, mapped to the owner's starter vocabulary (STARTER_STATE_FOR):
+OFFICIAL_RELEASE -> CONFIRMED_BY_TEAM_PUBLISHED_EVIDENCE (tier OFFICIAL_TEAM_PUBLISHED), AGGREGATOR ->
+REPORTED_EXPECTED_STARTER (tier HIGH_CONFIDENCE_REPORTED_STARTER), none/SECONDHAND ->
+REPORTED_STARTER_UNVERIFIED. Every tier drives the depth chart the same way (he starts); the label is
+what keeps "the team published it" apart from "reporters expect it". Items and starters may carry their
+own received_at; a packet is cumulative for the day, later evidence replacing earlier in place.
 
 PROVENANCE IS NEVER UPGRADED. An owner-relayed item is evidence at the tier the owner cites (or
 EXTERNAL_RESEARCH_SECONDHAND when none is cited); it is never CONFIRMED_INACTIVE, which needs a captured
@@ -52,6 +61,10 @@ STATUS_FOR = {
     # Questionable for selection purposes and leaves the availability status UNKNOWN_ACTIVE_STATE
     (AV.TIER_EXTERNAL_SECONDHAND, 'ACTIVE'): AV.UNKNOWN_ACTIVE_STATE,
 }
+#: owner-relayed starter citation -> (evidence tier, starter state); owner vocabulary 2026-10-04
+STARTER_STATE_FOR = {'OFFICIAL_RELEASE': ('OFFICIAL_TEAM_PUBLISHED', 'CONFIRMED_BY_TEAM_PUBLISHED_EVIDENCE'),
+                     'AGGREGATOR': ('HIGH_CONFIDENCE_REPORTED_STARTER', 'REPORTED_EXPECTED_STARTER'),
+                     'SECONDHAND': ('EXTERNAL_RESEARCH_SECONDHAND', 'REPORTED_STARTER_UNVERIFIED')}
 STATE_FOR_SOURCE = {'OFFICIAL_CAPTURED': 'APPLIED', 'OWNER_RELAYED': 'APPLIED_OWNER_RELAYED',
                     'REHEARSAL': 'REHEARSAL_NOT_EVIDENCE'}
 
@@ -81,6 +94,11 @@ def load(path) -> Outcome:
             bad.append(f'players[{i}]: name and team are required')
         if x.get('cited') and x['cited'] not in CITED_TIER:
             bad.append(f"players[{i}] {x.get('name')}: cited {x['cited']!r} not in {sorted(CITED_TIER)}")
+    for club, v in (pk.get('starters') or {}).items():
+        if isinstance(v, dict) and (not v.get('name') or (v.get('cited') and v['cited'] not in STARTER_STATE_FOR)):
+            bad.append(f"starters[{club}]: needs a name, and cited in {sorted(STARTER_STATE_FOR)}")
+        elif not isinstance(v, (dict, str)):
+            bad.append(f'starters[{club}]: a name or {{name, cited}}')
     if pk.get('complete_clubs') and pk.get('source') != 'OFFICIAL_CAPTURED':
         bad.append('complete_clubs is only meaningful for an OFFICIAL_CAPTURED packet')
     if not (pk.get('players') or pk.get('starters')):
@@ -113,15 +131,25 @@ def resolve(pk, pool_rows) -> Outcome:
         r = hit[0]
         tier = tier_of(pk, x)
         res[r['dk_id']] = {'claim': x['status'], 'tier': tier, 'status': STATUS_FOR[(tier, x['status'])],
-                           'packet_id': pk['packet_id'], 'source': pk['source'], 'received_at': pk['received_at'],
-                           'note': x.get('note')}
+                           'packet_id': pk['packet_id'], 'source': pk['source'],
+                           'received_at': x.get('received_at') or pk['received_at'], 'note': x.get('note')}
     starters = {}
-    for club, nm in (pk.get('starters') or {}).items():
+    for club, sv in (pk.get('starters') or {}).items():
+        nm = sv['name'] if isinstance(sv, dict) else sv
+        sv = sv if isinstance(sv, dict) else {}
         hit = [r for r in by.get((_norm(nm), club), []) if r['dk_pos'] == 'QB']
         if len(hit) != 1:
             unmatched.append({'name': nm, 'team': club, 'why': 'STARTER_NOT_A_QB_IN_POOL'})
             continue
-        starters[club] = {'dk_id': hit[0]['dk_id'], 'name': hit[0]['dk_name']}
+        cited = sv.get('cited') or 'SECONDHAND'
+        tier, sstate = STARTER_STATE_FOR[cited]
+        if pk['source'] == 'OFFICIAL_CAPTURED':
+            tier, sstate = AV.TIER_OFFICIAL_CAPTURED, 'CONFIRMED_BY_CAPTURED_TEAM_DOCUMENT'
+        elif pk['source'] == 'REHEARSAL':
+            sstate = 'REHEARSAL_STARTER_NOT_EVIDENCE'
+        starters[club] = {'dk_id': hit[0]['dk_id'], 'name': hit[0]['dk_name'], 'cited': cited, 'evidence_tier': tier,
+                          'starter_state': sstate, 'relayed_by': pk['source'], 'captured_document': pk['source'] == 'OFFICIAL_CAPTURED',
+                          'received_at': sv.get('received_at') or pk['received_at'], 'note': sv.get('note')}
         if res.get(hit[0]['dk_id'], {}).get('claim') == 'INACTIVE':
             unmatched.append({'name': nm, 'team': club, 'why': 'NAMED_STARTER_AND_INACTIVE'})
     if unmatched:

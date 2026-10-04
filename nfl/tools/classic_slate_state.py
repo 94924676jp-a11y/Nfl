@@ -106,7 +106,11 @@ def _packet_starter_label(ctx, dk_id, team, pstart, packet):
     the tier its packet supports (a rehearsal's starter is not evidence at all)."""
     if not ctx or not packet or (pstart.get(team) or {}).get('dk_id') != dk_id:
         return ctx
-    return {**ctx, 'state': STARTER_TIER_FOR_SOURCE[packet['source']], 'packet_id': packet['packet_id']}
+    st_ = pstart[team]
+    return {**ctx, 'state': st_.get('starter_state') or STARTER_TIER_FOR_SOURCE[packet['source']],
+            'evidence_tier': st_.get('evidence_tier'), 'cited': st_.get('cited'), 'relayed_by': st_.get('relayed_by'),
+            'captured_document': st_.get('captured_document'), 'received_at': st_.get('received_at'),
+            'note': st_.get('note'), 'packet_id': packet['packet_id']}
 
 
 def _next_healthy_context(pos, team, gsis, qb_chart, out_gsis):
@@ -393,7 +397,8 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
              'received_at': evidence_packet['received_at'], 'complete_clubs': sorted(complete_clubs),
              'n_players': len(pres), 'n_inactive': sum(1 for v in pres.values() if v['claim'] == 'INACTIVE'),
              'n_active': sum(1 for v in pres.values() if v['claim'] == 'ACTIVE'),
-             'starters': {c: v['name'] for c, v in pstart.items()},
+             'starters': {c: {k: v.get(k) for k in ('name', 'starter_state', 'evidence_tier', 'relayed_by', 'received_at')}
+                          for c, v in pstart.items()},
              'NEVER_UPGRADED': 'each player carries the tier its source supports; owner-relayed is not official'}),
         'depth': {'source': ('QB: rank on the newest captured depth chart lawful at as_of, among QBs not '
                              'reported out. RB/WR/TE: the better of the usage-history rank '

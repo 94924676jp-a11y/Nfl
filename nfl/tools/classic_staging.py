@@ -69,17 +69,41 @@ def sunday_inputs(slate, A):
                                  'why': f"{sum(1 for c in aud.get('contradictions', []) if c['kind'] == 'ROSTER_MOVE_SINCE_LAST_CAPTURE')} "
                                         'pool players carry a club the last roster capture does not',
                                  'fills_from': 'networked agent roster capture (docs/AGENT_OUTBOX.md)'},
-        'HARD_ROCK_BOARD': {'state': 'AWAITING_POST_SEAL_CAPTURE',
+        'HARD_ROCK_BOARD': {'state': 'AWAITING_POST_FINAL_SEAL',
                             'rule': 'captured AFTER the seal and compared downstream only; never fed back into a projection',
                             'slots': f'DK_{slate}_EARLY_HARD_ROCK_SLOTS.json'},
         'WEATHER': {'state': 'AWAITING_CURRENT_WEATHER', 'use': 'CONTEXT_ONLY (no weather term in the projection)',
                     'games': {g: {**v, 'weather': 'AWAITING_CURRENT_WEATHER'}
                               for g, v in ((aud.get('stadiums') or {}).get('games') or {}).items()}},
     }
+    pend = A.get('_pending') or {}
+    named = dict((st.get('official_inactives') or {}).get('starters') or {})
     for club, name in nh:
         slots[f'{club}_STARTING_QB'] = {'state': 'ROLE_DEPENDENT_AWAITING_CONFIRMATION', 'chart_starter': name,
                                         'evidence_now': 'DEPTH_CHART_NEXT_HEALTHY_AFTER_REPORTED_OUT (not a confirmation)',
                                         'fills_from': 'packet "starters": {"%s": "<name>"} from a club or league source' % club}
+    for club, v in {**named, **(pend.get('starters') or {})}.items():
+        nm = v['name'] if isinstance(v, dict) else v
+        stt = v.get('starter_state') if isinstance(v, dict) else None
+        tier = v.get('evidence_tier') if isinstance(v, dict) else None
+        slots[f'{club}_STARTING_QB'] = {
+            'state': {'CONFIRMED_BY_TEAM_PUBLISHED_EVIDENCE': 'OFFICIAL_TEAM_PUBLISHED_STARTER',
+                      'REPORTED_EXPECTED_STARTER': 'HIGH_CONFIDENCE_REPORTED_STARTER_AWAITING_OFFICIAL_TEAM_CONFIRMATION',
+                      'CONFIRMED_BY_CAPTURED_TEAM_DOCUMENT': 'CONFIRMED_BY_CAPTURED_TEAM_DOCUMENT'}.get(stt, stt or 'NAMED'),
+            'starter': nm, 'starter_state': stt, 'evidence_tier': tier,
+            'relayed_by': v.get('relayed_by') if isinstance(v, dict) else None,
+            'captured_document': v.get('captured_document') if isinstance(v, dict) else None,
+            'received_at': v.get('received_at') if isinstance(v, dict) else None,
+            'applied': 'IN_PRODUCTION_STATE' if club in named else
+                       'RECORDED_IN_PACKET; applied at the next pipeline run (projection verified identical: '
+                       f"{pend.get('projection_numeric_differences')} numeric differences)",
+            'still_a_watch_item': stt != 'CONFIRMED_BY_CAPTURED_TEAM_DOCUMENT' and stt != 'CONFIRMED_BY_TEAM_PUBLISHED_EVIDENCE'}
+    fin = A.get('FINAL_MANIFEST') or {}
+    built = str(fin.get('STATE', '')).startswith('FINAL_POST_INACTIVES')
+    for k in ('FINAL_150', 'FINAL_20', 'FINAL_3'):
+        slots[k] = {'state': 'BUILT' if built else 'NOT_BUILT', 'waiting_on': fin.get('failed_gates')}
+    slots['FINAL_UPLOAD'] = {'state': 'BUILT_OWNER_REVIEW' if built else 'NOT_SAFE_TO_UPLOAD',
+                             'why': None if built else 'Saturday upload is PRE_INACTIVES_BASELINE, not Sunday-final'}
     return {'ARTIFACT': 'CLASSIC_SUNDAY_INPUTS', 'slate_id': slate,
             'built_at_utc': dt.datetime.now(dt.timezone.utc).isoformat(),
             'NEVER_A_SUBSTITUTE_FOR_OFFICIAL_EVIDENCE': NEVER_A_SUBSTITUTE,
@@ -217,7 +241,8 @@ def checks(slate, A):
     return c, table, limits
 
 
-def build(slate):
+def build(slate, pending_packet=None, projection_differences=None):
+    """`pending_packet`: evidence recorded but not yet applied by a pipeline run; shown, never applied here."""
     f = lambda n: OUT_DIR / f'DK_{slate}_EARLY_{n}'  # noqa: E731
     A = {n: _j(f(f'{n}.json')) for n in ('STATE', 'PROJ', 'DRAWS', 'RESEARCH_BOOK', 'PORTFOLIOS', 'UPLOAD_VERIFY', 'AUDIT',
                                          'PRELOCK', 'SEAL', 'FINAL_MANIFEST', 'SCENARIOS', 'RUN_LEDGER', 'RUN_CHANGES',
@@ -225,13 +250,31 @@ def build(slate):
     missing = [n for n in ('STATE', 'PROJ', 'DRAWS', 'RESEARCH_BOOK', 'PORTFOLIOS', 'UPLOAD_VERIFY', 'AUDIT', 'PRELOCK') if A[n] is None]
     if missing:
         return Outcome.fail('STAGING_ARTIFACT_MISSING', f'missing {missing}')
+    if pending_packet:
+        from nfl.tools import sunday_evidence as SE
+        lo = SE.load(pending_packet)
+        if lo.state.value != 'PASS':
+            return lo
+        ro = SE.resolve(lo.value, [{'dk_id': k, 'dk_name': v['name'], 'team': v['team'], 'dk_pos': v['position']}
+                                   for k, v in A['STATE']['players'].items()])
+        if ro.state.value != 'PASS':
+            return ro
+        A['_pending'] = {**ro.value, 'packet': str(pending_packet), 'projection_numeric_differences': projection_differences}
     si = sunday_inputs(slate, A)
+    if pending_packet:
+        si['pending_packet'] = {'path': str(pending_packet), 'sha256': lo.value['_sha256'],
+                                'n_players': len(A['_pending']['players']), 'starters': sorted(A['_pending']['starters'])}
     f('SUNDAY_INPUTS.json').write_text(json.dumps(si, indent=1, default=str))
     hr = hard_rock_slots(slate, A)
     f('HARD_ROCK_SLOTS.json').write_text(json.dumps(hr, indent=1, default=str))
     A['_yards_blocked'] = hr['yards_blocked_clubs']
     c, table, limits = checks(slate, A)
-    external = [{'input': k, 'state': v['state']} for k, v in si['slots'].items() if v['state'] not in ('NONE_OPEN',)]
+    external = [{'input': k, 'state': v['state']} for k, v in si['slots'].items()
+                if v['state'] not in ('NONE_OPEN', 'OFFICIAL_TEAM_PUBLISHED_STARTER', 'CONFIRMED_BY_CAPTURED_TEAM_DOCUMENT')
+                and not k.startswith('FINAL_')]
+    open_qb = sorted(k for k, v in si['slots'].items() if k.endswith('_STARTING_QB') and v.get('still_a_watch_item', True)
+                     and v['state'] != 'OFFICIAL_TEAM_PUBLISHED_STARTER')
+    table['STARTER CONFIRMATIONS'] = f"AWAITING ({', '.join(x.split('_')[0] for x in open_qb)})" if open_qb else READY
     doc = {'ARTIFACT': 'CLASSIC_STAGING_CHECK', 'slate_id': slate, 'checked_at_utc': dt.datetime.now(dt.timezone.utc).isoformat(),
            'SLATE_READY': False, 'WHY_NOT_READY': 'Sunday evidence is outstanding; FINAL files are not populated',
            'checks': c, 'readiness_table': table, 'declared_limitations': limits, 'remaining_external_inputs': external}
@@ -246,7 +289,11 @@ def build(slate):
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument('slate_id')
-    o = build(ap.parse_args().slate_id)
+    ap.add_argument('--pending-packet', default=None)
+    ap.add_argument('--projection-differences', type=int, default=None,
+                    help='measured numeric projection differences when the pending packet was applied off-production')
+    a = ap.parse_args()
+    o = build(a.slate_id, a.pending_packet, a.projection_differences)
     print(f'{o.state.value}[{o.code}] {o.detail}')
     return 0 if o.state.value == 'PASS' else 1
 

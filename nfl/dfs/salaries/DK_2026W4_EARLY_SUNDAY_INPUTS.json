@@ -1,7 +1,7 @@
 {
  "ARTIFACT": "CLASSIC_SUNDAY_INPUTS",
  "slate_id": "2026W4",
- "built_at_utc": "2026-10-04T05:56:53.167781+00:00",
+ "built_at_utc": "2026-10-04T14:34:38.741059+00:00",
  "NEVER_A_SUBSTITUTE_FOR_OFFICIAL_EVIDENCE": [
   "a projected starter",
   "a depth-chart starter",
@@ -92,7 +92,7 @@
    "fills_from": "networked agent roster capture (docs/AGENT_OUTBOX.md)"
   },
   "HARD_ROCK_BOARD": {
-   "state": "AWAITING_POST_SEAL_CAPTURE",
+   "state": "AWAITING_POST_FINAL_SEAL",
    "rule": "captured AFTER the seal and compared downstream only; never fed back into a projection",
    "slots": "DK_2026W4_EARLY_HARD_ROCK_SLOTS.json"
   },
@@ -151,16 +151,60 @@
    }
   },
   "CHI_STARTING_QB": {
-   "state": "ROLE_DEPENDENT_AWAITING_CONFIRMATION",
-   "chart_starter": "Tyson Bagent",
-   "evidence_now": "DEPTH_CHART_NEXT_HEALTHY_AFTER_REPORTED_OUT (not a confirmation)",
-   "fills_from": "packet \"starters\": {\"CHI\": \"<name>\"} from a club or league source"
+   "state": "HIGH_CONFIDENCE_REPORTED_STARTER_AWAITING_OFFICIAL_TEAM_CONFIRMATION",
+   "starter": "Tyson Bagent",
+   "starter_state": "REPORTED_EXPECTED_STARTER",
+   "evidence_tier": "HIGH_CONFIDENCE_REPORTED_STARTER",
+   "relayed_by": "OWNER_RELAYED",
+   "captured_document": false,
+   "received_at": "2026-10-04T14:22:00Z",
+   "applied": "RECORDED_IN_PACKET; applied at the next pipeline run (projection verified identical: 0 numeric differences)",
+   "still_a_watch_item": true
   },
   "TB_STARTING_QB": {
-   "state": "ROLE_DEPENDENT_AWAITING_CONFIRMATION",
-   "chart_starter": "Jalon Daniels",
-   "evidence_now": "DEPTH_CHART_NEXT_HEALTHY_AFTER_REPORTED_OUT (not a confirmation)",
-   "fills_from": "packet \"starters\": {\"TB\": \"<name>\"} from a club or league source"
+   "state": "OFFICIAL_TEAM_PUBLISHED_STARTER",
+   "starter": "Jalon Daniels",
+   "starter_state": "CONFIRMED_BY_TEAM_PUBLISHED_EVIDENCE",
+   "evidence_tier": "OFFICIAL_TEAM_PUBLISHED",
+   "relayed_by": "OWNER_RELAYED",
+   "captured_document": false,
+   "received_at": "2026-10-04T14:22:00Z",
+   "applied": "RECORDED_IN_PACKET; applied at the next pipeline run (projection verified identical: 0 numeric differences)",
+   "still_a_watch_item": false
+  },
+  "FINAL_150": {
+   "state": "NOT_BUILT",
+   "waiting_on": [
+    "EVIDENCE",
+    "PRELOCK"
+   ]
+  },
+  "FINAL_20": {
+   "state": "NOT_BUILT",
+   "waiting_on": [
+    "EVIDENCE",
+    "PRELOCK"
+   ]
+  },
+  "FINAL_3": {
+   "state": "NOT_BUILT",
+   "waiting_on": [
+    "EVIDENCE",
+    "PRELOCK"
+   ]
+  },
+  "FINAL_UPLOAD": {
+   "state": "NOT_SAFE_TO_UPLOAD",
+   "why": "Saturday upload is PRE_INACTIVES_BASELINE, not Sunday-final"
   }
+ },
+ "pending_packet": {
+  "path": "nfl/dfs/salaries/evidence/2026W4_SUNDAY_OWNER.json",
+  "sha256": "fcba92bfd91c1659ceab81c61a4e30f3a768e190b95949770b186d29ca882a50",
+  "n_players": 0,
+  "starters": [
+   "CHI",
+   "TB"
+  ]
  }
 }

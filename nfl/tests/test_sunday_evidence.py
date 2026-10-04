@@ -97,6 +97,23 @@ def test_03_schema_and_empty():
           SE.STATE_FOR_SOURCE['REHEARSAL'] == 'REHEARSAL_NOT_EVIDENCE' and SE.STATE_FOR_SOURCE['OWNER_RELAYED'] != 'APPLIED')
 
 
+def test_04_starter_citations_stay_distinct():
+    lo = SE.load(_write(_pk(players=[], starters={'CHI': {'name': 'Tyson Bagent', 'cited': 'AGGREGATOR'}})))
+    r = SE.resolve(lo.value, POOL).value['starters']['CHI']
+    check('a media-reported starter is REPORTED_EXPECTED_STARTER at HIGH_CONFIDENCE_REPORTED_STARTER, never confirmed',
+          (r['starter_state'], r['evidence_tier']) == ('REPORTED_EXPECTED_STARTER', 'HIGH_CONFIDENCE_REPORTED_STARTER')
+          and r['captured_document'] is False, r)
+    lo = SE.load(_write(_pk(players=[], starters={'CHI': {'name': 'Tyson Bagent', 'cited': 'OFFICIAL_RELEASE'}})))
+    r = SE.resolve(lo.value, POOL).value['starters']['CHI']
+    check('a team-published starter relayed by the owner is CONFIRMED_BY_TEAM_PUBLISHED_EVIDENCE, document not captured',
+          r['starter_state'] == 'CONFIRMED_BY_TEAM_PUBLISHED_EVIDENCE' and r['relayed_by'] == 'OWNER_RELAYED'
+          and r['captured_document'] is False, r)
+    r = SE.resolve(SE.load(_write(_pk(players=[]))).value, POOL).value['starters']['CHI']
+    check('negative control: an uncited bare name is REPORTED_STARTER_UNVERIFIED', r['starter_state'] == 'REPORTED_STARTER_UNVERIFIED', r)
+    o = SE.load(_write(_pk(players=[], starters={'CHI': {'name': 'Tyson Bagent', 'cited': 'TWITTER'}})))
+    check('positive control: an unknown starter citation is refused', o.code == 'EVIDENCE_PACKET_SCHEMA', o.code)
+
+
 def test_zz_every_check_passed():
     """The module's own counter, re-raised so a failure turns this module RED."""
     if FAILED:
