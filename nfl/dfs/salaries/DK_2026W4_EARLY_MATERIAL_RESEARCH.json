@@ -1,7 +1,7 @@
 {
  "ARTIFACT": "CLASSIC_MATERIAL_RESEARCH",
  "slate_id": "2026W4",
- "built_at_utc": "2026-10-04T15:10:18.707916+00:00",
+ "built_at_utc": "2026-10-04T16:13:28.465344+00:00",
  "IS_NOT": "a projection. No number here entered the model; a defect is fixed in the football state and regenerated.",
  "thresholds": {
   "MAX150": 0.05,
@@ -19,11 +19,11 @@
   "daily practice trend",
   "current depth charts"
  ],
- "state_used": "nfl/dfs/salaries/sensitivity/scenarios/live_1022/STATE.json",
+ "state_used": "/home/user/nfl/nfl/dfs/salaries/DK_2026W4_EARLY_STATE.json",
  "evidence_state": "APPLIED_OWNER_RELAYED",
- "n_material": 87,
+ "n_material": 88,
  "verdicts": {
-  "SUPPORTED": 26,
+  "SUPPORTED": 27,
   "SUPPORTED_WITH_UNCERTAINTY": 60,
   "NEEDS_REVIEW": 1,
   "INPUT_DEFECT_FOUND": 0
@@ -35,10 +35,10 @@
    "position": "WR",
    "dk_id": "44328759",
    "material_because": [
-    "large FC disagreement (-4.6)"
+    "large FC disagreement (-4.7)"
    ],
    "MODEL_PROJECTION": 0.3,
-   "SIM_MEAN": 0.29,
+   "SIM_MEAN": 0.27,
    "ROLE_STATE": {
     "role_band": "FRINGE",
     "depth_rank": null,
@@ -81,11 +81,11 @@
     ">= 10% of the 20-max",
     ">= 5% of the 150-max",
     "likely Hard Rock prop candidate",
-    "simulation vs projection +2.7",
+    "simulation vs projection +2.4",
     "starting QB"
    ],
    "MODEL_PROJECTION": 24.71,
-   "SIM_MEAN": 27.39,
+   "SIM_MEAN": 27.09,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -93,8 +93,8 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.2,
-    "MAX20": 0.3,
+    "MAX150": 0.14,
+    "MAX20": 0.1,
     "MAX3": 0.0
    },
    "evidence": {
@@ -104,7 +104,9 @@
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
     "5_recent_usage": "3 games: 86.0 att, 23.0 carries, 1.0 targets (target share 0.012, carry share 0.271)",
     "6_trend": "offense snap share 1.0 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Skyler Bell"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "NE allowed 30.7 pass att / 24.7 rush att per game, sack rate 0.071, explosive pass 0.054; observed context only, not a model term",
@@ -112,7 +114,7 @@
     "12_model_consistent": "projected 31.3 pass attempts vs measured 28.7/game"
    },
    "RESEARCH_VERDICT": "SUPPORTED_WITH_UNCERTAINTY",
-   "WHY": "simulated mean differs from the projection by +2.7 (touchdowns and bonuses as simulated, not rescaled)",
+   "WHY": "simulated mean differs from the projection by +2.4 (touchdowns and bonuses as simulated, not rescaled)",
    "concerns": []
   },
   {
@@ -127,8 +129,8 @@
     "in the 3-entry set",
     "likely Hard Rock prop candidate"
    ],
-   "MODEL_PROJECTION": 22.77,
-   "SIM_MEAN": 22.72,
+   "MODEL_PROJECTION": 23.12,
+   "SIM_MEAN": 23.25,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -136,9 +138,9 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.247,
-    "MAX20": 0.3,
-    "MAX3": 0.333
+    "MAX150": 0.313,
+    "MAX20": 0.4,
+    "MAX3": 0.667
    },
    "evidence": {
     "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier OFFICIAL_TEAM_RELEASE_CITED)",
@@ -148,13 +150,16 @@
     "5_recent_usage": "1 games: 0 att, 0 carries, 9.0 targets (target share 0.085, carry share 0.0)",
     "6_trend": "offense snap share 0.7 (weeks [1]); routes UNAVAILABLE_NO_CAPTURE",
     "7_teammate_absences": [
-     "Terrance Ferguson"
+     "CJ Daniels",
+     "Colby Parkinson",
+     "Terrance Ferguson",
+     "Ty Simpson"
     ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "PHI allowed 29.3 pass att / 31.3 rush att per game, sack rate 0.033, explosive pass 0.091; observed context only, not a model term",
     "11_role_uncertainty": "role confidence HIGH; prior tier PLAYER_OWN_ROLE; conflicts: depth chart ranks him WR1; 2026 usage ranks him WR3; projection used chart rank 1 over usage rank 3",
-    "12_model_consistent": "projected 11.2 targets vs measured 9.0/game"
+    "12_model_consistent": "projected 11.3 targets vs measured 9.0/game"
    },
    "RESEARCH_VERDICT": "SUPPORTED_WITH_UNCERTAINTY",
    "WHY": "chart and usage disagree on his rank; 1 games measured in 2026",
@@ -181,7 +186,7 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.233,
+    "MAX150": 0.287,
     "MAX20": 0.4,
     "MAX3": 0.333
    },
@@ -215,12 +220,13 @@
    "material_because": [
     ">= 10% of the 20-max",
     ">= 5% of the 150-max",
+    "in the 3-entry set",
     "likely Hard Rock prop candidate",
     "simulation vs projection +1.6",
     "starting QB"
    ],
    "MODEL_PROJECTION": 22.19,
-   "SIM_MEAN": 23.83,
+   "SIM_MEAN": 23.79,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -228,9 +234,9 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.133,
+    "MAX150": 0.127,
     "MAX20": 0.1,
-    "MAX3": 0.0
+    "MAX3": 0.333
    },
    "evidence": {
     "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier OFFICIAL_TEAM_RELEASE_CITED)",
@@ -239,7 +245,10 @@
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
     "5_recent_usage": "3 games: 74.0 att, 14.0 carries, 0 targets (target share 0.0, carry share 0.149)",
     "6_trend": "offense snap share 1.0 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Chris Moore",
+     "Joe Fagnano"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "OL starters on the report: LT Ronnie Stanley (Questionable)",
     "10_opponent": "TEN allowed 27.7 pass att / 33.3 rush att per game, sack rate 0.067, explosive pass 0.108; observed context only, not a model term",
@@ -256,14 +265,15 @@
    "position": "WR",
    "dk_id": "44328635",
    "material_because": [
+    ">= 10% of the 20-max",
     ">= 5% of the 150-max",
     "Questionable",
+    "in the 3-entry set",
     "likely Hard Rock prop candidate",
-    "material open question (scenario map)",
-    "material role uncertainty (board: role-dependent)"
+    "material open question (scenario map)"
    ],
-   "MODEL_PROJECTION": 21.58,
-   "SIM_MEAN": 22.04,
+   "MODEL_PROJECTION": 21.6,
+   "SIM_MEAN": 22.28,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -271,18 +281,21 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.353,
-    "MAX20": 0.0,
-    "MAX3": 0.0
+    "MAX150": 0.313,
+    "MAX20": 0.35,
+    "MAX3": 0.667
    },
    "evidence": {
-    "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier OFFICIAL_TEAM_RELEASE_CITED)",
+    "1_starter_availability": "REPORTED_ACTIVE_NOT_ON_LIST (tier AGGREGATOR_REPORTED)",
     "2_latest_injury_news": "Friday report: QUESTIONABLE (Hamstring); anything newer: UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "3_practice_trend": "Limited Participation in Practice (final day only; the daily trend is not captured)",
     "4_depth_chart": "chart rank 1, usage rank 2, projection rank 1",
     "5_recent_usage": "2 games: 0 att, 1.0 carries, 12.0 targets (target share 0.164, carry share 0.011)",
     "6_trend": "offense snap share 0.29 (weeks [1]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Chris Moore",
+     "Joe Fagnano"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "OL starters on the report: LT Ronnie Stanley (Questionable)",
     "10_opponent": "TEN allowed 27.7 pass att / 33.3 rush att per game, sack rate 0.067, explosive pass 0.108; observed context only, not a model term",
@@ -290,7 +303,7 @@
     "12_model_consistent": "projected 7.6 targets vs measured 6.0/game"
    },
    "RESEARCH_VERDICT": "SUPPORTED_WITH_UNCERTAINTY",
-   "WHY": "QUESTIONABLE and unresolved; if out: Rashod Bateman +5.0, Mark Andrews +2.8, Ja'Kobi Lane +2.1; chart and usage disagree on his rank; 2 games measured in 2026",
+   "WHY": "chart and usage disagree on his rank; 2 games measured in 2026",
    "concerns": []
   },
   {
@@ -302,11 +315,11 @@
     ">= 10% of the 20-max",
     ">= 5% of the 150-max",
     "in the 3-entry set",
-    "large FC disagreement (+3.7)",
+    "large FC disagreement (+4.0)",
     "likely Hard Rock prop candidate"
    ],
    "MODEL_PROJECTION": 21.51,
-   "SIM_MEAN": 21.36,
+   "SIM_MEAN": 21.67,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -314,9 +327,9 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.313,
-    "MAX20": 0.35,
-    "MAX3": 1.0
+    "MAX150": 0.38,
+    "MAX20": 0.4,
+    "MAX3": 0.333
    },
    "evidence": {
     "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier NO_EVIDENCE_HELD)",
@@ -325,7 +338,9 @@
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
     "5_recent_usage": "3 games: 0 att, 0 carries, 23.0 targets (target share 0.303, carry share 0.0)",
     "6_trend": "offense snap share 0.71 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "CJ Williams"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "CIN allowed 38.3 pass att / 19.3 rush att per game, sack rate 0.08, explosive pass 0.104; observed context only, not a model term",
@@ -344,11 +359,10 @@
    "material_because": [
     ">= 10% of the 20-max",
     ">= 5% of the 150-max",
-    "in the 3-entry set",
     "likely Hard Rock prop candidate"
    ],
-   "MODEL_PROJECTION": 20.88,
-   "SIM_MEAN": 20.78,
+   "MODEL_PROJECTION": 20.84,
+   "SIM_MEAN": 21.07,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -356,9 +370,9 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.207,
-    "MAX20": 0.35,
-    "MAX3": 0.333
+    "MAX150": 0.247,
+    "MAX20": 0.3,
+    "MAX3": 0.0
    },
    "evidence": {
     "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier OFFICIAL_TEAM_RELEASE_CITED)",
@@ -367,7 +381,9 @@
     "4_depth_chart": "chart rank 1, usage rank 3, projection rank 1",
     "5_recent_usage": "1 games: 0 att, 1.0 carries, 10.0 targets (target share 0.089, carry share 0.014)",
     "6_trend": "offense snap share 0.72 (weeks [1]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Marlin Klein"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "DAL allowed 28.0 pass att / 34.7 rush att per game, sack rate 0.023, explosive pass 0.083; observed context only, not a model term",
@@ -431,7 +447,6 @@
     "large FC disagreement (+8.8)",
     "likely Hard Rock prop candidate",
     "material open question (scenario map)",
-    "material role uncertainty (board: role-dependent)",
     "starting QB"
    ],
    "MODEL_PROJECTION": 18.9,
@@ -443,9 +458,9 @@
     "starter_tier": "HIGH_CONFIDENCE_REPORTED_STARTER"
    },
    "exposure": {
-    "MAX150": 0.147,
-    "MAX20": 0.3,
-    "MAX3": 0.667
+    "MAX150": 0.16,
+    "MAX20": 0.2,
+    "MAX3": 0.333
    },
    "evidence": {
     "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier NO_EVIDENCE_HELD); starter evidence REPORTED_EXPECTED_STARTER [HIGH_CONFIDENCE_REPORTED_STARTER]",
@@ -489,8 +504,8 @@
    },
    "exposure": {
     "MAX150": 0.327,
-    "MAX20": 0.45,
-    "MAX3": 0.333
+    "MAX20": 0.55,
+    "MAX3": 0.667
    },
    "evidence": {
     "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier OFFICIAL_TEAM_RELEASE_CITED)",
@@ -523,7 +538,7 @@
     "starting QB"
    ],
    "MODEL_PROJECTION": 18.44,
-   "SIM_MEAN": 18.79,
+   "SIM_MEAN": 18.73,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -531,7 +546,7 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.033,
+    "MAX150": 0.02,
     "MAX20": 0.0,
     "MAX3": 0.0
    },
@@ -543,6 +558,7 @@
     "5_recent_usage": "3 games: 87.0 att, 14.0 carries, 0 targets (target share 0.0, carry share 0.189)",
     "6_trend": "offense snap share 1.0 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
     "7_teammate_absences": [
+     "Cole Payton",
      "Dallas Goedert",
      "DeVonta Smith",
      "Hollywood Brown"
@@ -563,13 +579,14 @@
    "position": "QB",
    "dk_id": "44328397",
    "material_because": [
+    ">= 10% of the 20-max",
     ">= 5% of the 150-max",
     "large FC disagreement (-4.3)",
     "likely Hard Rock prop candidate",
     "starting QB"
    ],
    "MODEL_PROJECTION": 18.42,
-   "SIM_MEAN": 19.06,
+   "SIM_MEAN": 19.01,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -577,8 +594,8 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.053,
-    "MAX20": 0.0,
+    "MAX150": 0.093,
+    "MAX20": 0.1,
     "MAX3": 0.0
    },
    "evidence": {
@@ -588,7 +605,9 @@
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
     "5_recent_usage": "3 games: 80.0 att, 8.0 carries, 0 targets (target share 0.0, carry share 0.096)",
     "6_trend": "offense snap share 0.94 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "CJ Williams"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "CIN allowed 38.3 pass att / 19.3 rush att per game, sack rate 0.08, explosive pass 0.104; observed context only, not a model term",
@@ -620,9 +639,9 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.3,
+    "MAX150": 0.287,
     "MAX20": 0.5,
-    "MAX3": 0.667
+    "MAX3": 0.333
    },
    "evidence": {
     "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier OFFICIAL_TEAM_RELEASE_CITED)",
@@ -662,7 +681,7 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.04,
+    "MAX150": 0.027,
     "MAX20": 0.0,
     "MAX3": 0.0
    },
@@ -694,13 +713,12 @@
    "position": "WR",
    "dk_id": "44328633",
    "material_because": [
-    ">= 10% of the 20-max",
     ">= 5% of the 150-max",
     "FC snapshot change (projection 17.32 -> 16.14) classified METHODOLOGY",
     "likely Hard Rock prop candidate"
    ],
-   "MODEL_PROJECTION": 16.93,
-   "SIM_MEAN": 16.64,
+   "MODEL_PROJECTION": 17.21,
+   "SIM_MEAN": 17.22,
    "ROLE_STATE": {
     "role_band": "SECONDARY",
     "depth_rank": 1,
@@ -709,7 +727,7 @@
    },
    "exposure": {
     "MAX150": 0.08,
-    "MAX20": 0.1,
+    "MAX20": 0.05,
     "MAX3": 0.0
    },
    "evidence": {
@@ -720,7 +738,10 @@
     "5_recent_usage": "3 games: 0 att, 0 carries, 29.0 targets (target share 0.274, carry share 0.0)",
     "6_trend": "offense snap share 0.595 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
     "7_teammate_absences": [
-     "Terrance Ferguson"
+     "CJ Daniels",
+     "Colby Parkinson",
+     "Terrance Ferguson",
+     "Ty Simpson"
     ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
@@ -753,7 +774,7 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.267,
+    "MAX150": 0.293,
     "MAX20": 0.35,
     "MAX3": 0.667
    },
@@ -785,12 +806,11 @@
    "material_because": [
     ">= 10% of the 20-max",
     ">= 5% of the 150-max",
-    "in the 3-entry set",
-    "large FC disagreement (+6.7)",
+    "large FC disagreement (+7.0)",
     "likely Hard Rock prop candidate"
    ],
    "MODEL_PROJECTION": 15.91,
-   "SIM_MEAN": 15.98,
+   "SIM_MEAN": 16.21,
    "ROLE_STATE": {
     "role_band": "PRIMARY",
     "depth_rank": 1,
@@ -798,9 +818,9 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.26,
-    "MAX20": 0.1,
-    "MAX3": 0.333
+    "MAX150": 0.233,
+    "MAX20": 0.25,
+    "MAX3": 0.0
    },
    "evidence": {
     "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier NO_EVIDENCE_HELD)",
@@ -809,7 +829,9 @@
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
     "5_recent_usage": "3 games: 0 att, 43.0 carries, 5.0 targets (target share 0.066, carry share 0.518)",
     "6_trend": "offense snap share 0.5 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "CJ Williams"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "CIN allowed 38.3 pass att / 19.3 rush att per game, sack rate 0.08, explosive pass 0.104; observed context only, not a model term",
@@ -829,8 +851,8 @@
     ">= 5% of the 150-max",
     "likely Hard Rock prop candidate"
    ],
-   "MODEL_PROJECTION": 14.67,
-   "SIM_MEAN": 14.62,
+   "MODEL_PROJECTION": 14.68,
+   "SIM_MEAN": 14.47,
    "ROLE_STATE": {
     "role_band": "PRIMARY",
     "depth_rank": 1,
@@ -838,7 +860,7 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.107,
+    "MAX150": 0.067,
     "MAX20": 0.0,
     "MAX3": 0.0
    },
@@ -849,7 +871,10 @@
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
     "5_recent_usage": "3 games: 0 att, 50.0 carries, 8.0 targets (target share 0.098, carry share 0.575)",
     "6_trend": "offense snap share 0.6 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Devin Singletary",
+     "Thomas Fidone II"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "ARI allowed 26.7 pass att / 27.7 rush att per game, sack rate 0.048, explosive pass 0.113; observed context only, not a model term",
@@ -868,12 +893,11 @@
    "material_because": [
     ">= 10% of the 20-max",
     ">= 5% of the 150-max",
-    "in the 3-entry set",
-    "large FC disagreement (+5.5)",
+    "large FC disagreement (+5.3)",
     "likely Hard Rock prop candidate"
    ],
    "MODEL_PROJECTION": 14.27,
-   "SIM_MEAN": 14.57,
+   "SIM_MEAN": 14.35,
    "ROLE_STATE": {
     "role_band": "SECONDARY",
     "depth_rank": 1,
@@ -881,9 +905,9 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.253,
-    "MAX20": 0.35,
-    "MAX3": 0.333
+    "MAX150": 0.18,
+    "MAX20": 0.15,
+    "MAX3": 0.0
    },
    "evidence": {
     "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier NO_EVIDENCE_HELD)",
@@ -893,6 +917,7 @@
     "5_recent_usage": "3 games: 0 att, 0 carries, 15.0 targets (target share 0.185, carry share 0.0)",
     "6_trend": "offense snap share 0.765 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
     "7_teammate_absences": [
+     "Cole Payton",
      "Dallas Goedert",
      "DeVonta Smith",
      "Hollywood Brown"
@@ -916,7 +941,6 @@
     "large FC disagreement (+3.7)",
     "likely Hard Rock prop candidate",
     "material open question (scenario map)",
-    "material role uncertainty (board: role-dependent)",
     "starting QB"
    ],
    "MODEL_PROJECTION": 14.04,
@@ -928,7 +952,7 @@
     "starter_tier": "OFFICIAL_TEAM_PUBLISHED"
    },
    "exposure": {
-    "MAX150": 0.033,
+    "MAX150": 0.007,
     "MAX20": 0.0,
     "MAX3": 0.0
    },
@@ -962,11 +986,11 @@
     ">= 10% of the 20-max",
     ">= 5% of the 150-max",
     "in the 3-entry set",
-    "large FC disagreement (+6.0)",
+    "large FC disagreement (+5.8)",
     "likely Hard Rock prop candidate"
    ],
    "MODEL_PROJECTION": 13.55,
-   "SIM_MEAN": 14.43,
+   "SIM_MEAN": 14.17,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -974,9 +998,9 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.32,
+    "MAX150": 0.293,
     "MAX20": 0.5,
-    "MAX3": 0.333
+    "MAX3": 1.0
    },
    "evidence": {
     "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier NO_EVIDENCE_HELD)",
@@ -1016,7 +1040,7 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.04,
+    "MAX150": 0.027,
     "MAX20": 0.0,
     "MAX3": 0.0
    },
@@ -1050,7 +1074,7 @@
     "starting QB"
    ],
    "MODEL_PROJECTION": 13.11,
-   "SIM_MEAN": 13.07,
+   "SIM_MEAN": 13.09,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -1058,7 +1082,7 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.0,
+    "MAX150": 0.007,
     "MAX20": 0.0,
     "MAX3": 0.0
    },
@@ -1069,7 +1093,10 @@
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
     "5_recent_usage": "2 games: 49.0 att, 3.0 carries, 0 targets (target share 0.0, carry share 0.034)",
     "6_trend": "offense snap share 0.88 (weeks [2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Devin Singletary",
+     "Thomas Fidone II"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "ARI allowed 26.7 pass att / 27.7 rush att per game, sack rate 0.048, explosive pass 0.113; observed context only, not a model term",
@@ -1088,11 +1115,11 @@
    "material_because": [
     ">= 10% of the 20-max",
     ">= 5% of the 150-max",
-    "large FC disagreement (+3.2)",
+    "large FC disagreement (+3.1)",
     "likely Hard Rock prop candidate"
    ],
-   "MODEL_PROJECTION": 13.05,
-   "SIM_MEAN": 13.83,
+   "MODEL_PROJECTION": 13.06,
+   "SIM_MEAN": 13.68,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -1100,8 +1127,8 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.133,
-    "MAX20": 0.1,
+    "MAX150": 0.147,
+    "MAX20": 0.15,
     "MAX3": 0.0
    },
    "evidence": {
@@ -1111,7 +1138,10 @@
     "4_depth_chart": "chart rank 1, usage rank 3, projection rank 1",
     "5_recent_usage": "3 games: 0 att, 0 carries, 11.0 targets (target share 0.134, carry share 0.0)",
     "6_trend": "offense snap share 0.615 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Behren Morton",
+     "Tanner Arkin"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "OL starters on the report: RT Morgan Moses (Questionable)",
     "10_opponent": "BUF allowed 36.7 pass att / 26.7 rush att per game, sack rate 0.076, explosive pass 0.127; observed context only, not a model term",
@@ -1123,16 +1153,15 @@
    "concerns": []
   },
   {
-   "player": "Malik Nabers",
-   "team": "NYG",
-   "position": "WR",
-   "dk_id": "44328647",
+   "player": "Cam Ward",
+   "team": "TEN",
+   "position": "QB",
+   "dk_id": "44328404",
    "material_because": [
-    "large FC disagreement (+3.1)",
-    "likely Hard Rock prop candidate"
+    "starting QB"
    ],
-   "MODEL_PROJECTION": 12.88,
-   "SIM_MEAN": 12.68,
+   "MODEL_PROJECTION": 12.96,
+   "SIM_MEAN": 11.35,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -1140,7 +1169,50 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.007,
+    "MAX150": 0.0,
+    "MAX20": 0.0,
+    "MAX3": 0.0
+   },
+   "evidence": {
+    "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier NO_EVIDENCE_HELD)",
+    "2_latest_injury_news": "not on the final report; anything newer: UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
+    "3_practice_trend": "no practice line (final day only; the daily trend is not captured)",
+    "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
+    "5_recent_usage": "3 games: 88.0 att, 9.0 carries, 0 targets (target share 0.0, carry share 0.141)",
+    "6_trend": "offense snap share 1.0 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
+    "7_teammate_absences": [
+     "Kylen Granson",
+     "Michael Carter"
+    ],
+    "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
+    "9_offensive_line": "no OL starter on the final report",
+    "10_opponent": "BAL allowed 35.0 pass att / 25.3 rush att per game, sack rate 0.054, explosive pass 0.076; observed context only, not a model term",
+    "11_role_uncertainty": "role confidence MEDIUM; prior tier PLAYER_OWN_ROLE",
+    "12_model_consistent": "projected 34.2 pass attempts vs measured 29.3/game"
+   },
+   "RESEARCH_VERDICT": "SUPPORTED_WITH_UNCERTAINTY",
+   "WHY": "simulated mean differs from the projection by -1.6 (touchdowns and bonuses as simulated, not rescaled)",
+   "concerns": []
+  },
+  {
+   "player": "Malik Nabers",
+   "team": "NYG",
+   "position": "WR",
+   "dk_id": "44328647",
+   "material_because": [
+    "large FC disagreement (+3.4)",
+    "likely Hard Rock prop candidate"
+   ],
+   "MODEL_PROJECTION": 12.9,
+   "SIM_MEAN": 12.95,
+   "ROLE_STATE": {
+    "role_band": "ALPHA",
+    "depth_rank": 1,
+    "starter_evidence": null,
+    "starter_tier": null
+   },
+   "exposure": {
+    "MAX150": 0.013,
     "MAX20": 0.0,
     "MAX3": 0.0
    },
@@ -1151,7 +1223,10 @@
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
     "5_recent_usage": "3 games: 0 att, 0 carries, 19.0 targets (target share 0.232, carry share 0.0)",
     "6_trend": "offense snap share 0.63 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Devin Singletary",
+     "Thomas Fidone II"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "ARI allowed 26.7 pass att / 27.7 rush att per game, sack rate 0.048, explosive pass 0.113; observed context only, not a model term",
@@ -1169,11 +1244,11 @@
    "dk_id": "44328931",
    "material_because": [
     ">= 5% of the 150-max",
-    "large FC disagreement (+3.6)",
+    "large FC disagreement (+3.2)",
     "likely Hard Rock prop candidate"
    ],
-   "MODEL_PROJECTION": 12.27,
-   "SIM_MEAN": 13.11,
+   "MODEL_PROJECTION": 12.28,
+   "SIM_MEAN": 12.76,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -1181,7 +1256,7 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.053,
+    "MAX150": 0.073,
     "MAX20": 0.0,
     "MAX3": 0.0
    },
@@ -1192,7 +1267,10 @@
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
     "5_recent_usage": "3 games: 0 att, 0 carries, 23.0 targets (target share 0.28, carry share 0.0)",
     "6_trend": "offense snap share 0.59 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Devin Singletary",
+     "Thomas Fidone II"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "ARI allowed 26.7 pass att / 27.7 rush att per game, sack rate 0.048, explosive pass 0.113; observed context only, not a model term",
@@ -1221,7 +1299,7 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.02,
+    "MAX150": 0.027,
     "MAX20": 0.0,
     "MAX3": 0.0
    },
@@ -1249,9 +1327,7 @@
    "position": "TE",
    "dk_id": "44328943",
    "material_because": [
-    ">= 10% of the 20-max",
     ">= 5% of the 150-max",
-    "in the 3-entry set",
     "large FC disagreement (+4.9)",
     "likely Hard Rock prop candidate"
    ],
@@ -1264,9 +1340,9 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.14,
-    "MAX20": 0.1,
-    "MAX3": 0.333
+    "MAX150": 0.12,
+    "MAX20": 0.0,
+    "MAX3": 0.0
    },
    "evidence": {
     "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier NO_EVIDENCE_HELD)",
@@ -1299,11 +1375,11 @@
     ">= 5% of the 150-max",
     "FC snapshot change (projection 0.00 -> 7.90; pDepth TE3 -> TE2; zero -> nonzero) classified OUR_STATE_SUPPORTED",
     "in the 3-entry set",
-    "large FC disagreement (+3.9)",
+    "large FC disagreement (+4.2)",
     "likely Hard Rock prop candidate"
    ],
-   "MODEL_PROJECTION": 10.94,
-   "SIM_MEAN": 11.75,
+   "MODEL_PROJECTION": 11.24,
+   "SIM_MEAN": 12.12,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -1311,8 +1387,8 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.16,
-    "MAX20": 0.15,
+    "MAX150": 0.153,
+    "MAX20": 0.2,
     "MAX3": 0.333
    },
    "evidence": {
@@ -1323,7 +1399,10 @@
     "5_recent_usage": "2 games: 0 att, 0 carries, 13.0 targets (target share 0.123, carry share 0.0)",
     "6_trend": "offense snap share 0.23 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
     "7_teammate_absences": [
-     "Terrance Ferguson"
+     "CJ Daniels",
+     "Colby Parkinson",
+     "Terrance Ferguson",
+     "Ty Simpson"
     ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
@@ -1336,56 +1415,17 @@
    "concerns": []
   },
   {
-   "player": "Mack Hollins",
-   "team": "NE",
-   "position": "WR",
-   "dk_id": "44328693",
-   "material_because": [
-    ">= 5% of the 150-max",
-    "likely Hard Rock prop candidate"
-   ],
-   "MODEL_PROJECTION": 10.84,
-   "SIM_MEAN": 10.39,
-   "ROLE_STATE": {
-    "role_band": "SECONDARY",
-    "depth_rank": 1,
-    "starter_evidence": null,
-    "starter_tier": null
-   },
-   "exposure": {
-    "MAX150": 0.053,
-    "MAX20": 0.05,
-    "MAX3": 0.0
-   },
-   "evidence": {
-    "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier NO_EVIDENCE_HELD)",
-    "2_latest_injury_news": "not on the final report; anything newer: UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
-    "3_practice_trend": "no practice line (final day only; the daily trend is not captured)",
-    "4_depth_chart": "chart rank 3, usage rank 1, projection rank 1",
-    "5_recent_usage": "3 games: 0 att, 0 carries, 16.0 targets (target share 0.195, carry share 0.0)",
-    "6_trend": "offense snap share 0.705 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
-    "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
-    "9_offensive_line": "OL starters on the report: RT Morgan Moses (Questionable)",
-    "10_opponent": "BUF allowed 36.7 pass att / 26.7 rush att per game, sack rate 0.076, explosive pass 0.127; observed context only, not a model term",
-    "11_role_uncertainty": "role confidence MEDIUM; prior tier PLAYER_OWN_ROLE; conflicts: depth chart ranks him WR3; 2026 usage ranks him WR1",
-    "12_model_consistent": "projected 4.8 targets vs measured 5.3/game"
-   },
-   "RESEARCH_VERDICT": "SUPPORTED_WITH_UNCERTAINTY",
-   "WHY": "chart and usage disagree on his rank",
-   "concerns": []
-  },
-  {
    "player": "Zach Ertz",
    "team": "PHI",
    "position": "TE",
    "dk_id": "44328949",
    "material_because": [
+    ">= 10% of the 20-max",
     ">= 5% of the 150-max",
     "likely Hard Rock prop candidate"
    ],
    "MODEL_PROJECTION": 10.72,
-   "SIM_MEAN": 10.99,
+   "SIM_MEAN": 10.93,
    "ROLE_STATE": {
     "role_band": "SECONDARY",
     "depth_rank": 1,
@@ -1393,8 +1433,8 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.06,
-    "MAX20": 0.05,
+    "MAX150": 0.107,
+    "MAX20": 0.1,
     "MAX3": 0.0
    },
    "evidence": {
@@ -1405,6 +1445,7 @@
     "5_recent_usage": "1 games: 0 att, 0 carries, 2.0 targets (target share 0.025, carry share 0.0)",
     "6_trend": "offense snap share None (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
     "7_teammate_absences": [
+     "Cole Payton",
      "Dallas Goedert",
      "DeVonta Smith",
      "Hollywood Brown"
@@ -1425,11 +1466,12 @@
    "position": "TE",
    "dk_id": "44328947",
    "material_because": [
+    ">= 10% of the 20-max",
     ">= 5% of the 150-max",
     "likely Hard Rock prop candidate"
    ],
-   "MODEL_PROJECTION": 10.42,
-   "SIM_MEAN": 11.28,
+   "MODEL_PROJECTION": 10.43,
+   "SIM_MEAN": 11.12,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -1437,8 +1479,8 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.06,
-    "MAX20": 0.05,
+    "MAX150": 0.093,
+    "MAX20": 0.2,
     "MAX3": 0.0
    },
    "evidence": {
@@ -1448,7 +1490,9 @@
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
     "5_recent_usage": "3 games: 0 att, 0 carries, 10.0 targets (target share 0.132, carry share 0.0)",
     "6_trend": "offense snap share 0.755 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "CJ Williams"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "CIN allowed 38.3 pass att / 19.3 rush att per game, sack rate 0.08, explosive pass 0.104; observed context only, not a model term",
@@ -1467,8 +1511,7 @@
    "material_because": [
     "Questionable",
     "likely Hard Rock prop candidate",
-    "material open question (scenario map)",
-    "material role uncertainty (board: role-dependent)"
+    "material open question (scenario map)"
    ],
    "MODEL_PROJECTION": 10.0,
    "SIM_MEAN": 9.53,
@@ -1479,12 +1522,12 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.02,
+    "MAX150": 0.007,
     "MAX20": 0.0,
     "MAX3": 0.0
    },
    "evidence": {
-    "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier OFFICIAL_TEAM_RELEASE_CITED)",
+    "1_starter_availability": "REPORTED_ACTIVE_NOT_ON_LIST (tier AGGREGATOR_REPORTED)",
     "2_latest_injury_news": "Friday report: QUESTIONABLE (Back); anything newer: UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "3_practice_trend": "Limited Participation in Practice (final day only; the daily trend is not captured)",
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
@@ -1502,7 +1545,7 @@
     "12_model_consistent": "projected 5.3 targets vs measured 4.7/game"
    },
    "RESEARCH_VERDICT": "SUPPORTED_WITH_UNCERTAINTY",
-   "WHY": "QUESTIONABLE and unresolved; if out: Jeremy Ruckert +3.1, Jelani Woods +2.0, Garrett Wilson +1.6; NYJ receiving and passing yards do not close inside the projection (yards props blocked)",
+   "WHY": "NYJ receiving and passing yards do not close inside the projection (yards props blocked)",
    "concerns": []
   },
   {
@@ -1511,6 +1554,7 @@
    "position": "DST",
    "dk_id": "44329119",
    "material_because": [
+    ">= 10% of the 20-max",
     ">= 5% of the 150-max",
     "in the 3-entry set"
    ],
@@ -1523,8 +1567,8 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.153,
-    "MAX20": 0.05,
+    "MAX150": 0.14,
+    "MAX20": 0.2,
     "MAX3": 0.333
    },
    "evidence": {
@@ -1565,7 +1609,7 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.013,
+    "MAX150": 0.0,
     "MAX20": 0.0,
     "MAX3": 0.0
    },
@@ -1596,7 +1640,8 @@
    "dk_id": "44329126",
    "material_because": [
     ">= 10% of the 20-max",
-    ">= 5% of the 150-max"
+    ">= 5% of the 150-max",
+    "in the 3-entry set"
    ],
    "MODEL_PROJECTION": 6.69,
    "SIM_MEAN": 6.69,
@@ -1607,9 +1652,9 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.2,
-    "MAX20": 0.25,
-    "MAX3": 0.0
+    "MAX150": 0.14,
+    "MAX20": 0.1,
+    "MAX3": 0.333
    },
    "evidence": {
     "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier NO_EVIDENCE_HELD)",
@@ -1618,10 +1663,12 @@
     "4_depth_chart": "team unit",
     "5_recent_usage": "observed 2026: {'games': 3, 'sacks_pg': 2.67, 'sack_rate': 0.087, 'explosive_pass_rate_allowed': 0.155}",
     "6_trend": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "CJ Williams"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "n/a (defence)",
-    "10_opponent": "CIN simulated to score 26.6 (p10 13.96, p90 39.65); P(allow <= 6) 0.015, P(allow >= 28) 0.426",
+    "10_opponent": "CIN simulated to score 26.3 (p10 13.26, p90 38.73); P(allow <= 6) 0.022, P(allow >= 28) 0.427",
     "11_role_uncertainty": "sacks and takeaways NOT_DECOMPOSED; defensive/return TDs NOT_MODELLED",
     "12_model_consistent": "points allowed drawn from the opponent's simulated score in the same world"
    },
@@ -1635,10 +1682,10 @@
    "position": "WR",
    "dk_id": "44328675",
    "material_because": [
-    "large FC disagreement (-4.7)"
+    "large FC disagreement (-4.5)"
    ],
    "MODEL_PROJECTION": 6.47,
-   "SIM_MEAN": 6.62,
+   "SIM_MEAN": 6.82,
    "ROLE_STATE": {
     "role_band": "SECONDARY",
     "depth_rank": 2,
@@ -1657,7 +1704,10 @@
     "4_depth_chart": "chart rank 2, usage rank 3, projection rank 2",
     "5_recent_usage": "3 games: 0 att, 0 carries, 9.0 targets (target share 0.08, carry share 0.0)",
     "6_trend": "offense snap share 0.765 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Carson Beck",
+     "Reggie Virgil"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "NYG allowed 33.3 pass att / 21.3 rush att per game, sack rate 0.01, explosive pass 0.06; observed context only, not a model term",
@@ -1674,7 +1724,6 @@
    "position": "DST",
    "dk_id": "44329121",
    "material_because": [
-    ">= 10% of the 20-max",
     ">= 5% of the 150-max",
     "FC snapshot change (projection 3.98 -> 5.03) classified METHODOLOGY"
    ],
@@ -1687,8 +1736,8 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.067,
-    "MAX20": 0.1,
+    "MAX150": 0.093,
+    "MAX20": 0.05,
     "MAX3": 0.0
    },
    "evidence": {
@@ -1718,10 +1767,10 @@
    "position": "RB",
    "dk_id": "44328477",
    "material_because": [
-    "large FC disagreement (-7.4)"
+    "large FC disagreement (-7.5)"
    ],
    "MODEL_PROJECTION": 5.99,
-   "SIM_MEAN": 5.83,
+   "SIM_MEAN": 5.8,
    "ROLE_STATE": {
     "role_band": "SECONDARY",
     "depth_rank": 2,
@@ -1740,7 +1789,10 @@
     "4_depth_chart": "chart rank 2, usage rank 2, projection rank 2",
     "5_recent_usage": "2 games: 0 att, 24.0 carries, 1.0 targets (target share 0.012, carry share 0.289)",
     "6_trend": "offense snap share 0.6 (weeks [2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Behren Morton",
+     "Tanner Arkin"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "OL starters on the report: RT Morgan Moses (Questionable)",
     "10_opponent": "BUF allowed 36.7 pass att / 26.7 rush att per game, sack rate 0.076, explosive pass 0.127; observed context only, not a model term",
@@ -1769,7 +1821,7 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.107,
+    "MAX150": 0.12,
     "MAX20": 0.1,
     "MAX3": 0.0
    },
@@ -1780,10 +1832,12 @@
     "4_depth_chart": "team unit",
     "5_recent_usage": "observed 2026: {'games': 3, 'sacks_pg': 3.67, 'sack_rate': 0.103, 'explosive_pass_rate_allowed': 0.135}",
     "6_trend": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Marlin Klein"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "n/a (defence)",
-    "10_opponent": "DAL simulated to score 27.5 (p10 15.11, p90 40.52); P(allow <= 6) 0.013, P(allow >= 28) 0.457",
+    "10_opponent": "DAL simulated to score 27.2 (p10 14.23, p90 39.95); P(allow <= 6) 0.015, P(allow >= 28) 0.469",
     "11_role_uncertainty": "sacks and takeaways NOT_DECOMPOSED; defensive/return TDs NOT_MODELLED",
     "12_model_consistent": "points allowed drawn from the opponent's simulated score in the same world"
    },
@@ -1809,7 +1863,7 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.093,
+    "MAX150": 0.113,
     "MAX20": 0.1,
     "MAX3": 0.0
    },
@@ -1820,50 +1874,13 @@
     "4_depth_chart": "team unit",
     "5_recent_usage": "observed 2026: {'games': 3, 'sacks_pg': 1.33, 'sack_rate': 0.048, 'explosive_pass_rate_allowed': 0.113}",
     "6_trend": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Carson Beck",
+     "Reggie Virgil"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "n/a (defence)",
-    "10_opponent": "NYG simulated to score 20.4 (p10 8.09, p90 32.61); P(allow <= 6) 0.062, P(allow >= 28) 0.204",
-    "11_role_uncertainty": "sacks and takeaways NOT_DECOMPOSED; defensive/return TDs NOT_MODELLED",
-    "12_model_consistent": "points allowed drawn from the opponent's simulated score in the same world"
-   },
-   "RESEARCH_VERDICT": "SUPPORTED_WITH_UNCERTAINTY",
-   "WHY": "DST projection is a floor: sacks/takeaways are not decomposed and defensive or return TDs are not modelled",
-   "concerns": []
-  },
-  {
-   "player": "Bills",
-   "team": "BUF",
-   "position": "DST",
-   "dk_id": "44329116",
-   "material_because": [
-    ">= 10% of the 20-max",
-    "in the 3-entry set"
-   ],
-   "MODEL_PROJECTION": 5.76,
-   "SIM_MEAN": 5.76,
-   "ROLE_STATE": {
-    "role_band": "ALPHA",
-    "depth_rank": null,
-    "starter_evidence": null,
-    "starter_tier": null
-   },
-   "exposure": {
-    "MAX150": 0.013,
-    "MAX20": 0.1,
-    "MAX3": 0.333
-   },
-   "evidence": {
-    "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier NO_EVIDENCE_HELD)",
-    "2_latest_injury_news": "not on the final report; anything newer: UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
-    "3_practice_trend": "no practice line (final day only; the daily trend is not captured)",
-    "4_depth_chart": "team unit",
-    "5_recent_usage": "observed 2026: {'games': 3, 'sacks_pg': 3.0, 'sack_rate': 0.076, 'explosive_pass_rate_allowed': 0.127}",
-    "6_trend": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
-    "7_teammate_absences": [],
-    "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
-    "9_offensive_line": "n/a (defence)",
-    "10_opponent": "NE simulated to score 20.5 (p10 7.75, p90 33.17); P(allow <= 6) 0.067, P(allow >= 28) 0.215",
+    "10_opponent": "NYG simulated to score 20.3 (p10 8.01, p90 33.26); P(allow <= 6) 0.066, P(allow >= 28) 0.208",
     "11_role_uncertainty": "sacks and takeaways NOT_DECOMPOSED; defensive/return TDs NOT_MODELLED",
     "12_model_consistent": "points allowed drawn from the opponent's simulated score in the same world"
    },
@@ -1879,8 +1896,8 @@
    "material_because": [
     "large FC disagreement (+5.0)"
    ],
-   "MODEL_PROJECTION": 5.76,
-   "SIM_MEAN": 5.88,
+   "MODEL_PROJECTION": 5.72,
+   "SIM_MEAN": 5.85,
    "ROLE_STATE": {
     "role_band": "SECONDARY",
     "depth_rank": 2,
@@ -1899,12 +1916,15 @@
     "4_depth_chart": "chart rank 2, usage rank 2, projection rank 2",
     "5_recent_usage": "1 games: 0 att, 6.0 carries, 1.0 targets (target share 0.01, carry share 0.087)",
     "6_trend": "offense snap share None (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Camden Brown",
+     "Emari Demercado"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "HOU allowed 32.0 pass att / 24.3 rush att per game, sack rate 0.103, explosive pass 0.135; observed context only, not a model term",
     "11_role_uncertainty": "role confidence LOW; prior tier ROLE_GROUP",
-    "12_model_consistent": "projected 7.3 carries + targets vs measured 7.0/game"
+    "12_model_consistent": "projected 7.2 carries + targets vs measured 7.0/game"
    },
    "RESEARCH_VERDICT": "SUPPORTED_WITH_UNCERTAINTY",
    "WHY": "1 games measured in 2026",
@@ -1917,7 +1937,8 @@
    "dk_id": "44329122",
    "material_because": [
     ">= 10% of the 20-max",
-    ">= 5% of the 150-max"
+    ">= 5% of the 150-max",
+    "in the 3-entry set"
    ],
    "MODEL_PROJECTION": 5.71,
    "SIM_MEAN": 5.71,
@@ -1928,9 +1949,9 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.107,
-    "MAX20": 0.1,
-    "MAX3": 0.0
+    "MAX150": 0.087,
+    "MAX20": 0.15,
+    "MAX3": 0.333
    },
    "evidence": {
     "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier NO_EVIDENCE_HELD)",
@@ -1944,7 +1965,7 @@
     ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "n/a (defence)",
-    "10_opponent": "JAX simulated to score 26.7 (p10 14.17, p90 39.32); P(allow <= 6) 0.018, P(allow >= 28) 0.438",
+    "10_opponent": "JAX simulated to score 26.6 (p10 14.42, p90 39.28); P(allow <= 6) 0.017, P(allow >= 28) 0.435",
     "11_role_uncertainty": "sacks and takeaways NOT_DECOMPOSED; defensive/return TDs NOT_MODELLED",
     "12_model_consistent": "points allowed drawn from the opponent's simulated score in the same world"
    },
@@ -1969,8 +1990,8 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.053,
-    "MAX20": 0.05,
+    "MAX150": 0.067,
+    "MAX20": 0.0,
     "MAX3": 0.0
    },
    "evidence": {
@@ -1981,11 +2002,14 @@
     "5_recent_usage": "observed 2026: {'games': 3, 'sacks_pg': 1.0, 'sack_rate': 0.029, 'explosive_pass_rate_allowed': 0.05}",
     "6_trend": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "7_teammate_absences": [
-     "Terrance Ferguson"
+     "CJ Daniels",
+     "Colby Parkinson",
+     "Terrance Ferguson",
+     "Ty Simpson"
     ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "n/a (defence)",
-    "10_opponent": "PHI simulated to score 21.8 (p10 9.81, p90 34.22); P(allow <= 6) 0.043, P(allow >= 28) 0.256",
+    "10_opponent": "PHI simulated to score 21.7 (p10 8.8, p90 34.14); P(allow <= 6) 0.051, P(allow >= 28) 0.258",
     "11_role_uncertainty": "sacks and takeaways NOT_DECOMPOSED; defensive/return TDs NOT_MODELLED",
     "12_model_consistent": "points allowed drawn from the opponent's simulated score in the same world"
    },
@@ -1999,10 +2023,10 @@
    "position": "WR",
    "dk_id": "44328683",
    "material_because": [
-    "large FC disagreement (-4.9)"
+    "large FC disagreement (-4.8)"
    ],
    "MODEL_PROJECTION": 5.34,
-   "SIM_MEAN": 5.34,
+   "SIM_MEAN": 5.48,
    "ROLE_STATE": {
     "role_band": "ROTATIONAL",
     "depth_rank": 2,
@@ -2021,7 +2045,9 @@
     "4_depth_chart": "chart rank 3, usage rank 2, projection rank 2",
     "5_recent_usage": "3 games: 0 att, 0 carries, 12.0 targets (target share 0.158, carry share 0.0)",
     "6_trend": "offense snap share None (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "CJ Williams"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "CIN allowed 38.3 pass att / 19.3 rush att per game, sack rate 0.08, explosive pass 0.104; observed context only, not a model term",
@@ -2120,8 +2146,7 @@
    "dk_id": "44329129",
    "material_because": [
     ">= 10% of the 20-max",
-    ">= 5% of the 150-max",
-    "in the 3-entry set"
+    ">= 5% of the 150-max"
    ],
    "MODEL_PROJECTION": 4.69,
    "SIM_MEAN": 4.69,
@@ -2132,9 +2157,9 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.1,
-    "MAX20": 0.1,
-    "MAX3": 0.333
+    "MAX150": 0.127,
+    "MAX20": 0.15,
+    "MAX3": 0.0
    },
    "evidence": {
     "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier NO_EVIDENCE_HELD)",
@@ -2143,10 +2168,13 @@
     "4_depth_chart": "team unit",
     "5_recent_usage": "observed 2026: {'games': 3, 'sacks_pg': 2.33, 'sack_rate': 0.071, 'explosive_pass_rate_allowed': 0.054}",
     "6_trend": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Behren Morton",
+     "Tanner Arkin"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "n/a (defence)",
-    "10_opponent": "BUF simulated to score 31.6 (p10 19.39, p90 44.0); P(allow <= 6) 0.002, P(allow >= 28) 0.639",
+    "10_opponent": "BUF simulated to score 31.4 (p10 19.39, p90 44.4); P(allow <= 6) 0.005, P(allow >= 28) 0.62",
     "11_role_uncertainty": "sacks and takeaways NOT_DECOMPOSED; defensive/return TDs NOT_MODELLED",
     "12_model_consistent": "points allowed drawn from the opponent's simulated score in the same world"
    },
@@ -2155,56 +2183,15 @@
    "concerns": []
   },
   {
-   "player": "Tyjae Spears",
-   "team": "TEN",
-   "position": "RB",
-   "dk_id": "44328485",
-   "material_because": [
-    "Questionable",
-    "material open question (scenario map)",
-    "material role uncertainty (board: role-dependent)"
-   ],
-   "MODEL_PROJECTION": 4.52,
-   "SIM_MEAN": 4.38,
-   "ROLE_STATE": {
-    "role_band": "SECONDARY",
-    "depth_rank": 2,
-    "starter_evidence": null,
-    "starter_tier": null
-   },
-   "exposure": {
-    "MAX150": 0.0,
-    "MAX20": 0.0,
-    "MAX3": 0.0
-   },
-   "evidence": {
-    "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier OFFICIAL_TEAM_RELEASE_CITED)",
-    "2_latest_injury_news": "Friday report: QUESTIONABLE (Ankle); anything newer: UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
-    "3_practice_trend": "Full Participation in Practice (final day only; the daily trend is not captured)",
-    "4_depth_chart": "chart rank 2, usage rank 2, projection rank 2",
-    "5_recent_usage": "3 games: 0 att, 13.0 carries, 6.0 targets (target share 0.075, carry share 0.203)",
-    "6_trend": "offense snap share 0.43 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
-    "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
-    "9_offensive_line": "no OL starter on the final report",
-    "10_opponent": "BAL allowed 35.0 pass att / 25.3 rush att per game, sack rate 0.054, explosive pass 0.076; observed context only, not a model term",
-    "11_role_uncertainty": "role confidence HIGH; prior tier PLAYER_OWN_ROLE",
-    "12_model_consistent": "projected 5.1 carries + targets vs measured 6.3/game"
-   },
-   "RESEARCH_VERDICT": "SUPPORTED_WITH_UNCERTAINTY",
-   "WHY": "QUESTIONABLE and unresolved; if out: Nick Singleton +2.3, Michael Carter +1.5",
-   "concerns": []
-  },
-  {
    "player": "Chris Rodriguez Jr.",
    "team": "JAX",
    "position": "RB",
    "dk_id": "44328499",
    "material_because": [
-    "large FC disagreement (-5.7)"
+    "large FC disagreement (-5.6)"
    ],
    "MODEL_PROJECTION": 4.14,
-   "SIM_MEAN": 4.43,
+   "SIM_MEAN": 4.5,
    "ROLE_STATE": {
     "role_band": "SECONDARY",
     "depth_rank": 2,
@@ -2223,7 +2210,9 @@
     "4_depth_chart": "chart rank 2, usage rank 2, projection rank 2",
     "5_recent_usage": "3 games: 0 att, 20.0 carries, 0 targets (target share 0.0, carry share 0.241)",
     "6_trend": "offense snap share None (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "CJ Williams"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "CIN allowed 38.3 pass att / 19.3 rush att per game, sack rate 0.08, explosive pass 0.104; observed context only, not a model term",
@@ -2235,17 +2224,102 @@
    "concerns": []
   },
   {
+   "player": "Jets",
+   "team": "NYJ",
+   "position": "DST",
+   "dk_id": "44329128",
+   "material_because": [
+    ">= 10% of the 20-max"
+   ],
+   "MODEL_PROJECTION": 4.13,
+   "SIM_MEAN": 4.13,
+   "ROLE_STATE": {
+    "role_band": "ALPHA",
+    "depth_rank": null,
+    "starter_evidence": null,
+    "starter_tier": null
+   },
+   "exposure": {
+    "MAX150": 0.033,
+    "MAX20": 0.1,
+    "MAX3": 0.0
+   },
+   "evidence": {
+    "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier NO_EVIDENCE_HELD)",
+    "2_latest_injury_news": "not on the final report; anything newer: UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
+    "3_practice_trend": "no practice line (final day only; the daily trend is not captured)",
+    "4_depth_chart": "team unit",
+    "5_recent_usage": "observed 2026: {'games': 3, 'sacks_pg': 2.67, 'sack_rate': 0.079, 'explosive_pass_rate_allowed': 0.043}",
+    "6_trend": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
+    "7_teammate_absences": [
+     "Adonai Mitchell",
+     "Breece Hall",
+     "Mason Taylor"
+    ],
+    "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
+    "9_offensive_line": "n/a (defence)",
+    "10_opponent": "CHI simulated to score 28.5 (p10 16.28, p90 41.53); P(allow <= 6) 0.011, P(allow >= 28) 0.495",
+    "11_role_uncertainty": "sacks and takeaways NOT_DECOMPOSED; defensive/return TDs NOT_MODELLED",
+    "12_model_consistent": "points allowed drawn from the opponent's simulated score in the same world"
+   },
+   "RESEARCH_VERDICT": "SUPPORTED_WITH_UNCERTAINTY",
+   "WHY": "DST projection is a floor: sacks/takeaways are not decomposed and defensive or return TDs are not modelled",
+   "concerns": []
+  },
+  {
    "player": "Brevyn Spann-Ford",
    "team": "DAL",
    "position": "TE",
    "dk_id": "44328973",
    "material_because": [
-    "large FC disagreement (+3.2)"
+    "large FC disagreement (+3.3)"
    ],
    "MODEL_PROJECTION": 3.24,
-   "SIM_MEAN": 3.25,
+   "SIM_MEAN": 3.28,
    "ROLE_STATE": {
     "role_band": "SECONDARY",
+    "depth_rank": 2,
+    "starter_evidence": null,
+    "starter_tier": null
+   },
+   "exposure": {
+    "MAX150": 0.007,
+    "MAX20": 0.0,
+    "MAX3": 0.0
+   },
+   "evidence": {
+    "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier NO_EVIDENCE_HELD)",
+    "2_latest_injury_news": "not on the final report; anything newer: UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
+    "3_practice_trend": "no practice line (final day only; the daily trend is not captured)",
+    "4_depth_chart": "chart rank 2, usage rank 2, projection rank 2",
+    "5_recent_usage": "2 games: 0 att, 0 carries, 3.0 targets (target share 0.03, carry share 0.0)",
+    "6_trend": "offense snap share 0.3 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
+    "7_teammate_absences": [
+     "Camden Brown",
+     "Emari Demercado"
+    ],
+    "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
+    "9_offensive_line": "no OL starter on the final report",
+    "10_opponent": "HOU allowed 32.0 pass att / 24.3 rush att per game, sack rate 0.103, explosive pass 0.135; observed context only, not a model term",
+    "11_role_uncertainty": "role confidence LOW; prior tier ROLE_GROUP",
+    "12_model_consistent": "projected 1.6 targets vs measured 1.5/game"
+   },
+   "RESEARCH_VERDICT": "SUPPORTED_WITH_UNCERTAINTY",
+   "WHY": "2 games measured in 2026",
+   "concerns": []
+  },
+  {
+   "player": "Jared Wayne",
+   "team": "HOU",
+   "position": "WR",
+   "dk_id": "44328749",
+   "material_because": [
+    "large FC disagreement (+3.0)"
+   ],
+   "MODEL_PROJECTION": 2.85,
+   "SIM_MEAN": 3.0,
+   "ROLE_STATE": {
+    "role_band": "ROTATIONAL",
     "depth_rank": 2,
     "starter_evidence": null,
     "starter_tier": null
@@ -2259,18 +2333,20 @@
     "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier NO_EVIDENCE_HELD)",
     "2_latest_injury_news": "not on the final report; anything newer: UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "3_practice_trend": "no practice line (final day only; the daily trend is not captured)",
-    "4_depth_chart": "chart rank 2, usage rank 2, projection rank 2",
-    "5_recent_usage": "2 games: 0 att, 0 carries, 3.0 targets (target share 0.03, carry share 0.0)",
-    "6_trend": "offense snap share 0.3 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "4_depth_chart": "chart rank 5, usage rank 2, projection rank 2",
+    "5_recent_usage": "3 games: 0 att, 0 carries, 12.0 targets (target share 0.107, carry share 0.0)",
+    "6_trend": "offense snap share 0.41 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
+    "7_teammate_absences": [
+     "Marlin Klein"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
-    "10_opponent": "HOU allowed 32.0 pass att / 24.3 rush att per game, sack rate 0.103, explosive pass 0.135; observed context only, not a model term",
-    "11_role_uncertainty": "role confidence LOW; prior tier ROLE_GROUP",
-    "12_model_consistent": "projected 1.6 targets vs measured 1.5/game"
+    "10_opponent": "DAL allowed 28.0 pass att / 34.7 rush att per game, sack rate 0.023, explosive pass 0.083; observed context only, not a model term",
+    "11_role_uncertainty": "role confidence LOW; prior tier ROLE_GROUP; conflicts: depth chart ranks him WR5; 2026 usage ranks him WR2",
+    "12_model_consistent": "projected 2.2 targets vs measured 4.0/game"
    },
    "RESEARCH_VERDICT": "SUPPORTED_WITH_UNCERTAINTY",
-   "WHY": "2 games measured in 2026",
+   "WHY": "chart and usage disagree on his rank",
    "concerns": []
   },
   {
@@ -2317,59 +2393,15 @@
    "concerns": []
   },
   {
-   "player": "Colby Parkinson",
-   "team": "LA",
-   "position": "TE",
-   "dk_id": "44328955",
-   "material_because": [
-    "Questionable",
-    "large FC disagreement (-5.1)",
-    "material role uncertainty (board: role-dependent)"
-   ],
-   "MODEL_PROJECTION": 2.77,
-   "SIM_MEAN": 2.86,
-   "ROLE_STATE": {
-    "role_band": "SECONDARY",
-    "depth_rank": 1,
-    "starter_evidence": null,
-    "starter_tier": null
-   },
-   "exposure": {
-    "MAX150": 0.0,
-    "MAX20": 0.0,
-    "MAX3": 0.0
-   },
-   "evidence": {
-    "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier OFFICIAL_TEAM_RELEASE_CITED)",
-    "2_latest_injury_news": "Friday report: QUESTIONABLE (Knee); anything newer: UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
-    "3_practice_trend": "Did Not Participate In Practice (final day only; the daily trend is not captured)",
-    "4_depth_chart": "chart rank 1, usage rank 2, projection rank 1",
-    "5_recent_usage": "3 games: 0 att, 0 carries, 5.0 targets (target share 0.047, carry share 0.0)",
-    "6_trend": "offense snap share 0.74 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [
-     "Terrance Ferguson"
-    ],
-    "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
-    "9_offensive_line": "no OL starter on the final report",
-    "10_opponent": "PHI allowed 29.3 pass att / 31.3 rush att per game, sack rate 0.033, explosive pass 0.091; observed context only, not a model term",
-    "11_role_uncertainty": "role confidence LOW; prior tier PLAYER_OWN_OFF_ROLE; conflicts: depth chart ranks him TE1; 2026 usage ranks him TE2; projection used chart rank 1 over usage rank 3",
-    "12_model_consistent": "projected 1.5 targets vs measured 1.7/game"
-   },
-   "RESEARCH_VERDICT": "SUPPORTED_WITH_UNCERTAINTY",
-   "WHY": "QUESTIONABLE and unresolved; if out: Davis Allen +1.9; chart and usage disagree on his rank",
-   "concerns": []
-  },
-  {
    "player": "Ray Davis",
    "team": "BUF",
    "position": "RB",
    "dk_id": "44328617",
    "material_because": [
-    "Questionable",
-    "material role uncertainty (board: role-dependent)"
+    "Questionable"
    ],
    "MODEL_PROJECTION": 0.5,
-   "SIM_MEAN": 0.51,
+   "SIM_MEAN": 0.49,
    "ROLE_STATE": {
     "role_band": "FRINGE",
     "depth_rank": 3,
@@ -2382,13 +2414,15 @@
     "MAX3": 0.0
    },
    "evidence": {
-    "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier OFFICIAL_TEAM_RELEASE_CITED)",
+    "1_starter_availability": "REPORTED_ACTIVE_NOT_ON_LIST (tier AGGREGATOR_REPORTED)",
     "2_latest_injury_news": "Friday report: QUESTIONABLE (Hamstring); anything newer: UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "3_practice_trend": "Limited Participation in Practice (final day only; the daily trend is not captured)",
     "4_depth_chart": "chart rank 3, usage rank 2, projection rank 3",
     "5_recent_usage": "1 games: 0 att, 1.0 carries, 0 targets (target share 0.0, carry share 0.012)",
     "6_trend": "offense snap share 0.115 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Skyler Bell"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "NE allowed 30.7 pass att / 24.7 rush att per game, sack rate 0.071, explosive pass 0.054; observed context only, not a model term",
@@ -2396,48 +2430,7 @@
     "12_model_consistent": "projected 1.0 carries + targets vs measured 1.0/game"
    },
    "RESEARCH_VERDICT": "SUPPORTED_WITH_UNCERTAINTY",
-   "WHY": "QUESTIONABLE and unresolved; if out: no teammate moves 0.5+; chart and usage disagree on his rank; 1 games measured in 2026",
-   "concerns": []
-  },
-  {
-   "player": "Chris Moore",
-   "team": "BAL",
-   "position": "WR",
-   "dk_id": "44328727",
-   "material_because": [
-    "Questionable",
-    "large FC disagreement (-4.4)",
-    "material role uncertainty (board: role-dependent)"
-   ],
-   "MODEL_PROJECTION": 0.3,
-   "SIM_MEAN": 0.33,
-   "ROLE_STATE": {
-    "role_band": "FRINGE",
-    "depth_rank": 3,
-    "starter_evidence": null,
-    "starter_tier": null
-   },
-   "exposure": {
-    "MAX150": 0.0,
-    "MAX20": 0.0,
-    "MAX3": 0.0
-   },
-   "evidence": {
-    "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier OFFICIAL_TEAM_RELEASE_CITED)",
-    "2_latest_injury_news": "Friday report: QUESTIONABLE (Ankle); anything newer: UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
-    "3_practice_trend": "Limited Participation in Practice (final day only; the daily trend is not captured)",
-    "4_depth_chart": "chart rank 4, usage rank 3, projection rank 3",
-    "5_recent_usage": "3 games: 0 att, 0 carries, 6.0 targets (target share 0.082, carry share 0.0)",
-    "6_trend": "offense snap share 0.46 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
-    "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
-    "9_offensive_line": "OL starters on the report: LT Ronnie Stanley (Questionable)",
-    "10_opponent": "TEN allowed 27.7 pass att / 33.3 rush att per game, sack rate 0.067, explosive pass 0.108; observed context only, not a model term",
-    "11_role_uncertainty": "role confidence LOW; prior tier ROLE_GROUP; conflicts: depth chart ranks him WR4; 2026 usage ranks him WR3",
-    "12_model_consistent": "projected 0.1 targets vs measured 2.0/game"
-   },
-   "RESEARCH_VERDICT": "SUPPORTED_WITH_UNCERTAINTY",
-   "WHY": "QUESTIONABLE and unresolved; if out: no teammate moves 0.5+; chart and usage disagree on his rank",
+   "WHY": "chart and usage disagree on his rank; 1 games measured in 2026",
    "concerns": []
   },
   {
@@ -2446,11 +2439,10 @@
    "position": "RB",
    "dk_id": "44328615",
    "material_because": [
-    "Questionable",
-    "material role uncertainty (board: role-dependent)"
+    "Questionable"
    ],
    "MODEL_PROJECTION": 0.09,
-   "SIM_MEAN": 0.09,
+   "SIM_MEAN": 0.08,
    "ROLE_STATE": {
     "role_band": "FRINGE",
     "depth_rank": null,
@@ -2463,13 +2455,16 @@
     "MAX3": 0.0
    },
    "evidence": {
-    "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier OFFICIAL_TEAM_RELEASE_CITED)",
+    "1_starter_availability": "REPORTED_ACTIVE_NOT_ON_LIST (tier AGGREGATOR_REPORTED)",
     "2_latest_injury_news": "Friday report: QUESTIONABLE (Knee); anything newer: UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "3_practice_trend": "Limited Participation in Practice (final day only; the daily trend is not captured)",
     "4_depth_chart": "chart rank None, usage rank None, projection rank None",
     "5_recent_usage": "1 games: 0 att, 0 carries, 2.0 targets (target share 0.024, carry share 0.0)",
     "6_trend": "offense snap share 0.27 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Behren Morton",
+     "Tanner Arkin"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "OL starters on the report: RT Morgan Moses (Questionable)",
     "10_opponent": "BUF allowed 36.7 pass att / 26.7 rush att per game, sack rate 0.076, explosive pass 0.127; observed context only, not a model term",
@@ -2477,7 +2472,7 @@
     "12_model_consistent": "projected 0.1 carries + targets vs measured 2.0/game"
    },
    "RESEARCH_VERDICT": "SUPPORTED_WITH_UNCERTAINTY",
-   "WHY": "QUESTIONABLE and unresolved; if out: no teammate moves 0.5+; 1 games measured in 2026",
+   "WHY": "1 games measured in 2026",
    "concerns": []
   },
   {
@@ -2489,7 +2484,7 @@
     "FC snapshot change (pDepth QB2 -> QB3) classified OUR_EVIDENCE_MAY_BE_STALE"
    ],
    "MODEL_PROJECTION": 0.05,
-   "SIM_MEAN": 0.04,
+   "SIM_MEAN": 0.05,
    "ROLE_STATE": {
     "role_band": "SECONDARY",
     "depth_rank": 2,
@@ -2509,6 +2504,7 @@
     "5_recent_usage": "1 games: 1.0 att, 0 carries, 0 targets (target share 0.0, carry share 0.0)",
     "6_trend": "offense snap share None (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
     "7_teammate_absences": [
+     "Cole Payton",
      "Dallas Goedert",
      "DeVonta Smith",
      "Hollywood Brown"
@@ -2529,11 +2525,10 @@
    "position": "TE",
    "dk_id": "44328967",
    "material_because": [
-    "Questionable",
-    "material role uncertainty (board: role-dependent)"
+    "Questionable"
    ],
    "MODEL_PROJECTION": 0.03,
-   "SIM_MEAN": 0.03,
+   "SIM_MEAN": 0.02,
    "ROLE_STATE": {
     "role_band": "FRINGE",
     "depth_rank": 2,
@@ -2546,13 +2541,16 @@
     "MAX3": 0.0
    },
    "evidence": {
-    "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier OFFICIAL_TEAM_RELEASE_CITED)",
+    "1_starter_availability": "REPORTED_ACTIVE_NOT_ON_LIST (tier AGGREGATOR_REPORTED)",
     "2_latest_injury_news": "Friday report: QUESTIONABLE (Thigh); anything newer: UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "3_practice_trend": "Limited Participation in Practice (final day only; the daily trend is not captured)",
     "4_depth_chart": "chart rank 2, usage rank 2, projection rank 2",
     "5_recent_usage": "2 games: 0 att, 0 carries, 2.0 targets (target share 0.024, carry share 0.0)",
     "6_trend": "offense snap share 0.37 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Behren Morton",
+     "Tanner Arkin"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "OL starters on the report: RT Morgan Moses (Questionable)",
     "10_opponent": "BUF allowed 36.7 pass att / 26.7 rush att per game, sack rate 0.076, explosive pass 0.127; observed context only, not a model term",
@@ -2560,7 +2558,93 @@
     "12_model_consistent": "projected 0.0 targets vs measured 1.0/game"
    },
    "RESEARCH_VERDICT": "SUPPORTED_WITH_UNCERTAINTY",
-   "WHY": "QUESTIONABLE and unresolved; if out: no teammate moves 0.5+; 2 games measured in 2026",
+   "WHY": "2 games measured in 2026",
+   "concerns": []
+  },
+  {
+   "player": "Chris Moore",
+   "team": "BAL",
+   "position": "WR",
+   "dk_id": "44328727",
+   "material_because": [
+    "Questionable"
+   ],
+   "MODEL_PROJECTION": null,
+   "SIM_MEAN": null,
+   "ROLE_STATE": {
+    "role_band": null,
+    "depth_rank": 3,
+    "starter_evidence": null,
+    "starter_tier": null
+   },
+   "exposure": {
+    "MAX150": 0.0,
+    "MAX20": 0.0,
+    "MAX3": 0.0
+   },
+   "evidence": {
+    "1_starter_availability": "REPORTED_INACTIVE_HIGH_CONFIDENCE (tier AGGREGATOR_REPORTED)",
+    "2_latest_injury_news": "Friday report: QUESTIONABLE (Ankle); anything newer: UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
+    "3_practice_trend": "Limited Participation in Practice (final day only; the daily trend is not captured)",
+    "4_depth_chart": "chart rank None, usage rank None, projection rank 3",
+    "5_recent_usage": "0 games: 0 att, 0 carries, 0 targets (target share 0.0, carry share 0.0)",
+    "6_trend": "offense snap share 0.46 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
+    "7_teammate_absences": [
+     "Chris Moore",
+     "Joe Fagnano"
+    ],
+    "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
+    "9_offensive_line": "OL starters on the report: LT Ronnie Stanley (Questionable)",
+    "10_opponent": "TEN allowed 27.7 pass att / 33.3 rush att per game, sack rate 0.067, explosive pass 0.108; observed context only, not a model term",
+    "11_role_uncertainty": "role confidence None; prior tier None",
+    "12_model_consistent": "projected 0.0 targets; no 2026 games measured"
+   },
+   "RESEARCH_VERDICT": "SUPPORTED_WITH_UNCERTAINTY",
+   "WHY": "0 games measured in 2026",
+   "concerns": []
+  },
+  {
+   "player": "Colby Parkinson",
+   "team": "LA",
+   "position": "TE",
+   "dk_id": "44328955",
+   "material_because": [
+    "Questionable"
+   ],
+   "MODEL_PROJECTION": null,
+   "SIM_MEAN": null,
+   "ROLE_STATE": {
+    "role_band": null,
+    "depth_rank": 3,
+    "starter_evidence": null,
+    "starter_tier": null
+   },
+   "exposure": {
+    "MAX150": 0.0,
+    "MAX20": 0.0,
+    "MAX3": 0.0
+   },
+   "evidence": {
+    "1_starter_availability": "REPORTED_INACTIVE_HIGH_CONFIDENCE (tier AGGREGATOR_REPORTED)",
+    "2_latest_injury_news": "Friday report: QUESTIONABLE (Knee); anything newer: UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
+    "3_practice_trend": "Did Not Participate In Practice (final day only; the daily trend is not captured)",
+    "4_depth_chart": "chart rank None, usage rank None, projection rank 3",
+    "5_recent_usage": "0 games: 0 att, 0 carries, 0 targets (target share 0.0, carry share 0.0)",
+    "6_trend": "offense snap share 0.74 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
+    "7_teammate_absences": [
+     "CJ Daniels",
+     "Colby Parkinson",
+     "Terrance Ferguson",
+     "Ty Simpson"
+    ],
+    "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
+    "9_offensive_line": "no OL starter on the final report",
+    "10_opponent": "PHI allowed 29.3 pass att / 31.3 rush att per game, sack rate 0.033, explosive pass 0.091; observed context only, not a model term",
+    "11_role_uncertainty": "role confidence None; prior tier None",
+    "12_model_consistent": "projected 0.0 targets; no 2026 games measured"
+   },
+   "RESEARCH_VERDICT": "SUPPORTED_WITH_UNCERTAINTY",
+   "WHY": "0 games measured in 2026",
    "concerns": []
   },
   {
@@ -2592,6 +2676,7 @@
     "5_recent_usage": "0 games: 0 att, 0 carries, 0 targets (target share 0.0, carry share 0.0)",
     "6_trend": "offense snap share None (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
     "7_teammate_absences": [
+     "Cole Payton",
      "Dallas Goedert",
      "DeVonta Smith",
      "Hollywood Brown"
@@ -2615,11 +2700,11 @@
     ">= 10% of the 20-max",
     ">= 5% of the 150-max",
     "in the 3-entry set",
-    "large FC disagreement (+9.3)",
+    "large FC disagreement (+8.6)",
     "likely Hard Rock prop candidate"
    ],
-   "MODEL_PROJECTION": 23.3,
-   "SIM_MEAN": 23.76,
+   "MODEL_PROJECTION": 23.33,
+   "SIM_MEAN": 23.07,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -2627,9 +2712,9 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.333,
-    "MAX20": 0.4,
-    "MAX3": 1.0
+    "MAX150": 0.26,
+    "MAX20": 0.25,
+    "MAX3": 0.667
    },
    "evidence": {
     "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier NO_EVIDENCE_HELD)",
@@ -2638,7 +2723,10 @@
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
     "5_recent_usage": "3 games: 0 att, 1.0 carries, 25.0 targets (target share 0.248, carry share 0.014)",
     "6_trend": "offense snap share 0.78 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Camden Brown",
+     "Emari Demercado"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "HOU allowed 32.0 pass att / 24.3 rush att per game, sack rate 0.103, explosive pass 0.135; observed context only, not a model term",
@@ -2657,11 +2745,11 @@
    "material_because": [
     ">= 10% of the 20-max",
     ">= 5% of the 150-max",
-    "large FC disagreement (-4.8)",
+    "large FC disagreement (-5.0)",
     "likely Hard Rock prop candidate"
    ],
    "MODEL_PROJECTION": 20.27,
-   "SIM_MEAN": 20.81,
+   "SIM_MEAN": 20.61,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -2702,12 +2790,12 @@
     ">= 10% of the 20-max",
     ">= 5% of the 150-max",
     "in the 3-entry set",
-    "large FC disagreement (+4.1)",
+    "large FC disagreement (+3.8)",
     "likely Hard Rock prop candidate",
     "starting QB"
    ],
-   "MODEL_PROJECTION": 20.02,
-   "SIM_MEAN": 20.86,
+   "MODEL_PROJECTION": 19.99,
+   "SIM_MEAN": 20.55,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -2715,8 +2803,8 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.08,
-    "MAX20": 0.1,
+    "MAX150": 0.093,
+    "MAX20": 0.15,
     "MAX3": 0.333
    },
    "evidence": {
@@ -2726,7 +2814,10 @@
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
     "5_recent_usage": "3 games: 105.0 att, 10.0 carries, 0 targets (target share 0.0, carry share 0.145)",
     "6_trend": "offense snap share 1.0 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Camden Brown",
+     "Emari Demercado"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "HOU allowed 32.0 pass att / 24.3 rush att per game, sack rate 0.103, explosive pass 0.135; observed context only, not a model term",
@@ -2743,12 +2834,13 @@
    "position": "QB",
    "dk_id": "44328391",
    "material_because": [
+    ">= 10% of the 20-max",
     ">= 5% of the 150-max",
     "likely Hard Rock prop candidate",
     "starting QB"
    ],
    "MODEL_PROJECTION": 19.82,
-   "SIM_MEAN": 21.07,
+   "SIM_MEAN": 20.92,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -2756,8 +2848,8 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.073,
-    "MAX20": 0.05,
+    "MAX150": 0.08,
+    "MAX20": 0.1,
     "MAX3": 0.0
    },
    "evidence": {
@@ -2790,8 +2882,8 @@
     ">= 5% of the 150-max",
     "likely Hard Rock prop candidate"
    ],
-   "MODEL_PROJECTION": 19.81,
-   "SIM_MEAN": 19.49,
+   "MODEL_PROJECTION": 19.82,
+   "SIM_MEAN": 19.72,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -2799,8 +2891,8 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.227,
-    "MAX20": 0.2,
+    "MAX150": 0.16,
+    "MAX20": 0.25,
     "MAX3": 0.0
    },
    "evidence": {
@@ -2810,12 +2902,15 @@
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
     "5_recent_usage": "3 games: 0 att, 0 carries, 34.0 targets (target share 0.301, carry share 0.0)",
     "6_trend": "offense snap share 0.84 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Carson Beck",
+     "Reggie Virgil"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "NYG allowed 33.3 pass att / 21.3 rush att per game, sack rate 0.01, explosive pass 0.06; observed context only, not a model term",
     "11_role_uncertainty": "role confidence HIGH; prior tier PLAYER_OWN_ROLE",
-    "12_model_consistent": "projected 11.1 targets vs measured 11.3/game"
+    "12_model_consistent": "projected 11.2 targets vs measured 11.3/game"
    },
    "RESEARCH_VERDICT": "SUPPORTED",
    "WHY": "projection consistent with his measured role and held evidence",
@@ -2827,12 +2922,13 @@
    "position": "QB",
    "dk_id": "44328395",
    "material_because": [
+    ">= 10% of the 20-max",
     ">= 5% of the 150-max",
     "likely Hard Rock prop candidate",
     "starting QB"
    ],
    "MODEL_PROJECTION": 19.8,
-   "SIM_MEAN": 19.85,
+   "SIM_MEAN": 20.07,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -2840,8 +2936,8 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.08,
-    "MAX20": 0.05,
+    "MAX150": 0.087,
+    "MAX20": 0.15,
     "MAX3": 0.0
    },
    "evidence": {
@@ -2852,7 +2948,10 @@
     "5_recent_usage": "3 games: 108.0 att, 4.0 carries, 0 targets (target share 0.0, carry share 0.053)",
     "6_trend": "offense snap share 0.92 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
     "7_teammate_absences": [
-     "Terrance Ferguson"
+     "CJ Daniels",
+     "Colby Parkinson",
+     "Terrance Ferguson",
+     "Ty Simpson"
     ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
@@ -2874,7 +2973,7 @@
     "starting QB"
    ],
    "MODEL_PROJECTION": 18.83,
-   "SIM_MEAN": 18.35,
+   "SIM_MEAN": 18.4,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -2882,7 +2981,7 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.033,
+    "MAX150": 0.02,
     "MAX20": 0.0,
     "MAX3": 0.0
    },
@@ -2893,7 +2992,10 @@
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
     "5_recent_usage": "3 games: 80.0 att, 13.0 carries, 0 targets (target share 0.0, carry share 0.157)",
     "6_trend": "offense snap share 1.0 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Behren Morton",
+     "Tanner Arkin"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "OL starters on the report: RT Morgan Moses (Questionable)",
     "10_opponent": "BUF allowed 36.7 pass att / 26.7 rush att per game, sack rate 0.076, explosive pass 0.127; observed context only, not a model term",
@@ -2913,8 +3015,8 @@
     ">= 5% of the 150-max",
     "likely Hard Rock prop candidate"
    ],
-   "MODEL_PROJECTION": 18.75,
-   "SIM_MEAN": 19.49,
+   "MODEL_PROJECTION": 18.76,
+   "SIM_MEAN": 19.24,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -2923,7 +3025,7 @@
    },
    "exposure": {
     "MAX150": 0.073,
-    "MAX20": 0.05,
+    "MAX20": 0.0,
     "MAX3": 0.0
    },
    "evidence": {
@@ -2933,7 +3035,10 @@
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
     "5_recent_usage": "3 games: 0 att, 66.0 carries, 5.0 targets (target share 0.068, carry share 0.702)",
     "6_trend": "offense snap share 0.535 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Chris Moore",
+     "Joe Fagnano"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "OL starters on the report: LT Ronnie Stanley (Questionable)",
     "10_opponent": "TEN allowed 27.7 pass att / 33.3 rush att per game, sack rate 0.067, explosive pass 0.108; observed context only, not a model term",
@@ -2953,11 +3058,11 @@
     ">= 10% of the 20-max",
     ">= 5% of the 150-max",
     "in the 3-entry set",
-    "large FC disagreement (+4.0)",
+    "large FC disagreement (+4.1)",
     "likely Hard Rock prop candidate"
    ],
-   "MODEL_PROJECTION": 18.52,
-   "SIM_MEAN": 18.68,
+   "MODEL_PROJECTION": 18.61,
+   "SIM_MEAN": 18.79,
    "ROLE_STATE": {
     "role_band": "PRIMARY",
     "depth_rank": 1,
@@ -2965,9 +3070,9 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.327,
-    "MAX20": 0.5,
-    "MAX3": 0.333
+    "MAX150": 0.347,
+    "MAX20": 0.35,
+    "MAX3": 0.667
    },
    "evidence": {
     "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier NO_EVIDENCE_HELD)",
@@ -2977,7 +3082,10 @@
     "5_recent_usage": "3 games: 0 att, 38.0 carries, 12.0 targets (target share 0.113, carry share 0.5)",
     "6_trend": "offense snap share 0.595 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
     "7_teammate_absences": [
-     "Terrance Ferguson"
+     "CJ Daniels",
+     "Colby Parkinson",
+     "Terrance Ferguson",
+     "Ty Simpson"
     ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
@@ -2995,12 +3103,11 @@
    "position": "RB",
    "dk_id": "44328445",
    "material_because": [
-    ">= 10% of the 20-max",
     ">= 5% of the 150-max",
     "likely Hard Rock prop candidate"
    ],
    "MODEL_PROJECTION": 18.25,
-   "SIM_MEAN": 18.9,
+   "SIM_MEAN": 18.62,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -3008,8 +3115,8 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.167,
-    "MAX20": 0.1,
+    "MAX150": 0.127,
+    "MAX20": 0.05,
     "MAX3": 0.0
    },
    "evidence": {
@@ -3019,7 +3126,9 @@
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
     "5_recent_usage": "3 games: 0 att, 58.0 carries, 8.0 targets (target share 0.098, carry share 0.682)",
     "6_trend": "offense snap share None (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Skyler Bell"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "NE allowed 30.7 pass att / 24.7 rush att per game, sack rate 0.071, explosive pass 0.054; observed context only, not a model term",
@@ -3041,7 +3150,7 @@
     "starting QB"
    ],
    "MODEL_PROJECTION": 17.58,
-   "SIM_MEAN": 18.14,
+   "SIM_MEAN": 18.3,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -3049,7 +3158,7 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.053,
+    "MAX150": 0.067,
     "MAX20": 0.05,
     "MAX3": 0.0
    },
@@ -3060,53 +3169,14 @@
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
     "5_recent_usage": "3 games: 118.0 att, 7.0 carries, 0 targets (target share 0.0, carry share 0.099)",
     "6_trend": "offense snap share 1.0 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Marlin Klein"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "DAL allowed 28.0 pass att / 34.7 rush att per game, sack rate 0.023, explosive pass 0.083; observed context only, not a model term",
     "11_role_uncertainty": "role confidence HIGH; prior tier PLAYER_OWN_ROLE",
     "12_model_consistent": "projected 39.1 pass attempts vs measured 39.3/game"
-   },
-   "RESEARCH_VERDICT": "SUPPORTED",
-   "WHY": "projection consistent with his measured role and held evidence",
-   "concerns": []
-  },
-  {
-   "player": "Javonte Williams",
-   "team": "DAL",
-   "position": "RB",
-   "dk_id": "44328449",
-   "material_because": [
-    ">= 10% of the 20-max",
-    ">= 5% of the 150-max",
-    "likely Hard Rock prop candidate"
-   ],
-   "MODEL_PROJECTION": 16.61,
-   "SIM_MEAN": 17.12,
-   "ROLE_STATE": {
-    "role_band": "ALPHA",
-    "depth_rank": 1,
-    "starter_evidence": null,
-    "starter_tier": null
-   },
-   "exposure": {
-    "MAX150": 0.16,
-    "MAX20": 0.1,
-    "MAX3": 0.0
-   },
-   "evidence": {
-    "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier NO_EVIDENCE_HELD)",
-    "2_latest_injury_news": "not on the final report; anything newer: UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
-    "3_practice_trend": "no practice line (final day only; the daily trend is not captured)",
-    "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
-    "5_recent_usage": "3 games: 0 att, 43.0 carries, 12.0 targets (target share 0.119, carry share 0.623)",
-    "6_trend": "offense snap share 0.755 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
-    "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
-    "9_offensive_line": "no OL starter on the final report",
-    "10_opponent": "HOU allowed 32.0 pass att / 24.3 rush att per game, sack rate 0.103, explosive pass 0.135; observed context only, not a model term",
-    "11_role_uncertainty": "role confidence LOW; prior tier PLAYER_OWN_OFF_ROLE",
-    "12_model_consistent": "projected 18.9 carries + targets vs measured 18.3/game"
    },
    "RESEARCH_VERDICT": "SUPPORTED",
    "WHY": "projection consistent with his measured role and held evidence",
@@ -3130,7 +3200,7 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.02,
+    "MAX150": 0.047,
     "MAX20": 0.0,
     "MAX3": 0.0
    },
@@ -3153,17 +3223,16 @@
    "concerns": []
   },
   {
-   "player": "Jacoby Brissett",
-   "team": "ARI",
-   "position": "QB",
-   "dk_id": "44328402",
+   "player": "Javonte Williams",
+   "team": "DAL",
+   "position": "RB",
+   "dk_id": "44328449",
    "material_because": [
-    "large FC disagreement (-5.3)",
-    "likely Hard Rock prop candidate",
-    "starting QB"
+    ">= 5% of the 150-max",
+    "likely Hard Rock prop candidate"
    ],
-   "MODEL_PROJECTION": 16.19,
-   "SIM_MEAN": 15.67,
+   "MODEL_PROJECTION": 16.5,
+   "SIM_MEAN": 16.63,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -3171,7 +3240,51 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.02,
+    "MAX150": 0.16,
+    "MAX20": 0.05,
+    "MAX3": 0.0
+   },
+   "evidence": {
+    "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier NO_EVIDENCE_HELD)",
+    "2_latest_injury_news": "not on the final report; anything newer: UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
+    "3_practice_trend": "no practice line (final day only; the daily trend is not captured)",
+    "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
+    "5_recent_usage": "3 games: 0 att, 43.0 carries, 12.0 targets (target share 0.119, carry share 0.623)",
+    "6_trend": "offense snap share 0.755 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
+    "7_teammate_absences": [
+     "Camden Brown",
+     "Emari Demercado"
+    ],
+    "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
+    "9_offensive_line": "no OL starter on the final report",
+    "10_opponent": "HOU allowed 32.0 pass att / 24.3 rush att per game, sack rate 0.103, explosive pass 0.135; observed context only, not a model term",
+    "11_role_uncertainty": "role confidence LOW; prior tier PLAYER_OWN_OFF_ROLE",
+    "12_model_consistent": "projected 18.8 carries + targets vs measured 18.3/game"
+   },
+   "RESEARCH_VERDICT": "SUPPORTED",
+   "WHY": "projection consistent with his measured role and held evidence",
+   "concerns": []
+  },
+  {
+   "player": "Jacoby Brissett",
+   "team": "ARI",
+   "position": "QB",
+   "dk_id": "44328402",
+   "material_because": [
+    "large FC disagreement (-5.2)",
+    "likely Hard Rock prop candidate",
+    "starting QB"
+   ],
+   "MODEL_PROJECTION": 16.19,
+   "SIM_MEAN": 15.82,
+   "ROLE_STATE": {
+    "role_band": "ALPHA",
+    "depth_rank": 1,
+    "starter_evidence": null,
+    "starter_tier": null
+   },
+   "exposure": {
+    "MAX150": 0.027,
     "MAX20": 0.05,
     "MAX3": 0.0
    },
@@ -3182,7 +3295,10 @@
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
     "5_recent_usage": "3 games: 116.0 att, 8.0 carries, 0 targets (target share 0.0, carry share 0.107)",
     "6_trend": "offense snap share 1.0 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Carson Beck",
+     "Reggie Virgil"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "NYG allowed 33.3 pass att / 21.3 rush att per game, sack rate 0.01, explosive pass 0.06; observed context only, not a model term",
@@ -3202,11 +3318,11 @@
     ">= 10% of the 20-max",
     ">= 5% of the 150-max",
     "in the 3-entry set",
-    "large FC disagreement (-4.3)",
+    "large FC disagreement (-4.1)",
     "likely Hard Rock prop candidate"
    ],
    "MODEL_PROJECTION": 15.79,
-   "SIM_MEAN": 16.27,
+   "SIM_MEAN": 16.53,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -3214,8 +3330,8 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.147,
-    "MAX20": 0.15,
+    "MAX150": 0.187,
+    "MAX20": 0.25,
     "MAX3": 0.333
    },
    "evidence": {
@@ -3248,8 +3364,8 @@
     ">= 5% of the 150-max",
     "likely Hard Rock prop candidate"
    ],
-   "MODEL_PROJECTION": 15.68,
-   "SIM_MEAN": 15.86,
+   "MODEL_PROJECTION": 15.69,
+   "SIM_MEAN": 15.85,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -3257,7 +3373,7 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.107,
+    "MAX150": 0.14,
     "MAX20": 0.1,
     "MAX3": 0.0
    },
@@ -3268,7 +3384,10 @@
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
     "5_recent_usage": "3 games: 0 att, 0 carries, 31.0 targets (target share 0.274, carry share 0.0)",
     "6_trend": "offense snap share 0.895 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Carson Beck",
+     "Reggie Virgil"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "NYG allowed 33.3 pass att / 21.3 rush att per game, sack rate 0.01, explosive pass 0.06; observed context only, not a model term",
@@ -3287,11 +3406,12 @@
    "material_because": [
     ">= 10% of the 20-max",
     ">= 5% of the 150-max",
-    "large FC disagreement (+7.4)",
+    "in the 3-entry set",
+    "large FC disagreement (+7.3)",
     "likely Hard Rock prop candidate"
    ],
-   "MODEL_PROJECTION": 15.26,
-   "SIM_MEAN": 16.67,
+   "MODEL_PROJECTION": 15.27,
+   "SIM_MEAN": 16.52,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -3299,9 +3419,9 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.22,
-    "MAX20": 0.3,
-    "MAX3": 0.0
+    "MAX150": 0.187,
+    "MAX20": 0.1,
+    "MAX3": 0.333
    },
    "evidence": {
     "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier NO_EVIDENCE_HELD)",
@@ -3310,7 +3430,9 @@
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
     "5_recent_usage": "3 games: 0 att, 0 carries, 17.0 targets (target share 0.207, carry share 0.0)",
     "6_trend": "offense snap share 0.69 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Skyler Bell"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "NE allowed 30.7 pass att / 24.7 rush att per game, sack rate 0.071, explosive pass 0.054; observed context only, not a model term",
@@ -3327,13 +3449,12 @@
    "position": "WR",
    "dk_id": "44328651",
    "material_because": [
-    ">= 10% of the 20-max",
     ">= 5% of the 150-max",
-    "large FC disagreement (+6.9)",
+    "large FC disagreement (+6.3)",
     "likely Hard Rock prop candidate"
    ],
    "MODEL_PROJECTION": 14.85,
-   "SIM_MEAN": 15.52,
+   "SIM_MEAN": 15.0,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -3341,8 +3462,8 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.133,
-    "MAX20": 0.1,
+    "MAX150": 0.127,
+    "MAX20": 0.05,
     "MAX3": 0.0
    },
    "evidence": {
@@ -3352,7 +3473,9 @@
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
     "5_recent_usage": "3 games: 0 att, 1.0 carries, 18.0 targets (target share 0.22, carry share 0.012)",
     "6_trend": "offense snap share None (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Skyler Bell"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "NE allowed 30.7 pass att / 24.7 rush att per game, sack rate 0.071, explosive pass 0.054; observed context only, not a model term",
@@ -3373,8 +3496,8 @@
     ">= 5% of the 150-max",
     "likely Hard Rock prop candidate"
    ],
-   "MODEL_PROJECTION": 14.52,
-   "SIM_MEAN": 15.16,
+   "MODEL_PROJECTION": 14.49,
+   "SIM_MEAN": 15.07,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -3382,7 +3505,7 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.1,
+    "MAX150": 0.147,
     "MAX20": 0.1,
     "MAX3": 0.0
    },
@@ -3393,7 +3516,9 @@
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
     "5_recent_usage": "3 games: 0 att, 0 carries, 25.0 targets (target share 0.223, carry share 0.0)",
     "6_trend": "offense snap share 0.67 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Marlin Klein"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "DAL allowed 28.0 pass att / 34.7 rush att per game, sack rate 0.023, explosive pass 0.083; observed context only, not a model term",
@@ -3405,39 +3530,42 @@
    "concerns": []
   },
   {
-   "player": "Cam Ward",
-   "team": "TEN",
-   "position": "QB",
-   "dk_id": "44328404",
+   "player": "Tee Higgins",
+   "team": "CIN",
+   "position": "WR",
+   "dk_id": "44328645",
    "material_because": [
-    "starting QB"
+    ">= 10% of the 20-max",
+    "likely Hard Rock prop candidate"
    ],
-   "MODEL_PROJECTION": 12.95,
-   "SIM_MEAN": 11.64,
+   "MODEL_PROJECTION": 13.08,
+   "SIM_MEAN": 13.78,
    "ROLE_STATE": {
-    "role_band": "ALPHA",
-    "depth_rank": 1,
+    "role_band": "SECONDARY",
+    "depth_rank": 2,
     "starter_evidence": null,
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.0,
-    "MAX20": 0.0,
+    "MAX150": 0.033,
+    "MAX20": 0.1,
     "MAX3": 0.0
    },
    "evidence": {
     "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier NO_EVIDENCE_HELD)",
     "2_latest_injury_news": "not on the final report; anything newer: UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "3_practice_trend": "no practice line (final day only; the daily trend is not captured)",
-    "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
-    "5_recent_usage": "3 games: 88.0 att, 9.0 carries, 0 targets (target share 0.0, carry share 0.141)",
-    "6_trend": "offense snap share 1.0 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "4_depth_chart": "chart rank 2, usage rank 2, projection rank 2",
+    "5_recent_usage": "3 games: 0 att, 0 carries, 23.0 targets (target share 0.225, carry share 0.0)",
+    "6_trend": "offense snap share 0.72 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
+    "7_teammate_absences": [
+     "Colbie Young"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
-    "9_offensive_line": "no OL starter on the final report",
-    "10_opponent": "BAL allowed 35.0 pass att / 25.3 rush att per game, sack rate 0.054, explosive pass 0.076; observed context only, not a model term",
+    "9_offensive_line": "OL starters on the report: RG Dalton Risner (Questionable)",
+    "10_opponent": "JAX allowed 28.0 pass att / 24.3 rush att per game, sack rate 0.087, explosive pass 0.155; observed context only, not a model term",
     "11_role_uncertainty": "role confidence MEDIUM; prior tier PLAYER_OWN_ROLE",
-    "12_model_consistent": "projected 34.2 pass attempts vs measured 29.3/game"
+    "12_model_consistent": "projected 6.6 targets vs measured 7.7/game"
    },
    "RESEARCH_VERDICT": "SUPPORTED",
    "WHY": "projection consistent with his measured role and held evidence",
@@ -3452,8 +3580,8 @@
     ">= 5% of the 150-max",
     "likely Hard Rock prop candidate"
    ],
-   "MODEL_PROJECTION": 12.85,
-   "SIM_MEAN": 13.11,
+   "MODEL_PROJECTION": 12.82,
+   "SIM_MEAN": 13.21,
    "ROLE_STATE": {
     "role_band": "PRIMARY",
     "depth_rank": 1,
@@ -3461,7 +3589,7 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.06,
+    "MAX150": 0.053,
     "MAX20": 0.0,
     "MAX3": 0.0
    },
@@ -3472,7 +3600,9 @@
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
     "5_recent_usage": "3 games: 0 att, 37.0 carries, 7.0 targets (target share 0.062, carry share 0.521)",
     "6_trend": "offense snap share 0.505 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Marlin Klein"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "DAL allowed 28.0 pass att / 34.7 rush att per game, sack rate 0.023, explosive pass 0.083; observed context only, not a model term",
@@ -3484,17 +3614,59 @@
    "concerns": []
   },
   {
+   "player": "Rhamondre Stevenson",
+   "team": "NE",
+   "position": "RB",
+   "dk_id": "44328479",
+   "material_because": [
+    ">= 5% of the 150-max",
+    "likely Hard Rock prop candidate"
+   ],
+   "MODEL_PROJECTION": 12.69,
+   "SIM_MEAN": 12.67,
+   "ROLE_STATE": {
+    "role_band": "PRIMARY",
+    "depth_rank": 1,
+    "starter_evidence": null,
+    "starter_tier": null
+   },
+   "exposure": {
+    "MAX150": 0.093,
+    "MAX20": 0.0,
+    "MAX3": 0.0
+   },
+   "evidence": {
+    "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier NO_EVIDENCE_HELD)",
+    "2_latest_injury_news": "not on the final report; anything newer: UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
+    "3_practice_trend": "no practice line (final day only; the daily trend is not captured)",
+    "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
+    "5_recent_usage": "3 games: 0 att, 31.0 carries, 11.0 targets (target share 0.134, carry share 0.373)",
+    "6_trend": "offense snap share 0.605 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
+    "7_teammate_absences": [
+     "Behren Morton",
+     "Tanner Arkin"
+    ],
+    "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
+    "9_offensive_line": "OL starters on the report: RT Morgan Moses (Questionable)",
+    "10_opponent": "BUF allowed 36.7 pass att / 26.7 rush att per game, sack rate 0.076, explosive pass 0.127; observed context only, not a model term",
+    "11_role_uncertainty": "role confidence HIGH; prior tier PLAYER_OWN_ROLE",
+    "12_model_consistent": "projected 15.4 carries + targets vs measured 14.0/game"
+   },
+   "RESEARCH_VERDICT": "SUPPORTED",
+   "WHY": "projection consistent with his measured role and held evidence",
+   "concerns": []
+  },
+  {
    "player": "Mark Andrews",
    "team": "BAL",
    "position": "TE",
    "dk_id": "44328937",
    "material_because": [
-    ">= 10% of the 20-max",
     ">= 5% of the 150-max",
     "likely Hard Rock prop candidate"
    ],
-   "MODEL_PROJECTION": 11.83,
-   "SIM_MEAN": 12.18,
+   "MODEL_PROJECTION": 11.85,
+   "SIM_MEAN": 12.49,
    "ROLE_STATE": {
     "role_band": "ALPHA",
     "depth_rank": 1,
@@ -3502,8 +3674,8 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.087,
-    "MAX20": 0.15,
+    "MAX150": 0.08,
+    "MAX20": 0.05,
     "MAX3": 0.0
    },
    "evidence": {
@@ -3513,7 +3685,10 @@
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
     "5_recent_usage": "3 games: 0 att, 0 carries, 18.0 targets (target share 0.247, carry share 0.0)",
     "6_trend": "offense snap share 0.715 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Chris Moore",
+     "Joe Fagnano"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "OL starters on the report: LT Ronnie Stanley (Questionable)",
     "10_opponent": "TEN allowed 27.7 pass att / 33.3 rush att per game, sack rate 0.067, explosive pass 0.108; observed context only, not a model term",
@@ -3530,11 +3705,10 @@
    "position": "TE",
    "dk_id": "44328935",
    "material_because": [
-    ">= 5% of the 150-max",
     "large FC disagreement (+3.7)",
     "likely Hard Rock prop candidate"
    ],
-   "MODEL_PROJECTION": 10.74,
+   "MODEL_PROJECTION": 10.76,
    "SIM_MEAN": 11.1,
    "ROLE_STATE": {
     "role_band": "ALPHA",
@@ -3543,8 +3717,8 @@
     "starter_tier": null
    },
    "exposure": {
-    "MAX150": 0.067,
-    "MAX20": 0.0,
+    "MAX150": 0.04,
+    "MAX20": 0.05,
     "MAX3": 0.0
    },
    "evidence": {
@@ -3554,7 +3728,10 @@
     "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
     "5_recent_usage": "3 games: 0 att, 0 carries, 11.0 targets (target share 0.109, carry share 0.0)",
     "6_trend": "offense snap share 0.68 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Camden Brown",
+     "Emari Demercado"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "HOU allowed 32.0 pass att / 24.3 rush att per game, sack rate 0.103, explosive pass 0.135; observed context only, not a model term",
@@ -3606,55 +3783,15 @@
    "concerns": []
   },
   {
-   "player": "Hunter Henry",
-   "team": "NE",
-   "position": "TE",
-   "dk_id": "44328941",
-   "material_because": [
-    ">= 5% of the 150-max",
-    "likely Hard Rock prop candidate"
-   ],
-   "MODEL_PROJECTION": 9.54,
-   "SIM_MEAN": 10.19,
-   "ROLE_STATE": {
-    "role_band": "ALPHA",
-    "depth_rank": 1,
-    "starter_evidence": null,
-    "starter_tier": null
-   },
-   "exposure": {
-    "MAX150": 0.053,
-    "MAX20": 0.0,
-    "MAX3": 0.0
-   },
-   "evidence": {
-    "1_starter_availability": "UNKNOWN_ACTIVE_STATE (tier NO_EVIDENCE_HELD)",
-    "2_latest_injury_news": "not on the final report; anything newer: UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
-    "3_practice_trend": "no practice line (final day only; the daily trend is not captured)",
-    "4_depth_chart": "chart rank 1, usage rank 1, projection rank 1",
-    "5_recent_usage": "3 games: 0 att, 0 carries, 10.0 targets (target share 0.122, carry share 0.0)",
-    "6_trend": "offense snap share 0.835 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
-    "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
-    "9_offensive_line": "OL starters on the report: RT Morgan Moses (Questionable)",
-    "10_opponent": "BUF allowed 36.7 pass att / 26.7 rush att per game, sack rate 0.076, explosive pass 0.127; observed context only, not a model term",
-    "11_role_uncertainty": "role confidence HIGH; prior tier PLAYER_OWN_ROLE",
-    "12_model_consistent": "projected 5.3 targets vs measured 3.3/game"
-   },
-   "RESEARCH_VERDICT": "SUPPORTED",
-   "WHY": "projection consistent with his measured role and held evidence",
-   "concerns": []
-  },
-  {
    "player": "Woody Marks",
    "team": "HOU",
    "position": "RB",
    "dk_id": "44328493",
    "material_because": [
-    "large FC disagreement (-4.6)"
+    "large FC disagreement (-4.7)"
    ],
-   "MODEL_PROJECTION": 6.0,
-   "SIM_MEAN": 6.07,
+   "MODEL_PROJECTION": 5.99,
+   "SIM_MEAN": 6.0,
    "ROLE_STATE": {
     "role_band": "SECONDARY",
     "depth_rank": 2,
@@ -3673,12 +3810,57 @@
     "4_depth_chart": "chart rank 2, usage rank 2, projection rank 2",
     "5_recent_usage": "3 games: 0 att, 22.0 carries, 8.0 targets (target share 0.071, carry share 0.31)",
     "6_trend": "offense snap share 0.495 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
-    "7_teammate_absences": [],
+    "7_teammate_absences": [
+     "Marlin Klein"
+    ],
     "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
     "9_offensive_line": "no OL starter on the final report",
     "10_opponent": "DAL allowed 28.0 pass att / 34.7 rush att per game, sack rate 0.023, explosive pass 0.083; observed context only, not a model term",
     "11_role_uncertainty": "role confidence MEDIUM; prior tier PLAYER_OWN_ROLE",
     "12_model_consistent": "projected 8.2 carries + targets vs measured 10.0/game"
+   },
+   "RESEARCH_VERDICT": "SUPPORTED",
+   "WHY": "projection consistent with his measured role and held evidence",
+   "concerns": []
+  },
+  {
+   "player": "Tyjae Spears",
+   "team": "TEN",
+   "position": "RB",
+   "dk_id": "44328485",
+   "material_because": [
+    "Questionable",
+    "material open question (scenario map)"
+   ],
+   "MODEL_PROJECTION": 4.53,
+   "SIM_MEAN": 4.43,
+   "ROLE_STATE": {
+    "role_band": "SECONDARY",
+    "depth_rank": 2,
+    "starter_evidence": null,
+    "starter_tier": null
+   },
+   "exposure": {
+    "MAX150": 0.0,
+    "MAX20": 0.0,
+    "MAX3": 0.0
+   },
+   "evidence": {
+    "1_starter_availability": "REPORTED_ACTIVE_NOT_ON_LIST (tier AGGREGATOR_REPORTED)",
+    "2_latest_injury_news": "Friday report: QUESTIONABLE (Ankle); anything newer: UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
+    "3_practice_trend": "Full Participation in Practice (final day only; the daily trend is not captured)",
+    "4_depth_chart": "chart rank 2, usage rank 2, projection rank 2",
+    "5_recent_usage": "3 games: 0 att, 13.0 carries, 6.0 targets (target share 0.075, carry share 0.203)",
+    "6_trend": "offense snap share 0.43 (weeks [1, 2]); routes UNAVAILABLE_NO_CAPTURE",
+    "7_teammate_absences": [
+     "Kylen Granson",
+     "Michael Carter"
+    ],
+    "8_coaching_comments": "UNAVAILABLE_HERE: no network on this machine; the networked agent holds it",
+    "9_offensive_line": "no OL starter on the final report",
+    "10_opponent": "BAL allowed 35.0 pass att / 25.3 rush att per game, sack rate 0.054, explosive pass 0.076; observed context only, not a model term",
+    "11_role_uncertainty": "role confidence HIGH; prior tier PLAYER_OWN_ROLE",
+    "12_model_consistent": "projected 5.1 carries + targets vs measured 6.3/game"
    },
    "RESEARCH_VERDICT": "SUPPORTED",
    "WHY": "projection consistent with his measured role and held evidence",

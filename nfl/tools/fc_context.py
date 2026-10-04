@@ -113,15 +113,18 @@ def _num(v):
 SOURCES = {
     '2026W3': (SRC, RETRIEVED, SOURCE_NAME),
     # the CURRENT week-4 snapshot; every earlier one is kept under its own key for change tracking
-    '2026W4': (_REPO / 'nfl/dfs/salaries/raw/THIRDPARTY_players_EARLY_ONLY_2026W4_SUN1506Z_CONTEXT_ONLY.csv',
-               '2026-10-04 15:06Z, delivered by the owner (Sunday, before official inactives)',
-               'FantasyCruncher DraftKings NFL 2026 week 4 export (Sunday snapshot)'),
+    '2026W4': (_REPO / 'nfl/dfs/salaries/raw/THIRDPARTY_players_EARLY_ONLY_2026W4_SUN1600Z_POSTINACTIVES_CONTEXT_ONLY.csv',
+               '2026-10-04 ~16:00Z, delivered by the owner (Sunday, after game-day inactives)',
+               'FantasyCruncher DraftKings NFL 2026 week 4 export (Sunday post-inactives snapshot)'),
+    '2026W4_SUN1506Z': (_REPO / 'nfl/dfs/salaries/raw/THIRDPARTY_players_EARLY_ONLY_2026W4_SUN1506Z_CONTEXT_ONLY.csv',
+                        '2026-10-04 15:06Z, delivered by the owner (Sunday, before official inactives)',
+                        'FantasyCruncher DraftKings NFL 2026 week 4 export (Sunday snapshot)'),
     '2026W4_SAT1702Z': (_REPO / 'nfl/dfs/salaries/raw/THIRDPARTY_players_EARLY_ONLY_2026W4_CONTEXT_ONLY.csv',
                         '2026-10-03 17:02Z, delivered by the owner (pre-inactives)',
                         'FantasyCruncher DraftKings NFL 2026 week 4 Early Only export'),
 }
 #: snapshot order per slate, oldest first (classic_fc_diff.py diffs the last two)
-HISTORY = {'2026W4': ['2026W4_SAT1702Z', '2026W4']}
+HISTORY = {'2026W4': ['2026W4_SAT1702Z', '2026W4_SUN1506Z', '2026W4']}
 
 
 def load(slate_id: str = '2026W3'):

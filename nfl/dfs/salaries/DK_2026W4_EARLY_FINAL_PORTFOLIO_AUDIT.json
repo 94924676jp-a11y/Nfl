@@ -1,0 +1,345 @@
+{
+ "ARTIFACT": "FINAL_PORTFOLIO_AUDIT",
+ "slate_id": "2026W4",
+ "built_at_utc": "2026-10-04T16:15:14.616932+00:00",
+ "SCOPE": "DraftKings Early Only 1:00 PM ET, 8 games: 2026_04_ARI_NYG, 2026_04_DAL_HOU, 2026_04_GB_TB, 2026_04_JAX_CIN, 2026_04_LA_PHI, 2026_04_NE_BUF, 2026_04_NYJ_CHI, 2026_04_TEN_BAL",
+ "FINAL_STATE": "FINAL_POST_INACTIVES_OWNER_RELAYED_NOT_OFFICIAL",
+ "gates": {
+  "EVIDENCE": true,
+  "SCOPE_EARLY_ONLY_1PM": true,
+  "EVERY_CLUB_HAS_ITS_INACTIVE_LIST": true,
+  "PORTFOLIO_ON_CURRENT_INPUTS": true,
+  "SEAL_COVERS_CURRENT_FORECAST": true,
+  "UPLOAD_VERIFIED": true,
+  "AUDIT": true,
+  "PRELOCK": true,
+  "FILLED": true
+ },
+ "evidence": {
+  "packet": "nfl/dfs/salaries/evidence/2026W4_SUNDAY_OWNER.json",
+  "packet_sha256": "2fb2c66fe5a3c973b52ca6fe37d68868e7401145d92cdf96ec6e8dd5b7a1e47a",
+  "inactives_source": "RotoWire lineups page screenshots relayed by the owner (OWNER_RELAYED_GAME_DAY_EVIDENCE, cited AGGREGATOR; not first-party)",
+  "screenshots": {
+   "screenshot_6.png": "8f7db4daa800e1f1a112b23c2d0e030be6afb2c5f21d611cabb765ec7a719b84",
+   "screenshot_7.png": "9ff893d31b276e3ed0c902d9a199db80c92e92647bbeec1ab8ba25d2915e9a33",
+   "screenshot_8.png": "88335f577ef3e05d3530aef563488e831f571a9a705e13810048ad4c182528ee",
+   "screenshot_9.png": "1f0f5f0bc5a068b002147642639ca83a3c2bc905a29aaa88baab269a133c728b"
+  },
+  "n_dk_pool_inactive": 29,
+  "n_cleared_questionable": 6,
+  "n_off_pool_names": 72,
+  "clubs_with_full_list": [
+   "ARI",
+   "BAL",
+   "BUF",
+   "CHI",
+   "CIN",
+   "DAL",
+   "GB",
+   "HOU",
+   "JAX",
+   "LA",
+   "NE",
+   "NYG",
+   "NYJ",
+   "PHI",
+   "TB",
+   "TEN"
+  ],
+  "starters": {
+   "TB": {
+    "name": "Jalon Daniels",
+    "starter_state": "CONFIRMED_BY_TEAM_PUBLISHED_EVIDENCE",
+    "evidence_tier": "OFFICIAL_TEAM_PUBLISHED",
+    "relayed_by": "OWNER_RELAYED",
+    "received_at": "2026-10-04T14:22:00Z"
+   },
+   "CHI": {
+    "name": "Tyson Bagent",
+    "starter_state": "REPORTED_EXPECTED_STARTER",
+    "evidence_tier": "HIGH_CONFIDENCE_REPORTED_STARTER",
+    "relayed_by": "OWNER_RELAYED",
+    "received_at": "2026-10-04T14:22:00Z"
+   }
+  }
+ },
+ "fc_inactive_reconciliation": {
+  "newest_fc_sha256": "30a8a7bff811c00b114bbb852f7d759f1ebef9088214bad53d19f0778f62e94c",
+  "counts": {
+   "FC_REMOVED": 29,
+   "FC_ZERO_PROJECTED": 0,
+   "FC_STILL_PROJECTED": 0,
+   "FC_NOT_IN_POOL": 72
+  },
+  "FC_INACTIVE_MISMATCH": []
+ },
+ "player_state": {
+  "n_pool": 411,
+  "availability_counts": {
+   "UNKNOWN_ACTIVE_STATE": 375,
+   "REPORTED_INACTIVE_HIGH_CONFIDENCE": 29,
+   "REPORTED_ACTIVE_NOT_ON_LIST": 6,
+   "REPORTED_INACTIVE_OFFICIAL_RELEASE_CITED": 1
+  },
+  "n_projected_in_worlds": 381,
+  "identity_unresolved_not_projected": 3,
+  "NOTE": "UNKNOWN_ACTIVE_STATE = on no inactive list and not on the injury report; a club with a full game-day list leaves him active-by-list only when he was Questionable (named in the packet); everyone else keeps UNKNOWN, never ZERO"
+ },
+ "projection": {
+  "sha256": "3d7c770af4b350777e8be2f623bfc4cffdf1f35293772a057f90b41194aa7a43",
+  "market_arm": "FOOTBALL_ONLY",
+  "sanity": "PASS"
+ },
+ "simulation": {
+  "n_worlds": 2000,
+  "draws_sha256": "5b7a519fafe968b5b78f2e5f10dbc698b708f1b9872484168321ba066185f42c",
+  "worlds_sha256": "8fbc71299e05590305ad4e20a122e6bf564092b659973a7c5351f4e2dda05b49",
+  "games_refused": [],
+  "CROSS_GAME_DEPENDENCE": "NONE: games are simulated independently and merged on one world index"
+ },
+ "accounting": "PASS",
+ "reproducibility": "PASS",
+ "portfolio": {
+  "objective": "E_w[max_i (S_iw - T_w)+], T_w = (1-q) quantile of candidate scores in world w",
+  "OWNERSHIP": "UNAVAILABLE: no ownership data for this slate. Duplication risk is not modelled.",
+  "contests": {
+   "MAX150": {
+    "contest_id": "196208416",
+    "lineups": 150,
+    "unique": 150,
+    "candidates": 589,
+    "pool": 130,
+    "p_any_entry_clears_bar": 0.974,
+    "expected_best_entry_score": 215.72,
+    "salary": {
+     "min": 47500,
+     "median": 49800.0,
+     "max": 50000,
+     "histogram": {
+      "50000": 39,
+      "49500": 84,
+      "49000": 23,
+      "48500": 3,
+      "47500": 1
+     }
+    }
+   },
+   "MAX20": {
+    "contest_id": "196208417",
+    "lineups": 20,
+    "unique": 20,
+    "candidates": 385,
+    "pool": 101,
+    "p_any_entry_clears_bar": 0.437,
+    "expected_best_entry_score": 199.08,
+    "salary": {
+     "min": 49400,
+     "median": 49900.0,
+     "max": 50000,
+     "histogram": {
+      "50000": 9,
+      "49500": 10,
+      "49000": 1
+     }
+    }
+   },
+   "MAX3": {
+    "contest_id": "196208418",
+    "lineups": 3,
+    "unique": 3,
+    "candidates": 385,
+    "pool": 101,
+    "p_any_entry_clears_bar": 0.1115,
+    "expected_best_entry_score": 179.03,
+    "salary": {
+     "min": 49600,
+     "median": 50000.0,
+     "max": 50000,
+     "histogram": {
+      "50000": 2,
+      "49500": 1
+     }
+    }
+   }
+  },
+  "exposure_tables_reconcile_with_lineups": {
+   "MAX150": true,
+   "MAX20": true,
+   "MAX3": true
+  },
+  "over_25pct_150": [
+   {
+    "player": "Parker Washington",
+    "exposure": 0.38,
+    "reason": "10.2 proj targets, 95.0 rec yds; role ALPHA"
+   },
+   {
+    "player": "Kyren Williams",
+    "exposure": 0.347,
+    "reason": "14.9 carries, 3.6 targets; role PRIMARY"
+   },
+   {
+    "player": "Bucky Irving",
+    "exposure": 0.327,
+    "reason": "16.3 carries, 4.7 targets; role ALPHA"
+   },
+   {
+    "player": "Zay Flowers",
+    "exposure": 0.313,
+    "reason": "7.6 proj targets, 110.0 rec yds; role ALPHA"
+   },
+   {
+    "player": "Puka Nacua",
+    "exposure": 0.313,
+    "reason": "11.3 proj targets, 105.0 rec yds; role ALPHA"
+   },
+   {
+    "player": "Mike Gesicki",
+    "exposure": 0.293,
+    "reason": "6.4 proj targets, 61.0 rec yds; role ALPHA"
+   },
+   {
+    "player": "Luther Burden III",
+    "exposure": 0.293,
+    "reason": "8.2 proj targets, 71.0 rec yds; role ALPHA"
+   },
+   {
+    "player": "Garrett Wilson",
+    "exposure": 0.287,
+    "reason": "11.8 proj targets, 96.0 rec yds; role ALPHA"
+   },
+   {
+    "player": "D'Andre Swift",
+    "exposure": 0.287,
+    "reason": "17.7 carries, 3.7 targets; role PRIMARY"
+   },
+   {
+    "player": "CeeDee Lamb",
+    "exposure": 0.26,
+    "reason": "10.1 proj targets, 111.0 rec yds; role ALPHA"
+   }
+  ],
+  "over_40pct_20": [
+   {
+    "player": "Bucky Irving",
+    "exposure": 0.55,
+    "reason": "16.3 carries, 4.7 targets; role ALPHA"
+   },
+   {
+    "player": "Mike Gesicki",
+    "exposure": 0.5,
+    "reason": "6.4 proj targets, 61.0 rec yds; role ALPHA"
+   },
+   {
+    "player": "D'Andre Swift",
+    "exposure": 0.5,
+    "reason": "17.7 carries, 3.7 targets; role PRIMARY"
+   }
+  ]
+ },
+ "verification": {
+  "verifier": "PASS[UPLOAD_VERIFIED] 173 rows, 173 owner entries, 0 violations",
+  "upload_sha256": "bf50aaeefc0788063e77c69cc85450c54c5c22720f5fad3b4be02c370ca06899",
+  "final_upload_sha256": "bf50aaeefc0788063e77c69cc85450c54c5c22720f5fad3b4be02c370ca06899",
+  "byte_identical": true,
+  "independent_recheck": "173 rows (150/20/3), 173 unique Entry IDs, positions, salary <= 50,000, no duplicate player, no inactive, every player in the 8 games, no duplicate lineup within a contest: 0 problems"
+ },
+ "material_research": {
+  "SUPPORTED": 27,
+  "SUPPORTED_WITH_UNCERTAINTY": 60,
+  "NEEDS_REVIEW": 1,
+  "INPUT_DEFECT_FOUND": 0
+ },
+ "needs_review": [
+  [
+   "Mitch Tinsley",
+   "CIN",
+   "identity not resolved to a football record, so he is NOT projected (input gap: roster capture); 0 games measured in 2026"
+  ]
+ ],
+ "declared_limitations": [
+  "PROJECTION_SYSTEM_STATE NOT_VALIDATED",
+  "touchdown counts not reconciled (Allen +2.7, Jackson +1.6 sim over projection)",
+  "yards non-closure: CHI, JAX, NYG, NYJ, PHI, TB (yards props blocked)",
+  "ownership unavailable: duplication risk not modelled",
+  "games simulated independently (no cross-game dependence)",
+  "inactives are aggregator-tier (RotoWire), relayed by the owner; not captured first-party"
+ ],
+ "pipeline": {
+  "started": "2026-10-04T15:59:15.387083+00:00",
+  "finished": "2026-10-04T16:11:56.494933+00:00",
+  "stages": [
+   [
+    "state",
+    0,
+    "PASS[CLASSIC_SLATE_STATE_BUILT] 411 players, 8 games, week 4"
+   ],
+   [
+    "run",
+    0,
+    "PASS[CLASSIC_SLATE_DRAWN] 381 players x 2000 worlds over 8 games; sanity PASS[FOOTBALL_SAN"
+   ],
+   [
+    "book",
+    0,
+    "PASS[RESEARCH_BOOK_BUILT] 8 games, 395 cards, accounting PASS"
+   ],
+   [
+    "portfolios",
+    0,
+    "PASS[CLASSIC_PORTFOLIOS_BUILT] MAX150 150/150, MAX20 20/20, MAX3 3/3"
+   ],
+   [
+    "verify",
+    0,
+    "PASS[UPLOAD_VERIFIED] 173 rows, 173 owner entries, 0 violations"
+   ],
+   [
+    "book_with_exposures",
+    0,
+    "PASS[RESEARCH_BOOK_BUILT] 8 games, 395 cards, accounting PASS"
+   ],
+   [
+    "board",
+    0,
+    "PASS[CLASSIC_OWNER_BOARD_BUILT] 411 players, {'viable': 95, 'thin': 35, 'unresolved': 3, '"
+   ],
+   [
+    "fc",
+    0,
+    "PASS[FC_COMPARISON_ATTACHED] 254 joined, 1 FC-only, 40 material gaps"
+   ],
+   [
+    "props",
+    1,
+    "BLOCKED[PROPS_NO_HARD_ROCK_BOARD] no Hard Rock board for this slate is held; requested fro"
+   ],
+   [
+    "audit",
+    0,
+    "PASS[AUDIT_COMPLETE] accounting PASS; 13 flag(s); yards-blocked teams ['CHI', 'JAX', 'NYG'"
+   ],
+   [
+    "prelock",
+    0,
+    "PASS[NO_RERUN_REQUIRED] no trigger fired"
+   ],
+   [
+    "changes",
+    0,
+    "PASS[CHANGE_LOG_BUILT] 50 player rows; lineups kept MAX150 1/150, MAX20 1/20, MAX3 1/3"
+   ],
+   [
+    "finalize",
+    0,
+    "PASS[FINAL_POPULATED] FINAL_POST_INACTIVES_OWNER_RELAYED_NOT_OFFICIAL: 4 files"
+   ],
+   [
+    "page",
+    0,
+    "wrote /tmp/claude-0/-home-user-mlb-prop-system-v7/8de98087-4781-5a10-ae09-ef74590f8116/scr"
+   ]
+  ]
+ },
+ "NOT_SUBMITTED": "this repository never uploads to DraftKings; the owner does"
+}
