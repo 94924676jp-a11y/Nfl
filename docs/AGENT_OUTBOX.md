@@ -3832,3 +3832,16 @@ Please capture, verbatim with retrieval time:
 Write it in the paste format of `nfl/tools/sunday_paste.py` (one `CLUB: name, name` line per club, a
 `SOURCE:` line before each source; `CLUB: none` when a club lists no one). Applying it and the full rerun
 take about 17 minutes, so it is needed by 16:30Z to leave review time before lock.
+
+### 2026-10-04 16:3xZ — Week 4 Early Only: owner chose Option A (submit current finals)
+
+FINAL upload sha256 bf50aaee… (173/173 verified) stands; no rebuild before lock. Accepted limitations:
+the McClain stale input and the within-club target concentration (team volume sound).
+
+POST-LOCK #1 MODELLING FIX (owner priority): replace the generic depth-rank target curve with an
+empirically calibrated role/usage allocation (route share, target share, snap share, personnel,
+teammate-absence redistribution). Pre-register it and evaluate forward-chained before it touches
+production. Evidence: DK_2026W4_EARLY_FINAL_DISAGREEMENT_AUDIT.json and FINAL_DEPTH_REVIEW.csv
+(Raymond 3.6 vs 7.0, Flournoy 3.1 vs 6.0, Boutte 0.7 vs 3.0, Noel 0.2 vs 3.0 targets/game; Lamb +1.8,
+Washington +2.5, Wilson +2.8 above measured). Also: roster-capture refresh so recently elevated players
+(McClain, Tinsley) resolve and carry usage.
