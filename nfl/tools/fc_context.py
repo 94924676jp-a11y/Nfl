@@ -58,7 +58,7 @@ PROPRIETARY_PREFIXES = (
 )
 
 FIELDS = ('FC Proj', 'Floor', 'Ceiling', 'Exp.', 'Used', 'Con.', 'Value',
-          'VegasPts', 'STDV', '2025 Avg', '2026 Avg', 'Def v Pos', 'pDepth')
+          'VegasPts', 'STDV', '2025 Avg', '2026 Avg', 'Def v Pos', 'pDepth', 'Inj')
 
 NOT_A_MODEL_INPUT = (
     'EXTERNAL COMPARISON ONLY. No value in this block may enter a proprietary feature, '
@@ -112,10 +112,16 @@ def _num(v):
 #: Every FC export this module has been handed, by slate. Week 3 stays the default.
 SOURCES = {
     '2026W3': (SRC, RETRIEVED, SOURCE_NAME),
-    '2026W4': (_REPO / 'nfl/dfs/salaries/raw/THIRDPARTY_players_EARLY_ONLY_2026W4_CONTEXT_ONLY.csv',
-               '2026-10-03 17:02Z, delivered by the owner (pre-inactives)',
-               'FantasyCruncher DraftKings NFL 2026 week 4 Early Only export'),
+    # the CURRENT week-4 snapshot; every earlier one is kept under its own key for change tracking
+    '2026W4': (_REPO / 'nfl/dfs/salaries/raw/THIRDPARTY_players_EARLY_ONLY_2026W4_SUN1506Z_CONTEXT_ONLY.csv',
+               '2026-10-04 15:06Z, delivered by the owner (Sunday, before official inactives)',
+               'FantasyCruncher DraftKings NFL 2026 week 4 export (Sunday snapshot)'),
+    '2026W4_SAT1702Z': (_REPO / 'nfl/dfs/salaries/raw/THIRDPARTY_players_EARLY_ONLY_2026W4_CONTEXT_ONLY.csv',
+                        '2026-10-03 17:02Z, delivered by the owner (pre-inactives)',
+                        'FantasyCruncher DraftKings NFL 2026 week 4 Early Only export'),
 }
+#: snapshot order per slate, oldest first (classic_fc_diff.py diffs the last two)
+HISTORY = {'2026W4': ['2026W4_SAT1702Z', '2026W4']}
 
 
 def load(slate_id: str = '2026W3'):

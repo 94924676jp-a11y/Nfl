@@ -58,7 +58,7 @@ def _opp(pos, d):
     return pr.get('targets') or 0.0, (m.get('targets') or 0) / g if g else None, 'targets'
 
 
-def material_set(state, board, audit, slots, scen):
+def material_set(state, board, audit, slots, scen, fcd=None):
     why = {}
     add = lambda dk, w: why.setdefault(dk, []).append(w)  # noqa: E731
     by_name = {(p['name'], p['team']): dk for dk, p in state['players'].items()}
@@ -93,6 +93,10 @@ def material_set(state, board, audit, slots, scen):
     for s in scen.get('scenarios', []):
         if s.get('material'):
             add(s['dk_id'], 'material open question (scenario map)')
+    for r in (fcd or {}).get('rows', []):
+        if r.get('material') and r.get('classification') != 'OUR_STATE_SUPPORTED' or \
+                (r.get('material') and any(v for v in (r['ours'].get('exposure') or {}).values())):
+            add(r['dk_id'], f"FC snapshot change ({'; '.join(r['material_because'])}) classified {r.get('classification')}")
     return {dk: sorted(set(w)) for dk, w in why.items()}
 
 
@@ -221,7 +225,7 @@ def build(slate, state_path=None):
     slots, scen = _j(f('HARD_ROCK_SLOTS.json')) or {'rows': []}, _j(f('SCENARIOS.json')) or {}
     if not all((state, book, board, audit)):
         return Outcome.fail('MATERIAL_RESEARCH_INPUT_MISSING', 'state, book, board and audit are required')
-    mat = material_set(state, board, audit, slots, scen)
+    mat = material_set(state, board, audit, slots, scen, _j(f('FC_DIFF.json')))
     if not mat:
         return Outcome.fail('MATERIAL_RESEARCH_EMPTY', 'no material player found -- the criteria matched nothing, which is not plausible')
     cards, teams = card_index(book)

@@ -1,0 +1,4034 @@
+{
+ "ARTIFACT": "CLASSIC_FC_DIFF",
+ "slate_id": "2026W4",
+ "built_at_utc": "2026-10-04T15:10:02.412284+00:00",
+ "EXTERNAL_COMPARISON_ONLY": "EXTERNAL COMPARISON ONLY. No value in this block may enter a proprietary feature, be averaged against our numbers, calibrate anything, or break a tie. It is here to be looked at and to be disagreed with.",
+ "old": {
+  "key": "2026W4_SAT1702Z",
+  "sha256": "da5fd2511ea370722d7016cf04a9c9bc69dcb393f97dab8021506d1200094ec9",
+  "retrieved": "2026-10-03 17:02Z, delivered by the owner (pre-inactives)",
+  "n_rows": 250,
+  "path": "nfl/dfs/salaries/raw/THIRDPARTY_players_EARLY_ONLY_2026W4_CONTEXT_ONLY.csv"
+ },
+ "new": {
+  "key": "2026W4",
+  "sha256": "5a2379ee0bd43aa68fc74c7e90e8d034585f2d2f70193e39051cc534691e9f20",
+  "retrieved": "2026-10-04 15:06Z, delivered by the owner (Sunday, before official inactives)",
+  "n_rows": 255,
+  "path": "nfl/dfs/salaries/raw/THIRDPARTY_players_EARLY_ONLY_2026W4_SUN1506Z_CONTEXT_ONLY.csv"
+ },
+ "materiality": {
+  "projection_move": 1.0,
+  "pDepth": "any change",
+  "injury_flag": "any change",
+  "zero_crossing": "either way",
+  "SOURCE": "owner 2026-10-04"
+ },
+ "n_changed": 105,
+ "n_material": 12,
+ "by_classification": {
+  "OUR_STATE_SUPPORTED": 6,
+  "OUR_EVIDENCE_MAY_BE_STALE": 2,
+  "FC_HAS_NEW_ROLE_INFORMATION": 0,
+  "METHODOLOGY": 4
+ },
+ "fc_only_new": [
+  {
+   "fc_name": "Ed Williams",
+   "fc_team": "JAC",
+   "fc_pos": "WR",
+   "fc_salary": 3000.0,
+   "reason": "no DK row under this name and club"
+  }
+ ],
+ "rows": [
+  {
+   "player": "Tyler Higbee",
+   "team": "LA",
+   "position": "TE",
+   "dk_id": "44328951",
+   "changes": {
+    "FC Proj": [
+     0.0,
+     7.9
+    ],
+    "Ceiling": [
+     0.0,
+     20.9
+    ],
+    "pDepth": [
+     "TE3",
+     "TE2"
+    ]
+   },
+   "material": true,
+   "material_because": [
+    "projection 0.00 -> 7.90",
+    "pDepth TE3 -> TE2",
+    "zero -> nonzero"
+   ],
+   "ours": {
+    "proj": 10.94,
+    "sim_mean": 11.75,
+    "role": "ALPHA",
+    "chart_rank": 3,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "NO_DESIGNATION",
+    "exposure": {
+     "MAX150": 0.16,
+     "MAX20": 0.15,
+     "MAX3": 0.333
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot",
+   "classification": "OUR_STATE_SUPPORTED",
+   "explanation": "FC now projects him (7.9); we already did (10.94, projection rank 1)."
+  },
+  {
+   "player": "Davis Allen",
+   "team": "LA",
+   "position": "TE",
+   "dk_id": "44329041",
+   "changes": {
+    "FC Proj": [
+     3.97,
+     0.0
+    ],
+    "Ceiling": [
+     11.17,
+     0.0
+    ],
+    "pDepth": [
+     "TE2",
+     "TE3"
+    ]
+   },
+   "material": true,
+   "material_because": [
+    "projection 3.97 -> 0.00",
+    "pDepth TE2 -> TE3",
+    "nonzero -> zero"
+   ],
+   "ours": {
+    "proj": 0.29,
+    "sim_mean": 0.28,
+    "role": "FRINGE",
+    "chart_rank": 2,
+    "usage_rank": 3,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot",
+   "classification": "OUR_STATE_SUPPORTED",
+   "explanation": "FC moved 3.97 -> 0.0, onto our number (0.29); our role state already had him there (chart 2, usage 3, projection rank 2)."
+  },
+  {
+   "player": "Puka Nacua",
+   "team": "LA",
+   "position": "WR",
+   "dk_id": "44328627",
+   "changes": {
+    "FC Proj": [
+     22.22,
+     20.73
+    ],
+    "Floor": [
+     6.17,
+     4.68
+    ],
+    "Ceiling": [
+     43.62,
+     42.13
+    ]
+   },
+   "material": true,
+   "material_because": [
+    "projection 22.22 -> 20.73"
+   ],
+   "ours": {
+    "proj": 22.77,
+    "sim_mean": 22.72,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 3,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "NO_DESIGNATION",
+    "exposure": {
+     "MAX150": 0.247,
+     "MAX20": 0.3,
+     "MAX3": 0.333
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot",
+   "classification": "METHODOLOGY",
+   "explanation": "FC moved 22.22 -> 20.73 with no depth, injury, zero or sportsbook-total change (VegasPts 23.25 both times): an FC-side model update with no football fact we can check. Ours: 22.77."
+  },
+  {
+   "player": "Davante Adams",
+   "team": "LA",
+   "position": "WR",
+   "dk_id": "44328633",
+   "changes": {
+    "FC Proj": [
+     17.32,
+     16.14
+    ],
+    "Floor": [
+     0.82,
+     0.0
+    ],
+    "Ceiling": [
+     39.32,
+     38.14
+    ]
+   },
+   "material": true,
+   "material_because": [
+    "projection 17.32 -> 16.14"
+   ],
+   "ours": {
+    "proj": 16.93,
+    "sim_mean": 16.64,
+    "role": "SECONDARY",
+    "chart_rank": 2,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "NO_DESIGNATION",
+    "exposure": {
+     "MAX150": 0.08,
+     "MAX20": 0.1,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot",
+   "classification": "METHODOLOGY",
+   "explanation": "FC moved 17.32 -> 16.14 with no depth, injury, zero or sportsbook-total change (VegasPts 23.25 both times): an FC-side model update with no football fact we can check. Ours: 16.93."
+  },
+  {
+   "player": "Buccaneers",
+   "team": "TB",
+   "position": "DST",
+   "dk_id": "44329121",
+   "changes": {
+    "FC Proj": [
+     3.98,
+     5.03
+    ],
+    "Ceiling": [
+     15.78,
+     16.83
+    ]
+   },
+   "material": true,
+   "material_because": [
+    "projection 3.98 -> 5.03"
+   ],
+   "ours": {
+    "proj": 6.31,
+    "sim_mean": 6.31,
+    "role": "ALPHA",
+    "chart_rank": null,
+    "usage_rank": null,
+    "projection_rank": null,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.067,
+     "MAX20": 0.1,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot",
+   "classification": "METHODOLOGY",
+   "explanation": "FC moved 3.98 -> 5.03 with no depth, injury or zero change, after the sportsbook total it uses moved (VegasPts 21.5 -> 20.75); our model never takes a sportsbook number."
+  },
+  {
+   "player": "Andy Dalton",
+   "team": "PHI",
+   "position": "QB",
+   "dk_id": "44328420",
+   "changes": {
+    "pDepth": [
+     "QB2",
+     "QB3"
+    ]
+   },
+   "material": true,
+   "material_because": [
+    "pDepth QB2 -> QB3"
+   ],
+   "ours": {
+    "proj": 0.05,
+    "sim_mean": 0.04,
+    "role": "SECONDARY",
+    "chart_rank": 2,
+    "usage_rank": 2,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot",
+   "classification": "OUR_EVIDENCE_MAY_BE_STALE",
+   "explanation": "FC moved him QB2 -> QB3; our captured chart still says 2 and usage says 2. A current chart settles it."
+  },
+  {
+   "player": "Tanner McKee",
+   "team": "PHI",
+   "position": "QB",
+   "dk_id": "44328421",
+   "changes": {
+    "pDepth": [
+     "QB3",
+     "QB2"
+    ]
+   },
+   "material": true,
+   "material_because": [
+    "pDepth QB3 -> QB2"
+   ],
+   "ours": {
+    "proj": 0.0,
+    "sim_mean": 0.0,
+    "role": "ROTATIONAL",
+    "chart_rank": 3,
+    "usage_rank": null,
+    "projection_rank": 3,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot",
+   "classification": "OUR_EVIDENCE_MAY_BE_STALE",
+   "explanation": "FC moved him QB3 -> QB2; our captured chart still says 3."
+  },
+  {
+   "player": "Easton Stick",
+   "team": "TB",
+   "position": "QB",
+   "dk_id": "44328431",
+   "changes": {
+    "FC Proj": [
+     null,
+     0.0
+    ],
+    "Floor": [
+     null,
+     0.0
+    ],
+    "Ceiling": [
+     null,
+     0.0
+    ],
+    "pDepth": [
+     null,
+     "QB2"
+    ],
+    "position": [
+     null,
+     "QB"
+    ],
+    "in_snapshot": [
+     false,
+     true
+    ]
+   },
+   "material": true,
+   "material_because": [
+    "pDepth None -> QB2",
+    "entered the FC file"
+   ],
+   "ours": {
+    "proj": 0.12,
+    "sim_mean": 0.15,
+    "role": "ROTATIONAL",
+    "chart_rank": null,
+    "usage_rank": null,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot",
+   "classification": "OUR_STATE_SUPPORTED",
+   "explanation": "FC added him at QB2 projecting 0.0; we project 0.12 -- no disagreement."
+  },
+  {
+   "player": "Sterling Shepard",
+   "team": "NYJ",
+   "position": "WR",
+   "dk_id": "44328775",
+   "changes": {
+    "FC Proj": [
+     null,
+     0.0
+    ],
+    "Floor": [
+     null,
+     0.0
+    ],
+    "Ceiling": [
+     null,
+     0.0
+    ],
+    "pDepth": [
+     null,
+     "WR5"
+    ],
+    "position": [
+     null,
+     "WR"
+    ],
+    "in_snapshot": [
+     false,
+     true
+    ]
+   },
+   "material": true,
+   "material_because": [
+    "pDepth None -> WR5",
+    "entered the FC file"
+   ],
+   "ours": {
+    "proj": 2.81,
+    "sim_mean": 2.78,
+    "role": "FRINGE",
+    "chart_rank": null,
+    "usage_rank": 3,
+    "projection_rank": 4,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot",
+   "classification": "METHODOLOGY",
+   "explanation": "FC added him at WR5 projecting 0.0; we project 2.81 from his own usage (usage rank 3)."
+  },
+  {
+   "player": "Alex Bachman",
+   "team": "LA",
+   "position": "WR",
+   "dk_id": "44328823",
+   "changes": {
+    "FC Proj": [
+     null,
+     0.0
+    ],
+    "Floor": [
+     null,
+     0.0
+    ],
+    "Ceiling": [
+     null,
+     0.0
+    ],
+    "pDepth": [
+     null,
+     "WR7"
+    ],
+    "position": [
+     null,
+     "WR"
+    ],
+    "in_snapshot": [
+     false,
+     true
+    ]
+   },
+   "material": true,
+   "material_because": [
+    "pDepth None -> WR7",
+    "entered the FC file"
+   ],
+   "ours": {
+    "proj": 0.02,
+    "sim_mean": 0.02,
+    "role": "FRINGE",
+    "chart_rank": null,
+    "usage_rank": null,
+    "projection_rank": null,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot",
+   "classification": "OUR_STATE_SUPPORTED",
+   "explanation": "FC added him at WR7 projecting 0.0; we project 0.02 -- no disagreement."
+  },
+  {
+   "player": "Josiah Deguara",
+   "team": "PHI",
+   "position": "TE",
+   "dk_id": "44329037",
+   "changes": {
+    "FC Proj": [
+     null,
+     0.0
+    ],
+    "Floor": [
+     null,
+     0.0
+    ],
+    "Ceiling": [
+     null,
+     0.0
+    ],
+    "pDepth": [
+     null,
+     "TE4"
+    ],
+    "position": [
+     null,
+     "TE"
+    ],
+    "in_snapshot": [
+     false,
+     true
+    ]
+   },
+   "material": true,
+   "material_because": [
+    "pDepth None -> TE4",
+    "entered the FC file"
+   ],
+   "ours": {
+    "proj": 0.02,
+    "sim_mean": 0.02,
+    "role": "FRINGE",
+    "chart_rank": null,
+    "usage_rank": null,
+    "projection_rank": null,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot",
+   "classification": "OUR_STATE_SUPPORTED",
+   "explanation": "FC added him at TE4 projecting 0.0; we project 0.02 -- no disagreement."
+  },
+  {
+   "player": "Jake Haener",
+   "team": "NYG",
+   "position": "QB",
+   "dk_id": "44361617",
+   "changes": {
+    "FC Proj": [
+     null,
+     0.0
+    ],
+    "Floor": [
+     null,
+     0.0
+    ],
+    "Ceiling": [
+     null,
+     0.0
+    ],
+    "pDepth": [
+     null,
+     "QB3"
+    ],
+    "position": [
+     null,
+     "QB"
+    ],
+    "in_snapshot": [
+     false,
+     true
+    ]
+   },
+   "material": true,
+   "material_because": [
+    "pDepth None -> QB3",
+    "entered the FC file"
+   ],
+   "ours": {
+    "proj": 0.0,
+    "sim_mean": 0.0,
+    "role": "FRINGE",
+    "chart_rank": null,
+    "usage_rank": null,
+    "projection_rank": 4,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot",
+   "classification": "OUR_STATE_SUPPORTED",
+   "explanation": "FC added him at QB3 projecting 0.0; we project 0.0 -- no disagreement."
+  },
+  {
+   "player": "Jordan Love",
+   "team": "GB",
+   "position": "QB",
+   "dk_id": "44328398",
+   "changes": {
+    "FC Proj": [
+     17.84,
+     17.01
+    ],
+    "Floor": [
+     5.09,
+     4.26
+    ],
+    "Ceiling": [
+     34.84,
+     34.01
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 16.54,
+    "sim_mean": 16.15,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.02,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Christian Watson",
+   "team": "GB",
+   "position": "WR",
+   "dk_id": "44328639",
+   "changes": {
+    "FC Proj": [
+     18.46,
+     17.65
+    ],
+    "Floor": [
+     4.81,
+     4.0
+    ],
+    "Ceiling": [
+     36.66,
+     35.85
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 19.66,
+    "sim_mean": 19.48,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 2,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.247,
+     "MAX20": 0.2,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Tucker Kraft",
+   "team": "GB",
+   "position": "TE",
+   "dk_id": "44328933",
+   "changes": {
+    "FC Proj": [
+     14.67,
+     13.97
+    ],
+    "Floor": [
+     3.42,
+     2.72
+    ],
+    "Ceiling": [
+     29.67,
+     28.97
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 10.64,
+    "sim_mean": 10.51,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.007,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Colby Parkinson",
+   "team": "LA",
+   "position": "TE",
+   "dk_id": "44328955",
+   "changes": {
+    "FC Proj": [
+     8.57,
+     7.97
+    ],
+    "Floor": [
+     1.22,
+     0.62
+    ],
+    "Ceiling": [
+     18.37,
+     17.77
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 2.77,
+    "sim_mean": 2.86,
+    "role": "SECONDARY",
+    "chart_rank": 1,
+    "usage_rank": 2,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "QUESTIONABLE",
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "MarShawn Lloyd",
+   "team": "GB",
+   "position": "RB",
+   "dk_id": "44328491",
+   "changes": {
+    "FC Proj": [
+     10.73,
+     10.3
+    ],
+    "Floor": [
+     6.68,
+     6.25
+    ],
+    "Ceiling": [
+     16.13,
+     15.7
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 11.12,
+    "sim_mean": 10.85,
+    "role": "PRIMARY",
+    "chart_rank": 2,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.033,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Matthew Golden",
+   "team": "GB",
+   "position": "WR",
+   "dk_id": "44328655",
+   "changes": {
+    "FC Proj": [
+     7.98,
+     7.59
+    ],
+    "Ceiling": [
+     20.58,
+     20.19
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 11.51,
+    "sim_mean": 11.49,
+    "role": "SECONDARY",
+    "chart_rank": 2,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.02,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Kyren Williams",
+   "team": "LA",
+   "position": "RB",
+   "dk_id": "44328463",
+   "changes": {
+    "FC Proj": [
+     15.01,
+     14.69
+    ],
+    "Floor": [
+     2.11,
+     1.79
+    ],
+    "Ceiling": [
+     32.21,
+     31.89
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 18.52,
+    "sim_mean": 18.68,
+    "role": "PRIMARY",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.327,
+     "MAX20": 0.5,
+     "MAX3": 0.333
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Jonnu Smith",
+   "team": "GB",
+   "position": "TE",
+   "dk_id": "44328957",
+   "changes": {
+    "FC Proj": [
+     5.72,
+     5.45
+    ],
+    "Ceiling": [
+     18.12,
+     17.85
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 3.66,
+    "sim_mean": 3.63,
+    "role": "SECONDARY",
+    "chart_rank": 2,
+    "usage_rank": 2,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Konata Mumpfield",
+   "team": "LA",
+   "position": "WR",
+   "dk_id": "44328715",
+   "changes": {
+    "FC Proj": [
+     3.41,
+     3.17
+    ],
+    "Ceiling": [
+     13.81,
+     13.57
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 3.24,
+    "sim_mean": 3.45,
+    "role": "ROTATIONAL",
+    "chart_rank": 4,
+    "usage_rank": 2,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "D'Andre Swift",
+   "team": "CHI",
+   "position": "RB",
+   "dk_id": "44328451",
+   "changes": {
+    "FC Proj": [
+     15.08,
+     15.24
+    ],
+    "Floor": [
+     3.68,
+     3.84
+    ],
+    "Ceiling": [
+     30.28,
+     30.44
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 18.39,
+    "sim_mean": 18.88,
+    "role": "PRIMARY",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "NO_DESIGNATION",
+    "exposure": {
+     "MAX150": 0.3,
+     "MAX20": 0.5,
+     "MAX3": 0.667
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Jordan Whittington",
+   "team": "LA",
+   "position": "WR",
+   "dk_id": "44328725",
+   "changes": {
+    "FC Proj": [
+     2.27,
+     2.11
+    ],
+    "Ceiling": [
+     10.47,
+     10.31
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 0.02,
+    "sim_mean": 0.01,
+    "role": "FRINGE",
+    "chart_rank": 3,
+    "usage_rank": 6,
+    "projection_rank": 3,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Nico Collins",
+   "team": "HOU",
+   "position": "WR",
+   "dk_id": "44328629",
+   "changes": {
+    "FC Proj": [
+     20.28,
+     20.41
+    ],
+    "Floor": [
+     6.48,
+     6.61
+    ],
+    "Ceiling": [
+     38.68,
+     38.81
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 20.88,
+    "sim_mean": 20.78,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 3,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "NO_DESIGNATION",
+    "exposure": {
+     "MAX150": 0.207,
+     "MAX20": 0.35,
+     "MAX3": 0.333
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Zay Flowers",
+   "team": "BAL",
+   "position": "WR",
+   "dk_id": "44328635",
+   "changes": {
+    "FC Proj": [
+     22.04,
+     21.91
+    ],
+    "Floor": [
+     10.04,
+     9.91
+    ],
+    "Ceiling": [
+     38.04,
+     37.91
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 21.58,
+    "sim_mean": 22.04,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 2,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "QUESTIONABLE",
+    "exposure": {
+     "MAX150": 0.353,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Josh Allen",
+   "team": "BUF",
+   "position": "QB",
+   "dk_id": "44328389",
+   "changes": {
+    "FC Proj": [
+     25.8,
+     25.68
+    ],
+    "Floor": [
+     11.1,
+     10.98
+    ],
+    "Ceiling": [
+     45.4,
+     45.28
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 24.71,
+    "sim_mean": 27.39,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.2,
+     "MAX20": 0.3,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Tony Pollard",
+   "team": "TEN",
+   "position": "RB",
+   "dk_id": "44328471",
+   "changes": {
+    "FC Proj": [
+     10.66,
+     10.54
+    ],
+    "Ceiling": [
+     26.46,
+     26.34
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 12.09,
+    "sim_mean": 11.62,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "NO_DESIGNATION",
+    "exposure": {
+     "MAX150": 0.033,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "DJ Moore",
+   "team": "BUF",
+   "position": "WR",
+   "dk_id": "44328651",
+   "changes": {
+    "FC Proj": [
+     8.77,
+     8.66
+    ],
+    "Ceiling": [
+     26.57,
+     26.46
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 14.85,
+    "sim_mean": 15.52,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "NO_DESIGNATION",
+    "exposure": {
+     "MAX150": 0.133,
+     "MAX20": 0.1,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Hunter Henry",
+   "team": "NE",
+   "position": "TE",
+   "dk_id": "44328941",
+   "changes": {
+    "FC Proj": [
+     10.88,
+     10.78
+    ],
+    "Floor": [
+     1.43,
+     1.33
+    ],
+    "Ceiling": [
+     23.48,
+     23.38
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 9.54,
+    "sim_mean": 10.19,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.053,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Tyjae Spears",
+   "team": "TEN",
+   "position": "RB",
+   "dk_id": "44328485",
+   "changes": {
+    "FC Proj": [
+     7.46,
+     7.36
+    ],
+    "Ceiling": [
+     19.66,
+     19.56
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 4.52,
+    "sim_mean": 4.38,
+    "role": "SECONDARY",
+    "chart_rank": 2,
+    "usage_rank": 2,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "QUESTIONABLE",
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Lamar Jackson",
+   "team": "BAL",
+   "position": "QB",
+   "dk_id": "44328390",
+   "changes": {
+    "FC Proj": [
+     22.49,
+     22.39
+    ],
+    "Floor": [
+     6.89,
+     6.79
+    ],
+    "Ceiling": [
+     43.29,
+     43.19
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 22.19,
+    "sim_mean": 23.83,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "NO_DESIGNATION",
+    "exposure": {
+     "MAX150": 0.133,
+     "MAX20": 0.1,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Dak Prescott",
+   "team": "DAL",
+   "position": "QB",
+   "dk_id": "44328393",
+   "changes": {
+    "FC Proj": [
+     16.63,
+     16.72
+    ],
+    "Floor": [
+     3.13,
+     3.22
+    ],
+    "Ceiling": [
+     34.63,
+     34.72
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 20.02,
+    "sim_mean": 20.86,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.08,
+     "MAX20": 0.1,
+     "MAX3": 0.333
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "James Cook III",
+   "team": "BUF",
+   "position": "RB",
+   "dk_id": "44328445",
+   "changes": {
+    "FC Proj": [
+     20.51,
+     20.42
+    ],
+    "Floor": [
+     6.11,
+     6.02
+    ],
+    "Ceiling": [
+     39.71,
+     39.62
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 18.25,
+    "sim_mean": 18.9,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.167,
+     "MAX20": 0.1,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Jets",
+   "team": "NYJ",
+   "position": "DST",
+   "dk_id": "44329128",
+   "changes": {
+    "FC Proj": [
+     3.4,
+     3.31
+    ],
+    "Ceiling": [
+     14.6,
+     14.51
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 4.13,
+    "sim_mean": 4.13,
+    "role": "ALPHA",
+    "chart_rank": null,
+    "usage_rank": null,
+    "projection_rank": null,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.027,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "C.J. Stroud",
+   "team": "HOU",
+   "position": "QB",
+   "dk_id": "44328399",
+   "changes": {
+    "FC Proj": [
+     20.47,
+     20.55
+    ],
+    "Floor": [
+     9.07,
+     9.15
+    ],
+    "Ceiling": [
+     35.67,
+     35.75
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 17.58,
+    "sim_mean": 18.14,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.053,
+     "MAX20": 0.05,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Kyle Monangai",
+   "team": "CHI",
+   "position": "RB",
+   "dk_id": "44328481",
+   "changes": {
+    "FC Proj": [
+     10.86,
+     10.94
+    ],
+    "Floor": [
+     0.06,
+     0.14
+    ],
+    "Ceiling": [
+     25.26,
+     25.34
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 6.93,
+    "sim_mean": 7.2,
+    "role": "SECONDARY",
+    "chart_rank": 2,
+    "usage_rank": 2,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.013,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Kaleb Johnson",
+   "team": "GB",
+   "position": "RB",
+   "dk_id": "44328497",
+   "changes": {
+    "FC Proj": [
+     1.75,
+     1.67
+    ],
+    "Floor": [
+     0.1,
+     0.02
+    ],
+    "Ceiling": [
+     3.95,
+     3.87
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 5.25,
+    "sim_mean": 5.11,
+    "role": "SECONDARY",
+    "chart_rank": 1,
+    "usage_rank": 2,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Tyson Bagent",
+   "team": "CHI",
+   "position": "QB",
+   "dk_id": "44328403",
+   "changes": {
+    "FC Proj": [
+     11.42,
+     11.49
+    ],
+    "Floor": [
+     1.82,
+     1.89
+    ],
+    "Ceiling": [
+     24.22,
+     24.29
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 18.9,
+    "sim_mean": 20.31,
+    "role": "ALPHA",
+    "chart_rank": 2,
+    "usage_rank": 2,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.147,
+     "MAX20": 0.3,
+     "MAX3": 0.667
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Luther Burden III",
+   "team": "CHI",
+   "position": "WR",
+   "dk_id": "44328657",
+   "changes": {
+    "FC Proj": [
+     10.36,
+     10.43
+    ],
+    "Ceiling": [
+     25.36,
+     25.43
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 16.5,
+    "sim_mean": 17.02,
+    "role": "ALPHA",
+    "chart_rank": 2,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.267,
+     "MAX20": 0.35,
+     "MAX3": 0.667
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Rome Odunze",
+   "team": "CHI",
+   "position": "WR",
+   "dk_id": "44328659",
+   "changes": {
+    "FC Proj": [
+     9.23,
+     9.3
+    ],
+    "Ceiling": [
+     25.03,
+     25.1
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 9.93,
+    "sim_mean": 10.22,
+    "role": "SECONDARY",
+    "chart_rank": 1,
+    "usage_rank": 3,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.013,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Wan'Dale Robinson",
+   "team": "TEN",
+   "position": "WR",
+   "dk_id": "44328671",
+   "changes": {
+    "FC Proj": [
+     12.17,
+     12.1
+    ],
+    "Floor": [
+     1.82,
+     1.75
+    ],
+    "Ceiling": [
+     25.97,
+     25.9
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 9.98,
+    "sim_mean": 9.8,
+    "role": "SECONDARY",
+    "chart_rank": 2,
+    "usage_rank": 2,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.007,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Colston Loveland",
+   "team": "CHI",
+   "position": "TE",
+   "dk_id": "44328927",
+   "changes": {
+    "FC Proj": [
+     10.28,
+     10.35
+    ],
+    "Ceiling": [
+     27.28,
+     27.35
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 9.61,
+    "sim_mean": 10.26,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.007,
+     "MAX20": 0.05,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Skyy Moore",
+   "team": "GB",
+   "position": "WR",
+   "dk_id": "44328729",
+   "changes": {
+    "FC Proj": [
+     1.53,
+     1.46
+    ],
+    "Ceiling": [
+     7.93,
+     7.86
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 2.93,
+    "sim_mean": 2.81,
+    "role": "ROTATIONAL",
+    "chart_rank": 3,
+    "usage_rank": 3,
+    "projection_rank": 3,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Rhamondre Stevenson",
+   "team": "NE",
+   "position": "RB",
+   "dk_id": "44328479",
+   "changes": {
+    "FC Proj": [
+     12.57,
+     12.51
+    ],
+    "Ceiling": [
+     29.37,
+     29.31
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 12.69,
+    "sim_mean": 12.54,
+    "role": "PRIMARY",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.033,
+     "MAX20": 0.05,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "George Pickens",
+   "team": "DAL",
+   "position": "WR",
+   "dk_id": "44328643",
+   "changes": {
+    "FC Proj": [
+     13.08,
+     13.14
+    ],
+    "Ceiling": [
+     31.28,
+     31.34
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 11.55,
+    "sim_mean": 11.76,
+    "role": "SECONDARY",
+    "chart_rank": 2,
+    "usage_rank": 2,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Carnell Tate",
+   "team": "TEN",
+   "position": "WR",
+   "dk_id": "44328665",
+   "changes": {
+    "FC Proj": [
+     10.0,
+     9.94
+    ],
+    "Floor": [
+     6.25,
+     6.19
+    ],
+    "Ceiling": [
+     15.0,
+     14.94
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 11.57,
+    "sim_mean": 11.47,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.027,
+     "MAX20": 0.05,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Justice Hill",
+   "team": "BAL",
+   "position": "RB",
+   "dk_id": "44328509",
+   "changes": {
+    "FC Proj": [
+     1.67,
+     1.61
+    ],
+    "Ceiling": [
+     12.47,
+     12.41
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 3.67,
+    "sim_mean": 3.66,
+    "role": "ROTATIONAL",
+    "chart_rank": 2,
+    "usage_rank": 2,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Ravens",
+   "team": "BAL",
+   "position": "DST",
+   "dk_id": "44329115",
+   "changes": {
+    "FC Proj": [
+     6.91,
+     6.97
+    ],
+    "Ceiling": [
+     19.91,
+     19.97
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 6.67,
+    "sim_mean": 6.67,
+    "role": "ALPHA",
+    "chart_rank": null,
+    "usage_rank": null,
+    "projection_rank": null,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.02,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Drake Maye",
+   "team": "NE",
+   "position": "QB",
+   "dk_id": "44328396",
+   "changes": {
+    "FC Proj": [
+     18.5,
+     18.44
+    ],
+    "Floor": [
+     7.85,
+     7.79
+    ],
+    "Ceiling": [
+     32.7,
+     32.64
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 18.83,
+    "sim_mean": 18.35,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "NO_DESIGNATION",
+    "exposure": {
+     "MAX150": 0.033,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Derrick Henry",
+   "team": "BAL",
+   "position": "RB",
+   "dk_id": "44328443",
+   "changes": {
+    "FC Proj": [
+     21.61,
+     21.55
+    ],
+    "Floor": [
+     4.36,
+     4.3
+    ],
+    "Ceiling": [
+     44.61,
+     44.55
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 18.75,
+    "sim_mean": 19.49,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.073,
+     "MAX20": 0.05,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Garrett Wilson",
+   "team": "NYJ",
+   "position": "WR",
+   "dk_id": "44328637",
+   "changes": {
+    "FC Proj": [
+     17.42,
+     17.48
+    ],
+    "Floor": [
+     5.57,
+     5.63
+    ],
+    "Ceiling": [
+     33.22,
+     33.28
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 22.22,
+    "sim_mean": 21.45,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.233,
+     "MAX20": 0.4,
+     "MAX3": 0.333
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Javonte Williams",
+   "team": "DAL",
+   "position": "RB",
+   "dk_id": "44328449",
+   "changes": {
+    "FC Proj": [
+     14.11,
+     14.16
+    ],
+    "Floor": [
+     4.06,
+     4.11
+    ],
+    "Ceiling": [
+     27.51,
+     27.56
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 16.61,
+    "sim_mean": 17.12,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.16,
+     "MAX20": 0.1,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "CeeDee Lamb",
+   "team": "DAL",
+   "position": "WR",
+   "dk_id": "44328625",
+   "changes": {
+    "FC Proj": [
+     14.41,
+     14.46
+    ],
+    "Ceiling": [
+     34.21,
+     34.26
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 23.3,
+    "sim_mean": 23.76,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.333,
+     "MAX20": 0.4,
+     "MAX3": 1.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Dalton Kincaid",
+   "team": "BUF",
+   "position": "TE",
+   "dk_id": "44328923",
+   "changes": {
+    "FC Proj": [
+     9.3,
+     9.25
+    ],
+    "Floor": [
+     0.15,
+     0.1
+    ],
+    "Ceiling": [
+     21.5,
+     21.45
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 15.26,
+    "sim_mean": 16.67,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.22,
+     "MAX20": 0.3,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Mark Andrews",
+   "team": "BAL",
+   "position": "TE",
+   "dk_id": "44328937",
+   "changes": {
+    "FC Proj": [
+     12.66,
+     12.61
+    ],
+    "Floor": [
+     0.06,
+     0.01
+    ],
+    "Ceiling": [
+     29.46,
+     29.41
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 11.83,
+    "sim_mean": 12.18,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "NO_DESIGNATION",
+    "exposure": {
+     "MAX150": 0.087,
+     "MAX20": 0.15,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Bo Melton",
+   "team": "GB",
+   "position": "WR",
+   "dk_id": "44328861",
+   "changes": {
+    "FC Proj": [
+     1.25,
+     1.2
+    ],
+    "Ceiling": [
+     13.25,
+     13.2
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 0.01,
+    "sim_mean": 0.01,
+    "role": "FRINGE",
+    "chart_rank": 4,
+    "usage_rank": 6,
+    "projection_rank": 4,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Kalif Raymond",
+   "team": "CHI",
+   "position": "WR",
+   "dk_id": "44328705",
+   "changes": {
+    "FC Proj": [
+     6.88,
+     6.93
+    ],
+    "Ceiling": [
+     17.88,
+     17.93
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 7.69,
+    "sim_mean": 7.73,
+    "role": "ROTATIONAL",
+    "chart_rank": 3,
+    "usage_rank": 2,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.027,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Bears",
+   "team": "CHI",
+   "position": "DST",
+   "dk_id": "44329119",
+   "changes": {
+    "FC Proj": [
+     7.26,
+     7.21
+    ],
+    "Ceiling": [
+     19.06,
+     19.01
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 7.72,
+    "sim_mean": 7.72,
+    "role": "ALPHA",
+    "chart_rank": null,
+    "usage_rank": null,
+    "projection_rank": null,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.153,
+     "MAX20": 0.05,
+     "MAX3": 0.333
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Cam Ward",
+   "team": "TEN",
+   "position": "QB",
+   "dk_id": "44328404",
+   "changes": {
+    "FC Proj": [
+     14.28,
+     14.23
+    ],
+    "Floor": [
+     6.78,
+     6.73
+    ],
+    "Ceiling": [
+     24.28,
+     24.23
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 12.95,
+    "sim_mean": 11.64,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Khalil Shakir",
+   "team": "BUF",
+   "position": "WR",
+   "dk_id": "44328669",
+   "changes": {
+    "FC Proj": [
+     10.83,
+     10.79
+    ],
+    "Floor": [
+     0.78,
+     0.74
+    ],
+    "Ceiling": [
+     24.23,
+     24.19
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 8.76,
+    "sim_mean": 9.46,
+    "role": "SECONDARY",
+    "chart_rank": 2,
+    "usage_rank": 2,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Mack Hollins",
+   "team": "NE",
+   "position": "WR",
+   "dk_id": "44328693",
+   "changes": {
+    "FC Proj": [
+     11.21,
+     11.17
+    ],
+    "Floor": [
+     2.96,
+     2.92
+    ],
+    "Ceiling": [
+     22.21,
+     22.17
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 10.84,
+    "sim_mean": 10.39,
+    "role": "SECONDARY",
+    "chart_rank": 3,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.053,
+     "MAX20": 0.05,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Dalton Schultz",
+   "team": "HOU",
+   "position": "TE",
+   "dk_id": "44328925",
+   "changes": {
+    "FC Proj": [
+     14.52,
+     14.56
+    ],
+    "Floor": [
+     4.47,
+     4.51
+    ],
+    "Ceiling": [
+     27.92,
+     27.96
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 14.52,
+    "sim_mean": 15.16,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "NO_DESIGNATION",
+    "exposure": {
+     "MAX150": 0.1,
+     "MAX20": 0.1,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Emeka Egbuka",
+   "team": "TB",
+   "position": "WR",
+   "dk_id": "44328649",
+   "changes": {
+    "FC Proj": [
+     7.86,
+     7.9
+    ],
+    "Ceiling": [
+     24.66,
+     24.7
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 13.25,
+    "sim_mean": 13.54,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.04,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Elic Ayomanor",
+   "team": "TEN",
+   "position": "WR",
+   "dk_id": "44328839",
+   "changes": {
+    "FC Proj": [
+     6.15,
+     6.11
+    ],
+    "Floor": [
+     0.15,
+     0.11
+    ],
+    "Ceiling": [
+     14.15,
+     14.11
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 4.3,
+    "sim_mean": 4.2,
+    "role": "ROTATIONAL",
+    "chart_rank": 3,
+    "usage_rank": 3,
+    "projection_rank": 3,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Cole Kmet",
+   "team": "CHI",
+   "position": "TE",
+   "dk_id": "44328959",
+   "changes": {
+    "FC Proj": [
+     4.67,
+     4.71
+    ],
+    "Ceiling": [
+     17.07,
+     17.11
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 2.93,
+    "sim_mean": 3.08,
+    "role": "SECONDARY",
+    "chart_rank": 2,
+    "usage_rank": 2,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Dawson Knox",
+   "team": "BUF",
+   "position": "TE",
+   "dk_id": "44328963",
+   "changes": {
+    "FC Proj": [
+     6.22,
+     6.18
+    ],
+    "Ceiling": [
+     16.62,
+     16.58
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 2.66,
+    "sim_mean": 2.85,
+    "role": "SECONDARY",
+    "chart_rank": 2,
+    "usage_rank": 2,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Packers",
+   "team": "GB",
+   "position": "DST",
+   "dk_id": "44329117",
+   "changes": {
+    "FC Proj": [
+     4.9,
+     4.86
+    ],
+    "Ceiling": [
+     15.5,
+     15.46
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 4.37,
+    "sim_mean": 4.37,
+    "role": "ALPHA",
+    "chart_rank": null,
+    "usage_rank": null,
+    "projection_rank": null,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.007,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Geno Smith",
+   "team": "NYJ",
+   "position": "QB",
+   "dk_id": "44328400",
+   "changes": {
+    "FC Proj": [
+     18.29,
+     18.33
+    ],
+    "Floor": [
+     5.84,
+     5.88
+    ],
+    "Ceiling": [
+     34.89,
+     34.93
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 17.44,
+    "sim_mean": 16.83,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.04,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Bucky Irving",
+   "team": "TB",
+   "position": "RB",
+   "dk_id": "44328461",
+   "changes": {
+    "FC Proj": [
+     13.38,
+     13.42
+    ],
+    "Floor": [
+     2.58,
+     2.62
+    ],
+    "Ceiling": [
+     27.78,
+     27.82
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 18.63,
+    "sim_mean": 18.85,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "NO_DESIGNATION",
+    "exposure": {
+     "MAX150": 0.327,
+     "MAX20": 0.45,
+     "MAX3": 0.333
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Romeo Doubs",
+   "team": "NE",
+   "position": "WR",
+   "dk_id": "44328667",
+   "changes": {
+    "FC Proj": [
+     10.62,
+     10.58
+    ],
+    "Floor": [
+     1.17,
+     1.13
+    ],
+    "Ceiling": [
+     23.22,
+     23.18
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 13.05,
+    "sim_mean": 13.83,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 3,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.133,
+     "MAX20": 0.1,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Jalon Daniels",
+   "team": "TB",
+   "position": "QB",
+   "dk_id": "44328407",
+   "changes": {
+    "FC Proj": [
+     10.52,
+     10.55
+    ],
+    "Floor": [
+     10.52,
+     10.55
+    ],
+    "Ceiling": [
+     10.52,
+     10.55
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 14.04,
+    "sim_mean": 14.29,
+    "role": "SECONDARY",
+    "chart_rank": 2,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.033,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "David Montgomery",
+   "team": "HOU",
+   "position": "RB",
+   "dk_id": "44328467",
+   "changes": {
+    "FC Proj": [
+     11.54,
+     11.57
+    ],
+    "Floor": [
+     0.0,
+     0.02
+    ],
+    "Ceiling": [
+     26.94,
+     26.97
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 12.85,
+    "sim_mean": 13.11,
+    "role": "PRIMARY",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.06,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Kenyon Sadiq",
+   "team": "NYJ",
+   "position": "TE",
+   "dk_id": "44328939",
+   "changes": {
+    "FC Proj": [
+     10.87,
+     10.9
+    ],
+    "Ceiling": [
+     29.87,
+     29.9
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 10.0,
+    "sim_mean": 9.53,
+    "role": "SECONDARY",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "QUESTIONABLE",
+    "exposure": {
+     "MAX150": 0.02,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Ryan Flournoy",
+   "team": "DAL",
+   "position": "WR",
+   "dk_id": "44328699",
+   "changes": {
+    "FC Proj": [
+     6.09,
+     6.12
+    ],
+    "Ceiling": [
+     19.29,
+     19.32
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 4.7,
+    "sim_mean": 4.82,
+    "role": "ROTATIONAL",
+    "chart_rank": 3,
+    "usage_rank": 3,
+    "projection_rank": 3,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Devontez Walker",
+   "team": "BAL",
+   "position": "WR",
+   "dk_id": "44328717",
+   "changes": {
+    "FC Proj": [
+     6.83,
+     6.8
+    ],
+    "Ceiling": [
+     17.63,
+     17.6
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 2.32,
+    "sim_mean": 2.4,
+    "role": "ROTATIONAL",
+    "chart_rank": 3,
+    "usage_rank": 5,
+    "projection_rank": 3,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Jake Ferguson",
+   "team": "DAL",
+   "position": "TE",
+   "dk_id": "44328935",
+   "changes": {
+    "FC Proj": [
+     7.37,
+     7.4
+    ],
+    "Ceiling": [
+     19.37,
+     19.4
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 10.74,
+    "sim_mean": 11.1,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.067,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Gunnar Helm",
+   "team": "TEN",
+   "position": "TE",
+   "dk_id": "44328961",
+   "changes": {
+    "FC Proj": [
+     4.98,
+     4.95
+    ],
+    "Ceiling": [
+     12.18,
+     12.15
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 7.84,
+    "sim_mean": 7.76,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.013,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Braelon Allen",
+   "team": "NYJ",
+   "position": "RB",
+   "dk_id": "44328475",
+   "changes": {
+    "FC Proj": [
+     10.73,
+     10.76
+    ],
+    "Floor": [
+     4.13,
+     4.16
+    ],
+    "Ceiling": [
+     19.53,
+     19.56
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 9.49,
+    "sim_mean": 9.16,
+    "role": "SECONDARY",
+    "chart_rank": 2,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.013,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "TreVeyon Henderson",
+   "team": "NE",
+   "position": "RB",
+   "dk_id": "44328477",
+   "changes": {
+    "FC Proj": [
+     13.28,
+     13.25
+    ],
+    "Ceiling": [
+     32.48,
+     32.45
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 5.99,
+    "sim_mean": 5.83,
+    "role": "SECONDARY",
+    "chart_rank": 2,
+    "usage_rank": 2,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Isaiah Davis",
+   "team": "NYJ",
+   "position": "RB",
+   "dk_id": "44328507",
+   "changes": {
+    "FC Proj": [
+     8.21,
+     8.24
+    ],
+    "Floor": [
+     0.86,
+     0.89
+    ],
+    "Ceiling": [
+     18.01,
+     18.04
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 6.56,
+    "sim_mean": 6.34,
+    "role": "ROTATIONAL",
+    "chart_rank": 3,
+    "usage_rank": null,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Keon Coleman",
+   "team": "BUF",
+   "position": "WR",
+   "dk_id": "44328695",
+   "changes": {
+    "FC Proj": [
+     7.01,
+     6.98
+    ],
+    "Ceiling": [
+     18.81,
+     18.78
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 4.95,
+    "sim_mean": 5.17,
+    "role": "ROTATIONAL",
+    "chart_rank": 3,
+    "usage_rank": 3,
+    "projection_rank": 3,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "NO_DESIGNATION",
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "DeMario Douglas",
+   "team": "NE",
+   "position": "WR",
+   "dk_id": "44328711",
+   "changes": {
+    "FC Proj": [
+     5.39,
+     5.36
+    ],
+    "Ceiling": [
+     15.19,
+     15.16
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 4.26,
+    "sim_mean": 4.16,
+    "role": "ROTATIONAL",
+    "chart_rank": 2,
+    "usage_rank": 2,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Xavier Hutchinson",
+   "team": "HOU",
+   "position": "WR",
+   "dk_id": "44328679",
+   "changes": {
+    "FC Proj": [
+     7.46,
+     7.48
+    ],
+    "Floor": [
+     1.46,
+     1.48
+    ],
+    "Ceiling": [
+     15.46,
+     15.48
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 6.62,
+    "sim_mean": 6.77,
+    "role": "SECONDARY",
+    "chart_rank": 2,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.007,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Rashod Bateman",
+   "team": "BAL",
+   "position": "WR",
+   "dk_id": "44328685",
+   "changes": {
+    "FC Proj": [
+     7.53,
+     7.51
+    ],
+    "Ceiling": [
+     20.13,
+     20.11
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 7.49,
+    "sim_mean": 7.74,
+    "role": "SECONDARY",
+    "chart_rank": 2,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.027,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Kyle Williams",
+   "team": "NE",
+   "position": "WR",
+   "dk_id": "44328731",
+   "changes": {
+    "FC Proj": [
+     4.28,
+     4.26
+    ],
+    "Ceiling": [
+     13.28,
+     13.26
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 0.29,
+    "sim_mean": 0.28,
+    "role": "FRINGE",
+    "chart_rank": 4,
+    "usage_rank": 4,
+    "projection_rank": 4,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Calvin Ridley",
+   "team": "TEN",
+   "position": "WR",
+   "dk_id": "44328703",
+   "changes": {
+    "FC Proj": [
+     2.7,
+     2.68
+    ],
+    "Ceiling": [
+     21.7,
+     21.68
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 0.78,
+    "sim_mean": 0.76,
+    "role": "FRINGE",
+    "chart_rank": 4,
+    "usage_rank": 4,
+    "projection_rank": 4,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "KaVontae Turpin",
+   "team": "DAL",
+   "position": "WR",
+   "dk_id": "44328739",
+   "changes": {
+    "FC Proj": [
+     3.6,
+     3.62
+    ],
+    "Ceiling": [
+     12.4,
+     12.42
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 0.41,
+    "sim_mean": 0.22,
+    "role": "FRINGE",
+    "chart_rank": 4,
+    "usage_rank": 4,
+    "projection_rank": 4,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Matthew Stafford",
+   "team": "LA",
+   "position": "QB",
+   "dk_id": "44328395",
+   "changes": {
+    "FC Proj": [
+     18.58,
+     18.56
+    ],
+    "Floor": [
+     7.63,
+     7.61
+    ],
+    "Ceiling": [
+     33.18,
+     33.16
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 19.8,
+    "sim_mean": 19.85,
+    "role": "ALPHA",
+    "chart_rank": 1,
+    "usage_rank": 1,
+    "projection_rank": 1,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.08,
+     "MAX20": 0.05,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Woody Marks",
+   "team": "HOU",
+   "position": "RB",
+   "dk_id": "44328493",
+   "changes": {
+    "FC Proj": [
+     10.67,
+     10.69
+    ],
+    "Floor": [
+     1.37,
+     1.39
+    ],
+    "Ceiling": [
+     23.07,
+     23.09
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 6.0,
+    "sim_mean": 6.07,
+    "role": "SECONDARY",
+    "chart_rank": 2,
+    "usage_rank": 2,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Kenny Gainwell",
+   "team": "TB",
+   "position": "RB",
+   "dk_id": "44328495",
+   "changes": {
+    "FC Proj": [
+     9.99,
+     10.01
+    ],
+    "Floor": [
+     0.24,
+     0.26
+    ],
+    "Ceiling": [
+     22.99,
+     23.01
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 5.12,
+    "sim_mean": 5.09,
+    "role": "SECONDARY",
+    "chart_rank": 2,
+    "usage_rank": 2,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Ty Johnson",
+   "team": "BUF",
+   "position": "RB",
+   "dk_id": "44328503",
+   "changes": {
+    "FC Proj": [
+     6.68,
+     6.66
+    ],
+    "Ceiling": [
+     17.28,
+     17.26
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 4.87,
+    "sim_mean": 5.11,
+    "role": "ROTATIONAL",
+    "chart_rank": 2,
+    "usage_rank": null,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.007,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Kayshon Boutte",
+   "team": "HOU",
+   "position": "WR",
+   "dk_id": "44328677",
+   "changes": {
+    "FC Proj": [
+     5.62,
+     5.64
+    ],
+    "Floor": [
+     3.37,
+     3.39
+    ],
+    "Ceiling": [
+     8.62,
+     8.64
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 1.2,
+    "sim_mean": 1.24,
+    "role": "FRINGE",
+    "chart_rank": 3,
+    "usage_rank": 4,
+    "projection_rank": 3,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Jaylin Noel",
+   "team": "HOU",
+   "position": "WR",
+   "dk_id": "44328713",
+   "changes": {
+    "FC Proj": [
+     5.79,
+     5.81
+    ],
+    "Ceiling": [
+     14.79,
+     14.81
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 0.33,
+    "sim_mean": 0.41,
+    "role": "FRINGE",
+    "chart_rank": 4,
+    "usage_rank": 5,
+    "projection_rank": 4,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Malik McClain",
+   "team": "NYJ",
+   "position": "WR",
+   "dk_id": "44328765",
+   "changes": {
+    "FC Proj": [
+     8.8,
+     8.82
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 0.25,
+    "sim_mean": 0.23,
+    "role": "FRINGE",
+    "chart_rank": 4,
+    "usage_rank": null,
+    "projection_rank": 3,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Foster Moreau",
+   "team": "HOU",
+   "position": "TE",
+   "dk_id": "44328965",
+   "changes": {
+    "FC Proj": [
+     5.37,
+     5.39
+    ],
+    "Ceiling": [
+     13.77,
+     13.79
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 3.62,
+    "sim_mean": 3.89,
+    "role": "SECONDARY",
+    "chart_rank": 2,
+    "usage_rank": 2,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Texans",
+   "team": "HOU",
+   "position": "DST",
+   "dk_id": "44329120",
+   "changes": {
+    "FC Proj": [
+     7.56,
+     7.54
+    ],
+    "Ceiling": [
+     19.76,
+     19.74
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 5.94,
+    "sim_mean": 5.94,
+    "role": "ALPHA",
+    "chart_rank": null,
+    "usage_rank": null,
+    "projection_rank": null,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.107,
+     "MAX20": 0.1,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Jeremy Ruckert",
+   "team": "NYJ",
+   "position": "TE",
+   "dk_id": "44328995",
+   "changes": {
+    "FC Proj": [
+     4.72,
+     4.73
+    ],
+    "Floor": [
+     0.67,
+     0.68
+    ],
+    "Ceiling": [
+     10.12,
+     10.13
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 3.65,
+    "sim_mean": 3.63,
+    "role": "SECONDARY",
+    "chart_rank": 3,
+    "usage_rank": 2,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "NO_DESIGNATION",
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Chris Godwin Jr.",
+   "team": "TB",
+   "position": "WR",
+   "dk_id": "44328663",
+   "changes": {
+    "FC Proj": [
+     6.88,
+     6.89
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 8.42,
+    "sim_mean": 8.62,
+    "role": "SECONDARY",
+    "chart_rank": 2,
+    "usage_rank": 3,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "NO_DESIGNATION",
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Isaiah Williams",
+   "team": "NYJ",
+   "position": "WR",
+   "dk_id": "44328707",
+   "changes": {
+    "FC Proj": [
+     5.71,
+     5.72
+    ],
+    "Floor": [
+     0.16,
+     0.17
+    ],
+    "Ceiling": [
+     13.11,
+     13.12
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 5.59,
+    "sim_mean": 5.54,
+    "role": "ROTATIONAL",
+    "chart_rank": 3,
+    "usage_rank": 2,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Joshua Palmer",
+   "team": "BUF",
+   "position": "WR",
+   "dk_id": "44328723",
+   "changes": {
+    "FC Proj": [
+     4.84,
+     4.83
+    ],
+    "Ceiling": [
+     17.24,
+     17.23
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 1.75,
+    "sim_mean": 1.88,
+    "role": "FRINGE",
+    "chart_rank": 4,
+    "usage_rank": 4,
+    "projection_rank": 4,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Ted Hurst III",
+   "team": "TB",
+   "position": "WR",
+   "dk_id": "44328737",
+   "changes": {
+    "FC Proj": [
+     5.65,
+     5.66
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 3.89,
+    "sim_mean": 3.85,
+    "role": "ROTATIONAL",
+    "chart_rank": 3,
+    "usage_rank": 2,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Daniel Bellinger",
+   "team": "TEN",
+   "position": "TE",
+   "dk_id": "44329057",
+   "changes": {
+    "FC Proj": [
+     3.44,
+     3.43
+    ],
+    "Ceiling": [
+     11.44,
+     11.43
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 2.06,
+    "sim_mean": 2.0,
+    "role": "SECONDARY",
+    "chart_rank": 2,
+    "usage_rank": 2,
+    "projection_rank": 2,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.0,
+     "MAX20": 0.0,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Bills",
+   "team": "BUF",
+   "position": "DST",
+   "dk_id": "44329116",
+   "changes": {
+    "FC Proj": [
+     5.69,
+     5.7
+    ],
+    "Ceiling": [
+     17.29,
+     17.3
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 5.76,
+    "sim_mean": 5.76,
+    "role": "ALPHA",
+    "chart_rank": null,
+    "usage_rank": null,
+    "projection_rank": null,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.013,
+     "MAX20": 0.1,
+     "MAX3": 0.333
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Patriots",
+   "team": "NE",
+   "position": "DST",
+   "dk_id": "44329129",
+   "changes": {
+    "FC Proj": [
+     4.45,
+     4.46
+    ],
+    "Ceiling": [
+     18.05,
+     18.06
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 4.69,
+    "sim_mean": 4.69,
+    "role": "ALPHA",
+    "chart_rank": null,
+    "usage_rank": null,
+    "projection_rank": null,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.1,
+     "MAX20": 0.1,
+     "MAX3": 0.333
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  },
+  {
+   "player": "Titans",
+   "team": "TEN",
+   "position": "DST",
+   "dk_id": "44329130",
+   "changes": {
+    "FC Proj": [
+     4.08,
+     4.09
+    ],
+    "Ceiling": [
+     14.48,
+     14.49
+    ]
+   },
+   "material": false,
+   "material_because": [],
+   "ours": {
+    "proj": 3.78,
+    "sim_mean": 3.78,
+    "role": "ALPHA",
+    "chart_rank": null,
+    "usage_rank": null,
+    "projection_rank": null,
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": null,
+    "exposure": {
+     "MAX150": 0.04,
+     "MAX20": 0.05,
+     "MAX3": 0.0
+    }
+   },
+   "OUR_PROJECTION_CHANGED": false,
+   "OUR_PROJECTION_NOTE": "FC is never an input; our projection is the same number before and after this snapshot"
+  }
+ ]
+}
