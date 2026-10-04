@@ -212,9 +212,15 @@ def build(slate_id: str, *, write: bool = True) -> Outcome:
                     f"depth charts (QB order; RB/WR/TE rank = better of usage and chart) {sorted({v['capture_id'] for v in st['depth']['qb_chart'].values()})}",
                     f"evidence covers every game the week-4 forecast consumes ({st['freshness']['n_games_scored']}/{st['freshness']['n_games_consumed']})",
                     f"football sanity gate {dr['football_sanity']['code']}"],
-        'STALE_OR_PENDING': ['game-day official inactives: not yet published (posts ~15:30Z Sunday)',
-                             'Hard Rock board: not captured in this checkout',
-                             'weather: not captured; no validated weather term in the model'],
+        # read from the state, never written as fixed text: a pending item that has arrived is not pending
+        'STALE_OR_PENDING': ([] if str((st.get('official_inactives') or {}).get('STATE', '')).startswith('APPLIED')
+                                and len((st.get('official_inactives') or {}).get('clubs_with_full_list') or []) ==
+                                len({c for g in st['games'].values() for c in (g['away'], g['home'])})
+                             else [f"game-day inactives: {(st.get('official_inactives') or {}).get('STATE')} "
+                                   f"({len((st.get('official_inactives') or {}).get('clubs_with_full_list') or [])} of "
+                                   f"{len({c for g in st['games'].values() for c in (g['away'], g['home'])})} clubs listed)"]),
+        'CONTEXT_NOT_CAPTURED': ['Hard Rock board: not captured (downstream comparison only; no lineup depends on it)',
+                                 'weather: not captured; no validated weather term in the model (context only)'],
         'UNRESOLVED': [f"{u['name']} {u['team']} {u['position']}" for u in st['identity']['unresolved']]
                       + [f"NYG injury block carries no game designation (filed, but blank)"]
                       + [f"{x['player']} {x['team']}: starter by depth chart, not confirmed by the club"
