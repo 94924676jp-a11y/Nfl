@@ -38,7 +38,10 @@ def _sha(p):
 def _world(td, oi_state='APPLIED_OWNER_RELAYED', prelock='NO_RERUN_REQUIRED', repro='PASS', lists=('A', 'H')):
     d = pathlib.Path(td)
     w = lambda n, v: (d / f'DK_T_EARLY_{n}').write_text(v if isinstance(v, str) else json.dumps(v))  # noqa: E731
+    F.EARLY_ONLY_GAMES['T'] = frozenset({('A', 'H')})
     w('STATE.json', {'built_at_utc': '2026-10-04T14:40:00+00:00', 'games': {'G': {'away': 'A', 'home': 'H'}},
+                     'kickoff': '10/04/2026 01:00PM ET',
+                     'players': {str(i): {'name': f'P{i}', 'team': 'A', 'game_id': 'G'} for i in range(1, 10)},
                      'official_inactives': {'STATE': oi_state, 'packet_id': 'pk', 'source': 'OWNER_RELAYED',
                                             'clubs_with_full_list': lists}})
     w('PROJ.json', {'rows': {}})
@@ -46,7 +49,9 @@ def _world(td, oi_state='APPLIED_OWNER_RELAYED', prelock='NO_RERUN_REQUIRED', re
     w('DRAWS.json', {'d': 1})
     rows = [HEAD] + [f'{i},c,{cid},$1,1,2,3,4,5,6,7,8,9' for cid, n in (('1', 150), ('2', 20), ('3', 3)) for i in range(n)]
     w('UPLOAD.csv', '\n'.join(rows) + '\n')
-    contests = [{'profile': p, 'contest_id': c, 'n_entries': n, 'FILLED': True, 'lineups': [{}] * n}
+    contests = [{'profile': p, 'contest_id': c, 'n_entries': n, 'FILLED': True,
+                 'lineups': [{'entry_id': str(i), 'slots': [{'dk_id': '1', 'name': 'P1'}]} for i in range(n)],
+                 'report': {'game_exposure': {'G': 1.0}}}
                 for p, c, n in (('MAX150', '1', 150), ('MAX20', '2', 20), ('MAX3', '3', 3))]
     inputs = {k: str(d / f'DK_T_EARLY_{n}') for k, n in (('state', 'STATE.json'), ('proj', 'PROJ.json'), ('draws', 'DRAWS.json'))}
     w('PORTFOLIOS.json', {'built_at_utc': '2026-10-04T14:50:00+00:00', 'inputs': inputs,
@@ -104,6 +109,28 @@ def test_03b_a_club_without_its_list_refuses():
     o = F.finalize('T', d)
     check('positive control: one club has no game-day list -> refused on EVERY_CLUB_HAS_ITS_INACTIVE_LIST',
           'EVERY_CLUB_HAS_ITS_INACTIVE_LIST' in o.evidence['failed'], o.detail)
+
+
+def test_03c_anything_outside_the_early_only_games_refuses():
+    d = _world(tempfile.mkdtemp())
+    st = json.loads((d / 'DK_T_EARLY_STATE.json').read_text())
+    st['players']['99'] = {'name': 'Late Game Star', 'team': 'KC', 'game_id': 'G_LATE'}
+    (d / 'DK_T_EARLY_STATE.json').write_text(json.dumps(st))
+    po = json.loads((d / 'DK_T_EARLY_PORTFOLIOS.json').read_text())
+    po['contests'][2]['lineups'][0]['slots'].append({'dk_id': '99', 'name': 'Late Game Star'})
+    (d / 'DK_T_EARLY_PORTFOLIOS.json').write_text(json.dumps(po))
+    o = F.finalize('T', d)
+    g = json.loads((d / 'DK_T_EARLY_FINAL_MANIFEST.json').read_text())['gates']['SCOPE_EARLY_ONLY_1PM']
+    check('positive control: a 4 PM player in the pool and in a 3-entry lineup -> refused on SCOPE_EARLY_ONLY_1PM',
+          'SCOPE_EARLY_ONLY_1PM' in o.evidence['failed'] and any('Late Game Star' in v for v in g['violations']), g)
+    d = _world(tempfile.mkdtemp())
+    st = json.loads((d / 'DK_T_EARLY_STATE.json').read_text())
+    st['games']['G2'] = {'away': 'KC', 'home': 'LV'}
+    (d / 'DK_T_EARLY_STATE.json').write_text(json.dumps(st))
+    check('positive control: a ninth game in the state -> refused', 'SCOPE_EARLY_ONLY_1PM' in F.finalize('T', d).evidence['failed'])
+    d = _world(tempfile.mkdtemp())
+    (d / 'DK_T_EARLY_HARD_ROCK_SLOTS.json').write_text(json.dumps({'rows': [{'team': 'KC', 'player': 'X'}]}))
+    check('positive control: a Hard Rock row for a non-Early club -> refused', 'SCOPE_EARLY_ONLY_1PM' in F.finalize('T', d).evidence['failed'])
 
 
 def test_04_a_stale_final_is_moved_aside():

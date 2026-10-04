@@ -50,6 +50,59 @@ FINAL_EVIDENCE_STATES = {'APPLIED': 'FINAL_POST_INACTIVES_OFFICIAL_CAPTURED',
 PROFILE_FILE = {'MAX150': 'FINAL_150_MAX_POST_INACTIVES.csv', 'MAX20': 'FINAL_20_MAX_POST_INACTIVES.csv',
                 'MAX3': 'FINAL_3_ENTRY_POST_INACTIVES.csv'}
 UPLOAD_FILE = 'FINAL_DK_UPLOAD_POST_INACTIVES.csv'
+#: OWNER SCOPE (2026-10-04): the 8 Early Only 1:00 PM ET games, (away, home). Nothing else may appear in
+#: the pool, a lineup, an exposure/stack/game table, the upload, or the Hard Rock board.
+EARLY_ONLY_GAMES = {'2026W4': frozenset({('ARI', 'NYG'), ('NE', 'BUF'), ('NYJ', 'CHI'), ('DAL', 'HOU'),
+                                         ('LA', 'PHI'), ('GB', 'TB'), ('TEN', 'BAL'), ('JAX', 'CIN')})}
+EARLY_ONLY_KICKOFF = '01:00PM ET'
+UPLOAD_SLOTS = ('QB', 'RB', 'WR', 'TE', 'FLEX', 'DST')
+
+
+def scope_gate(slate, st, port, out_dir):
+    """Every player and every table inside the owner's 8 Early Only games, or a named refusal."""
+    want = EARLY_ONLY_GAMES.get(slate)
+    if want is None:
+        return {'ok': False, 'why': f'no declared Early Only scope for {slate}'}
+    games = {gid: (g['away'], g['home']) for gid, g in (st.get('games') or {}).items()}
+    bad = []
+    if set(games.values()) != set(want):
+        bad.append(f'state games {sorted(games.values())} != the 8 Early Only games')
+    if EARLY_ONLY_KICKOFF not in str(st.get('kickoff', '')):
+        bad.append(f"kickoff {st.get('kickoff')!r} is not the 1:00 PM ET window")
+    clubs = {c for pr in want for c in pr}
+    ids = set(games)
+    off_pool = [p['name'] for p in st['players'].values() if p.get('game_id') not in ids or p['team'] not in clubs]
+    if off_pool:
+        bad.append(f'{len(off_pool)} pool players outside the 8 games: {off_pool[:5]}')
+    for c in port.get('contests', []):
+        for lu in c['lineups']:
+            for sl in lu['slots']:
+                p = st['players'].get(sl['dk_id'])
+                if p is None or p.get('game_id') not in ids:
+                    bad.append(f"{c['profile']} entry {lu.get('entry_id')}: {sl.get('name')} ({sl['dk_id']}) is not in an Early Only game")
+        r = c.get('report') or {}
+        extra = sorted(set(r.get('game_exposure') or {}) - ids)
+        if extra:
+            bad.append(f"{c['profile']} game exposure lists {extra}")
+        stray = [e.get('dk_id') for e in (r.get('player_exposure') or {}).values() if e.get('dk_id') not in st['players']]
+        if stray:
+            bad.append(f"{c['profile']} exposure table holds {len(stray)} players outside the pool")
+    up = out_dir / f'DK_{slate}_EARLY_UPLOAD.csv'
+    if up.exists():
+        rows = list(csv.reader(up.open()))
+        hdr = rows[0]
+        cols = [i for i, h in enumerate(hdr) if h in UPLOAD_SLOTS]
+        for r in rows[1:]:
+            for i in cols:
+                p = st['players'].get(r[i])
+                if p is None or p.get('game_id') not in ids:
+                    bad.append(f'upload entry {r[0]}: player id {r[i]} is not in an Early Only game')
+    for name in ('HARD_ROCK_SLOTS.json', 'PROP_DIAGNOSTIC.json'):
+        d = _j(out_dir / f'DK_{slate}_EARLY_{name}') or {}
+        t = sorted({x.get('team') for x in d.get('rows', []) if x.get('team') and x.get('team') not in clubs})
+        if t:
+            bad.append(f'{name} has rows for clubs outside the 8 games: {t}')
+    return {'ok': not bad, 'games': sorted(games), 'violations': bad[:20], 'n_violations': len(bad)}
 
 
 def _sha(p):
@@ -73,6 +126,7 @@ def gates(slate, out_dir=OUT_DIR):
     oi = (st.get('official_inactives') or {}).get('STATE')
     g['EVIDENCE'] = {'ok': oi in FINAL_EVIDENCE_STATES, 'state': oi,
                      'packet_id': (st.get('official_inactives') or {}).get('packet_id')}
+    g['SCOPE_EARLY_ONLY_1PM'] = scope_gate(slate, st, port, out_dir)
     clubs = sorted({c for g in (st.get('games') or {}).values() for c in (g['away'], g['home'])})
     have = set((st.get('official_inactives') or {}).get('clubs_with_full_list') or ())
     g['EVERY_CLUB_HAS_ITS_INACTIVE_LIST'] = {'ok': bool(clubs) and set(clubs) <= have,
