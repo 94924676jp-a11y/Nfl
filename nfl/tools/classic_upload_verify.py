@@ -35,6 +35,7 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from nfl.dfs.salaries import early_only as EO  # noqa: E402
+from nfl.tools import availability as AV  # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 
 OUT_DIR = _REPO / 'nfl/dfs/salaries'
@@ -42,8 +43,7 @@ HEADER = ['Entry ID', 'Contest Name', 'Contest ID', 'Entry Fee',
           'QB', 'RB', 'RB', 'WR', 'WR', 'WR', 'TE', 'FLEX', 'DST']
 SLOT_POS = {'QB': {'QB'}, 'RB': {'RB'}, 'WR': {'WR'}, 'TE': {'TE'}, 'DST': {'DST'}}
 CAP = 50000
-OUT_STATES = ('REPORTED_INACTIVE_OFFICIAL_RELEASE_CITED', 'REPORTED_INACTIVE_HIGH_CONFIDENCE',
-              'CONFIRMED_INACTIVE')
+OUT_STATES = AV.ABSENT_STATUSES   # every absence, including relayed and unverified ones
 
 
 def verify(rows, pool, entries, out_ids) -> Outcome:

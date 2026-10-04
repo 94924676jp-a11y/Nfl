@@ -50,6 +50,7 @@ if str(_REPO) not in sys.path:
 from nfl.dfs.salaries import early_only as EO  # noqa: E402
 from nfl.opt import exact  # noqa: E402
 from nfl.tools import showdown_to_portfolio as S  # noqa: E402
+from nfl.tools import availability as AV  # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 
 SPEC_VERSION = 'classic-portfolio-1'
@@ -101,6 +102,14 @@ def _paths(slate_id):
             'draws': pathlib.Path(f'{b}_DRAWS.json'), 'out': pathlib.Path(f'{b}_PORTFOLIOS.json')}
 
 
+def _effective_designation(av):
+    """The Friday designation, unless Sunday evidence resolved it ACTIVE (any tier, labelled)."""
+    d = av.get('designation')
+    if d in ('QUESTIONABLE', 'DOUBTFUL') and ((av.get('resolution') or {}).get('claim') == 'ACTIVE'):
+        return f'{d}_RESOLVED_ACTIVE'
+    return d
+
+
 def research_book_gate(slate_id, P):
     """None when lineups may be built; otherwise the refusal.
 
@@ -148,7 +157,7 @@ def load(slate_id):
         r = proj['rows'].get(dk) or {}
         if r.get('projection_state') not in PLAYABLE_STATES:
             continue
-        if 'INACTIVE' in p['current_availability']['status']:
+        if p['current_availability']['status'] in AV.ABSENT_STATUSES:
             continue
         k = S.player_key(p['name'], p['team'])
         v = dr['draws'].get(k)
@@ -158,7 +167,7 @@ def load(slate_id):
         mat.append(v)
         meta[dk] = {'name': p['name'], 'team': p['team'], 'opp': p['opponent'], 'pos': p['position'],
                     'salary': p['salary'], 'game': p['game_id'], 'role_band': r.get('role_band'),
-                    'state': r.get('projection_state'), 'designation': p['current_availability'].get('designation')}
+                    'state': r.get('projection_state'), 'designation': _effective_designation(p['current_availability'])}
     M = np.asarray(mat, dtype=np.float64)
     return Outcome.ok('PORTFOLIO_INPUTS_LOADED', {'ids': ids, 'M': M, 'meta': meta, 'state': st, 'proj': proj,
                                                   'draws_doc': {k: v for k, v in dr.items() if k != 'draws'}},

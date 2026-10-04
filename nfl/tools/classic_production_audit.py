@@ -41,6 +41,7 @@ _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
+from nfl.tools import availability as AV  # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 
 OUT_DIR = _REPO / 'nfl/dfs/salaries'
@@ -114,7 +115,7 @@ def structure(book, state):
                 pr, st_, dp = c['projection'], c['status'], c['depth']
                 vol = (pr.get('targets') or 0) + (pr.get('carries') or 0) + (pr.get('pass_attempts') or 0)
                 tag = f"{c['name']} ({club} {c['position']})"
-                if st_['availability'] and 'INACTIVE' in st_['availability'] and vol >= VOLUME_FLOOR:
+                if st_['availability'] in AV.ABSENT_STATUSES and vol >= VOLUME_FLOOR:
                     flags.append({'kind': 'INACTIVE_WITH_VOLUME', 'player': tag, 'volume': _f(vol)})
                 if c['position'] in ('WR', 'TE', 'RB') and dp['declared_rank'] == 1 and pr.get('role_band') in ('ROTATIONAL', 'FRINGE') \
                         and not (st_['designation'] in ('QUESTIONABLE', 'DOUBTFUL')):
@@ -137,7 +138,7 @@ def structure(book, state):
             # chart starters missing from the DK pool -- by gsis id, never by name ("James Cook" on the
             # roster is "James Cook III" in DK's pool; a name comparison reported him missing)
             ids_in_pool = {c.get('gsis_id') for c in cards}
-            out_g = {v.get('gsis_id') for v in sp.values() if 'INACTIVE' in v['current_availability']['status']}
+            out_g = {v.get('gsis_id') for v in sp.values() if v['current_availability']['status'] in AV.ABSENT_STATUSES}
             for slot in ('QB', 'RB', 'WR', 'TE'):
                 for g_ in (chart_ids.get(club, {}).get(slot) or [])[:(2 if slot == 'WR' else 1)]:
                     if g_ not in ids_in_pool and g_ not in out_g:
@@ -209,7 +210,7 @@ def accounting(proj, state):
     tv = proj['team_volume']
     clubs = sorted({c for g in state['games'].values() for c in (g['away'], g['home'])})
     out, fails = {}, []
-    out_ids = {dk for dk, p in state['players'].items() if 'INACTIVE' in p['current_availability']['status']}
+    out_ids = {dk for dk, p in state['players'].items() if p['current_availability']['status'] in AV.ABSENT_STATUSES}
     for club in clubs:
         mem = [r for r in rows.values() if r.get('team') == club and r.get('position') in ('QB', 'RB', 'WR', 'TE')]
         s = {f: sum(r.get(f) or 0 for r in mem) for f in ('pass_attempts', 'targets', 'carries')}

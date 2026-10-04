@@ -194,6 +194,7 @@ def load_worlds(path):
 
 def run(slate_id: str, *, n_sims: int = 2000, player_mean_anchor: str = ANCHOR_EFFICIENCY) -> Outcome:
     from nfl.tools import proj_v1 as PV, role_state as RS, showdown_draws as SD, football_sanity as FS
+    from nfl.tools import availability as AV
     from nfl.sim import game as sim_game
     P = paths(slate_id)
     if not P['state'].exists():
@@ -219,9 +220,7 @@ def run(slate_id: str, *, n_sims: int = 2000, player_mean_anchor: str = ANCHOR_E
 
     # 3. FOOTBALL SANITY GATE on the projection, before any draw.
     absent = [v['name'] for v in state['players'].values()
-              if v['current_availability']['status'] in ('REPORTED_INACTIVE_OFFICIAL_RELEASE_CITED',
-                                                          'REPORTED_INACTIVE_HIGH_CONFIDENCE',
-                                                          'CONFIRMED_INACTIVE')]
+              if v['current_availability']['status'] in AV.ABSENT_STATUSES]
     clubs = sorted({c for g in state['games'].values() for c in (g['away'], g['home'])})
     sane = FS.assess(proj, absent=absent, clubs=clubs, units=('DST',))
 

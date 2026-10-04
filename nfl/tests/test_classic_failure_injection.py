@@ -90,9 +90,12 @@ def test_02_prelock_triggers():
     o = L.evaluate(_state(), PORT, ['DJ Moore'])
     check('positive control: a lineup player on the inactive list -> INACTIVE_IN_A_LINEUP',
           o.code == 'RERUN_REQUIRED' and any(r['kind'] == 'INACTIVE_IN_A_LINEUP' for r in o.evidence['reasons']))
-    o = L.evaluate(_state(q='QUESTIONABLE'), PORT, [])
-    check('positive control: a Questionable player resolved either way -> rerun',
-          any(r['kind'] == 'QUESTIONABLE_RESOLVED' for r in (o.evidence or {}).get('reasons', [])))
+    o = L.evaluate(_state(q='QUESTIONABLE'), PORT, [], None, ['DJ Moore'])
+    check('positive control: a Questionable player explicitly cleared -> rerun',
+          any(r['kind'] == 'QUESTIONABLE_RESOLVED' and r['now'] == 'ACTIVE' for r in (o.evidence or {}).get('reasons', [])))
+    o = L.evaluate(_state(q='QUESTIONABLE'), PORT, ['Somebody Else'])
+    check('negative control: a Questionable player on neither list stays unresolved (absence is not active)',
+          not any(r['kind'] == 'QUESTIONABLE_RESOLVED' for r in (o.evidence or {}).get('reasons', [])), o.evidence)
 
 
 def _proj(targets_sum=30.0, absent_targets=0.0, team_targets=30.0):

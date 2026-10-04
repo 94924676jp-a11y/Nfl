@@ -60,6 +60,7 @@ def out_path(slate_id: str) -> pathlib.Path:
 NEXT_HEALTHY_TIER = 'DEPTH_CHART_NEXT_HEALTHY_AFTER_REPORTED_OUT'
 #: highest chart rank that may lift a player who has NO usage history (see _qb_rank)
 NO_USAGE_CHART_LIFT_LIMIT = {'RB': 2, 'TE': 2, 'WR': 4}
+from nfl.tools.sunday_evidence import STATE_FOR_SOURCE as SE_STATE_FOR_SOURCE  # noqa: E402
 
 
 def _qb_rank(pos, team, gsis, qb_chart, depth, out_gsis=()):
@@ -190,7 +191,9 @@ def captured_qb_depth(as_of: str) -> dict:
 
 
 def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_starters=None,
-          write: bool = True) -> Outcome:
+          evidence_packet=None, write: bool = True) -> Outcome:
+    """`evidence_packet`: a loaded nfl/tools/sunday_evidence packet (inactives, cleared players,
+    starting quarterbacks, each with its provenance tier). See that module for the rules."""
     files = EO.slate_files(slate_id)
     po = EO.pool(files['entries_blob'], files['entries_sha'])
     if po.state.value != 'PASS':
@@ -253,12 +256,30 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
     qb_chart = captured_qb_depth(as_of)
 
     officials = {n.strip() for n in (official_inactives or ())}
+    # ------------------------------------------------------------------ Sunday evidence packet
+    pres, pstart, complete_clubs = {}, {}, set()
+    if evidence_packet:
+        from nfl.tools import sunday_evidence as SE
+        ro = SE.resolve(evidence_packet, pool_rows)
+        if ro.state.value != 'PASS':
+            return ro
+        pres, pstart, complete_clubs = ro.value['players'], ro.value['starters'], set(ro.value['complete_clubs'])
+        # a confirmed starter takes rank 1 on his club's chart; the chart's own order follows
+        for club, st_ in pstart.items():
+            g_ = (ids.get(st_['dk_id']) or {}).get('gsis_id')
+            if club in qb_chart and g_:
+                qb_chart[club] = {**qb_chart[club], 'order': [g_] + [x for x in qb_chart[club]['order'] if x != g_],
+                                  'confirmed_starter': st_['name']}
+        confirmed_starters = {**(confirmed_starters or {}), **{v['name']: c for c, v in pstart.items()}}
     game_of = {}
     for r in pool_rows:
         gid, _ = games[(SS.S.corpus_team(r['away']), SS.S.corpus_team(r['home']))]
         game_of[r['dk_id']] = gid
     players, status_counts, desig_counts = {}, collections.Counter(), collections.Counter()
     out_gsis = {g for g, r in by_gsis.items() if (r.get('report_status') or '').strip().lower() == 'out'}
+    # packet absences feed the depth logic too: the next healthy player moves up behind them
+    out_gsis |= {(ids.get(dk) or {}).get('gsis_id') for dk, v in pres.items()
+                 if v['status'] in AV.ABSENT_STATUSES and (ids.get(dk) or {}).get('gsis_id')}
     for r in pool_rows:
         dk_id, nm, team, pos = r['dk_id'], r['dk_name'], r['team'], r['dk_pos']
         rec = ids.get(dk_id) or {}
@@ -276,6 +297,12 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
             status, tier = SS.DESIGNATION_MAP[designation], AV.TIER_OFFICIAL_RELEASE_CITED
         else:
             status, tier = AV.UNKNOWN_ACTIVE_STATE, AV.TIER_NONE
+        resolution = None
+        if dk_id in pres:
+            status, tier = pres[dk_id]['status'], pres[dk_id]['tier']
+            resolution = pres[dk_id]
+        elif team in complete_clubs and status not in AV.ABSENT_STATUSES:
+            status, tier = AV.ACTIVE_NOT_ON_INACTIVE_LIST, AV.TIER_OFFICIAL_CAPTURED
         if dk_id in unresolved_ids:
             status, tier = AV.UNKNOWN_ACTIVE_STATE, AV.TIER_NONE
         status_counts[status] += 1
@@ -301,11 +328,13 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
                 'status': status, 'tier': tier, 'designation': designation if ir is not None else None,
                 'practice_status': (ir or {}).get('practice_status'),
                 'injury': (ir or {}).get('report_primary_injury'),
+                'resolution': resolution,
                 'IS_NOT': ('a game-day inactive decision unless the status is CONFIRMED_INACTIVE, '
                            'which requires a captured official document'),
             },
             'predicted_lineup_context': (SS._starter_context(nm, team, confirmed_starters)
-                                         or _next_healthy_context(pos, team, gsis, qb_chart, out_gsis)),
+                                         or ({} if (pos == 'QB' and team in pstart)   # the club named its starter
+                                             else _next_healthy_context(pos, team, gsis, qb_chart, out_gsis))),
         }
 
     out = {
@@ -337,9 +366,20 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
                           'clubs_with_no_game_designation': sorted(
                               t for t, n in inj.evidence['n_report_status_filled'].items() if n == 0),
                           'clubs_with_no_filed_block': inj.evidence['clubs_with_no_filed_block']},
-        'official_inactives': {'n_supplied': len(officials), 'STATUS_IF_SUPPLIED': AV.REPORTED_INACTIVE_HIGH_CONFIDENCE,
-                               'CAPTURED_DOCUMENT': None,
-                               'STATE': 'NOT_YET_PUBLISHED' if not officials else 'APPLIED'},
+        'official_inactives': (
+            {'n_supplied': len(officials), 'STATUS_IF_SUPPLIED': AV.REPORTED_INACTIVE_HIGH_CONFIDENCE,
+             'CAPTURED_DOCUMENT': None,
+             # a bare name list carries no captured document, so it is never 'APPLIED' (official)
+             'STATE': 'AWAITING_OFFICIAL_INACTIVES' if not officials else 'APPLIED_NAME_LIST_NOT_CAPTURED'}
+            if not evidence_packet else
+            {'STATE': SE_STATE_FOR_SOURCE[evidence_packet['source']],
+             'packet_id': evidence_packet['packet_id'], 'packet_sha256': evidence_packet.get('_sha256'),
+             'source': evidence_packet['source'], 'source_detail': evidence_packet.get('source_detail'),
+             'received_at': evidence_packet['received_at'], 'complete_clubs': sorted(complete_clubs),
+             'n_players': len(pres), 'n_inactive': sum(1 for v in pres.values() if v['claim'] == 'INACTIVE'),
+             'n_active': sum(1 for v in pres.values() if v['claim'] == 'ACTIVE'),
+             'starters': {c: v['name'] for c, v in pstart.items()},
+             'NEVER_UPGRADED': 'each player carries the tier its source supports; owner-relayed is not official'}),
         'depth': {'source': ('QB: rank on the newest captured depth chart lawful at as_of, among QBs not '
                              'reported out. RB/WR/TE: the better of the usage-history rank '
                              '(role_state_history.pregame_depth) and the captured chart rank. DST: none.'),
@@ -369,9 +409,18 @@ def main() -> int:
     ap.add_argument('slate_id')
     ap.add_argument('--as-of', required=True)
     ap.add_argument('--official-inactives', help='JSON list of names from a CAPTURED official list')
+    ap.add_argument('--evidence-packet', help='a Sunday evidence packet (nfl/tools/sunday_evidence.py)')
     a = ap.parse_args()
     oi = json.loads(pathlib.Path(a.official_inactives).read_text()) if a.official_inactives else None
-    o = build(a.slate_id, as_of=a.as_of, official_inactives=oi)
+    pk = None
+    if a.evidence_packet:
+        from nfl.tools import sunday_evidence as SE
+        lo = SE.load(a.evidence_packet)
+        if lo.state.value != 'PASS':
+            print(f'{lo.state.value}[{lo.code}] {lo.detail}')
+            return 1
+        pk = lo.value
+    o = build(a.slate_id, as_of=a.as_of, official_inactives=oi, evidence_packet=pk)
     print(f'{o.state.value}[{o.code}] {o.detail}')
     for k in ('availability', 'n_unresolved_not_projected', 'path'):
         if k in (o.evidence or {}):

@@ -27,11 +27,12 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from nfl.tools import showdown_to_portfolio as S  # noqa: E402
+from nfl.tools import availability as AV  # noqa: E402
 from sportsplatform.governance.outcome import Outcome  # noqa: E402
 
 OUT_DIR = _REPO / 'nfl/dfs/salaries'
 HARD_ROCK = 'NOT_CAPTURED: no Hard Rock week-4 board in this checkout (requested in docs/AGENT_OUTBOX.md)'
-ABSENT = ('REPORTED_INACTIVE_OFFICIAL_RELEASE_CITED', 'REPORTED_INACTIVE_HIGH_CONFIDENCE', 'CONFIRMED_INACTIVE')
+ABSENT = AV.ABSENT_STATUSES   # one definition of 'not playing', including relayed and unverified absences
 
 COLUMNS = ['player', 'team', 'opp', 'pos', 'salary', 'dk_id', 'classification', 'starter_state',
            'availability', 'designation', 'role', 'role_confidence', 'projection', 'sim_mean', 'median',
@@ -59,7 +60,7 @@ def classify(r, p, sim_mean, p90):
         return 'non-playable'
     if p['position'] == 'DST':
         return 'viable'
-    if av.get('designation') in ('QUESTIONABLE', 'DOUBTFUL'):
+    if av.get('designation') in ('QUESTIONABLE', 'DOUBTFUL') and (av.get('resolution') or {}).get('claim') != 'ACTIVE':
         return 'role-dependent'
     if (p.get('predicted_lineup_context') or {}).get('state') == 'DEPTH_CHART_NEXT_HEALTHY_AFTER_REPORTED_OUT':
         return 'role-dependent'   # a starter by the depth chart alone, not confirmed by his club

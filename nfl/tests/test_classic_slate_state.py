@@ -102,6 +102,54 @@ def test_04_a_chart_alone_lifts_only_into_formation_slots():
     check('  a player WITH usage history keeps the better of usage and chart', r == 3, str(r))
 
 
+def _pk(players, starters=None, source='REHEARSAL'):
+    return {'packet_id': 'test', 'source': source, 'received_at': '2026-10-04T05:00:00Z',
+            'players': players, 'starters': starters or {}}
+
+
+def _qbs(v, club):
+    return {p['name']: p for p in v['players'].values() if p['team'] == club and p['position'] == 'QB'}
+
+
+def test_05_an_evidence_packet_drives_the_real_week4_state():
+    """Integration on the committed week-4 inputs (write=False: the production state is untouched)."""
+    from nfl.opt import classic_portfolio as CP
+    o = C.build('2026W4', as_of='2026-10-04T05:00:00Z', write=False,
+                evidence_packet=_pk([{'name': 'Tyson Bagent', 'team': 'CHI', 'status': 'INACTIVE'},
+                                     {'name': 'Zay Flowers', 'team': 'BAL', 'status': 'ACTIVE', 'cited': 'OFFICIAL_RELEASE'}]))
+    if not check('the week-4 state builds with a packet', o.state.value == 'PASS', f'{o.code} {o.detail}'):
+        return
+    q = _qbs(o.value, 'CHI')
+    check('positive control: the packet-inactive starter leaves rank 1 and the next healthy QB takes it',
+          q['Case Keenum']['depth_rank'] == 1
+          and (q['Case Keenum'].get('predicted_lineup_context') or {}).get('state') == C.NEXT_HEALTHY_TIER,
+          {k: v.get('depth_rank') for k, v in q.items()})
+    check('  the owner-uncited inactive is REPORTED_OUT_UNVERIFIED, never CONFIRMED_INACTIVE',
+          q['Tyson Bagent']['current_availability']['status'] == 'REPORTED_OUT_UNVERIFIED')
+    z = next(p for p in o.value['players'].values() if p['name'] == 'Zay Flowers')['current_availability']
+    check('a cleared Questionable carries the resolution and keeps his Friday designation',
+          z['designation'] == 'QUESTIONABLE' and z['resolution']['claim'] == 'ACTIVE', z)
+    check('  and becomes eligible for the conviction pool (designation reads RESOLVED_ACTIVE)',
+          CP._effective_designation(z) == 'QUESTIONABLE_RESOLVED_ACTIVE')
+    check('  negative control: an unresolved Questionable stays QUESTIONABLE',
+          CP._effective_designation({'designation': 'QUESTIONABLE'}) == 'QUESTIONABLE')
+    check('a rehearsal is labelled as not evidence', o.value['official_inactives']['STATE'] == 'REHEARSAL_NOT_EVIDENCE')
+
+    o = C.build('2026W4', as_of='2026-10-04T05:00:00Z', write=False,
+                evidence_packet=_pk([], {'CHI': 'Case Keenum'}))
+    q = _qbs(o.value, 'CHI')
+    check('positive control: a confirmed starter overrides chart inference',
+          o.state.value == 'PASS' and q['Case Keenum']['depth_rank'] == 1 and q['Tyson Bagent']['depth_rank'] != 1,
+          {k: v.get('depth_rank') for k, v in q.items()})
+    check('  and no next-healthy guess is layered on a confirmed club',
+          not any((v.get('predicted_lineup_context') or {}).get('state') == C.NEXT_HEALTHY_TIER for v in q.values()))
+    o = C.build('2026W4', as_of='2026-10-04T05:00:00Z', write=False)
+    q = _qbs(o.value, 'CHI')
+    check('negative control: with no packet the chart starter keeps the next-healthy tier and the slot is AWAITING',
+          q['Tyson Bagent']['depth_rank'] == 1 and o.value['official_inactives'].get('STATE', '').startswith('AWAITING'),
+          (q['Tyson Bagent'].get('depth_rank'), o.value['official_inactives'].get('STATE')))
+
+
 def test_zz_every_check_passed():
     """The module's own counter, re-raised so a failure turns this module RED."""
     if FAILED:

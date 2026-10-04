@@ -33,7 +33,9 @@ OUT_DIR = _REPO / 'nfl/dfs/salaries'
 NEXT_HEALTHY = 'DEPTH_CHART_NEXT_HEALTHY_AFTER_REPORTED_OUT'
 
 
-def evaluate(state, port, inactives=None, confirmed=None):
+def evaluate(state, port, inactives=None, confirmed=None, actives=None):
+    """`inactives` / `actives`: names explicitly claimed. A Questionable player on NEITHER list is still
+    unresolved -- absence from a partial list is not a claim that he plays."""
     chart_only = {v['team']: v for v in state['players'].values()
                   if (v.get('predicted_lineup_context') or {}).get('state') == NEXT_HEALTHY}
     in_lineups = {}
@@ -48,6 +50,7 @@ def evaluate(state, port, inactives=None, confirmed=None):
                                f'no official inactive list supplied; {len(watch)} chart-only starter(s) unconfirmed',
                                cause=Cause.DATA, watch=watch)
     out = {n.strip().lower() for n in inactives}
+    act = {n.strip().lower() for n in (actives or ())}
     reasons = []
     for club, v in chart_only.items():
         if v['name'].lower() in out:
@@ -60,10 +63,12 @@ def evaluate(state, port, inactives=None, confirmed=None):
         if p.get('name', '').lower() in out:
             reasons.append({'kind': 'INACTIVE_IN_A_LINEUP', 'player': p['name'], 'club': p.get('team'), 'exposure': ex})
     for dk, p in state['players'].items():
-        if (p['current_availability'].get('designation') or '') in ('QUESTIONABLE', 'DOUBTFUL'):
-            reasons.append({'kind': 'QUESTIONABLE_RESOLVED', 'player': p['name'], 'club': p['team'],
-                            'now': 'INACTIVE' if p['name'].lower() in out else 'ACTIVE (not on the inactive list)',
-                            'exposure': in_lineups.get(dk, {})})
+        if ((p['current_availability'].get('designation') or '') in ('QUESTIONABLE', 'DOUBTFUL')
+                and not p['current_availability'].get('resolution')):   # already resolved in this state
+            nm_ = p['name'].lower()
+            if nm_ in out or nm_ in act:
+                reasons.append({'kind': 'QUESTIONABLE_RESOLVED', 'player': p['name'], 'club': p['team'],
+                                'now': 'INACTIVE' if nm_ in out else 'ACTIVE', 'exposure': in_lineups.get(dk, {})})
     if reasons:
         return Outcome.fail('RERUN_REQUIRED', f'{len(reasons)} trigger(s): ' + ', '.join(sorted({r["kind"] for r in reasons})),
                             reasons=reasons, watch=watch)
@@ -76,13 +81,25 @@ def main() -> int:
     ap.add_argument('slate_id')
     ap.add_argument('--official-inactives', default=None)
     ap.add_argument('--confirmed-starters', default=None)
+    ap.add_argument('--evidence-packet', default=None, help='a Sunday evidence packet (sunday_evidence.py)')
     a = ap.parse_args()
     st = json.loads((OUT_DIR / f'DK_{a.slate_id}_EARLY_STATE.json').read_text())
     pp = OUT_DIR / f'DK_{a.slate_id}_EARLY_PORTFOLIOS.json'
     port = json.loads(pp.read_text()) if pp.exists() else None
     ina = json.loads(pathlib.Path(a.official_inactives).read_text()) if a.official_inactives else None
     con = json.loads(pathlib.Path(a.confirmed_starters).read_text()) if a.confirmed_starters else None
-    o = evaluate(st, port, ina, con)
+    act = None
+    if a.evidence_packet:
+        from nfl.tools import sunday_evidence as SE
+        lo = SE.load(a.evidence_packet)
+        if lo.state.value != 'PASS':
+            print(f'{lo.state.value}[{lo.code}] {lo.detail}')
+            return 1
+        pk = lo.value
+        ina = [x['name'] for x in pk.get('players') or [] if x['status'] == 'INACTIVE']
+        act = [x['name'] for x in pk.get('players') or [] if x['status'] == 'ACTIVE']
+        con = dict(pk.get('starters') or {})
+    o = evaluate(st, port, ina, con, act)
     (OUT_DIR / f'DK_{a.slate_id}_EARLY_PRELOCK.json').write_text(json.dumps(
         {'ARTIFACT': 'CLASSIC_PRELOCK', 'slate_id': a.slate_id, 'checked_at_utc': dt.datetime.now(dt.timezone.utc).isoformat(),
          'state': o.state.value, 'code': o.code, 'detail': o.detail, **(o.evidence or {})}, indent=1, default=str))
