@@ -73,6 +73,19 @@ def build(slate, text, packet_path, received_at):
     off_pool = list(pk.get('off_pool') or [])
     probe = {'packet_id': 'probe', 'source': pk['source'], 'received_at': received_at, 'starters': {}}
     for club, v in clubs.items():
+        resolved = []
+        for nm in v['names']:
+            m = re.match(r'^([A-Z])\.\s*(.+)$', nm)
+            if m:   # "M. Carter": exactly one pool player on the club with that initial and surname, or refuse
+                ini, sur = m.group(1).lower(), SE._norm(m.group(2))
+                hits = [q['dk_name'] for q in pool if q['team'] == club and q['dk_name'][:1].lower() == ini
+                        and SE._norm(q['dk_name']).endswith(sur)]
+                if len(hits) > 1:
+                    raise SystemExit(f'REFUSED: {nm!r} ({club}) is ambiguous: {hits}')
+                if hits:
+                    nm = hits[0]
+            resolved.append(nm)
+        v['names'] = resolved
         for nm in v['names']:
             r = SE.resolve({**probe, 'players': [{'name': nm, 'team': club, 'status': 'INACTIVE'}]}, pool)
             if r.state.value != 'PASS':
