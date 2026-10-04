@@ -1,12 +1,12 @@
 {
  "ARTIFACT": "CLASSIC_FINAL_MANIFEST",
  "slate_id": "2026W4",
- "checked_at_utc": "2026-10-04T15:55:31.317891+00:00",
+ "checked_at_utc": "2026-10-04T16:12:54.254686+00:00",
  "gates": {
   "EVIDENCE": {
-   "ok": false,
-   "state": "NOT_YET_PUBLISHED",
-   "packet_id": null
+   "ok": true,
+   "state": "APPLIED_OWNER_RELAYED",
+   "packet_id": "2026W4-sunday-owner"
   },
   "SCOPE_EARLY_ONLY_1PM": {
    "ok": true,
@@ -24,25 +24,8 @@
    "n_violations": 0
   },
   "EVERY_CLUB_HAS_ITS_INACTIVE_LIST": {
-   "ok": false,
-   "missing": [
-    "ARI",
-    "BAL",
-    "BUF",
-    "CHI",
-    "CIN",
-    "DAL",
-    "GB",
-    "HOU",
-    "JAX",
-    "LA",
-    "NE",
-    "NYG",
-    "NYJ",
-    "PHI",
-    "TB",
-    "TEN"
-   ]
+   "ok": true,
+   "missing": []
   },
   "PORTFOLIO_ON_CURRENT_INPUTS": {
    "ok": true,
@@ -61,8 +44,8 @@
    "reproducibility": "PASS"
   },
   "PRELOCK": {
-   "ok": false,
-   "verdict": "BLOCKED[AWAITING_OFFICIAL_INACTIVES]"
+   "ok": true,
+   "verdict": "PASS[NO_RERUN_REQUIRED]"
   },
   "FILLED": {
    "ok": true,
@@ -74,11 +57,35 @@
   }
  },
  "NOT_SUBMITTED": "this repository never uploads to DraftKings; the owner does",
- "STATE": "NOT_POPULATED",
- "failed_gates": [
-  "EVERY_CLUB_HAS_ITS_INACTIVE_LIST",
-  "EVIDENCE",
-  "PRELOCK"
- ],
- "moved_aside": []
+ "STATE": "FINAL_POST_INACTIVES_OWNER_RELAYED_NOT_OFFICIAL",
+ "evidence": {
+  "STATE": "APPLIED_OWNER_RELAYED",
+  "packet_id": "2026W4-sunday-owner",
+  "packet_sha256": "2fb2c66fe5a3c973b52ca6fe37d68868e7401145d92cdf96ec6e8dd5b7a1e47a",
+  "source": "OWNER_RELAYED",
+  "received_at": "2026-10-04T14:22:00Z",
+  "starters": {
+   "TB": {
+    "name": "Jalon Daniels",
+    "starter_state": "CONFIRMED_BY_TEAM_PUBLISHED_EVIDENCE",
+    "evidence_tier": "OFFICIAL_TEAM_PUBLISHED",
+    "relayed_by": "OWNER_RELAYED",
+    "received_at": "2026-10-04T14:22:00Z"
+   },
+   "CHI": {
+    "name": "Tyson Bagent",
+    "starter_state": "REPORTED_EXPECTED_STARTER",
+    "evidence_tier": "HIGH_CONFIDENCE_REPORTED_STARTER",
+    "relayed_by": "OWNER_RELAYED",
+    "received_at": "2026-10-04T14:22:00Z"
+   }
+  }
+ },
+ "files": {
+  "FINAL_150_MAX_POST_INACTIVES.csv": "ae90a1212d289812908de766d12215e1767d093e49eadec1585c453d2abdf6c0",
+  "FINAL_20_MAX_POST_INACTIVES.csv": "2039d46d5b46bb04399a2b57767773ac9289fbdf55201097d72ac9276e8c4455",
+  "FINAL_3_ENTRY_POST_INACTIVES.csv": "b3a0b3508cd43285223ef7f41facfd90f164673343a389536e2f52618c83b2b9",
+  "FINAL_DK_UPLOAD_POST_INACTIVES.csv": "bf50aaeefc0788063e77c69cc85450c54c5c22720f5fad3b4be02c370ca06899"
+ },
+ "upload_sha256": "bf50aaeefc0788063e77c69cc85450c54c5c22720f5fad3b4be02c370ca06899"
 }

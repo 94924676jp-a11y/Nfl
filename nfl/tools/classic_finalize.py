@@ -174,8 +174,10 @@ def finalize(slate, out_dir=OUT_DIR) -> Outcome:
         (out_dir / f'DK_{slate}_EARLY_FINAL_MANIFEST.json').write_text(json.dumps(man, indent=1, default=str))
         return Outcome.blocked('FINAL_NOT_POPULATED', f'{len(failed)} gate(s) not passed: {", ".join(failed)}',
                                cause=Cause.DATA, failed=failed)
-    up = (out_dir / f'DK_{slate}_EARLY_UPLOAD.csv').read_text()
-    rows = list(csv.reader(io.StringIO(up)))
+    raw = (out_dir / f'DK_{slate}_EARLY_UPLOAD.csv').read_bytes()   # the VERIFIED bytes, never re-encoded
+    eol = '\r\n' if b'\r\n' in raw else '\n'
+    up = raw.decode('utf-8')
+    rows = list(csv.reader(io.StringIO(up, newline='')))
     head, body = rows[0], rows[1:]
     cid = head.index('Contest ID')
     files = {}
@@ -184,15 +186,15 @@ def finalize(slate, out_dir=OUT_DIR) -> Outcome:
         if len(keep) != c['n_entries']:
             return Outcome.fail('FINAL_UPLOAD_CONTEST_COUNT', f"{c['profile']}: {len(keep)} upload rows for {c['n_entries']} entries")
         buf = io.StringIO()
-        csv.writer(buf, lineterminator='\n').writerows([head, *keep])
+        csv.writer(buf, lineterminator=eol).writerows([head, *keep])
         files[PROFILE_FILE[c['profile']]] = buf.getvalue()
     files[UPLOAD_FILE] = up
     for n, txt in files.items():
-        (out_dir / f'DK_{slate}_EARLY_{n}').write_text(txt)
+        (out_dir / f'DK_{slate}_EARLY_{n}').write_bytes(raw if n == UPLOAD_FILE else txt.encode('utf-8'))
     man.update({'STATE': FINAL_EVIDENCE_STATES[g['EVIDENCE']['state']],
                 'evidence': {k: (st.get('official_inactives') or {}).get(k)
                              for k in ('STATE', 'packet_id', 'packet_sha256', 'source', 'received_at', 'starters')},
-                'files': {n: hashlib.sha256(t.encode()).hexdigest() for n, t in files.items()},
+                'files': {n: _sha(out_dir / f'DK_{slate}_EARLY_{n}') for n in files},
                 'upload_sha256': _sha(out_dir / f'DK_{slate}_EARLY_UPLOAD.csv')})
     (out_dir / f'DK_{slate}_EARLY_FINAL_MANIFEST.json').write_text(json.dumps(man, indent=1, default=str))
     return Outcome.ok('FINAL_POPULATED', man['files'], f"{man['STATE']}: {len(files)} files")

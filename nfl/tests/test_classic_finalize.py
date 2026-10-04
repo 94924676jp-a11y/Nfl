@@ -48,7 +48,7 @@ def _world(td, oi_state='APPLIED_OWNER_RELAYED', prelock='NO_RERUN_REQUIRED', re
     (d / 'DK_T_EARLY_WORLDS.npz').write_bytes(b'worlds')
     w('DRAWS.json', {'d': 1})
     rows = [HEAD] + [f'{i},c,{cid},$1,1,2,3,4,5,6,7,8,9' for cid, n in (('1', 150), ('2', 20), ('3', 3)) for i in range(n)]
-    w('UPLOAD.csv', '\n'.join(rows) + '\n')
+    (d / 'DK_T_EARLY_UPLOAD.csv').write_bytes(('\r\n'.join(rows) + '\r\n').encode())   # DK files are CRLF
     contests = [{'profile': p, 'contest_id': c, 'n_entries': n, 'FILLED': True,
                  'lineups': [{'entry_id': str(i), 'slots': [{'dk_id': '1', 'name': 'P1'}]} for i in range(n)],
                  'report': {'game_exposure': {'G': 1.0}}}
