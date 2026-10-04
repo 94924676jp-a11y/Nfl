@@ -27,7 +27,7 @@ def check(label, ok, detail=''):
 
 def test_01_the_order_is_the_owners():
     names = [n for n, _ in PL.stages('S', '2026-10-04T15:40:00Z', 'i.json', 'p.html')]
-    want = ['state', 'run', 'book', 'portfolios', 'verify', 'book_with_exposures', 'board', 'fc', 'props', 'audit', 'changes', 'page']
+    want = ['state', 'run', 'book', 'portfolios', 'verify', 'book_with_exposures', 'board', 'fc', 'props', 'audit', 'prelock', 'changes', 'finalize', 'page']
     check('stages run in the declared lock-critical order', names == want, names)
     check('  lineups come only after the research book', names.index('portfolios') > names.index('book'))
     check('  Hard Rock is compared only after the projection, book, seal and lineups exist',
@@ -35,6 +35,20 @@ def test_01_the_order_is_the_owners():
     check('  only FC and Hard Rock may refuse without stopping the run', PL.DOWNSTREAM_ONLY == {'fc', 'props'})
     st = dict(PL.stages('S', 'T', 'i.json', 'p.html'))['state']
     check('  the official inactive list reaches the state builder', '--official-inactives' in st and 'i.json' in st)
+    sg = dict(PL.stages('S', 'T', None, 'p.html', 'pk.json'))
+    check('  the evidence packet reaches both the state builder and the prelock check',
+          sg['state'][-2:] == ['--evidence-packet', 'pk.json'] and sg['prelock'][-2:] == ['--evidence-packet', 'pk.json'])
+    check('  negative control: no packet -> no packet flag anywhere',
+          not any('--evidence-packet' in (c if isinstance(c[0], str) else sum(c, []))
+                  for c in dict(PL.stages('S', 'T', None, 'p.html')).values()))
+    pt = sg['portfolios']
+    check('  the production build runs beside two tagged reproducibility builds, production first',
+          len(pt) == 3 and '--tag' not in pt[0] and [c[-1] for c in pt[1:]] == ['reproA', 'reproB'])
+    check('  finalize comes after audit, prelock and the change log, and before the page',
+          names.index('finalize') > max(names.index(x) for x in ('audit', 'prelock', 'changes', 'verify'))
+          and names.index('finalize') == names.index('page') - 1)
+    check('  only the comparisons and the two post-run verdicts may refuse without stopping',
+          PL.NON_STOPPING == {'fc', 'props', 'prelock', 'finalize'})
 
 
 def test_02_a_dry_run_writes_no_snapshot():

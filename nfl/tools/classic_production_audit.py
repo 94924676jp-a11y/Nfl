@@ -458,6 +458,10 @@ def reproducibility():
     h = {n: hashlib.sha256(p.read_bytes()).hexdigest() for n, p in (('A', a), ('B', b), ('production', prod))}
     pa = json.loads((sd / 'DK_2026W4_EARLY_PORTFOLIOS.reproA.json').read_text())
     pb = json.loads((sd / 'DK_2026W4_EARLY_PORTFOLIOS.reproB.json').read_text())
+    cur = json.loads((OUT_DIR / 'DK_2026W4_EARLY_PORTFOLIOS.json').read_text()).get('inputs_sha256')
+    if not (pa.get('inputs_sha256') == pb.get('inputs_sha256') == cur):
+        # builds from older inputs say nothing about this run's reproducibility
+        return {'state': 'STALE', 'why': 'the tagged builds were made from different inputs than production'}
     strip = lambda d: {k: v for k, v in d.items() if k not in ('built_at_utc', 'sensitivity', 'research_book_sha256')}  # noqa: E731
     same_doc = json.dumps(strip(pa), sort_keys=True) == json.dumps(strip(pb), sort_keys=True)
     return {'state': 'PASS' if h['A'] == h['B'] == h['production'] and same_doc else 'FAIL', 'upload_sha256': h,
@@ -477,8 +481,10 @@ def role_dependent(port, state):
         row = {'player': name, 'dk_id': dk, 'current_exposure': cur,
                'starter_evidence': (sp.get('predicted_lineup_context') or {}).get('state'),
                'club_confirmation': 'NONE HELD', 'classification': 'ROLE_DEPENDENT'}
-        if p.exists():
-            alt = json.loads(p.read_text())
+        alt = json.loads(p.read_text()) if p.exists() else None
+        if alt is not None and alt.get('inputs_sha256') != port.get('inputs_sha256'):
+            row['if_removed'] = 'STALE_AGAINST_CURRENT_INPUTS'
+        elif alt is not None:
             turnover, qb_shift = {}, {}
             for c, a in zip(port['contests'], alt['contests']):
                 s0 = {frozenset(s['dk_id'] for s in lu['slots']) for lu in c['lineups']}
