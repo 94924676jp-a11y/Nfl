@@ -243,6 +243,43 @@ def audit_section(a, pre):
     <h3>Stadiums</h3><ul class="fine">{roof}</ul>"""
 
 
+def staging_section(slate_id):
+    sc, si, fin = _load(slate_id, 'STAGING_CHECK'), _load(slate_id, 'SUNDAY_INPUTS'), _load(slate_id, 'FINAL_MANIFEST')
+    sn = _load(slate_id, 'SCENARIOS')
+    if not sc:
+        return '<p class="missing">Staging check not run (classic_staging.py).</p>'
+    cls = {'READY': 'ok', 'AWAITING': 'warn', 'BLOCKED': 'bad', 'READY_WITH_DECLARED_LIMITATION': 'warn'}
+    lim = sc.get('declared_limitations') or {}
+    rows = ''.join(f"<tr><td>{e(k)}</td><td class=\"cls-{cls.get(v, 'bad')}\"><b>{e(v.replace('_', ' '))}</b></td>"
+                   f"<td class=\"fine\">{e(lim.get(k, ''))}</td></tr>" for k, v in sc['readiness_table'].items())
+    inputs = ''.join(f"<li><b>{e(k.replace('_', ' '))}</b>: {e(v['state'])}"
+                     + (f" ({e(', '.join(x['player'] for x in v['players']))})" if v.get('players') else '')
+                     + (f" (chart starter {e(v['chart_starter'])})" if v.get('chart_starter') else '') + '</li>'
+                     for k, v in ((si or {}).get('slots') or {}).items())
+    scen = ''
+    for x in (sn or {}).get('scenarios', []):
+        if not x.get('material'):
+            continue
+        mv = ', '.join(f"{m['player']} {m['change']:+.1f}" for m in x.get('cascade', [])[:5]) or 'no teammate moves 0.5+'
+        su = x.get('successor') or {}
+        if su.get('state') == 'NO_SUCCESSOR_ON_CAPTURED_CHART':
+            mv = 'no successor on the captured chart; passing split ' + ', '.join(f'{k} {v:.0f}' for k, v in su['pass_attempts_split'].items()) + '. ' + mv
+        scen += (f"<tr><td>{e(x['player'])}</td><td>{e(x['team'])}</td><td>{e(x['open_question'])}</td>"
+                 f"<td class=\"n\">{pct(x['exposure'].get('MAX150'))} / {pct(x['exposure'].get('MAX20'))} / {pct(x['exposure'].get('MAX3'))}</td>"
+                 f"<td>{e(mv)}</td><td class=\"fine\">{e('; '.join(x.get('material_because', [])))}</td></tr>")
+    checked = [x['player'] for x in (sn or {}).get('scenarios', []) if not x.get('material')]
+    fin_line = (f"FINAL files: <b>{e((fin or {}).get('STATE', 'NOT BUILT'))}</b>"
+                + (f" (waiting on {e(', '.join(fin.get('failed_gates', [])))})" if fin and fin.get('failed_gates') else ''))
+    return f"""<p class="fine">{fin_line}. Saturday's lineups are preserved unchanged as PRE_INACTIVES_BASELINE
+    (nfl/dfs/salaries/baseline_2026W4_pre_inactives/). Nothing on this page is Sunday-final until the FINAL files exist.</p>
+    <div class="scroll"><table><thead><tr><th>Component</th><th>State</th><th>Declared limitation</th></tr></thead><tbody>{rows}</tbody></table></div>
+    <h3>Still waiting on</h3><ul class="fine">{inputs}</ul>
+    <h3>If an open question resolves against us</h3>
+    <p class="fine">Scenario map only; it changes nothing until real evidence arrives. Exposure is 150-max / 20-max / 3-entry.</p>
+    <div class="scroll"><table><thead><tr><th>Player</th><th>Team</th><th>Open question</th><th>Exposure</th><th>If he is out</th><th>Why material</th></tr></thead><tbody>{scen}</tbody></table></div>
+    <p class="fine">Checked and not material: {e(', '.join(checked) or 'none')}.</p>"""
+
+
 def build(slate_id):
     b = _load(slate_id, 'OWNER_BOARD')
     if b is None:
@@ -262,6 +299,10 @@ def build(slate_id):
     status = 'READY' if ready else 'NOT READY TO SUBMIT'
     why = [] if ready else (rd.get('BLOCKED', []) + rd.get('STALE_OR_PENDING', [])
                             + ([] if verified else ['upload file not verified']))
+    fin_ = _load(slate_id, 'FINAL_MANIFEST') or {}
+    if not str(fin_.get('STATE', '')).startswith('FINAL_POST_INACTIVES'):
+        ready, status = False, 'NOT READY TO SUBMIT'
+        why = why + [f"FINAL post-inactives files not populated (gates waiting: {', '.join(fin_.get('failed_gates') or ['not run'])})"]
     contests = ''.join(contest_card(c, ver) for c in (port or {}).get('contests', [])) or \
         '<p class="missing">No portfolio artifact for this slate.</p>'
     games = ''.join(f'''<tr><td>{e(g['away'])} @ {e(g['home'])}</td><td class="n">{g['football_total']:.1f}</td>
@@ -320,7 +361,7 @@ def build(slate_id):
             f"snap counts weeks {((book or {}).get('evidence') or {}).get('snap_counts', {}).get('weeks_used')}",
             f"official inactives: {(st_.get('official_inactives') or {}).get('STATE', 'unknown')}"]
     return TEMPLATE.format(
-        audit=audit_section(audit, pre), evidence=lst(evid), defects=lst(KNOWN_DEFECTS), run_changes=run_changes,
+        staging=staging_section(slate_id), audit=audit_section(audit, pre), evidence=lst(evid), defects=lst(KNOWN_DEFECTS), run_changes=run_changes,
         research=research_section(book), reasoning=reasoning_section(b.get('dfs_reasoning')),
         accounting=e(acc_state), props=prop_html,
         status=status, status_cls='ok' if ready else 'bad', why=lst(why), built=e(b['built_at_utc'][:16] + 'Z'),
@@ -406,6 +447,7 @@ details.game[open] {{ display: grid; gap: 12px; }}
 .team p {{ margin: 0; }}
 .fine {{ font-size: .85rem; color: var(--muted); }}
 code {{ font-family: var(--mono); font-size: .85em; word-break: break-all; }}
+.cls-ok {{ color: var(--ok); }} .cls-warn {{ color: var(--warn); }} .cls-bad {{ color: var(--bad); }}
 .cls-viable {{ color: var(--ok); }} .cls-inactive, .cls-unresolved {{ color: var(--bad); }} .cls-thin, .cls-role-dependent {{ color: var(--warn); }}
 </style>
 <div class="wrap">
@@ -420,6 +462,11 @@ code {{ font-family: var(--mono); font-size: .85em; word-break: break-all; }}
     <ul>{why}</ul>
     <p class="fine">{validation}</p>
   </div>
+
+  <section class="block">
+    <h2>Sunday staging</h2>
+    {staging}
+  </section>
 
   <section class="block">
     <h2>Contest portfolios</h2>

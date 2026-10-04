@@ -1,0 +1,679 @@
+{
+ "ARTIFACT": "CLASSIC_SCENARIOS",
+ "slate_id": "2026W4",
+ "built_at_utc": "2026-10-04T05:33:59.300274+00:00",
+ "LABEL": "SCENARIO_MAP_ONLY_NOT_PRODUCTION: nothing here changes a projection, a lineup or a price",
+ "base": {
+  "projection_sha256": "b7d79cec4b71d767e4c3f791513ce779e2c11096885f668aa85e7372141d682e",
+  "state_sha256": "02f41551c54d290d2c2bfd2d0989fa910fb45e91515d5ea170db1350b695c9a0",
+  "portfolios_sha256": "fa68dd3b09d246b07996e2e71ace1837ffe690bec25d5f70fcaa156a6100c003"
+ },
+ "materiality": {
+  "MAX150": 0.05,
+  "MAX20": 0.1,
+  "MAX3": "any",
+  "teammate_move_dk": 2.0,
+  "SOURCE": "owner directive 2026-10-04"
+ },
+ "NO_ACTIVE_SCENARIO": "the projection does not price a Questionable designation; clearing one changes only conviction-pool eligibility",
+ "scenarios": [
+  {
+   "player": "Chris Moore",
+   "dk_id": "44328727",
+   "team": "BAL",
+   "position": "WR",
+   "open_question": "QUESTIONABLE (Friday report)",
+   "base_dk_points": 0.3,
+   "exposure": {},
+   "lineups_containing": {},
+   "scenario": "HE_IS_INACTIVE",
+   "material": false,
+   "material_because": [],
+   "successor": null,
+   "cascade": [],
+   "club_total_change": -0.0,
+   "portfolios_to_rebuild": [],
+   "hard_rock_markets_affected": [],
+   "yards_markets_blocked_for_club": false
+  },
+  {
+   "player": "Colby Parkinson",
+   "dk_id": "44328955",
+   "team": "LA",
+   "position": "TE",
+   "open_question": "QUESTIONABLE (Friday report)",
+   "base_dk_points": 2.77,
+   "exposure": {},
+   "lineups_containing": {},
+   "scenario": "HE_IS_INACTIVE",
+   "material": false,
+   "material_because": [],
+   "successor": null,
+   "cascade": [
+    {
+     "player": "Davis Allen",
+     "dk_id": "44329041",
+     "position": "TE",
+     "old": 0.29,
+     "new": 2.2,
+     "change": 1.91,
+     "components": {
+      "carries": 0.32,
+      "targets": 1.1,
+      "receptions": 0.83,
+      "rec_yards": 8.01
+     },
+     "exposure": {},
+     "hard_rock_markets": [
+      "player_receptions",
+      "player_receiving_yards",
+      "player_touchdowns"
+     ]
+    }
+   ],
+   "club_total_change": 0.48,
+   "portfolios_to_rebuild": [],
+   "hard_rock_markets_affected": [
+    "Davis Allen player_receiving_yards",
+    "Davis Allen player_receptions",
+    "Davis Allen player_touchdowns"
+   ],
+   "yards_markets_blocked_for_club": false
+  },
+  {
+   "player": "Eli Raridon",
+   "dk_id": "44328967",
+   "team": "NE",
+   "position": "TE",
+   "open_question": "QUESTIONABLE (Friday report)",
+   "base_dk_points": 0.03,
+   "exposure": {},
+   "lineups_containing": {},
+   "scenario": "HE_IS_INACTIVE",
+   "material": false,
+   "material_because": [],
+   "successor": null,
+   "cascade": [],
+   "club_total_change": -0.01,
+   "portfolios_to_rebuild": [],
+   "hard_rock_markets_affected": [],
+   "yards_markets_blocked_for_club": false
+  },
+  {
+   "player": "Jalon Daniels",
+   "dk_id": "44328407",
+   "team": "TB",
+   "position": "QB",
+   "open_question": "starter by depth chart only (QB1 reported OUT)",
+   "base_dk_points": 14.04,
+   "exposure": {
+    "MAX150": 0.033
+   },
+   "lineups_containing": {
+    "MAX150": 5
+   },
+   "scenario": "HE_IS_INACTIVE",
+   "material": true,
+   "material_because": [
+    "moves a teammate >= 2.0 DK points"
+   ],
+   "successor": {
+    "state": "NO_SUCCESSOR_ON_CAPTURED_CHART",
+    "why": "every quarterback the captured chart lists is out; the projection splits the passing volume among unlisted quarterbacks, which is the honest reading of no evidence",
+    "pass_attempts_split": {
+     "Brett Rypien": 21.5,
+     "Easton Stick": 12.5
+    }
+   },
+   "cascade": [
+    {
+     "player": "Brett Rypien",
+     "dk_id": "44361618",
+     "position": "QB",
+     "old": 0.0,
+     "new": 7.38,
+     "change": 7.38,
+     "components": {
+      "pass_attempts": 21.46,
+      "pass_yards": 101.85
+     },
+     "exposure": {},
+     "hard_rock_markets": [
+      "player_passing_attempts",
+      "player_passing_touchdowns",
+      "player_interceptions",
+      "player_rushing_yards",
+      "player_rushing_attempts"
+     ]
+    },
+    {
+     "player": "Easton Stick",
+     "dk_id": "44328431",
+     "position": "QB",
+     "old": 0.12,
+     "new": 4.46,
+     "change": 4.33,
+     "components": {
+      "pass_attempts": 12.17,
+      "pass_yards": 64.38
+     },
+     "exposure": {},
+     "hard_rock_markets": [
+      "player_passing_attempts",
+      "player_passing_touchdowns",
+      "player_interceptions",
+      "player_rushing_yards",
+      "player_rushing_attempts"
+     ]
+    },
+    {
+     "player": "Bucky Irving",
+     "dk_id": "44328461",
+     "position": "RB",
+     "old": 18.63,
+     "new": 19.42,
+     "change": 0.79,
+     "components": {
+      "carries": 1.23,
+      "rush_yards": 5.47
+     },
+     "exposure": {
+      "MAX150": 0.327,
+      "MAX20": 0.45,
+      "MAX3": 0.333
+     },
+     "hard_rock_markets": [
+      "player_rushing_yards",
+      "player_rushing_attempts",
+      "player_receptions",
+      "player_touchdowns"
+     ]
+    }
+   ],
+   "club_total_change": -1.31,
+   "portfolios_to_rebuild": [
+    "MAX150",
+    "MAX20",
+    "MAX3"
+   ],
+   "hard_rock_markets_affected": [
+    "Brett Rypien player_interceptions",
+    "Brett Rypien player_passing_attempts",
+    "Brett Rypien player_passing_touchdowns",
+    "Brett Rypien player_rushing_attempts",
+    "Brett Rypien player_rushing_yards",
+    "Bucky Irving player_receptions",
+    "Bucky Irving player_rushing_attempts",
+    "Bucky Irving player_rushing_yards",
+    "Bucky Irving player_touchdowns",
+    "Easton Stick player_interceptions",
+    "Easton Stick player_passing_attempts",
+    "Easton Stick player_passing_touchdowns",
+    "Easton Stick player_rushing_attempts",
+    "Easton Stick player_rushing_yards"
+   ],
+   "yards_markets_blocked_for_club": true
+  },
+  {
+   "player": "Kenyon Sadiq",
+   "dk_id": "44328939",
+   "team": "NYJ",
+   "position": "TE",
+   "open_question": "QUESTIONABLE (Friday report)",
+   "base_dk_points": 10.0,
+   "exposure": {
+    "MAX150": 0.02
+   },
+   "lineups_containing": {
+    "MAX150": 3
+   },
+   "scenario": "HE_IS_INACTIVE",
+   "material": true,
+   "material_because": [
+    "moves a teammate >= 2.0 DK points"
+   ],
+   "successor": null,
+   "cascade": [
+    {
+     "player": "Jeremy Ruckert",
+     "dk_id": "44328995",
+     "position": "TE",
+     "old": 3.65,
+     "new": 6.79,
+     "change": 3.14,
+     "components": {
+      "carries": 1.09,
+      "targets": 1.76,
+      "receptions": 1.56,
+      "rec_yards": 9.97
+     },
+     "exposure": {},
+     "hard_rock_markets": [
+      "player_receptions",
+      "player_touchdowns"
+     ]
+    },
+    {
+     "player": "Jelani Woods",
+     "dk_id": "44328997",
+     "position": "TE",
+     "old": 0.02,
+     "new": 2.0,
+     "change": 1.98,
+     "components": {
+      "targets": 1.45,
+      "receptions": 0.96,
+      "rec_yards": 6.9
+     },
+     "exposure": {},
+     "hard_rock_markets": [
+      "player_receptions",
+      "player_touchdowns"
+     ]
+    },
+    {
+     "player": "Garrett Wilson",
+     "dk_id": "44328637",
+     "position": "WR",
+     "old": 22.22,
+     "new": 23.84,
+     "change": 1.62,
+     "components": {
+      "targets": 1.13,
+      "receptions": 0.8,
+      "rec_yards": 9.25
+     },
+     "exposure": {
+      "MAX150": 0.233,
+      "MAX20": 0.4,
+      "MAX3": 0.333
+     },
+     "hard_rock_markets": [
+      "player_receptions",
+      "player_touchdowns"
+     ]
+    }
+   ],
+   "club_total_change": -1.95,
+   "portfolios_to_rebuild": [
+    "MAX150",
+    "MAX20",
+    "MAX3"
+   ],
+   "hard_rock_markets_affected": [
+    "Garrett Wilson player_receptions",
+    "Garrett Wilson player_touchdowns",
+    "Jelani Woods player_receptions",
+    "Jelani Woods player_touchdowns",
+    "Jeremy Ruckert player_receptions",
+    "Jeremy Ruckert player_touchdowns"
+   ],
+   "yards_markets_blocked_for_club": true
+  },
+  {
+   "player": "Ray Davis",
+   "dk_id": "44328617",
+   "team": "BUF",
+   "position": "RB",
+   "open_question": "QUESTIONABLE (Friday report)",
+   "base_dk_points": 0.5,
+   "exposure": {},
+   "lineups_containing": {},
+   "scenario": "HE_IS_INACTIVE",
+   "material": false,
+   "material_because": [],
+   "successor": null,
+   "cascade": [],
+   "club_total_change": 0.05,
+   "portfolios_to_rebuild": [],
+   "hard_rock_markets_affected": [],
+   "yards_markets_blocked_for_club": false
+  },
+  {
+   "player": "Reggie Gilliam",
+   "dk_id": "44328615",
+   "team": "NE",
+   "position": "RB",
+   "open_question": "QUESTIONABLE (Friday report)",
+   "base_dk_points": 0.09,
+   "exposure": {},
+   "lineups_containing": {},
+   "scenario": "HE_IS_INACTIVE",
+   "material": false,
+   "material_because": [],
+   "successor": null,
+   "cascade": [],
+   "club_total_change": 0.02,
+   "portfolios_to_rebuild": [],
+   "hard_rock_markets_affected": [],
+   "yards_markets_blocked_for_club": false
+  },
+  {
+   "player": "Tyjae Spears",
+   "dk_id": "44328485",
+   "team": "TEN",
+   "position": "RB",
+   "open_question": "QUESTIONABLE (Friday report)",
+   "base_dk_points": 4.52,
+   "exposure": {},
+   "lineups_containing": {},
+   "scenario": "HE_IS_INACTIVE",
+   "material": true,
+   "material_because": [
+    "moves a teammate >= 2.0 DK points"
+   ],
+   "successor": null,
+   "cascade": [
+    {
+     "player": "Nick Singleton",
+     "dk_id": "44328581",
+     "position": "RB",
+     "old": 1.28,
+     "new": 3.57,
+     "change": 2.29,
+     "components": {
+      "carries": 2.22,
+      "rush_yards": 7.73,
+      "targets": 0.9,
+      "receptions": 0.72,
+      "rec_yards": 4.52
+     },
+     "exposure": {},
+     "hard_rock_markets": [
+      "player_rushing_yards",
+      "player_rushing_attempts",
+      "player_receptions",
+      "player_receiving_yards",
+      "player_rushing_+_receiving_yards",
+      "player_touchdowns"
+     ]
+    },
+    {
+     "player": "Michael Carter",
+     "dk_id": "44328587",
+     "position": "RB",
+     "old": 0.22,
+     "new": 1.68,
+     "change": 1.46,
+     "components": {
+      "carries": 1.13,
+      "rush_yards": 4.67,
+      "targets": 0.6,
+      "receptions": 0.46,
+      "rec_yards": 3.35
+     },
+     "exposure": {},
+     "hard_rock_markets": [
+      "player_rushing_yards",
+      "player_rushing_attempts",
+      "player_receptions",
+      "player_receiving_yards",
+      "player_rushing_+_receiving_yards",
+      "player_touchdowns"
+     ]
+    }
+   ],
+   "club_total_change": -0.31,
+   "portfolios_to_rebuild": [],
+   "hard_rock_markets_affected": [
+    "Michael Carter player_receiving_yards",
+    "Michael Carter player_receptions",
+    "Michael Carter player_rushing_+_receiving_yards",
+    "Michael Carter player_rushing_attempts",
+    "Michael Carter player_rushing_yards",
+    "Michael Carter player_touchdowns",
+    "Nick Singleton player_receiving_yards",
+    "Nick Singleton player_receptions",
+    "Nick Singleton player_rushing_+_receiving_yards",
+    "Nick Singleton player_rushing_attempts",
+    "Nick Singleton player_rushing_yards",
+    "Nick Singleton player_touchdowns"
+   ],
+   "yards_markets_blocked_for_club": false
+  },
+  {
+   "player": "Tyson Bagent",
+   "dk_id": "44328403",
+   "team": "CHI",
+   "position": "QB",
+   "open_question": "starter by depth chart only (QB1 reported OUT)",
+   "base_dk_points": 18.9,
+   "exposure": {
+    "MAX150": 0.147,
+    "MAX20": 0.3,
+    "MAX3": 0.667
+   },
+   "lineups_containing": {
+    "MAX150": 22,
+    "MAX20": 6,
+    "MAX3": 2
+   },
+   "scenario": "HE_IS_INACTIVE",
+   "material": true,
+   "material_because": [
+    ">= 5% of the 150-max",
+    ">= 10% of the 20-max",
+    "in the 3-entry set",
+    "moves a teammate >= 2.0 DK points"
+   ],
+   "successor": {
+    "state": "NEXT_HEALTHY_ON_CAPTURED_CHART",
+    "player": "Case Keenum"
+   },
+   "cascade": [
+    {
+     "player": "Case Keenum",
+     "dk_id": "44328405",
+     "position": "QB",
+     "old": 0.09,
+     "new": 20.19,
+     "change": 20.1,
+     "components": {
+      "pass_attempts": 34.71,
+      "pass_yards": 227.29,
+      "carries": 5.72,
+      "rush_yards": 23.91,
+      "rec_yards": 0.33
+     },
+     "exposure": {},
+     "hard_rock_markets": [
+      "player_passing_attempts",
+      "player_passing_touchdowns",
+      "player_interceptions",
+      "player_rushing_yards",
+      "player_rushing_attempts"
+     ]
+    },
+    {
+     "player": "D'Andre Swift",
+     "dk_id": "44328451",
+     "position": "RB",
+     "old": 18.39,
+     "new": 17.51,
+     "change": -0.89,
+     "components": {
+      "carries": -0.68,
+      "rush_yards": -3.13
+     },
+     "exposure": {
+      "MAX150": 0.3,
+      "MAX20": 0.5,
+      "MAX3": 0.667
+     },
+     "hard_rock_markets": [
+      "player_rushing_yards",
+      "player_rushing_attempts",
+      "player_receptions",
+      "player_touchdowns"
+     ]
+    }
+   ],
+   "club_total_change": -0.01,
+   "portfolios_to_rebuild": [
+    "MAX150",
+    "MAX20",
+    "MAX3"
+   ],
+   "hard_rock_markets_affected": [
+    "Case Keenum player_interceptions",
+    "Case Keenum player_passing_attempts",
+    "Case Keenum player_passing_touchdowns",
+    "Case Keenum player_rushing_attempts",
+    "Case Keenum player_rushing_yards",
+    "D'Andre Swift player_receptions",
+    "D'Andre Swift player_rushing_attempts",
+    "D'Andre Swift player_rushing_yards",
+    "D'Andre Swift player_touchdowns"
+   ],
+   "yards_markets_blocked_for_club": true
+  },
+  {
+   "player": "Zay Flowers",
+   "dk_id": "44328635",
+   "team": "BAL",
+   "position": "WR",
+   "open_question": "QUESTIONABLE (Friday report)",
+   "base_dk_points": 21.58,
+   "exposure": {
+    "MAX150": 0.353
+   },
+   "lineups_containing": {
+    "MAX150": 53
+   },
+   "scenario": "HE_IS_INACTIVE",
+   "material": true,
+   "material_because": [
+    ">= 5% of the 150-max",
+    "moves a teammate >= 2.0 DK points"
+   ],
+   "successor": null,
+   "cascade": [
+    {
+     "player": "Rashod Bateman",
+     "dk_id": "44328685",
+     "position": "WR",
+     "old": 7.49,
+     "new": 12.46,
+     "change": 4.97,
+     "components": {
+      "carries": 2.52,
+      "targets": 2.25,
+      "receptions": 1.5,
+      "rec_yards": 20.77
+     },
+     "exposure": {
+      "MAX150": 0.027
+     },
+     "hard_rock_markets": [
+      "player_receptions",
+      "player_receiving_yards",
+      "player_touchdowns"
+     ]
+    },
+    {
+     "player": "Mark Andrews",
+     "dk_id": "44328937",
+     "position": "TE",
+     "old": 11.83,
+     "new": 14.67,
+     "change": 2.84,
+     "components": {
+      "targets": 1.59,
+      "receptions": 1.14,
+      "rec_yards": 11.54
+     },
+     "exposure": {
+      "MAX150": 0.087,
+      "MAX20": 0.15
+     },
+     "hard_rock_markets": [
+      "player_receptions",
+      "player_receiving_yards",
+      "player_touchdowns"
+     ]
+    },
+    {
+     "player": "Ja'Kobi Lane",
+     "dk_id": "44328831",
+     "position": "WR",
+     "old": 1.29,
+     "new": 3.39,
+     "change": 2.1,
+     "components": {
+      "targets": 0.91,
+      "receptions": 0.5,
+      "rec_yards": 5.87
+     },
+     "exposure": {},
+     "hard_rock_markets": [
+      "player_receptions",
+      "player_receiving_yards",
+      "player_touchdowns"
+     ]
+    },
+    {
+     "player": "Devontez Walker",
+     "dk_id": "44328717",
+     "position": "WR",
+     "old": 2.32,
+     "new": 4.36,
+     "change": 2.04,
+     "components": {
+      "rush_yards": 0.11,
+      "targets": 0.99,
+      "receptions": 0.47,
+      "rec_yards": 11.88
+     },
+     "exposure": {},
+     "hard_rock_markets": [
+      "player_receptions",
+      "player_receiving_yards",
+      "player_touchdowns"
+     ]
+    },
+    {
+     "player": "Chris Moore",
+     "dk_id": "44328727",
+     "position": "WR",
+     "old": 0.3,
+     "new": 1.25,
+     "change": 0.95,
+     "components": {
+      "targets": 0.46,
+      "receptions": 0.26,
+      "rec_yards": 4.34
+     },
+     "exposure": {},
+     "hard_rock_markets": [
+      "player_receptions",
+      "player_receiving_yards",
+      "player_touchdowns"
+     ]
+    }
+   ],
+   "club_total_change": -7.52,
+   "portfolios_to_rebuild": [
+    "MAX150",
+    "MAX20"
+   ],
+   "hard_rock_markets_affected": [
+    "Chris Moore player_receiving_yards",
+    "Chris Moore player_receptions",
+    "Chris Moore player_touchdowns",
+    "Devontez Walker player_receiving_yards",
+    "Devontez Walker player_receptions",
+    "Devontez Walker player_touchdowns",
+    "Ja'Kobi Lane player_receiving_yards",
+    "Ja'Kobi Lane player_receptions",
+    "Ja'Kobi Lane player_touchdowns",
+    "Mark Andrews player_receiving_yards",
+    "Mark Andrews player_receptions",
+    "Mark Andrews player_touchdowns",
+    "Rashod Bateman player_receiving_yards",
+    "Rashod Bateman player_receptions",
+    "Rashod Bateman player_touchdowns"
+   ],
+   "yards_markets_blocked_for_club": false
+  }
+ ]
+}

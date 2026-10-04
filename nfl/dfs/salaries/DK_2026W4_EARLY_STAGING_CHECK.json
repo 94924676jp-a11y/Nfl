@@ -1,0 +1,183 @@
+{
+ "ARTIFACT": "CLASSIC_STAGING_CHECK",
+ "slate_id": "2026W4",
+ "checked_at_utc": "2026-10-04T05:34:08.489676+00:00",
+ "SLATE_READY": false,
+ "WHY_NOT_READY": "Sunday evidence is outstanding; FINAL files are not populated",
+ "checks": [
+  {
+   "n": 1,
+   "item": "games",
+   "status": "READY",
+   "evidence": "8 games, kickoff 10/04/2026 01:00PM ET"
+  },
+  {
+   "n": 2,
+   "item": "pool and Entry IDs",
+   "status": "READY",
+   "evidence": "411 pool rows (411 in state); entries file sha ddddf790bfd2"
+  },
+  {
+   "n": 3,
+   "item": "173 entries",
+   "status": "READY",
+   "evidence": "173 upload rows"
+  },
+  {
+   "n": 4,
+   "item": "salaries and IDs",
+   "status": "READY",
+   "evidence": "0 verifier violations"
+  },
+  {
+   "n": 5,
+   "item": "projections",
+   "status": "READY",
+   "evidence": "411 rows, market_arm FOOTBALL_ONLY, sanity PASS"
+  },
+  {
+   "n": 6,
+   "item": "2,000-world artifact",
+   "status": "READY",
+   "evidence": "n_sims 2000, worlds match projection and seal, 0 games refused"
+  },
+  {
+   "n": 7,
+   "item": "research book",
+   "status": "READY",
+   "evidence": "8 games; seal written 2026-10-03T20:12:56.956144+00:00"
+  },
+  {
+   "n": 8,
+   "item": "16-team accounting",
+   "status": "READY",
+   "evidence": "PASS, 16 teams, 0 failures"
+  },
+  {
+   "n": 9,
+   "item": "role cards",
+   "status": "READY",
+   "evidence": "11 cards independently recounted"
+  },
+  {
+   "n": 10,
+   "item": "150 / 20 / 3 legality",
+   "status": "READY",
+   "evidence": "{\"196208416\": 150, \"196208417\": 20, \"196208418\": 3}"
+  },
+  {
+   "n": 11,
+   "item": "upload checker",
+   "status": "READY",
+   "evidence": "PASS[UPLOAD_VERIFIED] 173 rows, 173 owner entries, 0 violations"
+  },
+  {
+   "n": 12,
+   "item": "reproducibility",
+   "status": "READY",
+   "evidence": "PASS (two separate processes, byte-identical upload)"
+  },
+  {
+   "n": 13,
+   "item": "FC external-only",
+   "status": "READY",
+   "evidence": "FC ATTACHED, labelled NOT_A_MODEL_INPUT; projection market_arm FOOTBALL_ONLY"
+  },
+  {
+   "n": 14,
+   "item": "Hard Rock downstream-only",
+   "status": "READY",
+   "evidence": "prop comparison reads the seal; no board held yet (AWAITING_POST_SEAL_CAPTURE)"
+  },
+  {
+   "n": 15,
+   "item": "one-command pipeline",
+   "status": "READY_WITH_DECLARED_LIMITATION",
+   "evidence": "last run COMPLETE with stages ['state', 'run', 'book', 'portfolios', 'verify', 'book_with_exposures', 'board', 'fc', 'props', 'audit', 'changes', 'page']; the prelock/finalize stages and the parallel reproducibility builds are new since that run and are exercised by the rehearsal"
+  },
+  {
+   "n": 16,
+   "item": "prelock logic",
+   "status": "READY",
+   "evidence": "BLOCKED[AWAITING_OFFICIAL_INACTIVES]: correct before any Sunday evidence"
+  },
+  {
+   "n": 17,
+   "item": "change log",
+   "status": "READY",
+   "evidence": "against nfl/dfs/salaries/runs/2026W4/20261003T200814Z; baseline_2026W4_pre_inactives/ preserved"
+  },
+  {
+   "n": 18,
+   "item": "page regeneration",
+   "status": "READY",
+   "evidence": "page stage rc 0 in the last run"
+  },
+  {
+   "n": 19,
+   "item": "finalize gate",
+   "status": "READY",
+   "evidence": "FINAL NOT_POPULATED; failing only on ['EVIDENCE', 'PRELOCK']"
+  },
+  {
+   "n": 20,
+   "item": "scenario cascades",
+   "status": "READY",
+   "evidence": "10 open questions, 5 material"
+  }
+ ],
+ "readiness_table": {
+  "DK POOL": "READY",
+  "ENTRY MAPPING": "READY",
+  "RESEARCH BOOK": "READY",
+  "ROLE CARDS": "READY",
+  "ACCOUNTING": "READY",
+  "BASE PROJECTIONS": "READY_WITH_DECLARED_LIMITATION",
+  "SIMULATOR": "READY_WITH_DECLARED_LIMITATION",
+  "150-MAX ENGINE": "READY",
+  "20-MAX ENGINE": "READY",
+  "3-ENTRY ENGINE": "READY",
+  "UPLOAD VERIFIER": "READY",
+  "CHANGE LOG": "READY",
+  "HARD ROCK COMPARISON ENGINE": "READY_WITH_DECLARED_LIMITATION",
+  "WEATHER SLOT": "READY",
+  "INACTIVES SLOT": "AWAITING",
+  "STARTER CONFIRMATIONS": "AWAITING"
+ },
+ "declared_limitations": {
+  "BASE PROJECTIONS": "PROJECTION_SYSTEM_STATE NOT_VALIDATED; touchdown counts not reconciled; yards non-closure blocks yards props for CHI, JAX, NYG, NYJ, PHI, TB",
+  "SIMULATOR": "games simulated independently (no cross-game dependence); TD and bonus thresholds as simulated",
+  "HARD ROCK COMPARISON ENGINE": "no board captured; every row will be NOT_A_BET; yards markets blocked for the clubs above",
+  "WEATHER SLOT": "slot ready; weather is CONTEXT_ONLY and does not enter the projection"
+ },
+ "remaining_external_inputs": [
+  {
+   "input": "OFFICIAL_INACTIVES",
+   "state": "AWAITING_OFFICIAL_INACTIVES"
+  },
+  {
+   "input": "QUESTIONABLE_PLAYER_STATUS",
+   "state": "UNRESOLVED_QUESTIONABLE"
+  },
+  {
+   "input": "WEEK4_ROSTER_REFRESH",
+   "state": "AWAITING_FRESH_CAPTURE"
+  },
+  {
+   "input": "HARD_ROCK_BOARD",
+   "state": "AWAITING_POST_SEAL_CAPTURE"
+  },
+  {
+   "input": "WEATHER",
+   "state": "AWAITING_CURRENT_WEATHER"
+  },
+  {
+   "input": "CHI_STARTING_QB",
+   "state": "ROLE_DEPENDENT_AWAITING_CONFIRMATION"
+  },
+  {
+   "input": "TB_STARTING_QB",
+   "state": "ROLE_DEPENDENT_AWAITING_CONFIRMATION"
+  }
+ ]
+}

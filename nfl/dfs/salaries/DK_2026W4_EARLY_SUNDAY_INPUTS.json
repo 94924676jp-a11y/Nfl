@@ -1,0 +1,166 @@
+{
+ "ARTIFACT": "CLASSIC_SUNDAY_INPUTS",
+ "slate_id": "2026W4",
+ "built_at_utc": "2026-10-04T05:34:08.161000+00:00",
+ "NEVER_A_SUBSTITUTE_FOR_OFFICIAL_EVIDENCE": [
+  "a projected starter",
+  "a depth-chart starter",
+  "absence from an inactive list",
+  "FantasyCruncher status",
+  "sportsbook availability"
+ ],
+ "UNKNOWN_IS_NOT_ZERO": "an AWAITING slot is not \"no news\" and not ACTIVE",
+ "packet_template": {
+  "packet_id": "2026W4-owner-1030",
+  "source": "OWNER_RELAYED",
+  "received_at": "<UTC>",
+  "source_detail": "<where the owner read it>",
+  "players": [
+   {
+    "name": "<DK name>",
+    "team": "<club>",
+    "status": "ACTIVE|INACTIVE",
+    "cited": "OFFICIAL_RELEASE|AGGREGATOR|SECONDHAND",
+    "note": ""
+   }
+  ],
+  "starters": {
+   "CHI": "<name>",
+   "TB": "<name>"
+  }
+ },
+ "slots": {
+  "OFFICIAL_INACTIVES": {
+   "state": "AWAITING_OFFICIAL_INACTIVES",
+   "fills_from": "nfl/dfs/salaries/evidence/<packet>.json (sunday_evidence.py); OFFICIAL_CAPTURED from the networked agent, or OWNER_RELAYED labelled as such",
+   "released": "about 90 minutes before kickoff (~11:30 ET for the 13:00 ET games)",
+   "consumed_by": [
+    "state",
+    "prelock",
+    "finalize"
+   ]
+  },
+  "QUESTIONABLE_PLAYER_STATUS": {
+   "state": "UNRESOLVED_QUESTIONABLE",
+   "players": [
+    {
+     "team": "BAL",
+     "player": "Chris Moore",
+     "designation": "QUESTIONABLE"
+    },
+    {
+     "team": "BAL",
+     "player": "Zay Flowers",
+     "designation": "QUESTIONABLE"
+    },
+    {
+     "team": "BUF",
+     "player": "Ray Davis",
+     "designation": "QUESTIONABLE"
+    },
+    {
+     "team": "LA",
+     "player": "Colby Parkinson",
+     "designation": "QUESTIONABLE"
+    },
+    {
+     "team": "NE",
+     "player": "Eli Raridon",
+     "designation": "QUESTIONABLE"
+    },
+    {
+     "team": "NE",
+     "player": "Reggie Gilliam",
+     "designation": "QUESTIONABLE"
+    },
+    {
+     "team": "NYJ",
+     "player": "Kenyon Sadiq",
+     "designation": "QUESTIONABLE"
+    },
+    {
+     "team": "TEN",
+     "player": "Tyjae Spears",
+     "designation": "QUESTIONABLE"
+    }
+   ],
+   "fills_from": "the same packet: ACTIVE or INACTIVE per player, with its citation"
+  },
+  "WEEK4_ROSTER_REFRESH": {
+   "state": "AWAITING_FRESH_CAPTURE",
+   "why": "8 pool players carry a club the last roster capture does not",
+   "fills_from": "networked agent roster capture (docs/AGENT_OUTBOX.md)"
+  },
+  "HARD_ROCK_BOARD": {
+   "state": "AWAITING_POST_SEAL_CAPTURE",
+   "rule": "captured AFTER the seal and compared downstream only; never fed back into a projection",
+   "slots": "DK_2026W4_EARLY_HARD_ROCK_SLOTS.json"
+  },
+  "WEATHER": {
+   "state": "AWAITING_CURRENT_WEATHER",
+   "use": "CONTEXT_ONLY (no weather term in the projection)",
+   "games": {
+    "2026_04_TEN_BAL": {
+     "stadium": "M&T Bank Stadium",
+     "roof": "outdoors",
+     "surface": "grass",
+     "weather": "AWAITING_CURRENT_WEATHER"
+    },
+    "2026_04_NE_BUF": {
+     "stadium": "Highmark Stadium",
+     "roof": "outdoors",
+     "surface": "a_turf",
+     "weather": "AWAITING_CURRENT_WEATHER"
+    },
+    "2026_04_NYJ_CHI": {
+     "stadium": "Soldier Field",
+     "roof": "outdoors",
+     "surface": "grass",
+     "weather": "AWAITING_CURRENT_WEATHER"
+    },
+    "2026_04_JAX_CIN": {
+     "stadium": "Paycor Stadium",
+     "roof": "outdoors",
+     "surface": "fieldturf",
+     "weather": "AWAITING_CURRENT_WEATHER"
+    },
+    "2026_04_DAL_HOU": {
+     "stadium": "Reliant Stadium",
+     "roof": "NOT_DECLARED (retractable; set on game day)",
+     "surface": "astroturf",
+     "weather": "AWAITING_CURRENT_WEATHER"
+    },
+    "2026_04_ARI_NYG": {
+     "stadium": "MetLife Stadium",
+     "roof": "outdoors",
+     "surface": "fieldturf",
+     "weather": "AWAITING_CURRENT_WEATHER"
+    },
+    "2026_04_LA_PHI": {
+     "stadium": "Lincoln Financial Field",
+     "roof": "outdoors",
+     "surface": "grass",
+     "weather": "AWAITING_CURRENT_WEATHER"
+    },
+    "2026_04_GB_TB": {
+     "stadium": "Raymond James Stadium",
+     "roof": "outdoors",
+     "surface": "grass",
+     "weather": "AWAITING_CURRENT_WEATHER"
+    }
+   }
+  },
+  "CHI_STARTING_QB": {
+   "state": "ROLE_DEPENDENT_AWAITING_CONFIRMATION",
+   "chart_starter": "Tyson Bagent",
+   "evidence_now": "DEPTH_CHART_NEXT_HEALTHY_AFTER_REPORTED_OUT (not a confirmation)",
+   "fills_from": "packet \"starters\": {\"CHI\": \"<name>\"} from a club or league source"
+  },
+  "TB_STARTING_QB": {
+   "state": "ROLE_DEPENDENT_AWAITING_CONFIRMATION",
+   "chart_starter": "Jalon Daniels",
+   "evidence_now": "DEPTH_CHART_NEXT_HEALTHY_AFTER_REPORTED_OUT (not a confirmation)",
+   "fills_from": "packet \"starters\": {\"TB\": \"<name>\"} from a club or league source"
+  }
+ }
+}
