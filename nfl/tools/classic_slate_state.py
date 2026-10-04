@@ -95,6 +95,20 @@ def _qb_rank(pos, team, gsis, qb_chart, depth, out_gsis=()):
     return min(ranks) if ranks else None
 
 
+#: a packet-named starter carries its packet's provenance, never a stronger one
+STARTER_TIER_FOR_SOURCE = {'OFFICIAL_CAPTURED': 'CLUB_OR_LEAGUE_CONFIRMED_STARTER_CAPTURED',
+                           'OWNER_RELAYED': 'OWNER_RELAYED_CONFIRMED_STARTER',
+                           'REHEARSAL': 'REHEARSAL_STARTER_NOT_EVIDENCE'}
+
+
+def _packet_starter_label(ctx, dk_id, team, pstart, packet):
+    """The shared helper labels every supplied starter OWNER_RELAYED; a packet starter is relabelled to
+    the tier its packet supports (a rehearsal's starter is not evidence at all)."""
+    if not ctx or not packet or (pstart.get(team) or {}).get('dk_id') != dk_id:
+        return ctx
+    return {**ctx, 'state': STARTER_TIER_FOR_SOURCE[packet['source']], 'packet_id': packet['packet_id']}
+
+
 def _next_healthy_context(pos, team, gsis, qb_chart, out_gsis):
     """Predicted-starter evidence for ONE case: the captured chart's QB1 is reported OUT and this is
     the first quarterback below him who is not. Labelled with its own tier, never as owner-relayed
@@ -332,7 +346,8 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
                 'IS_NOT': ('a game-day inactive decision unless the status is CONFIRMED_INACTIVE, '
                            'which requires a captured official document'),
             },
-            'predicted_lineup_context': (SS._starter_context(nm, team, confirmed_starters)
+            'predicted_lineup_context': (_packet_starter_label(SS._starter_context(nm, team, confirmed_starters),
+                                                               dk_id, team, pstart, evidence_packet)
                                          or ({} if (pos == 'QB' and team in pstart)   # the club named its starter
                                              else _next_healthy_context(pos, team, gsis, qb_chart, out_gsis))),
         }

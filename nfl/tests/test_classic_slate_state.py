@@ -141,6 +141,12 @@ def test_05_an_evidence_packet_drives_the_real_week4_state():
     check('positive control: a confirmed starter overrides chart inference',
           o.state.value == 'PASS' and q['Case Keenum']['depth_rank'] == 1 and q['Tyson Bagent']['depth_rank'] != 1,
           {k: v.get('depth_rank') for k, v in q.items()})
+    check('  a rehearsal starter is labelled not-evidence, never owner-relayed or confirmed',
+          (q['Case Keenum'].get('predicted_lineup_context') or {}).get('state') == 'REHEARSAL_STARTER_NOT_EVIDENCE',
+          q['Case Keenum'].get('predicted_lineup_context'))
+    check('  and each packet source maps to its own starter tier',
+          len(set(C.STARTER_TIER_FOR_SOURCE.values())) == 3
+          and C.STARTER_TIER_FOR_SOURCE['OWNER_RELAYED'] != C.STARTER_TIER_FOR_SOURCE['OFFICIAL_CAPTURED'])
     check('  and no next-healthy guess is layered on a confirmed club',
           not any((v.get('predicted_lineup_context') or {}).get('state') == C.NEXT_HEALTHY_TIER for v in q.values()))
     o = C.build('2026W4', as_of='2026-10-04T05:00:00Z', write=False)

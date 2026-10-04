@@ -180,10 +180,15 @@ def checks(slate, A):
     pd = A['PROP_DIAGNOSTIC'] or {}
     add(14, 'Hard Rock downstream-only', READY if pd.get('seal') and pj.get('market_arm') == 'FOOTBALL_ONLY' else BLOCKED,
         'prop comparison reads the seal; no board held yet (AWAITING_POST_SEAL_CAPTURE)')
-    stg = [s['stage'] for s in (led or {}).get('stages', [])]
-    add(15, 'one-command pipeline', LIMITED if led and led.get('STATE') == 'COMPLETE' else BLOCKED,
-        f"last run {(led or {}).get('STATE')} with stages {stg}; the prelock/finalize stages and the parallel "
-        'reproducibility builds are new since that run and are exercised by the rehearsal')
+    reh = A.get('REHEARSAL') or {}
+    want_stages = [n for n, _ in __import__('nfl.tools.classic_slate_pipeline', fromlist=['stages']).stages(slate, 'T', None, 'p')]
+    reh_ok = (reh.get('pipeline_STATE') == 'COMPLETE' and [s['stage'] for s in reh.get('stages', [])] == want_stages
+              and (reh.get('finalize') or {}).get('failed_gates') == ['EVIDENCE'])
+    add(15, 'one-command pipeline', READY if reh_ok else LIMITED if led and led.get('STATE') == 'COMPLETE' else BLOCKED,
+        (f"rehearsal {reh.get('started_utc', '')[:16]}Z ran every current stage: {reh.get('pipeline_STATE')}, prelock "
+         f"{reh.get('prelock_after_rerun')}, finalize refused on {reh.get('finalize', {}).get('failed_gates')} only "
+         f"(a rehearsal can never finalize); {reh.get('restore', '')}") if reh_ok else
+        f"last run {(led or {}).get('STATE')}; the current stage list has not run end to end")
     add(16, 'prelock logic', READY if pre.get('code') == 'AWAITING_OFFICIAL_INACTIVES' else LIMITED,
         f"{pre.get('state')}[{pre.get('code')}]: correct before any Sunday evidence")
     add(17, 'change log', READY if rc else BLOCKED, f"against {(rc or {}).get('against')}; baseline_2026W4_pre_inactives/ preserved")
@@ -216,7 +221,7 @@ def build(slate):
     f = lambda n: OUT_DIR / f'DK_{slate}_EARLY_{n}'  # noqa: E731
     A = {n: _j(f(f'{n}.json')) for n in ('STATE', 'PROJ', 'DRAWS', 'RESEARCH_BOOK', 'PORTFOLIOS', 'UPLOAD_VERIFY', 'AUDIT',
                                          'PRELOCK', 'SEAL', 'FINAL_MANIFEST', 'SCENARIOS', 'RUN_LEDGER', 'RUN_CHANGES',
-                                         'OWNER_BOARD', 'PROP_DIAGNOSTIC')}
+                                         'OWNER_BOARD', 'PROP_DIAGNOSTIC', 'REHEARSAL')}
     missing = [n for n in ('STATE', 'PROJ', 'DRAWS', 'RESEARCH_BOOK', 'PORTFOLIOS', 'UPLOAD_VERIFY', 'AUDIT', 'PRELOCK') if A[n] is None]
     if missing:
         return Outcome.fail('STAGING_ARTIFACT_MISSING', f'missing {missing}')

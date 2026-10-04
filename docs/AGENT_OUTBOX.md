@@ -3796,3 +3796,28 @@ test_football_only_arm fail only in a clean checkout (absent derived caches) and
 production tree (9/9 and 6/6 checks); test_v1_draw_artifact is the incumbent run_forecast capture
 declaration; test_showdown_family is the showdown product; test_draw_coherence is a docstring check.
 None blocks the Early Only path. SUITE FAIL stands: the repository is not green.
+
+### 2026-10-04 — Week 4 Sunday: how to hand us the news, and two new specifics
+
+The post-news path is staged. Everything Sunday needs enters as ONE evidence packet
+(`nfl/tools/sunday_evidence.py`; template in `nfl/dfs/salaries/DK_2026W4_EARLY_SUNDAY_INPUTS.json`),
+written to `nfl/dfs/salaries/evidence/<packet_id>.json` and run as
+
+    python3.12 nfl/tools/classic_slate_pipeline.py 2026W4 --as-of <UTC> \
+        --evidence-packet nfl/dfs/salaries/evidence/<packet_id>.json --page <out>.html
+
+- **Your capture of the official inactive lists** goes in with `"source": "OFFICIAL_CAPTURED"` and
+  `"complete_clubs": [...]` naming every club whose FULL list you hold. Only that makes the unlisted
+  players of a club ACTIVE_NOT_ON_INACTIVE_LIST; anything partial resolves only the names on it.
+- **The owner's 10:30 ET list** goes in as `"source": "OWNER_RELAYED"`. It is never relabelled official:
+  an uncited INACTIVE lands as REPORTED_OUT_UNVERIFIED, and the FINAL files say OWNER_RELAYED_NOT_OFFICIAL.
+- A name that does not resolve to exactly one DraftKings pool row refuses the whole packet by name.
+
+6. **TB quarterback depth beyond Daniels.** The captured TB chart lists only Mayfield (OUT) and
+   Daniels. If Daniels is ruled out, nothing we hold names the starter: the projection then splits
+   passing between Brett Rypien (21.5 attempts) and Easton Stick (12.5), which is the honest reading of
+   no evidence and a poor one for lineups. A current TB chart or a club statement settles it.
+7. **Official inactives as early as they post** (about 11:30 ET for the 13:00 ET games), as an
+   OFFICIAL_CAPTURED packet for all 16 clubs. The full rerun took **16.6 minutes** in rehearsal
+   (`nfl/dfs/salaries/DK_2026W4_EARLY_REHEARSAL.json`), so a packet landing by about **12:15 ET** leaves
+   time to run, verify and hand the owner the FINAL files before 13:00 ET lock.

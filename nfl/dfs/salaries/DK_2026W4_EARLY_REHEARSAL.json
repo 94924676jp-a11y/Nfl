@@ -1,0 +1,308 @@
+{
+ "ARTIFACT": "CLASSIC_REHEARSAL",
+ "slate_id": "2026W4",
+ "LABEL": "REHEARSAL: not evidence; production restored byte for byte afterwards",
+ "packet": "nfl/dfs/salaries/evidence/REHEARSAL_2026W4.json",
+ "packet_sha256": "7cd61f6118889d89866391a2a2518c699992fc132af1a883ecaf806715dd5ffe",
+ "code_commit": "72bd9f6e",
+ "started_utc": "2026-10-04T05:34:28.475080+00:00",
+ "finished_utc": "2026-10-04T05:51:07.730680+00:00",
+ "pipeline_STATE": "COMPLETE",
+ "FINAL": "BLOCKED[FINAL_NOT_POPULATED] 1 gate(s) not passed: EVIDENCE",
+ "stages": [
+  {
+   "stage": "state",
+   "rc": 0,
+   "result": "PASS[CLASSIC_SLATE_STATE_BUILT] 411 players, 8 games, week 4",
+   "seconds": 6.0
+  },
+  {
+   "stage": "run",
+   "rc": 0,
+   "result": "PASS[CLASSIC_SLATE_DRAWN] 399 players x 2000 worlds over 8 games; sanity PASS[FOOTBALL_SANITY_PASS]",
+   "seconds": 135.0
+  },
+  {
+   "stage": "book",
+   "rc": 0,
+   "result": "PASS[RESEARCH_BOOK_BUILT] 8 games, 395 cards, accounting PASS",
+   "seconds": 6.1
+  },
+  {
+   "stage": "portfolios",
+   "rc": 0,
+   "result": "PASS[CLASSIC_PORTFOLIOS_BUILT] MAX150 150/150, MAX20 20/20, MAX3 3/3",
+   "seconds": 836.5,
+   "parallel": [
+    [
+     "2026W4",
+     0
+    ],
+    [
+     "reproA",
+     0
+    ],
+    [
+     "reproB",
+     0
+    ]
+   ]
+  },
+  {
+   "stage": "verify",
+   "rc": 0,
+   "result": "PASS[UPLOAD_VERIFIED] 173 rows, 173 owner entries, 0 violations",
+   "seconds": 0.2
+  },
+  {
+   "stage": "book_with_exposures",
+   "rc": 0,
+   "result": "PASS[RESEARCH_BOOK_BUILT] 8 games, 395 cards, accounting PASS",
+   "seconds": 5.9
+  },
+  {
+   "stage": "board",
+   "rc": 0,
+   "result": "PASS[CLASSIC_OWNER_BOARD_BUILT] 411 players, {'viable': 95, 'role-dependent': 6, 'thin': 31, 'unresolved': 3, 'inactive': 12, 'non-playable': 264}; FC attached separately; portfolio yes",
+   "seconds": 0.7
+  },
+  {
+   "stage": "fc",
+   "rc": 0,
+   "result": "PASS[FC_COMPARISON_ATTACHED] 249 joined, 1 FC-only, 43 material gaps",
+   "seconds": 0.1
+  },
+  {
+   "stage": "props",
+   "rc": 1,
+   "result": "BLOCKED[PROPS_NO_HARD_ROCK_BOARD] no Hard Rock board for this slate is held; requested from the networked agent in docs/AGENT_OUTBOX.md",
+   "seconds": 0.3
+  },
+  {
+   "stage": "audit",
+   "rc": 0,
+   "result": "PASS[AUDIT_COMPLETE] accounting PASS; 13 flag(s); yards-blocked teams ['CHI', 'JAX', 'NYG', 'NYJ', 'PHI', 'TB']; reproducibility PASS",
+   "seconds": 7.8
+  },
+  {
+   "stage": "prelock",
+   "rc": 0,
+   "result": "PASS[NO_RERUN_REQUIRED] no trigger fired",
+   "seconds": 0.1
+  },
+  {
+   "stage": "changes",
+   "rc": 0,
+   "result": "PASS[CHANGE_LOG_BUILT] 49 player rows; lineups kept MAX150 12/150, MAX20 0/20, MAX3 0/3",
+   "seconds": 0.2
+  },
+  {
+   "stage": "finalize",
+   "rc": 1,
+   "result": "BLOCKED[FINAL_NOT_POPULATED] 1 gate(s) not passed: EVIDENCE",
+   "seconds": 0.1
+  },
+  {
+   "stage": "page",
+   "rc": 0,
+   "result": "wrote /tmp/claude-0/-home-user-mlb-prop-system-v7/8de98087-4781-5a10-ae09-ef74590f8116/scratchpad/rehearsal.html",
+   "seconds": 0.1
+  }
+ ],
+ "prelock_after_rerun": "PASS[NO_RERUN_REQUIRED]",
+ "finalize": {
+  "STATE": "NOT_POPULATED",
+  "failed_gates": [
+   "EVIDENCE"
+  ]
+ },
+ "official_inactives_block": {
+  "STATE": "REHEARSAL_NOT_EVIDENCE",
+  "source": "REHEARSAL",
+  "starters": {
+   "CHI": "Tyson Bagent",
+   "TB": "Jalon Daniels"
+  }
+ },
+ "change_report": {
+  "contests": {
+   "MAX150": {
+    "lineups_kept": 12,
+    "lineups_new": 138,
+    "of": 150
+   },
+   "MAX20": {
+    "lineups_kept": 0,
+    "lineups_new": 20,
+    "of": 20
+   },
+   "MAX3": {
+    "lineups_kept": 0,
+    "lineups_new": 3,
+    "of": 3
+   }
+  },
+  "largest_player_moves": [
+   {
+    "player": "Kenyon Sadiq",
+    "team": "NYJ",
+    "old_proj": 10.0,
+    "new_proj": 0.0,
+    "change": -10.0,
+    "cause": "availability UNKNOWN_ACTIVE_STATE -> REPORTED_OUT_UNVERIFIED",
+    "old_150": 0.02,
+    "new_150": null,
+    "old_20": null,
+    "new_20": null,
+    "old_3": null,
+    "new_3": null
+   },
+   {
+    "player": "Jeremy Ruckert",
+    "team": "NYJ",
+    "old_proj": 3.65,
+    "new_proj": 6.79,
+    "change": 3.14,
+    "cause": "depth rank 2 -> 1",
+    "old_150": null,
+    "new_150": 0.013,
+    "old_20": null,
+    "new_20": null,
+    "old_3": null,
+    "new_3": null
+   },
+   {
+    "player": "Jelani Woods",
+    "team": "NYJ",
+    "old_proj": 0.02,
+    "new_proj": 2.0,
+    "change": 1.98,
+    "cause": "depth rank 3 -> 2",
+    "old_150": null,
+    "new_150": null,
+    "old_20": null,
+    "new_20": null,
+    "old_3": null,
+    "new_3": null
+   },
+   {
+    "player": "Garrett Wilson",
+    "team": "NYJ",
+    "old_proj": 22.22,
+    "new_proj": 23.84,
+    "change": 1.62,
+    "cause": "reallocation inside the club (his own evidence did not change)",
+    "old_150": 0.233,
+    "new_150": 0.4,
+    "old_20": 0.4,
+    "new_20": 0.55,
+    "old_3": 0.333,
+    "new_3": 0.667
+   },
+   {
+    "player": "Josh Allen",
+    "team": "BUF",
+    "old_proj": 24.71,
+    "new_proj": 24.71,
+    "change": 0.0,
+    "cause": "reallocation inside the club (his own evidence did not change)",
+    "old_150": 0.2,
+    "new_150": 0.2,
+    "old_20": 0.3,
+    "new_20": 0.15,
+    "old_3": null,
+    "new_3": 0.333
+   },
+   {
+    "player": "Joe Burrow",
+    "team": "CIN",
+    "old_proj": 19.82,
+    "new_proj": 19.82,
+    "change": 0.0,
+    "cause": "reallocation inside the club (his own evidence did not change)",
+    "old_150": 0.073,
+    "new_150": 0.087,
+    "old_20": 0.05,
+    "new_20": 0.1,
+    "old_3": null,
+    "new_3": null
+   },
+   {
+    "player": "Dak Prescott",
+    "team": "DAL",
+    "old_proj": 20.02,
+    "new_proj": 20.02,
+    "change": 0.0,
+    "cause": "reallocation inside the club (his own evidence did not change)",
+    "old_150": 0.08,
+    "new_150": 0.1,
+    "old_20": 0.1,
+    "new_20": 0.2,
+    "old_3": 0.333,
+    "new_3": null
+   },
+   {
+    "player": "Drake Maye",
+    "team": "NE",
+    "old_proj": 18.83,
+    "new_proj": 18.83,
+    "change": 0.0,
+    "cause": "reallocation inside the club (his own evidence did not change)",
+    "old_150": 0.033,
+    "new_150": 0.027,
+    "old_20": null,
+    "new_20": 0.05,
+    "old_3": null,
+    "new_3": null
+   }
+  ]
+ },
+ "exposure_saturday": {
+  "Zay Flowers BAL": {
+   "MAX150": 0.353
+  },
+  "Garrett Wilson NYJ": {
+   "MAX150": 0.233,
+   "MAX20": 0.4,
+   "MAX3": 0.333
+  },
+  "Tyson Bagent CHI": {
+   "MAX150": 0.147,
+   "MAX20": 0.3,
+   "MAX3": 0.667
+  },
+  "Jalon Daniels TB": {
+   "MAX150": 0.033
+  },
+  "Kenyon Sadiq NYJ": {
+   "MAX150": 0.02
+  }
+ },
+ "exposure_rehearsal": {
+  "Garrett Wilson NYJ": {
+   "MAX150": 0.4,
+   "MAX20": 0.55,
+   "MAX3": 0.667
+  },
+  "Zay Flowers BAL": {
+   "MAX150": 0.32,
+   "MAX20": 0.4,
+   "MAX3": 0.667
+  },
+  "Tyson Bagent CHI": {
+   "MAX150": 0.187,
+   "MAX20": 0.2,
+   "MAX3": 0.333
+  },
+  "Jalon Daniels TB": {
+   "MAX150": 0.013
+  }
+ },
+ "restore": "sha256sum -c over 34 production files: every byte identical",
+ "DEFECT_FOUND": "starters named by a REHEARSAL packet were labelled OWNER_RELAYED_CONFIRMED_STARTER; fixed after this run (STARTER_TIER_FOR_SOURCE)",
+ "FINDINGS": [
+  "a cleared Questionable enters the conviction pools: Zay Flowers 0 -> 40% of the 20-max and 2 of 3 entries",
+  "lineup turnover is near total on small news: 12/150, 0/20, 0/3 kept; expect Sunday FINAL lineups to differ from Saturday almost entirely",
+  "end-to-end rerun 16.6 minutes on this machine (portfolio stage 836 s with three builds in parallel)"
+ ]
+}
