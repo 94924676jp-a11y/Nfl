@@ -3845,3 +3845,10 @@ production. Evidence: DK_2026W4_EARLY_FINAL_DISAGREEMENT_AUDIT.json and FINAL_DE
 (Raymond 3.6 vs 7.0, Flournoy 3.1 vs 6.0, Boutte 0.7 vs 3.0, Noel 0.2 vs 3.0 targets/game; Lamb +1.8,
 Washington +2.5, Wilson +2.8 above measured). Also: roster-capture refresh so recently elevated players
 (McClain, Tinsley) resolve and carry usage.
+
+### 2026-10-04 — post-lock data request for the role-allocation successor (roadmap item 1)
+
+For weeks 1-4 2026 (and 2024-2025 for history), all 32 clubs: per player per game routes run, route
+participation, slot/outside/inline alignment, personnel grouping on each snap, pass-block snaps, RB
+routes, red-zone and goal-line snaps. Source and retrieval time with each file. See
+docs/NFL_POSTLOCK_ROADMAP_2026W4.md. Not needed before lock.
