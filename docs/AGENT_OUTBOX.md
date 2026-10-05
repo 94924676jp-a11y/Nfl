@@ -3915,3 +3915,24 @@ Owner decisions this ledger raises (not taken here): approve the manual capture 
 and after final, hashed, within the 10-day window); whether to buy one month of stat-api Pro as a research-only single-user
 archive AFTER a free-preview cross-check against our 10/4 CSVs (vendor collection method unknown: a lawful-acquisition
 question, DATA-03 / DATA-12); whether to ask DFS Hero for export terms (DATA-07).
+
+## REQUEST 2026-10-05 22:50Z — LOCK-CRITICAL: official ATL and NO game-day inactives (lock 00:15Z)
+
+This session's egress policy DENIES every host that publishes them (403 CONNECT, recorded 22:45Z): www.nfl.com,
+site.api.espn.com, www.neworleanssaints.com, www.atlantafalcons.com, www.espn.com, www.rotowire.com; WebFetch is
+blocked the same way. Web search returns only 2017-18 lists (Marshall, Te'o, Hendrickson) -- rejected, wrong game.
+So this is BLOCKED FOR ME, NOT BLOCKED: it is the networked agent's to capture.
+
+Needed, as soon as both teams post (normally ~90 min before the 8:15 PM ET kickoff):
+1. The OFFICIAL inactive list for ATL and for NO, every name (not only skill players), with the source URL and the
+   post time. Primary sources: neworleanssaints.com and atlantafalcons.com "inactives" articles, the NFL Gamecenter
+   inactive list, or the teams' official X accounts.
+2. Delivered as `nfl/dfs/salaries/raw/showdown_atl_no_2026W4/OFFICIAL_INACTIVES_ATL_NO_2026W4.json`, in the same shape
+   as OFFICIAL_INACTIVES_PIT_CLE_2026W4.json (a JSON list of full names), plus a sibling
+   `OFFICIAL_INACTIVES_ATL_NO_2026W4.PROVENANCE.json` with {source_url, posted_at, captured_at, captured_by}. Commit and
+   push to claude/nfl-greenfield-architecture-stsxmk. This session polls that branch every 2 minutes and runs the
+   OFFICIAL scenario the moment the file appears.
+
+Already recorded (owner relay, tier RELAYED_OWNER_MESSAGE): game-day elevations ATL S Jammie Robinson (00-0038587),
+NO EDGE Fadil Diggs (00-0040249), NO LB Jackson Sirmon (00-0039288) -- all practice-squad (DEV) in nflverse; none is
+a priced DK Showdown player.
