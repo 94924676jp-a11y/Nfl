@@ -6,6 +6,238 @@
   "OFFICIAL_INACTIVES_NOT_INCORPORATED"
  ],
  "FOOTBALL": {
+  "SHOWDOWN_COHERENCE_WARNING": {
+   "ours_by_team": {
+    "NO": {
+     "corr_team_td_vs_team_off_dk": 0.55,
+     "corr_team_points_vs_team_off_dk": 0.485
+    },
+    "ATL": {
+     "corr_team_td_vs_team_off_dk": 0.56,
+     "corr_team_points_vs_team_off_dk": 0.49
+    }
+   },
+   "ours_corr_home_points_vs_away_points": 0.109,
+   "ours_corr_home_off_dk_vs_away_off_dk": 0.184,
+   "history_2021_2025": {
+    "corr_team_td_vs_team_off_dk": 0.811,
+    "corr_team_points_vs_team_off_dk": 0.763,
+    "corr_home_points_vs_away_points": -0.038,
+    "corr_home_off_dk_vs_away_off_dk": 0.181,
+    "team_games": 2718
+   },
+   "FINDING": "DEFECT-COHERENCE (measured 2026-10-05): within a simulated world, a team's offensive DK points track its touchdowns and points far more loosely than in 2021-25 games (see the numbers). The TD identity holds, so this is not broken accounting: yardage/receptions are drawn too independently of scoring. Effect: same-team boom-together is understated, so stacks are undervalued in the top tail. NOT fixed tonight (no validated fix before lock; the sealed football model is preserved); registered as the first post-lock football item."
+  },
+  "CORRELATION_RECOVERY": [
+   {
+    "team": "ATL",
+    "pair": "QB-WR1",
+    "players": [
+     "Michael Penix Jr.",
+     "Drake London"
+    ],
+    "ours": 0.512,
+    "spikeweek_COR01": 0.542,
+    "fantasylabs_COR02": 0.54,
+    "ours_minus_spikeweek": -0.03,
+    "ours_minus_fantasylabs": -0.028
+   },
+   {
+    "team": "ATL",
+    "pair": "QB-WR2",
+    "players": [
+     "Michael Penix Jr.",
+     "Jahan Dotson"
+    ],
+    "ours": 0.325,
+    "spikeweek_COR01": 0.514,
+    "fantasylabs_COR02": 0.48,
+    "ours_minus_spikeweek": -0.189,
+    "ours_minus_fantasylabs": -0.155
+   },
+   {
+    "team": "ATL",
+    "pair": "QB-TE1",
+    "players": [
+     "Michael Penix Jr.",
+     "Kyle Pitts Sr."
+    ],
+    "ours": 0.325,
+    "spikeweek_COR01": 0.366,
+    "fantasylabs_COR02": 0.49,
+    "ours_minus_spikeweek": -0.041,
+    "ours_minus_fantasylabs": -0.165
+   },
+   {
+    "team": "ATL",
+    "pair": "QB-RB1",
+    "players": [
+     "Michael Penix Jr.",
+     "Bijan Robinson"
+    ],
+    "ours": 0.23,
+    "spikeweek_COR01": 0.09,
+    "fantasylabs_COR02": 0.38,
+    "ours_minus_spikeweek": 0.14,
+    "ours_minus_fantasylabs": -0.15
+   },
+   {
+    "team": "ATL",
+    "pair": "WR1-WR2_same_team",
+    "players": [
+     "Drake London",
+     "Jahan Dotson"
+    ],
+    "ours": 0.01,
+    "spikeweek_COR01": 0.345,
+    "fantasylabs_COR02": null,
+    "ours_minus_spikeweek": -0.335,
+    "ours_minus_fantasylabs": null
+   },
+   {
+    "team": "ATL",
+    "pair": "WR1-opposing_WR1",
+    "players": [
+     "Drake London",
+     "Chris Olave"
+    ],
+    "ours": 0.02,
+    "spikeweek_COR01": 0.56,
+    "fantasylabs_COR02": null,
+    "ours_minus_spikeweek": -0.54,
+    "ours_minus_fantasylabs": null
+   },
+   {
+    "team": "ATL",
+    "pair": "QB-own_DST",
+    "players": [
+     "Michael Penix Jr.",
+     "Falcons"
+    ],
+    "ours": -0.114,
+    "spikeweek_COR01": null,
+    "fantasylabs_COR02": 0.07,
+    "ours_minus_spikeweek": null,
+    "ours_minus_fantasylabs": -0.184
+   },
+   {
+    "team": "ATL",
+    "pair": "QB-opposing_DST",
+    "players": [
+     "Michael Penix Jr.",
+     "Saints"
+    ],
+    "ours": -0.305,
+    "spikeweek_COR01": null,
+    "fantasylabs_COR02": -0.16,
+    "ours_minus_spikeweek": null,
+    "ours_minus_fantasylabs": -0.145
+   },
+   {
+    "team": "NO",
+    "pair": "QB-WR1",
+    "players": [
+     "Tyler Shough",
+     "Chris Olave"
+    ],
+    "ours": 0.429,
+    "spikeweek_COR01": 0.542,
+    "fantasylabs_COR02": 0.54,
+    "ours_minus_spikeweek": -0.113,
+    "ours_minus_fantasylabs": -0.111
+   },
+   {
+    "team": "NO",
+    "pair": "QB-WR2",
+    "players": [
+     "Tyler Shough",
+     "Devaughn Vele"
+    ],
+    "ours": 0.312,
+    "spikeweek_COR01": 0.514,
+    "fantasylabs_COR02": 0.48,
+    "ours_minus_spikeweek": -0.202,
+    "ours_minus_fantasylabs": -0.168
+   },
+   {
+    "team": "NO",
+    "pair": "QB-TE1",
+    "players": [
+     "Tyler Shough",
+     "Juwan Johnson"
+    ],
+    "ours": 0.374,
+    "spikeweek_COR01": 0.366,
+    "fantasylabs_COR02": 0.49,
+    "ours_minus_spikeweek": 0.008,
+    "ours_minus_fantasylabs": -0.116
+   },
+   {
+    "team": "NO",
+    "pair": "QB-RB1",
+    "players": [
+     "Tyler Shough",
+     "Alvin Kamara"
+    ],
+    "ours": 0.179,
+    "spikeweek_COR01": 0.09,
+    "fantasylabs_COR02": 0.38,
+    "ours_minus_spikeweek": 0.089,
+    "ours_minus_fantasylabs": -0.201
+   },
+   {
+    "team": "NO",
+    "pair": "WR1-WR2_same_team",
+    "players": [
+     "Chris Olave",
+     "Devaughn Vele"
+    ],
+    "ours": 0.023,
+    "spikeweek_COR01": 0.345,
+    "fantasylabs_COR02": null,
+    "ours_minus_spikeweek": -0.322,
+    "ours_minus_fantasylabs": null
+   },
+   {
+    "team": "NO",
+    "pair": "WR1-opposing_WR1",
+    "players": [
+     "Chris Olave",
+     "Drake London"
+    ],
+    "ours": 0.02,
+    "spikeweek_COR01": 0.56,
+    "fantasylabs_COR02": null,
+    "ours_minus_spikeweek": -0.54,
+    "ours_minus_fantasylabs": null
+   },
+   {
+    "team": "NO",
+    "pair": "QB-own_DST",
+    "players": [
+     "Tyler Shough",
+     "Saints"
+    ],
+    "ours": -0.093,
+    "spikeweek_COR01": null,
+    "fantasylabs_COR02": 0.07,
+    "ours_minus_spikeweek": null,
+    "ours_minus_fantasylabs": -0.163
+   },
+   {
+    "team": "NO",
+    "pair": "QB-opposing_DST",
+    "players": [
+     "Tyler Shough",
+     "Falcons"
+    ],
+    "ours": -0.385,
+    "spikeweek_COR01": null,
+    "fantasylabs_COR02": -0.16,
+    "ours_minus_spikeweek": null,
+    "ours_minus_fantasylabs": -0.225
+   }
+  ],
   "scenario": "FANT_OUT",
   "official_inactives": null,
   "designations": {
@@ -3248,6 +3480,74 @@
       ]
      }
     }
+   }
+  },
+  "DUPE_SALARY_SENSITIVITY": {
+   "BLEND|FC08_90PCT_LE_500|phi200.0": {
+    "anchor_target_vs_achieved": {
+     "0-500": {
+      "target": 0.9,
+      "achieved": 0.892
+     },
+     "600-50000": {
+      "target": 0.1,
+      "achieved": 0.108
+     }
+    },
+    "calibration_residual_rmse_pts": {
+     "cpt": 0.19,
+     "flex": 0.925
+    },
+    "E3_mean_by_contest": {
+     "196285137": 97.6,
+     "196285160": 48.94,
+     "196285161": 121.2
+    },
+    "two_entry_E3": [
+     [
+      "Chris Olave",
+      76.5
+     ],
+     [
+      "Tyler Shough",
+      165.9
+     ]
+    ]
+   },
+   "BLEND|FC09_80PCT_MAX|phi200.0": {
+    "anchor_target_vs_achieved": {
+     "0-0": {
+      "target": 0.8,
+      "achieved": 0.483
+     },
+     "100-200": {
+      "target": 0.1,
+      "achieved": 0.254
+     },
+     "300-50000": {
+      "target": 0.1,
+      "achieved": 0.263
+     }
+    },
+    "calibration_residual_rmse_pts": {
+     "cpt": 0.349,
+     "flex": 1.959
+    },
+    "E3_mean_by_contest": {
+     "196285137": 83.42,
+     "196285160": 21.04,
+     "196285161": 86.5
+    },
+    "two_entry_E3": [
+     [
+      "Chris Olave",
+      141.2
+     ],
+     [
+      "Tyler Shough",
+      31.8
+     ]
+    ]
    }
   },
   "PROMOTION_STATUS": "NOT_PROMOTED. Both field projections are EXTERNAL_RESEARCH_SHADOW and UNVALIDATED; the blend fits five unverified anchors better, which is not validation. Neither feeds the football or the production portfolio."

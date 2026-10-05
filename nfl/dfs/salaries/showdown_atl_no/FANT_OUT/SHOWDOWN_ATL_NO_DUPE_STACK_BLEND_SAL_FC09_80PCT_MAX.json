@@ -1,0 +1,1349 @@
+{
+ "ARTIFACT": "SHOWDOWN_ARCHETYPE_FIELD_AND_DUPE_STACK",
+ "label": "EXTERNAL_RESEARCH_SHADOW",
+ "STATUS": "PRODUCTION_CANDIDATE -- NOT PROMOTED, NOT VALIDATED",
+ "method_candidates": [
+  "MC-FIELD-1",
+  "MC-DUPE-1"
+ ],
+ "targets_from": "nfl/dfs/salaries/showdown_atl_no/SHADOW_FANT_OUT_BLEND",
+ "field_projection": "BLEND",
+ "NOT_FITTED": {
+  "targets": "optimizer-exposure shadow field ownership, not a fitted ownership model",
+  "archetype_prior": "DERIVED_FROM_OPTIMIZER_FIELD (joint away-count x QB-count x K/DST-count)",
+  "phi": "ASSUMED, swept [50.0, 200.0, 1000.0]; 200.0 carried to the board",
+  "contest_bucket": "one bucket for all three contests",
+  "E2": "ETR-seeded correlation factors only; salary-left and construction factors 1.0"
+ },
+ "archetype_prior": {
+  "2away_1QB_1KD": 0.12,
+  "3away_1QB_1KD": 0.0888,
+  "1away_1QB_1KD": 0.054,
+  "2away_1QB_0KD": 0.0516,
+  "3away_1QB_0KD": 0.0482,
+  "2away_2QB_1KD": 0.0426,
+  "3away_2QB_1KD": 0.042,
+  "3away_2QB_0KD": 0.0398,
+  "2away_1QB_2KD": 0.0374,
+  "2away_2QB_0KD": 0.0362,
+  "3away_0QB_1KD": 0.0346,
+  "4away_1QB_1KD": 0.0342,
+  "3away_1QB_2KD": 0.0322,
+  "2away_0QB_1KD": 0.0314,
+  "1away_1QB_0KD": 0.0234,
+  "1away_1QB_2KD": 0.019,
+  "4away_1QB_0KD": 0.0182,
+  "4away_2QB_1KD": 0.0174,
+  "3away_0QB_2KD": 0.0174,
+  "2away_2QB_2KD": 0.0172,
+  "3away_0QB_0KD": 0.0168,
+  "4away_1QB_2KD": 0.0156,
+  "3away_2QB_2KD": 0.0138,
+  "1away_2QB_0KD": 0.0136,
+  "2away_0QB_2KD": 0.0124,
+  "1away_0QB_1KD": 0.0122,
+  "4away_2QB_0KD": 0.0112,
+  "2away_0QB_0KD": 0.0104,
+  "4away_0QB_1KD": 0.0096,
+  "1away_2QB_1KD": 0.0088,
+  "4away_2QB_2KD": 0.0064,
+  "4away_0QB_2KD": 0.0058,
+  "1away_0QB_0KD": 0.0058,
+  "5away_1QB_1KD": 0.0058,
+  "3away_1QB_3KD": 0.0054,
+  "1away_0QB_2KD": 0.0046,
+  "4away_0QB_0KD": 0.0042,
+  "1away_2QB_2KD": 0.004,
+  "5away_1QB_2KD": 0.0038,
+  "2away_0QB_3KD": 0.0032,
+  "5away_1QB_0KD": 0.003,
+  "4away_1QB_3KD": 0.0026,
+  "2away_1QB_3KD": 0.0026,
+  "3away_0QB_3KD": 0.0024,
+  "4away_2QB_3KD": 0.0016,
+  "5away_2QB_0KD": 0.0012,
+  "5away_0QB_2KD": 0.0012,
+  "5away_2QB_1KD": 0.0012,
+  "3away_2QB_3KD": 0.001,
+  "5away_0QB_1KD": 0.001,
+  "2away_2QB_3KD": 0.001,
+  "4away_0QB_3KD": 0.0006,
+  "1away_1QB_3KD": 0.0006,
+  "5away_2QB_2KD": 0.0006,
+  "5away_1QB_3KD": 0.0004
+ },
+ "k": 50000,
+ "generations": 50,
+ "field_size_estimates": {
+  "196285137": 235294,
+  "196285160": 47059,
+  "196285161": 58824
+ },
+ "by_phi": {
+  "200.0": {
+   "salary_anchor_target_vs_achieved": {
+    "0-0": {
+     "target": 0.8,
+     "achieved": 0.483
+    },
+    "100-200": {
+     "target": 0.1,
+     "achieved": 0.254
+    },
+    "300-50000": {
+     "target": 0.1,
+     "achieved": 0.263
+    }
+   },
+   "archetypes_prior_vs_generated": {
+    "2away_1QB_1KD": {
+     "prior": 0.12,
+     "generated": 0.129
+    },
+    "3away_1QB_1KD": {
+     "prior": 0.0888,
+     "generated": 0.1319
+    },
+    "1away_1QB_1KD": {
+     "prior": 0.054,
+     "generated": 0.0492
+    },
+    "2away_1QB_0KD": {
+     "prior": 0.0516,
+     "generated": 0.0485
+    },
+    "3away_1QB_0KD": {
+     "prior": 0.0482,
+     "generated": 0.0647
+    },
+    "2away_2QB_1KD": {
+     "prior": 0.0426,
+     "generated": 0.0324
+    },
+    "3away_2QB_1KD": {
+     "prior": 0.042,
+     "generated": 0.0299
+    },
+    "3away_2QB_0KD": {
+     "prior": 0.0398,
+     "generated": 0.0344
+    },
+    "2away_1QB_2KD": {
+     "prior": 0.0374,
+     "generated": 0.0306
+    },
+    "2away_2QB_0KD": {
+     "prior": 0.0362,
+     "generated": 0.0299
+    },
+    "3away_0QB_1KD": {
+     "prior": 0.0346,
+     "generated": 0.0274
+    },
+    "4away_1QB_1KD": {
+     "prior": 0.0342,
+     "generated": 0.0584
+    },
+    "3away_1QB_2KD": {
+     "prior": 0.0322,
+     "generated": 0.0299
+    },
+    "2away_0QB_1KD": {
+     "prior": 0.0314,
+     "generated": 0.0343
+    },
+    "1away_1QB_0KD": {
+     "prior": 0.0234,
+     "generated": 0.0214
+    },
+    "1away_1QB_2KD": {
+     "prior": 0.019,
+     "generated": 0.0129
+    },
+    "4away_1QB_0KD": {
+     "prior": 0.0182,
+     "generated": 0.0244
+    },
+    "4away_2QB_1KD": {
+     "prior": 0.0174,
+     "generated": 0.0216
+    },
+    "3away_0QB_2KD": {
+     "prior": 0.0174,
+     "generated": 0.0174
+    },
+    "2away_2QB_2KD": {
+     "prior": 0.0172,
+     "generated": 0.0178
+    },
+    "3away_0QB_0KD": {
+     "prior": 0.0168,
+     "generated": 0.0114
+    },
+    "4away_1QB_2KD": {
+     "prior": 0.0156,
+     "generated": 0.0118
+    },
+    "3away_2QB_2KD": {
+     "prior": 0.0138,
+     "generated": 0.0107
+    },
+    "1away_2QB_0KD": {
+     "prior": 0.0136,
+     "generated": 0.0191
+    },
+    "2away_0QB_2KD": {
+     "prior": 0.0124,
+     "generated": 0.0069
+    },
+    "1away_0QB_1KD": {
+     "prior": 0.0122,
+     "generated": 0.0068
+    },
+    "4away_2QB_0KD": {
+     "prior": 0.0112,
+     "generated": 0.0145
+    },
+    "2away_0QB_0KD": {
+     "prior": 0.0104,
+     "generated": 0.0079
+    },
+    "4away_0QB_1KD": {
+     "prior": 0.0096,
+     "generated": 0.0133
+    },
+    "1away_2QB_1KD": {
+     "prior": 0.0088,
+     "generated": 0.0029
+    },
+    "4away_2QB_2KD": {
+     "prior": 0.0064,
+     "generated": 0.0044
+    },
+    "4away_0QB_2KD": {
+     "prior": 0.0058,
+     "generated": 0.0037
+    },
+    "1away_0QB_0KD": {
+     "prior": 0.0058,
+     "generated": 0.0018
+    },
+    "5away_1QB_1KD": {
+     "prior": 0.0058,
+     "generated": 0.0034
+    },
+    "3away_1QB_3KD": {
+     "prior": 0.0054,
+     "generated": 0.0026
+    },
+    "1away_0QB_2KD": {
+     "prior": 0.0046,
+     "generated": 0.0035
+    },
+    "4away_0QB_0KD": {
+     "prior": 0.0042,
+     "generated": 0.0065
+    },
+    "1away_2QB_2KD": {
+     "prior": 0.004,
+     "generated": 0.002
+    },
+    "5away_1QB_2KD": {
+     "prior": 0.0038,
+     "generated": 0.0052
+    },
+    "2away_0QB_3KD": {
+     "prior": 0.0032,
+     "generated": 0.0015
+    },
+    "5away_1QB_0KD": {
+     "prior": 0.003,
+     "generated": 0.0021
+    },
+    "4away_1QB_3KD": {
+     "prior": 0.0026,
+     "generated": 0.0035
+    },
+    "2away_1QB_3KD": {
+     "prior": 0.0026,
+     "generated": 0.0009
+    },
+    "3away_0QB_3KD": {
+     "prior": 0.0024,
+     "generated": 0.0013
+    },
+    "4away_2QB_3KD": {
+     "prior": 0.0016,
+     "generated": 0.0005
+    },
+    "5away_2QB_0KD": {
+     "prior": 0.0012,
+     "generated": 0.0017
+    },
+    "5away_0QB_2KD": {
+     "prior": 0.0012,
+     "generated": 0.0019
+    },
+    "5away_2QB_1KD": {
+     "prior": 0.0012,
+     "generated": 0.0002
+    },
+    "3away_2QB_3KD": {
+     "prior": 0.001,
+     "generated": 0.0003
+    },
+    "5away_0QB_1KD": {
+     "prior": 0.001,
+     "generated": 0.0005
+    },
+    "2away_2QB_3KD": {
+     "prior": 0.001,
+     "generated": 0.0002
+    },
+    "4away_0QB_3KD": {
+     "prior": 0.0006,
+     "generated": 0.0001
+    },
+    "1away_1QB_3KD": {
+     "prior": 0.0006,
+     "generated": 0.0002
+    },
+    "5away_2QB_2KD": {
+     "prior": 0.0006,
+     "generated": 0.0004
+    },
+    "5away_1QB_3KD": {
+     "prior": 0.0004,
+     "generated": 0.0002
+    }
+   },
+   "archetype_shortfall": {
+    "3away_2QB_3KD": 117,
+    "3away_1QB_1KD": 5120,
+    "4away_1QB_1KD": 1602,
+    "2away_2QB_0KD": 3291,
+    "1away_1QB_2KD": 1862,
+    "1away_1QB_0KD": 2014,
+    "3away_2QB_1KD": 4048,
+    "1away_1QB_1KD": 4669,
+    "2away_1QB_2KD": 3397,
+    "2away_2QB_1KD": 3996,
+    "2away_1QB_1KD": 9345,
+    "3away_0QB_1KD": 3185,
+    "1away_2QB_1KD": 1017,
+    "4away_2QB_1KD": 1206,
+    "3away_2QB_0KD": 3523,
+    "3away_1QB_0KD": 3104,
+    "3away_1QB_2KD": 2744,
+    "1away_2QB_0KD": 844,
+    "3away_0QB_2KD": 1433,
+    "1away_0QB_2KD": 423,
+    "1away_2QB_2KD": 425,
+    "2away_0QB_2KD": 1289,
+    "4away_0QB_1KD": 607,
+    "2away_2QB_2KD": 1364,
+    "4away_2QB_0KD": 755,
+    "3away_1QB_3KD": 586,
+    "4away_1QB_0KD": 1180,
+    "2away_1QB_0KD": 4364,
+    "2away_0QB_0KD": 982,
+    "2away_0QB_1KD": 2416,
+    "5away_1QB_0KD": 294,
+    "3away_0QB_0KD": 1653,
+    "4away_0QB_2KD": 581,
+    "5away_2QB_0KD": 91,
+    "3away_2QB_2KD": 1274,
+    "2away_0QB_3KD": 346,
+    "4away_0QB_3KD": 68,
+    "5away_0QB_2KD": 79,
+    "5away_1QB_2KD": 248,
+    "1away_0QB_1KD": 1272,
+    "4away_0QB_0KD": 240,
+    "4away_1QB_2KD": 1478,
+    "1away_0QB_0KD": 674,
+    "4away_1QB_3KD": 172,
+    "4away_2QB_2KD": 628,
+    "5away_0QB_1KD": 107,
+    "3away_0QB_3KD": 254,
+    "5away_2QB_1KD": 148,
+    "5away_1QB_1KD": 595,
+    "1away_1QB_3KD": 81,
+    "2away_1QB_3KD": 300,
+    "4away_2QB_3KD": 185,
+    "5away_2QB_2KD": 62,
+    "2away_2QB_3KD": 120,
+    "5away_1QB_3KD": 52
+   },
+   "calibration": [
+    {
+     "round": 0,
+     "cpt_rmse_pts": 5.981,
+     "flex_rmse_pts": 4.088
+    },
+    {
+     "round": 1,
+     "cpt_rmse_pts": 4.643,
+     "flex_rmse_pts": 3.326
+    },
+    {
+     "round": 2,
+     "cpt_rmse_pts": 3.251,
+     "flex_rmse_pts": 2.678
+    },
+    {
+     "round": 3,
+     "cpt_rmse_pts": 1.734,
+     "flex_rmse_pts": 1.704
+    },
+    {
+     "round": 4,
+     "cpt_rmse_pts": 1.115,
+     "flex_rmse_pts": 1.8
+    },
+    {
+     "round": 5,
+     "cpt_rmse_pts": 0.621,
+     "flex_rmse_pts": 1.632
+    },
+    {
+     "round": 6,
+     "cpt_rmse_pts": 0.491,
+     "flex_rmse_pts": 1.51
+    },
+    {
+     "round": 7,
+     "cpt_rmse_pts": 0.295,
+     "flex_rmse_pts": 1.397
+    },
+    {
+     "round": 8,
+     "cpt_rmse_pts": 0.576,
+     "flex_rmse_pts": 1.637
+    },
+    {
+     "round": 9,
+     "cpt_rmse_pts": 0.487,
+     "flex_rmse_pts": 1.524
+    },
+    {
+     "round": 10,
+     "cpt_rmse_pts": 0.301,
+     "flex_rmse_pts": 1.323
+    },
+    {
+     "round": 11,
+     "cpt_rmse_pts": 0.188,
+     "flex_rmse_pts": 1.408
+    },
+    {
+     "round": 12,
+     "cpt_rmse_pts": 0.277,
+     "flex_rmse_pts": 1.496
+    },
+    {
+     "round": 13,
+     "cpt_rmse_pts": 0.251,
+     "flex_rmse_pts": 1.359
+    },
+    {
+     "round": 14,
+     "cpt_rmse_pts": 0.293,
+     "flex_rmse_pts": 1.442
+    },
+    {
+     "round": 15,
+     "cpt_rmse_pts": 0.563,
+     "flex_rmse_pts": 1.552
+    },
+    {
+     "round": 16,
+     "cpt_rmse_pts": 0.316,
+     "flex_rmse_pts": 1.49
+    },
+    {
+     "round": 17,
+     "cpt_rmse_pts": 0.446,
+     "flex_rmse_pts": 1.562
+    },
+    {
+     "round": 18,
+     "cpt_rmse_pts": 0.294,
+     "flex_rmse_pts": 1.569
+    },
+    {
+     "round": 19,
+     "cpt_rmse_pts": 0.573,
+     "flex_rmse_pts": 1.549
+    },
+    {
+     "round": 20,
+     "cpt_rmse_pts": 0.326,
+     "flex_rmse_pts": 1.435
+    },
+    {
+     "round": 21,
+     "cpt_rmse_pts": 0.272,
+     "flex_rmse_pts": 1.394
+    },
+    {
+     "round": 22,
+     "cpt_rmse_pts": 0.382,
+     "flex_rmse_pts": 1.593
+    },
+    {
+     "round": 23,
+     "cpt_rmse_pts": 0.198,
+     "flex_rmse_pts": 1.673
+    },
+    {
+     "round": 24,
+     "cpt_rmse_pts": 0.231,
+     "flex_rmse_pts": 1.493
+    },
+    {
+     "round": 25,
+     "cpt_rmse_pts": 0.383,
+     "flex_rmse_pts": 1.672
+    },
+    {
+     "round": 26,
+     "cpt_rmse_pts": 0.446,
+     "flex_rmse_pts": 1.733
+    },
+    {
+     "round": 27,
+     "cpt_rmse_pts": 0.265,
+     "flex_rmse_pts": 1.531
+    },
+    {
+     "round": 28,
+     "cpt_rmse_pts": 0.241,
+     "flex_rmse_pts": 1.581
+    },
+    {
+     "round": 29,
+     "cpt_rmse_pts": 0.208,
+     "flex_rmse_pts": 1.632
+    },
+    {
+     "round": 30,
+     "cpt_rmse_pts": 0.293,
+     "flex_rmse_pts": 1.703
+    },
+    {
+     "round": 31,
+     "cpt_rmse_pts": 0.335,
+     "flex_rmse_pts": 1.671
+    },
+    {
+     "round": 32,
+     "cpt_rmse_pts": 0.144,
+     "flex_rmse_pts": 1.613
+    },
+    {
+     "round": 33,
+     "cpt_rmse_pts": 0.244,
+     "flex_rmse_pts": 1.796
+    },
+    {
+     "round": 34,
+     "cpt_rmse_pts": 0.233,
+     "flex_rmse_pts": 1.728
+    },
+    {
+     "round": 35,
+     "cpt_rmse_pts": 0.198,
+     "flex_rmse_pts": 1.783
+    },
+    {
+     "round": 36,
+     "cpt_rmse_pts": 0.298,
+     "flex_rmse_pts": 1.677
+    },
+    {
+     "round": 37,
+     "cpt_rmse_pts": 0.325,
+     "flex_rmse_pts": 1.808
+    },
+    {
+     "round": 38,
+     "cpt_rmse_pts": 0.323,
+     "flex_rmse_pts": 1.706
+    },
+    {
+     "round": 39,
+     "cpt_rmse_pts": 0.442,
+     "flex_rmse_pts": 1.775
+    }
+   ],
+   "rejected": 4101538,
+   "accept_rate": 0.012,
+   "final_residual_rmse_pts": {
+    "cpt": 0.349,
+    "flex": 1.959
+   },
+   "largest_residuals_pts": [
+    {
+     "player": "Charlie Woerner",
+     "cpt": 0.0,
+     "flex": 7.12
+    },
+    {
+     "player": "Chris Olave",
+     "cpt": 1.35,
+     "flex": -2.73
+    },
+    {
+     "player": "Daniel Carlson",
+     "cpt": 0.27,
+     "flex": -2.48
+    },
+    {
+     "player": "Drake London",
+     "cpt": 0.19,
+     "flex": 2.2
+    },
+    {
+     "player": "Kevin Austin Jr.",
+     "cpt": 0.02,
+     "flex": -2.18
+    },
+    {
+     "player": "Kyle Pitts Sr.",
+     "cpt": -0.02,
+     "flex": 1.66
+    },
+    {
+     "player": "Olamide Zaccheaus",
+     "cpt": -0.06,
+     "flex": 1.66
+    },
+    {
+     "player": "Juwan Johnson",
+     "cpt": -0.23,
+     "flex": -1.45
+    }
+   ],
+   "salary_left": {
+    "mean": 1328,
+    "p50": 100.0,
+    "share_0": 0.483,
+    "share_le_900": 0.772,
+    "share_1000_1900": 0.036
+   },
+   "distinct_lineups": 8189,
+   "top_copies_in_field": [
+    1367,
+    755,
+    701,
+    594,
+    520
+   ],
+   "contests": {
+    "196285137": {
+     "N_estimate": 235294,
+     "n_lineups": 150,
+     "mean": {
+      "E1": 37.14,
+      "E2": 49.26,
+      "E3_lower_bound_mean": 83.42,
+      "E4": 49.89
+     },
+     "flags": {
+      "E1_E3_DISAGREE_GT_2X": 64,
+      "E3_BELOW_RESOLUTION_E1_NOT": 47,
+      "None": 37,
+      "PLAYER_ABSENT_FROM_FIELD_TARGETS": 2
+     },
+     "lineups": null,
+     "top10_by_E1": [
+      {
+       "captain": "Bijan Robinson",
+       "flex": [
+        "Daniel Carlson",
+        "Drake London",
+        "Juwan Johnson",
+        "Kevin Austin Jr.",
+        "Michael Penix Jr."
+       ],
+       "E1_independent_product": 282.69,
+       "E2_adjusted_product": 282.69,
+       "E2_factors": [
+        "none"
+       ],
+       "E3_archetype_field": 9.4,
+       "E3_count_in_field": 2,
+       "E4_optimizer_field": 329.4,
+       "FLAG": "E1_E3_DISAGREE_GT_2X",
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Tyler Shough",
+       "flex": [
+        "Alvin Kamara",
+        "Chris Olave",
+        "Daniel Carlson",
+        "Juwan Johnson",
+        "Nick Folk"
+       ],
+       "E1_independent_product": 196.85,
+       "E2_adjusted_product": 196.85,
+       "E2_factors": [
+        "none"
+       ],
+       "E3_archetype_field": 80.0,
+       "E3_count_in_field": 17,
+       "E4_optimizer_field": 470.6,
+       "FLAG": "E1_E3_DISAGREE_GT_2X",
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Chris Olave",
+       "flex": [
+        "Daniel Carlson",
+        "Drake London",
+        "Juwan Johnson",
+        "Olamide Zaccheaus",
+        "Tyler Shough"
+       ],
+       "E1_independent_product": 170.39,
+       "E2_adjusted_product": 340.78,
+       "E2_factors": [
+        "CPT_WR_WITH_OWN_QB x2.0"
+       ],
+       "E3_archetype_field": 1872.9,
+       "E3_count_in_field": 398,
+       "E4_optimizer_field": 329.4,
+       "FLAG": "E1_E3_DISAGREE_GT_2X",
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Bijan Robinson",
+       "flex": [
+        "Alvin Kamara",
+        "Chris Olave",
+        "Drake London",
+        "Falcons",
+        "Kevin Austin Jr."
+       ],
+       "E1_independent_product": 165.26,
+       "E2_adjusted_product": 165.26,
+       "E2_factors": [
+        "none"
+       ],
+       "E3_archetype_field": 395.3,
+       "E3_count_in_field": 84,
+       "E4_optimizer_field": 282.4,
+       "FLAG": "E1_E3_DISAGREE_GT_2X",
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Tyler Shough",
+       "flex": [
+        "Chris Olave",
+        "Devaughn Vele",
+        "Drake London",
+        "Kevin Austin Jr.",
+        "Nick Folk"
+       ],
+       "E1_independent_product": 137.71,
+       "E2_adjusted_product": 137.71,
+       "E2_factors": [
+        "none"
+       ],
+       "E3_archetype_field": "<4.7",
+       "E3_count_in_field": 0,
+       "E4_optimizer_field": 188.2,
+       "FLAG": "E3_BELOW_RESOLUTION_E1_NOT",
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Tyler Shough",
+       "flex": [
+        "Alvin Kamara",
+        "Daniel Carlson",
+        "Devaughn Vele",
+        "Drake London",
+        "Nick Folk"
+       ],
+       "E1_independent_product": 124.9,
+       "E2_adjusted_product": 124.9,
+       "E2_factors": [
+        "none"
+       ],
+       "E3_archetype_field": "<4.7",
+       "E3_count_in_field": 0,
+       "E4_optimizer_field": 47.1,
+       "FLAG": "E3_BELOW_RESOLUTION_E1_NOT",
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Bijan Robinson",
+       "flex": [
+        "Alvin Kamara",
+        "Daniel Carlson",
+        "Jahan Dotson",
+        "Juwan Johnson",
+        "Tyler Shough"
+       ],
+       "E1_independent_product": 121.67,
+       "E2_adjusted_product": 121.67,
+       "E2_factors": [
+        "none"
+       ],
+       "E3_archetype_field": 28.2,
+       "E3_count_in_field": 6,
+       "E4_optimizer_field": 0.0,
+       "FLAG": "E1_E3_DISAGREE_GT_2X",
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Chris Olave",
+       "flex": [
+        "Bijan Robinson",
+        "Devaughn Vele",
+        "Falcons",
+        "Kevin Austin Jr.",
+        "Tyler Shough"
+       ],
+       "E1_independent_product": 118.88,
+       "E2_adjusted_product": 237.77,
+       "E2_factors": [
+        "CPT_WR_WITH_OWN_QB x2.0"
+       ],
+       "E3_archetype_field": 47.1,
+       "E3_count_in_field": 10,
+       "E4_optimizer_field": 235.3,
+       "FLAG": "E1_E3_DISAGREE_GT_2X",
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Tyler Shough",
+       "flex": [
+        "Chris Olave",
+        "Drake London",
+        "Juwan Johnson",
+        "Nick Folk",
+        "Olamide Zaccheaus"
+       ],
+       "E1_independent_product": 114.05,
+       "E2_adjusted_product": 114.05,
+       "E2_factors": [
+        "none"
+       ],
+       "E3_archetype_field": 1581.2,
+       "E3_count_in_field": 336,
+       "E4_optimizer_field": 94.1,
+       "FLAG": "E1_E3_DISAGREE_GT_2X",
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Chris Olave",
+       "flex": [
+        "Alvin Kamara",
+        "Bijan Robinson",
+        "Juwan Johnson",
+        "Nick Folk",
+        "Olamide Zaccheaus"
+       ],
+       "E1_independent_product": 109.07,
+       "E2_adjusted_product": 109.07,
+       "E2_factors": [
+        "none"
+       ],
+       "E3_archetype_field": 18.8,
+       "E3_count_in_field": 4,
+       "E4_optimizer_field": 47.1,
+       "FLAG": "E1_E3_DISAGREE_GT_2X",
+       "players_absent_from_field_targets": []
+      }
+     ]
+    },
+    "196285160": {
+     "N_estimate": 47059,
+     "n_lineups": 20,
+     "mean": {
+      "E1": 8.73,
+      "E2": 12.48,
+      "E3_lower_bound_mean": 21.04,
+      "E4": 15.98
+     },
+     "flags": {
+      "E1_E3_DISAGREE_GT_2X": 9,
+      "E3_BELOW_RESOLUTION_E1_NOT": 6,
+      "None": 5
+     },
+     "lineups": [
+      {
+       "captain": "Chris Olave",
+       "flex": [
+        "Bijan Robinson",
+        "Daniel Carlson",
+        "Juwan Johnson",
+        "Treyton Welch",
+        "Tyler Shough"
+       ],
+       "E1_independent_product": 5.54,
+       "E2_adjusted_product": 11.07,
+       "E2_factors": [
+        "CPT_WR_WITH_OWN_QB x2.0"
+       ],
+       "E3_archetype_field": 112.9,
+       "E3_count_in_field": 120,
+       "E4_optimizer_field": 28.2,
+       "FLAG": "E1_E3_DISAGREE_GT_2X",
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Tyler Shough",
+       "flex": [
+        "Bijan Robinson",
+        "Chris Olave",
+        "Juwan Johnson",
+        "Nick Folk",
+        "Treyton Welch"
+       ],
+       "E1_independent_product": 3.71,
+       "E2_adjusted_product": 3.71,
+       "E2_factors": [
+        "none"
+       ],
+       "E3_archetype_field": 168.5,
+       "E3_count_in_field": 179,
+       "E4_optimizer_field": 18.8,
+       "FLAG": "E1_E3_DISAGREE_GT_2X",
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Tyler Shough",
+       "flex": [
+        "Alvin Kamara",
+        "Chris Olave",
+        "Drake London",
+        "Juwan Johnson",
+        "Treyton Welch"
+       ],
+       "E1_independent_product": 5.96,
+       "E2_adjusted_product": 5.96,
+       "E2_factors": [
+        "none"
+       ],
+       "E3_archetype_field": 25.4,
+       "E3_count_in_field": 27,
+       "E4_optimizer_field": 37.6,
+       "FLAG": "E1_E3_DISAGREE_GT_2X",
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Chris Olave",
+       "flex": [
+        "Alvin Kamara",
+        "Juwan Johnson",
+        "Nick Folk",
+        "Saints",
+        "Tyler Shough"
+       ],
+       "E1_independent_product": 20.19,
+       "E2_adjusted_product": 40.38,
+       "E2_factors": [
+        "CPT_WR_WITH_OWN_QB x2.0"
+       ],
+       "E3_archetype_field": 6.6,
+       "E3_count_in_field": 7,
+       "E4_optimizer_field": 37.6,
+       "FLAG": "E1_E3_DISAGREE_GT_2X",
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Bijan Robinson",
+       "flex": [
+        "Chris Olave",
+        "Drake London",
+        "Falcons",
+        "Juwan Johnson",
+        "Treyton Welch"
+       ],
+       "E1_independent_product": 2.53,
+       "E2_adjusted_product": 2.53,
+       "E2_factors": [
+        "none"
+       ],
+       "E3_archetype_field": "<0.9",
+       "E3_count_in_field": 0,
+       "E4_optimizer_field": 0.0,
+       "FLAG": "E3_BELOW_RESOLUTION_E1_NOT",
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Bijan Robinson",
+       "flex": [
+        "Alvin Kamara",
+        "Chris Olave",
+        "Drake London",
+        "Saints",
+        "Treyton Welch"
+       ],
+       "E1_independent_product": 2.87,
+       "E2_adjusted_product": 2.87,
+       "E2_factors": [
+        "none"
+       ],
+       "E3_archetype_field": 52.7,
+       "E3_count_in_field": 56,
+       "E4_optimizer_field": 0.0,
+       "FLAG": "E1_E3_DISAGREE_GT_2X",
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Chris Olave",
+       "flex": [
+        "Alvin Kamara",
+        "Bijan Robinson",
+        "Daniel Carlson",
+        "Treyton Welch",
+        "Tyler Shough"
+       ],
+       "E1_independent_product": 5.81,
+       "E2_adjusted_product": 11.63,
+       "E2_factors": [
+        "CPT_WR_WITH_OWN_QB x2.0"
+       ],
+       "E3_archetype_field": "<0.9",
+       "E3_count_in_field": 0,
+       "E4_optimizer_field": 18.8,
+       "FLAG": "E3_BELOW_RESOLUTION_E1_NOT",
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Bijan Robinson",
+       "flex": [
+        "Daniel Carlson",
+        "Drake London",
+        "Juwan Johnson",
+        "Treyton Welch",
+        "Tyler Shough"
+       ],
+       "E1_independent_product": 5.42,
+       "E2_adjusted_product": 5.42,
+       "E2_factors": [
+        "none"
+       ],
+       "E3_archetype_field": 2.8,
+       "E3_count_in_field": 3,
+       "E4_optimizer_field": 37.6,
+       "FLAG": null,
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Drake London",
+       "flex": [
+        "Chris Olave",
+        "Daniel Carlson",
+        "Michael Penix Jr.",
+        "Treyton Welch",
+        "Tyler Shough"
+       ],
+       "E1_independent_product": 3.07,
+       "E2_adjusted_product": 6.14,
+       "E2_factors": [
+        "CPT_WR_WITH_OWN_QB x2.0"
+       ],
+       "E3_archetype_field": "<0.9",
+       "E3_count_in_field": 0,
+       "E4_optimizer_field": 0.0,
+       "FLAG": "E3_BELOW_RESOLUTION_E1_NOT",
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Bijan Robinson",
+       "flex": [
+        "Alvin Kamara",
+        "Devaughn Vele",
+        "Juwan Johnson",
+        "Treyton Welch",
+        "Tyler Shough"
+       ],
+       "E1_independent_product": 4.24,
+       "E2_adjusted_product": 4.24,
+       "E2_factors": [
+        "none"
+       ],
+       "E3_archetype_field": 6.6,
+       "E3_count_in_field": 7,
+       "E4_optimizer_field": 47.1,
+       "FLAG": null,
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Chris Olave",
+       "flex": [
+        "Alvin Kamara",
+        "Austin Hooper",
+        "Drake London",
+        "Saints",
+        "Tyler Shough"
+       ],
+       "E1_independent_product": 0.85,
+       "E2_adjusted_product": 1.7,
+       "E2_factors": [
+        "CPT_WR_WITH_OWN_QB x2.0"
+       ],
+       "E3_archetype_field": "<0.9",
+       "E3_count_in_field": 0,
+       "E4_optimizer_field": 9.4,
+       "FLAG": null,
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Drake London",
+       "flex": [
+        "Bijan Robinson",
+        "Bryce Lance",
+        "Daniel Carlson",
+        "Juwan Johnson",
+        "Michael Penix Jr."
+       ],
+       "E1_independent_product": 9.53,
+       "E2_adjusted_product": 19.05,
+       "E2_factors": [
+        "CPT_WR_WITH_OWN_QB x2.0"
+       ],
+       "E3_archetype_field": 1.9,
+       "E3_count_in_field": 2,
+       "E4_optimizer_field": 18.8,
+       "FLAG": "E1_E3_DISAGREE_GT_2X",
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Bijan Robinson",
+       "flex": [
+        "Chris Olave",
+        "Devaughn Vele",
+        "Falcons",
+        "Treyton Welch",
+        "Tyler Shough"
+       ],
+       "E1_independent_product": 2.02,
+       "E2_adjusted_product": 2.02,
+       "E2_factors": [
+        "none"
+       ],
+       "E3_archetype_field": 2.8,
+       "E3_count_in_field": 3,
+       "E4_optimizer_field": 0.0,
+       "FLAG": null,
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Chris Olave",
+       "flex": [
+        "Drake London",
+        "Jahan Dotson",
+        "Michael Penix Jr.",
+        "Olamide Zaccheaus",
+        "Tyler Shough"
+       ],
+       "E1_independent_product": 12.51,
+       "E2_adjusted_product": 25.03,
+       "E2_factors": [
+        "CPT_WR_WITH_OWN_QB x2.0"
+       ],
+       "E3_archetype_field": 22.6,
+       "E3_count_in_field": 24,
+       "E4_optimizer_field": 9.4,
+       "FLAG": null,
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Tyler Shough",
+       "flex": [
+        "Alvin Kamara",
+        "Bijan Robinson",
+        "Daniel Carlson",
+        "Juwan Johnson",
+        "Saints"
+       ],
+       "E1_independent_product": 36.04,
+       "E2_adjusted_product": 36.04,
+       "E2_factors": [
+        "none"
+       ],
+       "E3_archetype_field": "<0.9",
+       "E3_count_in_field": 0,
+       "E4_optimizer_field": 28.2,
+       "FLAG": "E3_BELOW_RESOLUTION_E1_NOT",
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Bijan Robinson",
+       "flex": [
+        "Alvin Kamara",
+        "Chris Olave",
+        "Daniel Carlson",
+        "Falcons",
+        "Nick Folk"
+       ],
+       "E1_independent_product": 17.57,
+       "E2_adjusted_product": 17.57,
+       "E2_factors": [
+        "none"
+       ],
+       "E3_archetype_field": 0.9,
+       "E3_count_in_field": 1,
+       "E4_optimizer_field": 0.0,
+       "FLAG": "E1_E3_DISAGREE_GT_2X",
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Juwan Johnson",
+       "flex": [
+        "Chris Olave",
+        "Drake London",
+        "Falcons",
+        "Saints",
+        "Tyler Shough"
+       ],
+       "E1_independent_product": 7.81,
+       "E2_adjusted_product": 7.81,
+       "E2_factors": [
+        "none"
+       ],
+       "E3_archetype_field": "<0.9",
+       "E3_count_in_field": 0,
+       "E4_optimizer_field": 9.4,
+       "FLAG": "E3_BELOW_RESOLUTION_E1_NOT",
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Alvin Kamara",
+       "flex": [
+        "Bijan Robinson",
+        "Daniel Carlson",
+        "Drake London",
+        "Falcons",
+        "Michael Penix Jr."
+       ],
+       "E1_independent_product": 11.45,
+       "E2_adjusted_product": 11.45,
+       "E2_factors": [
+        "none"
+       ],
+       "E3_archetype_field": 3.8,
+       "E3_count_in_field": 4,
+       "E4_optimizer_field": 0.0,
+       "FLAG": "E1_E3_DISAGREE_GT_2X",
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Drake London",
+       "flex": [
+        "Alvin Kamara",
+        "Devaughn Vele",
+        "Falcons",
+        "Juwan Johnson",
+        "Michael Penix Jr."
+       ],
+       "E1_independent_product": 11.17,
+       "E2_adjusted_product": 22.34,
+       "E2_factors": [
+        "CPT_WR_WITH_OWN_QB x2.0"
+       ],
+       "E3_archetype_field": "<0.9",
+       "E3_count_in_field": 0,
+       "E4_optimizer_field": 9.4,
+       "FLAG": "E3_BELOW_RESOLUTION_E1_NOT",
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Drake London",
+       "flex": [
+        "Alvin Kamara",
+        "Bijan Robinson",
+        "Bryce Lance",
+        "Michael Penix Jr.",
+        "Nick Folk"
+       ],
+       "E1_independent_product": 6.31,
+       "E2_adjusted_product": 12.61,
+       "E2_factors": [
+        "CPT_WR_WITH_OWN_QB x2.0"
+       ],
+       "E3_archetype_field": 13.2,
+       "E3_count_in_field": 14,
+       "E4_optimizer_field": 9.4,
+       "FLAG": "E1_E3_DISAGREE_GT_2X",
+       "players_absent_from_field_targets": []
+      }
+     ],
+     "top10_by_E1": null
+    },
+    "196285161": {
+     "N_estimate": 58824,
+     "n_lineups": 2,
+     "mean": {
+      "E1": 7.19,
+      "E2": 10.64,
+      "E3_lower_bound_mean": 86.5,
+      "E4": 41.2
+     },
+     "flags": {
+      "E1_E3_DISAGREE_GT_2X": 2
+     },
+     "lineups": [
+      {
+       "captain": "Chris Olave",
+       "flex": [
+        "Bijan Robinson",
+        "Daniel Carlson",
+        "Juwan Johnson",
+        "Treyton Welch",
+        "Tyler Shough"
+       ],
+       "E1_independent_product": 6.92,
+       "E2_adjusted_product": 13.84,
+       "E2_factors": [
+        "CPT_WR_WITH_OWN_QB x2.0"
+       ],
+       "E3_archetype_field": 141.2,
+       "E3_count_in_field": 120,
+       "E4_optimizer_field": 35.3,
+       "FLAG": "E1_E3_DISAGREE_GT_2X",
+       "players_absent_from_field_targets": []
+      },
+      {
+       "captain": "Tyler Shough",
+       "flex": [
+        "Alvin Kamara",
+        "Chris Olave",
+        "Drake London",
+        "Juwan Johnson",
+        "Treyton Welch"
+       ],
+       "E1_independent_product": 7.45,
+       "E2_adjusted_product": 7.45,
+       "E2_factors": [
+        "none"
+       ],
+       "E3_archetype_field": 31.8,
+       "E3_count_in_field": 27,
+       "E4_optimizer_field": 47.1,
+       "FLAG": "E1_E3_DISAGREE_GT_2X",
+       "players_absent_from_field_targets": []
+      }
+     ],
+     "top10_by_E1": null
+    }
+   }
+  }
+ },
+ "salary_anchor": {
+  "name": "FC09_80PCT_MAX",
+  "buckets": {
+   "0-0": 0.8,
+   "100-200": 0.1,
+   "300-50000": 0.1
+  },
+  "NOTE": "field-side salary-left anchor from the Cycle 1 ledger (FC-08 / FC-09): a SENSITIVITY variant of E3, not a fitted salary model"
+ },
+ "as_of_utc": "2026-10-05T20:15:06.207851+00:00"
+}

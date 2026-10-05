@@ -7,6 +7,7 @@
 - starters: `{'Michael Penix Jr.': 'ATL', 'Tyler Shough': 'NO'}` (PUBLIC_DEPTH_CHART_AND_SNAPS_CITED)
 - state counts: `{'PROJECTED': 27, 'ZERO_OPPORTUNITY': 7, 'INACTIVE': 21, 'PROJECTED_WITH_UNCERTAINTY': 1}`
 - football sanity: `{"state": "PASS", "code": "FOOTBALL_SANITY_PASS", "detail": "56 rows, 2 clubs, no football contradiction", "flags": null}`
+- **SHOWDOWN_COHERENCE_WARNING** (measured, not fixed tonight): `{"ours_by_team": {"NO": {"corr_team_td_vs_team_off_dk": 0.555, "corr_team_points_vs_team_off_dk": 0.495}, "ATL": {"corr_team_td_vs_team_off_dk": 0.575, "corr_team_points_vs_team_off_dk": 0.514}}, "ours_corr_home_points_vs_away_points": 0.068, "ours_corr_home_off_dk_vs_away_off_dk": 0.194, "history_2021_2025": {"corr_team_td_vs_team_off_dk": 0.811, "corr_team_points_vs_team_off_dk": 0.763, "corr_home_points_vs_away_points": -0.038, "corr_home_off_dk_vs_away_off_dk": 0.181, "team_games": 2718}, "FINDING": "DEFECT-COHERENCE (measured 2026-10-05): within a simulated world, a team's offensive DK points track its touchdowns and points far more loosely than in 2021-25 games (see the numbers). The TD identity holds, so this is not broken accounting: yardage/receptions are drawn too independently of scoring. Effect: same-team boom-together is understated, so stacks are undervalued in the top tail. NOT fixed tonight (no validated fix before lock; the sealed football model is preserved); registered as the first post-lock football item."}`
 
 | player | team | pos | salary | state | availability | desig | depth | mean | p90 | P(0) |
 |---|---|---|---|---|---|---|---|---|---|---|
@@ -106,6 +107,10 @@
   - 196285161: mean `{'E1': 4.38, 'E2': 6.52, 'E3_lower_bound_mean': 60.0, 'E4': 47.05}`; flags `{'E1_E3_DISAGREE_GT_2X': 2}`; E3 mean by phi `{'50.0': 67.05, '200.0': 60.0, '1000.0': 70.6}`
     - CPT Chris Olave + Bijan Robinson, Daniel Carlson, Juwan Johnson, Treyton Welch, Tyler Shough: E1 4.28, E2 8.56 ['CPT_WR_WITH_OWN_QB x2.0'], E3 42.4, E4 58.8, flag E1_E3_DISAGREE_GT_2X
     - CPT Tyler Shough + Alvin Kamara, Chris Olave, Drake London, Juwan Johnson, Treyton Welch: E1 4.47, E2 4.47 ['none'], E3 77.6, E4 35.3, flag E1_E3_DISAGREE_GT_2X
+
+### DUPE SALARY-LEFT SENSITIVITY (Cycle 1 FC-08 / FC-09 field-side anchors; SENSITIVITY, not a fitted model)
+- BLEND|FC08_90PCT_LE_500|phi200.0: anchor `{'0-500': {'target': 0.9, 'achieved': 0.892}, '600-50000': {'target': 0.1, 'achieved': 0.108}}`; residual `{'cpt': 0.462, 'flex': 0.935}`; E3 mean `{'196285137': 93.15, '196285160': 45.41, '196285161': 105.3}`; 2-entry E3 `[('Chris Olave', 95.3), ('Tyler Shough', 115.3)]`
+- BLEND|FC09_80PCT_MAX|phi200.0: anchor `{'0-0': {'target': 0.8, 'achieved': 0.466}, '100-200': {'target': 0.1, 'achieved': 0.263}, '300-50000': {'target': 0.1, 'achieved': 0.271}}`; residual `{'cpt': 0.174, 'flex': 1.827}`; E3 mean `{'196285137': 75.73, '196285160': 64.04, '196285161': 73.5}`; 2-entry E3 `[('Chris Olave', 117.6), ('Tyler Shough', 29.4)]`
 
 ## EXTERNAL
 - Hard Rock: NOT CAPTURED HERE -- only after the football freeze, by the networked agent (docs/AGENT_OUTBOX.md); never fed back into the projection; no wager is recommended
