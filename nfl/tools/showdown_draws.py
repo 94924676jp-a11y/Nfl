@@ -162,6 +162,45 @@ def kicker_draws(club, n_sims, rng) -> Outcome:
                       PAT_MAKE_RATE_NOTE='0.96 is the long-run league PAT rate carried in the model')
 
 
+def kicker_world_draws(club, scoring_worlds, rng) -> Outcome:
+    """Draws for one club's kicker INSIDE the simulated worlds (owner directive 2026-10-05).
+
+    `scoring_worlds` is the simulator's per-world (club points, offensive TDs). Each world's XP and
+    FG makes follow from those by identity plus the measured rates in nfl/tools/kicker_world.py, so
+    a kicker's score moves with his offence's in the same world. Replaces `kicker_draws`, which drew
+    attempts independently of the world and used a hard-coded 0.96 PAT rate."""
+    from nfl.tools import kicker_world as KW
+    if not scoring_worlds:
+        return Outcome.fail('SHOWDOWN_KICKER_NO_WORLDS',
+                            f'{club}: the simulator retained no per-world scoring, so the kicker '
+                            f'cannot be drawn inside the world', club=club)
+    mix = KW.band_mix(club)
+    if mix is None:
+        return Outcome.blocked('SHOWDOWN_KICKER_NOT_PROJECTABLE',
+                               f'{club} has no measured kicking history', cause=Cause.DATA, club=club)
+    rates = KW.load()['rates']
+    draws, det = [], collections.Counter()
+    misses = []
+    for pts, td in scoring_worlds:
+        dk, d = KW.draw(pts, td, mix, rates, rng)
+        draws.append(dk)
+        misses.append(d['fg_att'] - d['fg_made'])
+        for k, v in d.items():
+            det[k] += v
+    n = len(draws)
+    srt = sorted(draws)
+    q = lambda f: srt[min(n - 1, int(f * n))]
+    return Outcome.ok('SHOWDOWN_KICKER_DRAWN_IN_WORLD', draws, f'{club} kicker, {n} same-world draws',
+                      mean=round(sum(draws) / n, 3), median=q(0.5), p75=q(0.75), p90=q(0.90),
+                      p95=q(0.95), p_zero=round(sum(d == 0 for d in draws) / n, 4),
+                      p_10_plus=round(sum(d >= 10 for d in draws) / n, 4),
+                      p_15_plus=round(sum(d >= 15 for d in draws) / n, 4),
+                      per_world_means={k: round(v / n, 4) for k, v in det.items()},
+                      made_mix=mix['made_mix'], rates=rates, MISS_RULE=KW.MISS_RULE,
+                      mean_if_miss_costs_one=round((sum(draws) - sum(misses)) / n, 3),
+                      SOURCE='nfl/tools/kicker_world.py inside nfl/sim/game.py worlds')
+
+
 def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED,
           volume_centre: str = None, n_calib: int = None) -> Outcome:
     proj = json.loads(pathlib.Path(proj_path).read_text())
@@ -240,12 +279,16 @@ def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED,
                   and isinstance(r.get('dk_points'), (int, float))), None)
         if k is None:
             continue
-        kd = kicker_draws(club, n_sims, rng)
+        kd = kicker_world_draws(club, (o.value.get('club_scoring_worlds') or {}).get(club), rng)
         if kd.state.value != 'PASS':
             return kd
         key = S.player_key(k['name'], club)
         draws[key] = kd.value
-        kickers[key] = {'mean': kd.evidence['mean'], 'point_projection': kd.evidence['point_projection']}
+        kickers[key] = {**{f: kd.evidence[f] for f in ('mean', 'median', 'p75', 'p90', 'p95', 'p_zero',
+                                                        'p_10_plus', 'p_15_plus', 'per_world_means',
+                                                        'made_mix', 'mean_if_miss_costs_one')},
+                        'point_projection_kicker_model': k.get('dk_points'),
+                        'SOURCE': kd.evidence['SOURCE']}
 
     lens = {len(v) for v in draws.values()}
     if len(lens) != 1:
@@ -257,7 +300,7 @@ def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED,
         'game_id': state['game_id'], 'away': away, 'home': home,
         'kickoff_et_naive': state['kickoff_et_naive'],
         'n_sims': n_sims, 'seed': seed, 'n_players': len(draws),
-        'source': 'nfl/sim/game.py simulate_game, plus kicker_model bands for the two kickers',
+        'source': 'nfl/sim/game.py simulate_game; kickers scored inside the same worlds by nfl/tools/kicker_world.py',
         # Outcome.ok puts the payload on `.value`; `.evidence` is a separate kwargs dict and
         # the key is `club_checks`, not `identities`. Reading `o.evidence.get('identities')`
         # recorded None on every run, so this artifact asserted nothing about the identities
@@ -283,6 +326,7 @@ def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED,
         'stat_draws': o.value.get('stat_draws'), 'STAT_FIELDS': o.value.get('STAT_FIELDS'),
         'STATS_NOT_DRAWN': o.value.get('STATS_NOT_DRAWN'),
         'club_worlds': o.value.get('club_worlds'), 'world_points': o.value.get('world_points'),
+        'club_scoring_worlds': o.value.get('club_scoring_worlds'),
         'NOT_SYNTHESISED': ('no draw is derived from a projected mean. Player draws come from the '
                             'joint simulator and kicker draws from measured attempt and make rates.'),
         'draws': draws,
@@ -301,7 +345,7 @@ def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED,
             'STAT_FIELDS': list(o.value.get('STAT_FIELDS') or ()),
             'STATS_NOT_DRAWN': list(o.value.get('STATS_NOT_DRAWN') or ()),
             'n_players': len(sd), 'keyed_by': 'name|club, same keys as draws'}
-    heavy = ('stat_draws', 'club_worlds', 'world_points')
+    heavy = ('stat_draws', 'club_worlds', 'world_points', 'club_scoring_worlds')
     OUT.write_text(json.dumps({**{k: v for k, v in art.items() if k not in heavy},
                                'PER_WORLD_FOOTBALL': 'returned to the caller, not written here'},
                               separators=(',', ':'), default=str))

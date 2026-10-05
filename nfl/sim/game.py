@@ -283,6 +283,7 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
     # drawn by this simulator and are NOT here; a grader must report them NOT_IN_DRAWS, never 0.
     stat_draws = collections.defaultdict(list)
     club_worlds = collections.defaultdict(list)   # (pa, ra, targets, throwaways) per club per world
+    club_scoring_worlds = collections.defaultdict(list)   # (points, offensive TDs) per club per world
     world_points = []                             # (home points, away points) per world, retained only
     for c in clubs:
         if c.get('dst_id'):
@@ -492,6 +493,7 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
                 identities['throwaway_identity_checked'] += 1
             if retain_stats:
                 club_worlds[c['club']].append((pa, ra, tg_total, throwaways))
+                club_scoring_worlds[c['club']].append((own, td))
 
             # ---- DK scoring, current rules
             for j, i in enumerate(qb_ix):
@@ -538,6 +540,9 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
         'IDENTITIES_HELD': ['total', 'margin', 'volume', 'yards', 'touchdowns']
                            + (['pass_attempts_eq_targets_plus_throwaways'] if _throwaway_rates else []),
         'club_worlds': ({k: v for k, v in club_worlds.items()} if retain_stats else None),
+        # the points and offensive-TD count each world fixed per club, so a kicker can be scored
+        # inside the same world (nfl/tools/kicker_world.py). Output only.
+        'club_scoring_worlds': ({k: v for k, v in club_scoring_worlds.items()} if retain_stats else None),
         # the score of every world, so a game story, a trailing/leading split or a stack's
         # correlation can be read off the SAME worlds the draws came from. Output only.
         'world_points': ({'home': home['club'], 'away': away['club'], 'points': world_points}
