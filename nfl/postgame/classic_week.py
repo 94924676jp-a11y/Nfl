@@ -64,7 +64,8 @@ SKILL_COLS = ('completions', 'attempts', 'passing_yards', 'passing_tds', 'passin
               'rushing_fumbles_lost', 'receiving_fumbles_lost', 'sack_fumbles_lost')
 OPTIONAL_COLS = ('passing_2pt_conversions', 'rushing_2pt_conversions', 'receiving_2pt_conversions',
                  'special_teams_tds')
-DST_COLS = ('def_sacks', 'def_interceptions', 'fumble_recovery_opp', 'def_tds', 'def_safeties')
+DST_COLS = ('def_sacks', 'def_interceptions', 'fumble_recovery_opp', 'def_tds', 'def_safeties', 'def_punt_blocks',
+            'def_fg_blocks', 'def_pat_blocks')
 FLEX = {'RB', 'WR', 'TE'}
 SLOTS = (('QB', {'QB'}), ('RB', {'RB'}), ('RB', {'RB'}), ('WR', {'WR'}), ('WR', {'WR'}), ('WR', {'WR'}),
          ('TE', {'TE'}), ('FLEX', FLEX), ('DST', {'DST'}))
@@ -263,8 +264,11 @@ def actual_points(lock, pw, games, stand):
                 rec.update(actual=round(DKS.dst_points(points_allowed=pa, sacks=td['def_sacks'], ints=td['def_interceptions'],
                                                        fumble_recoveries=td.get('fumble_recovery_opp', 0),
                                                        tds=td.get('def_tds', 0) + td.get('st_tds', 0),
-                                                       safeties=td.get('def_safeties', 0)), 2),
-                           basis='COMPONENTS (blocked kicks and 2-pt returns not in the feed)', points_allowed=pa)
+                                                       safeties=td.get('def_safeties', 0),
+                                                       blocked_kicks=td.get('def_punt_blocks', 0) + td.get('def_fg_blocks', 0)
+                                                       + td.get('def_pat_blocks', 0)), 2),
+                           basis='COMPONENTS (2-pt/XP returns not in the feed)', points_allowed=pa,
+                           dst_components={k: td.get(k, 0) for k in DST_COLS + ('st_tds',)})
             elif p['name'] in dkf:
                 rec.update(actual=dkf[p['name']]['fpts'], basis='DK_REPORTED')
             else:

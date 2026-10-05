@@ -1,0 +1,1995 @@
+{
+ "ARTIFACT": "CLASSIC_POSTGAME_FORENSIC_REPORT",
+ "slate_id": "2026W4",
+ "built_at_utc": "2026-10-05T11:34:14.862410+00:00",
+ "LOCK": {
+  "commit": "039cfd0e",
+  "upload_sha256": "bf50aaeefc0788063e77c69cc85450c54c5c22720f5fad3b4be02c370ca06899",
+  "seal_written_at": "2026-10-04T16:01:18.810818+00:00",
+  "kickoff_utc": "2026-10-04T17:00:00+00:00"
+ },
+ "inputs": {
+  "player_week": "PASS[ACTUALS_LOADED] 550 player rows, 16/16 clubs",
+  "games": "PASS[GAMES_LOADED] 8 final scores",
+  "standings": "BLOCKED[STANDINGS_NOT_INGESTED] no DraftKings standings export ingested"
+ },
+ "provenance": {
+  "player_week": {
+   "kind": "NFL_PLAYER_WEEK",
+   "file": "nfl/postgame/raw/2026W4/NFL_PLAYER_WEEK.27a8a46468790134.csv",
+   "sha256": "27a8a464687901340e87873010b3583443619fad723db828f745f71c8086ec9e",
+   "source": "nflverse-data release stats_player/stats_player_week_2026.csv (https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2026.csv)",
+   "captured_at": "2026-10-05T11:31:23Z",
+   "event_time": "2026 week 4 Early Only (1:00 PM ET)",
+   "ingested_at": "2026-10-05T11:31:35.350017+00:00",
+   "original_name": "stats_player_week_2026.csv",
+   "slate_scope": "2026W4 Early Only 8 games"
+  },
+  "games": {
+   "kind": "NFL_GAMES",
+   "file": "nfl/postgame/raw/2026W4/NFL_GAMES.dcb3fe35f175d93e.csv",
+   "sha256": "dcb3fe35f175d93e353c0c30f74da90fc69555aa3438a310b8c5d6f78006b015",
+   "source": "nflverse nfldata games.csv (https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv)",
+   "captured_at": "2026-10-05T11:31:23Z",
+   "event_time": "2026 week 4 Early Only (1:00 PM ET)",
+   "ingested_at": "2026-10-05T11:31:35.658292+00:00",
+   "original_name": "games.csv",
+   "slate_scope": "2026W4 Early Only 8 games"
+  }
+ },
+ "scoring_crosscheck": "our DK scoring reproduces nflverse fantasy_points_ppr for every skill row after the documented rule differences (100/300-yard bonuses, INT and fumble -1 vs -2): 0 mismatches",
+ "owner_relayed_contest_facts": {
+  "best_150_points": 207.5,
+  "best_150_rank": 19,
+  "first_place_points": 225.38,
+  "SOURCE": "owner message 2026-10-05 (DraftKings contest page); standings export not yet ingested"
+ },
+ "best_150_reproduces_owner": true,
+ "players_summary": {
+  "DST": {
+   "n": 16,
+   "mae": 1.85,
+   "rmse": 2.79,
+   "bias_actual_minus_proj": 0.17,
+   "spearman_proj_vs_actual": 0.3558823529411765,
+   "share_in_p10_p90": 0.938,
+   "share_above_p90": 0.062,
+   "NOMINAL": {
+    "in_p10_p90": 0.8,
+    "above_p90": 0.1
+   },
+   "pit_deciles": [
+    0,
+    1,
+    0,
+    0,
+    6,
+    4,
+    2,
+    1,
+    1,
+    1
+   ],
+   "mean_crps": 1.722
+  },
+  "QB": {
+   "n": 17,
+   "mae": 5.28,
+   "rmse": 5.97,
+   "bias_actual_minus_proj": -0.3,
+   "spearman_proj_vs_actual": 0.43627450980392163,
+   "share_in_p10_p90": 0.824,
+   "share_above_p90": 0.118,
+   "NOMINAL": {
+    "in_p10_p90": 0.8,
+    "above_p90": 0.1
+   },
+   "pit_deciles": [
+    1,
+    1,
+    4,
+    1,
+    3,
+    1,
+    0,
+    0,
+    4,
+    2
+   ],
+   "mean_crps": 3.698
+  },
+  "RB": {
+   "n": 55,
+   "mae": 3.93,
+   "rmse": 6.11,
+   "bias_actual_minus_proj": -0.06,
+   "spearman_proj_vs_actual": 0.7269841269841271,
+   "share_in_p10_p90": 0.691,
+   "share_above_p90": 0.182,
+   "NOMINAL": {
+    "in_p10_p90": 0.8,
+    "above_p90": 0.1
+   },
+   "pit_deciles": [
+    7,
+    11,
+    5,
+    7,
+    4,
+    2,
+    3,
+    2,
+    4,
+    10
+   ],
+   "mean_crps": 2.697
+  },
+  "TE": {
+   "n": 42,
+   "mae": 3.59,
+   "rmse": 4.75,
+   "bias_actual_minus_proj": -0.82,
+   "spearman_proj_vs_actual": 0.4647111255165708,
+   "share_in_p10_p90": 0.619,
+   "share_above_p90": 0.286,
+   "NOMINAL": {
+    "in_p10_p90": 0.8,
+    "above_p90": 0.1
+   },
+   "pit_deciles": [
+    6,
+    9,
+    3,
+    0,
+    1,
+    3,
+    6,
+    0,
+    2,
+    12
+   ],
+   "mean_crps": 2.554
+  },
+  "WR": {
+   "n": 71,
+   "mae": 5.74,
+   "rmse": 8.1,
+   "bias_actual_minus_proj": 1.19,
+   "spearman_proj_vs_actual": 0.5618376928236083,
+   "share_in_p10_p90": 0.62,
+   "share_above_p90": 0.254,
+   "NOMINAL": {
+    "in_p10_p90": 0.8,
+    "above_p90": 0.1
+   },
+   "pit_deciles": [
+    12,
+    3,
+    9,
+    3,
+    4,
+    2,
+    9,
+    4,
+    7,
+    18
+   ],
+   "mean_crps": 4.226
+  },
+  "ALL": {
+   "n": 201,
+   "mae": 4.45,
+   "rmse": 6.46,
+   "bias_actual_minus_proj": 0.22,
+   "spearman_proj_vs_actual": 0.6755342101374316,
+   "share_in_p10_p90": 0.682,
+   "share_above_p90": 0.214,
+   "NOMINAL": {
+    "in_p10_p90": 0.8,
+    "above_p90": 0.1
+   },
+   "pit_deciles": [
+    26,
+    25,
+    21,
+    11,
+    18,
+    12,
+    20,
+    7,
+    18,
+    43
+   ],
+   "mean_crps": 3.214
+  }
+ },
+ "calibration": {
+  "ALL": {
+   "n": 201,
+   "actual_le_p50": 0.502,
+   "actual_le_p75": 0.677,
+   "actual_le_p90": 0.786,
+   "actual_le_p95": 0.831,
+   "NOMINAL": {
+    "p50": 0.5,
+    "p75": 0.75,
+    "p90": 0.9,
+    "p95": 0.95
+   },
+   "share_below_p10": 0.129,
+   "share_above_p90": 0.209,
+   "mean_error_actual_minus_projection": 0.22,
+   "binomial_se_at_p90": 0.021
+  },
+  "QB": {
+   "n": 17,
+   "actual_le_p50": 0.588,
+   "actual_le_p75": 0.647,
+   "actual_le_p90": 0.882,
+   "actual_le_p95": 0.941,
+   "NOMINAL": {
+    "p50": 0.5,
+    "p75": 0.75,
+    "p90": 0.9,
+    "p95": 0.95
+   },
+   "share_below_p10": 0.059,
+   "share_above_p90": 0.059,
+   "mean_error_actual_minus_projection": -0.3,
+   "binomial_se_at_p90": 0.073
+  },
+  "RB": {
+   "n": 55,
+   "actual_le_p50": 0.618,
+   "actual_le_p75": 0.727,
+   "actual_le_p90": 0.818,
+   "actual_le_p95": 0.891,
+   "NOMINAL": {
+    "p50": 0.5,
+    "p75": 0.75,
+    "p90": 0.9,
+    "p95": 0.95
+   },
+   "share_below_p10": 0.127,
+   "share_above_p90": 0.182,
+   "mean_error_actual_minus_projection": -0.06,
+   "binomial_se_at_p90": 0.04
+  },
+  "WR": {
+   "n": 71,
+   "actual_le_p50": 0.437,
+   "actual_le_p75": 0.62,
+   "actual_le_p90": 0.746,
+   "actual_le_p95": 0.775,
+   "NOMINAL": {
+    "p50": 0.5,
+    "p75": 0.75,
+    "p90": 0.9,
+    "p95": 0.95
+   },
+   "share_below_p10": 0.169,
+   "share_above_p90": 0.254,
+   "mean_error_actual_minus_projection": 1.19,
+   "binomial_se_at_p90": 0.036
+  },
+  "TE": {
+   "n": 42,
+   "actual_le_p50": 0.452,
+   "actual_le_p75": 0.667,
+   "actual_le_p90": 0.714,
+   "actual_le_p95": 0.762,
+   "NOMINAL": {
+    "p50": 0.5,
+    "p75": 0.75,
+    "p90": 0.9,
+    "p95": 0.95
+   },
+   "share_below_p10": 0.143,
+   "share_above_p90": 0.286,
+   "mean_error_actual_minus_projection": -0.82,
+   "binomial_se_at_p90": 0.046
+  },
+  "DST": {
+   "n": 16,
+   "actual_le_p50": 0.438,
+   "actual_le_p75": 0.812,
+   "actual_le_p90": 0.938,
+   "actual_le_p95": 0.938,
+   "NOMINAL": {
+    "p50": 0.5,
+    "p75": 0.75,
+    "p90": 0.9,
+    "p95": 0.95
+   },
+   "share_below_p10": 0.0,
+   "share_above_p90": 0.062,
+   "mean_error_actual_minus_projection": 0.17,
+   "binomial_se_at_p90": 0.075
+  },
+  "HIGH_EXPOSURE_150 (>= 20%)": {
+   "n": 13,
+   "actual_le_p50": 0.538,
+   "actual_le_p75": 0.692,
+   "actual_le_p90": 0.846,
+   "actual_le_p95": 0.846,
+   "NOMINAL": {
+    "p50": 0.5,
+    "p75": 0.75,
+    "p90": 0.9,
+    "p95": 0.95
+   },
+   "share_below_p10": 0.385,
+   "share_above_p90": 0.154,
+   "mean_error_actual_minus_projection": -1.09,
+   "binomial_se_at_p90": 0.083
+  }
+ },
+ "calibration_reading": [
+  "tails too NARROW: actuals land outside p10-p90 far more than 20%",
+  "centre within two SEs of nominal"
+ ],
+ "role_allocation_test": {
+  "verdict": "CONFIRM_TARGET_CONCENTRATION_DEFECT",
+  "RULE": "CONFIRM when the 90% game-bootstrap interval of the WR1+TE1 share gap is wholly below 0 AND that of WR2+WR3+ is wholly above 0; PARTIALLY_CONFIRM when the point estimates point that way; else DO_NOT_CONFIRM",
+  "primary_share_gap_per_club": -0.0881,
+  "primary_90pct": [
+   -0.1469,
+   -0.0297
+  ],
+  "secondary_share_gap_per_club": 0.0991,
+  "secondary_90pct": [
+   0.0506,
+   0.147
+  ],
+  "bands": {
+   "WR1": {
+    "n": 16,
+    "proj_targets": 143.7,
+    "actual_targets": 122.0,
+    "mean_proj_share": 0.3077,
+    "mean_actual_share": 0.2439,
+    "share_gap_per_club(actual-proj)": -0.0638,
+    "game_bootstrap_90pct": [
+     -0.1259,
+     -0.0018
+    ],
+    "dk_actual_minus_proj_per_player": -0.73
+   },
+   "WR2": {
+    "n": 16,
+    "proj_targets": 81.0,
+    "actual_targets": 93.0,
+    "mean_proj_share": 0.1718,
+    "mean_actual_share": 0.1878,
+    "share_gap_per_club(actual-proj)": 0.0161,
+    "game_bootstrap_90pct": [
+     -0.0153,
+     0.0471
+    ],
+    "dk_actual_minus_proj_per_player": 1.92
+   },
+   "WR3+": {
+    "n": 28,
+    "proj_targets": 35.7,
+    "actual_targets": 78.0,
+    "mean_proj_share": 0.0439,
+    "mean_actual_share": 0.0913,
+    "share_gap_per_club(actual-proj)": 0.083,
+    "game_bootstrap_90pct": [
+     0.0421,
+     0.1216
+    ],
+    "dk_actual_minus_proj_per_player": 3.15
+   },
+   "TE1": {
+    "n": 16,
+    "proj_targets": 103.6,
+    "actual_targets": 93.0,
+    "mean_proj_share": 0.2229,
+    "mean_actual_share": 0.1985,
+    "share_gap_per_club(actual-proj)": -0.0244,
+    "game_bootstrap_90pct": [
+     -0.0736,
+     0.0256
+    ],
+    "dk_actual_minus_proj_per_player": -3.01
+   },
+   "TE2+": {
+    "n": 23,
+    "proj_targets": 20.5,
+    "actual_targets": 27.0,
+    "mean_proj_share": 0.0306,
+    "mean_actual_share": 0.0396,
+    "share_gap_per_club(actual-proj)": 0.013,
+    "game_bootstrap_90pct": [
+     0.0002,
+     0.0255
+    ],
+    "dk_actual_minus_proj_per_player": 0.98
+   },
+   "RB1": {
+    "n": 16,
+    "proj_targets": 55.6,
+    "actual_targets": 56.0,
+    "mean_proj_share": 0.1194,
+    "mean_actual_share": 0.1009,
+    "share_gap_per_club(actual-proj)": -0.0185,
+    "game_bootstrap_90pct": [
+     -0.0414,
+     0.0028
+    ],
+    "dk_actual_minus_proj_per_player": -1.52
+   },
+   "RB2+": {
+    "n": 29,
+    "proj_targets": 26.5,
+    "actual_targets": 26.0,
+    "mean_proj_share": 0.0317,
+    "mean_actual_share": 0.0287,
+    "share_gap_per_club(actual-proj)": -0.0054,
+    "game_bootstrap_90pct": [
+     -0.0189,
+     0.0071
+    ],
+    "dk_actual_minus_proj_per_player": 1.05
+   }
+  },
+  "team_volume": [
+   {
+    "club": "ARI",
+    "proj_targets": 33.5,
+    "actual_targets": 35.0
+   },
+   {
+    "club": "BAL",
+    "proj_targets": 22.9,
+    "actual_targets": 29.0
+   },
+   {
+    "club": "BUF",
+    "proj_targets": 26.9,
+    "actual_targets": 30.0
+   },
+   {
+    "club": "CHI",
+    "proj_targets": 30.0,
+    "actual_targets": 31.0
+   },
+   {
+    "club": "CIN",
+    "proj_targets": 31.7,
+    "actual_targets": 46.0
+   },
+   {
+    "club": "DAL",
+    "proj_targets": 33.6,
+    "actual_targets": 41.0
+   },
+   {
+    "club": "GB",
+    "proj_targets": 31.5,
+    "actual_targets": 28.0
+   },
+   {
+    "club": "HOU",
+    "proj_targets": 31.7,
+    "actual_targets": 26.0
+   },
+   {
+    "club": "JAX",
+    "proj_targets": 29.1,
+    "actual_targets": 23.0
+   },
+   {
+    "club": "LA",
+    "proj_targets": 34.1,
+    "actual_targets": 50.0
+   },
+   {
+    "club": "NE",
+    "proj_targets": 25.7,
+    "actual_targets": 34.0
+   },
+   {
+    "club": "NYG",
+    "proj_targets": 27.4,
+    "actual_targets": 28.0
+   },
+   {
+    "club": "NYJ",
+    "proj_targets": 26.6,
+    "actual_targets": 15.0
+   },
+   {
+    "club": "PHI",
+    "proj_targets": 23.8,
+    "actual_targets": 25.0
+   },
+   {
+    "club": "TB",
+    "proj_targets": 29.5,
+    "actual_targets": 26.0
+   },
+   {
+    "club": "TEN",
+    "proj_targets": 28.8,
+    "actual_targets": 28.0
+   }
+  ],
+  "named": {
+   "Kalif Raymond": {
+    "band": "WR3+",
+    "player": "Kalif Raymond",
+    "proj_targets": 3.56,
+    "actual_targets": 2.0,
+    "proj_share": 0.119,
+    "actual_share": 0.065,
+    "proj_carries": 0.09,
+    "actual_carries": 0.0,
+    "proj_dk": 7.69,
+    "actual_dk": 2.6
+   },
+   "Ryan Flournoy": {
+    "band": "WR3+",
+    "player": "Ryan Flournoy",
+    "proj_targets": 3.14,
+    "actual_targets": 5.0,
+    "proj_share": 0.094,
+    "actual_share": 0.122,
+    "proj_carries": 0.05,
+    "actual_carries": 0.0,
+    "proj_dk": 4.71,
+    "actual_dk": 7.7
+   },
+   "Kayshon Boutte": {
+    "band": "WR3+",
+    "player": "Kayshon Boutte",
+    "proj_targets": 0.67,
+    "actual_targets": 4.0,
+    "proj_share": 0.021,
+    "actual_share": 0.154,
+    "proj_carries": 0.0,
+    "actual_carries": 0.0,
+    "proj_dk": 1.2,
+    "actual_dk": 6.6
+   },
+   "Jaylin Noel": {
+    "band": "WR3+",
+    "player": "Jaylin Noel",
+    "proj_targets": 0.2,
+    "actual_targets": 3.0,
+    "proj_share": 0.006,
+    "actual_share": 0.115,
+    "proj_carries": 0.14,
+    "actual_carries": 1.0,
+    "proj_dk": 0.33,
+    "actual_dk": 11.9
+   },
+   "TreVeyon Henderson": {
+    "band": "RB2+",
+    "player": "TreVeyon Henderson",
+    "proj_targets": 1.17,
+    "actual_targets": 2.0,
+    "proj_share": 0.046,
+    "actual_share": 0.059,
+    "proj_carries": 7.14,
+    "actual_carries": 14.0,
+    "proj_dk": 5.99,
+    "actual_dk": 4.2
+   },
+   "CeeDee Lamb": {
+    "band": "WR1",
+    "player": "CeeDee Lamb",
+    "proj_targets": 10.1,
+    "actual_targets": 21.0,
+    "proj_share": 0.301,
+    "actual_share": 0.512,
+    "proj_carries": 0.45,
+    "actual_carries": 1.0,
+    "proj_dk": 23.33,
+    "actual_dk": 44.3
+   },
+   "Garrett Wilson": {
+    "band": "WR1",
+    "player": "Garrett Wilson",
+    "proj_targets": 11.81,
+    "actual_targets": 4.0,
+    "proj_share": 0.443,
+    "actual_share": 0.267,
+    "proj_carries": 0.1,
+    "actual_carries": 0.0,
+    "proj_dk": 22.22,
+    "actual_dk": 5.7
+   },
+   "Parker Washington": {
+    "band": "WR1",
+    "player": "Parker Washington",
+    "proj_targets": 10.23,
+    "actual_targets": 3.0,
+    "proj_share": 0.352,
+    "actual_share": 0.13,
+    "proj_carries": 0.28,
+    "actual_carries": 1.0,
+    "proj_dk": 21.51,
+    "actual_dk": 2.0
+   },
+   "Mike Gesicki": {
+    "band": "TE1",
+    "player": "Mike Gesicki",
+    "proj_targets": 6.42,
+    "actual_targets": 5.0,
+    "proj_share": 0.203,
+    "actual_share": 0.109,
+    "proj_carries": 1.13,
+    "actual_carries": 0.0,
+    "proj_dk": 13.55,
+    "actual_dk": 13.0
+   },
+   "Bhayshul Tuten": {
+    "band": "RB1",
+    "player": "Bhayshul Tuten",
+    "proj_targets": 2.81,
+    "actual_targets": 2.0,
+    "proj_share": 0.097,
+    "actual_share": 0.087,
+    "proj_carries": 15.84,
+    "actual_carries": 17.0,
+    "proj_dk": 15.91,
+    "actual_dk": 11.1
+   },
+   "Bucky Irving": {
+    "band": "RB1",
+    "player": "Bucky Irving",
+    "proj_targets": 4.75,
+    "actual_targets": 0.0,
+    "proj_share": 0.161,
+    "actual_share": 0.0,
+    "proj_carries": 16.32,
+    "actual_carries": 16.0,
+    "proj_dk": 18.63,
+    "actual_dk": 6.1
+   }
+  },
+  "n_games": 8
+ },
+ "fc_disagreement": [
+  {
+   "player": "CeeDee Lamb",
+   "team": "DAL",
+   "pos": "WR",
+   "our_prelock": 23.33,
+   "fc_prelock": 14.46,
+   "actual": 44.3,
+   "who_was_closer": "OURS",
+   "classification": "OUR_EFFICIENCY_EDGE",
+   "prelock_classification": "ROLE_VOLUME_SUPPORTED",
+   "why": "targets: ours 10.1, actual 21, his 2026 rate 8.3"
+  },
+  {
+   "player": "Tyson Bagent",
+   "team": "CHI",
+   "pos": "QB",
+   "our_prelock": 18.9,
+   "fc_prelock": 11.49,
+   "actual": 9.82,
+   "who_was_closer": "FC",
+   "classification": "FC_EFFICIENCY_EDGE",
+   "prelock_classification": "SMALL_SAMPLE_UNCERTAINTY",
+   "why": "pass_att: ours 34.8, actual 34, his 2026 rate 8.0"
+  },
+  {
+   "player": "TreVeyon Henderson",
+   "team": "NE",
+   "pos": "RB",
+   "our_prelock": 5.99,
+   "fc_prelock": 13.25,
+   "actual": 4.2,
+   "who_was_closer": "OURS",
+   "classification": "OUR_EFFICIENCY_EDGE",
+   "prelock_classification": "SMALL_SAMPLE_UNCERTAINTY",
+   "why": "carries: ours 8.3, actual 16, his 2026 rate 12.5"
+  },
+  {
+   "player": "Bhayshul Tuten",
+   "team": "JAX",
+   "pos": "RB",
+   "our_prelock": 15.91,
+   "fc_prelock": 9.26,
+   "actual": 11.1,
+   "who_was_closer": "FC",
+   "classification": "FC_EFFICIENCY_EDGE",
+   "prelock_classification": "ROLE_VOLUME_SUPPORTED",
+   "why": "carries: ours 18.6, actual 19, his 2026 rate 16.0"
+  },
+  {
+   "player": "DJ Moore",
+   "team": "BUF",
+   "pos": "WR",
+   "our_prelock": 14.85,
+   "fc_prelock": 8.66,
+   "actual": 2.7,
+   "who_was_closer": "FC",
+   "classification": "FC_ROLE_EDGE",
+   "prelock_classification": "ROLE_VOLUME_SUPPORTED",
+   "why": "targets: ours 7.2, actual 2, his 2026 rate 6.0"
+  },
+  {
+   "player": "Luther Burden III",
+   "team": "CHI",
+   "pos": "WR",
+   "our_prelock": 16.5,
+   "fc_prelock": 10.43,
+   "actual": 11.4,
+   "who_was_closer": "FC",
+   "classification": "FC_ROLE_EDGE",
+   "prelock_classification": "ROLE_VOLUME_SUPPORTED",
+   "why": "targets: ours 8.2, actual 6, his 2026 rate 7.7"
+  },
+  {
+   "player": "Dalton Kincaid",
+   "team": "BUF",
+   "pos": "TE",
+   "our_prelock": 15.27,
+   "fc_prelock": 9.25,
+   "actual": 1.7,
+   "who_was_closer": "FC",
+   "classification": "FC_ROLE_EDGE",
+   "prelock_classification": "ROLE_VOLUME_SUPPORTED",
+   "why": "targets: ours 6.3, actual 2, his 2026 rate 5.7"
+  },
+  {
+   "player": "Chris Rodriguez Jr.",
+   "team": "JAX",
+   "pos": "RB",
+   "our_prelock": 4.14,
+   "fc_prelock": 10.11,
+   "actual": 9.5,
+   "who_was_closer": "FC",
+   "classification": "PURE_VARIANCE",
+   "prelock_classification": "ROLE_VOLUME_SUPPORTED",
+   "why": "carries: ours 5.7, actual 6, his 2026 rate 6.7; 1 TD(s) worth 6 pts carried the gap"
+  },
+  {
+   "player": "Jaylin Noel",
+   "team": "HOU",
+   "pos": "WR",
+   "our_prelock": 0.33,
+   "fc_prelock": 5.81,
+   "actual": 11.9,
+   "who_was_closer": "FC",
+   "classification": "OUR_MODEL_DEFECT",
+   "prelock_classification": "UNEXPLAINED_MODEL_DISAGREEMENT",
+   "why": "targets: ours 0.2, actual 3, his 2026 rate 3.0"
+  },
+  {
+   "player": "Emeka Egbuka",
+   "team": "TB",
+   "pos": "WR",
+   "our_prelock": 13.25,
+   "fc_prelock": 7.9,
+   "actual": 3.3,
+   "who_was_closer": "FC",
+   "classification": "FC_ROLE_EDGE",
+   "prelock_classification": "ROLE_VOLUME_SUPPORTED",
+   "why": "targets: ours 8.2, actual 4, his 2026 rate 6.7"
+  },
+  {
+   "player": "Ja'Marr Chase",
+   "team": "CIN",
+   "pos": "WR",
+   "our_prelock": 20.27,
+   "fc_prelock": 25.6,
+   "actual": 5.7,
+   "who_was_closer": "OURS",
+   "classification": "OUR_EFFICIENCY_EDGE",
+   "prelock_classification": "ROLE_VOLUME_SUPPORTED",
+   "why": "targets: ours 10.3, actual 3, his 2026 rate 8.3"
+  },
+  {
+   "player": "Dontayvion Wicks",
+   "team": "PHI",
+   "pos": "WR",
+   "our_prelock": 14.27,
+   "fc_prelock": 9.0,
+   "actual": 4.8,
+   "who_was_closer": "FC",
+   "classification": "FC_ROLE_EDGE",
+   "prelock_classification": "INJURY_REALLOCATION_SUPPORTED",
+   "why": "targets: ours 6.8, actual 5, his 2026 rate 5.0"
+  },
+  {
+   "player": "Bucky Irving",
+   "team": "TB",
+   "pos": "RB",
+   "our_prelock": 18.63,
+   "fc_prelock": 13.42,
+   "actual": 6.1,
+   "who_was_closer": "FC",
+   "classification": "FC_ROLE_EDGE",
+   "prelock_classification": "ROLE_VOLUME_SUPPORTED",
+   "why": "carries: ours 21.1, actual 16, his 2026 rate 18.3"
+  },
+  {
+   "player": "Mike Gesicki",
+   "team": "CIN",
+   "pos": "TE",
+   "our_prelock": 13.55,
+   "fc_prelock": 8.4,
+   "actual": 13.0,
+   "who_was_closer": "OURS",
+   "classification": "OUR_ROLE_EDGE",
+   "prelock_classification": "ROLE_VOLUME_SUPPORTED",
+   "why": "targets: ours 6.4, actual 5, his 2026 rate 5.0"
+  },
+  {
+   "player": "Devontez Walker",
+   "team": "BAL",
+   "pos": "WR",
+   "our_prelock": 2.32,
+   "fc_prelock": 7.42,
+   "actual": 2.9,
+   "who_was_closer": "OURS",
+   "classification": "FC_WAS_CONSERVATIVE",
+   "prelock_classification": "ROLE_VOLUME_SUPPORTED",
+   "why": "targets: ours 1.1, actual 2, his 2026 rate 1.5"
+  },
+  {
+   "player": "Trevor Lawrence",
+   "team": "JAX",
+   "pos": "QB",
+   "our_prelock": 18.42,
+   "fc_prelock": 23.35,
+   "actual": 13.08,
+   "who_was_closer": "OURS",
+   "classification": "OUR_EFFICIENCY_EDGE",
+   "prelock_classification": "ROLE_VOLUME_SUPPORTED",
+   "why": "pass_att: ours 32.3, actual 23, his 2026 rate 26.7"
+  },
+  {
+   "player": "Brian Thomas Jr.",
+   "team": "JAX",
+   "pos": "WR",
+   "our_prelock": 5.34,
+   "fc_prelock": 10.27,
+   "actual": 9.7,
+   "who_was_closer": "FC",
+   "classification": "PURE_VARIANCE",
+   "prelock_classification": "ROLE_VOLUME_SUPPORTED",
+   "why": "targets: ours 3.4, actual 2, his 2026 rate 4.0; 1 TD(s) worth 6 pts carried the gap"
+  },
+  {
+   "player": "Kenny Gainwell",
+   "team": "TB",
+   "pos": "RB",
+   "our_prelock": 5.12,
+   "fc_prelock": 10.01,
+   "actual": 10.7,
+   "who_was_closer": "FC",
+   "classification": "PURE_VARIANCE",
+   "prelock_classification": "ROLE_VOLUME_SUPPORTED",
+   "why": "carries: ours 6.0, actual 5, his 2026 rate 6.7; 1 TD(s) worth 6 pts carried the gap"
+  },
+  {
+   "player": "Marvin Harrison Jr.",
+   "team": "ARI",
+   "pos": "WR",
+   "our_prelock": 6.47,
+   "fc_prelock": 11.32,
+   "actual": 8.2,
+   "who_was_closer": "OURS",
+   "classification": "FC_WAS_CONSERVATIVE",
+   "prelock_classification": "ROLE_VOLUME_SUPPORTED",
+   "why": "targets: ours 4.3, actual 4, his 2026 rate 3.0"
+  },
+  {
+   "player": "Tyler Goodson",
+   "team": "DAL",
+   "pos": "RB",
+   "our_prelock": 5.72,
+   "fc_prelock": 0.87,
+   "actual": 1.2,
+   "who_was_closer": "FC",
+   "classification": "FC_ROLE_EDGE",
+   "prelock_classification": "ROLE_VOLUME_SUPPORTED",
+   "why": "carries: ours 7.2, actual 4, his 2026 rate 7.0"
+  },
+  {
+   "player": "Chase Brown",
+   "team": "CIN",
+   "pos": "RB",
+   "our_prelock": 15.79,
+   "fc_prelock": 20.62,
+   "actual": 19.1,
+   "who_was_closer": "FC",
+   "classification": "FC_EFFICIENCY_EDGE",
+   "prelock_classification": "ROLE_VOLUME_SUPPORTED",
+   "why": "carries: ours 19.4, actual 20, his 2026 rate 20.7"
+  },
+  {
+   "player": "Jacoby Brissett",
+   "team": "ARI",
+   "pos": "QB",
+   "our_prelock": 16.19,
+   "fc_prelock": 20.99,
+   "actual": 13.44,
+   "who_was_closer": "OURS",
+   "classification": "OUR_ROLE_EDGE",
+   "prelock_classification": "ROLE_VOLUME_SUPPORTED",
+   "why": "pass_att: ours 41.1, actual 35, his 2026 rate 38.7"
+  },
+  {
+   "player": "Theo Johnson",
+   "team": "NYG",
+   "pos": "TE",
+   "our_prelock": 2.23,
+   "fc_prelock": 7.0,
+   "actual": 8.1,
+   "who_was_closer": "FC",
+   "classification": "PURE_VARIANCE",
+   "prelock_classification": "ROLE_VOLUME_SUPPORTED",
+   "why": "targets: ours 2.0, actual 1, his 2026 rate 2.5; 1 TD(s) worth 6 pts carried the gap"
+  },
+  {
+   "player": "Garrett Wilson",
+   "team": "NYJ",
+   "pos": "WR",
+   "our_prelock": 22.22,
+   "fc_prelock": 17.48,
+   "actual": 5.7,
+   "who_was_closer": "FC",
+   "classification": "FC_ROLE_EDGE",
+   "prelock_classification": "INJURY_REALLOCATION_SUPPORTED",
+   "why": "targets: ours 11.8, actual 4, his 2026 rate 9.0"
+  },
+  {
+   "player": "Woody Marks",
+   "team": "HOU",
+   "pos": "RB",
+   "our_prelock": 5.99,
+   "fc_prelock": 10.69,
+   "actual": 8.2,
+   "who_was_closer": "TIE",
+   "classification": "PURE_VARIANCE",
+   "prelock_classification": "ROLE_VOLUME_SUPPORTED",
+   "why": "carries: ours 8.2, actual 7, his 2026 rate 10.0"
+  },
+  {
+   "player": "Josh Cameron",
+   "team": "JAX",
+   "pos": "WR",
+   "our_prelock": 1.2,
+   "fc_prelock": 5.74,
+   "actual": 6.2,
+   "who_was_closer": "FC",
+   "classification": "FC_ROLE_EDGE",
+   "prelock_classification": "ROLE_VOLUME_SUPPORTED",
+   "why": "targets: ours 0.6, actual 2, his 2026 rate 2.0"
+  },
+  {
+   "player": "Kayshon Boutte",
+   "team": "HOU",
+   "pos": "WR",
+   "our_prelock": 1.2,
+   "fc_prelock": 5.64,
+   "actual": 6.6,
+   "who_was_closer": "FC",
+   "classification": "OUR_MODEL_DEFECT",
+   "prelock_classification": "UNEXPLAINED_MODEL_DISAGREEMENT",
+   "why": "targets: ours 0.7, actual 4, his 2026 rate 3.0"
+  },
+  {
+   "player": "Cade Otton",
+   "team": "TB",
+   "pos": "TE",
+   "our_prelock": 11.32,
+   "fc_prelock": 7.2,
+   "actual": 7.7,
+   "who_was_closer": "FC",
+   "classification": "FC_ROLE_EDGE",
+   "prelock_classification": "ROLE_VOLUME_SUPPORTED",
+   "why": "targets: ours 6.9, actual 6, his 2026 rate 5.7"
+  },
+  {
+   "player": "Kyle Monangai",
+   "team": "CHI",
+   "pos": "RB",
+   "our_prelock": 6.93,
+   "fc_prelock": 10.94,
+   "actual": 31.0,
+   "who_was_closer": "FC",
+   "classification": "OUR_MODEL_DEFECT",
+   "prelock_classification": "UNEXPLAINED_MODEL_DISAGREEMENT",
+   "why": "carries: ours 8.1, actual 31, his 2026 rate 11.3"
+  },
+  {
+   "player": "Parker Washington",
+   "team": "JAX",
+   "pos": "WR",
+   "our_prelock": 21.51,
+   "fc_prelock": 17.63,
+   "actual": 2.0,
+   "who_was_closer": "FC",
+   "classification": "FC_ROLE_EDGE",
+   "prelock_classification": "INJURY_REALLOCATION_SUPPORTED",
+   "why": "targets: ours 10.2, actual 3, his 2026 rate 7.7"
+  },
+  {
+   "player": "Kyren Williams",
+   "team": "LA",
+   "pos": "RB",
+   "our_prelock": 18.61,
+   "fc_prelock": 14.91,
+   "actual": 36.7,
+   "who_was_closer": "OURS",
+   "classification": "PURE_VARIANCE",
+   "prelock_classification": "ROLE_VOLUME_SUPPORTED",
+   "why": "carries: ours 18.5, actual 29, his 2026 rate 16.7; 2 TD(s) worth 12 pts carried the gap"
+  },
+  {
+   "player": "D'Andre Swift",
+   "team": "CHI",
+   "pos": "RB",
+   "our_prelock": 18.39,
+   "fc_prelock": 15.24,
+   "actual": 8.4,
+   "who_was_closer": "FC",
+   "classification": "FC_ROLE_EDGE",
+   "prelock_classification": "ROLE_VOLUME_SUPPORTED",
+   "why": "carries: ours 21.5, actual 17, his 2026 rate 21.0"
+  },
+  {
+   "player": "Zay Flowers",
+   "team": "BAL",
+   "pos": "WR",
+   "our_prelock": 21.6,
+   "fc_prelock": 23.77,
+   "actual": 28.8,
+   "who_was_closer": "FC",
+   "classification": "PURE_VARIANCE",
+   "prelock_classification": "SMALL_SAMPLE_UNCERTAINTY",
+   "why": "targets: ours 7.6, actual 10, his 2026 rate 6.0; 1 TD(s) worth 6 pts carried the gap"
+  },
+  {
+   "player": "Christian Watson",
+   "team": "GB",
+   "pos": "WR",
+   "our_prelock": 19.66,
+   "fc_prelock": 17.65,
+   "actual": 7.7,
+   "who_was_closer": "FC",
+   "classification": "FC_WAS_CONSERVATIVE",
+   "prelock_classification": "ROLE_VOLUME_SUPPORTED",
+   "why": "targets: ours 9.5, actual 3, his 2026 rate 9.7"
+  }
+ ],
+ "fc_closer_counts": {
+  "OURS": 9,
+  "FC": 24,
+  "TIE": 1
+ },
+ "fc_classification_counts": {
+  "OUR_EFFICIENCY_EDGE": 4,
+  "FC_EFFICIENCY_EDGE": 3,
+  "FC_ROLE_EDGE": 12,
+  "PURE_VARIANCE": 7,
+  "OUR_MODEL_DEFECT": 3,
+  "OUR_ROLE_EDGE": 2,
+  "FC_WAS_CONSERVATIVE": 3
+ },
+ "lineup_distributions": {
+  "MAX150": {
+   "n": 150,
+   "best": 207.5,
+   "mean": 129.41,
+   "median": 127.87,
+   "p75": 149.69,
+   "p90": 165.98,
+   "p95": 173.81,
+   "worst": 55.26
+  },
+  "MAX20": {
+   "n": 20,
+   "best": 191.08,
+   "mean": 132.33,
+   "median": 126.75,
+   "p75": 148.45,
+   "p90": 166.22,
+   "p95": 172.1,
+   "worst": 66.12
+  },
+  "MAX3": {
+   "n": 3,
+   "best": 171.1,
+   "mean": 157.13,
+   "median": 161.02,
+   "p75": 166.06,
+   "p90": 169.08,
+   "p95": 170.09,
+   "worst": 139.28
+  }
+ },
+ "best_150_lineup": {
+  "entry_id": "5279820055",
+  "points": 207.5,
+  "pregame_sim_mean": 144.32,
+  "slots": [
+   {
+    "slot": "QB",
+    "player": "Dak Prescott",
+    "team": "DAL",
+    "salary": 6400,
+    "proj": 19.99,
+    "actual": 21.1
+   },
+   {
+    "slot": "RB",
+    "player": "Javonte Williams",
+    "team": "DAL",
+    "salary": 6600,
+    "proj": 16.5,
+    "actual": 31.3
+   },
+   {
+    "slot": "RB",
+    "player": "Rhamondre Stevenson",
+    "team": "NE",
+    "salary": 5100,
+    "proj": 12.69,
+    "actual": 18.4
+   },
+   {
+    "slot": "WR",
+    "player": "CeeDee Lamb",
+    "team": "DAL",
+    "salary": 7800,
+    "proj": 23.33,
+    "actual": 44.3
+   },
+   {
+    "slot": "WR",
+    "player": "Nico Collins",
+    "team": "HOU",
+    "salary": 7200,
+    "proj": 20.84,
+    "actual": 33.8
+   },
+   {
+    "slot": "WR",
+    "player": "Zay Flowers",
+    "team": "BAL",
+    "salary": 6900,
+    "proj": 21.6,
+    "actual": 28.8
+   },
+   {
+    "slot": "TE",
+    "player": "Brenton Strange",
+    "team": "JAX",
+    "salary": 3200,
+    "proj": 10.43,
+    "actual": 16.5
+   },
+   {
+    "slot": "FLEX",
+    "player": "Mack Hollins",
+    "team": "NE",
+    "salary": 4000,
+    "proj": 10.84,
+    "actual": 8.3
+   },
+   {
+    "slot": "DST",
+    "player": "Buccaneers",
+    "team": "TB",
+    "salary": 2800,
+    "proj": 6.31,
+    "actual": 5.0
+   }
+  ]
+ },
+ "optimal_lineup": {
+  "points": 262.92,
+  "players": [
+   [
+    "Joe Burrow",
+    "QB",
+    6800,
+    28.72
+   ],
+   [
+    "Giants",
+    "DST",
+    3100,
+    14.0
+   ],
+   [
+    "Kyren Williams",
+    "RB",
+    5900,
+    36.7
+   ],
+   [
+    "Javonte Williams",
+    "RB",
+    6600,
+    31.3
+   ],
+   [
+    "Kyle Monangai",
+    "RB",
+    4900,
+    31.0
+   ],
+   [
+    "CeeDee Lamb",
+    "WR",
+    7800,
+    44.3
+   ],
+   [
+    "Nico Collins",
+    "WR",
+    7200,
+    33.8
+   ],
+   [
+    "Keon Coleman",
+    "WR",
+    4000,
+    26.6
+   ],
+   [
+    "Brenton Strange",
+    "TE",
+    3200,
+    16.5
+   ]
+  ],
+  "salary": 49500
+ },
+ "ratios": {
+  "owner_best_over_optimal": 0.789,
+  "winner_over_optimal (owner-relayed winner)": 0.857
+ },
+ "construction": {
+  "stack": {
+   "MAX150": {
+    "QB+3": {
+     "n": 4,
+     "mean": 143.08,
+     "median": 143.21,
+     "max": 170.88,
+     "share_ge_190": 0.0
+    },
+    "QB+1": {
+     "n": 96,
+     "mean": 130.81,
+     "median": 131.2,
+     "max": 195.78,
+     "share_ge_190": 0.01
+    },
+    "QB+2": {
+     "n": 50,
+     "mean": 125.62,
+     "median": 119.88,
+     "max": 207.5,
+     "share_ge_190": 0.02
+    }
+   },
+   "MAX20": {
+    "QB+1": {
+     "n": 7,
+     "mean": 137.32,
+     "median": 128.52,
+     "max": 171.1,
+     "share_ge_190": 0.0
+    },
+    "QB+2": {
+     "n": 11,
+     "mean": 130.73,
+     "median": 126.5,
+     "max": 191.08,
+     "share_ge_190": 0.091
+    },
+    "QB+3": {
+     "n": 2,
+     "mean": 123.72,
+     "median": 123.72,
+     "max": 126.62,
+     "share_ge_190": 0.0
+    }
+   },
+   "MAX3": {
+    "QB+1": {
+     "n": 3,
+     "mean": 157.13,
+     "median": 161.02,
+     "max": 171.1,
+     "share_ge_190": 0.0
+    }
+   }
+  },
+  "bring_back": {
+   "MAX150": {
+    "bring_back_1": {
+     "n": 57,
+     "mean": 131.34,
+     "median": 131.88,
+     "max": 207.5,
+     "share_ge_190": 0.035
+    },
+    "bring_back_0": {
+     "n": 84,
+     "mean": 129.03,
+     "median": 127.62,
+     "max": 178.3,
+     "share_ge_190": 0.0
+    },
+    "bring_back_2": {
+     "n": 9,
+     "mean": 120.76,
+     "median": 102.52,
+     "max": 175.98,
+     "share_ge_190": 0.0
+    }
+   },
+   "MAX20": {
+    "bring_back_0": {
+     "n": 10,
+     "mean": 143.79,
+     "median": 139.93,
+     "max": 191.08,
+     "share_ge_190": 0.1
+    },
+    "bring_back_2": {
+     "n": 1,
+     "mean": 126.88,
+     "median": 126.88,
+     "max": 126.88,
+     "share_ge_190": 0.0
+    },
+    "bring_back_1": {
+     "n": 9,
+     "mean": 120.21,
+     "median": 124.42,
+     "max": 165.68,
+     "share_ge_190": 0.0
+    }
+   },
+   "MAX3": {
+    "bring_back_0": {
+     "n": 3,
+     "mean": 157.13,
+     "median": 161.02,
+     "max": 171.1,
+     "share_ge_190": 0.0
+    }
+   }
+  },
+  "qb": {
+   "MAX150": {
+    "C.J. Stroud": {
+     "n": 10,
+     "mean": 152.26,
+     "median": 149.48,
+     "max": 195.78,
+     "share_ge_190": 0.1
+    },
+    "Dak Prescott": {
+     "n": 14,
+     "mean": 148.31,
+     "median": 146.8,
+     "max": 207.5,
+     "share_ge_190": 0.071
+    },
+    "Lamar Jackson": {
+     "n": 19,
+     "mean": 135.95,
+     "median": 138.88,
+     "max": 177.58,
+     "share_ge_190": 0.0
+    },
+    "Matthew Stafford": {
+     "n": 13,
+     "mean": 134.74,
+     "median": 131.68,
+     "max": 171.98,
+     "share_ge_190": 0.0
+    },
+    "Jordan Love": {
+     "n": 7,
+     "mean": 132.61,
+     "median": 132.38,
+     "max": 160.08,
+     "share_ge_190": 0.0
+    },
+    "Joe Burrow": {
+     "n": 12,
+     "mean": 129.77,
+     "median": 129.47,
+     "max": 168.72,
+     "share_ge_190": 0.0
+    },
+    "Trevor Lawrence": {
+     "n": 14,
+     "mean": 128.89,
+     "median": 123.13,
+     "max": 184.98,
+     "share_ge_190": 0.0
+    },
+    "Tyson Bagent": {
+     "n": 24,
+     "mean": 124.92,
+     "median": 120.87,
+     "max": 172.12,
+     "share_ge_190": 0.0
+    },
+    "Jameis Winston": {
+     "n": 1,
+     "mean": 122.3,
+     "median": 122.3,
+     "max": 122.3,
+     "share_ge_190": 0.0
+    },
+    "Josh Allen": {
+     "n": 21,
+     "mean": 116.5,
+     "median": 110.22,
+     "max": 165.92,
+     "share_ge_190": 0.0
+    },
+    "Drake Maye": {
+     "n": 3,
+     "mean": 115.43,
+     "median": 124.76,
+     "max": 127.86,
+     "share_ge_190": 0.0
+    },
+    "Jalon Daniels": {
+     "n": 1,
+     "mean": 112.22,
+     "median": 112.22,
+     "max": 112.22,
+     "share_ge_190": 0.0
+    },
+    "Geno Smith": {
+     "n": 4,
+     "mean": 110.11,
+     "median": 119.56,
+     "max": 146.06,
+     "share_ge_190": 0.0
+    },
+    "Jalen Hurts": {
+     "n": 3,
+     "mean": 104.42,
+     "median": 102.52,
+     "max": 110.42,
+     "share_ge_190": 0.0
+    },
+    "Jacoby Brissett": {
+     "n": 4,
+     "mean": 102.14,
+     "median": 107.59,
+     "max": 121.14,
+     "share_ge_190": 0.0
+    }
+   },
+   "MAX20": {
+    "C.J. Stroud": {
+     "n": 1,
+     "mean": 157.68,
+     "median": 157.68,
+     "max": 157.68,
+     "share_ge_190": 0.0
+    },
+    "Matthew Stafford": {
+     "n": 3,
+     "mean": 157.11,
+     "median": 165.68,
+     "max": 191.08,
+     "share_ge_190": 0.333
+    },
+    "Lamar Jackson": {
+     "n": 2,
+     "mean": 139.93,
+     "median": 139.93,
+     "max": 140.58,
+     "share_ge_190": 0.0
+    },
+    "Trevor Lawrence": {
+     "n": 2,
+     "mean": 136.13,
+     "median": 136.13,
+     "max": 145.38,
+     "share_ge_190": 0.0
+    },
+    "Dak Prescott": {
+     "n": 3,
+     "mean": 135.87,
+     "median": 126.5,
+     "max": 171.1,
+     "share_ge_190": 0.0
+    },
+    "Josh Allen": {
+     "n": 2,
+     "mean": 126.47,
+     "median": 126.47,
+     "max": 128.52,
+     "share_ge_190": 0.0
+    },
+    "Jacoby Brissett": {
+     "n": 1,
+     "mean": 124.04,
+     "median": 124.04,
+     "max": 124.04,
+     "share_ge_190": 0.0
+    },
+    "Joe Burrow": {
+     "n": 2,
+     "mean": 113.92,
+     "median": 113.92,
+     "max": 120.82,
+     "share_ge_190": 0.0
+    },
+    "Tyson Bagent": {
+     "n": 4,
+     "mean": 113.27,
+     "median": 112.97,
+     "max": 161.02,
+     "share_ge_190": 0.0
+    }
+   },
+   "MAX3": {
+    "Dak Prescott": {
+     "n": 1,
+     "mean": 171.1,
+     "median": 171.1,
+     "max": 171.1,
+     "share_ge_190": 0.0
+    },
+    "Tyson Bagent": {
+     "n": 1,
+     "mean": 161.02,
+     "median": 161.02,
+     "max": 161.02,
+     "share_ge_190": 0.0
+    },
+    "Lamar Jackson": {
+     "n": 1,
+     "mean": 139.28,
+     "median": 139.28,
+     "max": 139.28,
+     "share_ge_190": 0.0
+    }
+   }
+  },
+  "qb_game": {
+   "MAX150": {
+    "2026_04_DAL_HOU": {
+     "n": 24,
+     "mean": 149.96,
+     "median": 149.14,
+     "max": 207.5,
+     "share_ge_190": 0.083
+    },
+    "2026_04_TEN_BAL": {
+     "n": 19,
+     "mean": 135.95,
+     "median": 138.88,
+     "max": 177.58,
+     "share_ge_190": 0.0
+    },
+    "2026_04_GB_TB": {
+     "n": 8,
+     "mean": 130.06,
+     "median": 130.13,
+     "max": 160.08,
+     "share_ge_190": 0.0
+    },
+    "2026_04_JAX_CIN": {
+     "n": 26,
+     "mean": 129.29,
+     "median": 123.13,
+     "max": 184.98,
+     "share_ge_190": 0.0
+    },
+    "2026_04_LA_PHI": {
+     "n": 16,
+     "mean": 129.06,
+     "median": 122.53,
+     "max": 171.98,
+     "share_ge_190": 0.0
+    },
+    "2026_04_NYJ_CHI": {
+     "n": 28,
+     "mean": 122.81,
+     "median": 120.87,
+     "max": 172.12,
+     "share_ge_190": 0.0
+    },
+    "2026_04_NE_BUF": {
+     "n": 24,
+     "mean": 116.36,
+     "median": 110.62,
+     "max": 165.92,
+     "share_ge_190": 0.0
+    },
+    "2026_04_ARI_NYG": {
+     "n": 5,
+     "mean": 106.17,
+     "median": 117.54,
+     "max": 122.3,
+     "share_ge_190": 0.0
+    }
+   },
+   "MAX20": {
+    "2026_04_LA_PHI": {
+     "n": 3,
+     "mean": 157.11,
+     "median": 165.68,
+     "max": 191.08,
+     "share_ge_190": 0.333
+    },
+    "2026_04_DAL_HOU": {
+     "n": 4,
+     "mean": 141.32,
+     "median": 142.09,
+     "max": 171.1,
+     "share_ge_190": 0.0
+    },
+    "2026_04_TEN_BAL": {
+     "n": 2,
+     "mean": 139.93,
+     "median": 139.93,
+     "max": 140.58,
+     "share_ge_190": 0.0
+    },
+    "2026_04_NE_BUF": {
+     "n": 2,
+     "mean": 126.47,
+     "median": 126.47,
+     "max": 128.52,
+     "share_ge_190": 0.0
+    },
+    "2026_04_JAX_CIN": {
+     "n": 4,
+     "mean": 125.02,
+     "median": 123.85,
+     "max": 145.38,
+     "share_ge_190": 0.0
+    },
+    "2026_04_ARI_NYG": {
+     "n": 1,
+     "mean": 124.04,
+     "median": 124.04,
+     "max": 124.04,
+     "share_ge_190": 0.0
+    },
+    "2026_04_NYJ_CHI": {
+     "n": 4,
+     "mean": 113.27,
+     "median": 112.97,
+     "max": 161.02,
+     "share_ge_190": 0.0
+    }
+   },
+   "MAX3": {
+    "2026_04_DAL_HOU": {
+     "n": 1,
+     "mean": 171.1,
+     "median": 171.1,
+     "max": 171.1,
+     "share_ge_190": 0.0
+    },
+    "2026_04_NYJ_CHI": {
+     "n": 1,
+     "mean": 161.02,
+     "median": 161.02,
+     "max": 161.02,
+     "share_ge_190": 0.0
+    },
+    "2026_04_TEN_BAL": {
+     "n": 1,
+     "mean": 139.28,
+     "median": 139.28,
+     "max": 139.28,
+     "share_ge_190": 0.0
+    }
+   }
+  },
+  "salary_band": {
+   "MAX150": {
+    "47500": {
+     "n": 1,
+     "mean": 148.62,
+     "median": 148.62,
+     "max": 148.62,
+     "share_ge_190": 0.0
+    },
+    "50000": {
+     "n": 39,
+     "mean": 133.38,
+     "median": 128.22,
+     "max": 207.5,
+     "share_ge_190": 0.026
+    },
+    "49500": {
+     "n": 84,
+     "mean": 128.73,
+     "median": 129.68,
+     "max": 195.78,
+     "share_ge_190": 0.012
+    },
+    "49000": {
+     "n": 23,
+     "mean": 126.79,
+     "median": 123.08,
+     "max": 177.58,
+     "share_ge_190": 0.0
+    },
+    "48500": {
+     "n": 3,
+     "mean": 110.47,
+     "median": 103.92,
+     "max": 129.38,
+     "share_ge_190": 0.0
+    }
+   },
+   "MAX20": {
+    "50000": {
+     "n": 9,
+     "mean": 133.63,
+     "median": 140.58,
+     "max": 171.1,
+     "share_ge_190": 0.0
+    },
+    "49500": {
+     "n": 10,
+     "mean": 131.74,
+     "median": 125.65,
+     "max": 191.08,
+     "share_ge_190": 0.1
+    },
+    "49000": {
+     "n": 1,
+     "mean": 126.5,
+     "median": 126.5,
+     "max": 126.5,
+     "share_ge_190": 0.0
+    }
+   },
+   "MAX3": {
+    "50000": {
+     "n": 2,
+     "mean": 166.06,
+     "median": 166.06,
+     "max": 171.1,
+     "share_ge_190": 0.0
+    },
+    "49500": {
+     "n": 1,
+     "mean": 139.28,
+     "median": 139.28,
+     "max": 139.28,
+     "share_ge_190": 0.0
+    }
+   }
+  },
+  "max_same_game": {
+   "MAX150": {
+    "5": {
+     "n": 5,
+     "mean": 141.35,
+     "median": 145.32,
+     "max": 175.98,
+     "share_ge_190": 0.0
+    },
+    "2": {
+     "n": 42,
+     "mean": 133.4,
+     "median": 130.49,
+     "max": 178.3,
+     "share_ge_190": 0.0
+    },
+    "4": {
+     "n": 24,
+     "mean": 128.63,
+     "median": 119.6,
+     "max": 207.5,
+     "share_ge_190": 0.042
+    },
+    "3": {
+     "n": 79,
+     "mean": 126.77,
+     "median": 127.42,
+     "max": 195.78,
+     "share_ge_190": 0.013
+    }
+   },
+   "MAX20": {
+    "3": {
+     "n": 6,
+     "mean": 142.06,
+     "median": 132.5,
+     "max": 191.08,
+     "share_ge_190": 0.167
+    },
+    "2": {
+     "n": 5,
+     "mean": 141.98,
+     "median": 139.28,
+     "max": 171.1,
+     "share_ge_190": 0.0
+    },
+    "5": {
+     "n": 2,
+     "mean": 123.72,
+     "median": 123.72,
+     "max": 126.62,
+     "share_ge_190": 0.0
+    },
+    "4": {
+     "n": 7,
+     "mean": 119.56,
+     "median": 126.5,
+     "max": 165.68,
+     "share_ge_190": 0.0
+    }
+   },
+   "MAX3": {
+    "2": {
+     "n": 3,
+     "mean": 157.13,
+     "median": 161.02,
+     "max": 171.1,
+     "share_ge_190": 0.0
+    }
+   }
+  },
+  "n_core": {
+   "MAX150": {
+    "7": {
+     "n": 2,
+     "mean": 163.92,
+     "median": 163.92,
+     "max": 166.82,
+     "share_ge_190": 0.0
+    },
+    "3": {
+     "n": 36,
+     "mean": 132.16,
+     "median": 129.52,
+     "max": 207.5,
+     "share_ge_190": 0.028
+    },
+    "4": {
+     "n": 55,
+     "mean": 131.76,
+     "median": 134.86,
+     "max": 195.78,
+     "share_ge_190": 0.018
+    },
+    "5": {
+     "n": 31,
+     "mean": 131.25,
+     "median": 127.88,
+     "max": 184.98,
+     "share_ge_190": 0.0
+    },
+    "6": {
+     "n": 7,
+     "mean": 130.49,
+     "median": 133.18,
+     "max": 165.08,
+     "share_ge_190": 0.0
+    },
+    "2": {
+     "n": 16,
+     "mean": 111.25,
+     "median": 110.32,
+     "max": 162.68,
+     "share_ge_190": 0.0
+    },
+    "1": {
+     "n": 3,
+     "mean": 105.61,
+     "median": 103.28,
+     "max": 111.02,
+     "share_ge_190": 0.0
+    }
+   },
+   "MAX20": {
+    "7": {
+     "n": 1,
+     "mean": 161.02,
+     "median": 161.02,
+     "max": 161.02,
+     "share_ge_190": 0.0
+    },
+    "4": {
+     "n": 7,
+     "mean": 143.15,
+     "median": 128.52,
+     "max": 191.08,
+     "share_ge_190": 0.143
+    },
+    "6": {
+     "n": 3,
+     "mean": 126.81,
+     "median": 110.0,
+     "max": 171.1,
+     "share_ge_190": 0.0
+    },
+    "3": {
+     "n": 1,
+     "mean": 124.42,
+     "median": 124.42,
+     "max": 124.42,
+     "share_ge_190": 0.0
+    },
+    "5": {
+     "n": 8,
+     "mean": 122.34,
+     "median": 126.75,
+     "max": 157.68,
+     "share_ge_190": 0.0
+    }
+   },
+   "MAX3": {
+    "6": {
+     "n": 1,
+     "mean": 171.1,
+     "median": 171.1,
+     "max": 171.1,
+     "share_ge_190": 0.0
+    },
+    "7": {
+     "n": 1,
+     "mean": 161.02,
+     "median": 161.02,
+     "max": 161.02,
+     "share_ge_190": 0.0
+    },
+    "5": {
+     "n": 1,
+     "mean": 139.28,
+     "median": 139.28,
+     "max": 139.28,
+     "share_ge_190": 0.0
+    }
+   }
+  }
+ },
+ "exposure_quality_counts": {
+  "BAD_OVERWEIGHT": 7,
+  "GOOD_OVERWEIGHT": 6,
+  "NEUTRAL": 70,
+  "GOOD_UNDERWEIGHT": 4,
+  "BAD_UNDERWEIGHT": 3
+ },
+ "big_scorers_never_rostered": [
+  {
+   "player": "Kyle Monangai",
+   "team": "CHI",
+   "pos": "RB",
+   "salary": 4900,
+   "proj": 6.93,
+   "actual_dk": 31.0
+  },
+  {
+   "player": "Keon Coleman",
+   "team": "BUF",
+   "pos": "WR",
+   "salary": 4000,
+   "proj": 4.95,
+   "actual_dk": 26.6
+  }
+ ],
+ "contest_finish": "STANDINGS_NOT_INGESTED: finish, cash rate, fees, winnings, ROI and the winner lineup need the three DraftKings standings exports",
+ "RULES": {
+  "HIGH_EXPOSURE": 0.2,
+  "LOW_EXPOSURE": 0.05,
+  "bootstrap": "4000 game resamples, seed 20261005"
+ },
+ "NO_PRODUCTION_PROMOTION": "week-4 results generate hypotheses and tests only"
+}

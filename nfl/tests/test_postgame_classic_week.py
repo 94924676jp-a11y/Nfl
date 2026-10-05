@@ -111,7 +111,7 @@ def test_03_grades_a_complete_synthetic_slate():
     pos = sorted(x[1] for x in opt['players'])
     check('  the optimal lineup has a legal position mix', pos.count('QB') == 1 and pos.count('DST') == 1 and pos.count('TE') in (1, 2)
           and 2 <= pos.count('RB') <= 3 and 3 <= pos.count('WR') <= 4, pos)
-    check('  DST graded from components with points allowed', any('COMPONENTS (blocked' in k for k in doc['actual_basis_counts']), doc['actual_basis_counts'])
+    check('  DST graded from components with points allowed', any('COMPONENTS (2-pt' in k for k in doc['actual_basis_counts']), doc['actual_basis_counts'])
     check('  concentration audit produced', isinstance(doc['concentration'], dict) and doc['concentration']['by_depth_band'])
     check('CRPS of a point forecast at the outcome is zero', abs(W._crps(np.full(50, 7.0), 7.0)) < 1e-9)
 

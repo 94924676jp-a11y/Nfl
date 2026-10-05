@@ -1,0 +1,850 @@
+{
+ "ARTIFACT": "CLASSIC_POSTGAME",
+ "slate_id": "2026W4",
+ "graded_at": "2026-10-05T11:32:06.540459+00:00",
+ "LOCK": {
+  "commit": "039cfd0e",
+  "upload_sha256": "bf50aaeefc0788063e77c69cc85450c54c5c22720f5fad3b4be02c370ca06899",
+  "seal_written_at": "2026-10-04T16:01:18.810818+00:00",
+  "kickoff_utc": "2026-10-04T17:00:00+00:00"
+ },
+ "inputs": {
+  "player_week": "PASS[ACTUALS_LOADED] 550 player rows, 16/16 clubs",
+  "games": "PASS[GAMES_LOADED] 8 final scores",
+  "standings": "BLOCKED[STANDINGS_NOT_INGESTED] no DraftKings standings export ingested"
+ },
+ "provenance": {
+  "player_week": {
+   "kind": "NFL_PLAYER_WEEK",
+   "file": "nfl/postgame/raw/2026W4/NFL_PLAYER_WEEK.27a8a46468790134.csv",
+   "sha256": "27a8a464687901340e87873010b3583443619fad723db828f745f71c8086ec9e",
+   "source": "nflverse-data release stats_player/stats_player_week_2026.csv (https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_2026.csv)",
+   "captured_at": "2026-10-05T11:31:23Z",
+   "event_time": "2026 week 4 Early Only (1:00 PM ET)",
+   "ingested_at": "2026-10-05T11:31:35.350017+00:00",
+   "original_name": "stats_player_week_2026.csv",
+   "slate_scope": "2026W4 Early Only 8 games"
+  },
+  "games": {
+   "kind": "NFL_GAMES",
+   "file": "nfl/postgame/raw/2026W4/NFL_GAMES.dcb3fe35f175d93e.csv",
+   "sha256": "dcb3fe35f175d93e353c0c30f74da90fc69555aa3438a310b8c5d6f78006b015",
+   "source": "nflverse nfldata games.csv (https://raw.githubusercontent.com/nflverse/nfldata/master/data/games.csv)",
+   "captured_at": "2026-10-05T11:31:23Z",
+   "event_time": "2026 week 4 Early Only (1:00 PM ET)",
+   "ingested_at": "2026-10-05T11:31:35.658292+00:00",
+   "original_name": "games.csv",
+   "slate_scope": "2026W4 Early Only 8 games"
+  }
+ },
+ "actual_basis_counts": {
+  "COMPONENTS": 184,
+  "INACTIVE_AT_LOCK_AND_NO_STAT_ROW": 30,
+  "NO_STAT_ROW_IN_A_COMPLETE_FEED (did not record a stat)": 181,
+  "COMPONENTS (2-pt/XP returns not in the feed)": 16
+ },
+ "dk_reconciliation": {
+  "n_checked": 0,
+  "n_mismatch": 0,
+  "mismatches": []
+ },
+ "players_summary": {
+  "DST": {
+   "n": 16,
+   "mae": 1.85,
+   "rmse": 2.79,
+   "bias_actual_minus_proj": 0.17,
+   "spearman_proj_vs_actual": 0.3558823529411765,
+   "share_in_p10_p90": 0.938,
+   "share_above_p90": 0.062,
+   "NOMINAL": {
+    "in_p10_p90": 0.8,
+    "above_p90": 0.1
+   },
+   "pit_deciles": [
+    0,
+    1,
+    0,
+    0,
+    6,
+    4,
+    2,
+    1,
+    1,
+    1
+   ],
+   "mean_crps": 1.722
+  },
+  "QB": {
+   "n": 17,
+   "mae": 5.28,
+   "rmse": 5.97,
+   "bias_actual_minus_proj": -0.3,
+   "spearman_proj_vs_actual": 0.43627450980392163,
+   "share_in_p10_p90": 0.824,
+   "share_above_p90": 0.118,
+   "NOMINAL": {
+    "in_p10_p90": 0.8,
+    "above_p90": 0.1
+   },
+   "pit_deciles": [
+    1,
+    1,
+    4,
+    1,
+    3,
+    1,
+    0,
+    0,
+    4,
+    2
+   ],
+   "mean_crps": 3.698
+  },
+  "RB": {
+   "n": 55,
+   "mae": 3.93,
+   "rmse": 6.11,
+   "bias_actual_minus_proj": -0.06,
+   "spearman_proj_vs_actual": 0.7269841269841271,
+   "share_in_p10_p90": 0.691,
+   "share_above_p90": 0.182,
+   "NOMINAL": {
+    "in_p10_p90": 0.8,
+    "above_p90": 0.1
+   },
+   "pit_deciles": [
+    7,
+    11,
+    5,
+    7,
+    4,
+    2,
+    3,
+    2,
+    4,
+    10
+   ],
+   "mean_crps": 2.697
+  },
+  "TE": {
+   "n": 42,
+   "mae": 3.59,
+   "rmse": 4.75,
+   "bias_actual_minus_proj": -0.82,
+   "spearman_proj_vs_actual": 0.4647111255165708,
+   "share_in_p10_p90": 0.619,
+   "share_above_p90": 0.286,
+   "NOMINAL": {
+    "in_p10_p90": 0.8,
+    "above_p90": 0.1
+   },
+   "pit_deciles": [
+    6,
+    9,
+    3,
+    0,
+    1,
+    3,
+    6,
+    0,
+    2,
+    12
+   ],
+   "mean_crps": 2.554
+  },
+  "WR": {
+   "n": 71,
+   "mae": 5.74,
+   "rmse": 8.1,
+   "bias_actual_minus_proj": 1.19,
+   "spearman_proj_vs_actual": 0.5618376928236083,
+   "share_in_p10_p90": 0.62,
+   "share_above_p90": 0.254,
+   "NOMINAL": {
+    "in_p10_p90": 0.8,
+    "above_p90": 0.1
+   },
+   "pit_deciles": [
+    12,
+    3,
+    9,
+    3,
+    4,
+    2,
+    9,
+    4,
+    7,
+    18
+   ],
+   "mean_crps": 4.226
+  },
+  "ALL": {
+   "n": 201,
+   "mae": 4.45,
+   "rmse": 6.46,
+   "bias_actual_minus_proj": 0.22,
+   "spearman_proj_vs_actual": 0.6755342101374316,
+   "share_in_p10_p90": 0.682,
+   "share_above_p90": 0.214,
+   "NOMINAL": {
+    "in_p10_p90": 0.8,
+    "above_p90": 0.1
+   },
+   "pit_deciles": [
+    26,
+    25,
+    21,
+    11,
+    18,
+    12,
+    20,
+    7,
+    18,
+    43
+   ],
+   "mean_crps": 3.214
+  }
+ },
+ "concentration": {
+  "by_depth_band": {
+   "TE1": {
+    "proj": 104.9,
+    "actual": 95.0,
+    "n": 17,
+    "actual_minus_proj_per_player": -0.58
+   },
+   "TE2": {
+    "proj": 17.5,
+    "actual": 17.0,
+    "n": 14,
+    "actual_minus_proj_per_player": -0.04
+   },
+   "TE3+": {
+    "proj": 1.7,
+    "actual": 8.0,
+    "n": 8,
+    "actual_minus_proj_per_player": 0.79
+   },
+   "WR1": {
+    "proj": 177.4,
+    "actual": 156.0,
+    "n": 22,
+    "actual_minus_proj_per_player": -0.97
+   },
+   "WR2": {
+    "proj": 61.5,
+    "actual": 72.0,
+    "n": 15,
+    "actual_minus_proj_per_player": 0.7
+   },
+   "WR3+": {
+    "proj": 21.6,
+    "actual": 65.0,
+    "n": 23,
+    "actual_minus_proj_per_player": 1.89
+   }
+  },
+  "named_in_prelock_audit": {
+   "Kalif Raymond": {
+    "targets_proj": 3.56,
+    "targets_actual": 2.0
+   },
+   "Ryan Flournoy": {
+    "targets_proj": 3.14,
+    "targets_actual": 5.0
+   },
+   "Kayshon Boutte": {
+    "targets_proj": 0.67,
+    "targets_actual": 4.0
+   },
+   "Jaylin Noel": {
+    "targets_proj": 0.2,
+    "targets_actual": 3.0
+   },
+   "CeeDee Lamb": {
+    "targets_proj": 10.1,
+    "targets_actual": 21.0
+   },
+   "Parker Washington": {
+    "targets_proj": 10.23,
+    "targets_actual": 3.0
+   },
+   "Garrett Wilson": {
+    "targets_proj": 11.81,
+    "targets_actual": 4.0
+   },
+   "Mike Gesicki": {
+    "targets_proj": 6.42,
+    "targets_actual": 5.0
+   },
+   "Emeka Egbuka": {
+    "targets_proj": 8.22,
+    "targets_actual": 4.0
+   }
+  },
+  "READING": "positive actual-minus-projected for WR3+ and negative for WR1/TE1 would confirm the pre-lock finding on this slate; one slate is one observation"
+ },
+ "lineups": {
+  "MAX150": {
+   "n": 150,
+   "best": {
+    "entry_id": "5279820055",
+    "points": 207.5,
+    "dk_points": null,
+    "rank": null,
+    "field": null,
+    "players": [
+     [
+      "Dak Prescott",
+      21.1
+     ],
+     [
+      "Javonte Williams",
+      31.3
+     ],
+     [
+      "Rhamondre Stevenson",
+      18.4
+     ],
+     [
+      "CeeDee Lamb",
+      44.3
+     ],
+     [
+      "Nico Collins",
+      33.8
+     ],
+     [
+      "Zay Flowers",
+      28.8
+     ],
+     [
+      "Brenton Strange",
+      16.5
+     ],
+     [
+      "Mack Hollins",
+      8.3
+     ],
+     [
+      "Buccaneers",
+      5.0
+     ]
+    ]
+   },
+   "median_points": 127.87,
+   "field_size": "STANDINGS_NOT_INGESTED"
+  },
+  "MAX20": {
+   "n": 20,
+   "best": {
+    "entry_id": "5279819960",
+    "points": 191.08,
+    "dk_points": null,
+    "rank": null,
+    "field": null,
+    "players": [
+     [
+      "Matthew Stafford",
+      14.68
+     ],
+     [
+      "Chase Brown",
+      19.1
+     ],
+     [
+      "Kyren Williams",
+      36.7
+     ],
+     [
+      "CeeDee Lamb",
+      44.3
+     ],
+     [
+      "Nico Collins",
+      33.8
+     ],
+     [
+      "Parker Washington",
+      2.0
+     ],
+     [
+      "Tyler Higbee",
+      11.7
+     ],
+     [
+      "Romeo Doubs",
+      23.8
+     ],
+     [
+      "Patriots",
+      5.0
+     ]
+    ]
+   },
+   "median_points": 126.75,
+   "field_size": "STANDINGS_NOT_INGESTED"
+  },
+  "MAX3": {
+   "n": 3,
+   "best": {
+    "entry_id": "5279814044",
+    "points": 171.1,
+    "dk_points": null,
+    "rank": null,
+    "field": null,
+    "players": [
+     [
+      "Dak Prescott",
+      21.1
+     ],
+     [
+      "D'Andre Swift",
+      8.4
+     ],
+     [
+      "Bucky Irving",
+      6.1
+     ],
+     [
+      "CeeDee Lamb",
+      44.3
+     ],
+     [
+      "Puka Nacua",
+      30.7
+     ],
+     [
+      "Zay Flowers",
+      28.8
+     ],
+     [
+      "Mike Gesicki",
+      13.0
+     ],
+     [
+      "Tyler Higbee",
+      11.7
+     ],
+     [
+      "Jaguars",
+      7.0
+     ]
+    ]
+   },
+   "median_points": 161.02,
+   "field_size": "STANDINGS_NOT_INGESTED"
+  }
+ },
+ "all_173_graded": true,
+ "exposures": {
+  "MAX150": {
+   "n_high": 13,
+   "high_exposure_mean_actual_minus_proj": -1.09,
+   "n_low": 77,
+   "low_exposure_mean_actual_minus_proj": -1.22,
+   "exposure_weighted_actual_minus_proj": -1.83,
+   "THRESHOLD": "20% exposure, DECLARED reporting split"
+  },
+  "MAX20": {
+   "n_high": 19,
+   "high_exposure_mean_actual_minus_proj": -1.26,
+   "n_low": 31,
+   "low_exposure_mean_actual_minus_proj": -1.58,
+   "exposure_weighted_actual_minus_proj": -2.06,
+   "THRESHOLD": "20% exposure, DECLARED reporting split"
+  },
+  "MAX3": {
+   "n_high": 19,
+   "high_exposure_mean_actual_minus_proj": -1.77,
+   "n_low": 0,
+   "low_exposure_mean_actual_minus_proj": null,
+   "exposure_weighted_actual_minus_proj": 0.06,
+   "THRESHOLD": "20% exposure, DECLARED reporting split"
+  }
+ },
+ "stacks_top": [
+  {
+   "contest": "MAX150",
+   "qb": "Dak Prescott",
+   "stack": "CeeDee Lamb + Javonte Williams",
+   "lineups": 5,
+   "mean_points": 157.02,
+   "max_points": 207.5
+  },
+  {
+   "contest": "MAX150",
+   "qb": "C.J. Stroud",
+   "stack": "Nico Collins",
+   "lineups": 4,
+   "mean_points": 149.31,
+   "max_points": 195.78
+  },
+  {
+   "contest": "MAX20",
+   "qb": "Matthew Stafford",
+   "stack": "Kyren Williams + Tyler Higbee",
+   "lineups": 1,
+   "mean_points": 191.08,
+   "max_points": 191.08
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Trevor Lawrence",
+   "stack": "Parker Washington",
+   "lineups": 7,
+   "mean_points": 129.91,
+   "max_points": 184.98
+  },
+  {
+   "contest": "MAX150",
+   "qb": "C.J. Stroud",
+   "stack": "Nico Collins + Texans",
+   "lineups": 1,
+   "mean_points": 184.88,
+   "max_points": 184.88
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Dak Prescott",
+   "stack": "CeeDee Lamb",
+   "lineups": 7,
+   "mean_points": 135.16,
+   "max_points": 178.3
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Lamar Jackson",
+   "stack": "Zay Flowers",
+   "lineups": 12,
+   "mean_points": 139.24,
+   "max_points": 177.58
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Trevor Lawrence",
+   "stack": "Bhayshul Tuten + Jaguars + Jakobi Meyers",
+   "lineups": 1,
+   "mean_points": 175.98,
+   "max_points": 175.98
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Dak Prescott",
+   "stack": "Jake Ferguson + Javonte Williams",
+   "lineups": 1,
+   "mean_points": 175.2,
+   "max_points": 175.2
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Tyson Bagent",
+   "stack": "Rome Odunze",
+   "lineups": 1,
+   "mean_points": 172.12,
+   "max_points": 172.12
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Matthew Stafford",
+   "stack": "Puka Nacua",
+   "lineups": 3,
+   "mean_points": 139.01,
+   "max_points": 171.98
+  },
+  {
+   "contest": "MAX20",
+   "qb": "Dak Prescott",
+   "stack": "CeeDee Lamb",
+   "lineups": 2,
+   "mean_points": 140.55,
+   "max_points": 171.1
+  },
+  {
+   "contest": "MAX3",
+   "qb": "Dak Prescott",
+   "stack": "CeeDee Lamb",
+   "lineups": 1,
+   "mean_points": 171.1,
+   "max_points": 171.1
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Matthew Stafford",
+   "stack": "Davante Adams + Kyren Williams + Tyler Higbee",
+   "lineups": 1,
+   "mean_points": 170.88,
+   "max_points": 170.88
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Dak Prescott",
+   "stack": "Jake Ferguson",
+   "lineups": 1,
+   "mean_points": 170.0,
+   "max_points": 170.0
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Joe Burrow",
+   "stack": "Ja'Marr Chase",
+   "lineups": 3,
+   "mean_points": 130.69,
+   "max_points": 168.72
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Tyson Bagent",
+   "stack": "Luther Burden III",
+   "lineups": 12,
+   "mean_points": 127.36,
+   "max_points": 166.82
+  },
+  {
+   "contest": "MAX150",
+   "qb": "C.J. Stroud",
+   "stack": "Dalton Schultz + Nico Collins",
+   "lineups": 3,
+   "mean_points": 154.75,
+   "max_points": 166.48
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Josh Allen",
+   "stack": "Khalil Shakir",
+   "lineups": 2,
+   "mean_points": 142.97,
+   "max_points": 165.92
+  },
+  {
+   "contest": "MAX20",
+   "qb": "Matthew Stafford",
+   "stack": "Kyren Williams + Puka Nacua",
+   "lineups": 1,
+   "mean_points": 165.68,
+   "max_points": 165.68
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Joe Burrow",
+   "stack": "Chase Brown + Mike Gesicki",
+   "lineups": 1,
+   "mean_points": 165.52,
+   "max_points": 165.52
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Matthew Stafford",
+   "stack": "Kyren Williams + Puka Nacua + Tyler Higbee",
+   "lineups": 1,
+   "mean_points": 165.28,
+   "max_points": 165.28
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Joe Burrow",
+   "stack": "Ja'Marr Chase + Tee Higgins",
+   "lineups": 1,
+   "mean_points": 164.02,
+   "max_points": 164.02
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Matthew Stafford",
+   "stack": "Kyren Williams + Puka Nacua",
+   "lineups": 2,
+   "mean_points": 157.18,
+   "max_points": 162.68
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Trevor Lawrence",
+   "stack": "Brenton Strange + Jaguars",
+   "lineups": 1,
+   "mean_points": 162.68,
+   "max_points": 162.68
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Tyson Bagent",
+   "stack": "Bears + Luther Burden III",
+   "lineups": 2,
+   "mean_points": 122.07,
+   "max_points": 161.02
+  },
+  {
+   "contest": "MAX20",
+   "qb": "Tyson Bagent",
+   "stack": "Bears + Luther Burden III",
+   "lineups": 1,
+   "mean_points": 161.02,
+   "max_points": 161.02
+  },
+  {
+   "contest": "MAX3",
+   "qb": "Tyson Bagent",
+   "stack": "Bears + Luther Burden III",
+   "lineups": 1,
+   "mean_points": 161.02,
+   "max_points": 161.02
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Josh Allen",
+   "stack": "DJ Moore",
+   "lineups": 7,
+   "mean_points": 128.05,
+   "max_points": 160.92
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Jordan Love",
+   "stack": "Matthew Golden",
+   "lineups": 1,
+   "mean_points": 160.08,
+   "max_points": 160.08
+  },
+  {
+   "contest": "MAX20",
+   "qb": "C.J. Stroud",
+   "stack": "Dalton Schultz + Nico Collins",
+   "lineups": 1,
+   "mean_points": 157.68,
+   "max_points": 157.68
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Lamar Jackson",
+   "stack": "Mark Andrews + Zay Flowers",
+   "lineups": 3,
+   "mean_points": 132.91,
+   "max_points": 152.38
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Jordan Love",
+   "stack": "Christian Watson",
+   "lineups": 5,
+   "mean_points": 128.82,
+   "max_points": 149.68
+  },
+  {
+   "contest": "MAX150",
+   "qb": "C.J. Stroud",
+   "stack": "Dalton Schultz",
+   "lineups": 1,
+   "mean_points": 148.88,
+   "max_points": 148.88
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Geno Smith",
+   "stack": "Garrett Wilson",
+   "lineups": 4,
+   "mean_points": 110.11,
+   "max_points": 146.06
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Lamar Jackson",
+   "stack": "Mark Andrews",
+   "lineups": 3,
+   "mean_points": 135.65,
+   "max_points": 145.78
+  },
+  {
+   "contest": "MAX20",
+   "qb": "Trevor Lawrence",
+   "stack": "Brenton Strange + Parker Washington",
+   "lineups": 1,
+   "mean_points": 145.38,
+   "max_points": 145.38
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Joe Burrow",
+   "stack": "Mike Gesicki + Tee Higgins",
+   "lineups": 1,
+   "mean_points": 145.32,
+   "max_points": 145.32
+  },
+  {
+   "contest": "MAX150",
+   "qb": "Josh Allen",
+   "stack": "Dalton Kincaid",
+   "lineups": 7,
+   "mean_points": 116.01,
+   "max_points": 142.32
+  },
+  {
+   "contest": "MAX20",
+   "qb": "Lamar Jackson",
+   "stack": "Mark Andrews + Zay Flowers",
+   "lineups": 1,
+   "mean_points": 140.58,
+   "max_points": 140.58
+  }
+ ],
+ "optimal_lineup": {
+  "points": 262.92,
+  "players": [
+   [
+    "Joe Burrow",
+    "QB",
+    6800,
+    28.72
+   ],
+   [
+    "Giants",
+    "DST",
+    3100,
+    14.0
+   ],
+   [
+    "Kyren Williams",
+    "RB",
+    5900,
+    36.7
+   ],
+   [
+    "Javonte Williams",
+    "RB",
+    6600,
+    31.3
+   ],
+   [
+    "Kyle Monangai",
+    "RB",
+    4900,
+    31.0
+   ],
+   [
+    "CeeDee Lamb",
+    "WR",
+    7800,
+    44.3
+   ],
+   [
+    "Nico Collins",
+    "WR",
+    7200,
+    33.8
+   ],
+   [
+    "Keon Coleman",
+    "WR",
+    4000,
+    26.6
+   ],
+   [
+    "Brenton Strange",
+    "TE",
+    3200,
+    16.5
+   ]
+  ],
+  "salary": 49500
+ },
+ "ONE_SLATE": "eight correlated games: these are observations for the ledger, not calibration or skill estimates"
+}

@@ -3863,3 +3863,11 @@ bf50aaee…) and refuses until it holds results. Needed, each as the raw file wi
 3. Optional: week-4 snap counts and participation/route data for the role audit.
 The owner supplies the three DraftKings contest-standings exports (196208416 / 196208417 / 196208418).
 This machine cannot reach the nflverse release files (404 through the proxy).
+
+### 2026-10-05 — Week 4 postgame: public results acquired here; one owner item remains
+
+This machine reached the nflverse releases (tag `stats_player`, not `player_stats`) and nfldata `games.csv`;
+both are ingested under nfl/postgame/raw/2026W4/ with provenance and the Week-4 grade is built
+(nfl/dfs/salaries/postgame/WEEK4_POSTGAME_REPORT.md). Items 1-2 of the previous request are CLOSED.
+Still wanted from the networked agent: week-4 snap counts and participation/route data (role audit).
+Owner-only: the three DraftKings standings exports (196208416 / 196208417 / 196208418).
