@@ -362,6 +362,64 @@ def ladder(hit, cand_rows, seats_of, n, n_w):
     return P, log
 
 
+#: search breadth for the swap polish: the candidates with the highest first-place-proxy rate. A compute
+#: budget, not a model parameter; on ATL@NO 2026W4 the full pool is ~5,700 and 3,000 covers every candidate
+#: that any greedy portfolio selected.
+SWAP_POOL = 3000
+SWAP_MAX_ROUNDS = 50
+
+
+def swap_polish(hit, seats_of, P, n, n_w):
+    """1-swap hill climbing on the SAME objective E[min(depth, m)] under the SAME rung constraints (player cap,
+    captain cap, overlap, distinct lineups). Each round makes the single best improving swap; stops when none
+    improves. Never lowers the objective. Greedy selection is not optimal: measured on ATL@NO BASE the 20-entry
+    portfolio gained +0.082 / +0.017 in held-out objective on both split halves (SWAP_HOLDOUT_DIAGNOSTIC); the
+    150 and 2 were neutral. The greedy result is kept beside the polished one."""
+    rung = LADDER[P['relaxation_level']]
+    m = P['objective']['m']
+    cap_p, cap_c = P['caps']['player'], P['caps']['captain']
+    H = hit.astype(np.int32)
+    sets = [set(x) for x in seats_of]
+    pool = [int(j) for j in np.argsort(-hit.mean(axis=1), kind='stable')[:SWAP_POOL]]
+    cur = list(P['chosen'])
+    rounds = 0
+    for rounds in range(1, SWAP_MAX_ROUNDS + 1):
+        depth = H[cur].sum(axis=0)
+        best = (0.0, None, None)
+        for s, i in enumerate(cur):
+            d0 = depth - H[i]
+            others = cur[:s] + cur[s + 1:]
+            exp = collections.Counter(k for j in others for k in seats_of[j])
+            cexp = collections.Counter(seats_of[j][0] for j in others)
+            v_in = np.minimum(d0 + H[i], m).mean()
+            gains = np.minimum(d0[None, :] + H[pool], m).mean(axis=1) - v_in
+            for t in np.argsort(-gains, kind='stable'):
+                g = float(gains[t])
+                if g <= best[0] + 1e-12:
+                    break
+                j = pool[t]
+                if j in cur or any(exp[k] + 1 > cap_p for k in seats_of[j]) or cexp[seats_of[j][0]] + 1 > cap_c:
+                    continue
+                if any(len(sets[j] & sets[o]) > rung['overlap'] for o in others):
+                    continue
+                best = (g, s, j)
+                break
+        if best[1] is None:
+            break
+        cur[best[1]] = best[2]
+    depth = H[cur].sum(axis=0)
+    out = dict(P)
+    out['greedy'] = {'chosen': list(P['chosen']), 'objective': P['objective']['value'], 'coverage': P['coverage']}
+    out['chosen'] = cur
+    out['coverage'] = float(hit[cur].any(axis=0).mean())
+    out['objective'] = {**P['objective'], 'value': float(np.minimum(depth, m).mean())}
+    out['selection_method'] = 'GREEDY_THEN_1SWAP_POLISH'
+    out['polish'] = {'rounds': rounds, 'lineups_changed': len(set(cur) - set(P['chosen'])),
+                     'objective_greedy': round(P['objective']['value'], 4), 'objective_final': round(out['objective']['value'], 4),
+                     'coverage_greedy': round(P['coverage'], 4), 'coverage_final': round(out['coverage'], 4)}
+    return out
+
+
 def kicker_rule_b(doc, by, rows, cands, seats_of, M, contests, portfolios, n_w):
     """SCORING_B: a missed field goal costs 1 point. Same worlds, kickers' draws minus their misses."""
     kw = doc.get('kickers') or {}
@@ -389,6 +447,8 @@ def kicker_rule_b(doc, by, rows, cands, seats_of, M, contests, portfolios, n_w):
         cr_b = [{'first_place_proxy': float(hitb[i].mean()), 'structural_duplication_index': 0} for i in range(len(seats_of))]
         rung = LADDER[P['relaxation_level']]
         PB = select(hitb, cr_b, seats_of, n, n_w, rung)
+        if P.get('selection_method') == 'GREEDY_THEN_1SWAP_POLISH' and PB['short'] == 0:
+            PB = swap_polish(hitb, seats_of, PB, n, n_w)     # like for like with the A portfolio
         a, b = set(P['chosen']), set(PB['chosen'])
         same = len(a & b)
         ka = sum(1 for i in P['chosen'] for k in seats_of[i] if k in miss)
@@ -702,6 +762,8 @@ def run(export, draws_path, out_dir, prefix, *, inactives=None, proj_path=None, 
     for cid, cdef in contests.items():
         n = len(cdef['entries'])
         P, log = ladder(hit, cand_rows, seats_of, n, n_w)
+        if P['short'] == 0:
+            P = swap_polish(hit, seats_of, P, n, n_w)
         portfolios[cid] = {'contest': cdef, **P, 'relaxation_log': log}
 
     # ---- 3b. kicker scoring B (missed FG -1) on the same worlds: does it move the selection?
@@ -956,6 +1018,9 @@ def run(export, draws_path, out_dir, prefix, *, inactives=None, proj_path=None, 
                              'n_built': len(P['chosen']), 'short': P['short'], 'caps': P['caps'],
                              'proxy_coverage': round(P['coverage'], 4),
                              'relaxation_level': P['relaxation_level'], 'relaxation_log': P['relaxation_log'],
+                             'selection_method': P.get('selection_method', 'GREEDY'), 'polish': P.get('polish'),
+                             'greedy_lineups': ([[by[seats_of[i][0]]['name'], sorted(by[k]['name'] for k in seats_of[i][1:])]
+                                                 for i in P['greedy']['chosen']] if P.get('greedy') else None),
                              'split_counts': P.get('split_counts'), 'salary_band_counts': P.get('band_counts')}
                        for cid, P in portfolios.items()},
         'upload_verification': ver.value if ver.state.value == 'PASS' else {'state': ver.state.value, 'code': ver.code,

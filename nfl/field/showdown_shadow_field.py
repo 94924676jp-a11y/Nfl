@@ -96,12 +96,25 @@ def ownership(lines, slate):
             for k in keys}
 
 
-def run(export, fc_csv, out_dir, absent=()):
+def run(export, fc_csv, out_dir, absent=(), blend_draws=None):
     ing = S.s1_ingest(pathlib.Path(export))
     slate = S.s2_slate_identity(ing.value['pool']).value
     absent = set(absent)
     absent_keys = {k for k, v in slate['players'].items() if v['name'] in absent or k in absent}
     fc = fc_projection(fc_csv)
+    source = 'FC_ONLY'
+    if blend_draws:
+        # TWO-SOURCE PUBLIC CONSENSUS (field layer only): the field reads several public projections, not
+        # one. The mean of FC and our own sim mean stands in for that aggregate. Our numbers enter the
+        # FIELD model here as one of two sources; nothing flows back to the football.
+        d = json.loads(pathlib.Path(blend_draws).read_text())['draws']
+        for key, v in slate['players'].items():
+            ours = d.get(key)
+            if ours is None:
+                continue
+            k2 = (v['name'], v['dk_team'])
+            fc[k2] = 0.5 * fc.get(k2, 0.0) + 0.5 * float(np.mean(ours))
+        source = 'MEAN_OF_FC_AND_OURS'
     sweep, fields = {}, {}
     for s in SIGMAS:
         L = field(slate, absent_keys, fc, s)
@@ -128,7 +141,7 @@ def run(export, fc_csv, out_dir, absent=()):
             w.writerow([p['name'], p['dk_team'], p['position'], p['flex']['salary'], fc.get((p['name'], p['dk_team'])),
                         round(v['cpt'], 2), round(v['flex'], 2), round(v['total'], 2), LABEL])
     doc = {'ARTIFACT': 'SHOWDOWN_SHADOW_FIELD', 'label': LABEL, 'VALIDATED': False,
-           'NOT_A_FOOTBALL_INPUT': True, 'field_projection': 'FantasyCruncher FLEX projection (public), x1.5 at CPT',
+           'NOT_A_FOOTBALL_INPUT': True, 'field_projection': source, 'field_projection_note': 'FLEX projection, x1.5 at CPT',
            'k_lineups': K, 'sigma_sweep': {str(s): v for s, v in sweep.items()}, 'sigma_chosen': best,
            'anchors': ANCHORS, 'anchor_source': ANCHOR_SOURCE,
            'salary_left': {'mean': round(float(np.mean(sal)), 0), 'p50': float(np.median(sal)),
@@ -161,7 +174,8 @@ if __name__ == '__main__':
     ap.add_argument('fc')
     ap.add_argument('out')
     ap.add_argument('--absent')
+    ap.add_argument('--blend-draws', help='scenario DRAWS.json: field projection = mean of FC and ours')
     a = ap.parse_args()
     ab = json.loads(pathlib.Path(a.absent).read_text()) if a.absent else []
-    doc, own, exact, slate = run(a.export, a.fc, a.out, ab)
+    doc, own, exact, slate = run(a.export, a.fc, a.out, ab, a.blend_draws)
     print(json.dumps({k: doc[k] for k in ('sigma_sweep', 'sigma_chosen', 'salary_left', 'field_size_estimates')}, indent=1))

@@ -61,7 +61,7 @@ def run(sd):
     worlds = next(sd.glob('SHOWDOWN_*_WORLDS.npz'))
     stats, _pts, meta = CR.load_worlds(worlds)
     keys = meta['keys']
-    audit = json.loads(next(sd.glob('SHOWDOWN_*_AUDIT.json')).read_text())
+    audit = json.loads(next(p for p in sd.glob('SHOWDOWN_*_AUDIT.json') if not p.name.endswith('_FILLER_AUDIT.json')).read_text())
     draws = json.loads(next(sd.glob('SHOWDOWN_*_DRAWS.json')).read_text())['draws']
     exp_flex, exp_cpt, n_all = {}, {}, 0
     fl = next(sd.glob('SHOWDOWN_*_FINAL_LINEUPS.csv'))

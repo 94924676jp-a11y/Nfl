@@ -1,5 +1,6 @@
 #!/usr/bin/env python3.12
 """Owner finalization gates 2026-10-05: DK input gate, relaxation ladder, upload verifier."""
+import collections
 import csv
 import pathlib
 import sys
@@ -96,7 +97,42 @@ def test_verifier_catches_tampering():
         check(SP.verify_upload(up, EXPORT).state.value == 'FAIL', 'an entry id not in the export is caught')
 
 
-for t in (test_dk_input_gate, test_ladder_fills_or_blocks, test_verifier_catches_tampering):
+def test_swap_polish():
+    # textbook greedy trap: G covers 7 of 12 worlds; A and B cover 6 each, disjoint, together all 12.
+    n_w = 12
+    G = [0, 1, 2, 6, 7, 8, 9]
+    A, B = list(range(6)), list(range(6, 12))
+    hit = np.zeros((3, n_w), dtype=bool)
+    for r, ws in enumerate((G, A, B)):
+        hit[r, ws] = True
+    seats = [list('ABCDEF'), list('GHIJKL'), list('MNOPQR')]
+    cr = [{'first_place_proxy': float(h.mean()), 'structural_duplication_index': 0} for h in hit]
+    P, _ = SP.ladder(hit, cr, seats, 2, n_w)
+    check(sorted(P['chosen']) == [0, 1] and abs(P['coverage'] - 10 / 12) < 1e-9, 'greedy takes the trap (10/12)')
+    Q = SP.swap_polish(hit, seats, P, 2, n_w)
+    check(sorted(Q['chosen']) == [1, 2] and Q['coverage'] == 1.0, f"polish escapes it (12/12, chose {sorted(Q['chosen'])})")
+    check(Q['greedy']['chosen'] == P['chosen'] and Q['polish']['lineups_changed'] == 1, 'the greedy result is kept beside it')
+    # random pools: the polish never lowers the objective and never breaks a cap, the overlap rule or distinctness
+    rng = np.random.default_rng(3)
+    people = [f'p{i}' for i in range(14)]
+    for trial in range(6):
+        seats = [list(rng.choice(people, 6, replace=False)) for _ in range(80)]
+        hit = rng.random((80, 60)) < 0.12
+        cr = [{'first_place_proxy': float(h.mean()), 'structural_duplication_index': 0} for h in hit]
+        P, _ = SP.ladder(hit, cr, seats, 8, 60)
+        if P['short']:
+            continue
+        Q = SP.swap_polish(hit, seats, P, 8, 60)
+        rung = SP.LADDER[Q['relaxation_level']]
+        exp = collections.Counter(k for i in Q['chosen'] for k in seats[i])
+        cexp = collections.Counter(seats[i][0] for i in Q['chosen'])
+        ok = (Q['objective']['value'] >= P['objective']['value'] - 1e-12 and len(set(Q['chosen'])) == 8
+              and max(exp.values()) <= Q['caps']['player'] and max(cexp.values()) <= Q['caps']['captain']
+              and all(len(set(seats[i]) & set(seats[j])) <= rung['overlap'] for i in Q['chosen'] for j in Q['chosen'] if i != j))
+        check(ok, f"trial {trial}: objective {P['objective']['value']:.4f} -> {Q['objective']['value']:.4f}, caps/overlap held")
+
+
+for t in (test_dk_input_gate, test_ladder_fills_or_blocks, test_verifier_catches_tampering, test_swap_polish):
     print('##', t.__name__)
     t()
 print(f'\nPASSED {P} FAILED {F}')
