@@ -92,6 +92,21 @@
 - 196285161: dupes exact `{'mean': 47.0, 'max': 58.8, 'n_over_guardrail': 2, 'guardrail': 20}` product `{'mean': 4.38, 'max': 4.47}`; salary left `{'ours': {'0': 2}, 'ours_mean': 100.0, 'shadow_field_mean': 1010.0}`; split `{'ours_pct': {'1-5': 100.0}, 'shadow_field_pct': {'1-5': 15.6, '2-4': 37.1, '3-3': 34.0, '4-2': 11.6, '5-1': 1.7}}`
   - CPT/FLEX ownership (150): Tyler Shough 19.7/44.1; Bijan Robinson 20.6/43.0; Chris Olave 16.3/39.8; Drake London 10.5/37.3; Michael Penix Jr. 8.1/37.1; Alvin Kamara 6.9/38.1; Juwan Johnson 7.5/36.6; Daniel Carlson 2.8/34.6; Kevin Austin Jr. 0.3/34.1; Devaughn Vele 3.0/24.3; Nick Folk 1.3/21.5; Olamide Zaccheaus 0.5/18.5
 
+### DUPE STACK (MC-DUPE-1 / MC-FIELD-1: PRODUCTION_CANDIDATE, NOT PROMOTED)
+- E1 independent product x N; E2 E1 x ETR-seeded correlation factors (SEEDED_NOT_FITTED); E3 copies in the archetype-first generated field x N/K (linear scaling; "<x" = below resolution); E4 copies in the optimizer field x N/K_opt. Flag when E1 and E3 differ by more than 2x.
+- **FC_ONLY** archetype-field calibration residual (pts) by phi `{'50.0': {'cpt': 0.591, 'flex': 2.101}, '200.0': {'cpt': 0.207, 'flex': 1.677}, '1000.0': {'cpt': 0.219, 'flex': 1.405}}`; salary left `{'mean': 2144, 'p50': 1500.0, 'share_0': 0.037, 'share_le_900': 0.35, 'share_1000_1900': 0.242}`
+  - 196285137: mean `{'E1': 25.5, 'E2': 30.24, 'E3_lower_bound_mean': 15.53, 'E4': 28.24}`; flags `{'PLAYER_ABSENT_FROM_FIELD_TARGETS': 52, 'E1_E3_DISAGREE_GT_2X': 45, 'None': 27, 'E3_BELOW_RESOLUTION_E1_NOT': 26}`; E3 mean by phi `{'50.0': 17.75, '200.0': 15.53, '1000.0': 16.53}`
+  - 196285160: mean `{'E1': 5.9, 'E2': 7.76, 'E3_lower_bound_mean': 5.93, 'E4': 8.94}`; flags `{'PLAYER_ABSENT_FROM_FIELD_TARGETS': 6, 'E1_E3_DISAGREE_GT_2X': 7, 'E3_BELOW_RESOLUTION_E1_NOT': 5, 'None': 2}`; E3 mean by phi `{'50.0': 5.31, '200.0': 5.93, '1000.0': 6.17}`
+  - 196285161: mean `{'E1': 0.0, 'E2': 0.0, 'E3_lower_bound_mean': 0.0, 'E4': 0.0}`; flags `{'PLAYER_ABSENT_FROM_FIELD_TARGETS': 2}`; E3 mean by phi `{'50.0': 0.0, '200.0': 0.0, '1000.0': 0.0}`
+    - CPT Chris Olave + Bijan Robinson, Daniel Carlson, Juwan Johnson, Treyton Welch, Tyler Shough: E1 0.0, E2 0.0 ['CPT_WR_WITH_OWN_QB x2.0'], E3 <1.2, E4 0.0, flag PLAYER_ABSENT_FROM_FIELD_TARGETS
+    - CPT Tyler Shough + Alvin Kamara, Chris Olave, Drake London, Juwan Johnson, Treyton Welch: E1 0.0, E2 0.0 ['none'], E3 <1.2, E4 0.0, flag PLAYER_ABSENT_FROM_FIELD_TARGETS
+- **BLEND** archetype-field calibration residual (pts) by phi `{'50.0': {'cpt': 0.44, 'flex': 1.831}, '200.0': {'cpt': 0.257, 'flex': 1.873}, '1000.0': {'cpt': 0.164, 'flex': 1.672}}`; salary left `{'mean': 1824, 'p50': 1200.0, 'share_0': 0.051, 'share_le_900': 0.434, 'share_1000_1900': 0.231}`
+  - 196285137: mean `{'E1': 37.1, 'E2': 44.6, 'E3_lower_bound_mean': 30.4, 'E4': 48.95}`; flags `{'E1_E3_DISAGREE_GT_2X': 50, 'None': 87, 'E3_BELOW_RESOLUTION_E1_NOT': 10, 'PLAYER_ABSENT_FROM_FIELD_TARGETS': 3}`; E3 mean by phi `{'50.0': 27.48, '200.0': 30.4, '1000.0': 29.55}`
+  - 196285160: mean `{'E1': 10.64, 'E2': 14.73, 'E3_lower_bound_mean': 13.69, 'E4': 18.35}`; flags `{'E1_E3_DISAGREE_GT_2X': 9, 'None': 9, 'PLAYER_ABSENT_FROM_FIELD_TARGETS': 2}`; E3 mean by phi `{'50.0': 13.27, '200.0': 13.69, '1000.0': 14.12}`
+  - 196285161: mean `{'E1': 4.38, 'E2': 6.52, 'E3_lower_bound_mean': 60.0, 'E4': 47.05}`; flags `{'E1_E3_DISAGREE_GT_2X': 2}`; E3 mean by phi `{'50.0': 67.05, '200.0': 60.0, '1000.0': 70.6}`
+    - CPT Chris Olave + Bijan Robinson, Daniel Carlson, Juwan Johnson, Treyton Welch, Tyler Shough: E1 4.28, E2 8.56 ['CPT_WR_WITH_OWN_QB x2.0'], E3 42.4, E4 58.8, flag E1_E3_DISAGREE_GT_2X
+    - CPT Tyler Shough + Alvin Kamara, Chris Olave, Drake London, Juwan Johnson, Treyton Welch: E1 4.47, E2 4.47 ['none'], E3 77.6, E4 35.3, flag E1_E3_DISAGREE_GT_2X
+
 ## EXTERNAL
 - Hard Rock: NOT CAPTURED HERE -- only after the football freeze, by the networked agent (docs/AGENT_OUTBOX.md); never fed back into the projection; no wager is recommended
 - FC comparison (largest gaps; FC is never an input):

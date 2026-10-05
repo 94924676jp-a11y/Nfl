@@ -12,6 +12,8 @@ step() { name=$1; shift; "$@" 2>&1 | grep -v "worlds solved" >> $LOG; echo "STEP
 step audit python3.12 nfl/tools/showdown_portfolio_audit.py $E $D/$s
 step board_blend python3.12 nfl/field/showdown_shadow_board.py $E $D/$s $D/SHADOW_${s}_BLEND
 step board_fc python3.12 nfl/field/showdown_shadow_board.py $E $D/$s $D/SHADOW_${s}
+step arch_blend python3.12 nfl/field/showdown_archetype_field.py $E $D/$s $D/SHADOW_${s}_BLEND
+step arch_fc python3.12 nfl/field/showdown_archetype_field.py $E $D/$s $D/SHADOW_${s}
 step fc_compare python3.12 nfl/tools/showdown_fc_compare.py $D/$s $FC
 step claims python3.12 nfl/tools/showdown_external_claims.py $D/$s
 step prelock python3.12 nfl/tools/showdown_prelock_board.py $E $D/$s

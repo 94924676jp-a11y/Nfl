@@ -140,6 +140,22 @@ def field(sd):
                                        | {'leverage_top12': v['leverage'][:12],
                                           'two_entry_lineups': v['lineups'] if cid == TWO_ENTRY else None}
                                  for cid, v in b['contests'].items()}}
+    out['DUPE_STACK'] = {}
+    for src in SHADOW_SOURCES:
+        p = sd / f'SHOWDOWN_ATL_NO_DUPE_STACK_{src}.json'
+        if not p.exists():
+            out['DUPE_STACK'][src] = 'NOT_BUILT'
+            continue
+        d = json.loads(p.read_text())
+        b = d['by_phi'][str(200.0)]
+        out['DUPE_STACK'][src] = {
+            'STATUS': d['STATUS'], 'NOT_FITTED': d['NOT_FITTED'], 'phi_sweep': list(d['by_phi']),
+            'calibration_residual_rmse_pts': {ph: v['final_residual_rmse_pts'] for ph, v in d['by_phi'].items()},
+            'salary_left_archetype_field': b['salary_left'],
+            'contests': {cid: {'mean': v['mean'], 'flags': v['flags'],
+                               'by_phi_E3_mean': {ph: d['by_phi'][ph]['contests'][cid]['mean']['E3_lower_bound_mean']
+                                                  for ph in d['by_phi']},
+                               'lineups': v['lineups']} for cid, v in b['contests'].items()}}
     out['PROMOTION_STATUS'] = ('NOT_PROMOTED. Both field projections are EXTERNAL_RESEARCH_SHADOW and UNVALIDATED; '
                                'the blend fits five unverified anchors better, which is not validation. Neither '
                                'feeds the football or the production portfolio.')
@@ -264,6 +280,23 @@ def markdown(b):
                      f"`{v['salary_left']}`; split `{v['team_split_away_home']}`")
         L.append('  - CPT/FLEX ownership (150): ' + '; '.join(
             f"{e['player']} {e['shadow_cpt']}/{e['shadow_flex']}" for e in f['contests'].get('196285137', {}).get('leverage_top12', [])))
+    L += ['', '### DUPE STACK (MC-DUPE-1 / MC-FIELD-1: PRODUCTION_CANDIDATE, NOT PROMOTED)',
+          '- E1 independent product x N; E2 E1 x ETR-seeded correlation factors (SEEDED_NOT_FITTED); E3 copies in the '
+          'archetype-first generated field x N/K (linear scaling; "<x" = below resolution); E4 copies in the optimizer '
+          'field x N/K_opt. Flag when E1 and E3 differ by more than 2x.']
+    for src, ds in b['FIELD'].get('DUPE_STACK', {}).items():
+        if not isinstance(ds, dict):
+            L.append(f"- {src}: {ds}")
+            continue
+        L.append(f"- **{src}** archetype-field calibration residual (pts) by phi `{ds['calibration_residual_rmse_pts']}`; "
+                 f"salary left `{ds['salary_left_archetype_field']}`")
+        for cid, v in ds['contests'].items():
+            L.append(f"  - {cid}: mean `{v['mean']}`; flags `{v['flags']}`; E3 mean by phi `{v['by_phi_E3_mean']}`")
+            if cid == TWO_ENTRY and v.get('lineups'):
+                for r in v['lineups']:
+                    L.append(f"    - CPT {r['captain']} + {', '.join(r['flex'])}: E1 {r['E1_independent_product']}, "
+                             f"E2 {r['E2_adjusted_product']} {r['E2_factors']}, E3 {r['E3_archetype_field']}, "
+                             f"E4 {r['E4_optimizer_field']}, flag {r['FLAG']}")
     L += ['', '## EXTERNAL', f"- Hard Rock: {b['EXTERNAL']['HARD_ROCK']}", '- FC comparison (largest gaps; FC is never an input):']
     for r in b['EXTERNAL']['fc_comparison_largest_gaps']:
         L.append(f"  - {r['player']} ({r['team']} {r['pos']}): ours {r['our_mean']} vs FC {r['fc_flex']} ({r['triage']})")

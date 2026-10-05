@@ -1,0 +1,76 @@
+{
+ "ARTIFACT": "METHOD_CANDIDATES",
+ "source": "Ownership_Field_Dupe_Role_Research_Addendum.md",
+ "status_of_all": "PRODUCTION_CANDIDATE (none promoted)",
+ "candidates": [
+  {
+   "id": "MC-OWN-1",
+   "scope": "OWNERSHIP",
+   "section": "2.2",
+   "method": "slot-specific (CPT, FLEX), contest-bucket (P150/P20/P2) Dirichlet-multinomial / conditional-logit share model, Haugh & Singal (2021) form alpha = exp(X beta), p ~ Dir(phi * pi); CPT modelled directly, never 0.5 x FLEX",
+   "tonight": "NOT FITTED -- no Showdown ownership history exists in this repository (one classic slate only); fitting it tonight would be fitting to nothing. Registered; tonight's three Showdown standings are observation #1.",
+   "baseline_it_must_beat": "optimizer-exposure field (nfl/field/showdown_shadow_field.py, FC_ONLY and BLEND)",
+   "promotion_requires": "beats the optimizer-exposure baseline on HELD-OUT slates in log-loss on shares and interval coverage, CPT and FLEX separately, per contest bucket; multi-slate; owner ruling"
+  },
+  {
+   "id": "MC-FIELD-1",
+   "scope": "FIELD",
+   "section": "4.2",
+   "method": "archetype-first field generator: team split / QB count / K-DST count / CPT-WR-with-own-QB drawn first, then slots from Dirichlet-jittered shares, DK legality accept/reject, iterated to slot-ownership targets with residuals reported",
+   "tonight": "SHADOW -- nfl/field/showdown_archetype_field.py. Archetype priors are NOT fitted on standings (none exist); they are read from the optimizer field and labelled so; one contest bucket.",
+   "promotion_requires": "reproduces actual slot ownership and archetype rates on held-out standings within a stated tolerance better than the optimizer field; multi-slate; owner ruling"
+  },
+  {
+   "id": "MC-DUPE-1",
+   "scope": "DUPLICATION",
+   "section": "5.2",
+   "method": "three estimators per lineup side by side: (1) independent product x N, (2) adjusted product (correlation, salary-left, construction factors), (3) empirical count in a generated field scaled to N; flag > 2x disagreement",
+   "tonight": "SHADOW -- estimators 1 and 3 computed; estimator 2 carries only the ETR-seeded correlation factors (CPT WR + own QB x2, CPT QB + opposing DST x0.36), labelled SEEDED_NOT_FITTED; salary-left and construction factors are 1.0 and labelled NOT_FITTED. Linear scaling from field size to N is stated, not assumed silently.",
+   "promotion_requires": "calibrated against actual duplicate counts in our captured Showdown standings (tonight is the first), out of sample; owner ruling"
+  },
+  {
+   "id": "MC-ROLE-1",
+   "scope": "FOOTBALL_ROLE",
+   "section": "6.1",
+   "method": "team volume first -> active-set participation -> role/alignment shares -> target/carry/red-zone allocation, Dirichlet-multinomial within-team shares over the ACTIVE set; absences act only through the active set; fitted concentration compared to the 63% median top-beneficiary benchmark (GWTTKB)",
+   "tonight": "NOT IMPLEMENTED -- post-lock candidate. The sealed football model is unchanged tonight (owner ruling); no pre-existing correctness defect in the current allocation was found that would justify touching it.",
+   "promotion_requires": "forward-chained evaluation on our own play-by-play and participation data against the current allocator, preregistered, no DFS or market inputs; owner ruling"
+  }
+ ],
+ "conflicts_to_settle_on_our_standings": [
+  {
+   "id": "CF-1",
+   "question": "Does the field over-captain QBs?",
+   "A": "DFS Army: field 28-35% QB CPT vs ~20% optimal",
+   "B": "ETR: field makes very few positional CPT mistakes (QB 24.1% of top-1%)",
+   "test": "CPT position share, field vs top 1%, on every captured DK Showdown standings file"
+  },
+  {
+   "id": "CF-2",
+   "question": "Product-ownership vs dupes R^2",
+   "A": "0.55 (ETR video 2022)",
+   "B": "0.43 (ETR article, current)",
+   "test": "refit on our captured Showdown standings"
+  },
+  {
+   "id": "CF-3",
+   "question": "Does CPT ownership drive dupes?",
+   "A": "common belief: yes",
+   "B": "ETR: minimal correlation",
+   "test": "regress dupe count on CPT ownership vs FLEX product ownership"
+  },
+  {
+   "id": "CF-4",
+   "question": "Showdown field size in a sim",
+   "A": "SaberSim 5,000 (2023)",
+   "B": "SaberSim 20,000 (2024)",
+   "test": "design choice; report sensitivity of our dupe estimates to the generated-field size"
+  }
+ ],
+ "gaps_stated_by_the_addendum": [
+  "no validated public Showdown CPT ownership model",
+  "no sample-backed salary-left -> dupe function",
+  "Haugh & Singal coefficients are FanDuel classic 2016-17: the method transfers, the coefficients do not",
+  "within-game alignment-based transfer rules are expert claims to test on our pbp"
+ ]
+}
