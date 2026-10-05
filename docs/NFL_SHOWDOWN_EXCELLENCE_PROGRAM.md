@@ -42,6 +42,9 @@ script and QB count.
   correlation); defensive/return TDs and safeties are drawn per world and added to the scoreboard so
   points allowed and team points stay one ledger. Acceptance: identity checks QB INT == DST INT and
   sacks taken == DST sacks in every world; held-out calibration of DST points no worse than today.
+  Also (found 2026-10-05 from the Week-4 standings, `nfl/dfs/salaries/postgame/FINDINGS_2026W4_STANDINGS.md`
+  F1): DK's points allowed EXCLUDES the opponent's defensive and return touchdowns. Once those TDs are
+  per-world events, points allowed must be computed that way, in the simulator and in the grader.
 - **P1 — role/usage allocation** (POST-LOCK #1, task #120): within-club share model with depth-player
   involvement and role-volume variance; acceptance per the Week-4 postgame report §9.
 - **P2 — Showdown ownership/field/duplication model**, fitted when archived Showdown contest
