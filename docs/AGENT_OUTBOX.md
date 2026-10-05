@@ -3871,3 +3871,20 @@ both are ingested under nfl/postgame/raw/2026W4/ with provenance and the Week-4 
 (nfl/dfs/salaries/postgame/WEEK4_POSTGAME_REPORT.md). Items 1-2 of the previous request are CLOSED.
 Still wanted from the networked agent: week-4 snap counts and participation/route data (role audit).
 Owner-only: the three DraftKings standings exports (196208416 / 196208417 / 196208418).
+
+### 2026-10-05 12:xxZ — Week 4 MNF ATL @ NO DraftKings Showdown (kickoff 00:15Z)
+
+Staged here: public injuries, depth charts, weekly rosters and snap counts captured 11:39Z from nflverse
+(nfl/dfs/salaries/raw/showdown_atl_no_2026W4/, hashed); role review
+(nfl/dfs/salaries/showdown_atl_no/SHOWDOWN_ATL_NO_ROLE_REVIEW.csv); kickers now scored inside the
+simulated world (nfl/tools/kicker_world.py); one-game runner and tournament builder ready.
+draftkings.com and api.draftkings.com are refused by this machine's proxy (403).
+
+1. OWNER: the DKEntries CSV for the ATL@NO Showdown contest(s): Entry IDs, Contest IDs, and the
+   player pool with CPT and FLEX item IDs and salaries. Nothing can be priced without it.
+2. NETWORKED AGENT or OWNER, at about 22:45Z (18:45 ET): the official ATL and NO inactive lists,
+   as captured documents (URL plus capture time). Relayed lists are applied as
+   REPORTED_INACTIVE_HIGH_CONFIDENCE and are never relabelled official.
+3. NETWORKED AGENT: confirm from DraftKings' published NFL Showdown scoring whether a missed field
+   goal deducts a point. kicker_model.py says -1 and dfs/scoring/statline.py says 0; the
+   same-world draws use 0 and report the mean under -1 beside it.
