@@ -3936,3 +3936,16 @@ Needed, as soon as both teams post (normally ~90 min before the 8:15 PM ET kicko
 Already recorded (owner relay, tier RELAYED_OWNER_MESSAGE): game-day elevations ATL S Jammie Robinson (00-0038587),
 NO EDGE Fadil Diggs (00-0040249), NO LB Jackson Sirmon (00-0039288) -- all practice-squad (DEV) in nflverse; none is
 a priced DK Showdown player.
+
+## REQUEST 2026-10-05 23:50Z — Hard Rock ATL@NO player-prop board, captured AFTER the seal and BEFORE kickoff (00:15Z)
+
+The prop forecast is SEALED: nfl/market/atl_no_2026W4/PROP_FORECAST_SEAL.json, written_at 2026-10-05T23:49:04Z,
+seal_sha256 e08e8a4a.... nfl/market/price_history.comparable refuses any price captured before that time or after
+kickoff, so capture now, once, and again as close to kickoff as possible.
+
+Needed: the full Hard Rock ATL@NO board in the existing board schema (market, selection, points, is_main, over, under,
+price, ts_utc, age_min, flag, over_id, under_id, price_id, player_id, team_id -- as HR_NYG_LAR_BOARD_*.csv), saved as
+nfl/market/raw/HR_ATL_NO_BOARD_<UTC stamp>.csv, priority markets: player_receptions, player_receiving_yards,
+player_rushing_yards, player_passing_yards, player_passing_touchdowns, anytime touchdown. Push to
+claude/nfl-greenfield-architecture-stsxmk. This session then runs `atl_no_prop_shadow.py compare <board>`.
+DOWNSTREAM COMPARISON ONLY: nothing from the board touches the football model or any DFS lineup.
