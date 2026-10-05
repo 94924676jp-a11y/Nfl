@@ -653,6 +653,9 @@ def run(export, draws_path, out_dir, prefix, *, inactives=None, proj_path=None, 
         pr['availability_status'] = ca.get('status')
         pr['designation'] = ca.get('designation')
         r['state'] = classify(r, pr)
+        if ca.get('status') == 'NO_OFFENSIVE_ROLE_ROSTER_POSITION':
+            r['state'] = 'ZERO_OPPORTUNITY'           # active, but a long snapper / punter
+            r['sub_state'] = 'ZERO_POINT_FILLER'
         r['availability'] = ca.get('status') or ('ABSENT' if r['absent'] else 'UNKNOWN')
         r['designation'] = ca.get('designation') or ''
         r['depth_rank'] = stv.get('depth_rank')

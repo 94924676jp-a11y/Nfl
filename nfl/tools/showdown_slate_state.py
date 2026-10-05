@@ -68,6 +68,7 @@ DESIGNATION_MAP = {
     'DOUBTFUL': AV.REPORTED_DOUBTFUL_UNVERIFIED,
     'QUESTIONABLE': AV.UNKNOWN_ACTIVE_STATE,
     'NO_DESIGNATION': AV.UNKNOWN_ACTIVE_STATE,
+    'NO_OFFENSIVE_ROLE': AV.NO_OFFENSIVE_ROLE,
 }
 
 #: The two defences are not players and never resolve against the roster index. They are projected by
@@ -351,7 +352,7 @@ def build(export, *, designations=None, official_inactives=None,
             status, tier = AV.REPORTED_INACTIVE_HIGH_CONFIDENCE, AV.TIER_AGGREGATOR_REPORTED
         elif nm in desig:
             status = DESIGNATION_MAP[desig[nm]]
-            tier = AV.TIER_OFFICIAL_RELEASE_CITED
+            tier = AV.TIER_ROSTER_POSITION if desig[nm] == 'NO_OFFENSIVE_ROLE' else AV.TIER_OFFICIAL_RELEASE_CITED
         else:
             status, tier = AV.UNKNOWN_ACTIVE_STATE, AV.TIER_NONE
         status_counts[status] += 1

@@ -101,8 +101,15 @@ STATUS_REQUIRES_TIER = {
 #: REPORTED_* is included deliberately: a named absence on a populated list is the
 #: strongest evidence available today, and refusing to build a role tree on it would
 #: mean refusing to do the football work at all. The tree records its own tier.
+#: ACTIVE, BUT WITH NO OFFENSIVE ROLE: the club's own roster lists him as a long snapper or punter. He
+#: takes the field, so he is not "inactive", but he takes no offensive snap, so for opportunity he is
+#: absent. Added 2026-10-05: with Noah Fant out the allocator handed part of the Saints' tight-end
+#: share to long snapper Cal Adomitis (a $200 DK 'TE'), 18% of worlds scoring. The label says why.
+NO_OFFENSIVE_ROLE = 'NO_OFFENSIVE_ROLE_ROSTER_POSITION'
+TIER_ROSTER_POSITION = 'CLUB_ROSTER_POSITION_CAPTURED'
+
 ABSENT_STATUSES = (CONFIRMED_INACTIVE, REPORTED_INACTIVE_OFFICIAL_RELEASE_CITED,
-                   REPORTED_INACTIVE_HIGH_CONFIDENCE, REPORTED_OUT_UNVERIFIED)
+                   REPORTED_INACTIVE_HIGH_CONFIDENCE, REPORTED_OUT_UNVERIFIED, NO_OFFENSIVE_ROLE)
 
 #: Statuses that are NOT a claim of absence and must never be treated as one.
 NOT_A_CLAIM_OF_ABSENCE = (UNKNOWN, UNKNOWN_NOT_RELAYED, UNKNOWN_ACTIVE_STATE,
