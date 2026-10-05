@@ -746,6 +746,8 @@ CONSTANTS_PROVENANCE['DEPTH_CLAIM_BLEND'] = (
 
 #: Role bands, strongest first, for ordering depth rank. Mirrors role_state's ladder.
 BANDS_ORDER = {'ALPHA': 5, 'PRIMARY': 4, 'SECONDARY': 3, 'ROTATIONAL': 2, 'FRINGE': 1}
+#: order the allocator's depth ranks by the captured chart rank before band and claim (DEFECT-TE-ORDER fix)
+CHART_RANK_ORDER = __import__('os').environ.get('CHART_RANK_ORDER', '1') != '0'
 
 
 #: The ONE team field each position's depth table is measured on (see depth_shares()). A depth
@@ -815,9 +817,21 @@ def allocate_opportunity(crows, tv, depth, groups, blend=None, apply_appearance=
             # designation -- and it is the ordering, not the threshold, that was wrong. The
             # predicted starter takes rank 1; a good player behind him keeps a large claim
             # inside rank 2, which is what a quality backup should look like.
-            idx.sort(key=lambda i: (0 if crows[i].get('is_predicted_starter') else 1,
-                                    -BANDS_ORDER.get(crows[i].get('role_band'), 0),
-                                    -claims[i]))
+            # CHART RANK BEFORE BAND AND CLAIM (DEFECT-TE-ORDER, 2026-10-05). Inside a band the order fell to claim size,
+            # so an archetype-only prior outranked current role evidence one rank below the starter: NO's Treyton Welch
+            # (no chart rank, TE4 on the captured chart, 7-11% snaps) took rank 2 and P(plays) 0.576 while Oscar Delp
+            # (chart TE2 once Fant is out, 13-19% snaps) took rank 3 and 0.115 -- the Njoku error one rank down. The
+            # captured chart rank now orders players ahead of band and claim; a player with no chart rank sorts after
+            # every ranked one. CHART_RANK_ORDER=False restores the previous ordering.
+            if CHART_RANK_ORDER:
+                idx.sort(key=lambda i: (0 if crows[i].get('is_predicted_starter') else 1,
+                                        crows[i].get('_chart_rank') if crows[i].get('_chart_rank') is not None else 99,
+                                        -BANDS_ORDER.get(crows[i].get('role_band'), 0),
+                                        -claims[i]))
+            else:
+                idx.sort(key=lambda i: (0 if crows[i].get('is_predicted_starter') else 1,
+                                        -BANDS_ORDER.get(crows[i].get('role_band'), 0),
+                                        -claims[i]))
             dr = ((depth.get(pos) or {}).get('by_rank') or {})
             # A RANK DEEPER THAN THE MEASURED TABLE INHERITS THE DEEPEST MEASURED RANK, NEVER 1.0.
             # The depth table is measured over players who appeared, so it runs a handful of ranks
@@ -1288,6 +1302,8 @@ def build():
                             depth=depth, depth_rank=rs.get('depth_rank'),
                             predicted_feed_covers_club=bool(pred_feed_clubs.get(club)))
         base.update(pr)
+        # the CAPTURED depth-chart rank from the role state, kept for the allocator's ordering (CHART_RANK_ORDER)
+        base['_chart_rank'] = rs.get('depth_rank') if isinstance(rs.get('depth_rank'), int) else None
         base['projection_state'] = ('PROJECTED' if gsis else 'PROJECTED_COLD_START')
         base['gsis_id'] = gsis
         base['identity_matched_by'] = (idr or {}).get('matched_by') or 'UNRESOLVED'
