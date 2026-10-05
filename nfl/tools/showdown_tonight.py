@@ -26,7 +26,8 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 
-def run(export, tag, scenario, designations=None, outs=(), official_inactives=None, n_sims=2000):
+def run(export, tag, scenario, designations=None, outs=(), official_inactives=None, n_sims=2000,
+        confirmed_starters=None, starter_tier=None, depth_chart_csv=None):
     from nfl.tools import showdown_slate_state as SSS, showdown_slate_run as SR, showdown_portfolio as SPF
     P = SR.paths(tag)
     P['dir'].mkdir(parents=True, exist_ok=True)
@@ -40,7 +41,16 @@ def run(export, tag, scenario, designations=None, outs=(), official_inactives=No
     if gate.state.value != 'PASS':
         return gate
     SSS.OUT = P['state']
-    st = SSS.build(export, designations=desig, official_inactives=official_inactives)
+    if starter_tier:
+        # the label says WHERE the starter evidence came from; downstream reads only the boolean
+        SSS.STARTER_TIER = starter_tier
+    chart = None
+    if depth_chart_csv:
+        import hashlib as _h
+        cid = 'nflverse_depth_charts_' + _h.sha256(pathlib.Path(depth_chart_csv).read_bytes()).hexdigest()[:16]
+        chart = SSS.chart_from_capture(depth_chart_csv, tag.split('_2026')[0].split('_'), cid)
+    st = SSS.build(export, designations=desig, official_inactives=official_inactives,
+                   confirmed_starters=confirmed_starters, depth_chart=chart)
     print('state', st.state.value, st.code, st.detail, flush=True)
     if st.state.value != 'PASS':
         return st
@@ -48,6 +58,11 @@ def run(export, tag, scenario, designations=None, outs=(), official_inactives=No
     print('draws', dr.state.value, dr.code, dr.detail, flush=True)
     if dr.state.value != 'PASS':
         return dr
+    from sportsplatform.governance.outcome import Outcome as _O
+    if (dr.evidence or {}).get('sanity') != 'PASS':
+        # a football contradiction (e.g. a starter carrying a backup's appearance discount) is never
+        # optimised over: no portfolio is built on a failed sanity gate
+        return _O.fail('SHOWDOWN_FOOTBALL_SANITY_FAILED', dr.detail)
     sd = P['dir'] / scenario
     sd.mkdir(exist_ok=True)
     for k in ('state', 'proj', 'draws', 'worlds'):
@@ -59,6 +74,8 @@ def run(export, tag, scenario, designations=None, outs=(), official_inactives=No
     (sd / 'SCENARIO.json').write_text(json.dumps({
         'scenario': scenario, 'export': str(export), 'designations': desig,
         'forced_out': list(outs), 'official_inactives': official_inactives,
+        'confirmed_starters': confirmed_starters, 'starter_tier': starter_tier,
+        'depth_chart_csv': depth_chart_csv,
         'absent_in_state': absent, 'n_sims': n_sims}, indent=1))
     pf = SPF.run(export, sd / P['draws'].name, sd, f'SHOWDOWN_{tag.split("_2026")[0]}', inactives=absent,
                  proj_path=sd / P['proj'].name, state_path=sd / P['state'].name)
@@ -180,10 +197,14 @@ def main():
     ap.add_argument('--out', action='append', default=[])
     ap.add_argument('--official-inactives')
     ap.add_argument('--n-sims', type=int, default=2000)
+    ap.add_argument('--confirmed-starters', help='JSON {name: CLUB}')
+    ap.add_argument('--starter-tier', help='source label for the starter evidence')
+    ap.add_argument('--depth-chart', help='captured nflverse depth_charts CSV for the two clubs')
     a = ap.parse_args()
     d = json.loads(pathlib.Path(a.designations).read_text()) if a.designations else None
     oi = json.loads(pathlib.Path(a.official_inactives).read_text()) if a.official_inactives else None
-    o = run(a.export, a.tag, a.scenario, d, a.out, oi, a.n_sims)
+    cs = json.loads(pathlib.Path(a.confirmed_starters).read_text()) if a.confirmed_starters else None
+    o = run(a.export, a.tag, a.scenario, d, a.out, oi, a.n_sims, cs, a.starter_tier, a.depth_chart)
     return 0 if o.state.value == 'PASS' else 1
 
 

@@ -278,10 +278,30 @@ def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED,
     rng = random.Random(seed)
     kickers = {}
     for club in (home, away):
-        k = next((r for r in rows if r.get('team') == club and r.get('position') == 'K'
-                  and isinstance(r.get('dk_points'), (int, float))), None)
-        if k is None:
+        ks = [r for r in rows if r.get('team') == club and r.get('position') == 'K'
+              and isinstance(r.get('dk_points'), (int, float))]
+        if not ks:
             continue
+        k = ks[0]
+        if len(ks) > 1:
+            # kicker_model is CLUB-level, so every K row of a club carries the club's projection. Only the
+            # club's actual kicker kicks; the choice is measured from play-by-play, never the row order.
+            from nfl.tools import kicker_world as KW
+            # projection rows carry no gsis_id for kickers; the slate state does
+            gid = {(v.get('name'), v.get('team')): v.get('gsis_id') for v in state['players'].values()}
+            for r in ks:
+                r['gsis_id'] = r.get('gsis_id') or gid.get((r['name'], club))
+            g, why = KW.club_kicker(club, [r.get('gsis_id') for r in ks])
+            if g is None:
+                return Outcome.blocked('SHOWDOWN_KICKER_AMBIGUOUS', f'{club}: {len(ks)} kicker rows; {why}',
+                                       cause=Cause.DATA, club=club)
+            k = next(r for r in ks if r.get('gsis_id') == g)
+            for other in ks:
+                if other is not k:
+                    key_o = S.player_key(other['name'], club)
+                    draws[key_o] = [0.0] * n_sims
+                    kickers[key_o] = {'mean': 0.0, 'ROLE': 'NOT_THE_CLUB_KICKER', 'EVIDENCE': why,
+                                      'ZERO_OPPORTUNITY': 'a club has one kicker; zero is the model output, not missing'}
         kd = kicker_world_draws(club, (o.value.get('club_scoring_worlds') or {}).get(club), rng)
         if kd.state.value != 'PASS':
             return kd

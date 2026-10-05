@@ -200,8 +200,32 @@ def _starter_context(name, club, confirmed):
     }
 
 
+def chart_from_capture(csv_path, clubs, capture_id):
+    """A depth chart in classic_slate_state.captured_qb_depth's own shape, from a captured nflverse
+    depth_charts CSV (latest dt per club). Read-only; the file is hashed in the raw directory."""
+    import csv as _csv
+    rows = [r for r in _csv.DictReader(open(csv_path)) if r['team'] in clubs and r.get('gsis_id')]
+    out = {}
+    for club in clubs:
+        cr = [r for r in rows if r['team'] == club]
+        if not cr:
+            continue
+        last = max(r['dt'] for r in cr)
+        def order(pos):
+            seen, o = set(), []
+            for r in sorted((r for r in cr if r['dt'] == last and r.get('pos_abb') == pos),
+                            key=lambda r: int(r['pos_rank']) if r['pos_rank'].isdigit() else 99):
+                if r['gsis_id'] not in seen:
+                    seen.add(r['gsis_id'])
+                    o.append(r['gsis_id'])
+            return o
+        out[club] = {'order': order('QB'), 'by_pos': {p_: order(p_) for p_ in ('RB', 'WR', 'TE')},
+                     'dt': last, 'capture_id': capture_id}
+    return out
+
+
 def build(export, *, designations=None, official_inactives=None,
-          confirmed_starters=None) -> Outcome:
+          confirmed_starters=None, depth_chart=None) -> Outcome:
     """Emit the POST-shaped state for one showdown slate.
 
     `designations` is {player name: 'OUT' | 'DOUBTFUL' | 'QUESTIONABLE' | 'NO_DESIGNATION'} from a team
@@ -305,6 +329,11 @@ def build(export, *, designations=None, official_inactives=None,
     from nfl.tools import role_state_history as RSH
     pos_of = player_prior.position_index()
     depth = RSH.pregame_depth(po.value, pos_of, kick.year, int(sched_week))
+    from nfl.tools import classic_slate_state as _CS
+    # a player reported out vacates his chart rank (Sunday's rule), so the next man up ranks first
+    _out_gsis = {(ids.get(dk) or {}).get('gsis_id') for dk, p_ in flat.items()
+                 if p_['name'] in officials or (desig.get(p_['name']) or '').upper() == 'OUT'}
+    _out_gsis.discard(None)
 
     players, status_counts = {}, collections.Counter()
     for dk_id, p in flat.items():
@@ -344,7 +373,14 @@ def build(export, *, designations=None, official_inactives=None,
             'observed_2026': (obs.get(gsis) or {}) if gsis else {},
             # pregame_depth returns a RECORD per player, not an integer. _position_scoped_ranks
             # tests isinstance(r, int), so handing it the record silently produced zero ranks.
-            'depth_rank': ((depth.get(gsis) or {}).get('pregame_rank') if gsis else None),
+            # SUNDAY'S ACCEPTED RULE (classic_slate_state._qb_rank) when a captured chart is supplied:
+            # quarterbacks by the chart among those not out; others the better of usage and chart,
+            # with the declared no-usage lift limit. Without a chart, the usage rank as before.
+            'depth_rank': (_CS._qb_rank(p['position'], p['team'], gsis, depth_chart, depth, _out_gsis)
+                           if (depth_chart and gsis) else
+                           ((depth.get(gsis) or {}).get('pregame_rank') if gsis else None)),
+            'depth_source': (('DEPTH_CHART_CAPTURED ' + depth_chart[p['team']]['capture_id'])
+                             if (depth_chart and p['team'] in depth_chart and gsis) else 'USAGE_HISTORY'),
             'depth_detail': ((depth.get(gsis) or {}) if gsis else {}),
             'current_availability': {
                 'status': status, 'tier': tier,

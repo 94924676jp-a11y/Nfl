@@ -158,6 +158,30 @@ def band_mix(club):
     return {'made_mix': {b: v / s for b, v in w.items()}, 'make_rate': mr}
 
 
+def club_kicker(club, candidates):
+    """Which of a club's DK kicker rows actually kicks: the gsis_id with the most recent FG/XP attempt for
+    the club in the latest 2026 play-by-play capture. Measured, never the row order. Returns
+    (gsis_id or None, evidence)."""
+    caps = sorted((_REPO / 'nfl/research/postgame').glob('pbp_2026.*.csv.gz'), key=lambda p: p.stat().st_mtime)
+    if not caps:
+        return None, 'NO_2026_PBP_CAPTURE'
+    last = {}
+    with gzip.open(caps[-1], 'rt', newline='', encoding='utf-8') as fh:
+        for r in csv.DictReader(fh):
+            if r.get('posteam') != club or not r.get('kicker_player_id'):
+                continue
+            if r.get('field_goal_attempt') == '1' or r.get('extra_point_attempt') == '1':
+                key = (int(r['week']), int(r.get('play_id') or 0))
+                kid = r['kicker_player_id']
+                if kid not in last or key > last[kid]:
+                    last[kid] = key
+    cand = [g for g in candidates if g in last]
+    if not cand:
+        return None, f'none of {candidates} kicked for {club} in {caps[-1].name}'
+    best = max(cand, key=lambda g: last[g])
+    return best, f'{best} last kicked for {club} in week {last[best][0]} ({caps[-1].name})'
+
+
 def BANDS():
     return tuple(BAND_POINTS)
 

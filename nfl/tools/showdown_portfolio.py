@@ -114,7 +114,7 @@ def classify(r, proj_row=None):
     if not r['has_draws']:
         return 'BLOCKED'
     m = float(r['draws'].mean())
-    if m < 0.05 and r['pos'] not in ('DST', 'K'):
+    if m < 0.05 and r['pos'] != 'DST':
         return 'ZERO_OPPORTUNITY'
     # Uncertainty is a team designation, not the pre-inactives default: before the official lists every
     # player is UNKNOWN_ACTIVE_STATE, which the `availability` column carries separately.
@@ -284,19 +284,44 @@ LADDER = (
 )
 
 
+#: CONTEST-SPECIFIC OBJECTIVE (owner directive 2026-10-05: three separate portfolios, the 20-max is not
+#: the top 20 of the 150, the 2-entry is not leftovers). One declared family: maximise
+#: E_w[min(number of entries reaching the first-place proxy in world w, m)].
+#:   m = 1 for a large portfolio (>= 100 entries): pure top-tail COVERAGE -- breadth across scripts.
+#:   m = 2 for a mid portfolio (3-99): a world may be backed twice -- concentration in the best-supported
+#:         hypotheses, less coverage for weak tails.
+#:   m = n for 1-2 entries: the sum of each entry's own proxy rate -- deliberate high-conviction builds,
+#:         which may share a core (the overlap cap still applies).
+#: A policy choice, declared; not fitted to any result.
+def depth_m(n):
+    return 1 if n >= 100 else (2 if n >= 3 else n)
+
+
 def select(hit, cand_rows, seats_of, n, n_w, rung):
     cap_p = max(1, int(np.ceil(rung['player'] * n))) if n > 1 else 1
     cap_c = max(1, int(np.ceil(rung['captain'] * n))) if n > 1 else 1
     if rung['level'] == 0:
         cap_p, cap_c = (max(1, int(rung['player'] * n)), max(1, int(rung['captain'] * n))) if n > 1 else (1, 1)
+    if n <= 2:
+        # exposure caps are fractions of a portfolio; for one or two entries they would forbid any shared
+        # player at all. Distinct lineups and the overlap cap still apply.
+        cap_p, cap_c = n, n
+    m = depth_m(n)
+    m_escalates = n >= 3
     chosen, exp, cexp = [], collections.Counter(), collections.Counter()
     covered = np.zeros(n_w, dtype=bool)
+    depth = np.zeros(n_w, dtype=np.int32)
     hit_i = hit.astype(np.int32)
     fp = np.array([c['first_place_proxy'] for c in cand_rows])
     dupi = np.array([c['structural_duplication_index'] for c in cand_rows])
     sets = [set(x) for x in seats_of]
     while len(chosen) < n:
-        gain = (hit_i @ (~covered).astype(np.int32)) / n_w
+        if m_escalates and depth.min() >= m:
+            # SATURATION: every world already reaches the proxy m times, so the gain is zero for all
+            # candidates and the objective stops discriminating. Raise the depth by one -- cover
+            # every world once, then twice -- so the remaining entries still spread across worlds.
+            m += 1
+        gain = (hit_i @ (depth < m).astype(np.int32)) / n_w
         order = np.lexsort((dupi, -fp, -gain))      # coverage gain, own proxy, lower duplication
         best = None
         for i in order:
@@ -312,10 +337,13 @@ def select(hit, cand_rows, seats_of, n, n_w, rung):
             break
         chosen.append(best)
         covered |= hit[best]
+        depth += hit[best]
         for k in seats_of[best]:
             exp[k] += 1
         cexp[seats_of[best][0]] += 1
     return {'chosen': chosen, 'coverage': float(covered.mean()),
+            'objective': {'m': m, 'value': float(np.minimum(depth, m).mean()),
+                          'MEANING': 'E[min(entries at the first-place proxy, m)] per world'},
             'caps': {'player': cap_p, 'captain': cap_c, 'overlap': rung['overlap']},
             'short': n - len(chosen), 'relaxation_level': rung['level']}
 
@@ -501,6 +529,37 @@ def correlation_rows(eligible, team_pts, home, away):
         out.append(['opposing QBs (shootout)', qa[0]['name'], qh[0]['name'], cc(qa[0]['draws'], qh[0]['draws'])])
     out.append(['team points (shootout)', away, home, cc(team_pts[away], team_pts[home])])
     return out
+
+
+def diversification(M, seats_of, chosen):
+    """How many distinct tournament bets the portfolio really is.
+
+    EFFECTIVE_HYPOTHESIS_COUNT = participation ratio of the lineups' score-correlation matrix over the
+    shared worlds: (sum of eigenvalues)^2 / sum of squared eigenvalues. n for independent lineups, 1 when
+    every lineup moves together. Plus pairwise shared players and the most repeated captain/4-man cores."""
+    if len(chosen) < 2:
+        return {'n': len(chosen), 'EFFECTIVE_HYPOTHESIS_COUNT': float(len(chosen))}
+    X = M[chosen]
+    C = np.corrcoef(X)
+    ev = np.clip(np.linalg.eigvalsh(np.nan_to_num(C)), 0, None)
+    eff = float(ev.sum() ** 2 / (ev ** 2).sum()) if (ev ** 2).sum() > 0 else float('nan')
+    sets = [set(seats_of[i]) for i in chosen]
+    sh = [len(sets[i] & sets[j]) for i in range(len(sets)) for j in range(i + 1, len(sets))]
+    cores = collections.Counter()
+    for i in chosen:
+        f = sorted(seats_of[i][1:])
+        for a in range(len(f)):
+            for b in range(a + 1, len(f)):
+                for c in range(b + 1, len(f)):
+                    for d in range(c + 1, len(f)):
+                        cores[(f[a], f[b], f[c], f[d])] += 1
+    caps = collections.Counter(seats_of[i][0] for i in chosen)
+    return {'n': len(chosen), 'EFFECTIVE_HYPOTHESIS_COUNT': round(eff, 1),
+            'mean_pairwise_score_corr': round(float((C.sum() - len(chosen)) / (len(chosen) * (len(chosen) - 1))), 3),
+            'mean_shared_players': round(float(np.mean(sh)), 2), 'max_shared_players': int(max(sh)),
+            'distinct_captains': len(caps),
+            'top_4man_flex_cores': [[list(k), v] for k, v in cores.most_common(5)],
+            'PREDICTED_DUPLICATION': 'STRUCTURAL INDEX ONLY (no Showdown field model); see candidates'}
 
 
 def dk_input_gate(export):
@@ -812,6 +871,13 @@ def run(export, draws_path, out_dir, prefix, *, inactives=None, proj_path=None, 
             wr.writerow(list(S.ENTRY_COLUMNS) + list(S.SHOWDOWN_SLOTS))
             wr.writerows(up)
         written['DK_UPLOAD'] = upload
+        for cid in portfolios:
+            pc = out_dir / f'{prefix}_DK_UPLOAD_{cid}.csv'
+            with pc.open('w', newline='') as fh:
+                wr = csv.writer(fh)
+                wr.writerow(list(S.ENTRY_COLUMNS) + list(S.SHOWDOWN_SLOTS))
+                wr.writerows([r for r in up if r[2] == cid])
+            written[f'DK_UPLOAD_{cid}'] = pc
         ver = verify_upload(upload, export, absent_names={by[k]['name'] for k in absent},
                             inactive_keys=absent)
         if ver.state.value == 'PASS' and ver.value['n_rows'] != len(V['entries']):
@@ -872,7 +938,9 @@ def run(export, draws_path, out_dir, prefix, *, inactives=None, proj_path=None, 
         'dst_coherence': dst_check,
         'n_eligible': len(eligible),
         'first_place_proxy': f'score >= (1 - {BAND}) x exact world optimum; a proxy, not P(win)',
+        'portfolio_diversification': {cid: diversification(M, seats_of, P['chosen']) for cid, P in portfolios.items()},
         'portfolios': {cid: {'contest': P['contest']['name'], 'n_entries': len(P['contest']['entries']),
+                             'objective': P.get('objective'),
                              'n_built': len(P['chosen']), 'short': P['short'], 'caps': P['caps'],
                              'proxy_coverage': round(P['coverage'], 4),
                              'relaxation_level': P['relaxation_level'], 'relaxation_log': P['relaxation_log'],
