@@ -37,23 +37,38 @@ from nfl.postgame import classic_week as W  # noqa: E402
 
 RAW = _REPO / 'nfl/postgame/raw/2026W4_standings'
 PROV = RAW / 'PROVENANCE.jsonl'
+#: Addendum N >= 2 never touches addendum 1's frozen raw files: new standings go to their own directory
+#: and provenance, and the grade writes ..._ADDENDUM_N.json. Set by main(); 1 is the original layout.
+ADDENDUM = 1
+
+
+def raw_dir(n):
+    return RAW if n == 1 else _REPO / f'nfl/postgame/raw/2026W4_standings_addendum_{n}'
+
+
+def prior_freezes():
+    return sorted(OUT.glob('FROZEN_2026W4_EARLY_STANDINGS_ADDENDUM_*.json'))
 OUT = _REPO / 'nfl/dfs/salaries/postgame'
 FROZEN = OUT / 'FROZEN_2026W4_EARLY.json'
 
 
 def frozen_hashes():
-    m = json.loads(FROZEN.read_text())
-    return {f: (hashlib.sha256((_REPO / f).read_bytes()).hexdigest() if (_REPO / f).exists() else None) == h
-            for f, h in m['sha256'].items()}
+    out = {}
+    for fz in [FROZEN] + prior_freezes():
+        m = json.loads(fz.read_text())
+        out.update({f: (hashlib.sha256((_REPO / f).read_bytes()).hexdigest() if (_REPO / f).exists() else None) == h
+                    for f, h in m['sha256'].items()})
+    return out
 
 
 def ingest(src, captured_at, source):
     src = pathlib.Path(src)
     if not src.exists() or src.stat().st_size == 0:
         return Outcome.blocked('STANDINGS_FILE_EMPTY', str(src), cause=Cause.EMPTY_INPUT)
-    RAW.mkdir(parents=True, exist_ok=True)
+    rd = raw_dir(ADDENDUM)
+    rd.mkdir(parents=True, exist_ok=True)
     sha = hashlib.sha256(src.read_bytes()).hexdigest()
-    dst = RAW / f'DK_STANDINGS.{sha[:16]}.csv'
+    dst = rd / f'DK_STANDINGS.{sha[:16]}.csv'
     if not dst.exists():
         shutil.copy2(src, dst)
         dst.chmod(0o444)
@@ -61,16 +76,19 @@ def ingest(src, captured_at, source):
            'captured_at': captured_at, 'original_name': src.name,
            'ingested_at': dt.datetime.now(dt.timezone.utc).isoformat(),
            'slate_scope': '2026W4 Early Only 8 games'}
-    with PROV.open('a') as fh:
+    with (rd / 'PROVENANCE.jsonl').open('a') as fh:
         fh.write(json.dumps(rec) + '\n')
     return Outcome.ok('INGESTED', rec, f'{sha[:12]} -> {dst.name}')
 
 
 def _load():
-    if not PROV.exists():
-        return []
     out = []
-    for ln in PROV.read_text().splitlines():
+    lines = []
+    for n in range(1, ADDENDUM + 1):
+        pv = raw_dir(n) / 'PROVENANCE.jsonl'
+        if pv.exists():
+            lines += pv.read_text().splitlines()
+    for ln in lines:
         r = json.loads(ln)
         p = _REPO / r['file']
         if hashlib.sha256(p.read_bytes()).hexdigest() != r['sha256']:
@@ -211,7 +229,10 @@ def grade():
                                                              'frozen grade, recorded here; the frozen record is not edited')},
                          'winner_vs_optimal': {'optimal': optimum, 'winner': win['points'],
                                                'winner_over_optimal': round(win['points'] / optimum, 3) if optimum else None}}
-        with (OUT / f'DK_2026W4_EARLY_STANDINGS_{label}_OWNERSHIP.csv').open('w', newline='') as fh:
+        own_csv = OUT / f'DK_2026W4_EARLY_STANDINGS_{label}_OWNERSHIP.csv'
+        if own_csv.exists() and str(own_csv.relative_to(_REPO)) in frozen_hashes():
+            continue          # already frozen by an earlier addendum; never rewritten
+        with own_csv.open('w', newline='') as fh:
             wr = csv.DictWriter(fh, fieldnames=['player', 'field_pct', 'our_pct', 'leverage_pts', 'fpts'])
             wr.writeheader()
             wr.writerows(sorted(lev, key=lambda x: -x['field_pct']))
@@ -223,7 +244,11 @@ def grade():
            'contests': contests,
            'contests_not_yet_supplied': sorted(set(W.CONTESTS) - set(contests)),
            'ONE_SLATE': 'one contest on one slate: observations for the ledger, not skill estimates'}
-    (OUT / 'DK_2026W4_EARLY_STANDINGS_ADDENDUM.json').write_text(json.dumps(doc, indent=1, default=str))
+    name = 'DK_2026W4_EARLY_STANDINGS_ADDENDUM.json' if ADDENDUM == 1 else f'DK_2026W4_EARLY_STANDINGS_ADDENDUM_{ADDENDUM}.json'
+    if ADDENDUM == 1 and prior_freezes():
+        return Outcome.fail('ADDENDUM_1_IS_FROZEN', 'addendum 1 is frozen; grade with --addendum 2 or later')
+    doc['addendum'] = ADDENDUM
+    (OUT / name).write_text(json.dumps(doc, indent=1, default=str))
     after = frozen_hashes()
     if not all(after.values()):
         return Outcome.fail('FROZEN_RECORD_CHANGED_BY_ADDENDUM', f'{[f for f, ok in after.items() if not ok]}')
@@ -238,7 +263,10 @@ def main():
     i.add_argument('--captured-at', required=True)
     i.add_argument('--source', default='DraftKings contest standings export, downloaded and uploaded by the owner')
     sub.add_parser('grade')
+    ap.add_argument('--addendum', type=int, default=1)
     a = ap.parse_args()
+    global ADDENDUM
+    ADDENDUM = a.addendum
     o = ingest(a.file, a.captured_at, a.source) if a.cmd == 'ingest' else grade()
     print(o.state.value, o.code, o.detail)
     return 0 if o.state.value == 'PASS' else 1
