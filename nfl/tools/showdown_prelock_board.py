@@ -50,7 +50,11 @@ def football(sd, scen):
                                'depth_rank', 'pass_att', 'carries', 'targets', 'sim_mean', 'p90', 'p_zero',
                                'role_data')}
             for r in sorted(proj, key=lambda r: -float(r['sim_mean'] or 0)) if r['sim_mean'] and float(r['sim_mean']) >= 1.0]
-    return {'scenario': scen['scenario'], 'official_inactives': scen.get('official_inactives'),
+    c1 = sd / 'SHOWDOWN_ATL_NO_CYCLE1_CHECKS.json'
+    coh = json.loads(c1.read_text()) if c1.exists() else {}
+    return {'SHOWDOWN_COHERENCE_WARNING': (coh.get('same_world_coherence') or 'NOT_RUN (nfl/tools/showdown_cycle1_checks.py)'),
+            'CORRELATION_RECOVERY': coh.get('correlation_recovery', 'NOT_RUN'),
+            'scenario': scen['scenario'], 'official_inactives': scen.get('official_inactives'),
             'designations': scen.get('designations'), 'absent_in_state': scen.get('absent_in_state'),
             'confirmed_starters': scen.get('confirmed_starters'), 'starter_tier': scen.get('starter_tier'),
             'state_counts': dict(states), 'football_sanity': draws.get('football_sanity'),
@@ -156,6 +160,16 @@ def field(sd):
                                'by_phi_E3_mean': {ph: d['by_phi'][ph]['contests'][cid]['mean']['E3_lower_bound_mean']
                                                   for ph in d['by_phi']},
                                'lineups': v['lineups']} for cid, v in b['contests'].items()}}
+    sens = {}
+    for p in sorted(sd.glob('SHOWDOWN_ATL_NO_DUPE_STACK_*_SAL_*.json')):
+        d = json.loads(p.read_text())
+        for ph, b in d['by_phi'].items():
+            sens[f"{d['field_projection']}|{d['salary_anchor']['name']}|phi{ph}"] = {
+                'anchor_target_vs_achieved': b.get('salary_anchor_target_vs_achieved'),
+                'calibration_residual_rmse_pts': b['final_residual_rmse_pts'],
+                'E3_mean_by_contest': {cid: v['mean']['E3_lower_bound_mean'] for cid, v in b['contests'].items()},
+                'two_entry_E3': [(r['captain'], r['E3_archetype_field']) for r in (b['contests'].get(TWO_ENTRY, {}).get('lineups') or [])]}
+    out['DUPE_SALARY_SENSITIVITY'] = sens or 'NOT_RUN'
     out['PROMOTION_STATUS'] = ('NOT_PROMOTED. Both field projections are EXTERNAL_RESEARCH_SHADOW and UNVALIDATED; '
                                'the blend fits five unverified anchors better, which is not validation. Neither '
                                'feeds the football or the production portfolio.')
@@ -225,7 +239,8 @@ def markdown(b):
          '## FOOTBALL', f"- official inactives: `{b['FOOTBALL']['official_inactives'] or 'NOT YET INCORPORATED'}`",
          f"- starters: `{b['FOOTBALL']['confirmed_starters']}` ({b['FOOTBALL']['starter_tier']})",
          f"- state counts: `{b['FOOTBALL']['state_counts']}`",
-         f"- football sanity: `{json.dumps(b['FOOTBALL']['football_sanity'], default=str)[:600]}`", '',
+         f"- football sanity: `{json.dumps(b['FOOTBALL']['football_sanity'], default=str)[:600]}`",
+         f"- **SHOWDOWN_COHERENCE_WARNING** (measured, not fixed tonight): `{json.dumps(b['FOOTBALL']['SHOWDOWN_COHERENCE_WARNING'], default=str)[:1400]}`", '',
          '| player | team | pos | salary | state | availability | desig | depth | mean | p90 | P(0) |', '|' + '---|' * 11]
     for r in b['FOOTBALL']['players_mean_ge_1pt']:
         L.append(f"| {r['player']} | {r['team']} | {r['pos']} | {r['salary']} | {r['state']} | {r['availability']} | "
@@ -297,6 +312,14 @@ def markdown(b):
                     L.append(f"    - CPT {r['captain']} + {', '.join(r['flex'])}: E1 {r['E1_independent_product']}, "
                              f"E2 {r['E2_adjusted_product']} {r['E2_factors']}, E3 {r['E3_archetype_field']}, "
                              f"E4 {r['E4_optimizer_field']}, flag {r['FLAG']}")
+    ss = b['FIELD'].get('DUPE_SALARY_SENSITIVITY')
+    L += ['', '### DUPE SALARY-LEFT SENSITIVITY (Cycle 1 FC-08 / FC-09 field-side anchors; SENSITIVITY, not a fitted model)']
+    if isinstance(ss, dict):
+        for k, v in ss.items():
+            L.append(f"- {k}: anchor `{v['anchor_target_vs_achieved']}`; residual `{v['calibration_residual_rmse_pts']}`; "
+                     f"E3 mean `{v['E3_mean_by_contest']}`; 2-entry E3 `{v['two_entry_E3']}`")
+    else:
+        L.append(f"- {ss}")
     L += ['', '## EXTERNAL', f"- Hard Rock: {b['EXTERNAL']['HARD_ROCK']}", '- FC comparison (largest gaps; FC is never an input):']
     for r in b['EXTERNAL']['fc_comparison_largest_gaps']:
         L.append(f"  - {r['player']} ({r['team']} {r['pos']}): ours {r['our_mean']} vs FC {r['fc_flex']} ({r['triage']})")

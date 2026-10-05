@@ -3897,3 +3897,21 @@ Hard Rock Bet ATL @ NO markets -- QB passing yards/attempts/TDs/INTs, rushing ya
 yards/receptions, anytime TD, kicker points if offered, and the game lines -- each with line, price,
 timestamp and source. Downstream comparison only; nothing flows back into the projection.
 Also still open: the official inactives at ~22:45Z, and DK's missed-FG rule.
+
+## OWNER MANUAL QUEUE 2026-10-05 — DraftKings exports (Cycle 1 ledger; deferred until the owner has computer access)
+
+Manual only: DK's Fair Play Commitment forbids automated collection (DATA-11). Nothing here may be scripted. Each file,
+once supplied, is hashed into a new `nfl/postgame/raw/<capture>/` directory with a PROVENANCE row; no capture is ever
+overwritten. Completed-contest CSVs are only available for **10 days after the contest ends** (DATA-02).
+
+| # | What | Where (DK) | Deadline | Ledger | Why |
+|---|---|---|---|---|---|
+| M1 | ATL@NO standings, contests 196285137 / 196285160 / 196285161, after FINAL | My Contests -> contest -> Export Lineups to CSV | by ~2026-10-15 | DATA-01, prereg doc | observation #1 for every shadow ownership / field / dupe method (docs/NFL_SHOWDOWN_ATL_NO_POSTGAME_PREREGISTRATION.md) |
+| M2 | ATL@NO flagship Showdown + one small-field + one 20-max Showdown we did NOT enter, after lock and after final | Lobby -> NFL -> Watch Live -> contest -> Export Lineups to CSV | by ~2026-10-15 | DATA-01 | contest-size / entry-limit ownership differences (OWN-01/02, FC-05); tests whether not-entered completed contests stay exportable |
+| M3 | PHI@CHI 2026-09-28 Showdown CSV(s) | same | **~2026-10-08** | DATA-02 | second Showdown observation; window closes first |
+| M4 | PIT@CLE 2026-10-01 Showdown CSV(s) | same | **~2026-10-11** | DATA-02, DATA-06 | third observation; verifies the ledger's Warren / Watson / Rodgers CPT:FLEX points |
+
+Owner decisions this ledger raises (not taken here): approve the manual capture SOP (export every NFL Showdown tier after lock
+and after final, hashed, within the 10-day window); whether to buy one month of stat-api Pro as a research-only single-user
+archive AFTER a free-preview cross-check against our 10/4 CSVs (vendor collection method unknown: a lawful-acquisition
+question, DATA-03 / DATA-12); whether to ask DFS Hero for export terms (DATA-07).

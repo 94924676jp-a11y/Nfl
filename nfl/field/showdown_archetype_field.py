@@ -60,6 +60,15 @@ SEED = 20261005
 CAP = 50000
 CORR_SEED = {'CPT_WR_WITH_OWN_QB': 2.0, 'CPT_QB_WITH_OPPOSING_DST': 0.36}   # ETR Showdown 101, SEEDED_NOT_FITTED
 FLAG_RATIO = 2.0
+#: FIELD-SIDE salary-left anchors from the Cycle 1 ledger, used ONLY as labelled sensitivity variants of E3:
+#:   FC-08 (Occupy Fantasy eBook): ~90% of entered large DK single-game GPP lineups use >= $49,500
+#:   FC-09 (AceMind, expert estimate): ~80% of the field spends max salary, ~10% $100-200 below
+#: buckets are salary LEFT: (lo, hi) inclusive
+SALARY_ANCHORS = {
+    'NONE': None,
+    'FC08_90PCT_LE_500': {(0, 500): 0.90, (600, 50000): 0.10},
+    'FC09_80PCT_MAX': {(0, 0): 0.80, (100, 200): 0.10, (300, 50000): 0.10},
+}
 
 
 def _cat(pos):
@@ -94,7 +103,7 @@ class Pool:
         self.pos = [P[k]['position'] for k in self.keys]
 
 
-def generate(pool, arche, wc, wf, k, phi, rng):
+def generate(pool, arche, wc, wf, k, phi, rng, salary_anchor=None):
     """Vectorised: each GENERATION is one Dirichlet jitter and a batch of lineups. Each slot is drawn by masked
     Gumbel-max over log-weights, which samples exactly in proportion to the weights among feasible players
     (archetype team / category quotas left, not already chosen). Over-cap lineups are rejected."""
@@ -109,10 +118,12 @@ def generate(pool, arche, wc, wf, k, phi, rng):
     per_gen = max(1, k // GENERATIONS)
     out, rejected, arch_of = [], 0, []
     short = np.zeros(len(A), dtype=int)
+    over = 1.0                                  # adaptive oversampling factor, grows while strata come up short
+    prev = 0
     while len(out) < k:
         jc = rng.dirichlet(np.maximum(phi * wc / wc.sum(), 1e-6))
         jf = rng.dirichlet(np.maximum(phi * wf / wf.sum(), 1e-6))
-        B = int(per_gen / 0.3) + 64             # oversample: each archetype stratum fills from its own accepts
+        B = int(over * per_gen / 0.3) + 64      # oversample: each archetype (and salary) stratum fills from its own accepts
         ai = rng.choice(len(A), size=B, p=pa)
         qt = np.stack([6 - Aaway[ai], Aaway[ai]], axis=1)                      # [home, away] quotas
         qc = np.stack([Aqb[ai], Akd[ai], 6 - Aqb[ai] - Akd[ai]], axis=1)
@@ -146,12 +157,25 @@ def generate(pool, arche, wc, wf, k, phi, rng):
         # heavy archetype (two QBs) is not thinned out by rejection; draws for an archetype that cannot fill are kept
         # as they come and counted
         quota = np.floor(per_gen * pa + rng.random(len(A))).astype(int)
+        left = CAP - sal
         for a_i in range(len(A)):
-            rows = pick[good & (ai == a_i)][:quota[a_i]]
-            short[a_i] += quota[a_i] - len(rows)
+            if salary_anchor:
+                # nested stratum: within the archetype, fill each salary-left bucket to its anchor share
+                rows = []
+                for (lo, hi), share in salary_anchor.items():
+                    qb = int(np.floor(quota[a_i] * share + rng.random()))
+                    rows.extend(pick[good & (ai == a_i) & (left >= lo) & (left <= hi)][:qb])
+                rows = np.array(rows, dtype=np.int64).reshape(-1, 6)
+            else:
+                rows = pick[good & (ai == a_i)][:quota[a_i]]
+            short[a_i] += max(0, quota[a_i] - len(rows))
             for row in rows:
                 out.append((int(row[0]), tuple(sorted(int(x) for x in row[1:]))))
                 arch_of.append(a_i)
+        filled_now = len(out)
+        if salary_anchor and filled_now - prev < 0.98 * quota.sum():
+            over = min(over * 1.6, 40.0)
+        prev = filled_now
         if len(out) >= k:
             break
     out, arch_of = out[:k], arch_of[:k]
@@ -170,11 +194,11 @@ def realised(pool, lines):
     return rc / n, rf / n
 
 
-def calibrate(pool, arche, phi, rng):
+def calibrate(pool, arche, phi, rng, salary_anchor=None):
     wc, wf = pool.tc.copy(), pool.tf.copy()
     hist = []
     for r in range(CAL_ROUNDS):
-        L, _ = generate(pool, arche, wc, wf, CAL_K, phi, rng)
+        L, _ = generate(pool, arche, wc, wf, CAL_K, phi, rng, salary_anchor)
         rc, rf = realised(pool, L)
         hist.append({'round': r, 'cpt_rmse_pts': round(100 * float(np.sqrt(np.mean((rc - pool.tc) ** 2))), 3),
                      'flex_rmse_pts': round(100 * float(np.sqrt(np.mean((rf - pool.tf) ** 2))), 3)})
@@ -227,7 +251,7 @@ def stack(ours, pool_keys_index, pool, gen_counts, k, opt_counts, k_opt, own, sl
     return rows
 
 
-def run(export, sd, shadow_dir, k=K):
+def run(export, sd, shadow_dir, k=K, salary_anchor='NONE', phis=PHIS):
     sd, shadow_dir = pathlib.Path(sd), pathlib.Path(shadow_dir)
     R = PA.rebuild(export, sd)
     slate = R['L']['slate']
@@ -247,10 +271,14 @@ def run(export, sd, shadow_dir, k=K):
                              'E2': 'ETR-seeded correlation factors only; salary-left and construction factors 1.0'},
               'archetype_prior': {f'{a[0]}away_{a[1]}QB_{a[2]}KD': round(v, 4) for a, v in sorted(arche.items(), key=lambda x: -x[1])},
               'k': k, 'generations': GENERATIONS, 'field_size_estimates': sizes, 'by_phi': {}}
-    for phi in PHIS:
+    anchor = SALARY_ANCHORS[salary_anchor]
+    result['salary_anchor'] = {'name': salary_anchor, 'buckets': {f'{lo}-{hi}': v for (lo, hi), v in (anchor or {}).items()},
+                               'NOTE': ('field-side salary-left anchor from the Cycle 1 ledger (FC-08 / FC-09): a SENSITIVITY '
+                                        'variant of E3, not a fitted salary model' if anchor else 'no salary-used target')}
+    for phi in phis:
         rng = np.random.default_rng(SEED)
-        wc, wf, hist = calibrate(pool, arche, phi, rng)
-        L, rej = generate(pool, arche, wc, wf, k, phi, rng)
+        wc, wf, hist = calibrate(pool, arche, phi, rng, anchor)
+        L, rej = generate(pool, arche, wc, wf, k, phi, rng, anchor)
         rc, rf = realised(pool, L)
         arch_rep = {f'{a[0]}away_{a[1]}QB_{a[2]}KD': {'prior': round(arche[a], 4),
                                                        'generated': generate.last['archetype_rates'].get(a, 0.0)}
@@ -261,7 +289,13 @@ def run(export, sd, shadow_dir, k=K):
                        key=lambda x: -abs(x[2]))
         P = slate['players']
         cnt = sorted(gen_counts.values(), reverse=True)
-        block = {'archetypes_prior_vs_generated': arch_rep,
+        left_arr = np.array(sal)
+        anchor_check = None
+        if anchor:
+            anchor_check = {f'{lo}-{hi}': {'target': v, 'achieved': round(float(np.mean((left_arr >= lo) & (left_arr <= hi))), 3)}
+                            for (lo, hi), v in anchor.items()}
+        block = {'salary_anchor_target_vs_achieved': anchor_check,
+                 'archetypes_prior_vs_generated': arch_rep,
                  'archetype_shortfall': {f'{a[0]}away_{a[1]}QB_{a[2]}KD': v for a, v in generate.last['archetype_shortfall'].items()},
                  'calibration': hist, 'rejected': rej, 'accept_rate': round(k / (k + rej), 3),
                  'final_residual_rmse_pts': {'cpt': round(float(np.sqrt(np.mean((100 * (rc - pool.tc)) ** 2))), 3),
@@ -288,7 +322,9 @@ def run(export, sd, shadow_dir, k=K):
                 'lineups': rows if len(rows) <= 20 else None,
                 'top10_by_E1': sorted(rows, key=lambda r: -r['E1_independent_product'])[:10] if len(rows) > 20 else None}
         result['by_phi'][str(phi)] = block
-    p = sd / f'SHOWDOWN_ATL_NO_DUPE_STACK_{src}.json'
+    result['as_of_utc'] = __import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat()
+    sfx = '' if salary_anchor == 'NONE' else f'_SAL_{salary_anchor}'
+    p = sd / f'SHOWDOWN_ATL_NO_DUPE_STACK_{src}{sfx}.json'
     p.write_text(json.dumps(result, indent=1, default=str))
     return p, result
 
@@ -299,8 +335,10 @@ if __name__ == '__main__':
     ap.add_argument('scenario_dir')
     ap.add_argument('shadow_dir')
     ap.add_argument('--k', type=int, default=K)
+    ap.add_argument('--salary-anchor', default='NONE', choices=sorted(SALARY_ANCHORS))
+    ap.add_argument('--phi', type=float, action='append', help='restrict the phi sweep (sensitivity runs)')
     a = ap.parse_args()
-    p, r = run(a.export, a.scenario_dir, a.shadow_dir, a.k)
+    p, r = run(a.export, a.scenario_dir, a.shadow_dir, a.k, a.salary_anchor, tuple(a.phi) if a.phi else PHIS)
     print(p)
     for phi, b in r['by_phi'].items():
         print('phi', phi, 'accept', b['accept_rate'], 'resid', b['final_residual_rmse_pts'], 'salary_left', b['salary_left'],
