@@ -3888,3 +3888,12 @@ draftkings.com and api.draftkings.com are refused by this machine's proxy (403).
 3. NETWORKED AGENT: confirm from DraftKings' published NFL Showdown scoring whether a missed field
    goal deducts a point. kicker_model.py says -1 and dfs/scoring/statline.py says 0; the
    same-world draws use 0 and report the mean under -1 beside it.
+
+### 2026-10-05 16:5xZ — ATL @ NO Showdown: Hard Rock capture after our projection is sealed
+
+The owner's DK entries (172: 150 / 20 / 2 in 196285137 / 196285160 / 196285161) are ingested; our
+football-only projection and 2,000-world simulation run here. NETWORKED AGENT, after the seal: capture
+Hard Rock Bet ATL @ NO markets -- QB passing yards/attempts/TDs/INTs, rushing yards/attempts, receiving
+yards/receptions, anytime TD, kicker points if offered, and the game lines -- each with line, price,
+timestamp and source. Downstream comparison only; nothing flows back into the projection.
+Also still open: the official inactives at ~22:45Z, and DK's missed-FG rule.
