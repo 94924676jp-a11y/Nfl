@@ -180,11 +180,13 @@ def kicker_world_draws(club, scoring_worlds, rng) -> Outcome:
                                f'{club} has no measured kicking history', cause=Cause.DATA, club=club)
     rates = KW.load()['rates']
     draws, det = [], collections.Counter()
-    misses = []
+    misses, fga, xpa = [], [], []
     for pts, td in scoring_worlds:
         dk, d = KW.draw(pts, td, mix, rates, rng)
         draws.append(dk)
         misses.append(d['fg_att'] - d['fg_made'])
+        fga.append(d['fg_att'])
+        xpa.append(d['xp_att'])
         for k, v in d.items():
             det[k] += v
     n = len(draws)
@@ -198,6 +200,7 @@ def kicker_world_draws(club, scoring_worlds, rng) -> Outcome:
                       per_world_means={k: round(v / n, 4) for k, v in det.items()},
                       made_mix=mix['made_mix'], rates=rates, MISS_RULE=KW.MISS_RULE,
                       mean_if_miss_costs_one=round((sum(draws) - sum(misses)) / n, 3),
+                      world_fg_missed=misses, world_fg_att=fga, world_xp_att=xpa,
                       SOURCE='nfl/tools/kicker_world.py inside nfl/sim/game.py worlds')
 
 
@@ -288,6 +291,9 @@ def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED,
                                                         'p_10_plus', 'p_15_plus', 'per_world_means',
                                                         'made_mix', 'mean_if_miss_costs_one')},
                         'point_projection_kicker_model': k.get('dk_points'),
+                        'world_fg_missed': kd.evidence['world_fg_missed'],
+                        'world_fg_att': kd.evidence['world_fg_att'],
+                        'world_xp_att': kd.evidence['world_xp_att'],
                         'SOURCE': kd.evidence['SOURCE']}
 
     lens = {len(v) for v in draws.values()}
@@ -327,6 +333,7 @@ def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED,
         'STATS_NOT_DRAWN': o.value.get('STATS_NOT_DRAWN'),
         'club_worlds': o.value.get('club_worlds'), 'world_points': o.value.get('world_points'),
         'club_scoring_worlds': o.value.get('club_scoring_worlds'),
+        'dst_components': o.value.get('dst_components'),
         'NOT_SYNTHESISED': ('no draw is derived from a projected mean. Player draws come from the '
                             'joint simulator and kicker draws from measured attempt and make rates.'),
         'draws': draws,
@@ -345,7 +352,7 @@ def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED,
             'STAT_FIELDS': list(o.value.get('STAT_FIELDS') or ()),
             'STATS_NOT_DRAWN': list(o.value.get('STATS_NOT_DRAWN') or ()),
             'n_players': len(sd), 'keyed_by': 'name|club, same keys as draws'}
-    heavy = ('stat_draws', 'club_worlds', 'world_points', 'club_scoring_worlds')
+    heavy = ('stat_draws', 'club_worlds', 'world_points', 'club_scoring_worlds', 'dst_components')
     OUT.write_text(json.dumps({**{k: v for k, v in art.items() if k not in heavy},
                                'PER_WORLD_FOOTBALL': 'returned to the caller, not written here'},
                               separators=(',', ':'), default=str))

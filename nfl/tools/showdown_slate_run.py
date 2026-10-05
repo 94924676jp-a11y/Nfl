@@ -116,6 +116,13 @@ def run(tag, *, n_sims=2000, seed=SEED) -> Outcome:
         'football_sanity': {'state': sane.state.value, 'code': sane.code, 'detail': sane.detail,
                             'flags': (sane.evidence or {}).get('flags')},
         'world_points': art.get('world_points'), 'club_scoring_worlds': art.get('club_scoring_worlds'),
+        'dst_components': art.get('dst_components'),
+        'club_worlds': art.get('club_worlds'),
+        'CLUB_WORLDS_MEANING': '(pass attempts, rush attempts, targets, throwaways) per club per world',
+        'DST_COMPONENTS_MEANING': '(sacks, takeaways, defensive TDs, safeties) per world, before the DST anchor step',
+        # per-world stat lines after the efficiency step (interceptions included), keyed like draws
+        'qb_interceptions': {k: [w[10] for w in v] for k, v in stat_worlds.items()
+                             if rows_by_key.get(k, {}).get('position') == 'QB'},
         'CPT_RULE': 'CPT score = FLEX score in the same world x 1.5; one distribution per person',
         'draws': draws,
     }

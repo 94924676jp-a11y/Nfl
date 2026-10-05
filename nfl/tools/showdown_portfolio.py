@@ -61,6 +61,7 @@ SALARY_BANDS = (('50000', 50000, 50000), ('49500-49900', 49500, 49900), ('49000-
 #: Per-captain forced solves keep at most this many distinct lineups, the most often world-optimal
 #: first. A pool-size limit, not a model parameter: it bounds memory, and the cut is reported.
 MAX_PER_FORCED_CAPTAIN = 120
+TEAM_ORDER = ('AWAY', 'HOME')     # set by run() from the slate
 POS_ORDER = {'QB': 0, 'RB': 1, 'WR': 2, 'TE': 3, 'K': 4, 'DST': 5}
 
 
@@ -118,8 +119,8 @@ def classify(r, proj_row=None):
     # Uncertainty is a team designation, not the pre-inactives default: before the official lists every
     # player is UNKNOWN_ACTIVE_STATE, which the `availability` column carries separately.
     if (proj_row or {}).get('designation') in ('QUESTIONABLE', 'DOUBTFUL'):
-        return 'PROJECTABLE_WITH_UNCERTAINTY'
-    return 'PROJECTABLE'
+        return 'PROJECTED_WITH_UNCERTAINTY'
+    return 'PROJECTED'
 
 
 def solver_players(rows, forbid_captain=(), only_captain=None):
@@ -221,9 +222,10 @@ def structural(c, f, by, top_mean_captain, top6):
     for q in qbs:
         mates = [k for k in seats if k != q and by[k]['team'] == by[q]['team'] and by[k]['pos'] in ('WR', 'TE', 'RB')]
         qb_double = qb_double or len(mates) >= 2
-    split = '-'.join(str(x) for x in sorted(teams.values(), reverse=True))
+    away, home = TEAM_ORDER
+    split = f"{teams.get(away, 0)}-{teams.get(home, 0)}"     # away-home, e.g. ATL-NO 4-2
     n_top6 = len(set(seats) & top6)
-    dup = (int(sal == CAP) + int(c == top_mean_captain) + max(0, n_top6 - 3) + int(qb_double) + int(split == '5-1'))
+    dup = (int(sal == CAP) + int(c == top_mean_captain) + max(0, n_top6 - 3) + int(qb_double) + int(max(teams.values()) == 5))
     return {'salary': sal, 'split': split, 'teams': dict(teams), 'qb_double_stack': qb_double,
             'n_of_top6_mean': n_top6, 'captain_is_top_mean': c == top_mean_captain,
             'salary_band': next(b for b, lo, hi in SALARY_BANDS if lo <= sal <= hi),
@@ -246,6 +248,19 @@ def scripts(doc, by, home, away):
         'one-score game (|margin| <= 8)': np.abs(mar) <= 8,
     }
     sw = doc.get('club_scoring_worlds') or {}
+    cw = doc.get('club_worlds') or {}
+    if cw.get(home) and cw.get(away):
+        pa = {c: np.asarray([w[0] for w in cw[c]], float) for c in (home, away)}
+        ra = {c: np.asarray([w[1] for w in cw[c]], float) for c in (home, away)}
+        own_m = {home: mar, away: -mar}
+        for c in (away, home):
+            rs = ra[c] / np.maximum(pa[c] + ra[c], 1)
+            lab[f'{c} run-control (leads by 7+, rush share >= sim p75)'] = (own_m[c] >= 7) & (rs >= np.percentile(rs, 75))
+            lab[f'{c} pass-heavy comeback (trails by 7+, pass att >= sim p75)'] = (own_m[c] <= -7) & (pa[c] >= np.percentile(pa[c], 75))
+    qi = doc.get('qb_interceptions') or {}
+    if qi:
+        ti = np.sum(np.vstack([np.asarray(v, float) for v in qi.values()]), axis=0)
+        lab['turnover-heavy (QB INTs >= sim p80)'] = ti >= max(1, np.percentile(ti, 80))
     ks = [k for k, r in by.items() if r['pos'] == 'K' and r['has_draws']]
     if ks:
         kt = sum(by[k]['draws'] for k in ks)
@@ -255,6 +270,289 @@ def scripts(doc, by, home, away):
         dm = np.max(np.vstack([by[k]['draws'] for k in ds]), axis=0)
         lab['DST spike (a defence >= 10)'] = dm >= 10
     return lab
+
+
+#: GOVERNED RELAXATION LADDER (owner directive 2026-10-05: FINAL_LINEUPS == PAID_ENTRIES, always).
+#: Level 0 is showdown_to_portfolio's declared caps. Each later level relaxes ONE more policy cap by a
+#: small declared step; salary, unique-person, inactive, CPT/FLEX identity and slate scope are never
+#: relaxed (they are properties of the candidates themselves, all built lawful by the exact solver).
+LADDER = (
+    {'level': 0, 'overlap': S.MAX_OVERLAP, 'player': S.MAX_PLAYER_EXPOSURE, 'captain': S.MAX_CAPTAIN_EXPOSURE},
+    {'level': 1, 'overlap': S.MAX_OVERLAP + 1, 'player': S.MAX_PLAYER_EXPOSURE, 'captain': S.MAX_CAPTAIN_EXPOSURE},
+    {'level': 2, 'overlap': S.MAX_OVERLAP + 1, 'player': S.MAX_PLAYER_EXPOSURE + 0.15, 'captain': S.MAX_CAPTAIN_EXPOSURE},
+    {'level': 3, 'overlap': S.MAX_OVERLAP + 1, 'player': S.MAX_PLAYER_EXPOSURE + 0.15, 'captain': S.MAX_CAPTAIN_EXPOSURE + 0.15},
+)
+
+
+def select(hit, cand_rows, seats_of, n, n_w, rung):
+    cap_p = max(1, int(np.ceil(rung['player'] * n))) if n > 1 else 1
+    cap_c = max(1, int(np.ceil(rung['captain'] * n))) if n > 1 else 1
+    if rung['level'] == 0:
+        cap_p, cap_c = (max(1, int(rung['player'] * n)), max(1, int(rung['captain'] * n))) if n > 1 else (1, 1)
+    chosen, exp, cexp = [], collections.Counter(), collections.Counter()
+    covered = np.zeros(n_w, dtype=bool)
+    hit_i = hit.astype(np.int32)
+    fp = np.array([c['first_place_proxy'] for c in cand_rows])
+    dupi = np.array([c['structural_duplication_index'] for c in cand_rows])
+    sets = [set(x) for x in seats_of]
+    while len(chosen) < n:
+        gain = (hit_i @ (~covered).astype(np.int32)) / n_w
+        order = np.lexsort((dupi, -fp, -gain))      # coverage gain, own proxy, lower duplication
+        best = None
+        for i in order:
+            i = int(i)
+            seats = seats_of[i]
+            if i in chosen or any(exp[k] + 1 > cap_p for k in seats) or cexp[seats[0]] + 1 > cap_c:
+                continue
+            if any(len(sets[i] & sets[j]) > rung['overlap'] for j in chosen):
+                continue
+            best = i
+            break
+        if best is None:
+            break
+        chosen.append(best)
+        covered |= hit[best]
+        for k in seats_of[best]:
+            exp[k] += 1
+        cexp[seats_of[best][0]] += 1
+    return {'chosen': chosen, 'coverage': float(covered.mean()),
+            'caps': {'player': cap_p, 'captain': cap_c, 'overlap': rung['overlap']},
+            'short': n - len(chosen), 'relaxation_level': rung['level']}
+
+
+def ladder(hit, cand_rows, seats_of, n, n_w):
+    log = []
+    for rung in LADDER:
+        P = select(hit, cand_rows, seats_of, n, n_w, rung)
+        log.append({'level': rung['level'], 'caps': P['caps'], 'built': len(P['chosen']), 'needed': n,
+                    'coverage': round(P['coverage'], 4)})
+        if P['short'] == 0:
+            return P, log
+    return P, log
+
+
+def kicker_rule_b(doc, by, rows, cands, seats_of, M, contests, portfolios, n_w):
+    """SCORING_B: a missed field goal costs 1 point. Same worlds, kickers' draws minus their misses."""
+    kw = doc.get('kickers') or {}
+    miss = {k: np.asarray(v['world_fg_missed'], dtype=float) for k, v in kw.items()
+            if k in by and v.get('world_fg_missed') is not None}
+    if not miss:
+        return {'state': 'NOT_COMPUTED', 'why': 'draws carry no per-world kicker misses'}
+    MB = M.copy()
+    for i, seats in enumerate(seats_of):
+        for j, k in enumerate(seats):
+            if k in miss:
+                MB[i] -= (1.5 if j == 0 else 1.0) * miss[k]
+    rows_b = [dict(r, draws=(r['draws'] - miss[r['key']]) if r['key'] in miss else r['draws']) for r in rows]
+    ob = world_optimum(rows_b)
+    if ob.state.value != 'PASS':
+        return {'state': 'NOT_COMPUTED', 'why': ob.code}
+    hitb = MB >= ((1.0 - BAND) * ob.value['opt'])[None, :]
+    out = {'state': 'COMPUTED', 'kicker_means': {}, 'contests': {}}
+    for k, v in miss.items():
+        out['kicker_means'][by[k]['name']] = {'SCORING_A': round(float(by[k]['draws'].mean()), 3),
+                                               'SCORING_B': round(float((by[k]['draws'] - v).mean()), 3)}
+    material = False
+    for cid, P in portfolios.items():
+        n = len(contests[cid]['entries'])
+        cr_b = [{'first_place_proxy': float(hitb[i].mean()), 'structural_duplication_index': 0} for i in range(len(seats_of))]
+        rung = LADDER[P['relaxation_level']]
+        PB = select(hitb, cr_b, seats_of, n, n_w, rung)
+        a, b = set(P['chosen']), set(PB['chosen'])
+        same = len(a & b)
+        ka = sum(1 for i in P['chosen'] for k in seats_of[i] if k in miss)
+        kb = sum(1 for i in PB['chosen'] for k in seats_of[i] if k in miss)
+        diff = 1 - same / max(1, n)
+        out['contests'][cid] = {'lineups_shared_A_B': same, 'n': n, 'share_changed': round(diff, 3),
+                                'kicker_slots_A': ka, 'kicker_slots_B': kb,
+                                'coverage_of_A_portfolio_under_B': round(float(hitb[P['chosen']].any(axis=0).mean()), 4)
+                                if P['chosen'] else 0.0,
+                                'coverage_of_B_portfolio_under_B': round(PB['coverage'], 4)}
+        cov_a = out['contests'][cid]['coverage_of_A_portfolio_under_B']
+        regret = round(PB['coverage'] - cov_a, 4)
+        out['contests'][cid]['coverage_regret_if_B_is_true'] = regret
+        material = material or regret > MATERIAL_REGRET
+    pa = (M >= ((1.0 - BAND) * np.asarray(doc.get('_opt_a')))[None, :]).mean(axis=1) if doc.get('_opt_a') is not None else None
+    if pa is not None:
+        ta, tb = set(np.argsort(-pa)[:100].tolist()), set(np.argsort(-hitb.mean(axis=1))[:100].tolist())
+        out['top100_candidates_shared_A_B'] = len(ta & tb)
+    out['MATERIAL'] = material
+    out['MATERIAL_RULE'] = (f'the SCORING_A portfolio, scored under SCORING_B, covers more than {MATERIAL_REGRET} '
+                            f'fewer worlds than a portfolio rebuilt under SCORING_B (coverage regret). '
+                            f'share_changed is reported beside it as greedy-selection sensitivity: lineup '
+                            f'identities can change while their value does not.')
+    return out
+
+
+#: Reporting rule only (not a model parameter): coverage the SCORING_A portfolio would forfeit if
+#: SCORING_B were DK's real rule, above which the rule question is flagged before finalization.
+#: One percentage point of worlds, declared 2026-10-05 for the owner's "materially" test.
+MATERIAL_REGRET = 0.01
+
+
+def dst_coherence(doc, by, home, away):
+    """Same-world correlations the owner asked to see, and the declared limitation they test."""
+    comps = doc.get('dst_components') or {}
+    qbi = doc.get('qb_interceptions') or {}
+    wp = (doc.get('world_points') or {}).get('points')
+    if not wp:
+        return {'state': 'NOT_COMPUTED', 'why': 'no world points in the draws'}
+    P = np.asarray(wp)
+    pts = {home: P[:, 0], away: P[:, 1]}
+    out = {'LIMITATION': ('DST sacks/takeaways are not yet generated directly from the same '
+                          'opposing-QB event process.'), 'by_dst': {}, 'warnings': []}
+    def cc(x, y):
+        x, y = np.asarray(x, float), np.asarray(y, float)
+        return None if x.std() == 0 or y.std() == 0 else round(float(np.corrcoef(x, y)[0, 1]), 3)
+    for k, r in by.items():
+        if r['pos'] != 'DST' or not r['has_draws']:
+            continue
+        opp = away if r['team'] == home else home
+        qbs = [q for q in by.values() if q['team'] == opp and q['pos'] == 'QB' and q['has_draws'] and not q['absent']]
+        q = max(qbs, key=lambda q: q['draws'].mean()) if qbs else None
+        c = comps.get(k)
+        take = [t[1] for t in c] if c else None
+        ints = qbi.get(q['key']) if q else None
+        rec = {'opponent': opp, 'opposing_qb': q['name'] if q else None,
+               'corr_dst_vs_opposing_qb_dk': cc(r['draws'], q['draws']) if q else None,
+               'corr_dst_vs_opposing_offense_points': cc(r['draws'], pts[opp]),
+               'corr_dst_takeaways_vs_opposing_qb_ints': cc(take, ints) if take and ints else None,
+               'mean_takeaways': None if not take else round(float(np.mean(take)), 3),
+               'mean_opposing_qb_ints': None if not ints else round(float(np.mean(ints)), 3)}
+        out['by_dst'][r['name']] = rec
+        if rec['corr_dst_vs_opposing_offense_points'] is not None and rec['corr_dst_vs_opposing_offense_points'] >= 0:
+            out['warnings'].append(f"{r['name']}: DST score does not fall as the opponent scores more")
+        if rec['corr_dst_vs_opposing_qb_dk'] is not None and rec['corr_dst_vs_opposing_qb_dk'] >= 0:
+            out['warnings'].append(f"{r['name']}: DST score does not fall as the opposing QB scores more")
+        t = rec['corr_dst_takeaways_vs_opposing_qb_ints']
+        if t is None or abs(t) < 0.2:
+            out['warnings'].append(f"{r['name']}: takeaways vs the opposing QB's interceptions corr {t} -- the "
+                                   f"same events are drawn independently (the declared limitation)")
+    out['state'] = 'SHOWDOWN_DST_MODEL_WARNING' if out['warnings'] else 'COHERENT'
+    out['CPT_PROBABILITY_NOT_CALIBRATED'] = 'DST captain rates are model outputs, not calibrated probabilities'
+    return out
+
+
+def tail_status(r):
+    if r['pos'] == 'DST':
+        return 'UNVALIDATED: DST sacks/takeaways not yet generated from the same opposing-QB event process'
+    if r['pos'] == 'K':
+        return 'UNVALIDATED: same-world kicker, new 2026-10-05'
+    return 'MODEL_OUTPUT_NOT_CALIBRATED'
+
+
+def role_data(r):
+    if r['pos'] in ('K', 'DST'):
+        return ''
+    return 'ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)'
+
+
+def uncertainty_reasons(r, rows):
+    out = []
+    pj = r.get('proj') or {}
+    if r.get('designation') in ('QUESTIONABLE', 'DOUBTFUL'):
+        out.append('DESIGNATION_' + r['designation'])
+    if isinstance(pj.get('current_season_weeks'), (int, float)) and pj['current_season_weeks'] < 3:
+        out.append('SMALL_CURRENT_SAMPLE')
+    if pj.get('prior_confidence') in ('LOW', 'NONE'):
+        out.append('LOW_PRIOR_CONFIDENCE')
+    if r['pos'] == 'QB' and not pj.get('is_predicted_starter') and r.get('depth_rank') != 1:
+        out.append('BACKUP_QB')
+    grp = {'RB': ('RB',), 'WR': ('WR', 'TE'), 'TE': ('WR', 'TE'), 'QB': ('QB',)}.get(r['pos'])
+    if grp and any(o['absent'] and o['team'] == r['team'] and o['pos'] in grp for o in rows):
+        out.append('TEAMMATE_ABSENCE_REDISTRIBUTION')
+    if r.get('state') == 'ZERO_OPPORTUNITY':
+        out.append('NO_MODELLED_OPPORTUNITY')
+    return out
+
+
+def correlation_rows(eligible, team_pts, home, away):
+    def cc(x, y):
+        return None if np.std(x) == 0 or np.std(y) == 0 else round(float(np.corrcoef(x, y)[0, 1]), 3)
+    out = []
+    top = lambda t, pos, n=1: sorted([r for r in eligible if r['team'] == t and r['pos'] in pos],
+                                     key=lambda r: -r['draws'].mean())[:n]
+    for t in (away, home):
+        o = home if t == away else away
+        qb = top(t, ('QB',))
+        oqb = top(o, ('QB',))
+        dst = top(t, ('DST',))
+        k = top(t, ('K',))
+        if qb:
+            for r in top(t, ('WR',), 3) + top(t, ('TE',), 2) + top(t, ('RB',), 2):
+                out.append([f'QB-{r["pos"]}', qb[0]['name'], r['name'], cc(qb[0]['draws'], r['draws'])])
+        if k:
+            out.append(['K-own offense points', k[0]['name'], t, cc(k[0]['draws'], team_pts[t])])
+            if qb:
+                out.append(['K-own QB', k[0]['name'], qb[0]['name'], cc(k[0]['draws'], qb[0]['draws'])])
+        if dst:
+            if oqb:
+                out.append(['DST-opposing QB', dst[0]['name'], oqb[0]['name'], cc(dst[0]['draws'], oqb[0]['draws'])])
+            for r in top(o, ('WR',), 2):
+                out.append(['DST-opposing WR', dst[0]['name'], r['name'], cc(dst[0]['draws'], r['draws'])])
+            for r in top(t, ('RB',), 1):
+                out.append(['RB-own DST', r['name'], dst[0]['name'], cc(r['draws'], dst[0]['draws'])])
+        wr = top(t, ('WR', 'TE'), 3)
+        for i in range(len(wr)):
+            for j in range(i + 1, len(wr)):
+                out.append(['same-team receivers', wr[i]['name'], wr[j]['name'], cc(wr[i]['draws'], wr[j]['draws'])])
+    qa, qh = top(away, ('QB',)), top(home, ('QB',))
+    if qa and qh:
+        out.append(['opposing QBs (shootout)', qa[0]['name'], qh[0]['name'], cc(qa[0]['draws'], qh[0]['draws'])])
+    out.append(['team points (shootout)', away, home, cc(team_pts[away], team_pts[home])])
+    return out
+
+
+def dk_input_gate(export):
+    """Hard gate on the DK file itself, independent of the builder: contests, entries, IDs, CPT/FLEX pairing."""
+    rows = list(csv.reader(open(export, newline='', encoding='utf-8-sig')))
+    hdr = [c.strip() for c in rows[0]]
+    entries = [r for r in rows[1:] if len(r) > 3 and r[0].strip().isdigit()]
+    by_contest = collections.Counter(r[hdr.index('Contest ID')].strip() for r in entries)
+    names = {r[hdr.index('Contest ID')].strip(): r[hdr.index('Contest Name')].strip() for r in entries}
+    pool, ph = [], None
+    for i, r in enumerate(rows):
+        if 'Roster Position' in r and 'ID' in r and 'Salary' in r:
+            ph = {h.strip(): j for j, h in enumerate(r)}
+            pool = [q for q in rows[i + 1:] if len(q) > ph['Salary'] and q[ph['ID']].strip()]
+            break
+    fail = []
+    if not entries:
+        fail.append('NO_ENTRIES')
+    if not pool:
+        fail.append('NO_POOL')
+    ids = [q[ph['ID']].strip() for q in pool] if pool else []
+    if len(ids) != len(set(ids)):
+        fail.append('DUPLICATE_DK_ID')
+    if any(not i.isdigit() for i in ids):
+        fail.append('NON_NUMERIC_DK_ID')
+    person = collections.defaultdict(dict)
+    games, teams = set(), set()
+    for q in pool:
+        slot = q[ph['Roster Position']].strip()
+        key = (q[ph['Name']].strip(), q[ph['TeamAbbrev']].strip())
+        if slot not in ('CPT', 'FLEX'):
+            fail.append(f'UNKNOWN_SLOT {slot}')
+        if slot in person[key]:
+            fail.append(f'TWO_{slot}_ROWS {key}')
+        person[key][slot] = int(q[ph['Salary']])
+        games.add(q[ph['Game Info']].strip().split(' ')[0])
+        teams.add(key[1])
+    unpaired = [k for k, v in person.items() if set(v) != {'CPT', 'FLEX'}]
+    bad_ratio = [k for k, v in person.items() if set(v) == {'CPT', 'FLEX'} and v['CPT'] != int(round(1.5 * v['FLEX']))]
+    if unpaired:
+        fail.append(f'UNPAIRED {unpaired[:5]}')
+    if bad_ratio:
+        fail.append(f'CPT_NOT_1_5X {bad_ratio[:5]}')
+    if len(games) != 1:
+        fail.append(f'NOT_ONE_GAME {sorted(games)}')
+    by_pos = collections.Counter(q[ph['Position']].strip() for q in pool if q[ph['Roster Position']].strip() == 'FLEX')
+    out = {'contests': {c: {'name': names[c], 'entries': n} for c, n in by_contest.items()},
+           'n_entries': len(entries), 'dk_player_rows': len(pool), 'football_players': len(person),
+           'teams': sorted(teams), 'game': sorted(games), 'people_by_position': dict(by_pos),
+           'unpaired': unpaired, 'cpt_ratio_violations': bad_ratio, 'failures': fail,
+           'sha256': hashlib.sha256(pathlib.Path(export).read_bytes()).hexdigest()}
+    return Outcome.ok('DK_INPUT_GATE_PASS', out) if not fail else Outcome.fail('DK_INPUT_GATE_FAIL', '; '.join(fail), **out)
 
 
 def run(export, draws_path, out_dir, prefix, *, inactives=None, proj_path=None, state_path=None):
@@ -279,6 +577,11 @@ def run(export, draws_path, out_dir, prefix, *, inactives=None, proj_path=None, 
             st_by[S.player_key(v['name'], v['team'])] = v
     n_w = len(next(r['draws'] for r in rows if r['has_draws']))
     home, away = slate['home'], slate['away']
+    global TEAM_ORDER
+    TEAM_ORDER = (away, home)
+    gate = dk_input_gate(export)
+    if gate.state.value != 'PASS':
+        return gate
 
     # ---- 1. completeness: every DK row classified
     for r in rows:
@@ -299,6 +602,7 @@ def run(export, draws_path, out_dir, prefix, *, inactives=None, proj_path=None, 
     if OPT.state.value != 'PASS':
         return OPT
     opt = OPT.value['opt']
+    doc['_opt_a'] = opt
     gen = S.near_optimal_candidates(slate, absent, V['draws'])
     if gen.state.value != 'PASS':
         return gen
@@ -324,46 +628,22 @@ def run(export, draws_path, out_dir, prefix, *, inactives=None, proj_path=None, 
                           'n_worlds_optimal': pool[(c, f)],
                           'source': 'EXACT_OR_NEAR_OPTIMAL' if (c, f) in gen_keys else 'FORCED_CAPTAIN'})
 
-    # ---- 3. per-contest portfolios, each built independently
+    # ---- 3. per-contest portfolios, each built independently, on the governed relaxation ladder
     contests = collections.OrderedDict()
     for e in V['entries']:
         contests.setdefault(e['contest_id'], {'name': e['contest_name'], 'fee': e['entry_fee'], 'entries': []})['entries'].append(e)
+    seats_of = [[cands[i][0]] + list(cands[i][1]) for i in range(len(cands))]
     portfolios = {}
     for cid, cdef in contests.items():
         n = len(cdef['entries'])
-        cap_p, cap_c = max(1, int(S.MAX_PLAYER_EXPOSURE * n)), max(1, int(S.MAX_CAPTAIN_EXPOSURE * n))
-        if n == 1:
-            cap_p = cap_c = 1
-        chosen, exp, cexp = [], collections.Counter(), collections.Counter()
-        covered = np.zeros(n_w, dtype=bool)
-        hit_i = hit.astype(np.int32)
-        fp = np.array([c['first_place_proxy'] for c in cand_rows])
-        dupi = np.array([c['structural_duplication_index'] for c in cand_rows])
-        seats_of = [[cands[i][0]] + list(cands[i][1]) for i in range(len(cands))]
-        while len(chosen) < n:
-            gain = (hit_i @ (~covered).astype(np.int32)) / n_w
-            # lexicographic: coverage gain, then the lineup's own proxy, then lower duplication
-            order = np.lexsort((dupi, -fp, -gain))
-            best = None
-            for i in order:
-                i = int(i)
-                seats = seats_of[i]
-                if i in chosen or any(exp[k] + 1 > cap_p for k in seats) or cexp[seats[0]] + 1 > cap_c:
-                    continue
-                if any(len(set(seats) & set(seats_of[j])) > S.MAX_OVERLAP for j in chosen):
-                    continue
-                best = i
-                break
-            if best is None:
-                break
-            chosen.append(best)
-            covered |= hit[best]
-            for k in seats_of[best]:
-                exp[k] += 1
-            cexp[seats_of[best][0]] += 1
-        portfolios[cid] = {'contest': cdef, 'chosen': chosen, 'coverage': float(covered.mean()),
-                           'caps': {'player': cap_p, 'captain': cap_c, 'overlap': S.MAX_OVERLAP},
-                           'short': n - len(chosen)}
+        P, log = ladder(hit, cand_rows, seats_of, n, n_w)
+        portfolios[cid] = {'contest': cdef, **P, 'relaxation_log': log}
+
+    # ---- 3b. kicker scoring B (missed FG -1) on the same worlds: does it move the selection?
+    kick_b = kicker_rule_b(doc, by, rows, cands, seats_of, M, contests, portfolios, n_w)
+
+    # ---- 3c. DST coherence on the same worlds
+    dst_check = dst_coherence(doc, by, home, away)
 
     # ---- 4. write the boards
     written = {}
@@ -379,7 +659,8 @@ def run(export, draws_path, out_dir, prefix, *, inactives=None, proj_path=None, 
     pr_hdr = ['player', 'team', 'pos', 'salary', 'cpt_salary', 'flex_id', 'cpt_id', 'state', 'availability',
               'designation', 'depth_rank', 'pass_att', 'carries', 'targets', 'rec', 'pass_yds', 'rush_yds',
               'rec_yds', 'pass_td', 'rush_td', 'rec_td', 'int', 'proj_dk_points', 'sim_mean', 'p50', 'p75',
-              'p90', 'p95', 'p99', 'cpt_mean', 'cpt_p95', 'p_zero', 'optimizer_eligible']
+              'p90', 'p95', 'p99', 'cpt_mean', 'cpt_p95', 'p_zero', 'optimizer_eligible',
+              'tail_status', 'role_data', 'uncertainty_reasons']
     data = []
     for r in sorted(rows, key=lambda r: (r['team'], POS_ORDER.get(r['pos'], 9), -(r['salary']))):
         cv = r['proj'].get('conditional_volume') or {}
@@ -405,7 +686,7 @@ def run(export, draws_path, out_dir, prefix, *, inactives=None, proj_path=None, 
                        [round(d.mean(), 2), round(_pct(d, 50), 2), round(_pct(d, 75), 2), round(_pct(d, 90), 2),
                         round(_pct(d, 95), 2), round(_pct(d, 99), 2), round(1.5 * d.mean(), 2),
                         round(1.5 * _pct(d, 95), 2), round(float((d <= 0).mean()), 3)]),
-                     r in eligible])
+                     r in eligible, tail_status(r), role_data(r), '|'.join(uncertainty_reasons(r, rows))])
     w('PROJECTIONS', pr_hdr, data)
 
     # simulation summary: one row per player with full quantiles + correlation to team/opp points
@@ -508,15 +789,53 @@ def run(export, draws_path, out_dir, prefix, *, inactives=None, proj_path=None, 
     w('GAME_SCRIPT_BOARD', ['script', 'share_of_worlds', 'top5_flex_means_in_script', 'best_mean_captain_in_script',
                             'mean_world_optimum', 'portfolio_proxy_coverage_by_contest'], gs)
 
-    upload = out_dir / f'{prefix}_DK_UPLOAD.csv'
-    with upload.open('w', newline='') as fh:
-        wr = csv.writer(fh)
-        wr.writerow(list(S.ENTRY_COLUMNS) + list(S.SHOWDOWN_SLOTS))
-        wr.writerows(up)
-    written['DK_UPLOAD'] = upload
+    w('CORRELATION', ['pair_type', 'a', 'b', 'corr_same_world'], correlation_rows(eligible, team_pts, home, away))
+    script_ct = collections.Counter()
+    if labs:
+        names_l = list(labs)
+        Mk = np.vstack([labs[x] for x in names_l]).astype(float)        # scripts x worlds
+        cond = (hit.astype(float) @ Mk.T) / np.maximum(Mk.sum(axis=1), 1)[None, :]
+        for i in range(len(cands)):
+            script_ct[names_l[int(np.argmax(cond[i]))]] += 1
+    qb_ct = collections.Counter(sum(1 for k in seats_of[i] if by[k]['pos'] == 'QB') for i in range(len(cands)))
 
-    ver = verify_upload(upload, export, absent_names={by[k]['name'] for k in absent},
-                        inactive_keys=absent)
+    upload = out_dir / f'{prefix}_DK_UPLOAD.csv'
+    short = {cid: P['short'] for cid, P in portfolios.items() if P['short']}
+    if short:
+        # FINAL_LINEUPS == PAID_ENTRIES, always: no upload file is written short.
+        if upload.exists():
+            upload.unlink()
+        ver = Outcome.fail('FINALIZATION_BLOCKED', f'contests short after the full ladder: {short}', short=short)
+    else:
+        with upload.open('w', newline='') as fh:
+            wr = csv.writer(fh)
+            wr.writerow(list(S.ENTRY_COLUMNS) + list(S.SHOWDOWN_SLOTS))
+            wr.writerows(up)
+        written['DK_UPLOAD'] = upload
+        ver = verify_upload(upload, export, absent_names={by[k]['name'] for k in absent},
+                            inactive_keys=absent)
+        if ver.state.value == 'PASS' and ver.value['n_rows'] != len(V['entries']):
+            ver = Outcome.fail('UPLOAD_ROWS_NE_PAID_ENTRIES', f"{ver.value['n_rows']} rows vs {len(V['entries'])} entries")
+
+    def pct_pack(a):
+        a = np.asarray(a, float)
+        return {'mean': round(float(a.mean()), 3), 'p75': round(_pct(a, 75), 2), 'p90': round(_pct(a, 90), 2),
+                'p95': round(_pct(a, 95), 2)}
+    kick_report = {}
+    for k, v in (doc.get('kickers') or {}).items():
+        if k in by and by[k]['has_draws']:
+            kick_report[by[k]['name']] = {
+                'SCORING_A_no_miss_deduction': {**pct_pack(by[k]['draws']),
+                                                'p_zero': round(float((by[k]['draws'] == 0).mean()), 4),
+                                                'p_10_plus': round(float((by[k]['draws'] >= 10).mean()), 4),
+                                                'p_15_plus': round(float((by[k]['draws'] >= 15).mean()), 4)},
+                'SCORING_B_minus_1_per_miss': (pct_pack(by[k]['draws'] - np.asarray(v['world_fg_missed']))
+                                               if v.get('world_fg_missed') else None),
+                'fg_attempts_mean': round(float(np.mean(v['world_fg_att'])), 3) if v.get('world_fg_att') else None,
+                'xp_attempts_mean': round(float(np.mean(v['world_xp_att'])), 3) if v.get('world_xp_att') else None,
+                'per_world_means': v.get('per_world_means'), 'made_mix': v.get('made_mix'),
+                'cpt_eligible': any(c['captain'] == k for c in cand_rows),
+                'VALIDATED': False}
     counts = collections.Counter(r['state'] for r in rows)
     audit = {
         'ARTIFACT': f'{prefix}_AUDIT', 'export': str(export), 'draws': str(draws_path),
@@ -534,13 +853,29 @@ def run(export, draws_path, out_dir, prefix, *, inactives=None, proj_path=None, 
                                         'flex_candidates': sum(1 for c in cand_rows if r['key'] in c['flex'])}
                             for r in rows if r['pos'] in ('K', 'DST')},
         'candidates': {'n': len(cands), 'n_exact_or_near': len(gen.value), 'forced_captain': forced_acct,
-                       'by_captain_pos': dict(collections.Counter(by[c]['pos'] for c, _ in cands)),
-                       'by_split': dict(collections.Counter(c['split'] for c in cand_rows)),
-                       'by_salary_band': dict(collections.Counter(c['salary_band'] for c in cand_rows))},
+                       'by_captain_pos': {p: sum(1 for c, _ in cands if by[c]['pos'] == p) for p in POS_ORDER},
+                       'by_split_away_home': {f'{a}-{6 - a}': sum(1 for c in cand_rows if c['split'] == f'{a}-{6 - a}')
+                                              for a in (5, 4, 3, 2, 1)},
+                       'split_orientation': f'{away}-{home}',
+                       'by_salary_band': {b: sum(1 for c in cand_rows if c['salary_band'] == b) for b, _l, _h in SALARY_BANDS},
+                       'by_best_game_script': dict(script_ct),
+                       'by_qb_count': {str(k): v for k, v in sorted(qb_ct.items())},
+                       'BEST_SCRIPT_MEANING': 'the script in which the candidate most often reaches the first-place proxy'},
+        'field_layer': {'P_top_1pct': 'UNAVAILABLE', 'P_top_0_1pct': 'UNAVAILABLE', 'expected_payout': 'UNAVAILABLE',
+                        'WHY': ('no Showdown ownership or field model exists; nfl/field/ is classic-only and '
+                                'NOT_CALIBRATED_NO_ARCHIVED_CONTEST_OWNERSHIP. Ownership is never invented.')},
+        'not_modelled_explicitly': {'overtime': 'inside the empirical total/margin residuals, not a world label',
+                                    'routes_alignment_personnel': 'ROLE_DATA_MISSING (no capture)'},
+        'dk_input_gate': gate.value,
+        'kickers': kick_report,
+        'kicker_rule_B': kick_b,
+        'dst_coherence': dst_check,
+        'n_eligible': len(eligible),
         'first_place_proxy': f'score >= (1 - {BAND}) x exact world optimum; a proxy, not P(win)',
         'portfolios': {cid: {'contest': P['contest']['name'], 'n_entries': len(P['contest']['entries']),
                              'n_built': len(P['chosen']), 'short': P['short'], 'caps': P['caps'],
                              'proxy_coverage': round(P['coverage'], 4),
+                             'relaxation_level': P['relaxation_level'], 'relaxation_log': P['relaxation_log'],
                              'split_counts': P.get('split_counts'), 'salary_band_counts': P.get('band_counts')}
                        for cid, P in portfolios.items()},
         'upload_verification': ver.value if ver.state.value == 'PASS' else {'state': ver.state.value, 'code': ver.code,
@@ -552,11 +887,10 @@ def run(export, draws_path, out_dir, prefix, *, inactives=None, proj_path=None, 
         'files': {k: str(p) for k, p in written.items()},
     }
     (out_dir / f'{prefix}_AUDIT.json').write_text(json.dumps(audit, indent=1, default=str))
+    if ver.code == 'FINALIZATION_BLOCKED':
+        return Outcome.fail('FINALIZATION_BLOCKED', ver.detail, audit=audit)
     if ver.state.value != 'PASS':
         return Outcome.fail('SHOWDOWN_UPLOAD_FAILED_VERIFICATION', ver.detail, audit=audit)
-    if any(P['short'] for P in portfolios.values()):
-        return Outcome.deferred('SHOWDOWN_PORTFOLIO_SHORT', 'a contest could not be filled under the caps',
-                                owed='decision', audit=audit)
     return Outcome.ok('SHOWDOWN_PORTFOLIO_BUILT', audit, f'{len(cands)} candidates; '
                       + '; '.join(f"{P['contest']['name'][:40]} {len(P['chosen'])}/{len(P['contest']['entries'])} cov {P['coverage']:.3f}"
                                   for P in portfolios.values()))

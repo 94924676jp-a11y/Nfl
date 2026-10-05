@@ -284,6 +284,7 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
     stat_draws = collections.defaultdict(list)
     club_worlds = collections.defaultdict(list)   # (pa, ra, targets, throwaways) per club per world
     club_scoring_worlds = collections.defaultdict(list)   # (points, offensive TDs) per club per world
+    dst_components = collections.defaultdict(list)   # (sacks, takeaways, def TD, safeties) per DST per world
     world_points = []                             # (home points, away points) per world, retained only
     for c in clubs:
         if c.get('dst_id'):
@@ -319,7 +320,10 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
         # to produce it.
         for c, other in ((home, away), (away, home)):
             if c.get('dst_id'):
-                draws[c['dst_id']].append(model.dst.draw(pts[other['club']], rng))
+                comp = model.dst.draw_components(pts[other['club']], rng)
+                draws[c['dst_id']].append(comp[0])
+                if retain_stats:
+                    dst_components[c['dst_id']].append(comp[1:])
 
         for c, other in ((home, away), (away, home)):
             own = pts[c['club']]
@@ -543,6 +547,7 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
         # the points and offensive-TD count each world fixed per club, so a kicker can be scored
         # inside the same world (nfl/tools/kicker_world.py). Output only.
         'club_scoring_worlds': ({k: v for k, v in club_scoring_worlds.items()} if retain_stats else None),
+        'dst_components': ({k: v for k, v in dst_components.items()} if retain_stats else None),
         # the score of every world, so a game story, a trailing/leading split or a stack's
         # correlation can be read off the SAME worlds the draws came from. Output only.
         'world_points': ({'home': home['club'], 'away': away['club'], 'points': world_points}

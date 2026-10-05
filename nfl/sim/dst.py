@@ -236,6 +236,11 @@ class DstModel:
 
     def draw(self, points_allowed: float, rng) -> float:
         """DK points for a defence, given what the simulated opponent scored."""
+        return self.draw_components(points_allowed, rng)[0]
+
+    def draw_components(self, points_allowed: float, rng):
+        """(DK points, sacks, takeaways, defensive TDs, safeties). Same single rng draw as `draw`,
+        so retaining the components changes no world."""
         pool = None
         for lo, hi, pairs in self.bands:
             if lo <= points_allowed < hi:
@@ -244,8 +249,8 @@ class DstModel:
         if pool is None:
             pool = self.bands[-1][2]
         sacks, takeaways, def_td, safety = pool[rng.randrange(len(pool))]
-        return (tier(points_allowed) + self.sack_pts * sacks + self.take_pts * takeaways
-                + self.td_pts * def_td + self.safety_pts * safety)
+        return ((tier(points_allowed) + self.sack_pts * sacks + self.take_pts * takeaways
+                 + self.td_pts * def_td + self.safety_pts * safety), sacks, takeaways, def_td, safety)
 
 
 if __name__ == '__main__':

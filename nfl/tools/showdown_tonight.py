@@ -33,6 +33,12 @@ def run(export, tag, scenario, designations=None, outs=(), official_inactives=No
     desig = dict(designations or {})
     for n in outs:
         desig[n] = 'OUT'
+    from nfl.tools.showdown_portfolio import dk_input_gate
+    gate = dk_input_gate(export)
+    print('dk_input_gate', gate.state.value, gate.code, json.dumps(gate.value if gate.value else gate.evidence,
+                                                                  default=str)[:1500], flush=True)
+    if gate.state.value != 'PASS':
+        return gate
     SSS.OUT = P['state']
     st = SSS.build(export, designations=desig, official_inactives=official_inactives)
     print('state', st.state.value, st.code, st.detail, flush=True)
@@ -57,9 +63,78 @@ def run(export, tag, scenario, designations=None, outs=(), official_inactives=No
     pf = SPF.run(export, sd / P['draws'].name, sd, f'SHOWDOWN_{tag.split("_2026")[0]}', inactives=absent,
                  proj_path=sd / P['proj'].name, state_path=sd / P['state'].name)
     print('portfolio', pf.state.value, pf.code, pf.detail, flush=True)
-    role_diagnostic(P['dir'] / f'SHOWDOWN_{tag.split("_2026")[0]}_ROLE_REVIEW.csv', sd / P['proj'].name,
-                    sd / f'SHOWDOWN_{tag.split("_2026")[0]}_ROLE_DIAGNOSTIC.csv')
+    pre = f'SHOWDOWN_{tag.split("_2026")[0]}'
+    role_diagnostic(P['dir'] / f'{pre}_ROLE_REVIEW.csv', sd / P['proj'].name, sd / f'{pre}_ROLE_DIAGNOSTIC.csv')
+    audit = (pf.value if pf.state.value == 'PASS' else (pf.evidence or {}).get('audit'))
+    if audit:
+        final_board(audit, json.loads((sd / 'SCENARIO.json').read_text()), sd / f'{pre}_FINAL_BOARD', pf)
     return pf
+
+
+def sunday_frozen_intact():
+    m = json.loads((_REPO / 'nfl/dfs/salaries/postgame/FROZEN_2026W4_EARLY.json').read_text())
+    import hashlib
+    bad = [f for f, h in m['sha256'].items()
+           if not (_REPO / f).exists() or hashlib.sha256((_REPO / f).read_bytes()).hexdigest() != h]
+    return {'files': len(m['sha256']), 'changed_or_missing': bad, 'graded_at_commit': m['graded_at_commit']}
+
+
+def final_board(a, scen, out, pf):
+    import hashlib
+    g = a['dk_input_gate']
+    rc = a['roster_completeness']
+    sc = rc['state_counts']
+    up = pathlib.Path(a['files'].get('DK_UPLOAD', '')) if a['files'].get('DK_UPLOAD') else None
+    ver = a['upload_verification']
+    k = a['kickers']
+    dst = a['dst_coherence']
+    fant = next((v for n, v in (scen.get('designations') or {}).items() if n == 'Noah Fant'), 'NOT_DESIGNATED')
+    b = {
+        'SLATE': f"{a['away']} @ {a['home']} DraftKings Showdown, {g['game']}",
+        'RESULT': pf.code,
+        'SCENARIO': scen['scenario'],
+        'CONTESTS': g['contests'],
+        'ENTRY_COUNTS': {c: v['entries'] for c, v in g['contests'].items()},
+        'DK_PLAYER_ROWS': g['dk_player_rows'], 'DK_FOOTBALL_PLAYERS': g['football_players'],
+        'PROJECTED': sc.get('PROJECTED', 0), 'PROJECTED_WITH_UNCERTAINTY': sc.get('PROJECTED_WITH_UNCERTAINTY', 0),
+        'ZERO_OPPORTUNITY': sc.get('ZERO_OPPORTUNITY', 0), 'INACTIVE': sc.get('INACTIVE', 0),
+        'BLOCKED': sc.get('BLOCKED', 0), 'BY_POSITION': rc['by_position'], 'UNCLASSIFIED': rc['unclassified'],
+        'KICKER_STATUS': {n: {'distribution': v['SCORING_A_no_miss_deduction'], 'scoring_B': v['SCORING_B_minus_1_per_miss'],
+                              'fg_att': v['fg_attempts_mean'], 'xp_att': v['xp_attempts_mean'],
+                              'cpt_eligible': v['cpt_eligible'], 'validated': False} for n, v in k.items()},
+        'KICKER_RULE_B': {x: a['kicker_rule_B'].get(x) for x in ('state', 'MATERIAL', 'MATERIAL_RULE',
+                                                                  'top100_candidates_shared_A_B', 'contests')},
+        'DST_STATUS': {'state': dst.get('state'), 'by_dst': dst.get('by_dst'), 'warnings': dst.get('warnings'),
+                       'LIMITATION': dst.get('LIMITATION'),
+                       'cpt_eligible': {n: v['cpt_candidates'] > 0 for n, v in a['kickers_and_dst'].items()
+                                        if v['pos'] == 'DST'},
+                       'NOT_CALIBRATED': 'DST captain rates are model outputs, not calibrated probabilities'},
+        'FANT_STATUS': fant,
+        'OFFICIAL_INACTIVES_STATUS': ('APPLIED: ' + str(len(scen['official_inactives'])) + ' names'
+                                      if scen.get('official_inactives') else 'NOT YET PUBLISHED / NOT APPLIED'),
+        'ABSENT_IN_STATE': scen.get('absent_in_state'),
+        'SIMULATION_WORLDS': a['n_worlds'], 'CANDIDATES': a['candidates']['n'],
+        'CANDIDATE_COVERAGE': {x: a['candidates'][x] for x in ('by_captain_pos', 'by_split_away_home',
+                                                                'split_orientation', 'by_salary_band')},
+        'FINAL_LINEUPS_PER_CONTEST': {c: v['n_built'] for c, v in a['portfolios'].items()},
+        'RELAXATION_LEVEL_USED': {c: v['relaxation_level'] for c, v in a['portfolios'].items()},
+        'VERIFIER_VIOLATIONS': (len(ver.get('violations', [])) if isinstance(ver, dict) and 'violations' in ver
+                                else ver),
+        'DK_UPLOAD': (str(up.relative_to(_REPO)) if up and up.exists() else None),
+        'DK_UPLOAD_SHA256': (hashlib.sha256(up.read_bytes()).hexdigest() if up and up.exists() else None),
+        'SUNDAY_FROZEN_RECORD': sunday_frozen_intact(),
+        'NOT_SUBMITTED': 'nothing here enters a contest; PROJECTION_SYSTEM_STATE NOT_VALIDATED; no wager is recommended',
+    }
+    pathlib.Path(str(out) + '.json').write_text(json.dumps(b, indent=1, default=str))
+    L = [f"# {b['SLATE']} -- final board ({b['SCENARIO']})", '', f"**{b['RESULT']}**", '']
+    for key in ('CONTESTS', 'ENTRY_COUNTS', 'DK_PLAYER_ROWS', 'DK_FOOTBALL_PLAYERS', 'PROJECTED',
+                'PROJECTED_WITH_UNCERTAINTY', 'ZERO_OPPORTUNITY', 'INACTIVE', 'BLOCKED', 'BY_POSITION',
+                'KICKER_STATUS', 'KICKER_RULE_B', 'DST_STATUS', 'FANT_STATUS', 'OFFICIAL_INACTIVES_STATUS',
+                'SIMULATION_WORLDS', 'CANDIDATES', 'CANDIDATE_COVERAGE', 'FINAL_LINEUPS_PER_CONTEST',
+                'VERIFIER_VIOLATIONS', 'RELAXATION_LEVEL_USED', 'DK_UPLOAD', 'DK_UPLOAD_SHA256', 'SUNDAY_FROZEN_RECORD'):
+        L.append(f"- **{key}**: `{json.dumps(b[key], default=str)}`")
+    L += ['', b['NOT_SUBMITTED']]
+    pathlib.Path(str(out) + '.md').write_text('\n'.join(L) + '\n')
 
 
 def role_diagnostic(review_csv, proj_path, out_csv):
