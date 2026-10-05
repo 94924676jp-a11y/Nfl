@@ -1,0 +1,6460 @@
+{
+ "ARTIFACT": "SHOWDOWN_HISTORY_CALIBRATION",
+ "label": "RESEARCH_ONLY_POSTGAME_NOT_PROMOTED",
+ "as_of_utc": "2026-10-05T23:21:48.994325+00:00",
+ "script": "nfl/field/showdown_history_calibration.py",
+ "TWO_OBSERVATIONS": "two contests on two slates: two observations; games are not independent; nothing here is promoted or validated",
+ "TOLERANCES": {
+  "OWNERSHIP_POINT_PCT_PTS": 2.0,
+  "RECOUNT_FLAG_PCT_PTS": 0.5,
+  "SHARE_CLAIM_PCT_PTS": 5.0,
+  "R2_CLAIM_ABS": 0.05,
+  "LOG_EFFECT_NEGLIGIBLE": 0.1,
+  "E1_TOP_DECILE_BIAS_RATIO": 2.0,
+  "E1_E3_FLAG_RATIO": 2.0
+ },
+ "contests": {
+  "PIT_CLE": {
+   "contest_id": "196187080",
+   "game": "PIT@CLE",
+   "game_date": "2026-10-01",
+   "nflverse_game_id": "2026_04_PIT_CLE",
+   "raw": {
+    "file": "nfl/postgame/raw/showdown_history/196187080_PIT_CLE/DK_STANDINGS.1888ebb3e4c35df5.csv",
+    "sha256": "1888ebb3e4c35df52e6bb8054fedcb8d9f6958fd89637c9d5da731800d509a65",
+    "zip_sha256": "f53382b2ee4c68bb0b5a9f22e9aeec0a11b12e35bbda02ff1cdfa0e8faf3eedb",
+    "provenance_captured_at": "2026-10-05T22:29:55.940835+00:00"
+   },
+   "N_all_entries": 47562,
+   "N_filled_lineups": 47329,
+   "N_empty_lineup_excluded": 233,
+   "EMPTY_LINEUP_NOTE": "entries with an empty Lineup are counted here and excluded from every lineup statistic; DK %Drafted uses all entries (empty included) as its denominator",
+   "top_1pct_cut_rank": 476,
+   "n_top_1pct_entries": 479,
+   "n_winner_entries": 28,
+   "metadata": {
+    "export": "nfl/dfs/salaries/raw/DKEntries_PIT_CLE_SHOWDOWN_2026W4.csv",
+    "sha256": "67229d912fd7ed058ad2c44bcac9b1f142039c9508591a1dbddc030825c8a2eb",
+    "contest_names": [
+     "NFL Showdown $10K Quarter Jukebox [Just $0.25!] (PIT @ CLE)"
+    ],
+    "away": "PIT",
+    "home": "CLE",
+    "owner_entries_in_this_field": 20,
+    "OWNER_NOTE": "the owner DKEntries export is for this same contest; the owner's entries found in the standings are part of the field and are NOT excluded"
+   },
+   "favorite": {
+    "implied_team_totals": {
+     "CLE": 17.5,
+     "PIT": 20.0
+    },
+    "favorite": "PIT",
+    "source": "nfl/dfs/salaries/raw/THIRDPARTY_showdown_PIT_CLE_2026W4_CONTEXT_ONLY.csv column VegasPts (third-party CONTEXT_ONLY file; implied team total as printed there; DST rows carry the opponent total and are skipped). favorite = club with the higher implied total. No spread is invented."
+   },
+   "ownership": {
+    "dk_sum_pct": {
+     "CPT": 99.5,
+     "FLEX": 497.54
+    },
+    "recount_max_abs_diff_pct_pts_over_all_entries": 0.005,
+    "recount_max_abs_diff_pct_pts_over_filled": 0.285,
+    "recount_flag_gt_0.5": false,
+    "player_slots_in_lineups_but_absent_from_dk_block": [],
+    "players": [
+     {
+      "player": "Deshaun Watson",
+      "team": "CLE",
+      "position": "QB",
+      "flex_salary": 9400,
+      "dk_cpt_pct": 12.97,
+      "dk_flex_pct": 57.02,
+      "cpt_to_flex_ratio": 0.2275,
+      "fpts_flex_basis": 14.92,
+      "favorite_team": false,
+      "salary_rank": 3
+     },
+     {
+      "player": "Aaron Rodgers",
+      "team": "PIT",
+      "position": "QB",
+      "flex_salary": 9800,
+      "dk_cpt_pct": 7.33,
+      "dk_flex_pct": 53.05,
+      "cpt_to_flex_ratio": 0.1382,
+      "fpts_flex_basis": 23.96,
+      "favorite_team": true,
+      "salary_rank": 1
+     },
+     {
+      "player": "Jaylen Warren",
+      "team": "PIT",
+      "position": "RB",
+      "flex_salary": 9600,
+      "dk_cpt_pct": 29.33,
+      "dk_flex_pct": 50.22,
+      "cpt_to_flex_ratio": 0.584,
+      "fpts_flex_basis": 15.6,
+      "favorite_team": true,
+      "salary_rank": 2
+     },
+     {
+      "player": "Harold Fannin Jr.",
+      "team": "CLE",
+      "position": "TE",
+      "flex_salary": 7400,
+      "dk_cpt_pct": 8.68,
+      "dk_flex_pct": 44.22,
+      "cpt_to_flex_ratio": 0.1963,
+      "fpts_flex_basis": 11.7,
+      "favorite_team": false,
+      "salary_rank": 7
+     },
+     {
+      "player": "Quinshon Judkins",
+      "team": "CLE",
+      "position": "RB",
+      "flex_salary": 8800,
+      "dk_cpt_pct": 7.23,
+      "dk_flex_pct": 31.63,
+      "cpt_to_flex_ratio": 0.2286,
+      "fpts_flex_basis": 21.6,
+      "favorite_team": false,
+      "salary_rank": 5
+     },
+     {
+      "player": "Chris Boswell",
+      "team": "PIT",
+      "position": "K",
+      "flex_salary": 5200,
+      "dk_cpt_pct": 1.81,
+      "dk_flex_pct": 28.74,
+      "cpt_to_flex_ratio": 0.063,
+      "fpts_flex_basis": 4.0,
+      "favorite_team": true,
+      "salary_rank": 18
+     },
+     {
+      "player": "KC Concepcion Jr.",
+      "team": "CLE",
+      "position": "WR",
+      "flex_salary": 6400,
+      "dk_cpt_pct": 4.38,
+      "dk_flex_pct": 27.95,
+      "cpt_to_flex_ratio": 0.1567,
+      "fpts_flex_basis": 11.4,
+      "favorite_team": false,
+      "salary_rank": 10
+     },
+     {
+      "player": "Denzel Boston",
+      "team": "CLE",
+      "position": "WR",
+      "flex_salary": 8000,
+      "dk_cpt_pct": 4.95,
+      "dk_flex_pct": 26.21,
+      "cpt_to_flex_ratio": 0.1889,
+      "fpts_flex_basis": 12.9,
+      "favorite_team": false,
+      "salary_rank": 6
+     },
+     {
+      "player": "DK Metcalf",
+      "team": "PIT",
+      "position": "WR",
+      "flex_salary": 9000,
+      "dk_cpt_pct": 6.83,
+      "dk_flex_pct": 25.58,
+      "cpt_to_flex_ratio": 0.267,
+      "fpts_flex_basis": 19.5,
+      "favorite_team": true,
+      "salary_rank": 4
+     },
+     {
+      "player": "Steelers",
+      "team": "PIT",
+      "position": "DST",
+      "flex_salary": 5000,
+      "dk_cpt_pct": 4.15,
+      "dk_flex_pct": 25.17,
+      "cpt_to_flex_ratio": 0.1649,
+      "fpts_flex_basis": 6.0,
+      "favorite_team": true,
+      "salary_rank": 19
+     },
+     {
+      "player": "Pat Freiermuth",
+      "team": "PIT",
+      "position": "TE",
+      "flex_salary": 5600,
+      "dk_cpt_pct": 2.71,
+      "dk_flex_pct": 22.62,
+      "cpt_to_flex_ratio": 0.1198,
+      "fpts_flex_basis": 10.7,
+      "favorite_team": true,
+      "salary_rank": 17
+     },
+     {
+      "player": "Andre Szmyt",
+      "team": "CLE",
+      "position": "K",
+      "flex_salary": 4600,
+      "dk_cpt_pct": 0.76,
+      "dk_flex_pct": 20.84,
+      "cpt_to_flex_ratio": 0.0365,
+      "fpts_flex_basis": 12.0,
+      "favorite_team": false,
+      "salary_rank": 21
+     },
+     {
+      "player": "Roman Wilson",
+      "team": "PIT",
+      "position": "WR",
+      "flex_salary": 4000,
+      "dk_cpt_pct": 2.09,
+      "dk_flex_pct": 20.71,
+      "cpt_to_flex_ratio": 0.1009,
+      "fpts_flex_basis": 16.4,
+      "favorite_team": true,
+      "salary_rank": 23
+     },
+     {
+      "player": "Michael Pittman Jr.",
+      "team": "PIT",
+      "position": "WR",
+      "flex_salary": 7000,
+      "dk_cpt_pct": 2.4,
+      "dk_flex_pct": 17.31,
+      "cpt_to_flex_ratio": 0.1386,
+      "fpts_flex_basis": 3.5,
+      "favorite_team": true,
+      "salary_rank": 8
+     },
+     {
+      "player": "Browns",
+      "team": "CLE",
+      "position": "DST",
+      "flex_salary": 4800,
+      "dk_cpt_pct": 2.05,
+      "dk_flex_pct": 14.62,
+      "cpt_to_flex_ratio": 0.1402,
+      "fpts_flex_basis": 9.0,
+      "favorite_team": false,
+      "salary_rank": 20
+     },
+     {
+      "player": "Darnell Washington",
+      "team": "PIT",
+      "position": "TE",
+      "flex_salary": 3600,
+      "dk_cpt_pct": 0.87,
+      "dk_flex_pct": 10.05,
+      "cpt_to_flex_ratio": 0.0866,
+      "fpts_flex_basis": 11.7,
+      "favorite_team": true,
+      "salary_rank": 24
+     },
+     {
+      "player": "Jerry Jeudy",
+      "team": "CLE",
+      "position": "WR",
+      "flex_salary": 3000,
+      "dk_cpt_pct": 0.29,
+      "dk_flex_pct": 5.85,
+      "cpt_to_flex_ratio": 0.0496,
+      "fpts_flex_basis": 6.6,
+      "favorite_team": false,
+      "salary_rank": 26
+     },
+     {
+      "player": "Raheim Sanders",
+      "team": "CLE",
+      "position": "RB",
+      "flex_salary": 4400,
+      "dk_cpt_pct": 0.25,
+      "dk_flex_pct": 5.79,
+      "cpt_to_flex_ratio": 0.0432,
+      "fpts_flex_basis": 3.6,
+      "favorite_team": false,
+      "salary_rank": 22
+     },
+     {
+      "player": "Germie Bernard",
+      "team": "PIT",
+      "position": "WR",
+      "flex_salary": 3200,
+      "dk_cpt_pct": 0.12,
+      "dk_flex_pct": 2.79,
+      "cpt_to_flex_ratio": 0.043,
+      "fpts_flex_basis": 3.1,
+      "favorite_team": true,
+      "salary_rank": 25
+     },
+     {
+      "player": "Blake Whiteheart",
+      "team": "CLE",
+      "position": "TE",
+      "flex_salary": 1600,
+      "dk_cpt_pct": 0.03,
+      "dk_flex_pct": 1.67,
+      "cpt_to_flex_ratio": 0.018,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": false,
+      "salary_rank": 30
+     },
+     {
+      "player": "Ben Skowronek",
+      "team": "PIT",
+      "position": "WR",
+      "flex_salary": 1200,
+      "dk_cpt_pct": 0.06,
+      "dk_flex_pct": 1.52,
+      "cpt_to_flex_ratio": 0.0395,
+      "fpts_flex_basis": 1.7,
+      "favorite_team": true,
+      "salary_rank": 32
+     },
+     {
+      "player": "Travis Homer",
+      "team": "PIT",
+      "position": "RB",
+      "flex_salary": 2600,
+      "dk_cpt_pct": 0.08,
+      "dk_flex_pct": 1.34,
+      "cpt_to_flex_ratio": 0.0597,
+      "fpts_flex_basis": -0.1,
+      "favorite_team": true,
+      "salary_rank": 27
+     },
+     {
+      "player": "Isaiah Bond",
+      "team": "CLE",
+      "position": "WR",
+      "flex_salary": 2000,
+      "dk_cpt_pct": 0.02,
+      "dk_flex_pct": 0.52,
+      "cpt_to_flex_ratio": 0.0385,
+      "fpts_flex_basis": 1.2,
+      "favorite_team": false,
+      "salary_rank": 29
+     },
+     {
+      "player": "Jaleel McLaughlin",
+      "team": "CLE",
+      "position": "RB",
+      "flex_salary": 400,
+      "dk_cpt_pct": 0.02,
+      "dk_flex_pct": 0.45,
+      "cpt_to_flex_ratio": 0.0444,
+      "fpts_flex_basis": 8.8,
+      "favorite_team": false,
+      "salary_rank": 36
+     },
+     {
+      "player": "Robert Tonyan",
+      "team": "PIT",
+      "position": "TE",
+      "flex_salary": 600,
+      "dk_cpt_pct": 0.01,
+      "dk_flex_pct": 0.32,
+      "cpt_to_flex_ratio": 0.0312,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": true,
+      "salary_rank": 35
+     },
+     {
+      "player": "Shedeur Sanders",
+      "team": "CLE",
+      "position": "QB",
+      "flex_salary": 6000,
+      "dk_cpt_pct": 0.04,
+      "dk_flex_pct": 0.24,
+      "cpt_to_flex_ratio": 0.1667,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": false,
+      "salary_rank": 11
+     },
+     {
+      "player": "Lew Nichols",
+      "team": "PIT",
+      "position": "RB",
+      "flex_salary": 1400,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.21,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": true,
+      "salary_rank": 31
+     },
+     {
+      "player": "Michael Burton",
+      "team": "CLE",
+      "position": "RB",
+      "flex_salary": 200,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.15,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": false,
+      "salary_rank": 37
+     },
+     {
+      "player": "Riley Nowakowski",
+      "team": "PIT",
+      "position": "RB",
+      "flex_salary": 200,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.11,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": true,
+      "salary_rank": 37
+     },
+     {
+      "player": "Carsen Ryan",
+      "team": "CLE",
+      "position": "TE",
+      "flex_salary": 200,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.09,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": false,
+      "salary_rank": 37
+     },
+     {
+      "player": "Malachi Corley",
+      "team": "CLE",
+      "position": "WR",
+      "flex_salary": 800,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.09,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": false,
+      "salary_rank": 34
+     },
+     {
+      "player": "Mason Rudolph",
+      "team": "PIT",
+      "position": "QB",
+      "flex_salary": 6000,
+      "dk_cpt_pct": 0.02,
+      "dk_flex_pct": 0.07,
+      "cpt_to_flex_ratio": 0.2857,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": true,
+      "salary_rank": 11
+     },
+     {
+      "player": "Kaden Wetjen",
+      "team": "PIT",
+      "position": "WR",
+      "flex_salary": 200,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.07,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": true,
+      "salary_rank": 37
+     },
+     {
+      "player": "Eli Heidenreich",
+      "team": "PIT",
+      "position": "RB",
+      "flex_salary": 2200,
+      "dk_cpt_pct": 0.01,
+      "dk_flex_pct": 0.07,
+      "cpt_to_flex_ratio": 0.1429,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": true,
+      "salary_rank": 28
+     },
+     {
+      "player": "Drew Allar",
+      "team": "PIT",
+      "position": "QB",
+      "flex_salary": 6000,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.05,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": true,
+      "salary_rank": 11
+     },
+     {
+      "player": "Dillon Gabriel",
+      "team": "CLE",
+      "position": "QB",
+      "flex_salary": 6000,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.05,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": false,
+      "salary_rank": 11
+     },
+     {
+      "player": "Taylen Green",
+      "team": "CLE",
+      "position": "QB",
+      "flex_salary": 6000,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.04,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": false,
+      "salary_rank": 11
+     },
+     {
+      "player": "Will Howard",
+      "team": "PIT",
+      "position": "QB",
+      "flex_salary": 6000,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.04,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": true,
+      "salary_rank": 11
+     },
+     {
+      "player": "Rico Dowdle",
+      "team": "PIT",
+      "position": "RB",
+      "flex_salary": 6600,
+      "dk_cpt_pct": 0.01,
+      "dk_flex_pct": 0.02,
+      "cpt_to_flex_ratio": 0.5,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": true,
+      "salary_rank": 9
+     },
+     {
+      "player": "Eric Gray",
+      "team": "CLE",
+      "position": "RB",
+      "flex_salary": 200,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.02,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": false,
+      "salary_rank": 37
+     },
+     {
+      "player": "Jimmy Horn Jr.",
+      "team": "CLE",
+      "position": "WR",
+      "flex_salary": 200,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.02,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": false,
+      "salary_rank": 37
+     },
+     {
+      "player": "Isaiah Hodgins",
+      "team": "PIT",
+      "position": "WR",
+      "flex_salary": 200,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.01,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": true,
+      "salary_rank": 37
+     },
+     {
+      "player": "Tylan Wallace",
+      "team": "CLE",
+      "position": "WR",
+      "flex_salary": 1000,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.0,
+      "cpt_to_flex_ratio": null,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": false,
+      "salary_rank": 33
+     }
+    ],
+    "by_position": {
+     "DST": {
+      "n_players": 2,
+      "sum_cpt_pct": 6.2,
+      "sum_flex_pct": 39.79,
+      "cpt_to_flex_ratio": 0.1558
+     },
+     "K": {
+      "n_players": 2,
+      "sum_cpt_pct": 2.57,
+      "sum_flex_pct": 49.58,
+      "cpt_to_flex_ratio": 0.0518
+     },
+     "QB": {
+      "n_players": 8,
+      "sum_cpt_pct": 20.36,
+      "sum_flex_pct": 110.56,
+      "cpt_to_flex_ratio": 0.1842
+     },
+     "RB": {
+      "n_players": 11,
+      "sum_cpt_pct": 36.93,
+      "sum_flex_pct": 90.01,
+      "cpt_to_flex_ratio": 0.4103
+     },
+     "TE": {
+      "n_players": 6,
+      "sum_cpt_pct": 12.3,
+      "sum_flex_pct": 78.97,
+      "cpt_to_flex_ratio": 0.1558
+     },
+     "WR": {
+      "n_players": 14,
+      "sum_cpt_pct": 21.14,
+      "sum_flex_pct": 128.63,
+      "cpt_to_flex_ratio": 0.1643
+     }
+    },
+    "by_salary_rank": {
+     "rank_1-5": {
+      "n_players": 5,
+      "sum_cpt_pct": 63.69,
+      "sum_flex_pct": 217.5,
+      "cpt_to_flex_ratio": 0.2928
+     },
+     "rank_6-10": {
+      "n_players": 5,
+      "sum_cpt_pct": 20.42,
+      "sum_flex_pct": 115.71,
+      "cpt_to_flex_ratio": 0.1765
+     },
+     "rank_11-20": {
+      "n_players": 10,
+      "sum_cpt_pct": 10.78,
+      "sum_flex_pct": 91.64,
+      "cpt_to_flex_ratio": 0.1176
+     },
+     "rank_21+": {
+      "n_players": 23,
+      "sum_cpt_pct": 4.61,
+      "sum_flex_pct": 72.69,
+      "cpt_to_flex_ratio": 0.0634
+     }
+    },
+    "by_favorite": {
+     "favorite_PIT": {
+      "n_players": 22,
+      "sum_cpt_pct": 57.83,
+      "sum_flex_pct": 260.07,
+      "cpt_to_flex_ratio": 0.2224
+     },
+     "underdog": {
+      "n_players": 21,
+      "sum_cpt_pct": 41.67,
+      "sum_flex_pct": 237.47,
+      "cpt_to_flex_ratio": 0.1755
+     },
+     "favorite_source": {
+      "implied_team_totals": {
+       "CLE": 17.5,
+       "PIT": 20.0
+      },
+      "favorite": "PIT",
+      "source": "nfl/dfs/salaries/raw/THIRDPARTY_showdown_PIT_CLE_2026W4_CONTEXT_ONLY.csv column VegasPts (third-party CONTEXT_ONLY file; implied team total as printed there; DST rows carry the opponent total and are skipped). favorite = club with the higher implied total. No spread is invented."
+     }
+    },
+    "cpt_half_flex_rule": {
+     "MASS_IDENTITY": "every lineup has 1 CPT and 5 FLEX, so sum(CPT %)/sum(FLEX %) = 100/500 = 0.2 exactly; a uniform CPT = 0.5 x FLEX is arithmetically impossible across a pool",
+     "dk_sum_cpt_over_sum_flex": 0.2,
+     "players_with_flex_ge_10pct": 16,
+     "FLOOR_NOTE": "FLEX >= 10% is a descriptive reporting floor, not fitted",
+     "median_ratio": 0.1484,
+     "share_within_0.4_0.6": 6.25,
+     "ratios": {
+      "Deshaun Watson": 0.2275,
+      "Aaron Rodgers": 0.1382,
+      "Jaylen Warren": 0.584,
+      "Harold Fannin Jr.": 0.1963,
+      "Quinshon Judkins": 0.2286,
+      "Chris Boswell": 0.063,
+      "KC Concepcion Jr.": 0.1567,
+      "Denzel Boston": 0.1889,
+      "DK Metcalf": 0.267,
+      "Steelers": 0.1649,
+      "Pat Freiermuth": 0.1198,
+      "Andre Szmyt": 0.0365,
+      "Roman Wilson": 0.1009,
+      "Michael Pittman Jr.": 0.1386,
+      "Browns": 0.1402,
+      "Darnell Washington": 0.0866
+     }
+    },
+    "ESTIMATOR_TARGETS": "E1/E2/E3 use slot shares counted over FILLED lineups (CPT sums to 1, FLEX to 5); DK %Drafted differs only by the factor filled/all"
+   },
+   "duplication": {
+    "distribution": {
+     "n_entries_filled": 47329,
+     "n_distinct_lineups": 9762,
+     "share_of_distinct_lineups_played_once": 50.25,
+     "share_of_entries_unique": 10.36,
+     "share_of_entries_in_lineups_dup_ge_2": 89.64,
+     "share_of_entries_in_lineups_dup_ge_10": 59.66,
+     "share_of_entries_in_lineups_dup_ge_50": 21.07,
+     "max_copies": 816
+    },
+    "top20": [
+     {
+      "cpt": "Jaylen Warren",
+      "flex": [
+       "Aaron Rodgers",
+       "Deshaun Watson",
+       "Harold Fannin Jr.",
+       "Roman Wilson",
+       "Steelers"
+      ],
+      "copies": 816,
+      "salary_left": 0,
+      "best_rank": 11500
+     },
+     {
+      "cpt": "Jaylen Warren",
+      "flex": [
+       "Aaron Rodgers",
+       "Andre Szmyt",
+       "Chris Boswell",
+       "Deshaun Watson",
+       "KC Concepcion Jr."
+      ],
+      "copies": 356,
+      "salary_left": 200,
+      "best_rank": 24147
+     },
+     {
+      "cpt": "Jaylen Warren",
+      "flex": [
+       "Chris Boswell",
+       "Denzel Boston",
+       "Deshaun Watson",
+       "Harold Fannin Jr.",
+       "Pat Freiermuth"
+      ],
+      "copies": 190,
+      "salary_left": 0,
+      "best_rank": 42026
+     },
+     {
+      "cpt": "Jaylen Warren",
+      "flex": [
+       "Andre Szmyt",
+       "Chris Boswell",
+       "Deshaun Watson",
+       "Harold Fannin Jr.",
+       "Quinshon Judkins"
+      ],
+      "copies": 174,
+      "salary_left": 200,
+      "best_rank": 28413
+     },
+     {
+      "cpt": "Jaylen Warren",
+      "flex": [
+       "Aaron Rodgers",
+       "Chris Boswell",
+       "Darnell Washington",
+       "Deshaun Watson",
+       "Harold Fannin Jr."
+      ],
+      "copies": 172,
+      "salary_left": 200,
+      "best_rank": 24147
+     },
+     {
+      "cpt": "Jaylen Warren",
+      "flex": [
+       "Aaron Rodgers",
+       "Andre Szmyt",
+       "Deshaun Watson",
+       "Harold Fannin Jr.",
+       "Roman Wilson"
+      ],
+      "copies": 160,
+      "salary_left": 400,
+      "best_rank": 4791
+     },
+     {
+      "cpt": "Jaylen Warren",
+      "flex": [
+       "Aaron Rodgers",
+       "Chris Boswell",
+       "Deshaun Watson",
+       "Pat Freiermuth",
+       "Steelers"
+      ],
+      "copies": 154,
+      "salary_left": 600,
+      "best_rank": 36560
+     },
+     {
+      "cpt": "Jaylen Warren",
+      "flex": [
+       "Aaron Rodgers",
+       "Chris Boswell",
+       "DK Metcalf",
+       "KC Concepcion Jr.",
+       "Steelers"
+      ],
+      "copies": 152,
+      "salary_left": 200,
+      "best_rank": 27065
+     },
+     {
+      "cpt": "Jaylen Warren",
+      "flex": [
+       "Aaron Rodgers",
+       "Deshaun Watson",
+       "KC Concepcion Jr.",
+       "Pat Freiermuth",
+       "Roman Wilson"
+      ],
+      "copies": 151,
+      "salary_left": 400,
+      "best_rank": 6450
+     },
+     {
+      "cpt": "Jaylen Warren",
+      "flex": [
+       "Aaron Rodgers",
+       "Andre Szmyt",
+       "Deshaun Watson",
+       "KC Concepcion Jr.",
+       "Steelers"
+      ],
+      "copies": 151,
+      "salary_left": 400,
+      "best_rank": 20408
+     },
+     {
+      "cpt": "Deshaun Watson",
+      "flex": [
+       "Chris Boswell",
+       "Denzel Boston",
+       "Harold Fannin Jr.",
+       "Jaylen Warren",
+       "Pat Freiermuth"
+      ],
+      "copies": 151,
+      "salary_left": 100,
+      "best_rank": 42527
+     },
+     {
+      "cpt": "Harold Fannin Jr.",
+      "flex": [
+       "Aaron Rodgers",
+       "Andre Szmyt",
+       "Chris Boswell",
+       "Deshaun Watson",
+       "Jaylen Warren"
+      ],
+      "copies": 143,
+      "salary_left": 300,
+      "best_rank": 27591
+     },
+     {
+      "cpt": "Jaylen Warren",
+      "flex": [
+       "Chris Boswell",
+       "Denzel Boston",
+       "Deshaun Watson",
+       "Harold Fannin Jr.",
+       "Steelers"
+      ],
+      "copies": 143,
+      "salary_left": 600,
+      "best_rank": 45132
+     },
+     {
+      "cpt": "Harold Fannin Jr.",
+      "flex": [
+       "Aaron Rodgers",
+       "Deshaun Watson",
+       "Jaylen Warren",
+       "Pat Freiermuth",
+       "Roman Wilson"
+      ],
+      "copies": 137,
+      "salary_left": 500,
+      "best_rank": 8069
+     },
+     {
+      "cpt": "Deshaun Watson",
+      "flex": [
+       "Denzel Boston",
+       "Harold Fannin Jr.",
+       "Jaylen Warren",
+       "KC Concepcion Jr.",
+       "Roman Wilson"
+      ],
+      "copies": 136,
+      "salary_left": 500,
+      "best_rank": 22767
+     },
+     {
+      "cpt": "KC Concepcion Jr.",
+      "flex": [
+       "Aaron Rodgers",
+       "Deshaun Watson",
+       "Harold Fannin Jr.",
+       "Jaylen Warren",
+       "Roman Wilson"
+      ],
+      "copies": 132,
+      "salary_left": 200,
+      "best_rank": 7456
+     },
+     {
+      "cpt": "Harold Fannin Jr.",
+      "flex": [
+       "Aaron Rodgers",
+       "Darnell Washington",
+       "Deshaun Watson",
+       "Jaylen Warren",
+       "KC Concepcion Jr."
+      ],
+      "copies": 126,
+      "salary_left": 100,
+      "best_rank": 14469
+     },
+     {
+      "cpt": "Darnell Washington",
+      "flex": [
+       "Aaron Rodgers",
+       "Denzel Boston",
+       "Deshaun Watson",
+       "Harold Fannin Jr.",
+       "Jaylen Warren"
+      ],
+      "copies": 121,
+      "salary_left": 400,
+      "best_rank": 11147
+     },
+     {
+      "cpt": "Jaylen Warren",
+      "flex": [
+       "Aaron Rodgers",
+       "Darnell Washington",
+       "Deshaun Watson",
+       "Quinshon Judkins",
+       "Roman Wilson"
+      ],
+      "copies": 109,
+      "salary_left": 0,
+      "best_rank": 486
+     },
+     {
+      "cpt": "Roman Wilson",
+      "flex": [
+       "Aaron Rodgers",
+       "Deshaun Watson",
+       "Jaylen Warren",
+       "KC Concepcion Jr.",
+       "Quinshon Judkins"
+      ],
+      "copies": 107,
+      "salary_left": 0,
+      "best_rank": 373
+     }
+    ],
+    "winner_lineups": [
+     {
+      "cpt": "Aaron Rodgers",
+      "flex": [
+       "DK Metcalf",
+       "Darnell Washington",
+       "Jaylen Warren",
+       "Quinshon Judkins",
+       "Roman Wilson"
+      ],
+      "copies_in_field": 28,
+      "tied_rank1_entries_with_it": 28
+     }
+    ],
+    "top_1pct": {
+     "n_entries": 479,
+     "n_distinct_lineups": 70,
+     "copies_in_field_of_top1pct_entries": {
+      "median": 18.0,
+      "mean": 35.7432,
+      "share_unique": 5.01,
+      "share_dup_ge_10": 67.43
+     }
+    }
+   },
+   "salary": {
+    "by_cohort": {
+     "field": {
+      "n": 47329,
+      "bucket_pct": {
+       "0": 11.03,
+       "100-500": 38.24,
+       "600-900": 16.64,
+       "1000-1900": 18.84,
+       "2000-2900": 7.39,
+       "3000+": 7.86
+      },
+      "mean_salary_left": 1068.5478,
+      "share_ge_49500_used": 49.27,
+      "share_exactly_50000": 11.03
+     },
+     "top_1pct": {
+      "n": 479,
+      "bucket_pct": {
+       "0": 31.52,
+       "100-500": 47.6,
+       "600-900": 8.56,
+       "1000-1900": 9.19,
+       "2000-2900": 2.71,
+       "3000+": 0.42
+      },
+      "mean_salary_left": 415.4489,
+      "share_ge_49500_used": 79.12,
+      "share_exactly_50000": 31.52
+     },
+     "winner": {
+      "n": 28,
+      "bucket_pct": {
+       "0": 0.0,
+       "100-500": 100.0,
+       "600-900": 0.0,
+       "1000-1900": 0.0,
+       "2000-2900": 0.0,
+       "3000+": 0.0
+      },
+      "mean_salary_left": 300.0,
+      "share_ge_49500_used": 100.0,
+      "share_exactly_50000": 0.0
+     }
+    },
+    "cap_violations": 0,
+    "dupes_on_salary": {
+     "MODEL_log_count_on_log_prod_own": {
+      "n": 9762,
+      "r2": 0.1465,
+      "coef": {
+       "intercept": 3.134,
+       "log_prod_own": 0.2475
+      },
+      "hc1_se": {
+       "intercept": 0.1583,
+       "log_prod_own": 0.0167
+      },
+      "dropped_constant_columns": [],
+      "SE_CAVEAT": "HC1 standard errors treat lineups as independent; they are not (one slate, one field)"
+     },
+     "MODEL_log_count_on_log_prod_own_plus_salary_left_buckets(ref $0)": {
+      "n": 9762,
+      "r2": 0.3828,
+      "coef": {
+       "intercept": 4.1154,
+       "log_prod_own": 0.2263,
+       "left_100-500": -0.3988,
+       "left_600-900": -0.826,
+       "left_1000-1900": -1.2737,
+       "left_2000-2900": -1.5661,
+       "left_3000+": -1.6692
+      },
+      "hc1_se": {
+       "intercept": 0.168,
+       "log_prod_own": 0.0166,
+       "left_100-500": 0.0682,
+       "left_600-900": 0.0687,
+       "left_1000-1900": 0.065,
+       "left_2000-2900": 0.0651,
+       "left_3000+": 0.0639
+      },
+      "dropped_constant_columns": [],
+      "SE_CAVEAT": "HC1 standard errors treat lineups as independent; they are not (one slate, one field)"
+     },
+     "DUP-01_log_count_on_salary_used_linear": {
+      "n": 9762,
+      "r2": 0.1507,
+      "coef": {
+       "intercept": -6.9221,
+       "salary_used": 0.0002
+      },
+      "hc1_se": {
+       "intercept": 0.2558,
+       "salary_used": 0.0
+      },
+      "dropped_constant_columns": [],
+      "SE_CAVEAT": "HC1 standard errors treat lineups as independent; they are not (one slate, one field)"
+     },
+     "DUP-01_log_count_on_salary_left_buckets": {
+      "n": 9762,
+      "r2": 0.2644,
+      "coef": {
+       "intercept": 2.014,
+       "left_100-500": -0.4399,
+       "left_600-900": -0.8341,
+       "left_1000-1900": -1.2688,
+       "left_2000-2900": -1.55,
+       "left_3000+": -1.8173
+      },
+      "hc1_se": {
+       "intercept": 0.0746,
+       "left_100-500": 0.0803,
+       "left_600-900": 0.0808,
+       "left_1000-1900": 0.0766,
+       "left_2000-2900": 0.0766,
+       "left_3000+": 0.0751
+      },
+      "dropped_constant_columns": [],
+      "SE_CAVEAT": "HC1 standard errors treat lineups as independent; they are not (one slate, one field)"
+     },
+     "DUP-06_vs_DUP-01_log_count_on_log_prod_own_plus_groups(ref exactly $50,000)": {
+      "n": 9762,
+      "r2": 0.3213,
+      "coef": {
+       "intercept": 4.2921,
+       "log_prod_own": 0.2453,
+       "exactly_49900": -0.129,
+       "49500_49800": -0.4705,
+       "other_le_49400": -1.3877
+      },
+      "hc1_se": {
+       "intercept": 0.17,
+       "log_prod_own": 0.0169,
+       "exactly_49900": 0.0824,
+       "49500_49800": 0.0687,
+       "other_le_49400": 0.0629
+      },
+      "dropped_constant_columns": [],
+      "SE_CAVEAT": "HC1 standard errors treat lineups as independent; they are not (one slate, one field)"
+     },
+     "DUP-06_vs_DUP-01_group_summary": {
+      "exactly_50000": {
+       "n_unique_lineups": 285,
+       "n_entries": 5220,
+       "mean_copies_per_unique_lineup": 18.3158,
+       "mean_copies_per_entry": 168.3617,
+       "mean_resid_log_count_given_log_prod_own": 1.1787
+      },
+      "exactly_49900": {
+       "n_unique_lineups": 364,
+       "n_entries": 4598,
+       "mean_copies_per_unique_lineup": 12.6319,
+       "mean_copies_per_entry": 41.3554,
+       "mean_resid_log_count_given_log_prod_own": 1.0507
+      },
+      "49500_49800": {
+       "n_unique_lineups": 1289,
+       "n_entries": 13499,
+       "mean_copies_per_unique_lineup": 10.4725,
+       "mean_copies_per_entry": 53.0357,
+       "mean_resid_log_count_given_log_prod_own": 0.7085
+      },
+      "other_le_49400": {
+       "n_unique_lineups": 7824,
+       "n_entries": 24012,
+       "mean_copies_per_unique_lineup": 3.069,
+       "mean_copies_per_entry": 14.9643,
+       "mean_resid_log_count_given_log_prod_own": -0.2085
+      }
+     },
+     "SELECTION_CAVEAT": "only lineups somebody played are observed: every unique lineup has count >= 1, lineups nobody played (count 0) are missing, so log(count) is truncated at 0 and the slopes describe played lineups only"
+    }
+   },
+   "construction": {
+    "field": {
+     "n": 47329,
+     "team_split_away_home": {
+      "n": 47329,
+      "pct": {
+       "5-1": 11.78,
+       "4-2": 28.33,
+       "3-3": 34.4,
+       "2-4": 18.55,
+       "1-5": 6.94
+      }
+     },
+     "qb_count": {
+      "n": 47329,
+      "pct": {
+       "0": 6.68,
+       "1": 55.25,
+       "2": 37.97,
+       "3": 0.05
+      }
+     },
+     "k_plus_dst_count": {
+      "n": 47329,
+      "pct": {
+       "0": 30.54,
+       "1": 42.64,
+       "2": 24.95,
+       "3": 1.38,
+       "4": 0.49
+      }
+     },
+     "cpt_position": {
+      "n": 47329,
+      "pct": {
+       "DST": 6.23,
+       "K": 2.59,
+       "QB": 20.45,
+       "RB": 37.11,
+       "TE": 12.36,
+       "WR": 21.25
+      }
+     },
+     "cpt_pass_catcher_with_own_qb_in_flex": {
+      "n": 47329,
+      "pct": {
+       "True": 27.94,
+       "False": 72.06
+      }
+     },
+     "given_cpt_wr_te_share_with_own_qb_in_flex": {
+      "n": 15910,
+      "pct": {
+       "True": 83.12,
+       "False": 16.88
+      }
+     }
+    },
+    "top_1pct": {
+     "n": 479,
+     "team_split_away_home": {
+      "n": 479,
+      "pct": {
+       "5-1": 12.32,
+       "4-2": 39.87,
+       "3-3": 46.97,
+       "2-4": 0.84,
+       "1-5": 0.0
+      }
+     },
+     "qb_count": {
+      "n": 479,
+      "pct": {
+       "0": 0.0,
+       "1": 52.19,
+       "2": 47.81,
+       "3": 0.0
+      }
+     },
+     "k_plus_dst_count": {
+      "n": 479,
+      "pct": {
+       "0": 69.94,
+       "1": 30.06,
+       "2": 0.0,
+       "3": 0.0,
+       "4": 0.0
+      }
+     },
+     "cpt_position": {
+      "n": 479,
+      "pct": {
+       "QB": 18.16,
+       "RB": 28.6,
+       "TE": 3.34,
+       "WR": 49.9
+      }
+     },
+     "cpt_pass_catcher_with_own_qb_in_flex": {
+      "n": 479,
+      "pct": {
+       "True": 52.82,
+       "False": 47.18
+      }
+     },
+     "given_cpt_wr_te_share_with_own_qb_in_flex": {
+      "n": 255,
+      "pct": {
+       "True": 99.22,
+       "False": 0.78
+      }
+     }
+    },
+    "winner": {
+     "n": 28,
+     "team_split_away_home": {
+      "n": 28,
+      "pct": {
+       "5-1": 100.0,
+       "4-2": 0.0,
+       "3-3": 0.0,
+       "2-4": 0.0,
+       "1-5": 0.0
+      }
+     },
+     "qb_count": {
+      "n": 28,
+      "pct": {
+       "0": 0.0,
+       "1": 100.0,
+       "2": 0.0,
+       "3": 0.0
+      }
+     },
+     "k_plus_dst_count": {
+      "n": 28,
+      "pct": {
+       "0": 100.0,
+       "1": 0.0,
+       "2": 0.0,
+       "3": 0.0,
+       "4": 0.0
+      }
+     },
+     "cpt_position": {
+      "n": 28,
+      "pct": {
+       "QB": 100.0
+      }
+     },
+     "cpt_pass_catcher_with_own_qb_in_flex": {
+      "n": 28,
+      "pct": {
+       "True": 0.0,
+       "False": 100.0
+      }
+     },
+     "given_cpt_wr_te_share_with_own_qb_in_flex": {
+      "status": "NOT_AVAILABLE",
+      "reason": "no rows with this feature known"
+     },
+     "distinct_lineups": 1
+    },
+    "NOTE": "top-1% and winner are OUTCOME-CONDITIONED: their construction mix records who scored that night, not what the field should have built",
+    "excluded_for_unmapped_players": 0
+   },
+   "entrant_cohorts": {
+    "1": {
+     "n_entries": 3473,
+     "n_users": 3473,
+     "cpt_position": {
+      "n": 3473,
+      "pct": {
+       "DST": 8.52,
+       "K": 2.42,
+       "QB": 21.22,
+       "RB": 32.28,
+       "TE": 18.31,
+       "WR": 17.25
+      }
+     },
+     "sub_5pct_owned_cpt_share": 28.25,
+     "no_k_no_dst_share": {
+      "n": 3473,
+      "pct": {
+       "True": 33.77,
+       "False": 66.23
+      }
+     },
+     "mean_log10_product_ownership": -3.6129,
+     "mean_geomean_ownership_pct": 25.4808,
+     "mean_copies_of_own_lineup": 55.7492,
+     "share_unique": 9.1,
+     "mean_salary_left": 919.0037,
+     "share_exactly_50000": 13.22
+    },
+    "2-20": {
+     "n_entries": 43856,
+     "n_users": 4635,
+     "cpt_position": {
+      "n": 43856,
+      "pct": {
+       "DST": 6.05,
+       "K": 2.6,
+       "QB": 20.39,
+       "RB": 37.5,
+       "TE": 11.89,
+       "WR": 21.57
+      }
+     },
+     "sub_5pct_owned_cpt_share": 27.2,
+     "no_k_no_dst_share": {
+      "n": 43856,
+      "pct": {
+       "True": 30.28,
+       "False": 69.72
+      }
+     },
+     "mean_log10_product_ownership": -3.6851,
+     "mean_geomean_ownership_pct": 24.8857,
+     "mean_copies_of_own_lineup": 44.4782,
+     "share_unique": 10.46,
+     "mean_salary_left": 1080.3904,
+     "share_exactly_50000": 10.86
+    },
+    "21-150": {
+     "status": "NOT_AVAILABLE",
+     "reason": "no entrant in this contest has 21-150 entries (largest observed: 20)"
+    },
+    "at_contest_max_20": {
+     "n_entries": 30253,
+     "n_users": 1516,
+     "cpt_position": {
+      "n": 30253,
+      "pct": {
+       "DST": 4.3,
+       "K": 2.2,
+       "QB": 20.15,
+       "RB": 40.27,
+       "TE": 10.81,
+       "WR": 22.27
+      }
+     },
+     "sub_5pct_owned_cpt_share": 24.95,
+     "no_k_no_dst_share": {
+      "n": 30253,
+      "pct": {
+       "True": 28.14,
+       "False": 71.86
+      }
+     },
+     "mean_log10_product_ownership": -3.6824,
+     "mean_geomean_ownership_pct": 24.9253,
+     "mean_copies_of_own_lineup": 44.2189,
+     "share_unique": 10.66,
+     "mean_salary_left": 1073.7679,
+     "share_exactly_50000": 10.72
+    },
+    "contest_max_entries_observed": 20,
+    "users_whose_entry_count_differs_from_their_N_in_(k/N)": 28,
+    "NOTE": "max entries is read from EntryName \"(k/N)\": N entries for that user; a bare name is 1. Entries with an empty lineup were dropped before this count, so a user can show fewer than N."
+   },
+   "estimators": {
+    "definitions": {
+     "E1": "N_filled x CPT share x product of FLEX shares, ACTUAL ownership (ORACLE ownership)",
+     "E2": "E1 x ETR seeds {'CPT_WR_WITH_OWN_QB': 2.0, 'CPT_QB_WITH_OPPOSING_DST': 0.36} (SEEDED_NOT_FITTED, ETR Showdown 101, via showdown_archetype_field.CORR_SEED)",
+     "GEO": "geomean of the six slot shares; N x GEO^6 == E1 identically, so GEO carries no separate error metric",
+     "E3*": "archetype-first generated field, ORACLE configuration (targets = actual slot ownership, archetype prior = actual field archetype rates), copies x N/K",
+     "E4*": "optimizer-exposure field over the FC projection, copies x N/K, every sigma reported, none chosen"
+    },
+    "generated_fields": {
+     "E3_NONE": {
+      "k": 50000,
+      "phi": 200.0,
+      "seed": 20261005,
+      "configuration": "ORACLE: targets = ACTUAL slot ownership; archetype prior = ACTUAL field archetype rates",
+      "salary_anchor": "NONE",
+      "rejected": 32379,
+      "accept_rate": 0.607,
+      "final_residual_rmse_pts": {
+       "cpt": 0.164,
+       "flex": 1.146
+      },
+      "calibration_last_round": {
+       "round": 39,
+       "cpt_rmse_pts": 0.226,
+       "flex_rmse_pts": 1.225
+      },
+      "archetype_shortfall": {
+       "(5, 2, 0)": 1,
+       "(1, 2, 2)": 3,
+       "(1, 2, 0)": 14,
+       "(1, 2, 1)": 3,
+       "(3, 1, 3)": 1,
+       "(4, 1, 3)": 8,
+       "(1, 0, 1)": 6,
+       "(5, 0, 0)": 5,
+       "(4, 0, 2)": 1,
+       "(3, 2, 3)": 4,
+       "(3, 0, 3)": 1,
+       "(1, 0, 2)": 5,
+       "(2, 1, 3)": 6,
+       "(5, 1, 3)": 55,
+       "(2, 0, 3)": 10,
+       "(5, 0, 2)": 1,
+       "(2, 2, 3)": 3,
+       "(4, 2, 3)": 4,
+       "(4, 0, 3)": 4,
+       "(4, 1, 4)": 10,
+       "(1, 1, 3)": 18,
+       "(2, 3, 0)": 3,
+       "(2, 3, 1)": 3,
+       "(3, 0, 4)": 1,
+       "(4, 3, 1)": 1,
+       "(4, 3, 0)": 1,
+       "(3, 2, 4)": 1,
+       "(3, 1, 4)": 6,
+       "(1, 3, 1)": 1,
+       "(3, 3, 2)": 3,
+       "(4, 0, 4)": 10,
+       "(3, 3, 1)": 7,
+       "(2, 0, 4)": 4,
+       "(4, 3, 2)": 1,
+       "(2, 1, 4)": 11,
+       "(5, 0, 3)": 2,
+       "(4, 5, 0)": 17,
+       "(3, 4, 0)": 1
+      },
+      "distinct_lineups": 16670,
+      "max_copies_in_K": 135,
+      "resolution_copies": 0.947,
+      "generated_salary_left_bucket_pct": {
+       "0": 5.14,
+       "100-500": 20.5,
+       "600-900": 13.24,
+       "1000-1900": 24.78,
+       "2000-2900": 13.97,
+       "3000+": 22.38
+      }
+     },
+     "E3_FC08_90PCT_LE_500": {
+      "k": 50000,
+      "phi": 200.0,
+      "seed": 20261005,
+      "configuration": "ORACLE: targets = ACTUAL slot ownership; archetype prior = ACTUAL field archetype rates",
+      "salary_anchor": "FC08_90PCT_LE_500",
+      "rejected": 105870,
+      "accept_rate": 0.3208,
+      "final_residual_rmse_pts": {
+       "cpt": 0.159,
+       "flex": 1.042
+      },
+      "calibration_last_round": {
+       "round": 39,
+       "cpt_rmse_pts": 0.251,
+       "flex_rmse_pts": 1.177
+      },
+      "archetype_shortfall": {
+       "(5, 1, 0)": 79,
+       "(4, 2, 0)": 58,
+       "(3, 2, 1)": 112,
+       "(3, 1, 1)": 240,
+       "(4, 1, 1)": 247,
+       "(4, 1, 0)": 109,
+       "(3, 2, 0)": 91,
+       "(3, 1, 0)": 91,
+       "(2, 2, 1)": 52,
+       "(5, 2, 0)": 27,
+       "(2, 2, 0)": 29,
+       "(5, 1, 1)": 639,
+       "(4, 2, 1)": 208,
+       "(2, 1, 2)": 187,
+       "(2, 1, 0)": 63,
+       "(3, 1, 2)": 305,
+       "(3, 0, 1)": 275,
+       "(2, 1, 1)": 246,
+       "(3, 0, 0)": 72,
+       "(2, 2, 2)": 47,
+       "(4, 0, 0)": 91,
+       "(5, 1, 2)": 387,
+       "(1, 2, 2)": 42,
+       "(4, 2, 2)": 119,
+       "(4, 1, 2)": 409,
+       "(5, 2, 1)": 48,
+       "(1, 1, 1)": 126,
+       "(2, 0, 0)": 38,
+       "(2, 0, 2)": 128,
+       "(1, 2, 0)": 7,
+       "(3, 2, 2)": 101,
+       "(1, 2, 1)": 15,
+       "(4, 0, 1)": 335,
+       "(1, 1, 2)": 422,
+       "(3, 3, 0)": 3,
+       "(3, 0, 2)": 402,
+       "(3, 1, 3)": 101,
+       "(1, 1, 0)": 42,
+       "(2, 0, 1)": 64,
+       "(4, 1, 3)": 97,
+       "(1, 0, 1)": 12,
+       "(5, 0, 1)": 64,
+       "(5, 0, 0)": 6,
+       "(5, 2, 2)": 203,
+       "(4, 0, 2)": 291,
+       "(3, 2, 3)": 36,
+       "(3, 0, 3)": 66,
+       "(1, 0, 2)": 10,
+       "(2, 1, 3)": 67,
+       "(5, 1, 3)": 123,
+       "(2, 0, 3)": 22,
+       "(5, 0, 2)": 61,
+       "(2, 2, 3)": 11,
+       "(4, 2, 3)": 99,
+       "(1, 0, 0)": 10,
+       "(4, 0, 3)": 77,
+       "(4, 1, 4)": 14,
+       "(1, 1, 3)": 35,
+       "(2, 3, 0)": 4,
+       "(3, 0, 4)": 138,
+       "(3, 2, 4)": 57,
+       "(3, 1, 4)": 22,
+       "(1, 3, 1)": 2,
+       "(3, 3, 2)": 3,
+       "(4, 0, 4)": 8,
+       "(3, 3, 1)": 5,
+       "(2, 0, 4)": 12,
+       "(2, 1, 4)": 5,
+       "(5, 0, 3)": 2,
+       "(4, 5, 0)": 11,
+       "(3, 4, 0)": 1
+      },
+      "distinct_lineups": 8210,
+      "max_copies_in_K": 567,
+      "resolution_copies": 0.947,
+      "generated_salary_left_bucket_pct": {
+       "0": 15.62,
+       "100-500": 72.91,
+       "600-900": 0.37,
+       "1000-1900": 0.85,
+       "2000-2900": 1.03,
+       "3000+": 9.21
+      }
+     },
+     "E4_sigma0.25": {
+      "k": 5000,
+      "sigma": 0.25,
+      "seed": 20261005,
+      "distinct_lineups": 1334,
+      "max_copies_in_K": 124,
+      "resolution_copies": 9.466,
+      "ownership_rmse_vs_actual_pts": {
+       "cpt": 5.58,
+       "flex": 9.386
+      },
+      "generated_salary_left_bucket_pct": {
+       "0": 4.86,
+       "100-500": 51.0,
+       "600-900": 17.66,
+       "1000-1900": 20.74,
+       "2000-2900": 4.44,
+       "3000+": 1.3
+      },
+      "NOT_CHOSEN": "no PIT@CLE ownership anchors exist; all three sigmas are reported and none is selected"
+     },
+     "E4_sigma0.4": {
+      "k": 5000,
+      "sigma": 0.4,
+      "seed": 20261005,
+      "distinct_lineups": 2703,
+      "max_copies_in_K": 36,
+      "resolution_copies": 9.466,
+      "ownership_rmse_vs_actual_pts": {
+       "cpt": 3.832,
+       "flex": 6.624
+      },
+      "generated_salary_left_bucket_pct": {
+       "0": 4.28,
+       "100-500": 35.98,
+       "600-900": 16.84,
+       "1000-1900": 24.3,
+       "2000-2900": 10.08,
+       "3000+": 8.52
+      },
+      "NOT_CHOSEN": "no PIT@CLE ownership anchors exist; all three sigmas are reported and none is selected"
+     },
+     "E4_sigma0.6": {
+      "k": 5000,
+      "sigma": 0.6,
+      "seed": 20261005,
+      "distinct_lineups": 3924,
+      "max_copies_in_K": 12,
+      "resolution_copies": 9.466,
+      "ownership_rmse_vs_actual_pts": {
+       "cpt": 2.897,
+       "flex": 5.621
+      },
+      "generated_salary_left_bucket_pct": {
+       "0": 2.92,
+       "100-500": 21.24,
+       "600-900": 12.34,
+       "1000-1900": 22.26,
+       "2000-2900": 13.98,
+       "3000+": 27.26
+      },
+      "NOT_CHOSEN": "no PIT@CLE ownership anchors exist; all three sigmas are reported and none is selected"
+     }
+    },
+    "generator_notes": {
+     "E3_archetype_prior_from_actual_field": {
+      "3away_2QB_0KD": 0.0773,
+      "4away_2QB_1KD": 0.0754,
+      "3away_1QB_1KD": 0.0656,
+      "4away_1QB_1KD": 0.0566,
+      "2away_1QB_1KD": 0.0558,
+      "4away_2QB_0KD": 0.0504,
+      "3away_2QB_1KD": 0.0461,
+      "3away_2QB_2KD": 0.0429,
+      "5away_1QB_1KD": 0.0417,
+      "3away_1QB_0KD": 0.039,
+      "2away_1QB_0KD": 0.0384,
+      "2away_1QB_2KD": 0.0379,
+      "3away_1QB_2KD": 0.0357,
+      "5away_1QB_2KD": 0.0345,
+      "4away_1QB_0KD": 0.0334,
+      "1away_1QB_1KD": 0.0306,
+      "4away_1QB_2KD": 0.0299,
+      "1away_1QB_2KD": 0.0211,
+      "2away_2QB_1KD": 0.0181,
+      "2away_2QB_0KD": 0.0176,
+      "4away_2QB_2KD": 0.0135,
+      "1away_1QB_0KD": 0.0119,
+      "5away_1QB_0KD": 0.0116,
+      "3away_0QB_0KD": 0.0108,
+      "5away_2QB_1KD": 0.0103,
+      "3away_0QB_1KD": 0.0099,
+      "3away_0QB_2KD": 0.0085,
+      "5away_2QB_2KD": 0.0081,
+      "4away_0QB_1KD": 0.0079,
+      "5away_2QB_0KD": 0.0065,
+      "4away_0QB_2KD": 0.0061,
+      "2away_2QB_2KD": 0.0058,
+      "2away_0QB_1KD": 0.0044,
+      "4away_0QB_0KD": 0.0039,
+      "2away_0QB_0KD": 0.0027,
+      "2away_0QB_2KD": 0.0027,
+      "3away_0QB_4KD": 0.0026,
+      "5away_1QB_3KD": 0.0023,
+      "4away_2QB_3KD": 0.0019,
+      "3away_1QB_3KD": 0.0019,
+      "4away_1QB_3KD": 0.0019,
+      "1away_2QB_1KD": 0.0017,
+      "4away_0QB_3KD": 0.0015,
+      "5away_0QB_1KD": 0.0014,
+      "1away_2QB_2KD": 0.0014,
+      "3away_0QB_3KD": 0.0012,
+      "2away_1QB_3KD": 0.0012,
+      "5away_0QB_2KD": 0.0012,
+      "3away_2QB_4KD": 0.0011,
+      "1away_2QB_0KD": 0.001,
+      "1away_0QB_1KD": 0.0007,
+      "1away_1QB_3KD": 0.0006,
+      "3away_2QB_3KD": 0.0005,
+      "2away_0QB_3KD": 0.0005,
+      "3away_1QB_4KD": 0.0005,
+      "4away_5QB_0KD": 0.0004,
+      "4away_1QB_4KD": 0.0002,
+      "4away_0QB_4KD": 0.0002,
+      "1away_0QB_2KD": 0.0002,
+      "5away_0QB_0KD": 0.0001,
+      "2away_2QB_3KD": 0.0001,
+      "2away_0QB_4KD": 0.0001,
+      "3away_3QB_1KD": 0.0001,
+      "2away_1QB_4KD": 0.0001,
+      "3away_3QB_0KD": 0.0001,
+      "2away_3QB_0KD": 0.0001,
+      "1away_0QB_0KD": 0.0001,
+      "3away_3QB_2KD": 0.0001,
+      "5away_0QB_3KD": 0.0001,
+      "3away_4QB_0KD": 0.0001,
+      "2away_3QB_1KD": 0.0,
+      "4away_3QB_1KD": 0.0,
+      "4away_3QB_0KD": 0.0,
+      "1away_3QB_1KD": 0.0,
+      "4away_3QB_2KD": 0.0
+     },
+     "E4_fc_name_aliases_by_suffix_same_club": {
+      "KC Concepcion|CLE": "KC Concepcion Jr.|CLE",
+      "Michael Pittman|PIT": "Michael Pittman Jr.|PIT",
+      "Lew Nichols III|PIT": "Lew Nichols|PIT"
+     },
+     "E4_fc_names_unresolved": [],
+     "E4_ALIAS_NOTE": "showdown_shadow_field.field() looks up FC by exact (name, club); without these aliases KC Concepcion Jr., Michael Pittman Jr. and Lew Nichols would carry projection 0 and be dropped from the optimizer field",
+     "E4_absent_official_inactives": [
+      "Drew Allar",
+      "Eli Heidenreich",
+      "Rico Dowdle",
+      "Taylen Green",
+      "Tylan Wallace",
+      "Will Howard"
+     ],
+     "E4_inputs": {
+      "fc": "nfl/dfs/salaries/raw/THIRDPARTY_showdown_PIT_CLE_2026W4_CONTEXT_ONLY.csv",
+      "fc_sha256": "1199bfcf9c262280763cb6b1c0c6b3b1edc8dd0dc1268a3c13ff728d8d68a1bc",
+      "inactives": "nfl/dfs/salaries/raw/OFFICIAL_INACTIVES_PIT_CLE_2026W4.json",
+      "inactives_sha256": "5ccd12c5d73eaf899a0273a992238c1455705eb317f67aa8d9c489c145cb5192"
+     }
+    },
+    "evaluation": {
+     "OBSERVED_ALL_UNIQUE": {
+      "n_lineups": 9762,
+      "sum_actual": 47329,
+      "E1": {
+       "median_abs_log_err": 0.6911,
+       "mean_abs_log_err": 0.8166,
+       "spearman_with_actual": 0.4399,
+       "sum_pred": 71990.1438,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 977,
+         "mean_pred": 0.2337,
+         "mean_actual": 1.3378
+        },
+        {
+         "decile": 2,
+         "n": 977,
+         "mean_pred": 0.9968,
+         "mean_actual": 1.868
+        },
+        {
+         "decile": 3,
+         "n": 976,
+         "mean_pred": 1.887,
+         "mean_actual": 2.2357
+        },
+        {
+         "decile": 4,
+         "n": 976,
+         "mean_pred": 3.0142,
+         "mean_actual": 2.5533
+        },
+        {
+         "decile": 5,
+         "n": 976,
+         "mean_pred": 4.2475,
+         "mean_actual": 3.042
+        },
+        {
+         "decile": 6,
+         "n": 976,
+         "mean_pred": 5.629,
+         "mean_actual": 3.6506
+        },
+        {
+         "decile": 7,
+         "n": 976,
+         "mean_pred": 7.3277,
+         "mean_actual": 4.2182
+        },
+        {
+         "decile": 8,
+         "n": 976,
+         "mean_pred": 9.678,
+         "mean_actual": 5.0912
+        },
+        {
+         "decile": 9,
+         "n": 976,
+         "mean_pred": 13.6132,
+         "mean_actual": 7.0656
+        },
+        {
+         "decile": 10,
+         "n": 976,
+         "mean_pred": 27.132,
+         "mean_actual": 17.4273
+        }
+       ],
+       "top_decile_actual_over_pred": 0.6423,
+       "top_decile_biased_gt_2x": false
+      },
+      "E2": {
+       "median_abs_log_err": 0.7237,
+       "mean_abs_log_err": 0.857,
+       "spearman_with_actual": 0.4448,
+       "sum_pred": 79721.139,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 977,
+         "mean_pred": 0.2569,
+         "mean_actual": 1.3439
+        },
+        {
+         "decile": 2,
+         "n": 977,
+         "mean_pred": 1.0695,
+         "mean_actual": 1.7902
+        },
+        {
+         "decile": 3,
+         "n": 976,
+         "mean_pred": 2.0275,
+         "mean_actual": 2.1486
+        },
+        {
+         "decile": 4,
+         "n": 976,
+         "mean_pred": 3.2086,
+         "mean_actual": 2.541
+        },
+        {
+         "decile": 5,
+         "n": 976,
+         "mean_pred": 4.565,
+         "mean_actual": 3.2316
+        },
+        {
+         "decile": 6,
+         "n": 976,
+         "mean_pred": 6.1278,
+         "mean_actual": 3.6885
+        },
+        {
+         "decile": 7,
+         "n": 976,
+         "mean_pred": 8.1014,
+         "mean_actual": 4.3279
+        },
+        {
+         "decile": 8,
+         "n": 976,
+         "mean_pred": 10.9371,
+         "mean_actual": 5.0205
+        },
+        {
+         "decile": 9,
+         "n": 976,
+         "mean_pred": 15.6546,
+         "mean_actual": 7.1691
+        },
+        {
+         "decile": 10,
+         "n": 976,
+         "mean_pred": 29.7318,
+         "mean_actual": 17.2285
+        }
+       ],
+       "top_decile_actual_over_pred": 0.5795,
+       "top_decile_biased_gt_2x": false
+      },
+      "E3_NONE": {
+       "median_abs_log_err": 0.6931,
+       "mean_abs_log_err": 0.7683,
+       "spearman_with_actual": 0.4943,
+       "sum_pred": 26825.1306,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 977,
+         "mean_pred": 0.0,
+         "mean_actual": 2.4841
+        },
+        {
+         "decile": 2,
+         "n": 977,
+         "mean_pred": 0.0,
+         "mean_actual": 1.956
+        },
+        {
+         "decile": 3,
+         "n": 976,
+         "mean_pred": 0.0,
+         "mean_actual": 1.667
+        },
+        {
+         "decile": 4,
+         "n": 976,
+         "mean_pred": 0.0,
+         "mean_actual": 1.5154
+        },
+        {
+         "decile": 5,
+         "n": 976,
+         "mean_pred": 0.5615,
+         "mean_actual": 2.5184
+        },
+        {
+         "decile": 6,
+         "n": 976,
+         "mean_pred": 0.9466,
+         "mean_actual": 2.8893
+        },
+        {
+         "decile": 7,
+         "n": 976,
+         "mean_pred": 1.7913,
+         "mean_actual": 4.0666
+        },
+        {
+         "decile": 8,
+         "n": 976,
+         "mean_pred": 3.0153,
+         "mean_actual": 5.1363
+        },
+        {
+         "decile": 9,
+         "n": 976,
+         "mean_pred": 5.2566,
+         "mean_actual": 7.5635
+        },
+        {
+         "decile": 10,
+         "n": 976,
+         "mean_pred": 15.9134,
+         "mean_actual": 18.6916
+        }
+       ],
+       "top_decile_actual_over_pred": 1.1746,
+       "top_decile_biased_gt_2x": false
+      },
+      "E3_FC08_90PCT_LE_500": {
+       "median_abs_log_err": 0.6931,
+       "mean_abs_log_err": 0.9853,
+       "spearman_with_actual": 0.4401,
+       "sum_pred": 38350.6887,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 977,
+         "mean_pred": 0.0,
+         "mean_actual": 2.9652
+        },
+        {
+         "decile": 2,
+         "n": 977,
+         "mean_pred": 0.0,
+         "mean_actual": 2.8414
+        },
+        {
+         "decile": 3,
+         "n": 976,
+         "mean_pred": 0.0,
+         "mean_actual": 2.9826
+        },
+        {
+         "decile": 4,
+         "n": 976,
+         "mean_pred": 0.0,
+         "mean_actual": 2.8402
+        },
+        {
+         "decile": 5,
+         "n": 976,
+         "mean_pred": 0.0,
+         "mean_actual": 3.084
+        },
+        {
+         "decile": 6,
+         "n": 976,
+         "mean_pred": 0.0,
+         "mean_actual": 2.8043
+        },
+        {
+         "decile": 7,
+         "n": 976,
+         "mean_pred": 0.0,
+         "mean_actual": 2.6383
+        },
+        {
+         "decile": 8,
+         "n": 976,
+         "mean_pred": 0.4801,
+         "mean_actual": 3.3975
+        },
+        {
+         "decile": 9,
+         "n": 976,
+         "mean_pred": 3.4701,
+         "mean_actual": 5.2223
+        },
+        {
+         "decile": 10,
+         "n": 976,
+         "mean_pred": 35.3435,
+         "mean_actual": 19.7111
+        }
+       ],
+       "top_decile_actual_over_pred": 0.5577,
+       "top_decile_biased_gt_2x": false
+      },
+      "E4_sigma0.25": {
+       "median_abs_log_err": 0.6931,
+       "mean_abs_log_err": 1.1974,
+       "spearman_with_actual": 0.2699,
+       "sum_pred": 41403.4092,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 977,
+         "mean_pred": 0.0,
+         "mean_actual": 4.915
+        },
+        {
+         "decile": 2,
+         "n": 977,
+         "mean_pred": 0.0,
+         "mean_actual": 3.9396
+        },
+        {
+         "decile": 3,
+         "n": 976,
+         "mean_pred": 0.0,
+         "mean_actual": 4.6363
+        },
+        {
+         "decile": 4,
+         "n": 976,
+         "mean_pred": 0.0,
+         "mean_actual": 4.5143
+        },
+        {
+         "decile": 5,
+         "n": 976,
+         "mean_pred": 0.0,
+         "mean_actual": 4.1783
+        },
+        {
+         "decile": 6,
+         "n": 976,
+         "mean_pred": 0.0,
+         "mean_actual": 4.2889
+        },
+        {
+         "decile": 7,
+         "n": 976,
+         "mean_pred": 0.0,
+         "mean_actual": 3.2961
+        },
+        {
+         "decile": 8,
+         "n": 976,
+         "mean_pred": 0.0,
+         "mean_actual": 3.0461
+        },
+        {
+         "decile": 9,
+         "n": 976,
+         "mean_pred": 0.3104,
+         "mean_actual": 2.5277
+        },
+        {
+         "decile": 10,
+         "n": 976,
+         "mean_pred": 42.1112,
+         "mean_actual": 13.1414
+        }
+       ],
+       "top_decile_actual_over_pred": 0.3121,
+       "top_decile_biased_gt_2x": true
+      },
+      "E4_sigma0.4": {
+       "median_abs_log_err": 0.6931,
+       "mean_abs_log_err": 1.1546,
+       "spearman_with_actual": 0.312,
+       "sum_pred": 34360.854,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 977,
+         "mean_pred": 0.0,
+         "mean_actual": 4.0768
+        },
+        {
+         "decile": 2,
+         "n": 977,
+         "mean_pred": 0.0,
+         "mean_actual": 3.9386
+        },
+        {
+         "decile": 3,
+         "n": 976,
+         "mean_pred": 0.0,
+         "mean_actual": 4.0461
+        },
+        {
+         "decile": 4,
+         "n": 976,
+         "mean_pred": 0.0,
+         "mean_actual": 3.5686
+        },
+        {
+         "decile": 5,
+         "n": 976,
+         "mean_pred": 0.0,
+         "mean_actual": 4.4816
+        },
+        {
+         "decile": 6,
+         "n": 976,
+         "mean_pred": 0.0,
+         "mean_actual": 3.3535
+        },
+        {
+         "decile": 7,
+         "n": 976,
+         "mean_pred": 0.0,
+         "mean_actual": 3.1076
+        },
+        {
+         "decile": 8,
+         "n": 976,
+         "mean_pred": 0.0,
+         "mean_actual": 2.3166
+        },
+        {
+         "decile": 9,
+         "n": 976,
+         "mean_pred": 6.6823,
+         "mean_actual": 7.0533
+        },
+        {
+         "decile": 10,
+         "n": 976,
+         "mean_pred": 28.5235,
+         "mean_actual": 12.542
+        }
+       ],
+       "top_decile_actual_over_pred": 0.4397,
+       "top_decile_biased_gt_2x": true
+      },
+      "E4_sigma0.6": {
+       "median_abs_log_err": 0.6931,
+       "mean_abs_log_err": 1.1589,
+       "spearman_with_actual": 0.2601,
+       "sum_pred": 24677.3406,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 977,
+         "mean_pred": 0.0,
+         "mean_actual": 4.5701
+        },
+        {
+         "decile": 2,
+         "n": 977,
+         "mean_pred": 0.0,
+         "mean_actual": 4.4514
+        },
+        {
+         "decile": 3,
+         "n": 976,
+         "mean_pred": 0.0,
+         "mean_actual": 4.3852
+        },
+        {
+         "decile": 4,
+         "n": 976,
+         "mean_pred": 0.0,
+         "mean_actual": 4.0963
+        },
+        {
+         "decile": 5,
+         "n": 976,
+         "mean_pred": 0.0,
+         "mean_actual": 4.2889
+        },
+        {
+         "decile": 6,
+         "n": 976,
+         "mean_pred": 0.0,
+         "mean_actual": 3.5922
+        },
+        {
+         "decile": 7,
+         "n": 976,
+         "mean_pred": 0.0,
+         "mean_actual": 3.0133
+        },
+        {
+         "decile": 8,
+         "n": 976,
+         "mean_pred": 0.0,
+         "mean_actual": 2.3607
+        },
+        {
+         "decile": 9,
+         "n": 976,
+         "mean_pred": 7.8849,
+         "mean_actual": 6.5318
+        },
+        {
+         "decile": 10,
+         "n": 976,
+         "mean_pred": 17.3992,
+         "mean_actual": 11.1936
+        }
+       ],
+       "top_decile_actual_over_pred": 0.6433,
+       "top_decile_biased_gt_2x": false
+      }
+     },
+     "TOP50_MOST_DUPLICATED": {
+      "n_lineups": 50,
+      "sum_actual": 6415,
+      "E1": {
+       "median_abs_log_err": 1.1726,
+       "mean_abs_log_err": 1.2142,
+       "spearman_with_actual": 0.3342,
+       "sum_pred": 1946.2972,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 5,
+         "mean_pred": 9.6893,
+         "mean_actual": 99.2
+        },
+        {
+         "decile": 2,
+         "n": 5,
+         "mean_pred": 14.8352,
+         "mean_actual": 86.8
+        },
+        {
+         "decile": 3,
+         "n": 5,
+         "mean_pred": 21.475,
+         "mean_actual": 120.2
+        },
+        {
+         "decile": 4,
+         "n": 5,
+         "mean_pred": 25.8622,
+         "mean_actual": 95.8
+        },
+        {
+         "decile": 5,
+         "n": 5,
+         "mean_pred": 33.4166,
+         "mean_actual": 101.8
+        },
+        {
+         "decile": 6,
+         "n": 5,
+         "mean_pred": 39.5545,
+         "mean_actual": 112.2
+        },
+        {
+         "decile": 7,
+         "n": 5,
+         "mean_pred": 47.948,
+         "mean_actual": 85.6
+        },
+        {
+         "decile": 8,
+         "n": 5,
+         "mean_pred": 53.3797,
+         "mean_actual": 106.6
+        },
+        {
+         "decile": 9,
+         "n": 5,
+         "mean_pred": 63.6238,
+         "mean_actual": 161.8
+        },
+        {
+         "decile": 10,
+         "n": 5,
+         "mean_pred": 79.4751,
+         "mean_actual": 313.0
+        }
+       ],
+       "top_decile_actual_over_pred": 3.9383,
+       "top_decile_biased_gt_2x": true
+      },
+      "E2": {
+       "median_abs_log_err": 1.0297,
+       "mean_abs_log_err": 1.1669,
+       "spearman_with_actual": 0.3344,
+       "sum_pred": 2029.1745,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 5,
+         "mean_pred": 9.6893,
+         "mean_actual": 99.2
+        },
+        {
+         "decile": 2,
+         "n": 5,
+         "mean_pred": 14.9171,
+         "mean_actual": 94.8
+        },
+        {
+         "decile": 3,
+         "n": 5,
+         "mean_pred": 23.5902,
+         "mean_actual": 114.6
+        },
+        {
+         "decile": 4,
+         "n": 5,
+         "mean_pred": 28.752,
+         "mean_actual": 104.4
+        },
+        {
+         "decile": 5,
+         "n": 5,
+         "mean_pred": 37.7716,
+         "mean_actual": 106.4
+        },
+        {
+         "decile": 6,
+         "n": 5,
+         "mean_pred": 43.2842,
+         "mean_actual": 85.6
+        },
+        {
+         "decile": 7,
+         "n": 5,
+         "mean_pred": 49.6811,
+         "mean_actual": 89.2
+        },
+        {
+         "decile": 8,
+         "n": 5,
+         "mean_pred": 54.489,
+         "mean_actual": 117.8
+        },
+        {
+         "decile": 9,
+         "n": 5,
+         "mean_pred": 64.1853,
+         "mean_actual": 158.0
+        },
+        {
+         "decile": 10,
+         "n": 5,
+         "mean_pred": 79.4751,
+         "mean_actual": 313.0
+        }
+       ],
+       "top_decile_actual_over_pred": 3.9383,
+       "top_decile_biased_gt_2x": true
+      },
+      "E3_NONE": {
+       "median_abs_log_err": 1.6418,
+       "mean_abs_log_err": 1.6541,
+       "spearman_with_actual": 0.4431,
+       "sum_pred": 1335.6244,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 5,
+         "mean_pred": 4.9222,
+         "mean_actual": 92.6
+        },
+        {
+         "decile": 2,
+         "n": 5,
+         "mean_pred": 9.2765,
+         "mean_actual": 92.8
+        },
+        {
+         "decile": 3,
+         "n": 5,
+         "mean_pred": 13.4414,
+         "mean_actual": 89.0
+        },
+        {
+         "decile": 4,
+         "n": 5,
+         "mean_pred": 15.9025,
+         "mean_actual": 109.0
+        },
+        {
+         "decile": 5,
+         "n": 5,
+         "mean_pred": 19.6889,
+         "mean_actual": 98.8
+        },
+        {
+         "decile": 6,
+         "n": 5,
+         "mean_pred": 23.0966,
+         "mean_actual": 114.0
+        },
+        {
+         "decile": 7,
+         "n": 5,
+         "mean_pred": 27.6401,
+         "mean_actual": 132.0
+        },
+        {
+         "decile": 8,
+         "n": 5,
+         "mean_pred": 33.5089,
+         "mean_actual": 135.0
+        },
+        {
+         "decile": 9,
+         "n": 5,
+         "mean_pred": 44.8679,
+         "mean_actual": 106.6
+        },
+        {
+         "decile": 10,
+         "n": 5,
+         "mean_pred": 74.7798,
+         "mean_actual": 313.2
+        }
+       ],
+       "top_decile_actual_over_pred": 4.1883,
+       "top_decile_biased_gt_2x": true
+      },
+      "E3_FC08_90PCT_LE_500": {
+       "median_abs_log_err": 0.4306,
+       "mean_abs_log_err": 1.0584,
+       "spearman_with_actual": 0.5172,
+       "sum_pred": 4995.1027,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 5,
+         "mean_pred": 0.0,
+         "mean_actual": 111.6
+        },
+        {
+         "decile": 2,
+         "n": 5,
+         "mean_pred": 9.4658,
+         "mean_actual": 81.8
+        },
+        {
+         "decile": 3,
+         "n": 5,
+         "mean_pred": 35.2128,
+         "mean_actual": 89.2
+        },
+        {
+         "decile": 4,
+         "n": 5,
+         "mean_pred": 58.8773,
+         "mean_actual": 93.8
+        },
+        {
+         "decile": 5,
+         "n": 5,
+         "mean_pred": 90.1144,
+         "mean_actual": 115.4
+        },
+        {
+         "decile": 6,
+         "n": 5,
+         "mean_pred": 101.2841,
+         "mean_actual": 106.2
+        },
+        {
+         "decile": 7,
+         "n": 5,
+         "mean_pred": 122.4875,
+         "mean_actual": 111.4
+        },
+        {
+         "decile": 8,
+         "n": 5,
+         "mean_pred": 142.7443,
+         "mean_actual": 110.6
+        },
+        {
+         "decile": 9,
+         "n": 5,
+         "mean_pred": 184.3938,
+         "mean_actual": 173.0
+        },
+        {
+         "decile": 10,
+         "n": 5,
+         "mean_pred": 254.4407,
+         "mean_actual": 290.0
+        }
+       ],
+       "top_decile_actual_over_pred": 1.1398,
+       "top_decile_biased_gt_2x": false
+      },
+      "E4_sigma0.25": {
+       "median_abs_log_err": 4.3882,
+       "mean_abs_log_err": 3.2936,
+       "spearman_with_actual": 0.2159,
+       "sum_pred": 1514.528,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 5,
+         "mean_pred": 0.0,
+         "mean_actual": 203.2
+        },
+        {
+         "decile": 2,
+         "n": 5,
+         "mean_pred": 0.0,
+         "mean_actual": 122.4
+        },
+        {
+         "decile": 3,
+         "n": 5,
+         "mean_pred": 0.0,
+         "mean_actual": 94.8
+        },
+        {
+         "decile": 4,
+         "n": 5,
+         "mean_pred": 0.0,
+         "mean_actual": 86.8
+        },
+        {
+         "decile": 5,
+         "n": 5,
+         "mean_pred": 0.0,
+         "mean_actual": 82.0
+        },
+        {
+         "decile": 6,
+         "n": 5,
+         "mean_pred": 1.8932,
+         "mean_actual": 99.4
+        },
+        {
+         "decile": 7,
+         "n": 5,
+         "mean_pred": 11.359,
+         "mean_actual": 124.8
+        },
+        {
+         "decile": 8,
+         "n": 5,
+         "mean_pred": 22.7179,
+         "mean_actual": 114.8
+        },
+        {
+         "decile": 9,
+         "n": 5,
+         "mean_pred": 51.1153,
+         "mean_actual": 109.6
+        },
+        {
+         "decile": 10,
+         "n": 5,
+         "mean_pred": 215.8202,
+         "mean_actual": 245.2
+        }
+       ],
+       "top_decile_actual_over_pred": 1.1361,
+       "top_decile_biased_gt_2x": false
+      },
+      "E4_sigma0.4": {
+       "median_abs_log_err": 2.4779,
+       "mean_abs_log_err": 2.9072,
+       "spearman_with_actual": 0.2378,
+       "sum_pred": 937.1142,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 5,
+         "mean_pred": 0.0,
+         "mean_actual": 152.2
+        },
+        {
+         "decile": 2,
+         "n": 5,
+         "mean_pred": 0.0,
+         "mean_actual": 97.6
+        },
+        {
+         "decile": 3,
+         "n": 5,
+         "mean_pred": 0.0,
+         "mean_actual": 85.6
+        },
+        {
+         "decile": 4,
+         "n": 5,
+         "mean_pred": 0.0,
+         "mean_actual": 78.8
+        },
+        {
+         "decile": 5,
+         "n": 5,
+         "mean_pred": 7.5726,
+         "mean_actual": 185.0
+        },
+        {
+         "decile": 6,
+         "n": 5,
+         "mean_pred": 9.4658,
+         "mean_actual": 98.6
+        },
+        {
+         "decile": 7,
+         "n": 5,
+         "mean_pred": 15.1453,
+         "mean_actual": 118.8
+        },
+        {
+         "decile": 8,
+         "n": 5,
+         "mean_pred": 22.7179,
+         "mean_actual": 119.4
+        },
+        {
+         "decile": 9,
+         "n": 5,
+         "mean_pred": 41.6495,
+         "mean_actual": 101.8
+        },
+        {
+         "decile": 10,
+         "n": 5,
+         "mean_pred": 90.8717,
+         "mean_actual": 245.2
+        }
+       ],
+       "top_decile_actual_over_pred": 2.6983,
+       "top_decile_biased_gt_2x": true
+      },
+      "E4_sigma0.6": {
+       "median_abs_log_err": 2.7536,
+       "mean_abs_log_err": 3.1477,
+       "spearman_with_actual": 0.3614,
+       "sum_pred": 501.6874,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 5,
+         "mean_pred": 0.0,
+         "mean_actual": 152.2
+        },
+        {
+         "decile": 2,
+         "n": 5,
+         "mean_pred": 0.0,
+         "mean_actual": 97.8
+        },
+        {
+         "decile": 3,
+         "n": 5,
+         "mean_pred": 0.0,
+         "mean_actual": 84.0
+        },
+        {
+         "decile": 4,
+         "n": 5,
+         "mean_pred": 0.0,
+         "mean_actual": 79.0
+        },
+        {
+         "decile": 5,
+         "n": 5,
+         "mean_pred": 5.6795,
+         "mean_actual": 124.4
+        },
+        {
+         "decile": 6,
+         "n": 5,
+         "mean_pred": 9.4658,
+         "mean_actual": 101.8
+        },
+        {
+         "decile": 7,
+         "n": 5,
+         "mean_pred": 11.359,
+         "mean_actual": 141.0
+        },
+        {
+         "decile": 8,
+         "n": 5,
+         "mean_pred": 18.9316,
+         "mean_actual": 153.6
+        },
+        {
+         "decile": 9,
+         "n": 5,
+         "mean_pred": 20.8248,
+         "mean_actual": 106.8
+        },
+        {
+         "decile": 10,
+         "n": 5,
+         "mean_pred": 34.0769,
+         "mean_actual": 242.4
+        }
+       ],
+       "top_decile_actual_over_pred": 7.1133,
+       "top_decile_biased_gt_2x": true
+      }
+     },
+     "WINNER_AND_TOP1PCT_LINEUPS": {
+      "n_lineups": 70,
+      "sum_actual": 479,
+      "E1": {
+       "median_abs_log_err": 0.7158,
+       "mean_abs_log_err": 0.7433,
+       "spearman_with_actual": 0.4443,
+       "sum_pred": 423.2071,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 7,
+         "mean_pred": 1.3846,
+         "mean_actual": 1.2857
+        },
+        {
+         "decile": 2,
+         "n": 7,
+         "mean_pred": 3.0704,
+         "mean_actual": 4.8571
+        },
+        {
+         "decile": 3,
+         "n": 7,
+         "mean_pred": 3.6145,
+         "mean_actual": 4.1429
+        },
+        {
+         "decile": 4,
+         "n": 7,
+         "mean_pred": 4.701,
+         "mean_actual": 3.5714
+        },
+        {
+         "decile": 5,
+         "n": 7,
+         "mean_pred": 5.3105,
+         "mean_actual": 2.7143
+        },
+        {
+         "decile": 6,
+         "n": 7,
+         "mean_pred": 5.8118,
+         "mean_actual": 9.8571
+        },
+        {
+         "decile": 7,
+         "n": 7,
+         "mean_pred": 6.2164,
+         "mean_actual": 5.2857
+        },
+        {
+         "decile": 8,
+         "n": 7,
+         "mean_pred": 6.9157,
+         "mean_actual": 4.7143
+        },
+        {
+         "decile": 9,
+         "n": 7,
+         "mean_pred": 10.703,
+         "mean_actual": 7.2857
+        },
+        {
+         "decile": 10,
+         "n": 7,
+         "mean_pred": 12.7302,
+         "mean_actual": 24.7143
+        }
+       ],
+       "top_decile_actual_over_pred": 1.9414,
+       "top_decile_biased_gt_2x": false
+      },
+      "E2": {
+       "median_abs_log_err": 0.8317,
+       "mean_abs_log_err": 0.8735,
+       "spearman_with_actual": 0.443,
+       "sum_pred": 583.7785,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 7,
+         "mean_pred": 1.1968,
+         "mean_actual": 1.2857
+        },
+        {
+         "decile": 2,
+         "n": 7,
+         "mean_pred": 3.2184,
+         "mean_actual": 5.4286
+        },
+        {
+         "decile": 3,
+         "n": 7,
+         "mean_pred": 4.2192,
+         "mean_actual": 3.0
+        },
+        {
+         "decile": 4,
+         "n": 7,
+         "mean_pred": 5.4265,
+         "mean_actual": 5.2857
+        },
+        {
+         "decile": 5,
+         "n": 7,
+         "mean_pred": 6.0335,
+         "mean_actual": 5.2857
+        },
+        {
+         "decile": 6,
+         "n": 7,
+         "mean_pred": 7.2224,
+         "mean_actual": 2.8571
+        },
+        {
+         "decile": 7,
+         "n": 7,
+         "mean_pred": 10.2163,
+         "mean_actual": 3.1429
+        },
+        {
+         "decile": 8,
+         "n": 7,
+         "mean_pred": 11.6371,
+         "mean_actual": 15.7143
+        },
+        {
+         "decile": 9,
+         "n": 7,
+         "mean_pred": 12.8936,
+         "mean_actual": 6.5714
+        },
+        {
+         "decile": 10,
+         "n": 7,
+         "mean_pred": 21.333,
+         "mean_actual": 19.8571
+        }
+       ],
+       "top_decile_actual_over_pred": 0.9308,
+       "top_decile_biased_gt_2x": false
+      },
+      "E3_NONE": {
+       "median_abs_log_err": 0.7067,
+       "mean_abs_log_err": 0.9404,
+       "spearman_with_actual": 0.4803,
+       "sum_pred": 130.628,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 2.2857
+        },
+        {
+         "decile": 2,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 3.5714
+        },
+        {
+         "decile": 3,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 2.0
+        },
+        {
+         "decile": 4,
+         "n": 7,
+         "mean_pred": 0.1352,
+         "mean_actual": 2.1429
+        },
+        {
+         "decile": 5,
+         "n": 7,
+         "mean_pred": 0.9466,
+         "mean_actual": 8.8571
+        },
+        {
+         "decile": 6,
+         "n": 7,
+         "mean_pred": 0.9466,
+         "mean_actual": 4.0
+        },
+        {
+         "decile": 7,
+         "n": 7,
+         "mean_pred": 1.0818,
+         "mean_actual": 1.5714
+        },
+        {
+         "decile": 8,
+         "n": 7,
+         "mean_pred": 1.8932,
+         "mean_actual": 10.5714
+        },
+        {
+         "decile": 9,
+         "n": 7,
+         "mean_pred": 3.3806,
+         "mean_actual": 7.2857
+        },
+        {
+         "decile": 10,
+         "n": 7,
+         "mean_pred": 10.2772,
+         "mean_actual": 26.1429
+        }
+       ],
+       "top_decile_actual_over_pred": 2.5438,
+       "top_decile_biased_gt_2x": true
+      },
+      "E3_FC08_90PCT_LE_500": {
+       "median_abs_log_err": 0.6931,
+       "mean_abs_log_err": 0.8501,
+       "spearman_with_actual": 0.6789,
+       "sum_pred": 451.5187,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 2.4286
+        },
+        {
+         "decile": 2,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 1.4286
+        },
+        {
+         "decile": 3,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 2.4286
+        },
+        {
+         "decile": 4,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 2.2857
+        },
+        {
+         "decile": 5,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 2.0
+        },
+        {
+         "decile": 6,
+         "n": 7,
+         "mean_pred": 0.2705,
+         "mean_actual": 2.4286
+        },
+        {
+         "decile": 7,
+         "n": 7,
+         "mean_pred": 2.2988,
+         "mean_actual": 4.0
+        },
+        {
+         "decile": 8,
+         "n": 7,
+         "mean_pred": 5.2738,
+         "mean_actual": 4.5714
+        },
+        {
+         "decile": 9,
+         "n": 7,
+         "mean_pred": 10.0067,
+         "mean_actual": 21.4286
+        },
+        {
+         "decile": 10,
+         "n": 7,
+         "mean_pred": 46.6529,
+         "mean_actual": 25.4286
+        }
+       ],
+       "top_decile_actual_over_pred": 0.5451,
+       "top_decile_biased_gt_2x": false
+      },
+      "E4_sigma0.25": {
+       "median_abs_log_err": 1.2425,
+       "mean_abs_log_err": 1.4655,
+       "spearman_with_actual": 0.1173,
+       "sum_pred": 18.9316,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 10.5714
+        },
+        {
+         "decile": 2,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 3.0
+        },
+        {
+         "decile": 3,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 5.1429
+        },
+        {
+         "decile": 4,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 9.1429
+        },
+        {
+         "decile": 5,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 5.1429
+        },
+        {
+         "decile": 6,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 6.8571
+        },
+        {
+         "decile": 7,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 3.4286
+        },
+        {
+         "decile": 8,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 2.5714
+        },
+        {
+         "decile": 9,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 3.0
+        },
+        {
+         "decile": 10,
+         "n": 7,
+         "mean_pred": 2.7045,
+         "mean_actual": 19.5714
+        }
+       ],
+       "top_decile_actual_over_pred": 7.2366,
+       "top_decile_biased_gt_2x": true
+      },
+      "E4_sigma0.4": {
+       "median_abs_log_err": 1.0986,
+       "mean_abs_log_err": 1.3718,
+       "spearman_with_actual": 0.2199,
+       "sum_pred": 123.0554,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 6.4286
+        },
+        {
+         "decile": 2,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 3.2857
+        },
+        {
+         "decile": 3,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 5.0
+        },
+        {
+         "decile": 4,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 9.8571
+        },
+        {
+         "decile": 5,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 6.7143
+        },
+        {
+         "decile": 6,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 3.2857
+        },
+        {
+         "decile": 7,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 2.7143
+        },
+        {
+         "decile": 8,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 3.0
+        },
+        {
+         "decile": 9,
+         "n": 7,
+         "mean_pred": 4.0568,
+         "mean_actual": 7.5714
+        },
+        {
+         "decile": 10,
+         "n": 7,
+         "mean_pred": 13.5226,
+         "mean_actual": 20.5714
+        }
+       ],
+       "top_decile_actual_over_pred": 1.5213,
+       "top_decile_biased_gt_2x": false
+      },
+      "E4_sigma0.6": {
+       "median_abs_log_err": 1.0986,
+       "mean_abs_log_err": 1.3497,
+       "spearman_with_actual": 0.23,
+       "sum_pred": 113.5896,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 3.2857
+        },
+        {
+         "decile": 2,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 4.7143
+        },
+        {
+         "decile": 3,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 9.0
+        },
+        {
+         "decile": 4,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 5.1429
+        },
+        {
+         "decile": 5,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 7.8571
+        },
+        {
+         "decile": 6,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 3.5714
+        },
+        {
+         "decile": 7,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 1.4286
+        },
+        {
+         "decile": 8,
+         "n": 7,
+         "mean_pred": 0.0,
+         "mean_actual": 3.1429
+        },
+        {
+         "decile": 9,
+         "n": 7,
+         "mean_pred": 5.409,
+         "mean_actual": 11.1429
+        },
+        {
+         "decile": 10,
+         "n": 7,
+         "mean_pred": 10.8181,
+         "mean_actual": 19.1429
+        }
+       ],
+       "top_decile_actual_over_pred": 1.7695,
+       "top_decile_biased_gt_2x": false
+      }
+     },
+     "OBSERVED_PLUS_GENERATED_UNOBSERVED(actual=0)": {
+      "n_lineups": 27373,
+      "sum_actual": 47329,
+      "E1": {
+       "median_abs_log_err": 0.7226,
+       "mean_abs_log_err": 0.8805,
+       "spearman_with_actual": 0.4465,
+       "sum_pred": 120178.4762,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 2738,
+         "mean_pred": 0.0098,
+         "mean_actual": 0.0416
+        },
+        {
+         "decile": 2,
+         "n": 2738,
+         "mean_pred": 0.0492,
+         "mean_actual": 0.0855
+        },
+        {
+         "decile": 3,
+         "n": 2738,
+         "mean_pred": 0.2751,
+         "mean_actual": 0.324
+        },
+        {
+         "decile": 4,
+         "n": 2737,
+         "mean_pred": 0.9001,
+         "mean_actual": 0.5806
+        },
+        {
+         "decile": 5,
+         "n": 2737,
+         "mean_pred": 1.74,
+         "mean_actual": 0.7716
+        },
+        {
+         "decile": 6,
+         "n": 2737,
+         "mean_pred": 2.8367,
+         "mean_actual": 0.9229
+        },
+        {
+         "decile": 7,
+         "n": 2737,
+         "mean_pred": 4.208,
+         "mean_actual": 1.3131
+        },
+        {
+         "decile": 8,
+         "n": 2737,
+         "mean_pred": 5.9913,
+         "mean_actual": 1.7899
+        },
+        {
+         "decile": 9,
+         "n": 2737,
+         "mean_pred": 8.8546,
+         "mean_actual": 2.646
+        },
+        {
+         "decile": 10,
+         "n": 2737,
+         "mean_pred": 19.0438,
+         "mean_actual": 8.817
+        }
+       ],
+       "top_decile_actual_over_pred": 0.463,
+       "top_decile_biased_gt_2x": true
+      },
+      "E2": {
+       "median_abs_log_err": 0.7379,
+       "mean_abs_log_err": 0.9059,
+       "spearman_with_actual": 0.4576,
+       "sum_pred": 130937.1952,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 2738,
+         "mean_pred": 0.0105,
+         "mean_actual": 0.0427
+        },
+        {
+         "decile": 2,
+         "n": 2738,
+         "mean_pred": 0.0526,
+         "mean_actual": 0.08
+        },
+        {
+         "decile": 3,
+         "n": 2738,
+         "mean_pred": 0.2903,
+         "mean_actual": 0.3053
+        },
+        {
+         "decile": 4,
+         "n": 2737,
+         "mean_pred": 0.9154,
+         "mean_actual": 0.5331
+        },
+        {
+         "decile": 5,
+         "n": 2737,
+         "mean_pred": 1.7838,
+         "mean_actual": 0.7263
+        },
+        {
+         "decile": 6,
+         "n": 2737,
+         "mean_pred": 2.915,
+         "mean_actual": 0.9138
+        },
+        {
+         "decile": 7,
+         "n": 2737,
+         "mean_pred": 4.4069,
+         "mean_actual": 1.3248
+        },
+        {
+         "decile": 8,
+         "n": 2737,
+         "mean_pred": 6.44,
+         "mean_actual": 1.8692
+        },
+        {
+         "decile": 9,
+         "n": 2737,
+         "mean_pred": 9.8448,
+         "mean_actual": 2.711
+        },
+        {
+         "decile": 10,
+         "n": 2737,
+         "mean_pred": 21.1802,
+         "mean_actual": 8.7859
+        }
+       ],
+       "top_decile_actual_over_pred": 0.4148,
+       "top_decile_biased_gt_2x": true
+      },
+      "E3_NONE": {
+       "median_abs_log_err": 0.6661,
+       "mean_abs_log_err": 0.6447,
+       "spearman_with_actual": 0.1469,
+       "sum_pred": 47329.0,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 2738,
+         "mean_pred": 0.0,
+         "mean_actual": 2.0676
+        },
+        {
+         "decile": 2,
+         "n": 2738,
+         "mean_pred": 0.0,
+         "mean_actual": 0.8349
+        },
+        {
+         "decile": 3,
+         "n": 2738,
+         "mean_pred": 0.0,
+         "mean_actual": 0.0
+        },
+        {
+         "decile": 4,
+         "n": 2737,
+         "mean_pred": 0.0858,
+         "mean_actual": 0.3135
+        },
+        {
+         "decile": 5,
+         "n": 2737,
+         "mean_pred": 0.9466,
+         "mean_actual": 1.5115
+        },
+        {
+         "decile": 6,
+         "n": 2737,
+         "mean_pred": 0.9466,
+         "mean_actual": 0.0
+        },
+        {
+         "decile": 7,
+         "n": 2737,
+         "mean_pred": 0.9466,
+         "mean_actual": 0.0
+        },
+        {
+         "decile": 8,
+         "n": 2737,
+         "mean_pred": 1.6825,
+         "mean_actual": 1.4392
+        },
+        {
+         "decile": 9,
+         "n": 2737,
+         "mean_pred": 2.7744,
+         "mean_actual": 2.1206
+        },
+        {
+         "decile": 10,
+         "n": 2737,
+         "mean_pred": 9.9099,
+         "mean_actual": 9.004
+        }
+       ],
+       "top_decile_actual_over_pred": 0.9086,
+       "top_decile_biased_gt_2x": false
+      },
+      "E3_FC08_90PCT_LE_500": {
+       "median_abs_log_err": 0.6661,
+       "mean_abs_log_err": 0.5211,
+       "spearman_with_actual": 0.0398,
+       "sum_pred": 47329.0,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 2738,
+         "mean_pred": 0.0,
+         "mean_actual": 2.9321
+        },
+        {
+         "decile": 2,
+         "n": 2738,
+         "mean_pred": 0.0,
+         "mean_actual": 2.8912
+        },
+        {
+         "decile": 3,
+         "n": 2738,
+         "mean_pred": 0.0,
+         "mean_actual": 1.6461
+        },
+        {
+         "decile": 4,
+         "n": 2737,
+         "mean_pred": 0.0,
+         "mean_actual": 0.0
+        },
+        {
+         "decile": 5,
+         "n": 2737,
+         "mean_pred": 0.0,
+         "mean_actual": 0.0
+        },
+        {
+         "decile": 6,
+         "n": 2737,
+         "mean_pred": 0.0,
+         "mean_actual": 0.0
+        },
+        {
+         "decile": 7,
+         "n": 2737,
+         "mean_pred": 0.0,
+         "mean_actual": 0.0
+        },
+        {
+         "decile": 8,
+         "n": 2737,
+         "mean_pred": 0.9462,
+         "mean_actual": 1.1334
+        },
+        {
+         "decile": 9,
+         "n": 2737,
+         "mean_pred": 0.9846,
+         "mean_actual": 0.2013
+        },
+        {
+         "decile": 10,
+         "n": 2737,
+         "mean_pred": 15.3614,
+         "mean_actual": 8.4856
+        }
+       ],
+       "top_decile_actual_over_pred": 0.5524,
+       "top_decile_biased_gt_2x": false
+      },
+      "E4_sigma0.25": {
+       "median_abs_log_err": 0.0,
+       "mean_abs_log_err": 0.4593,
+       "spearman_with_actual": 0.2371,
+       "sum_pred": 47329.0,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 2738,
+         "mean_pred": 0.0,
+         "mean_actual": 4.5237
+        },
+        {
+         "decile": 2,
+         "n": 2738,
+         "mean_pred": 0.0,
+         "mean_actual": 4.3981
+        },
+        {
+         "decile": 3,
+         "n": 2738,
+         "mean_pred": 0.0,
+         "mean_actual": 3.2159
+        },
+        {
+         "decile": 4,
+         "n": 2737,
+         "mean_pred": 0.0,
+         "mean_actual": 0.3518
+        },
+        {
+         "decile": 5,
+         "n": 2737,
+         "mean_pred": 0.0,
+         "mean_actual": 0.0
+        },
+        {
+         "decile": 6,
+         "n": 2737,
+         "mean_pred": 0.0,
+         "mean_actual": 0.0
+        },
+        {
+         "decile": 7,
+         "n": 2737,
+         "mean_pred": 0.0,
+         "mean_actual": 0.0
+        },
+        {
+         "decile": 8,
+         "n": 2737,
+         "mean_pred": 0.0,
+         "mean_actual": 0.0
+        },
+        {
+         "decile": 9,
+         "n": 2737,
+         "mean_pred": 0.0,
+         "mean_actual": 0.0
+        },
+        {
+         "decile": 10,
+         "n": 2737,
+         "mean_pred": 17.2923,
+         "mean_actual": 4.7983
+        }
+       ],
+       "top_decile_actual_over_pred": 0.2775,
+       "top_decile_biased_gt_2x": true
+      },
+      "E4_sigma0.4": {
+       "median_abs_log_err": 0.0,
+       "mean_abs_log_err": 0.5069,
+       "spearman_with_actual": 0.2328,
+       "sum_pred": 47329.0,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 2738,
+         "mean_pred": 0.0,
+         "mean_actual": 4.0771
+        },
+        {
+         "decile": 2,
+         "n": 2738,
+         "mean_pred": 0.0,
+         "mean_actual": 3.87
+        },
+        {
+         "decile": 3,
+         "n": 2738,
+         "mean_pred": 0.0,
+         "mean_actual": 2.5121
+        },
+        {
+         "decile": 4,
+         "n": 2737,
+         "mean_pred": 0.0,
+         "mean_actual": 0.0
+        },
+        {
+         "decile": 5,
+         "n": 2737,
+         "mean_pred": 0.0,
+         "mean_actual": 0.0
+        },
+        {
+         "decile": 6,
+         "n": 2737,
+         "mean_pred": 0.0,
+         "mean_actual": 0.0
+        },
+        {
+         "decile": 7,
+         "n": 2737,
+         "mean_pred": 0.0,
+         "mean_actual": 0.0
+        },
+        {
+         "decile": 8,
+         "n": 2737,
+         "mean_pred": 0.0,
+         "mean_actual": 0.0
+        },
+        {
+         "decile": 9,
+         "n": 2737,
+         "mean_pred": 0.0,
+         "mean_actual": 0.0
+        },
+        {
+         "decile": 10,
+         "n": 2737,
+         "mean_pred": 17.2923,
+         "mean_actual": 6.8294
+        }
+       ],
+       "top_decile_actual_over_pred": 0.3949,
+       "top_decile_biased_gt_2x": true
+      },
+      "E4_sigma0.6": {
+       "median_abs_log_err": 0.0,
+       "mean_abs_log_err": 0.6021,
+       "spearman_with_actual": 0.1282,
+       "sum_pred": 47329.0,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 2738,
+         "mean_pred": 0.0,
+         "mean_actual": 4.5632
+        },
+        {
+         "decile": 2,
+         "n": 2738,
+         "mean_pred": 0.0,
+         "mean_actual": 4.0007
+        },
+        {
+         "decile": 3,
+         "n": 2738,
+         "mean_pred": 0.0,
+         "mean_actual": 2.4832
+        },
+        {
+         "decile": 4,
+         "n": 2737,
+         "mean_pred": 0.0,
+         "mean_actual": 0.0
+        },
+        {
+         "decile": 5,
+         "n": 2737,
+         "mean_pred": 0.0,
+         "mean_actual": 0.0
+        },
+        {
+         "decile": 6,
+         "n": 2737,
+         "mean_pred": 0.0,
+         "mean_actual": 0.0
+        },
+        {
+         "decile": 7,
+         "n": 2737,
+         "mean_pred": 0.0,
+         "mean_actual": 0.0
+        },
+        {
+         "decile": 8,
+         "n": 2737,
+         "mean_pred": 0.0,
+         "mean_actual": 0.0
+        },
+        {
+         "decile": 9,
+         "n": 2737,
+         "mean_pred": 4.1052,
+         "mean_actual": 3.2181
+        },
+        {
+         "decile": 10,
+         "n": 2737,
+         "mean_pred": 13.1871,
+         "mean_actual": 3.023
+        }
+       ],
+       "top_decile_actual_over_pred": 0.2292,
+       "top_decile_biased_gt_2x": true
+      }
+     },
+     "OVER_PREDICTION_ON_EACH_GENERATED_FIELDS_OWN_PREDICTIONS": {
+      "E3_NONE": {
+       "n_lineups_predicted": 16670,
+       "n_predicted_but_unplayed": 11211,
+       "share_predicted_lineups_unplayed": 67.25,
+       "pred_copies_on_unplayed": 20503.8694,
+       "share_of_pred_mass_on_unplayed": 0.4332,
+       "set_metrics": {
+        "median_abs_log_err": 0.6661,
+        "mean_abs_log_err": 0.824,
+        "spearman_with_actual": 0.4327,
+        "sum_pred": 47329.0,
+        "calibration_by_decile_of_estimator": [
+         {
+          "decile": 1,
+          "n": 1667,
+          "mean_pred": 0.9466,
+          "mean_actual": 2.9964
+         },
+         {
+          "decile": 2,
+          "n": 1667,
+          "mean_pred": 0.9466,
+          "mean_actual": 0.0
+         },
+         {
+          "decile": 3,
+          "n": 1667,
+          "mean_pred": 0.9466,
+          "mean_actual": 0.0
+         },
+         {
+          "decile": 4,
+          "n": 1667,
+          "mean_pred": 0.9466,
+          "mean_actual": 0.0
+         },
+         {
+          "decile": 5,
+          "n": 1667,
+          "mean_pred": 0.9466,
+          "mean_actual": 0.0
+         },
+         {
+          "decile": 6,
+          "n": 1667,
+          "mean_pred": 1.4769,
+          "mean_actual": 2.3527
+         },
+         {
+          "decile": 7,
+          "n": 1667,
+          "mean_pred": 1.8932,
+          "mean_actual": 0.0102
+         },
+         {
+          "decile": 8,
+          "n": 1667,
+          "mean_pred": 2.6893,
+          "mean_actual": 1.8674
+         },
+         {
+          "decile": 9,
+          "n": 1667,
+          "mean_pred": 4.3831,
+          "mean_actual": 4.2669
+         },
+         {
+          "decile": 10,
+          "n": 1667,
+          "mean_pred": 13.2163,
+          "mean_actual": 12.1308
+         }
+        ],
+        "top_decile_actual_over_pred": 0.9179,
+        "top_decile_biased_gt_2x": false
+       }
+      },
+      "E3_FC08_90PCT_LE_500": {
+       "n_lineups_predicted": 8210,
+       "n_predicted_but_unplayed": 5763,
+       "share_predicted_lineups_unplayed": 70.19,
+       "pred_copies_on_unplayed": 8978.3113,
+       "share_of_pred_mass_on_unplayed": 0.1897,
+       "set_metrics": {
+        "median_abs_log_err": 0.6661,
+        "mean_abs_log_err": 0.7942,
+        "spearman_with_actual": 0.6292,
+        "sum_pred": 47329.0,
+        "calibration_by_decile_of_estimator": [
+         {
+          "decile": 1,
+          "n": 821,
+          "mean_pred": 0.9466,
+          "mean_actual": 3.7783
+         },
+         {
+          "decile": 2,
+          "n": 821,
+          "mean_pred": 0.9466,
+          "mean_actual": 0.0
+         },
+         {
+          "decile": 3,
+          "n": 821,
+          "mean_pred": 0.9466,
+          "mean_actual": 0.0
+         },
+         {
+          "decile": 4,
+          "n": 821,
+          "mean_pred": 0.9466,
+          "mean_actual": 0.0
+         },
+         {
+          "decile": 5,
+          "n": 821,
+          "mean_pred": 0.9466,
+          "mean_actual": 0.0
+         },
+         {
+          "decile": 6,
+          "n": 821,
+          "mean_pred": 0.9466,
+          "mean_actual": 0.0
+         },
+         {
+          "decile": 7,
+          "n": 821,
+          "mean_pred": 1.3893,
+          "mean_actual": 1.3045
+         },
+         {
+          "decile": 8,
+          "n": 821,
+          "mean_pred": 2.5607,
+          "mean_actual": 1.7406
+         },
+         {
+          "decile": 9,
+          "n": 821,
+          "mean_pred": 6.8371,
+          "mean_actual": 4.5091
+         },
+         {
+          "decile": 10,
+          "n": 821,
+          "mean_pred": 41.1814,
+          "mean_actual": 21.4056
+         }
+        ],
+        "top_decile_actual_over_pred": 0.5198,
+        "top_decile_biased_gt_2x": false
+       }
+      },
+      "E4_sigma0.25": {
+       "n_lineups_predicted": 1334,
+       "n_predicted_but_unplayed": 326,
+       "share_predicted_lineups_unplayed": 24.44,
+       "pred_copies_on_unplayed": 5925.5908,
+       "share_of_pred_mass_on_unplayed": 0.1252,
+       "set_metrics": {
+        "median_abs_log_err": 1.655,
+        "mean_abs_log_err": 1.7194,
+        "spearman_with_actual": 0.2468,
+        "sum_pred": 47329.0,
+        "calibration_by_decile_of_estimator": [
+         {
+          "decile": 1,
+          "n": 134,
+          "mean_pred": 9.4658,
+          "mean_actual": 8.3284
+         },
+         {
+          "decile": 2,
+          "n": 134,
+          "mean_pred": 9.4658,
+          "mean_actual": 9.4403
+         },
+         {
+          "decile": 3,
+          "n": 134,
+          "mean_pred": 9.4658,
+          "mean_actual": 10.4701
+         },
+         {
+          "decile": 4,
+          "n": 134,
+          "mean_pred": 9.4658,
+          "mean_actual": 6.806
+         },
+         {
+          "decile": 5,
+          "n": 133,
+          "mean_pred": 9.4658,
+          "mean_actual": 0.0
+         },
+         {
+          "decile": 6,
+          "n": 133,
+          "mean_pred": 16.2983,
+          "mean_actual": 11.0677
+         },
+         {
+          "decile": 7,
+          "n": 133,
+          "mean_pred": 19.1451,
+          "mean_actual": 6.6541
+         },
+         {
+          "decile": 8,
+          "n": 133,
+          "mean_pred": 30.2479,
+          "mean_actual": 12.7068
+         },
+         {
+          "decile": 9,
+          "n": 133,
+          "mean_pred": 49.393,
+          "mean_actual": 10.203
+         },
+         {
+          "decile": 10,
+          "n": 133,
+          "mean_pred": 193.1593,
+          "mean_actual": 22.8045
+         }
+        ],
+        "top_decile_actual_over_pred": 0.1181,
+        "top_decile_biased_gt_2x": true
+       }
+      },
+      "E4_sigma0.4": {
+       "n_lineups_predicted": 2703,
+       "n_predicted_but_unplayed": 1038,
+       "share_predicted_lineups_unplayed": 38.4,
+       "pred_copies_on_unplayed": 12968.146,
+       "share_of_pred_mass_on_unplayed": 0.274,
+       "set_metrics": {
+        "median_abs_log_err": 1.7715,
+        "mean_abs_log_err": 1.7307,
+        "spearman_with_actual": 0.2942,
+        "sum_pred": 47329.0,
+        "calibration_by_decile_of_estimator": [
+         {
+          "decile": 1,
+          "n": 271,
+          "mean_pred": 9.4658,
+          "mean_actual": 9.3284
+         },
+         {
+          "decile": 2,
+          "n": 271,
+          "mean_pred": 9.4658,
+          "mean_actual": 10.0517
+         },
+         {
+          "decile": 3,
+          "n": 271,
+          "mean_pred": 9.4658,
+          "mean_actual": 7.5904
+         },
+         {
+          "decile": 4,
+          "n": 270,
+          "mean_pred": 9.4658,
+          "mean_actual": 4.9963
+         },
+         {
+          "decile": 5,
+          "n": 270,
+          "mean_pred": 9.4658,
+          "mean_actual": 0.0
+         },
+         {
+          "decile": 6,
+          "n": 270,
+          "mean_pred": 9.4658,
+          "mean_actual": 0.0
+         },
+         {
+          "decile": 7,
+          "n": 270,
+          "mean_pred": 11.7446,
+          "mean_actual": 3.6704
+         },
+         {
+          "decile": 8,
+          "n": 270,
+          "mean_pred": 18.9316,
+          "mean_actual": 10.7259
+         },
+         {
+          "decile": 9,
+          "n": 270,
+          "mean_pred": 25.172,
+          "mean_actual": 6.2222
+         },
+         {
+          "decile": 10,
+          "n": 270,
+          "mean_pred": 62.5444,
+          "mean_actual": 16.5444
+         }
+        ],
+        "top_decile_actual_over_pred": 0.2645,
+        "top_decile_biased_gt_2x": true
+       }
+      },
+      "E4_sigma0.6": {
+       "n_lineups_predicted": 3924,
+       "n_predicted_but_unplayed": 2135,
+       "share_predicted_lineups_unplayed": 54.41,
+       "pred_copies_on_unplayed": 22651.6594,
+       "share_of_pred_mass_on_unplayed": 0.4786,
+       "set_metrics": {
+        "median_abs_log_err": 2.3481,
+        "mean_abs_log_err": 1.8466,
+        "spearman_with_actual": 0.2921,
+        "sum_pred": 47329.0,
+        "calibration_by_decile_of_estimator": [
+         {
+          "decile": 1,
+          "n": 393,
+          "mean_pred": 9.4658,
+          "mean_actual": 8.0891
+         },
+         {
+          "decile": 2,
+          "n": 393,
+          "mean_pred": 9.4658,
+          "mean_actual": 6.4835
+         },
+         {
+          "decile": 3,
+          "n": 393,
+          "mean_pred": 9.4658,
+          "mean_actual": 7.7964
+         },
+         {
+          "decile": 4,
+          "n": 393,
+          "mean_pred": 9.4658,
+          "mean_actual": 1.0891
+         },
+         {
+          "decile": 5,
+          "n": 392,
+          "mean_pred": 9.4658,
+          "mean_actual": 0.0
+         },
+         {
+          "decile": 6,
+          "n": 392,
+          "mean_pred": 9.4658,
+          "mean_actual": 0.0
+         },
+         {
+          "decile": 7,
+          "n": 392,
+          "mean_pred": 9.4658,
+          "mean_actual": 0.0
+         },
+         {
+          "decile": 8,
+          "n": 392,
+          "mean_pred": 9.4658,
+          "mean_actual": 0.0
+         },
+         {
+          "decile": 9,
+          "n": 392,
+          "mean_pred": 17.5069,
+          "mean_actual": 11.0026
+         },
+         {
+          "decile": 10,
+          "n": 392,
+          "mean_pred": 27.4074,
+          "mean_actual": 9.0561
+         }
+        ],
+        "top_decile_actual_over_pred": 0.3304,
+        "top_decile_biased_gt_2x": true
+       }
+      }
+     },
+     "E1_vs_E3_FLAG_TEST": {
+      "E3_NONE|observed": {
+       "n_lineups": 9762,
+       "n_both_positive": 5459,
+       "share_E1_E3_differ_gt_2x_of_both_positive": 72.94,
+       "n_E3_below_resolution_E1_not": 3251,
+       "n_disagree_gt_2x": 3982,
+       "share_of_disagreements_where_actual_closer_to_E3": 66.5,
+       "E3_over_E1_ge_5x(ATL@NO-like)": {
+        "n": 290,
+        "median_actual": 2.0,
+        "median_E1": 0.3171,
+        "median_E3": 5.6795,
+        "share_actual_closer_to_E3": 51.72
+       },
+       "E3_ge_20_and_ge_5x_E1(ATL@NO-sized)": {
+        "n": 52,
+        "median_actual": 5.5,
+        "median_E1": 1.9916,
+        "median_E3": 27.4508,
+        "share_unplayed": 0.0,
+        "share_actual_closer_to_E3": 32.69
+       }
+      },
+      "E3_NONE|observed_plus_generated": {
+       "n_lineups": 27373,
+       "n_both_positive": 16670,
+       "share_E1_E3_differ_gt_2x_of_both_positive": 78.65,
+       "n_E3_below_resolution_E1_not": 5949,
+       "n_disagree_gt_2x": 13111,
+       "share_of_disagreements_where_actual_closer_to_E3": 55.85,
+       "E3_over_E1_ge_5x(ATL@NO-like)": {
+        "n": 4190,
+        "median_actual": 0.0,
+        "median_E1": 0.031,
+        "median_E3": 0.9466,
+        "share_actual_closer_to_E3": 3.58
+       },
+       "E3_ge_20_and_ge_5x_E1(ATL@NO-sized)": {
+        "n": 69,
+        "median_actual": 2.0,
+        "median_E1": 1.9254,
+        "median_E3": 27.4508,
+        "share_unplayed": 24.64,
+        "share_actual_closer_to_E3": 24.64
+       }
+      },
+      "E3_FC08_90PCT_LE_500|observed": {
+       "n_lineups": 9762,
+       "n_both_positive": 2447,
+       "share_E1_E3_differ_gt_2x_of_both_positive": 66.78,
+       "n_E3_below_resolution_E1_not": 6108,
+       "n_disagree_gt_2x": 1634,
+       "share_of_disagreements_where_actual_closer_to_E3": 54.83,
+       "E3_over_E1_ge_5x(ATL@NO-like)": {
+        "n": 316,
+        "median_actual": 4.0,
+        "median_E1": 1.3895,
+        "median_E3": 12.7788,
+        "share_actual_closer_to_E3": 52.53
+       },
+       "E3_ge_20_and_ge_5x_E1(ATL@NO-sized)": {
+        "n": 122,
+        "median_actual": 12.0,
+        "median_E1": 7.2498,
+        "median_E3": 53.0085,
+        "share_unplayed": 0.0,
+        "share_actual_closer_to_E3": 31.15
+       }
+      },
+      "E3_FC08_90PCT_LE_500|observed_plus_generated": {
+       "n_lineups": 27373,
+       "n_both_positive": 8210,
+       "share_E1_E3_differ_gt_2x_of_both_positive": 75.15,
+       "n_E3_below_resolution_E1_not": 13147,
+       "n_disagree_gt_2x": 6170,
+       "share_of_disagreements_where_actual_closer_to_E3": 37.23,
+       "E3_over_E1_ge_5x(ATL@NO-like)": {
+        "n": 2920,
+        "median_actual": 0.0,
+        "median_E1": 0.0282,
+        "median_E3": 0.9466,
+        "share_actual_closer_to_E3": 5.68
+       },
+       "E3_ge_20_and_ge_5x_E1(ATL@NO-sized)": {
+        "n": 130,
+        "median_actual": 11.5,
+        "median_E1": 6.6244,
+        "median_E3": 52.5352,
+        "share_unplayed": 6.15,
+        "share_actual_closer_to_E3": 29.23
+       }
+      }
+     }
+    },
+    "correlation_claims": {
+     "CF-2_log_count_on_log_prod_own": {
+      "n": 9762,
+      "r2": 0.1465,
+      "coef": {
+       "intercept": 3.134,
+       "log_prod_own": 0.2475
+      },
+      "hc1_se": {
+       "intercept": 0.1583,
+       "log_prod_own": 0.0167
+      },
+      "dropped_constant_columns": [],
+      "SE_CAVEAT": "HC1 standard errors treat lineups as independent; they are not (one slate, one field)"
+     },
+     "CF-2_entry_weighted_variant": {
+      "n": 47329,
+      "r2": 0.3334,
+      "coef": {
+       "intercept": 7.8431,
+       "log_prod_own": 0.6172
+      },
+      "hc1_se": {
+       "intercept": 0.2411,
+       "log_prod_own": 0.0287
+      },
+      "dropped_constant_columns": [],
+      "SE_CAVEAT": "HC1 standard errors treat lineups as independent; they are not (one slate, one field)"
+     },
+     "CF-3_log_count_on_log_cpt_share_only": {
+      "n": 9762,
+      "r2": 0.0239,
+      "coef": {
+       "intercept": 1.1681,
+       "log_cpt_share": 0.1403
+      },
+      "hc1_se": {
+       "intercept": 0.0263,
+       "log_cpt_share": 0.0081
+      },
+      "dropped_constant_columns": [],
+      "SE_CAVEAT": "HC1 standard errors treat lineups as independent; they are not (one slate, one field)"
+     },
+     "CF-3_log_count_on_log_flex_product_only": {
+      "n": 9762,
+      "r2": 0.0733,
+      "coef": {
+       "intercept": 1.9663,
+       "log_flex_product": 0.1741
+      },
+      "hc1_se": {
+       "intercept": 0.0815,
+       "log_flex_product": 0.0118
+      },
+      "dropped_constant_columns": [],
+      "SE_CAVEAT": "HC1 standard errors treat lineups as independent; they are not (one slate, one field)"
+     },
+     "CF-3_both": {
+      "n": 9762,
+      "r2": 0.1471,
+      "coef": {
+       "intercept": 3.1418,
+       "log_cpt_share": 0.2641,
+       "log_flex_product": 0.242
+      },
+      "hc1_se": {
+       "intercept": 0.1548,
+       "log_cpt_share": 0.0145,
+       "log_flex_product": 0.0179
+      },
+      "dropped_constant_columns": [],
+      "SE_CAVEAT": "HC1 standard errors treat lineups as independent; they are not (one slate, one field)"
+     },
+     "SELECTION_CAVEAT": "observed lineups only (count >= 1); unplayed lineups are unobserved"
+    },
+    "n_generated_unobserved_lineups": 17611,
+    "SELECTION_CAVEAT": "only played lineups have observable counts; on OBSERVED sets every actual >= 1, so low-predicted played lineups are necessarily under-predicted. The generated-field sets add lineups predicted but unplayed (actual 0) so over-prediction is visible."
+   },
+   "unique_lineups_csv": "nfl/postgame/showdown_history/UNIQUE_LINEUPS_PIT_CLE.csv"
+  },
+  "PHI_CHI": {
+   "contest_id": "196036243",
+   "game": "PHI@CHI",
+   "game_date": "2026-09-28",
+   "nflverse_game_id": "2026_03_PHI_CHI",
+   "raw": {
+    "file": "nfl/postgame/raw/showdown_history/196036243_PHI_CHI/DK_STANDINGS.c3953c0c00259885.csv",
+    "sha256": "c3953c0c00259885b88b6f963b3f01a07c4957a2e933735da3a2e6758c29e415",
+    "zip_sha256": "6ae196ace68d154fee4415d338930a08cd6d367dd31f61040a9375e71f3d9739",
+    "provenance_captured_at": "2026-10-05T22:29:56.003750+00:00"
+   },
+   "N_all_entries": 47562,
+   "N_filled_lineups": 47333,
+   "N_empty_lineup_excluded": 229,
+   "EMPTY_LINEUP_NOTE": "entries with an empty Lineup are counted here and excluded from every lineup statistic; DK %Drafted uses all entries (empty included) as its denominator",
+   "top_1pct_cut_rank": 476,
+   "n_top_1pct_entries": 484,
+   "n_winner_entries": 3,
+   "metadata": {
+    "roster_file": "nfl/dfs/salaries/raw/showdown_atl_no_2026W4/roster_weekly_2026.0f72f882f3974ff2.csv",
+    "sha256": "0f72f882f3974ff2d524ce838fb750f2d2f2fb8b3f081728ed45e832972292c3",
+    "week_used": "3",
+    "week_note": "nflverse game id 2026_03_PHI_CHI (present in this repository) places the 2026-09-28 game in week 3; the task named week 4. Week 3 is used; the mapping is re-checked against week 4.",
+    "names_whose_team_or_position_differs_in_week_4": [],
+    "unmapped": [
+     "Hollywood Brown",
+     "Scotty Miller"
+    ],
+    "ambiguous": [],
+    "unmapped_lastname_candidates_NOT_USED": {
+     "Hollywood Brown": [
+      [
+       "Brittain Brown",
+       "CHI",
+       "RB",
+       "RES"
+      ],
+      [
+       "Marquise Brown",
+       "PHI",
+       "WR",
+       "INA"
+      ]
+     ],
+     "Scotty Miller": [
+      [
+       "Scott Miller",
+       "CHI",
+       "WR",
+       "CUT"
+      ]
+     ]
+    },
+    "UNMAPPED_POLICY": "an unmapped name keeps position UNMAPPED and team None; it is never guessed. Lineup features that need its team/position exclude that lineup and the exclusion is counted"
+   },
+   "favorite": {
+    "favorite": null,
+    "status": "NOT_AVAILABLE",
+    "reason": "no spread or implied team total for PHI@CHI exists in this repository; none is invented"
+   },
+   "ownership": {
+    "dk_sum_pct": {
+     "CPT": 99.53,
+     "FLEX": 497.59
+    },
+    "recount_max_abs_diff_pct_pts_over_all_entries": 0.005,
+    "recount_max_abs_diff_pct_pts_over_filled": 0.296,
+    "recount_flag_gt_0.5": false,
+    "player_slots_in_lineups_but_absent_from_dk_block": [
+     "Dallas Goedert/FLEX"
+    ],
+    "players": [
+     {
+      "player": "Jalen Hurts",
+      "team": "PHI",
+      "position": "QB",
+      "flex_salary": null,
+      "dk_cpt_pct": 24.99,
+      "dk_flex_pct": 61.28,
+      "cpt_to_flex_ratio": 0.4078,
+      "fpts_flex_basis": 13.62,
+      "favorite_team": null
+     },
+     {
+      "player": "DeVonta Smith",
+      "team": "PHI",
+      "position": "WR",
+      "flex_salary": null,
+      "dk_cpt_pct": 13.15,
+      "dk_flex_pct": 49.41,
+      "cpt_to_flex_ratio": 0.2661,
+      "fpts_flex_basis": 12.5,
+      "favorite_team": null
+     },
+     {
+      "player": "Dontayvion Wicks",
+      "team": "PHI",
+      "position": "WR",
+      "flex_salary": null,
+      "dk_cpt_pct": 7.97,
+      "dk_flex_pct": 44.35,
+      "cpt_to_flex_ratio": 0.1797,
+      "fpts_flex_basis": 5.2,
+      "favorite_team": null
+     },
+     {
+      "player": "Saquon Barkley",
+      "team": "PHI",
+      "position": "RB",
+      "flex_salary": null,
+      "dk_cpt_pct": 14.99,
+      "dk_flex_pct": 44.11,
+      "cpt_to_flex_ratio": 0.3398,
+      "fpts_flex_basis": 9.0,
+      "favorite_team": null
+     },
+     {
+      "player": "D'Andre Swift",
+      "team": "CHI",
+      "position": "RB",
+      "flex_salary": null,
+      "dk_cpt_pct": 13.64,
+      "dk_flex_pct": 43.26,
+      "cpt_to_flex_ratio": 0.3153,
+      "fpts_flex_basis": 10.8,
+      "favorite_team": null
+     },
+     {
+      "player": "Kyle Monangai",
+      "team": "CHI",
+      "position": "RB",
+      "flex_salary": null,
+      "dk_cpt_pct": 3.36,
+      "dk_flex_pct": 29.68,
+      "cpt_to_flex_ratio": 0.1132,
+      "fpts_flex_basis": 3.1,
+      "favorite_team": null
+     },
+     {
+      "player": "Case Keenum",
+      "team": "CHI",
+      "position": "QB",
+      "flex_salary": null,
+      "dk_cpt_pct": 2.64,
+      "dk_flex_pct": 25.17,
+      "cpt_to_flex_ratio": 0.1049,
+      "fpts_flex_basis": 24.48,
+      "favorite_team": null
+     },
+     {
+      "player": "Kalif Raymond",
+      "team": "CHI",
+      "position": "WR",
+      "flex_salary": null,
+      "dk_cpt_pct": 1.42,
+      "dk_flex_pct": 24.05,
+      "cpt_to_flex_ratio": 0.059,
+      "fpts_flex_basis": 21.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Jake Elliott",
+      "team": "PHI",
+      "position": "K",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.77,
+      "dk_flex_pct": 23.78,
+      "cpt_to_flex_ratio": 0.0324,
+      "fpts_flex_basis": 1.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Cairo Santos",
+      "team": "CHI",
+      "position": "K",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.57,
+      "dk_flex_pct": 20.93,
+      "cpt_to_flex_ratio": 0.0272,
+      "fpts_flex_basis": 10.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Eagles",
+      "team": "PHI",
+      "position": "DST",
+      "flex_salary": null,
+      "dk_cpt_pct": 4.36,
+      "dk_flex_pct": 20.42,
+      "cpt_to_flex_ratio": 0.2135,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Luther Burden III",
+      "team": "CHI",
+      "position": "WR",
+      "flex_salary": null,
+      "dk_cpt_pct": 3.05,
+      "dk_flex_pct": 18.09,
+      "cpt_to_flex_ratio": 0.1686,
+      "fpts_flex_basis": 19.8,
+      "favorite_team": null
+     },
+     {
+      "player": "Colston Loveland",
+      "team": "CHI",
+      "position": "TE",
+      "flex_salary": null,
+      "dk_cpt_pct": 2.71,
+      "dk_flex_pct": 16.04,
+      "cpt_to_flex_ratio": 0.169,
+      "fpts_flex_basis": 7.1,
+      "favorite_team": null
+     },
+     {
+      "player": "Makai Lemon",
+      "team": "PHI",
+      "position": "WR",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.92,
+      "dk_flex_pct": 14.74,
+      "cpt_to_flex_ratio": 0.0624,
+      "fpts_flex_basis": 5.9,
+      "favorite_team": null
+     },
+     {
+      "player": "Zach Ertz",
+      "team": "PHI",
+      "position": "TE",
+      "flex_salary": null,
+      "dk_cpt_pct": 1.07,
+      "dk_flex_pct": 11.62,
+      "cpt_to_flex_ratio": 0.0921,
+      "fpts_flex_basis": 1.9,
+      "favorite_team": null
+     },
+     {
+      "player": "Bears",
+      "team": "CHI",
+      "position": "DST",
+      "flex_salary": null,
+      "dk_cpt_pct": 1.11,
+      "dk_flex_pct": 10.42,
+      "cpt_to_flex_ratio": 0.1065,
+      "fpts_flex_basis": 12.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Rome Odunze",
+      "team": "CHI",
+      "position": "WR",
+      "flex_salary": null,
+      "dk_cpt_pct": 1.34,
+      "dk_flex_pct": 10.33,
+      "cpt_to_flex_ratio": 0.1297,
+      "fpts_flex_basis": 7.4,
+      "favorite_team": null
+     },
+     {
+      "player": "Cole Kmet",
+      "team": "CHI",
+      "position": "TE",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.24,
+      "dk_flex_pct": 7.34,
+      "cpt_to_flex_ratio": 0.0327,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Johnny Mundt",
+      "team": "PHI",
+      "position": "TE",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.23,
+      "dk_flex_pct": 5.68,
+      "cpt_to_flex_ratio": 0.0405,
+      "fpts_flex_basis": 1.4,
+      "favorite_team": null
+     },
+     {
+      "player": "Tank Bigsby",
+      "team": "PHI",
+      "position": "RB",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.36,
+      "dk_flex_pct": 5.29,
+      "cpt_to_flex_ratio": 0.0681,
+      "fpts_flex_basis": 0.5,
+      "favorite_team": null
+     },
+     {
+      "player": "Darius Cooper",
+      "team": "PHI",
+      "position": "WR",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.12,
+      "dk_flex_pct": 3.46,
+      "cpt_to_flex_ratio": 0.0347,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Will Shipley",
+      "team": "PHI",
+      "position": "RB",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.07,
+      "dk_flex_pct": 1.98,
+      "cpt_to_flex_ratio": 0.0354,
+      "fpts_flex_basis": 2.1,
+      "favorite_team": null
+     },
+     {
+      "player": "Tyson Bagent",
+      "team": "CHI",
+      "position": "QB",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.35,
+      "dk_flex_pct": 1.75,
+      "cpt_to_flex_ratio": 0.2,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Sam Roush",
+      "team": "CHI",
+      "position": "TE",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.01,
+      "dk_flex_pct": 1.31,
+      "cpt_to_flex_ratio": 0.0076,
+      "fpts_flex_basis": 2.6,
+      "favorite_team": null
+     },
+     {
+      "player": "Jahdae Walker",
+      "team": "CHI",
+      "position": "WR",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.03,
+      "dk_flex_pct": 0.82,
+      "cpt_to_flex_ratio": 0.0366,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "E.J. Jenkins",
+      "team": "PHI",
+      "position": "TE",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.03,
+      "dk_flex_pct": 0.72,
+      "cpt_to_flex_ratio": 0.0417,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Zavion Thomas",
+      "team": "CHI",
+      "position": "WR",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.01,
+      "dk_flex_pct": 0.48,
+      "cpt_to_flex_ratio": 0.0208,
+      "fpts_flex_basis": 1.1,
+      "favorite_team": null
+     },
+     {
+      "player": "Elijah Moore",
+      "team": "PHI",
+      "position": "WR",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.3,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Roschon Johnson",
+      "team": "CHI",
+      "position": "RB",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.27,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Britain Covey",
+      "team": "PHI",
+      "position": "WR",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.01,
+      "dk_flex_pct": 0.19,
+      "cpt_to_flex_ratio": 0.0526,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Carson Steele",
+      "team": "PHI",
+      "position": "RB",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.05,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Kaden Davis",
+      "team": "CHI",
+      "position": "WR",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.04,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Jaydon Blue",
+      "team": "PHI",
+      "position": "RB",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.04,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Andy Dalton",
+      "team": "PHI",
+      "position": "QB",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.01,
+      "dk_flex_pct": 0.04,
+      "cpt_to_flex_ratio": 0.25,
+      "fpts_flex_basis": -1.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Josiah Deguara",
+      "team": "PHI",
+      "position": "TE",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.03,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Salvon Ahmed",
+      "team": "CHI",
+      "position": "RB",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.02,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Hollywood Brown",
+      "team": null,
+      "position": "UNMAPPED",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.02,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Zavier Scott",
+      "team": "CHI",
+      "position": "RB",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.01,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Tanner McKee",
+      "team": "PHI",
+      "position": "QB",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.01,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Xavier Gipson",
+      "team": "PHI",
+      "position": "WR",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.01,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Rocco Underwood",
+      "team": "PHI",
+      "position": "LS",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.01,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Caleb Williams",
+      "team": "CHI",
+      "position": "QB",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.01,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Miller Moss",
+      "team": "CHI",
+      "position": "QB",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.01,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Scotty Miller",
+      "team": null,
+      "position": "UNMAPPED",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.01,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Dameon Pierce",
+      "team": "PHI",
+      "position": "RB",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.01,
+      "cpt_to_flex_ratio": 0.0,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Dallas Goedert",
+      "team": "PHI",
+      "position": "TE",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.0,
+      "cpt_to_flex_ratio": null,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "JP Richardson",
+      "team": "CHI",
+      "position": "WR",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.0,
+      "cpt_to_flex_ratio": null,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Stephen Carlson",
+      "team": "CHI",
+      "position": "TE",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.0,
+      "cpt_to_flex_ratio": null,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Cole Payton",
+      "team": "PHI",
+      "position": "QB",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.0,
+      "cpt_to_flex_ratio": null,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     },
+     {
+      "player": "Qadir Ismail",
+      "team": "CHI",
+      "position": "TE",
+      "flex_salary": null,
+      "dk_cpt_pct": 0.0,
+      "dk_flex_pct": 0.0,
+      "cpt_to_flex_ratio": null,
+      "fpts_flex_basis": 0.0,
+      "favorite_team": null
+     }
+    ],
+    "by_position": {
+     "DST": {
+      "n_players": 2,
+      "sum_cpt_pct": 5.47,
+      "sum_flex_pct": 30.84,
+      "cpt_to_flex_ratio": 0.1774
+     },
+     "K": {
+      "n_players": 2,
+      "sum_cpt_pct": 1.34,
+      "sum_flex_pct": 44.71,
+      "cpt_to_flex_ratio": 0.03
+     },
+     "LS": {
+      "n_players": 1,
+      "sum_cpt_pct": 0.0,
+      "sum_flex_pct": 0.01,
+      "cpt_to_flex_ratio": 0.0
+     },
+     "QB": {
+      "n_players": 8,
+      "sum_cpt_pct": 27.99,
+      "sum_flex_pct": 88.27,
+      "cpt_to_flex_ratio": 0.3171
+     },
+     "RB": {
+      "n_players": 11,
+      "sum_cpt_pct": 32.42,
+      "sum_flex_pct": 124.72,
+      "cpt_to_flex_ratio": 0.2599
+     },
+     "TE": {
+      "n_players": 10,
+      "sum_cpt_pct": 4.29,
+      "sum_flex_pct": 42.74,
+      "cpt_to_flex_ratio": 0.1004
+     },
+     "UNMAPPED": {
+      "n_players": 2,
+      "sum_cpt_pct": 0.0,
+      "sum_flex_pct": 0.03,
+      "cpt_to_flex_ratio": 0.0
+     },
+     "WR": {
+      "n_players": 14,
+      "sum_cpt_pct": 28.02,
+      "sum_flex_pct": 166.27,
+      "cpt_to_flex_ratio": 0.1685
+     }
+    },
+    "by_salary_rank": {
+     "status": "NOT_AVAILABLE",
+     "reason": "no salary file for this slate"
+    },
+    "by_favorite": {
+     "status": "NOT_AVAILABLE",
+     "reason": "no spread or implied team total for PHI@CHI exists in this repository; none is invented"
+    },
+    "cpt_half_flex_rule": {
+     "MASS_IDENTITY": "every lineup has 1 CPT and 5 FLEX, so sum(CPT %)/sum(FLEX %) = 100/500 = 0.2 exactly; a uniform CPT = 0.5 x FLEX is arithmetically impossible across a pool",
+     "dk_sum_cpt_over_sum_flex": 0.2,
+     "players_with_flex_ge_10pct": 17,
+     "FLOOR_NOTE": "FLEX >= 10% is a descriptive reporting floor, not fitted",
+     "median_ratio": 0.1297,
+     "share_within_0.4_0.6": 5.88,
+     "ratios": {
+      "Jalen Hurts": 0.4078,
+      "DeVonta Smith": 0.2661,
+      "Dontayvion Wicks": 0.1797,
+      "Saquon Barkley": 0.3398,
+      "D'Andre Swift": 0.3153,
+      "Kyle Monangai": 0.1132,
+      "Case Keenum": 0.1049,
+      "Kalif Raymond": 0.059,
+      "Jake Elliott": 0.0324,
+      "Cairo Santos": 0.0272,
+      "Eagles": 0.2135,
+      "Luther Burden III": 0.1686,
+      "Colston Loveland": 0.169,
+      "Makai Lemon": 0.0624,
+      "Zach Ertz": 0.0921,
+      "Bears": 0.1065,
+      "Rome Odunze": 0.1297
+     }
+    },
+    "ESTIMATOR_TARGETS": "E1/E2/E3 use slot shares counted over FILLED lineups (CPT sums to 1, FLEX to 5); DK %Drafted differs only by the factor filled/all"
+   },
+   "duplication": {
+    "distribution": {
+     "n_entries_filled": 47333,
+     "n_distinct_lineups": 10273,
+     "share_of_distinct_lineups_played_once": 53.84,
+     "share_of_entries_unique": 11.69,
+     "share_of_entries_in_lineups_dup_ge_2": 88.31,
+     "share_of_entries_in_lineups_dup_ge_10": 59.1,
+     "share_of_entries_in_lineups_dup_ge_50": 25.73,
+     "max_copies": 633
+    },
+    "top20": [
+     {
+      "cpt": "Jalen Hurts",
+      "flex": [
+       "DeVonta Smith",
+       "Dontayvion Wicks",
+       "Jake Elliott",
+       "Kalif Raymond",
+       "Saquon Barkley"
+      ],
+      "copies": 633,
+      "salary_left": null,
+      "best_rank": 15933
+     },
+     {
+      "cpt": "Jalen Hurts",
+      "flex": [
+       "Cairo Santos",
+       "DeVonta Smith",
+       "Dontayvion Wicks",
+       "Makai Lemon",
+       "Saquon Barkley"
+      ],
+      "copies": 437,
+      "salary_left": null,
+      "best_rank": 23840
+     },
+     {
+      "cpt": "D'Andre Swift",
+      "flex": [
+       "DeVonta Smith",
+       "Dontayvion Wicks",
+       "Jalen Hurts",
+       "Kalif Raymond",
+       "Kyle Monangai"
+      ],
+      "copies": 320,
+      "salary_left": null,
+      "best_rank": 12520
+     },
+     {
+      "cpt": "Saquon Barkley",
+      "flex": [
+       "DeVonta Smith",
+       "Dontayvion Wicks",
+       "Eagles",
+       "Jalen Hurts",
+       "Kalif Raymond"
+      ],
+      "copies": 293,
+      "salary_left": null,
+      "best_rank": 20709
+     },
+     {
+      "cpt": "Jalen Hurts",
+      "flex": [
+       "D'Andre Swift",
+       "DeVonta Smith",
+       "Dontayvion Wicks",
+       "Eagles",
+       "Kalif Raymond"
+      ],
+      "copies": 257,
+      "salary_left": null,
+      "best_rank": 14567
+     },
+     {
+      "cpt": "Jalen Hurts",
+      "flex": [
+       "Cairo Santos",
+       "D'Andre Swift",
+       "Dontayvion Wicks",
+       "Eagles",
+       "Saquon Barkley"
+      ],
+      "copies": 246,
+      "salary_left": null,
+      "best_rank": 31891
+     },
+     {
+      "cpt": "Jalen Hurts",
+      "flex": [
+       "Cairo Santos",
+       "DeVonta Smith",
+       "Dontayvion Wicks",
+       "Kalif Raymond",
+       "Saquon Barkley"
+      ],
+      "copies": 236,
+      "salary_left": null,
+      "best_rank": 7624
+     },
+     {
+      "cpt": "Saquon Barkley",
+      "flex": [
+       "D'Andre Swift",
+       "Dontayvion Wicks",
+       "Eagles",
+       "Jake Elliott",
+       "Jalen Hurts"
+      ],
+      "copies": 208,
+      "salary_left": null,
+      "best_rank": 44456
+     },
+     {
+      "cpt": "Dontayvion Wicks",
+      "flex": [
+       "Case Keenum",
+       "D'Andre Swift",
+       "DeVonta Smith",
+       "Jalen Hurts",
+       "Kalif Raymond"
+      ],
+      "copies": 194,
+      "salary_left": null,
+      "best_rank": 2238
+     },
+     {
+      "cpt": "Jalen Hurts",
+      "flex": [
+       "D'Andre Swift",
+       "DeVonta Smith",
+       "Dontayvion Wicks",
+       "Jake Elliott",
+       "Kalif Raymond"
+      ],
+      "copies": 194,
+      "salary_left": null,
+      "best_rank": 13469
+     },
+     {
+      "cpt": "Jalen Hurts",
+      "flex": [
+       "D'Andre Swift",
+       "Dontayvion Wicks",
+       "Kalif Raymond",
+       "Kyle Monangai",
+       "Saquon Barkley"
+      ],
+      "copies": 190,
+      "salary_left": null,
+      "best_rank": 15246
+     },
+     {
+      "cpt": "Jalen Hurts",
+      "flex": [
+       "DeVonta Smith",
+       "Dontayvion Wicks",
+       "Kyle Monangai",
+       "Saquon Barkley",
+       "Zach Ertz"
+      ],
+      "copies": 186,
+      "salary_left": null,
+      "best_rank": 36141
+     },
+     {
+      "cpt": "Dontayvion Wicks",
+      "flex": [
+       "D'Andre Swift",
+       "DeVonta Smith",
+       "Jalen Hurts",
+       "Johnny Mundt",
+       "Saquon Barkley"
+      ],
+      "copies": 175,
+      "salary_left": null,
+      "best_rank": 32432
+     },
+     {
+      "cpt": "DeVonta Smith",
+      "flex": [
+       "Dontayvion Wicks",
+       "Jake Elliott",
+       "Jalen Hurts",
+       "Kalif Raymond",
+       "Saquon Barkley"
+      ],
+      "copies": 171,
+      "salary_left": null,
+      "best_rank": 17201
+     },
+     {
+      "cpt": "D'Andre Swift",
+      "flex": [
+       "Dontayvion Wicks",
+       "Jake Elliott",
+       "Jalen Hurts",
+       "Kyle Monangai",
+       "Saquon Barkley"
+      ],
+      "copies": 171,
+      "salary_left": null,
+      "best_rank": 40732
+     },
+     {
+      "cpt": "Jalen Hurts",
+      "flex": [
+       "DeVonta Smith",
+       "Dontayvion Wicks",
+       "Kalif Raymond",
+       "Makai Lemon",
+       "Saquon Barkley"
+      ],
+      "copies": 166,
+      "salary_left": null,
+      "best_rank": 10613
+     },
+     {
+      "cpt": "Jalen Hurts",
+      "flex": [
+       "D'Andre Swift",
+       "DeVonta Smith",
+       "Dontayvion Wicks",
+       "Jake Elliott",
+       "Makai Lemon"
+      ],
+      "copies": 164,
+      "salary_left": null,
+      "best_rank": 31562
+     },
+     {
+      "cpt": "Jalen Hurts",
+      "flex": [
+       "D'Andre Swift",
+       "Dontayvion Wicks",
+       "Kyle Monangai",
+       "Makai Lemon",
+       "Saquon Barkley"
+      ],
+      "copies": 164,
+      "salary_left": null,
+      "best_rank": 33233
+     },
+     {
+      "cpt": "D'Andre Swift",
+      "flex": [
+       "DeVonta Smith",
+       "Dontayvion Wicks",
+       "Jalen Hurts",
+       "Kyle Monangai",
+       "Makai Lemon"
+      ],
+      "copies": 157,
+      "salary_left": null,
+      "best_rank": 30457
+     },
+     {
+      "cpt": "Eagles",
+      "flex": [
+       "DeVonta Smith",
+       "Dontayvion Wicks",
+       "Jalen Hurts",
+       "Kyle Monangai",
+       "Saquon Barkley"
+      ],
+      "copies": 155,
+      "salary_left": null,
+      "best_rank": 44970
+     }
+    ],
+    "winner_lineups": [
+     {
+      "cpt": "Case Keenum",
+      "flex": [
+       "Bears",
+       "DeVonta Smith",
+       "Jalen Hurts",
+       "Kalif Raymond",
+       "Luther Burden III"
+      ],
+      "copies_in_field": 3,
+      "tied_rank1_entries_with_it": 3
+     }
+    ],
+    "top_1pct": {
+     "n_entries": 484,
+     "n_distinct_lineups": 95,
+     "copies_in_field_of_top1pct_entries": {
+      "median": 10.0,
+      "mean": 21.8678,
+      "share_unique": 6.82,
+      "share_dup_ge_10": 53.93
+     }
+    }
+   },
+   "salary": {
+    "status": "NOT_AVAILABLE",
+    "reason": "no salary file exists for PHI@CHI; salary left, cap checks and every salary regression are not computed"
+   },
+   "construction": {
+    "field": {
+     "n": 47333,
+     "team_split_away_home": {
+      "n": 47318,
+      "pct": {
+       "5-1": 20.88,
+       "4-2": 35.34,
+       "3-3": 28.82,
+       "2-4": 11.12,
+       "1-5": 3.85
+      }
+     },
+     "qb_count": {
+      "n": 47318,
+      "pct": {
+       "0": 5.85,
+       "1": 71.56,
+       "2": 22.52,
+       "3": 0.07
+      }
+     },
+     "k_plus_dst_count": {
+      "n": 47318,
+      "pct": {
+       "0": 37.38,
+       "1": 44.08,
+       "2": 17.1,
+       "3": 1.28,
+       "4": 0.16
+      }
+     },
+     "cpt_position": {
+      "n": 47333,
+      "pct": {
+       "DST": 5.49,
+       "K": 1.35,
+       "QB": 28.12,
+       "RB": 32.57,
+       "TE": 4.31,
+       "UNMAPPED": 0.0,
+       "WR": 28.17
+      }
+     },
+     "cpt_pass_catcher_with_own_qb_in_flex": {
+      "n": 47332,
+      "pct": {
+       "True": 27.52,
+       "False": 72.48
+      }
+     },
+     "given_cpt_wr_te_share_with_own_qb_in_flex": {
+      "n": 15372,
+      "pct": {
+       "True": 84.74,
+       "False": 15.26
+      }
+     }
+    },
+    "top_1pct": {
+     "n": 484,
+     "team_split_away_home": {
+      "n": 484,
+      "pct": {
+       "5-1": 0.0,
+       "4-2": 0.0,
+       "3-3": 31.82,
+       "2-4": 46.69,
+       "1-5": 21.49
+      }
+     },
+     "qb_count": {
+      "n": 484,
+      "pct": {
+       "0": 0.0,
+       "1": 16.74,
+       "2": 83.26,
+       "3": 0.0
+      }
+     },
+     "k_plus_dst_count": {
+      "n": 484,
+      "pct": {
+       "0": 63.84,
+       "1": 33.26,
+       "2": 2.89,
+       "3": 0.0,
+       "4": 0.0
+      }
+     },
+     "cpt_position": {
+      "n": 484,
+      "pct": {
+       "QB": 44.83,
+       "RB": 9.3,
+       "WR": 45.87
+      }
+     },
+     "cpt_pass_catcher_with_own_qb_in_flex": {
+      "n": 484,
+      "pct": {
+       "True": 42.98,
+       "False": 57.02
+      }
+     },
+     "given_cpt_wr_te_share_with_own_qb_in_flex": {
+      "n": 222,
+      "pct": {
+       "True": 93.69,
+       "False": 6.31
+      }
+     }
+    },
+    "winner": {
+     "n": 3,
+     "team_split_away_home": {
+      "n": 3,
+      "pct": {
+       "5-1": 0.0,
+       "4-2": 0.0,
+       "3-3": 0.0,
+       "2-4": 100.0,
+       "1-5": 0.0
+      }
+     },
+     "qb_count": {
+      "n": 3,
+      "pct": {
+       "0": 0.0,
+       "1": 0.0,
+       "2": 100.0,
+       "3": 0.0
+      }
+     },
+     "k_plus_dst_count": {
+      "n": 3,
+      "pct": {
+       "0": 0.0,
+       "1": 100.0,
+       "2": 0.0,
+       "3": 0.0,
+       "4": 0.0
+      }
+     },
+     "cpt_position": {
+      "n": 3,
+      "pct": {
+       "QB": 100.0
+      }
+     },
+     "cpt_pass_catcher_with_own_qb_in_flex": {
+      "n": 3,
+      "pct": {
+       "True": 0.0,
+       "False": 100.0
+      }
+     },
+     "given_cpt_wr_te_share_with_own_qb_in_flex": {
+      "status": "NOT_AVAILABLE",
+      "reason": "no rows with this feature known"
+     },
+     "distinct_lineups": 1
+    },
+    "NOTE": "top-1% and winner are OUTCOME-CONDITIONED: their construction mix records who scored that night, not what the field should have built",
+    "excluded_for_unmapped_players": 15
+   },
+   "entrant_cohorts": {
+    "1": {
+     "n_entries": 3624,
+     "n_users": 3624,
+     "cpt_position": {
+      "n": 3624,
+      "pct": {
+       "DST": 8.53,
+       "K": 0.69,
+       "QB": 31.02,
+       "RB": 36.87,
+       "TE": 3.67,
+       "WR": 19.23
+      }
+     },
+     "sub_5pct_owned_cpt_share": 22.74,
+     "no_k_no_dst_share": {
+      "n": 3621,
+      "pct": {
+       "True": 42.89,
+       "False": 57.11
+      }
+     },
+     "mean_log10_product_ownership": -3.7419,
+     "mean_geomean_ownership_pct": 24.5858,
+     "mean_copies_of_own_lineup": 62.6371,
+     "share_unique": 10.13,
+     "salary_left": {
+      "status": "NOT_AVAILABLE",
+      "reason": "no salary file"
+     }
+    },
+    "2-20": {
+     "n_entries": 43709,
+     "n_users": 4700,
+     "cpt_position": {
+      "n": 43709,
+      "pct": {
+       "DST": 5.24,
+       "K": 1.4,
+       "QB": 27.88,
+       "RB": 32.21,
+       "TE": 4.36,
+       "UNMAPPED": 0.0,
+       "WR": 28.91
+      }
+     },
+     "sub_5pct_owned_cpt_share": 25.09,
+     "no_k_no_dst_share": {
+      "n": 43697,
+      "pct": {
+       "True": 36.92,
+       "False": 63.08
+      }
+     },
+     "mean_log10_product_ownership": -3.7998,
+     "mean_geomean_ownership_pct": 23.9702,
+     "mean_copies_of_own_lineup": 50.9647,
+     "share_unique": 11.81,
+     "salary_left": {
+      "status": "NOT_AVAILABLE",
+      "reason": "no salary file"
+     }
+    },
+    "21-150": {
+     "status": "NOT_AVAILABLE",
+     "reason": "no entrant in this contest has 21-150 entries (largest observed: 20)"
+    },
+    "at_contest_max_20": {
+     "n_entries": 29672,
+     "n_users": 1486,
+     "cpt_position": {
+      "n": 29672,
+      "pct": {
+       "DST": 3.55,
+       "K": 1.27,
+       "QB": 28.28,
+       "RB": 31.62,
+       "TE": 4.03,
+       "WR": 31.26
+      }
+     },
+     "sub_5pct_owned_cpt_share": 23.09,
+     "no_k_no_dst_share": {
+      "n": 29664,
+      "pct": {
+       "True": 33.94,
+       "False": 66.06
+      }
+     },
+     "mean_log10_product_ownership": -3.785,
+     "mean_geomean_ownership_pct": 24.0584,
+     "mean_copies_of_own_lineup": 49.4374,
+     "share_unique": 11.77,
+     "salary_left": {
+      "status": "NOT_AVAILABLE",
+      "reason": "no salary file"
+     }
+    },
+    "contest_max_entries_observed": 20,
+    "users_whose_entry_count_differs_from_their_N_in_(k/N)": 27,
+    "NOTE": "max entries is read from EntryName \"(k/N)\": N entries for that user; a bare name is 1. Entries with an empty lineup were dropped before this count, so a user can show fewer than N."
+   },
+   "estimators": {
+    "definitions": {
+     "E1": "N_filled x CPT share x product of FLEX shares, ACTUAL ownership (ORACLE ownership)",
+     "E2": "E1 x ETR seeds {'CPT_WR_WITH_OWN_QB': 2.0, 'CPT_QB_WITH_OPPOSING_DST': 0.36} (SEEDED_NOT_FITTED, ETR Showdown 101, via showdown_archetype_field.CORR_SEED)",
+     "GEO": "geomean of the six slot shares; N x GEO^6 == E1 identically, so GEO carries no separate error metric",
+     "E3*": "archetype-first generated field, ORACLE configuration (targets = actual slot ownership, archetype prior = actual field archetype rates), copies x N/K",
+     "E4*": "optimizer-exposure field over the FC projection, copies x N/K, every sigma reported, none chosen"
+    },
+    "generated_fields": {
+     "E3": {
+      "status": "NOT_AVAILABLE",
+      "reason": "E3 needs salaries (cap legality in the generator); no salary file exists for PHI@CHI"
+     },
+     "E4": {
+      "status": "NOT_AVAILABLE",
+      "reason": "E4 needs salaries and a public projection for this slate; neither exists for PHI@CHI"
+     }
+    },
+    "generator_notes": null,
+    "evaluation": {
+     "OBSERVED_ALL_UNIQUE": {
+      "n_lineups": 10273,
+      "sum_actual": 47333,
+      "E1": {
+       "median_abs_log_err": 0.5697,
+       "mean_abs_log_err": 0.6865,
+       "spearman_with_actual": 0.4447,
+       "sum_pred": 52306.4855,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 1028,
+         "mean_pred": 0.0889,
+         "mean_actual": 1.2519
+        },
+        {
+         "decile": 2,
+         "n": 1028,
+         "mean_pred": 0.3834,
+         "mean_actual": 1.6537
+        },
+        {
+         "decile": 3,
+         "n": 1028,
+         "mean_pred": 0.7877,
+         "mean_actual": 1.8366
+        },
+        {
+         "decile": 4,
+         "n": 1027,
+         "mean_pred": 1.357,
+         "mean_actual": 2.0798
+        },
+        {
+         "decile": 5,
+         "n": 1027,
+         "mean_pred": 2.1026,
+         "mean_actual": 2.6076
+        },
+        {
+         "decile": 6,
+         "n": 1027,
+         "mean_pred": 3.0248,
+         "mean_actual": 2.8861
+        },
+        {
+         "decile": 7,
+         "n": 1027,
+         "mean_pred": 4.3626,
+         "mean_actual": 3.4654
+        },
+        {
+         "decile": 8,
+         "n": 1027,
+         "mean_pred": 6.4905,
+         "mean_actual": 4.5901
+        },
+        {
+         "decile": 9,
+         "n": 1027,
+         "mean_pred": 10.2893,
+         "mean_actual": 6.5034
+        },
+        {
+         "decile": 10,
+         "n": 1027,
+         "mean_pred": 22.0433,
+         "mean_actual": 19.2093
+        }
+       ],
+       "top_decile_actual_over_pred": 0.8714,
+       "top_decile_biased_gt_2x": false
+      },
+      "E2": {
+       "median_abs_log_err": 0.5798,
+       "mean_abs_log_err": 0.7106,
+       "spearman_with_actual": 0.4531,
+       "sum_pred": 61098.0665,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 1028,
+         "mean_pred": 0.0983,
+         "mean_actual": 1.2568
+        },
+        {
+         "decile": 2,
+         "n": 1028,
+         "mean_pred": 0.4257,
+         "mean_actual": 1.6566
+        },
+        {
+         "decile": 3,
+         "n": 1028,
+         "mean_pred": 0.8843,
+         "mean_actual": 1.7578
+        },
+        {
+         "decile": 4,
+         "n": 1027,
+         "mean_pred": 1.5155,
+         "mean_actual": 2.1198
+        },
+        {
+         "decile": 5,
+         "n": 1027,
+         "mean_pred": 2.3267,
+         "mean_actual": 2.4362
+        },
+        {
+         "decile": 6,
+         "n": 1027,
+         "mean_pred": 3.3233,
+         "mean_actual": 2.9094
+        },
+        {
+         "decile": 7,
+         "n": 1027,
+         "mean_pred": 4.8087,
+         "mean_actual": 3.3817
+        },
+        {
+         "decile": 8,
+         "n": 1027,
+         "mean_pred": 7.2722,
+         "mean_actual": 4.5657
+        },
+        {
+         "decile": 9,
+         "n": 1027,
+         "mean_pred": 11.9124,
+         "mean_actual": 6.5073
+        },
+        {
+         "decile": 10,
+         "n": 1027,
+         "mean_pred": 26.9234,
+         "mean_actual": 19.4927
+        }
+       ],
+       "top_decile_actual_over_pred": 0.724,
+       "top_decile_biased_gt_2x": false
+      }
+     },
+     "TOP50_MOST_DUPLICATED": {
+      "n_lineups": 50,
+      "sum_actual": 7955,
+      "E1": {
+       "median_abs_log_err": 1.3599,
+       "mean_abs_log_err": 1.3789,
+       "spearman_with_actual": 0.4355,
+       "sum_pred": 1931.9754,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 5,
+         "mean_pred": 12.8882,
+         "mean_actual": 118.4
+        },
+        {
+         "decile": 2,
+         "n": 5,
+         "mean_pred": 20.609,
+         "mean_actual": 106.6
+        },
+        {
+         "decile": 3,
+         "n": 5,
+         "mean_pred": 24.7755,
+         "mean_actual": 106.4
+        },
+        {
+         "decile": 4,
+         "n": 5,
+         "mean_pred": 31.2935,
+         "mean_actual": 122.4
+        },
+        {
+         "decile": 5,
+         "n": 5,
+         "mean_pred": 37.6704,
+         "mean_actual": 199.2
+        },
+        {
+         "decile": 6,
+         "n": 5,
+         "mean_pred": 40.8553,
+         "mean_actual": 171.8
+        },
+        {
+         "decile": 7,
+         "n": 5,
+         "mean_pred": 44.9757,
+         "mean_actual": 156.2
+        },
+        {
+         "decile": 8,
+         "n": 5,
+         "mean_pred": 50.5776,
+         "mean_actual": 152.6
+        },
+        {
+         "decile": 9,
+         "n": 5,
+         "mean_pred": 56.7905,
+         "mean_actual": 142.8
+        },
+        {
+         "decile": 10,
+         "n": 5,
+         "mean_pred": 65.9595,
+         "mean_actual": 314.6
+        }
+       ],
+       "top_decile_actual_over_pred": 4.7696,
+       "top_decile_biased_gt_2x": true
+      },
+      "E2": {
+       "median_abs_log_err": 1.2873,
+       "mean_abs_log_err": 1.2183,
+       "spearman_with_actual": 0.3799,
+       "sum_pred": 2241.5778,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 5,
+         "mean_pred": 17.5082,
+         "mean_actual": 92.6
+        },
+        {
+         "decile": 2,
+         "n": 5,
+         "mean_pred": 22.4021,
+         "mean_actual": 131.0
+        },
+        {
+         "decile": 3,
+         "n": 5,
+         "mean_pred": 31.2387,
+         "mean_actual": 166.6
+        },
+        {
+         "decile": 4,
+         "n": 5,
+         "mean_pred": 39.4525,
+         "mean_actual": 159.4
+        },
+        {
+         "decile": 5,
+         "n": 5,
+         "mean_pred": 43.1301,
+         "mean_actual": 166.4
+        },
+        {
+         "decile": 6,
+         "n": 5,
+         "mean_pred": 47.1813,
+         "mean_actual": 157.6
+        },
+        {
+         "decile": 7,
+         "n": 5,
+         "mean_pred": 51.9433,
+         "mean_actual": 112.6
+        },
+        {
+         "decile": 8,
+         "n": 5,
+         "mean_pred": 56.7905,
+         "mean_actual": 142.8
+        },
+        {
+         "decile": 9,
+         "n": 5,
+         "mean_pred": 62.683,
+         "mean_actual": 213.8
+        },
+        {
+         "decile": 10,
+         "n": 5,
+         "mean_pred": 75.9859,
+         "mean_actual": 248.2
+        }
+       ],
+       "top_decile_actual_over_pred": 3.2664,
+       "top_decile_biased_gt_2x": true
+      }
+     },
+     "WINNER_AND_TOP1PCT_LINEUPS": {
+      "n_lineups": 95,
+      "sum_actual": 484,
+      "E1": {
+       "median_abs_log_err": 0.423,
+       "mean_abs_log_err": 0.5431,
+       "spearman_with_actual": 0.4304,
+       "sum_pred": 358.8759,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 10,
+         "mean_pred": 0.5438,
+         "mean_actual": 1.9
+        },
+        {
+         "decile": 2,
+         "n": 10,
+         "mean_pred": 1.0053,
+         "mean_actual": 2.5
+        },
+        {
+         "decile": 3,
+         "n": 10,
+         "mean_pred": 1.4262,
+         "mean_actual": 1.7
+        },
+        {
+         "decile": 4,
+         "n": 10,
+         "mean_pred": 2.1253,
+         "mean_actual": 5.1
+        },
+        {
+         "decile": 5,
+         "n": 10,
+         "mean_pred": 2.9149,
+         "mean_actual": 2.5
+        },
+        {
+         "decile": 6,
+         "n": 9,
+         "mean_pred": 3.4981,
+         "mean_actual": 2.8889
+        },
+        {
+         "decile": 7,
+         "n": 9,
+         "mean_pred": 4.141,
+         "mean_actual": 3.8889
+        },
+        {
+         "decile": 8,
+         "n": 9,
+         "mean_pred": 5.3458,
+         "mean_actual": 3.6667
+        },
+        {
+         "decile": 9,
+         "n": 9,
+         "mean_pred": 6.7371,
+         "mean_actual": 11.4444
+        },
+        {
+         "decile": 10,
+         "n": 9,
+         "mean_pred": 11.247,
+         "mean_actual": 16.6667
+        }
+       ],
+       "top_decile_actual_over_pred": 1.4819,
+       "top_decile_biased_gt_2x": false
+      },
+      "E2": {
+       "median_abs_log_err": 0.3856,
+       "mean_abs_log_err": 0.561,
+       "spearman_with_actual": 0.4426,
+       "sum_pred": 499.651,
+       "calibration_by_decile_of_estimator": [
+        {
+         "decile": 1,
+         "n": 10,
+         "mean_pred": 0.6339,
+         "mean_actual": 1.9
+        },
+        {
+         "decile": 2,
+         "n": 10,
+         "mean_pred": 1.2111,
+         "mean_actual": 1.0
+        },
+        {
+         "decile": 3,
+         "n": 10,
+         "mean_pred": 1.8471,
+         "mean_actual": 2.8
+        },
+        {
+         "decile": 4,
+         "n": 10,
+         "mean_pred": 2.6989,
+         "mean_actual": 2.5
+        },
+        {
+         "decile": 5,
+         "n": 10,
+         "mean_pred": 3.4287,
+         "mean_actual": 3.3
+        },
+        {
+         "decile": 6,
+         "n": 9,
+         "mean_pred": 4.386,
+         "mean_actual": 6.0
+        },
+        {
+         "decile": 7,
+         "n": 9,
+         "mean_pred": 5.5667,
+         "mean_actual": 3.6667
+        },
+        {
+         "decile": 8,
+         "n": 9,
+         "mean_pred": 7.2582,
+         "mean_actual": 9.0
+        },
+        {
+         "decile": 9,
+         "n": 9,
+         "mean_pred": 9.3282,
+         "mean_actual": 5.2222
+        },
+        {
+         "decile": 10,
+         "n": 9,
+         "mean_pred": 18.067,
+         "mean_actual": 17.1111
+        }
+       ],
+       "top_decile_actual_over_pred": 0.9471,
+       "top_decile_biased_gt_2x": false
+      }
+     },
+     "E3": {
+      "status": "NOT_AVAILABLE",
+      "reason": "E3 needs salaries (cap legality in the generator); no salary file exists for PHI@CHI"
+     },
+     "E4": {
+      "status": "NOT_AVAILABLE",
+      "reason": "E4 needs salaries and a public projection for this slate; neither exists for PHI@CHI"
+     }
+    },
+    "correlation_claims": {
+     "CF-2_log_count_on_log_prod_own": {
+      "n": 10273,
+      "r2": 0.1795,
+      "coef": {
+       "intercept": 3.1079,
+       "log_prod_own": 0.2372
+      },
+      "hc1_se": {
+       "intercept": 0.071,
+       "log_prod_own": 0.0066
+      },
+      "dropped_constant_columns": [],
+      "SE_CAVEAT": "HC1 standard errors treat lineups as independent; they are not (one slate, one field)"
+     },
+     "CF-2_entry_weighted_variant": {
+      "n": 47333,
+      "r2": 0.5092,
+      "coef": {
+       "intercept": 9.4416,
+       "log_prod_own": 0.773
+      },
+      "hc1_se": {
+       "intercept": 0.0534,
+       "log_prod_own": 0.0062
+      },
+      "dropped_constant_columns": [],
+      "SE_CAVEAT": "HC1 standard errors treat lineups as independent; they are not (one slate, one field)"
+     },
+     "CF-3_log_count_on_log_cpt_share_only": {
+      "n": 10273,
+      "r2": 0.018,
+      "coef": {
+       "intercept": 0.9933,
+       "log_cpt_share": 0.1057
+      },
+      "hc1_se": {
+       "intercept": 0.0223,
+       "log_cpt_share": 0.0066
+      },
+      "dropped_constant_columns": [],
+      "SE_CAVEAT": "HC1 standard errors treat lineups as independent; they are not (one slate, one field)"
+     },
+     "CF-3_log_count_on_log_flex_product_only": {
+      "n": 10273,
+      "r2": 0.1053,
+      "coef": {
+       "intercept": 2.043,
+       "log_flex_product": 0.1796
+      },
+      "hc1_se": {
+       "intercept": 0.0453,
+       "log_flex_product": 0.0054
+      },
+      "dropped_constant_columns": [],
+      "SE_CAVEAT": "HC1 standard errors treat lineups as independent; they are not (one slate, one field)"
+     },
+     "CF-3_both": {
+      "n": 10273,
+      "r2": 0.1797,
+      "coef": {
+       "intercept": 3.1059,
+       "log_cpt_share": 0.2308,
+       "log_flex_product": 0.2392
+      },
+      "hc1_se": {
+       "intercept": 0.071,
+       "log_cpt_share": 0.0078,
+       "log_flex_product": 0.0071
+      },
+      "dropped_constant_columns": [],
+      "SE_CAVEAT": "HC1 standard errors treat lineups as independent; they are not (one slate, one field)"
+     },
+     "SELECTION_CAVEAT": "observed lineups only (count >= 1); unplayed lineups are unobserved"
+    },
+    "n_generated_unobserved_lineups": 0,
+    "SELECTION_CAVEAT": "only played lineups have observable counts; on OBSERVED sets every actual >= 1, so low-predicted played lineups are necessarily under-predicted. The generated-field sets add lineups predicted but unplayed (actual 0) so over-prediction is visible."
+   },
+   "unique_lineups_csv": "nfl/postgame/showdown_history/UNIQUE_LINEUPS_PHI_CHI.csv"
+  }
+ },
+ "verdicts": [
+  {
+   "claim": "DATA-06",
+   "text": "Jaylen Warren CPT 27.4 / FLEX 51.1 (PIT_CLE)",
+   "verdict": "CONFIRMED",
+   "numbers": "DK file: CPT 29.33 / FLEX 50.22 (diff +1.93 / -0.88 pts; tolerance 2.0 pts from DATA-05's own criterion)",
+   "n": "N_all 47562"
+  },
+  {
+   "claim": "DATA-06",
+   "text": "Deshaun Watson CPT 13.4 / FLEX 57.1 (PIT_CLE)",
+   "verdict": "CONFIRMED",
+   "numbers": "DK file: CPT 12.97 / FLEX 57.02 (diff -0.43 / -0.08 pts; tolerance 2.0 pts from DATA-05's own criterion)",
+   "n": "N_all 47562"
+  },
+  {
+   "claim": "DATA-06",
+   "text": "Aaron Rodgers CPT 6.1 / FLEX 50.9 (PIT_CLE)",
+   "verdict": "FALSIFIED",
+   "numbers": "DK file: CPT 7.33 / FLEX 53.05 (diff +1.23 / +2.15 pts; tolerance 2.0 pts from DATA-05's own criterion)",
+   "n": "N_all 47562"
+  },
+  {
+   "claim": "DATA-05",
+   "text": "Jalen Hurts CPT 23.7 / FLEX 61.9 (PHI_CHI)",
+   "verdict": "CONFIRMED",
+   "numbers": "DK file: CPT 24.99 / FLEX 61.28 (diff +1.29 / -0.62 pts; tolerance 2.0 pts from DATA-05's own criterion)",
+   "n": "N_all 47562"
+  },
+  {
+   "claim": "DATA-04",
+   "text": "A displayed DK NFL Showdown contest (238K lineups) shows Bijan Robinson at 25.4% captain /...",
+   "verdict": "UNRESOLVED",
+   "numbers": "different slate (ATL vs GB); neither file here can test it",
+   "n": "0 matching contests"
+  },
+  {
+   "claim": "CPT = 0.5 x FLEX (chanzer0 default; DATA-06 conflicting_evidence)",
+   "text": "CPT ownership is half of FLEX",
+   "verdict": "FALSIFIED",
+   "numbers": "PIT@CLE: median ratio 0.1484 over 16 players with FLEX>=10%, 6.25% within 0.4-0.6; pool mass ratio 0.2; PHI@CHI: median ratio 0.1297 over 17 players with FLEX>=10%, 5.88% within 0.4-0.6; pool mass ratio 0.2 (0.2 is forced by 1 CPT + 5 FLEX)",
+   "n": "players per contest as shown"
+  },
+  {
+   "claim": "FC-08",
+   "text": "~90% of the field uses >= $49,500",
+   "verdict": "FALSIFIED",
+   "numbers": "PIT@CLE field: 49.27% (tolerance +/-5.0 pts, ASSUMED); PHI@CHI NOT_AVAILABLE (no salaries)",
+   "n": "47329 filled entries, 1 contest"
+  },
+  {
+   "claim": "FC-09",
+   "text": "~80% of the field spends exactly $50,000",
+   "verdict": "FALSIFIED",
+   "numbers": "PIT@CLE field: 11.03% (tolerance +/-5.0 pts, ASSUMED); PHI@CHI NOT_AVAILABLE (no salaries)",
+   "n": "47329 filled entries, 1 contest"
+  },
+  {
+   "claim": "FC-08 (winners)",
+   "text": "only ~45% of winning lineups use >= $49,500",
+   "verdict": "UNRESOLVED",
+   "numbers": "PIT@CLE winner entries: 100.0% (n=28 tied entries); one winner is one observation",
+   "n": "1 contest"
+  },
+  {
+   "claim": "DUP-01 (R^2)",
+   "text": "salary used vs dupes is weak (R^2 ~.16) and nonlinear",
+   "verdict": "CONFIRMED (weak); nonlinear: YES",
+   "numbers": "PIT@CLE unique lineups: linear-in-salary R^2 0.1507 vs .16 (tolerance +/-0.05, ASSUMED); salary-left bucket R^2 0.2644 (nonlinear if it beats linear by > the same margin); observed lineups only (selection)",
+   "n": "9762 unique lineups"
+  },
+  {
+   "claim": "DUP-06 vs DUP-01",
+   "text": "does $49,900 reduce dupes vs $50,000, holding ownership?",
+   "verdict": "UNRESOLVED",
+   "numbers": "coef(log count | $49,900 vs $50,000, given log prod own) = -0.129 (HC1 se 0.0824); $49,500-49,800 coef -0.4705; mean copies per unique lineup 50,000: 18.3158, 49,900: 12.6319, 49,500-49,800: 10.4725",
+   "n": "285 / 364 / 1289 unique lineups; 1 contest"
+  },
+  {
+   "claim": "CF-1",
+   "text": "Does the field over-captain QBs? (A: DFS Army field 28-35% QB CPT; B: ETR QB 24.1% of top-1%)",
+   "verdict": "UNRESOLVED",
+   "numbers": "PIT@CLE: field QB CPT 20.45% vs top-1% 18.16%; PHI@CHI: field QB CPT 28.12% vs top-1% 44.83%; field QB-CPT share inside 28-35%: [False, True]. Top-1% is outcome-conditioned, so a field-vs-top-1% gap records who scored, not a captaining mistake",
+   "n": "2 contests"
+  },
+  {
+   "claim": "CF-2",
+   "text": "product ownership vs dupes R^2: 0.55 (ETR 2022) vs 0.43 (ETR current)",
+   "verdict": "FALSIFIED (both)",
+   "numbers": "R^2 PIT@CLE 0.1465, PHI@CHI 0.1795 (log count ~ log product, unique observed lineups; nearest: ['neither', 'neither']); entry-weighted variant R^2 PIT@CLE 0.3334, PHI@CHI 0.5092; ETR unit of analysis not stated",
+   "n": "9762 / 10273 unique lineups"
+  },
+  {
+   "claim": "CF-3",
+   "text": "does CPT ownership drive dupes? (ETR: minimal)",
+   "verdict": "CONFIRMED (CPT explains less than FLEX product)",
+   "numbers": "PIT@CLE: R^2 CPT-only 0.0239 vs FLEX-product-only 0.0733; PHI@CHI: R^2 CPT-only 0.018 vs FLEX-product-only 0.1053",
+   "n": "2 contests"
+  },
+  {
+   "claim": "FC-05 (CPT RB)",
+   "text": "max-entry players captain RBs more than single-entry (31.1 vs 24.9)",
+   "verdict": "UNRESOLVED (contests disagree)",
+   "numbers": "PIT@CLE (max=20): CPT RB max-entry 40.27% vs single 32.28%; sub-5% CPT max-entry 24.95% vs single 28.25% (n 30253 / 3473); PHI@CHI (max=20): CPT RB max-entry 31.62% vs single 36.87%; sub-5% CPT max-entry 23.09% vs single 22.74% (n 29672 / 3624)",
+   "n": "2 contests; ETR sample was 37-max high-stakes"
+  },
+  {
+   "claim": "FC-05 (sub-5% CPT)",
+   "text": "single-entry over-indexes sub-5% CPTs (25.4 vs 16.3)",
+   "verdict": "UNRESOLVED (contests disagree)",
+   "numbers": "PIT@CLE (max=20): CPT RB max-entry 40.27% vs single 32.28%; sub-5% CPT max-entry 24.95% vs single 28.25% (n 30253 / 3473); PHI@CHI (max=20): CPT RB max-entry 31.62% vs single 36.87%; sub-5% CPT max-entry 23.09% vs single 22.74% (n 29672 / 3624)",
+   "n": "2 contests; ETR sample was 37-max high-stakes"
+  },
+  {
+   "claim": "E1 top-chalk-decile bias (PIT@CLE)",
+   "text": "falsify E1 if biased > 2x in the top decile of E1",
+   "verdict": "NOT FALSIFIED (within 2x)",
+   "numbers": "actual/pred in E1 top decile 0.6423; Spearman 0.4399; median |log((p+1)/(a+1))| 0.6911",
+   "n": "9762 observed unique lineups"
+  },
+  {
+   "claim": "E1 top-chalk-decile bias (PHI@CHI)",
+   "text": "falsify E1 if biased > 2x in the top decile of E1",
+   "verdict": "NOT FALSIFIED (within 2x)",
+   "numbers": "actual/pred in E1 top decile 0.8714; Spearman 0.4447; median |log((p+1)/(a+1))| 0.5697",
+   "n": "10273 observed unique lineups"
+  },
+  {
+   "claim": "E1-vs-E3 >2x flag (E3_NONE|observed)",
+   "text": "when E1 and E3 disagree by >2x, is actual closer to E3?",
+   "verdict": "CONFIRMED (E3 closer in a majority)",
+   "numbers": "3982 disagreements; actual closer to E3 in 66.5%; ORACLE configuration",
+   "n": "9762 lineups, PIT@CLE only"
+  },
+  {
+   "claim": "E1-vs-E3 >2x flag (E3_NONE|observed_plus_generated)",
+   "text": "when E1 and E3 disagree by >2x, is actual closer to E3?",
+   "verdict": "CONFIRMED (E3 closer in a majority)",
+   "numbers": "13111 disagreements; actual closer to E3 in 55.85%; ORACLE configuration",
+   "n": "27373 lineups, PIT@CLE only"
+  },
+  {
+   "claim": "E1-vs-E3 >2x flag (E3_FC08_90PCT_LE_500|observed_plus_generated)",
+   "text": "when E1 and E3 disagree by >2x, is actual closer to E3?",
+   "verdict": "FALSIFIED (E1 closer in a majority)",
+   "numbers": "6170 disagreements; actual closer to E3 in 37.23%; ORACLE configuration",
+   "n": "27373 lineups, PIT@CLE only"
+  }
+ ],
+ "atl_no_context": {
+  "atl_no_two_entry_contest": "196285161",
+  "atl_no_board_values": [
+   {
+    "file": "nfl/dfs/salaries/showdown_atl_no/BASE/SHOWDOWN_ATL_NO_DUPE_STACK_BLEND.json",
+    "sha256": "aef14d2394fcf270ae91c4ce2c83e3dcd7c3c6d87f056a6df6642cd532045578",
+    "lineups": [
+     {
+      "captain": "Chris Olave",
+      "E1": 4.28,
+      "E3": 42.4,
+      "E4": 58.8,
+      "log_E3_over_E1": 2.2932
+     },
+     {
+      "captain": "Tyler Shough",
+      "E1": 4.47,
+      "E3": 77.6,
+      "E4": 35.3,
+      "log_E3_over_E1": 2.8542
+     }
+    ]
+   },
+   {
+    "file": "nfl/dfs/salaries/showdown_atl_no/BASE/SHOWDOWN_ATL_NO_DUPE_STACK_BLEND_SAL_FC08_90PCT_LE_500.json",
+    "sha256": "2a188bab3e0ba8bccefdbe65dbbde522c514320d3a60fb927f6c7b1102859d3f",
+    "lineups": [
+     {
+      "captain": "Chris Olave",
+      "E1": 4.28,
+      "E3": 95.3,
+      "E4": 58.8,
+      "log_E3_over_E1": 3.1031
+     },
+     {
+      "captain": "Tyler Shough",
+      "E1": 4.47,
+      "E3": 115.3,
+      "E4": 35.3,
+      "log_E3_over_E1": 3.2501
+     }
+    ]
+   },
+   {
+    "file": "nfl/dfs/salaries/showdown_atl_no/FANT_OUT/SHOWDOWN_ATL_NO_DUPE_STACK_BLEND.json",
+    "sha256": "1f4043f5138f9fc21cc86d10fd3ad52b7b27dd29fc84eeaba64a0f6c45e4ccee",
+    "lineups": [
+     {
+      "captain": "Chris Olave",
+      "E1": 6.92,
+      "E3": 70.6,
+      "E4": 35.3,
+      "log_E3_over_E1": 2.3226
+     },
+     {
+      "captain": "Tyler Shough",
+      "E1": 7.45,
+      "E3": 84.7,
+      "E4": 47.1,
+      "log_E3_over_E1": 2.4309
+     }
+    ]
+   },
+   {
+    "file": "nfl/dfs/salaries/showdown_atl_no/FANT_OUT/SHOWDOWN_ATL_NO_DUPE_STACK_BLEND_SAL_FC08_90PCT_LE_500.json",
+    "sha256": "1222d82b742cb6be77187b83dc0a08b294eb346b2533e75b3a5aa55e4d19818e",
+    "lineups": [
+     {
+      "captain": "Chris Olave",
+      "E1": 6.92,
+      "E3": 76.5,
+      "E4": 35.3,
+      "log_E3_over_E1": 2.4029
+     },
+     {
+      "captain": "Tyler Shough",
+      "E1": 7.45,
+      "E3": 165.9,
+      "E4": 47.1,
+      "log_E3_over_E1": 3.1032
+     }
+    ]
+   }
+  ],
+  "pit_cle_median_abs_log_err_observed": {
+   "E1": 0.6911,
+   "E2": 0.7237,
+   "E3_NONE": 0.6931,
+   "E3_FC08_90PCT_LE_500": 0.6931,
+   "E4_sigma0.25": 0.6931,
+   "E4_sigma0.4": 0.6931,
+   "E4_sigma0.6": 0.6931
+  },
+  "pit_cle_E3_over_E1_ge_5x": {
+   "E3_NONE|observed": {
+    "n": 290,
+    "median_actual": 2.0,
+    "median_E1": 0.3171,
+    "median_E3": 5.6795,
+    "share_actual_closer_to_E3": 51.72
+   },
+   "E3_NONE|observed_plus_generated": {
+    "n": 4190,
+    "median_actual": 0.0,
+    "median_E1": 0.031,
+    "median_E3": 0.9466,
+    "share_actual_closer_to_E3": 3.58
+   },
+   "E3_FC08_90PCT_LE_500|observed": {
+    "n": 316,
+    "median_actual": 4.0,
+    "median_E1": 1.3895,
+    "median_E3": 12.7788,
+    "share_actual_closer_to_E3": 52.53
+   },
+   "E3_FC08_90PCT_LE_500|observed_plus_generated": {
+    "n": 2920,
+    "median_actual": 0.0,
+    "median_E1": 0.0282,
+    "median_E3": 0.9466,
+    "share_actual_closer_to_E3": 5.68
+   }
+  },
+  "pit_cle_E3_ge_20_and_ge_5x_E1": {
+   "E3_NONE|observed": {
+    "n": 52,
+    "median_actual": 5.5,
+    "median_E1": 1.9916,
+    "median_E3": 27.4508,
+    "share_unplayed": 0.0,
+    "share_actual_closer_to_E3": 32.69
+   },
+   "E3_NONE|observed_plus_generated": {
+    "n": 69,
+    "median_actual": 2.0,
+    "median_E1": 1.9254,
+    "median_E3": 27.4508,
+    "share_unplayed": 24.64,
+    "share_actual_closer_to_E3": 24.64
+   },
+   "E3_FC08_90PCT_LE_500|observed": {
+    "n": 122,
+    "median_actual": 12.0,
+    "median_E1": 7.2498,
+    "median_E3": 53.0085,
+    "share_unplayed": 0.0,
+    "share_actual_closer_to_E3": 31.15
+   },
+   "E3_FC08_90PCT_LE_500|observed_plus_generated": {
+    "n": 130,
+    "median_actual": 11.5,
+    "median_E1": 6.6244,
+    "median_E3": 52.5352,
+    "share_unplayed": 6.15,
+    "share_actual_closer_to_E3": 29.23
+   }
+  },
+  "NOT_SCORED": "ATL@NO is a different slate and is not scored here; this is context only"
+ },
+ "NOT_AVAILABLE": [
+  "PHI@CHI salary left, cap checks, salary regressions, DUP-01/DUP-06 tests: no salary file exists",
+  "PHI@CHI E3 (archetype field) and E4 (optimizer field): need salaries / a public projection for that slate",
+  "PHI@CHI favorite flag: no spread or implied total in the repository; none invented",
+  "PHI@CHI CPT:FLEX by salary rank: no salaries",
+  "DATA-04 (ATL vs GB 238K contest): different slate, not testable on these files",
+  "payouts / ROI: the standings export carries no prize table"
+ ],
+ "CAVEATS": [
+  "Only lineups somebody played have observable counts; on observed sets low-predicted lineups are necessarily under-predicted. Generated-field sets add predicted-but-unplayed lineups (actual 0).",
+  "E1 and E3 here use ACTUAL ownership and ACTUAL archetype rates (ORACLE). Their errors are a lower bound on what a pre-lock estimate with forecast ownership would achieve.",
+  "Top-1% and winner cohorts are conditioned on the realised outcome; their construction mix is not a statement about what the field should have built.",
+  "Both contests are large-field (~47.5k), 20-max DK Showdowns (PIT@CLE contest name from the owner export: see metadata.contest_names; PHI@CHI contest name is not on file); ledger sources describe other contest types (e.g. ETR FC-05: 37-max high-stakes, 1,000-1,500 entries).",
+  "Ledger FTA ownership (DATA-05/06) does not state which contest it comes from; a difference from this contest can be a contest difference rather than an error.",
+  "HC1 standard errors treat lineups as independent; they are not.",
+  "Median |log((pred+1)/(actual+1))| is resolution-bound for E3/E4: a generated field of K lineups cannot predict fewer than N/K copies except 0, so a played-once lineup it missed scores log 2 = 0.6931 and a lineup nobody played that it also missed scores 0. Read Spearman, the decile calibration, the top-50 set and the over-prediction block alongside the medians."
+ ]
+}
