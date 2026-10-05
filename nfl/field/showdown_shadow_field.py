@@ -141,7 +141,10 @@ def run(export, fc_csv, out_dir, absent=(), blend_draws=None):
             w.writerow([p['name'], p['dk_team'], p['position'], p['flex']['salary'], fc.get((p['name'], p['dk_team'])),
                         round(v['cpt'], 2), round(v['flex'], 2), round(v['total'], 2), LABEL])
     doc = {'ARTIFACT': 'SHOWDOWN_SHADOW_FIELD', 'label': LABEL, 'VALIDATED': False,
-           'NOT_A_FOOTBALL_INPUT': True, 'field_projection': source, 'field_projection_note': 'FLEX projection, x1.5 at CPT',
+           'NOT_A_FOOTBALL_INPUT': True, 'field_projection': source,
+           'PROMOTION_STATUS': ('NOT_PROMOTED: FC_ONLY and MEAN_OF_FC_AND_OURS are both kept and reported side by '
+                                'side. A better fit to five unverified anchor points is not validation; neither '
+                                'variant may replace the other or feed production without an owner ruling.'), 'field_projection_note': 'FLEX projection, x1.5 at CPT',
            'k_lineups': K, 'sigma_sweep': {str(s): v for s, v in sweep.items()}, 'sigma_chosen': best,
            'anchors': ANCHORS, 'anchor_source': ANCHOR_SOURCE,
            'salary_left': {'mean': round(float(np.mean(sal)), 0), 'p50': float(np.median(sal)),
@@ -163,8 +166,15 @@ def lineup_dupes(lineups, own, exact, k, field_size):
         ex = exact.get(key, 0) / k * field_size
         prod = (own.get(c, {}).get('cpt', 0) / 100.0) * math.prod(own.get(x, {}).get('flex', 0) / 100.0 for x in f)
         geo = (max(prod, 1e-12)) ** (1 / 6)
-        out.append({'pred_dupes_exact': round(ex, 1), 'pred_dupes_product': round(prod * field_size, 2),
-                    'geomean_ownership': round(geo * 100, 2)})
+        absent = [x for x in [c] + list(f) if own.get(x, {}).get('total', 0) == 0]
+        rec = {'pred_dupes_exact': round(ex, 1), 'pred_dupes_product': round(prod * field_size, 2),
+               'geomean_ownership': round(geo * 100, 2)}
+        if absent:
+            # a player the shadow field never rosters (e.g. a public projection of 0) forces both estimators to
+            # 0; that is an artifact of the field's projection, not evidence the lineup is unique
+            rec['players_absent_from_shadow_field'] = absent
+            rec['DUPES_STATUS'] = 'UNDERSTATED_PLAYER_ABSENT_FROM_SHADOW_FIELD'
+        out.append(rec)
     return out
 
 

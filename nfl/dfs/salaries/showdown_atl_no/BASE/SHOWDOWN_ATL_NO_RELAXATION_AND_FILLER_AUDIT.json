@@ -1,0 +1,3367 @@
+{
+ "ARTIFACT": "SHOWDOWN_PORTFOLIO_AUDIT",
+ "scenario_dir": "nfl/dfs/salaries/showdown_atl_no/BASE",
+ "relaxation": {
+  "196285137": {
+   "n_entries": 150,
+   "rungs": [
+    {
+     "level": 0,
+     "caps": {
+      "player": 75,
+      "captain": 45,
+      "overlap": 4
+     },
+     "built": 141,
+     "needed": 150,
+     "EFFECTIVE_HYPOTHESIS_COUNT": 80.5
+    },
+    {
+     "level": 1,
+     "caps": {
+      "player": 75,
+      "captain": 45,
+      "overlap": 5
+     },
+     "built": 144,
+     "needed": 150,
+     "EFFECTIVE_HYPOTHESIS_COUNT": 70.7
+    },
+    {
+     "level": 2,
+     "caps": {
+      "player": 98,
+      "captain": 45,
+      "overlap": 5
+     },
+     "built": 150,
+     "needed": 150,
+     "EFFECTIVE_HYPOTHESIS_COUNT": 66.3
+    }
+   ],
+   "players_above_original_cap": {
+    "Chris Olave": {
+     "n": 87,
+     "final_pct": 58.0,
+     "orig_cap_n": 75,
+     "orig_cap_pct": 50.0
+    },
+    "Bijan Robinson": {
+     "n": 93,
+     "final_pct": 62.0,
+     "orig_cap_n": 75,
+     "orig_cap_pct": 50.0
+    },
+    "Tyler Shough": {
+     "n": 98,
+     "final_pct": 65.3,
+     "orig_cap_n": 75,
+     "orig_cap_pct": 50.0
+    },
+    "Drake London": {
+     "n": 78,
+     "final_pct": 52.0,
+     "orig_cap_n": 75,
+     "orig_cap_pct": 50.0
+    }
+   },
+   "captains_above_original_cap": {},
+   "n_lineups_breaking_level0_rules": 103,
+   "affected_clusters": {
+    "by_origin": {
+     "SWAP_POLISH": 18,
+     "RELAXATION": 85
+    },
+    "by_captain": {
+     "Bijan Robinson": 23,
+     "Chris Olave": 18,
+     "Drake London": 17,
+     "Tyler Shough": 15,
+     "Juwan Johnson": 8,
+     "Alvin Kamara": 6,
+     "Devaughn Vele": 4,
+     "Michael Penix Jr.": 3,
+     "Saints": 2,
+     "Daniel Carlson": 2,
+     "Nick Folk": 1,
+     "Falcons": 1,
+     "Austin Hooper": 1,
+     "Brian Robinson Jr.": 1,
+     "Noah Fant": 1
+    },
+    "by_split": {
+     "3-3": 35,
+     "2-4": 28,
+     "4-2": 24,
+     "1-5": 13,
+     "5-1": 3
+    },
+    "by_salary_band": {
+     "49500-49900": 52,
+     "49000-49400": 27,
+     "50000": 14,
+     "48000-48900": 8,
+     "<48000": 2
+    }
+   },
+   "WHY_RELAXATION_WAS_NEEDED": "level 0 built 141/150: under a 75-entry player cap, a 45-entry captain cap and at most 4 shared players, the lawful pool near the top-tail runs out of lineups that avoid the core (Tyler Shough, Bijan Robinson, Chris Olave, Drake London)",
+   "EFFECTIVE_HYPOTHESIS_COUNT_last_unfilled_rung": 70.7,
+   "EFFECTIVE_HYPOTHESIS_COUNT_final": 66.3,
+   "affected_lineups": [
+    {
+     "captain": "Juwan Johnson",
+     "max_overlap": 5,
+     "origin": "SWAP_POLISH",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Drake London"
+     ],
+     "split": "3-3",
+     "salary": 48900,
+     "proxy": 0.0495
+    },
+    {
+     "captain": "Tyler Shough",
+     "max_overlap": 5,
+     "origin": "SWAP_POLISH",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave"
+     ],
+     "split": "1-5",
+     "salary": 49400,
+     "proxy": 0.0665
+    },
+    {
+     "captain": "Tyler Shough",
+     "max_overlap": 5,
+     "origin": "SWAP_POLISH",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave"
+     ],
+     "split": "2-4",
+     "salary": 49400,
+     "proxy": 0.0505
+    },
+    {
+     "captain": "Chris Olave",
+     "max_overlap": 5,
+     "origin": "SWAP_POLISH",
+     "over_cap_players": [
+      "Chris Olave",
+      "Drake London"
+     ],
+     "split": "3-3",
+     "salary": 47800,
+     "proxy": 0.013
+    },
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Drake London",
+      "Bijan Robinson"
+     ],
+     "split": "3-3",
+     "salary": 49900,
+     "proxy": 0.0715
+    },
+    {
+     "captain": "Drake London",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Chris Olave",
+      "Drake London"
+     ],
+     "split": "3-3",
+     "salary": 49600,
+     "proxy": 0.054
+    },
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 4,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Bijan Robinson"
+     ],
+     "split": "4-2",
+     "salary": 49500,
+     "proxy": 0.063
+    },
+    {
+     "captain": "Devaughn Vele",
+     "max_overlap": 5,
+     "origin": "SWAP_POLISH",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Bijan Robinson"
+     ],
+     "split": "1-5",
+     "salary": 49500,
+     "proxy": 0.0325
+    },
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 4,
+     "origin": "SWAP_POLISH",
+     "over_cap_players": [
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "3-3",
+     "salary": 49500,
+     "proxy": 0.0445
+    },
+    {
+     "captain": "Juwan Johnson",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Drake London"
+     ],
+     "split": "1-5",
+     "salary": 49700,
+     "proxy": 0.0515
+    },
+    {
+     "captain": "Drake London",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Drake London"
+     ],
+     "split": "4-2",
+     "salary": 49400,
+     "proxy": 0.0455
+    },
+    {
+     "captain": "Chris Olave",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave"
+     ],
+     "split": "2-4",
+     "salary": 49400,
+     "proxy": 0.043
+    },
+    {
+     "captain": "Tyler Shough",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Drake London",
+      "Bijan Robinson"
+     ],
+     "split": "5-1",
+     "salary": 50000,
+     "proxy": 0.056
+    },
+    {
+     "captain": "Drake London",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Chris Olave",
+      "Drake London"
+     ],
+     "split": "4-2",
+     "salary": 49600,
+     "proxy": 0.038
+    },
+    {
+     "captain": "Drake London",
+     "max_overlap": 4,
+     "origin": "SWAP_POLISH",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Drake London",
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "2-4",
+     "salary": 49800,
+     "proxy": 0.0965
+    },
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Drake London",
+      "Bijan Robinson"
+     ],
+     "split": "3-3",
+     "salary": 49700,
+     "proxy": 0.0675
+    },
+    {
+     "captain": "Tyler Shough",
+     "max_overlap": 5,
+     "origin": "SWAP_POLISH",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Bijan Robinson"
+     ],
+     "split": "1-5",
+     "salary": 49600,
+     "proxy": 0.081
+    },
+    {
+     "captain": "Tyler Shough",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave"
+     ],
+     "split": "3-3",
+     "salary": 50000,
+     "proxy": 0.027
+    },
+    {
+     "captain": "Drake London",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Drake London",
+      "Bijan Robinson"
+     ],
+     "split": "4-2",
+     "salary": 49400,
+     "proxy": 0.019
+    },
+    {
+     "captain": "Chris Olave",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Drake London"
+     ],
+     "split": "1-5",
+     "salary": 49200,
+     "proxy": 0.087
+    },
+    {
+     "captain": "Nick Folk",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "3-3",
+     "salary": 48700,
+     "proxy": 0.038
+    },
+    {
+     "captain": "Juwan Johnson",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Bijan Robinson"
+     ],
+     "split": "4-2",
+     "salary": 48900,
+     "proxy": 0.0315
+    },
+    {
+     "captain": "Tyler Shough",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave"
+     ],
+     "split": "2-4",
+     "salary": 49200,
+     "proxy": 0.0295
+    },
+    {
+     "captain": "Falcons",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "2-4",
+     "salary": 49200,
+     "proxy": 0.0735
+    },
+    {
+     "captain": "Drake London",
+     "max_overlap": 4,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Drake London"
+     ],
+     "split": "4-2",
+     "salary": 50000,
+     "proxy": 0.068
+    },
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 4,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "4-2",
+     "salary": 49500,
+     "proxy": 0.052
+    },
+    {
+     "captain": "Alvin Kamara",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Drake London",
+      "Bijan Robinson"
+     ],
+     "split": "3-3",
+     "salary": 48900,
+     "proxy": 0.037
+    },
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 4,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Drake London",
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "4-2",
+     "salary": 49900,
+     "proxy": 0.075
+    },
+    {
+     "captain": "Devaughn Vele",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Drake London"
+     ],
+     "split": "2-4",
+     "salary": 49900,
+     "proxy": 0.029
+    },
+    {
+     "captain": "Chris Olave",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "2-4",
+     "salary": 50000,
+     "proxy": 0.1465
+    },
+    {
+     "captain": "Chris Olave",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "4-2",
+     "salary": 49600,
+     "proxy": 0.081
+    },
+    {
+     "captain": "Chris Olave",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Chris Olave",
+      "Drake London"
+     ],
+     "split": "4-2",
+     "salary": 49600,
+     "proxy": 0.029
+    },
+    {
+     "captain": "Tyler Shough",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Drake London"
+     ],
+     "split": "2-4",
+     "salary": 50000,
+     "proxy": 0.073
+    },
+    {
+     "captain": "Drake London",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Drake London"
+     ],
+     "split": "2-4",
+     "salary": 49800,
+     "proxy": 0.0685
+    },
+    {
+     "captain": "Chris Olave",
+     "max_overlap": 4,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "2-4",
+     "salary": 50000,
+     "proxy": 0.0635
+    },
+    {
+     "captain": "Tyler Shough",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Drake London"
+     ],
+     "split": "1-5",
+     "salary": 48800,
+     "proxy": 0.0575
+    },
+    {
+     "captain": "Chris Olave",
+     "max_overlap": 4,
+     "origin": "SWAP_POLISH",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave"
+     ],
+     "split": "1-5",
+     "salary": 50000,
+     "proxy": 0.069
+    },
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Bijan Robinson"
+     ],
+     "split": "4-2",
+     "salary": 49900,
+     "proxy": 0.046
+    },
+    {
+     "captain": "Chris Olave",
+     "max_overlap": 5,
+     "origin": "SWAP_POLISH",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave"
+     ],
+     "split": "2-4",
+     "salary": 49800,
+     "proxy": 0.0575
+    },
+    {
+     "captain": "Drake London",
+     "max_overlap": 4,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Chris Olave",
+      "Drake London"
+     ],
+     "split": "4-2",
+     "salary": 49200,
+     "proxy": 0.013
+    },
+    {
+     "captain": "Alvin Kamara",
+     "max_overlap": 5,
+     "origin": "SWAP_POLISH",
+     "over_cap_players": [
+      "Chris Olave",
+      "Drake London"
+     ],
+     "split": "2-4",
+     "salary": 49300,
+     "proxy": 0.031
+    },
+    {
+     "captain": "Tyler Shough",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "1-5",
+     "salary": 49400,
+     "proxy": 0.124
+    },
+    {
+     "captain": "Tyler Shough",
+     "max_overlap": 4,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Drake London",
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "3-3",
+     "salary": 50000,
+     "proxy": 0.1175
+    },
+    {
+     "captain": "Drake London",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Drake London"
+     ],
+     "split": "3-3",
+     "salary": 49200,
+     "proxy": 0.0455
+    },
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 5,
+     "origin": "SWAP_POLISH",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "3-3",
+     "salary": 49900,
+     "proxy": 0.0545
+    },
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Drake London",
+      "Bijan Robinson"
+     ],
+     "split": "4-2",
+     "salary": 49100,
+     "proxy": 0.0415
+    },
+    {
+     "captain": "Tyler Shough",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Drake London"
+     ],
+     "split": "2-4",
+     "salary": 50000,
+     "proxy": 0.0295
+    },
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Bijan Robinson"
+     ],
+     "split": "3-3",
+     "salary": 49500,
+     "proxy": 0.054
+    },
+    {
+     "captain": "Chris Olave",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave"
+     ],
+     "split": "2-4",
+     "salary": 49400,
+     "proxy": 0.07
+    },
+    {
+     "captain": "Drake London",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Chris Olave",
+      "Drake London"
+     ],
+     "split": "3-3",
+     "salary": 49400,
+     "proxy": 0.054
+    },
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Bijan Robinson"
+     ],
+     "split": "3-3",
+     "salary": 49900,
+     "proxy": 0.047
+    },
+    {
+     "captain": "Alvin Kamara",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "2-4",
+     "salary": 49900,
+     "proxy": 0.085
+    },
+    {
+     "captain": "Chris Olave",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "3-3",
+     "salary": 49800,
+     "proxy": 0.082
+    },
+    {
+     "captain": "Saints",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Drake London",
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "3-3",
+     "salary": 49500,
+     "proxy": 0.0525
+    },
+    {
+     "captain": "Juwan Johnson",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Bijan Robinson"
+     ],
+     "split": "3-3",
+     "salary": 49300,
+     "proxy": 0.039
+    },
+    {
+     "captain": "Juwan Johnson",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave"
+     ],
+     "split": "2-4",
+     "salary": 49100,
+     "proxy": 0.036
+    },
+    {
+     "captain": "Chris Olave",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "2-4",
+     "salary": 49800,
+     "proxy": 0.0685
+    },
+    {
+     "captain": "Drake London",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Drake London"
+     ],
+     "split": "4-2",
+     "salary": 49600,
+     "proxy": 0.0345
+    },
+    {
+     "captain": "Austin Hooper",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "4-2",
+     "salary": 49000,
+     "proxy": 0.025
+    },
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Bijan Robinson"
+     ],
+     "split": "2-4",
+     "salary": 49900,
+     "proxy": 0.0605
+    },
+    {
+     "captain": "Chris Olave",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave"
+     ],
+     "split": "1-5",
+     "salary": 48800,
+     "proxy": 0.057
+    },
+    {
+     "captain": "Drake London",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Drake London"
+     ],
+     "split": "2-4",
+     "salary": 49600,
+     "proxy": 0.056
+    },
+    {
+     "captain": "Alvin Kamara",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Drake London",
+      "Bijan Robinson"
+     ],
+     "split": "3-3",
+     "salary": 49900,
+     "proxy": 0.0455
+    },
+    {
+     "captain": "Tyler Shough",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave"
+     ],
+     "split": "1-5",
+     "salary": 49600,
+     "proxy": 0.0435
+    },
+    {
+     "captain": "Michael Penix Jr.",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Bijan Robinson"
+     ],
+     "split": "3-3",
+     "salary": 49700,
+     "proxy": 0.029
+    },
+    {
+     "captain": "Drake London",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Chris Olave",
+      "Drake London"
+     ],
+     "split": "3-3",
+     "salary": 50000,
+     "proxy": 0.0195
+    },
+    {
+     "captain": "Michael Penix Jr.",
+     "max_overlap": 4,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "4-2",
+     "salary": 49700,
+     "proxy": 0.0135
+    },
+    {
+     "captain": "Saints",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Drake London"
+     ],
+     "split": "2-4",
+     "salary": 49300,
+     "proxy": 0.03
+    },
+    {
+     "captain": "Alvin Kamara",
+     "max_overlap": 5,
+     "origin": "SWAP_POLISH",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Drake London",
+      "Bijan Robinson"
+     ],
+     "split": "3-3",
+     "salary": 49100,
+     "proxy": 0.039
+    },
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "3-3",
+     "salary": 49300,
+     "proxy": 0.074
+    },
+    {
+     "captain": "Chris Olave",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Drake London"
+     ],
+     "split": "3-3",
+     "salary": 49400,
+     "proxy": 0.07
+    },
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Drake London",
+      "Bijan Robinson"
+     ],
+     "split": "4-2",
+     "salary": 49500,
+     "proxy": 0.0615
+    },
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 4,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "2-4",
+     "salary": 49900,
+     "proxy": 0.0575
+    },
+    {
+     "captain": "Drake London",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Drake London"
+     ],
+     "split": "2-4",
+     "salary": 50000,
+     "proxy": 0.035
+    },
+    {
+     "captain": "Michael Penix Jr.",
+     "max_overlap": 4,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Drake London"
+     ],
+     "split": "3-3",
+     "salary": 49900,
+     "proxy": 0.019
+    },
+    {
+     "captain": "Tyler Shough",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Bijan Robinson"
+     ],
+     "split": "3-3",
+     "salary": 49600,
+     "proxy": 0.019
+    },
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "2-4",
+     "salary": 49900,
+     "proxy": 0.088
+    },
+    {
+     "captain": "Chris Olave",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Drake London"
+     ],
+     "split": "3-3",
+     "salary": 49000,
+     "proxy": 0.056
+    },
+    {
+     "captain": "Juwan Johnson",
+     "max_overlap": 5,
+     "origin": "SWAP_POLISH",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave"
+     ],
+     "split": "1-5",
+     "salary": 46300,
+     "proxy": 0.0295
+    },
+    {
+     "captain": "Chris Olave",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave"
+     ],
+     "split": "1-5",
+     "salary": 48200,
+     "proxy": 0.0545
+    },
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 5,
+     "origin": "SWAP_POLISH",
+     "over_cap_players": [
+      "Bijan Robinson"
+     ],
+     "split": "3-3",
+     "salary": 49900,
+     "proxy": 0.028
+    },
+    {
+     "captain": "Tyler Shough",
+     "max_overlap": 5,
+     "origin": "SWAP_POLISH",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave"
+     ],
+     "split": "2-4",
+     "salary": 49000,
+     "proxy": 0.026
+    },
+    {
+     "captain": "Drake London",
+     "max_overlap": 4,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Drake London",
+      "Bijan Robinson"
+     ],
+     "split": "4-2",
+     "salary": 49000,
+     "proxy": 0.038
+    },
+    {
+     "captain": "Alvin Kamara",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "4-2",
+     "salary": 49500,
+     "proxy": 0.023
+    },
+    {
+     "captain": "Chris Olave",
+     "max_overlap": 4,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave"
+     ],
+     "split": "2-4",
+     "salary": 49800,
+     "proxy": 0.0225
+    },
+    {
+     "captain": "Brian Robinson Jr.",
+     "max_overlap": 4,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Drake London"
+     ],
+     "split": "3-3",
+     "salary": 49500,
+     "proxy": 0.01
+    },
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 5,
+     "origin": "SWAP_POLISH",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "2-4",
+     "salary": 49700,
+     "proxy": 0.0645
+    },
+    {
+     "captain": "Juwan Johnson",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "2-4",
+     "salary": 49500,
+     "proxy": 0.111
+    },
+    {
+     "captain": "Noah Fant",
+     "max_overlap": 5,
+     "origin": "SWAP_POLISH",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Drake London",
+      "Bijan Robinson"
+     ],
+     "split": "4-2",
+     "salary": 50000,
+     "proxy": 0.0215
+    },
+    {
+     "captain": "Chris Olave",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "4-2",
+     "salary": 50000,
+     "proxy": 0.051
+    },
+    {
+     "captain": "Juwan Johnson",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Drake London",
+      "Bijan Robinson"
+     ],
+     "split": "4-2",
+     "salary": 49700,
+     "proxy": 0.0485
+    },
+    {
+     "captain": "Devaughn Vele",
+     "max_overlap": 4,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "3-3",
+     "salary": 49500,
+     "proxy": 0.032
+    },
+    {
+     "captain": "Tyler Shough",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Drake London"
+     ],
+     "split": "1-5",
+     "salary": 48200,
+     "proxy": 0.023
+    },
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 4,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Bijan Robinson"
+     ],
+     "split": "3-3",
+     "salary": 49900,
+     "proxy": 0.0765
+    },
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "2-4",
+     "salary": 49900,
+     "proxy": 0.118
+    },
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "3-3",
+     "salary": 49900,
+     "proxy": 0.068
+    },
+    {
+     "captain": "Drake London",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Chris Olave",
+      "Drake London"
+     ],
+     "split": "3-3",
+     "salary": 50000,
+     "proxy": 0.046
+    },
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Bijan Robinson"
+     ],
+     "split": "4-2",
+     "salary": 49900,
+     "proxy": 0.042
+    },
+    {
+     "captain": "Daniel Carlson",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Drake London",
+      "Bijan Robinson"
+     ],
+     "split": "3-3",
+     "salary": 49200,
+     "proxy": 0.0125
+    },
+    {
+     "captain": "Devaughn Vele",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Drake London",
+      "Bijan Robinson"
+     ],
+     "split": "5-1",
+     "salary": 49100,
+     "proxy": 0.0135
+    },
+    {
+     "captain": "Daniel Carlson",
+     "max_overlap": 4,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Drake London",
+      "Chris Olave",
+      "Bijan Robinson"
+     ],
+     "split": "3-3",
+     "salary": 49600,
+     "proxy": 0.052
+    },
+    {
+     "captain": "Drake London",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Drake London",
+      "Bijan Robinson"
+     ],
+     "split": "5-1",
+     "salary": 49600,
+     "proxy": 0.052
+    },
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 5,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Drake London",
+      "Bijan Robinson"
+     ],
+     "split": "4-2",
+     "salary": 49700,
+     "proxy": 0.0425
+    }
+   ]
+  },
+  "196285160": {
+   "n_entries": 20,
+   "rungs": [
+    {
+     "level": 0,
+     "caps": {
+      "player": 10,
+      "captain": 6,
+      "overlap": 4
+     },
+     "built": 18,
+     "needed": 20,
+     "EFFECTIVE_HYPOTHESIS_COUNT": 14.3
+    },
+    {
+     "level": 1,
+     "caps": {
+      "player": 10,
+      "captain": 6,
+      "overlap": 5
+     },
+     "built": 17,
+     "needed": 20,
+     "EFFECTIVE_HYPOTHESIS_COUNT": 12.6
+    },
+    {
+     "level": 2,
+     "caps": {
+      "player": 13,
+      "captain": 6,
+      "overlap": 5
+     },
+     "built": 20,
+     "needed": 20,
+     "EFFECTIVE_HYPOTHESIS_COUNT": 14.0
+    }
+   ],
+   "players_above_original_cap": {
+    "Chris Olave": {
+     "n": 13,
+     "final_pct": 65.0,
+     "orig_cap_n": 10,
+     "orig_cap_pct": 50.0
+    },
+    "Bijan Robinson": {
+     "n": 13,
+     "final_pct": 65.0,
+     "orig_cap_n": 10,
+     "orig_cap_pct": 50.0
+    },
+    "Juwan Johnson": {
+     "n": 11,
+     "final_pct": 55.0,
+     "orig_cap_n": 10,
+     "orig_cap_pct": 50.0
+    },
+    "Tyler Shough": {
+     "n": 13,
+     "final_pct": 65.0,
+     "orig_cap_n": 10,
+     "orig_cap_pct": 50.0
+    },
+    "Alvin Kamara": {
+     "n": 11,
+     "final_pct": 55.0,
+     "orig_cap_n": 10,
+     "orig_cap_pct": 50.0
+    },
+    "Drake London": {
+     "n": 12,
+     "final_pct": 60.0,
+     "orig_cap_n": 10,
+     "orig_cap_pct": 50.0
+    }
+   },
+   "captains_above_original_cap": {},
+   "n_lineups_breaking_level0_rules": 10,
+   "affected_clusters": {
+    "by_origin": {
+     "SWAP_POLISH": 5,
+     "RELAXATION": 5
+    },
+    "by_captain": {
+     "Bijan Robinson": 3,
+     "Drake London": 3,
+     "Chris Olave": 2,
+     "Tyler Shough": 1,
+     "Juwan Johnson": 1
+    },
+    "by_split": {
+     "3-3": 5,
+     "2-4": 2,
+     "1-5": 2,
+     "4-2": 1
+    },
+    "by_salary_band": {
+     "49500-49900": 6,
+     "50000": 3,
+     "49000-49400": 1
+    }
+   },
+   "WHY_RELAXATION_WAS_NEEDED": "level 0 built 18/20: under a 10-entry player cap, a 6-entry captain cap and at most 4 shared players, the lawful pool near the top-tail runs out of lineups that avoid the core (Chris Olave, Bijan Robinson, Tyler Shough, Drake London)",
+   "EFFECTIVE_HYPOTHESIS_COUNT_last_unfilled_rung": 12.6,
+   "EFFECTIVE_HYPOTHESIS_COUNT_final": 14.0,
+   "affected_lineups": [
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 4,
+     "origin": "SWAP_POLISH",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Alvin Kamara",
+      "Bijan Robinson"
+     ],
+     "split": "2-4",
+     "salary": 49900,
+     "proxy": 0.0655
+    },
+    {
+     "captain": "Chris Olave",
+     "max_overlap": 4,
+     "origin": "SWAP_POLISH",
+     "over_cap_players": [
+      "Drake London",
+      "Tyler Shough",
+      "Juwan Johnson",
+      "Chris Olave"
+     ],
+     "split": "1-5",
+     "salary": 49200,
+     "proxy": 0.087
+    },
+    {
+     "captain": "Tyler Shough",
+     "max_overlap": 4,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Alvin Kamara",
+      "Bijan Robinson",
+      "Chris Olave"
+     ],
+     "split": "1-5",
+     "salary": 50000,
+     "proxy": 0.122
+    },
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 5,
+     "origin": "SWAP_POLISH",
+     "over_cap_players": [
+      "Alvin Kamara",
+      "Bijan Robinson",
+      "Juwan Johnson",
+      "Drake London"
+     ],
+     "split": "3-3",
+     "salary": 49900,
+     "proxy": 0.0715
+    },
+    {
+     "captain": "Bijan Robinson",
+     "max_overlap": 4,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Bijan Robinson",
+      "Juwan Johnson",
+      "Chris Olave"
+     ],
+     "split": "2-4",
+     "salary": 49900,
+     "proxy": 0.1445
+    },
+    {
+     "captain": "Drake London",
+     "max_overlap": 4,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Bijan Robinson",
+      "Drake London"
+     ],
+     "split": "4-2",
+     "salary": 50000,
+     "proxy": 0.074
+    },
+    {
+     "captain": "Juwan Johnson",
+     "max_overlap": 4,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Juwan Johnson",
+      "Alvin Kamara",
+      "Drake London",
+      "Tyler Shough",
+      "Bijan Robinson"
+     ],
+     "split": "3-3",
+     "salary": 49700,
+     "proxy": 0.0945
+    },
+    {
+     "captain": "Chris Olave",
+     "max_overlap": 4,
+     "origin": "RELAXATION",
+     "over_cap_players": [
+      "Tyler Shough",
+      "Drake London",
+      "Chris Olave"
+     ],
+     "split": "3-3",
+     "salary": 49600,
+     "proxy": 0.065
+    },
+    {
+     "captain": "Drake London",
+     "max_overlap": 4,
+     "origin": "SWAP_POLISH",
+     "over_cap_players": [
+      "Drake London",
+      "Juwan Johnson",
+      "Chris Olave"
+     ],
+     "split": "3-3",
+     "salary": 50000,
+     "proxy": 0.046
+    },
+    {
+     "captain": "Drake London",
+     "max_overlap": 4,
+     "origin": "SWAP_POLISH",
+     "over_cap_players": [
+      "Alvin Kamara",
+      "Drake London",
+      "Chris Olave"
+     ],
+     "split": "3-3",
+     "salary": 49600,
+     "proxy": 0.054
+    }
+   ]
+  },
+  "196285161": {
+   "n_entries": 2,
+   "rungs": [
+    {
+     "level": 0,
+     "caps": {
+      "player": 2,
+      "captain": 2,
+      "overlap": 4
+     },
+     "built": 2,
+     "needed": 2,
+     "EFFECTIVE_HYPOTHESIS_COUNT": 2.0
+    }
+   ],
+   "players_above_original_cap": {},
+   "captains_above_original_cap": {},
+   "n_lineups_breaking_level0_rules": 0,
+   "affected_clusters": {
+    "by_origin": {},
+    "by_captain": {},
+    "by_split": {},
+    "by_salary_band": {}
+   },
+   "WHY_RELAXATION_WAS_NEEDED": "no relaxation needed: level 0 built 2/2",
+   "EFFECTIVE_HYPOTHESIS_COUNT_last_unfilled_rung": null,
+   "EFFECTIVE_HYPOTHESIS_COUNT_final": 2.0,
+   "affected_lineups": []
+  }
+ },
+ "zero_point_fillers": {
+  "ZERO_POINT_FILLERS": [
+   "Zach Wilson"
+  ],
+  "LOW_OPPORTUNITY_SALARY_RELIEF": [
+   "Barion Brown",
+   "CJ Donaldson",
+   "Charlie Woerner",
+   "Chris Blair",
+   "Cooper Rush",
+   "Jack Strand",
+   "Kevin Austin Jr.",
+   "Nick Muse",
+   "Oscar Delp",
+   "Spencer Rattler",
+   "Treyton Welch",
+   "Tua Tagovailoa",
+   "Zachariah Branch"
+  ],
+  "lineups": [
+   {
+    "contest": "196285137",
+    "captain": "Chris Olave",
+    "lineup": [
+     "Chris Olave",
+     "Bijan Robinson",
+     "Daniel Carlson",
+     "Juwan Johnson",
+     "Treyton Welch",
+     "Tyler Shough"
+    ],
+    "salary": 50000,
+    "fillers": [
+     "Treyton Welch"
+    ],
+    "classification": {
+     "Treyton Welch": "LOW_OPPORTUNITY_SALARY_RELIEF"
+    },
+    "filler_mean": {
+     "Treyton Welch": 0.29
+    },
+    "p_first_place_proxy_when_filler_scores_0": {
+     "Treyton Welch": 0.173
+    },
+    "p_first_place_proxy_when_filler_scores_positive": {
+     "Treyton Welch": 0.2418
+    },
+    "proxy_rate": 0.1835,
+    "mean": 109.17,
+    "filler_p_scores": {
+     "Treyton Welch": 0.153
+    },
+    "filler_roster_position": {
+     "Treyton Welch": "TE"
+    },
+    "salary_unlocks": [
+     "Bijan Robinson",
+     "Juwan Johnson",
+     "Tyler Shough"
+    ],
+    "best_alternative_same_captain_most_shared": {
+     "lineup": [
+      "Chris Olave",
+      "Bijan Robinson",
+      "Daniel Carlson",
+      "Juwan Johnson",
+      "Nick Muse",
+      "Tyler Shough"
+     ],
+     "shared": 5,
+     "proxy_rate": 0.174,
+     "mean": 108.9
+    },
+    "best_alternative_same_captain_by_proxy": {
+     "lineup": [
+      "Chris Olave",
+      "Bijan Robinson",
+      "Daniel Carlson",
+      "Juwan Johnson",
+      "Nick Muse",
+      "Tyler Shough"
+     ],
+     "proxy_rate": 0.174,
+     "mean": 108.9
+    },
+    "proxy_advantage_over_best_alternative": 0.0095
+   },
+   {
+    "contest": "196285137",
+    "captain": "Drake London",
+    "lineup": [
+     "Drake London",
+     "Alvin Kamara",
+     "Bijan Robinson",
+     "Charlie Woerner",
+     "Chris Olave",
+     "Daniel Carlson"
+    ],
+    "salary": 50000,
+    "fillers": [
+     "Charlie Woerner"
+    ],
+    "classification": {
+     "Charlie Woerner": "LOW_OPPORTUNITY_SALARY_RELIEF"
+    },
+    "filler_mean": {
+     "Charlie Woerner": 0.37
+    },
+    "p_first_place_proxy_when_filler_scores_0": {
+     "Charlie Woerner": 0.0902
+    },
+    "p_first_place_proxy_when_filler_scores_positive": {
+     "Charlie Woerner": 0.0836
+    },
+    "proxy_rate": 0.089,
+    "mean": 102.89,
+    "filler_p_scores": {
+     "Charlie Woerner": 0.1795
+    },
+    "filler_roster_position": {
+     "Charlie Woerner": "TE"
+    },
+    "salary_unlocks": [
+     "Alvin Kamara",
+     "Bijan Robinson",
+     "Chris Olave"
+    ],
+    "best_alternative_same_captain_most_shared": {
+     "lineup": [
+      "Drake London",
+      "Alvin Kamara",
+      "Bijan Robinson",
+      "Chris Olave",
+      "Daniel Carlson",
+      "Nick Muse"
+     ],
+     "shared": 5,
+     "proxy_rate": 0.0855,
+     "mean": 102.54
+    },
+    "best_alternative_same_captain_by_proxy": {
+     "lineup": [
+      "Drake London",
+      "Alvin Kamara",
+      "Chris Olave",
+      "Juwan Johnson",
+      "Treyton Welch",
+      "Tyler Shough"
+     ],
+     "proxy_rate": 0.1145,
+     "mean": 105.17
+    },
+    "proxy_advantage_over_best_alternative": -0.0255
+   },
+   {
+    "contest": "196285137",
+    "captain": "Bijan Robinson",
+    "lineup": [
+     "Bijan Robinson",
+     "Alvin Kamara",
+     "Devaughn Vele",
+     "Juwan Johnson",
+     "Treyton Welch",
+     "Tyler Shough"
+    ],
+    "salary": 49700,
+    "fillers": [
+     "Treyton Welch"
+    ],
+    "classification": {
+     "Treyton Welch": "LOW_OPPORTUNITY_SALARY_RELIEF"
+    },
+    "filler_mean": {
+     "Treyton Welch": 0.29
+    },
+    "p_first_place_proxy_when_filler_scores_0": {
+     "Treyton Welch": 0.0667
+    },
+    "p_first_place_proxy_when_filler_scores_positive": {
+     "Treyton Welch": 0.0556
+    },
+    "proxy_rate": 0.065,
+    "mean": 101.29,
+    "filler_p_scores": {
+     "Treyton Welch": 0.153
+    },
+    "filler_roster_position": {
+     "Treyton Welch": "TE"
+    },
+    "salary_unlocks": [
+     "Alvin Kamara",
+     "Devaughn Vele",
+     "Juwan Johnson",
+     "Tyler Shough"
+    ],
+    "best_alternative_same_captain_most_shared": {
+     "lineup": [
+      "Bijan Robinson",
+      "Alvin Kamara",
+      "Devaughn Vele",
+      "Juwan Johnson",
+      "Nick Muse",
+      "Tyler Shough"
+     ],
+     "shared": 5,
+     "proxy_rate": 0.0635,
+     "mean": 101.02
+    },
+    "best_alternative_same_captain_by_proxy": {
+     "lineup": [
+      "Bijan Robinson",
+      "Chris Olave",
+      "Juwan Johnson",
+      "Nick Muse",
+      "Saints",
+      "Tyler Shough"
+     ],
+     "proxy_rate": 0.1525,
+     "mean": 107.96
+    },
+    "proxy_advantage_over_best_alternative": -0.0875
+   },
+   {
+    "contest": "196285137",
+    "captain": "Drake London",
+    "lineup": [
+     "Drake London",
+     "Bijan Robinson",
+     "Bryce Lance",
+     "Chris Olave",
+     "Kevin Austin Jr.",
+     "Tyler Shough"
+    ],
+    "salary": 49800,
+    "fillers": [
+     "Kevin Austin Jr."
+    ],
+    "classification": {
+     "Kevin Austin Jr.": "LOW_OPPORTUNITY_SALARY_RELIEF"
+    },
+    "filler_mean": {
+     "Kevin Austin Jr.": 0.65
+    },
+    "p_first_place_proxy_when_filler_scores_0": {
+     "Kevin Austin Jr.": 0.0875
+    },
+    "p_first_place_proxy_when_filler_scores_positive": {
+     "Kevin Austin Jr.": 0.1146
+    },
+    "proxy_rate": 0.0965,
+    "mean": 105.99,
+    "filler_p_scores": {
+     "Kevin Austin Jr.": 0.3315
+    },
+    "filler_roster_position": {
+     "Kevin Austin Jr.": "WR"
+    },
+    "salary_unlocks": [
+     "Bijan Robinson",
+     "Chris Olave",
+     "Tyler Shough"
+    ],
+    "best_alternative_same_captain_most_shared": {
+     "lineup": [
+      "Drake London",
+      "Bijan Robinson",
+      "Bryce Lance",
+      "Chris Olave",
+      "Treyton Welch",
+      "Tyler Shough"
+     ],
+     "shared": 5,
+     "proxy_rate": 0.0935,
+     "mean": 105.63
+    },
+    "best_alternative_same_captain_by_proxy": {
+     "lineup": [
+      "Drake London",
+      "Alvin Kamara",
+      "Chris Olave",
+      "Juwan Johnson",
+      "Treyton Welch",
+      "Tyler Shough"
+     ],
+     "proxy_rate": 0.1145,
+     "mean": 105.17
+    },
+    "proxy_advantage_over_best_alternative": -0.018
+   },
+   {
+    "contest": "196285137",
+    "captain": "Drake London",
+    "lineup": [
+     "Drake London",
+     "Chris Olave",
+     "Michael Penix Jr.",
+     "Nick Folk",
+     "Nick Muse",
+     "Tyler Shough"
+    ],
+    "salary": 50000,
+    "fillers": [
+     "Nick Muse"
+    ],
+    "classification": {
+     "Nick Muse": "LOW_OPPORTUNITY_SALARY_RELIEF"
+    },
+    "filler_mean": {
+     "Nick Muse": 0.02
+    },
+    "p_first_place_proxy_when_filler_scores_0": {
+     "Nick Muse": 0.0681
+    },
+    "p_first_place_proxy_when_filler_scores_positive": {
+     "Nick Muse": 0.0526
+    },
+    "proxy_rate": 0.068,
+    "mean": 99.85,
+    "filler_p_scores": {
+     "Nick Muse": 0.0095
+    },
+    "filler_roster_position": {
+     "Nick Muse": "TE"
+    },
+    "salary_unlocks": [
+     "Chris Olave",
+     "Michael Penix Jr.",
+     "Tyler Shough"
+    ],
+    "best_alternative_same_captain_most_shared": {
+     "lineup": [
+      "Drake London",
+      "Bryce Lance",
+      "Chris Olave",
+      "Juwan Johnson",
+      "Nick Folk",
+      "Tyler Shough"
+     ],
+     "shared": 4,
+     "proxy_rate": 0.092,
+     "mean": 102.38
+    },
+    "best_alternative_same_captain_by_proxy": {
+     "lineup": [
+      "Drake London",
+      "Alvin Kamara",
+      "Chris Olave",
+      "Juwan Johnson",
+      "Treyton Welch",
+      "Tyler Shough"
+     ],
+     "proxy_rate": 0.1145,
+     "mean": 105.17
+    },
+    "proxy_advantage_over_best_alternative": -0.0465
+   },
+   {
+    "contest": "196285137",
+    "captain": "Chris Olave",
+    "lineup": [
+     "Chris Olave",
+     "Alvin Kamara",
+     "Bijan Robinson",
+     "Charlie Woerner",
+     "Daniel Carlson",
+     "Tyler Shough"
+    ],
+    "salary": 50000,
+    "fillers": [
+     "Charlie Woerner"
+    ],
+    "classification": {
+     "Charlie Woerner": "LOW_OPPORTUNITY_SALARY_RELIEF"
+    },
+    "filler_mean": {
+     "Charlie Woerner": 0.37
+    },
+    "p_first_place_proxy_when_filler_scores_0": {
+     "Charlie Woerner": 0.1383
+    },
+    "p_first_place_proxy_when_filler_scores_positive": {
+     "Charlie Woerner": 0.1838
+    },
+    "proxy_rate": 0.1465,
+    "mean": 107.21,
+    "filler_p_scores": {
+     "Charlie Woerner": 0.1795
+    },
+    "filler_roster_position": {
+     "Charlie Woerner": "TE"
+    },
+    "salary_unlocks": [
+     "Alvin Kamara",
+     "Bijan Robinson",
+     "Tyler Shough"
+    ],
+    "best_alternative_same_captain_most_shared": {
+     "lineup": [
+      "Chris Olave",
+      "Alvin Kamara",
+      "Bijan Robinson",
+      "Daniel Carlson",
+      "Treyton Welch",
+      "Tyler Shough"
+     ],
+     "shared": 5,
+     "proxy_rate": 0.141,
+     "mean": 107.14
+    },
+    "best_alternative_same_captain_by_proxy": {
+     "lineup": [
+      "Chris Olave",
+      "Bijan Robinson",
+      "Daniel Carlson",
+      "Juwan Johnson",
+      "Treyton Welch",
+      "Tyler Shough"
+     ],
+     "proxy_rate": 0.1835,
+     "mean": 109.17
+    },
+    "proxy_advantage_over_best_alternative": -0.037
+   },
+   {
+    "contest": "196285137",
+    "captain": "Drake London",
+    "lineup": [
+     "Drake London",
+     "Bijan Robinson",
+     "Michael Penix Jr.",
+     "Nick Muse",
+     "Noah Fant",
+     "Tyler Shough"
+    ],
+    "salary": 50000,
+    "fillers": [
+     "Nick Muse"
+    ],
+    "classification": {
+     "Nick Muse": "LOW_OPPORTUNITY_SALARY_RELIEF"
+    },
+    "filler_mean": {
+     "Nick Muse": 0.02
+    },
+    "p_first_place_proxy_when_filler_scores_0": {
+     "Nick Muse": 0.0565
+    },
+    "p_first_place_proxy_when_filler_scores_positive": {
+     "Nick Muse": 0.0
+    },
+    "proxy_rate": 0.056,
+    "mean": 98.88,
+    "filler_p_scores": {
+     "Nick Muse": 0.0095
+    },
+    "filler_roster_position": {
+     "Nick Muse": "TE"
+    },
+    "salary_unlocks": [
+     "Bijan Robinson",
+     "Michael Penix Jr.",
+     "Tyler Shough"
+    ],
+    "best_alternative_same_captain_most_shared": {
+     "lineup": [
+      "Drake London",
+      "Austin Hooper",
+      "Bijan Robinson",
+      "Bryce Lance",
+      "Michael Penix Jr.",
+      "Tyler Shough"
+     ],
+     "shared": 4,
+     "proxy_rate": 0.074,
+     "mean": 100.25
+    },
+    "best_alternative_same_captain_by_proxy": {
+     "lineup": [
+      "Drake London",
+      "Alvin Kamara",
+      "Chris Olave",
+      "Juwan Johnson",
+      "Treyton Welch",
+      "Tyler Shough"
+     ],
+     "proxy_rate": 0.1145,
+     "mean": 105.17
+    },
+    "proxy_advantage_over_best_alternative": -0.0585
+   },
+   {
+    "contest": "196285137",
+    "captain": "Drake London",
+    "lineup": [
+     "Drake London",
+     "Devaughn Vele",
+     "Juwan Johnson",
+     "Kevin Austin Jr.",
+     "Michael Penix Jr.",
+     "Tyler Shough"
+    ],
+    "salary": 49600,
+    "fillers": [
+     "Kevin Austin Jr."
+    ],
+    "classification": {
+     "Kevin Austin Jr.": "LOW_OPPORTUNITY_SALARY_RELIEF"
+    },
+    "filler_mean": {
+     "Kevin Austin Jr.": 0.65
+    },
+    "p_first_place_proxy_when_filler_scores_0": {
+     "Kevin Austin Jr.": 0.0299
+    },
+    "p_first_place_proxy_when_filler_scores_positive": {
+     "Kevin Austin Jr.": 0.0422
+    },
+    "proxy_rate": 0.034,
+    "mean": 93.92,
+    "filler_p_scores": {
+     "Kevin Austin Jr.": 0.3315
+    },
+    "filler_roster_position": {
+     "Kevin Austin Jr.": "WR"
+    },
+    "salary_unlocks": [
+     "Devaughn Vele",
+     "Juwan Johnson",
+     "Michael Penix Jr.",
+     "Tyler Shough"
+    ],
+    "best_alternative_same_captain_most_shared": {
+     "lineup": [
+      "Drake London",
+      "Alvin Kamara",
+      "Bryce Lance",
+      "Juwan Johnson",
+      "Michael Penix Jr.",
+      "Tyler Shough"
+     ],
+     "shared": 4,
+     "proxy_rate": 0.0685,
+     "mean": 98.64
+    },
+    "best_alternative_same_captain_by_proxy": {
+     "lineup": [
+      "Drake London",
+      "Alvin Kamara",
+      "Chris Olave",
+      "Juwan Johnson",
+      "Treyton Welch",
+      "Tyler Shough"
+     ],
+     "proxy_rate": 0.1145,
+     "mean": 105.17
+    },
+    "proxy_advantage_over_best_alternative": -0.0805
+   },
+   {
+    "contest": "196285137",
+    "captain": "Tyler Shough",
+    "lineup": [
+     "Tyler Shough",
+     "Bijan Robinson",
+     "Chris Olave",
+     "Juwan Johnson",
+     "Kevin Austin Jr.",
+     "Saints"
+    ],
+    "salary": 49400,
+    "fillers": [
+     "Kevin Austin Jr."
+    ],
+    "classification": {
+     "Kevin Austin Jr.": "LOW_OPPORTUNITY_SALARY_RELIEF"
+    },
+    "filler_mean": {
+     "Kevin Austin Jr.": 0.65
+    },
+    "p_first_place_proxy_when_filler_scores_0": {
+     "Kevin Austin Jr.": 0.1122
+    },
+    "p_first_place_proxy_when_filler_scores_positive": {
+     "Kevin Austin Jr.": 0.1478
+    },
+    "proxy_rate": 0.124,
+    "mean": 106.43,
+    "filler_p_scores": {
+     "Kevin Austin Jr.": 0.3315
+    },
+    "filler_roster_position": {
+     "Kevin Austin Jr.": "WR"
+    },
+    "salary_unlocks": [
+     "Bijan Robinson",
+     "Chris Olave",
+     "Juwan Johnson"
+    ],
+    "best_alternative_same_captain_most_shared": {
+     "lineup": [
+      "Tyler Shough",
+      "Bijan Robinson",
+      "CJ Donaldson",
+      "Chris Olave",
+      "Juwan Johnson",
+      "Saints"
+     ],
+     "shared": 5,
+     "proxy_rate": 0.1175,
+     "mean": 106.32
+    },
+    "best_alternative_same_captain_by_proxy": {
+     "lineup": [
+      "Tyler Shough",
+      "Bijan Robinson",
+      "Chris Olave",
+      "Juwan Johnson",
+      "Nick Folk",
+      "Nick Muse"
+     ],
+     "proxy_rate": 0.144,
+     "mean": 107.46
+    },
+    "proxy_advantage_over_best_alternative": -0.02
+   },
+   {
+    "contest": "196285137",
+    "captain": "Tyler Shough",
+    "lineup": [
+     "Tyler Shough",
+     "Austin Hooper",
+     "Bijan Robinson",
+     "Chris Olave",
+     "Drake London",
+     "Treyton Welch"
+    ],
+    "salary": 50000,
+    "fillers": [
+     "Treyton Welch"
+    ],
+    "classification": {
+     "Treyton Welch": "LOW_OPPORTUNITY_SALARY_RELIEF"
+    },
+    "filler_mean": {
+     "Treyton Welch": 0.29
+    },
+    "p_first_place_proxy_when_filler_scores_0": {
+     "Treyton Welch": 0.108
+    },
+    "p_first_place_proxy_when_filler_scores_positive": {
+     "Treyton Welch": 0.1699
+    },
+    "proxy_rate": 0.1175,
+    "mean": 107.9,
+    "filler_p_scores": {
+     "Treyton Welch": 0.153
+    },
+    "filler_roster_position": {
+     "Treyton Welch": "TE"
+    },
+    "salary_unlocks": [
+     "Bijan Robinson",
+     "Chris Olave",
+     "Drake London"
+    ],
+    "best_alternative_same_captain_most_shared": {
+     "lineup": [
+      "Tyler Shough",
+      "Austin Hooper",
+      "Bijan Robinson",
+      "Chris Olave",
+      "Drake London",
+      "Nick Muse"
+     ],
+     "shared": 5,
+     "proxy_rate": 0.1095,
+     "mean": 107.62
+    },
+    "best_alternative_same_captain_by_proxy": {
+     "lineup": [
+      "Tyler Shough",
+      "Bijan Robinson",
+      "Chris Olave",
+      "Juwan Johnson",
+      "Nick Folk",
+      "Nick Muse"
+     ],
+     "proxy_rate": 0.144,
+     "mean": 107.46
+    },
+    "proxy_advantage_over_best_alternative": -0.0265
+   },
+   {
+    "contest": "196285137",
+    "captain": "Bijan Robinson",
+    "lineup": [
+     "Bijan Robinson",
+     "Brian Robinson Jr.",
+     "Chris Olave",
+     "Devaughn Vele",
+     "Treyton Welch",
+     "Tyler Shough"
+    ],
+    "salary": 49900,
+    "fillers": [
+     "Treyton Welch"
+    ],
+    "classification": {
+     "Treyton Welch": "LOW_OPPORTUNITY_SALARY_RELIEF"
+    },
+    "filler_mean": {
+     "Treyton Welch": 0.29
+    },
+    "p_first_place_proxy_when_filler_scores_0": {
+     "Treyton Welch": 0.0537
+    },
+    "p_first_place_proxy_when_filler_scores_positive": {
+     "Treyton Welch": 0.0784
+    },
+    "proxy_rate": 0.0575,
+    "mean": 101.76,
+    "filler_p_scores": {
+     "Treyton Welch": 0.153
+    },
+    "filler_roster_position": {
+     "Treyton Welch": "TE"
+    },
+    "salary_unlocks": [
+     "Chris Olave",
+     "Devaughn Vele",
+     "Tyler Shough"
+    ],
+    "best_alternative_same_captain_most_shared": {
+     "lineup": [
+      "Bijan Robinson",
+      "Brian Robinson Jr.",
+      "Chris Olave",
+      "Devaughn Vele",
+      "Nick Muse",
+      "Tyler Shough"
+     ],
+     "shared": 5,
+     "proxy_rate": 0.053,
+     "mean": 101.48
+    },
+    "best_alternative_same_captain_by_proxy": {
+     "lineup": [
+      "Bijan Robinson",
+      "Chris Olave",
+      "Juwan Johnson",
+      "Nick Muse",
+      "Saints",
+      "Tyler Shough"
+     ],
+     "proxy_rate": 0.1525,
+     "mean": 107.96
+    },
+    "proxy_advantage_over_best_alternative": -0.095
+   },
+   {
+    "contest": "196285137",
+    "captain": "Drake London",
+    "lineup": [
+     "Drake London",
+     "Alvin Kamara",
+     "Bijan Robinson",
+     "Kevin Austin Jr.",
+     "Michael Penix Jr.",
+     "Nick Folk"
+    ],
+    "salary": 49000,
+    "fillers": [
+     "Kevin Austin Jr."
+    ],
+    "classification": {
+     "Kevin Austin Jr.": "LOW_OPPORTUNITY_SALARY_RELIEF"
+    },
+    "filler_mean": {
+     "Kevin Austin Jr.": 0.65
+    },
+    "p_first_place_proxy_when_filler_scores_0": {
+     "Kevin Austin Jr.": 0.0299
+    },
+    "p_first_place_proxy_when_filler_scores_positive": {
+     "Kevin Austin Jr.": 0.0543
+    },
+    "proxy_rate": 0.038,
+    "mean": 93.92,
+    "filler_p_scores": {
+     "Kevin Austin Jr.": 0.3315
+    },
+    "filler_roster_position": {
+     "Kevin Austin Jr.": "WR"
+    },
+    "salary_unlocks": [
+     "Alvin Kamara",
+     "Bijan Robinson",
+     "Michael Penix Jr."
+    ],
+    "best_alternative_same_captain_most_shared": {
+     "lineup": [
+      "Drake London",
+      "Alvin Kamara",
+      "Bijan Robinson",
+      "Daniel Carlson",
+      "Michael Penix Jr.",
+      "Olamide Zaccheaus"
+     ],
+     "shared": 4,
+     "proxy_rate": 0.064,
+     "mean": 96.07
+    },
+    "best_alternative_same_captain_by_proxy": {
+     "lineup": [
+      "Drake London",
+      "Alvin Kamara",
+      "Chris Olave",
+      "Juwan Johnson",
+      "Treyton Welch",
+      "Tyler Shough"
+     ],
+     "proxy_rate": 0.1145,
+     "mean": 105.17
+    },
+    "proxy_advantage_over_best_alternative": -0.0765
+   },
+   {
+    "contest": "196285137",
+    "captain": "Juwan Johnson",
+    "lineup": [
+     "Juwan Johnson",
+     "Bijan Robinson",
+     "Chris Olave",
+     "Kevin Austin Jr.",
+     "Nick Folk",
+     "Tyler Shough"
+    ],
+    "salary": 49500,
+    "fillers": [
+     "Kevin Austin Jr."
+    ],
+    "classification": {
+     "Kevin Austin Jr.": "LOW_OPPORTUNITY_SALARY_RELIEF"
+    },
+    "filler_mean": {
+     "Kevin Austin Jr.": 0.65
+    },
+    "p_first_place_proxy_when_filler_scores_0": {
+     "Kevin Austin Jr.": 0.101
+    },
+    "p_first_place_proxy_when_filler_scores_positive": {
+     "Kevin Austin Jr.": 0.1312
+    },
+    "proxy_rate": 0.111,
+    "mean": 104.67,
+    "filler_p_scores": {
+     "Kevin Austin Jr.": 0.3315
+    },
+    "filler_roster_position": {
+     "Kevin Austin Jr.": "WR"
+    },
+    "salary_unlocks": [
+     "Bijan Robinson",
+     "Chris Olave",
+     "Tyler Shough"
+    ],
+    "best_alternative_same_captain_most_shared": {
+     "lineup": [
+      "Juwan Johnson",
+      "Barion Brown",
+      "Bijan Robinson",
+      "Chris Olave",
+      "Nick Folk",
+      "Tyler Shough"
+     ],
+     "shared": 5,
+     "proxy_rate": 0.1015,
+     "mean": 104.3
+    },
+    "best_alternative_same_captain_by_proxy": {
+     "lineup": [
+      "Juwan Johnson",
+      "Bijan Robinson",
+      "Bryce Lance",
+      "Chris Olave",
+      "Daniel Carlson",
+      "Tyler Shough"
+     ],
+     "proxy_rate": 0.1175,
+     "mean": 107.04
+    },
+    "proxy_advantage_over_best_alternative": -0.0065
+   },
+   {
+    "contest": "196285137",
+    "captain": "Devaughn Vele",
+    "lineup": [
+     "Devaughn Vele",
+     "Bijan Robinson",
+     "Chris Olave",
+     "Nick Folk",
+     "Nick Muse",
+     "Tyler Shough"
+    ],
+    "salary": 49500,
+    "fillers": [
+     "Nick Muse"
+    ],
+    "classification": {
+     "Nick Muse": "LOW_OPPORTUNITY_SALARY_RELIEF"
+    },
+    "filler_mean": {
+     "Nick Muse": 0.02
+    },
+    "p_first_place_proxy_when_filler_scores_0": {
+     "Nick Muse": 0.0318
+    },
+    "p_first_place_proxy_when_filler_scores_positive": {
+     "Nick Muse": 0.0526
+    },
+    "proxy_rate": 0.032,
+    "mean": 96.79,
+    "filler_p_scores": {
+     "Nick Muse": 0.0095
+    },
+    "filler_roster_position": {
+     "Nick Muse": "TE"
+    },
+    "salary_unlocks": [
+     "Bijan Robinson",
+     "Chris Olave",
+     "Tyler Shough"
+    ],
+    "best_alternative_same_captain_most_shared": {
+     "lineup": [
+      "Devaughn Vele",
+      "Bijan Robinson",
+      "Chris Olave",
+      "Nick Folk",
+      "Treyton Welch",
+      "Tyler Shough"
+     ],
+     "shared": 5,
+     "proxy_rate": 0.035,
+     "mean": 97.07
+    },
+    "best_alternative_same_captain_by_proxy": {
+     "lineup": [
+      "Devaughn Vele",
+      "Bijan Robinson",
+      "Bryce Lance",
+      "Chris Olave",
+      "Saints",
+      "Tyler Shough"
+     ],
+     "proxy_rate": 0.0365,
+     "mean": 97.69
+    },
+    "proxy_advantage_over_best_alternative": -0.0045
+   },
+   {
+    "contest": "196285137",
+    "captain": "Bijan Robinson",
+    "lineup": [
+     "Bijan Robinson",
+     "Alvin Kamara",
+     "Charlie Woerner",
+     "Chris Olave",
+     "Saints",
+     "Tyler Shough"
+    ],
+    "salary": 49900,
+    "fillers": [
+     "Charlie Woerner"
+    ],
+    "classification": {
+     "Charlie Woerner": "LOW_OPPORTUNITY_SALARY_RELIEF"
+    },
+    "filler_mean": {
+     "Charlie Woerner": 0.37
+    },
+    "p_first_place_proxy_when_filler_scores_0": {
+     "Charlie Woerner": 0.1152
+    },
+    "p_first_place_proxy_when_filler_scores_positive": {
+     "Charlie Woerner": 0.1309
+    },
+    "proxy_rate": 0.118,
+    "mean": 106.27,
+    "filler_p_scores": {
+     "Charlie Woerner": 0.1795
+    },
+    "filler_roster_position": {
+     "Charlie Woerner": "TE"
+    },
+    "salary_unlocks": [
+     "Alvin Kamara",
+     "Chris Olave",
+     "Tyler Shough"
+    ],
+    "best_alternative_same_captain_most_shared": {
+     "lineup": [
+      "Bijan Robinson",
+      "Alvin Kamara",
+      "Chris Olave",
+      "Nick Muse",
+      "Saints",
+      "Tyler Shough"
+     ],
+     "shared": 5,
+     "proxy_rate": 0.1115,
+     "mean": 105.92
+    },
+    "best_alternative_same_captain_by_proxy": {
+     "lineup": [
+      "Bijan Robinson",
+      "Chris Olave",
+      "Juwan Johnson",
+      "Saints",
+      "Treyton Welch",
+      "Tyler Shough"
+     ],
+     "proxy_rate": 0.1575,
+     "mean": 108.23
+    },
+    "proxy_advantage_over_best_alternative": -0.0395
+   },
+   {
+    "contest": "196285137",
+    "captain": "Daniel Carlson",
+    "lineup": [
+     "Daniel Carlson",
+     "Bijan Robinson",
+     "Chris Olave",
+     "Drake London",
+     "Kevin Austin Jr.",
+     "Michael Penix Jr."
+    ],
+    "salary": 49600,
+    "fillers": [
+     "Kevin Austin Jr."
+    ],
+    "classification": {
+     "Kevin Austin Jr.": "LOW_OPPORTUNITY_SALARY_RELIEF"
+    },
+    "filler_mean": {
+     "Kevin Austin Jr.": 0.65
+    },
+    "p_first_place_proxy_when_filler_scores_0": {
+     "Kevin Austin Jr.": 0.0434
+    },
+    "p_first_place_proxy_when_filler_scores_positive": {
+     "Kevin Austin Jr.": 0.0694
+    },
+    "proxy_rate": 0.052,
+    "mean": 99.59,
+    "filler_p_scores": {
+     "Kevin Austin Jr.": 0.3315
+    },
+    "filler_roster_position": {
+     "Kevin Austin Jr.": "WR"
+    },
+    "salary_unlocks": [
+     "Bijan Robinson",
+     "Chris Olave",
+     "Drake London",
+     "Michael Penix Jr."
+    ],
+    "best_alternative_same_captain_most_shared": {
+     "lineup": [
+      "Daniel Carlson",
+      "Bijan Robinson",
+      "Charlie Woerner",
+      "Chris Olave",
+      "Drake London",
+      "Michael Penix Jr."
+     ],
+     "shared": 5,
+     "proxy_rate": 0.052,
+     "mean": 99.3
+    },
+    "best_alternative_same_captain_by_proxy": {
+     "lineup": [
+      "Daniel Carlson",
+      "Bijan Robinson",
+      "Charlie Woerner",
+      "Chris Olave",
+      "Drake London",
+      "Tyler Shough"
+     ],
+     "proxy_rate": 0.0705,
+     "mean": 106.12
+    },
+    "proxy_advantage_over_best_alternative": -0.0185
+   },
+   {
+    "contest": "196285160",
+    "captain": "Chris Olave",
+    "lineup": [
+     "Chris Olave",
+     "Bijan Robinson",
+     "Daniel Carlson",
+     "Juwan Johnson",
+     "Treyton Welch",
+     "Tyler Shough"
+    ],
+    "salary": 50000,
+    "fillers": [
+     "Treyton Welch"
+    ],
+    "classification": {
+     "Treyton Welch": "LOW_OPPORTUNITY_SALARY_RELIEF"
+    },
+    "filler_mean": {
+     "Treyton Welch": 0.29
+    },
+    "p_first_place_proxy_when_filler_scores_0": {
+     "Treyton Welch": 0.173
+    },
+    "p_first_place_proxy_when_filler_scores_positive": {
+     "Treyton Welch": 0.2418
+    },
+    "proxy_rate": 0.1835,
+    "mean": 109.17,
+    "filler_p_scores": {
+     "Treyton Welch": 0.153
+    },
+    "filler_roster_position": {
+     "Treyton Welch": "TE"
+    },
+    "salary_unlocks": [
+     "Bijan Robinson",
+     "Juwan Johnson",
+     "Tyler Shough"
+    ],
+    "best_alternative_same_captain_most_shared": {
+     "lineup": [
+      "Chris Olave",
+      "Bijan Robinson",
+      "Daniel Carlson",
+      "Juwan Johnson",
+      "Nick Muse",
+      "Tyler Shough"
+     ],
+     "shared": 5,
+     "proxy_rate": 0.174,
+     "mean": 108.9
+    },
+    "best_alternative_same_captain_by_proxy": {
+     "lineup": [
+      "Chris Olave",
+      "Bijan Robinson",
+      "Daniel Carlson",
+      "Juwan Johnson",
+      "Nick Muse",
+      "Tyler Shough"
+     ],
+     "proxy_rate": 0.174,
+     "mean": 108.9
+    },
+    "proxy_advantage_over_best_alternative": 0.0095
+   },
+   {
+    "contest": "196285160",
+    "captain": "Tyler Shough",
+    "lineup": [
+     "Tyler Shough",
+     "Alvin Kamara",
+     "Chris Olave",
+     "Drake London",
+     "Juwan Johnson",
+     "Treyton Welch"
+    ],
+    "salary": 49800,
+    "fillers": [
+     "Treyton Welch"
+    ],
+    "classification": {
+     "Treyton Welch": "LOW_OPPORTUNITY_SALARY_RELIEF"
+    },
+    "filler_mean": {
+     "Treyton Welch": 0.29
+    },
+    "p_first_place_proxy_when_filler_scores_0": {
+     "Treyton Welch": 0.1175
+    },
+    "p_first_place_proxy_when_filler_scores_positive": {
+     "Treyton Welch": 0.1895
+    },
+    "proxy_rate": 0.1285,
+    "mean": 106.28,
+    "filler_p_scores": {
+     "Treyton Welch": 0.153
+    },
+    "filler_roster_position": {
+     "Treyton Welch": "TE"
+    },
+    "salary_unlocks": [
+     "Alvin Kamara",
+     "Chris Olave",
+     "Drake London",
+     "Juwan Johnson"
+    ],
+    "best_alternative_same_captain_most_shared": {
+     "lineup": [
+      "Tyler Shough",
+      "Alvin Kamara",
+      "Chris Olave",
+      "Drake London",
+      "Juwan Johnson",
+      "Nick Muse"
+     ],
+     "shared": 5,
+     "proxy_rate": 0.1225,
+     "mean": 106.0
+    },
+    "best_alternative_same_captain_by_proxy": {
+     "lineup": [
+      "Tyler Shough",
+      "Bijan Robinson",
+      "Chris Olave",
+      "Juwan Johnson",
+      "Nick Folk",
+      "Nick Muse"
+     ],
+     "proxy_rate": 0.144,
+     "mean": 107.46
+    },
+    "proxy_advantage_over_best_alternative": -0.0155
+   },
+   {
+    "contest": "196285160",
+    "captain": "Bijan Robinson",
+    "lineup": [
+     "Bijan Robinson",
+     "Chris Olave",
+     "Falcons",
+     "Juwan Johnson",
+     "Kevin Austin Jr.",
+     "Tyler Shough"
+    ],
+    "salary": 49900,
+    "fillers": [
+     "Kevin Austin Jr."
+    ],
+    "classification": {
+     "Kevin Austin Jr.": "LOW_OPPORTUNITY_SALARY_RELIEF"
+    },
+    "filler_mean": {
+     "Kevin Austin Jr.": 0.65
+    },
+    "p_first_place_proxy_when_filler_scores_0": {
+     "Kevin Austin Jr.": 0.1324
+    },
+    "p_first_place_proxy_when_filler_scores_positive": {
+     "Kevin Austin Jr.": 0.1689
+    },
+    "proxy_rate": 0.1445,
+    "mean": 107.66,
+    "filler_p_scores": {
+     "Kevin Austin Jr.": 0.3315
+    },
+    "filler_roster_position": {
+     "Kevin Austin Jr.": "WR"
+    },
+    "salary_unlocks": [
+     "Chris Olave",
+     "Juwan Johnson",
+     "Tyler Shough"
+    ],
+    "best_alternative_same_captain_most_shared": {
+     "lineup": [
+      "Bijan Robinson",
+      "Charlie Woerner",
+      "Chris Olave",
+      "Falcons",
+      "Juwan Johnson",
+      "Tyler Shough"
+     ],
+     "shared": 5,
+     "proxy_rate": 0.1405,
+     "mean": 107.37
+    },
+    "best_alternative_same_captain_by_proxy": {
+     "lineup": [
+      "Bijan Robinson",
+      "Chris Olave",
+      "Juwan Johnson",
+      "Saints",
+      "Treyton Welch",
+      "Tyler Shough"
+     ],
+     "proxy_rate": 0.1575,
+     "mean": 108.23
+    },
+    "proxy_advantage_over_best_alternative": -0.013
+   },
+   {
+    "contest": "196285160",
+    "captain": "Chris Olave",
+    "lineup": [
+     "Chris Olave",
+     "Alvin Kamara",
+     "Bijan Robinson",
+     "Charlie Woerner",
+     "Daniel Carlson",
+     "Tyler Shough"
+    ],
+    "salary": 50000,
+    "fillers": [
+     "Charlie Woerner"
+    ],
+    "classification": {
+     "Charlie Woerner": "LOW_OPPORTUNITY_SALARY_RELIEF"
+    },
+    "filler_mean": {
+     "Charlie Woerner": 0.37
+    },
+    "p_first_place_proxy_when_filler_scores_0": {
+     "Charlie Woerner": 0.1383
+    },
+    "p_first_place_proxy_when_filler_scores_positive": {
+     "Charlie Woerner": 0.1838
+    },
+    "proxy_rate": 0.1465,
+    "mean": 107.21,
+    "filler_p_scores": {
+     "Charlie Woerner": 0.1795
+    },
+    "filler_roster_position": {
+     "Charlie Woerner": "TE"
+    },
+    "salary_unlocks": [
+     "Alvin Kamara",
+     "Bijan Robinson",
+     "Tyler Shough"
+    ],
+    "best_alternative_same_captain_most_shared": {
+     "lineup": [
+      "Chris Olave",
+      "Alvin Kamara",
+      "Bijan Robinson",
+      "Daniel Carlson",
+      "Treyton Welch",
+      "Tyler Shough"
+     ],
+     "shared": 5,
+     "proxy_rate": 0.141,
+     "mean": 107.14
+    },
+    "best_alternative_same_captain_by_proxy": {
+     "lineup": [
+      "Chris Olave",
+      "Bijan Robinson",
+      "Daniel Carlson",
+      "Juwan Johnson",
+      "Treyton Welch",
+      "Tyler Shough"
+     ],
+     "proxy_rate": 0.1835,
+     "mean": 109.17
+    },
+    "proxy_advantage_over_best_alternative": -0.037
+   },
+   {
+    "contest": "196285160",
+    "captain": "Juwan Johnson",
+    "lineup": [
+     "Juwan Johnson",
+     "Alvin Kamara",
+     "Bijan Robinson",
+     "Drake London",
+     "Nick Muse",
+     "Tyler Shough"
+    ],
+    "salary": 49700,
+    "fillers": [
+     "Nick Muse"
+    ],
+    "classification": {
+     "Nick Muse": "LOW_OPPORTUNITY_SALARY_RELIEF"
+    },
+    "filler_mean": {
+     "Nick Muse": 0.02
+    },
+    "p_first_place_proxy_when_filler_scores_0": {
+     "Nick Muse": 0.0929
+    },
+    "p_first_place_proxy_when_filler_scores_positive": {
+     "Nick Muse": 0.2632
+    },
+    "proxy_rate": 0.0945,
+    "mean": 104.9,
+    "filler_p_scores": {
+     "Nick Muse": 0.0095
+    },
+    "filler_roster_position": {
+     "Nick Muse": "TE"
+    },
+    "salary_unlocks": [
+     "Alvin Kamara",
+     "Bijan Robinson",
+     "Drake London",
+     "Tyler Shough"
+    ],
+    "best_alternative_same_captain_most_shared": {
+     "lineup": [
+      "Juwan Johnson",
+      "Alvin Kamara",
+      "Chris Olave",
+      "Drake London",
+      "Kevin Austin Jr.",
+      "Tyler Shough"
+     ],
+     "shared": 4,
+     "proxy_rate": 0.0795,
+     "mean": 103.22
+    },
+    "best_alternative_same_captain_by_proxy": {
+     "lineup": [
+      "Juwan Johnson",
+      "Bijan Robinson",
+      "Bryce Lance",
+      "Chris Olave",
+      "Daniel Carlson",
+      "Tyler Shough"
+     ],
+     "proxy_rate": 0.1175,
+     "mean": 107.04
+    },
+    "proxy_advantage_over_best_alternative": -0.023
+   },
+   {
+    "contest": "196285160",
+    "captain": "Drake London",
+    "lineup": [
+     "Drake London",
+     "Bijan Robinson",
+     "Chris Olave",
+     "Jahan Dotson",
+     "Michael Penix Jr.",
+     "Treyton Welch"
+    ],
+    "salary": 49800,
+    "fillers": [
+     "Treyton Welch"
+    ],
+    "classification": {
+     "Treyton Welch": "LOW_OPPORTUNITY_SALARY_RELIEF"
+    },
+    "filler_mean": {
+     "Treyton Welch": 0.29
+    },
+    "p_first_place_proxy_when_filler_scores_0": {
+     "Treyton Welch": 0.0744
+    },
+    "p_first_place_proxy_when_filler_scores_positive": {
+     "Treyton Welch": 0.1013
+    },
+    "proxy_rate": 0.0785,
+    "mean": 100.27,
+    "filler_p_scores": {
+     "Treyton Welch": 0.153
+    },
+    "filler_roster_position": {
+     "Treyton Welch": "TE"
+    },
+    "salary_unlocks": [
+     "Bijan Robinson",
+     "Chris Olave",
+     "Michael Penix Jr."
+    ],
+    "best_alternative_same_captain_most_shared": {
+     "lineup": [
+      "Drake London",
+      "Bijan Robinson",
+      "Chris Olave",
+      "Jahan Dotson",
+      "Michael Penix Jr.",
+      "Nick Muse"
+     ],
+     "shared": 5,
+     "proxy_rate": 0.0735,
+     "mean": 100.0
+    },
+    "best_alternative_same_captain_by_proxy": {
+     "lineup": [
+      "Drake London",
+      "Alvin Kamara",
+      "Chris Olave",
+      "Juwan Johnson",
+      "Nick Muse",
+      "Tyler Shough"
+     ],
+     "proxy_rate": 0.111,
+     "mean": 104.9
+    },
+    "proxy_advantage_over_best_alternative": -0.0325
+   },
+   {
+    "contest": "196285160",
+    "captain": "Tyler Shough",
+    "lineup": [
+     "Tyler Shough",
+     "Bijan Robinson",
+     "Chris Olave",
+     "Juwan Johnson",
+     "Nick Folk",
+     "Nick Muse"
+    ],
+    "salary": 50000,
+    "fillers": [
+     "Nick Muse"
+    ],
+    "classification": {
+     "Nick Muse": "LOW_OPPORTUNITY_SALARY_RELIEF"
+    },
+    "filler_mean": {
+     "Nick Muse": 0.02
+    },
+    "p_first_place_proxy_when_filler_scores_0": {
+     "Nick Muse": 0.1454
+    },
+    "p_first_place_proxy_when_filler_scores_positive": {
+     "Nick Muse": 0.0
+    },
+    "proxy_rate": 0.144,
+    "mean": 107.46,
+    "filler_p_scores": {
+     "Nick Muse": 0.0095
+    },
+    "filler_roster_position": {
+     "Nick Muse": "TE"
+    },
+    "salary_unlocks": [
+     "Bijan Robinson",
+     "Chris Olave",
+     "Juwan Johnson"
+    ],
+    "best_alternative_same_captain_most_shared": {
+     "lineup": [
+      "Tyler Shough",
+      "Bijan Robinson",
+      "Chris Olave",
+      "Daniel Carlson",
+      "Juwan Johnson",
+      "Kevin Austin Jr."
+     ],
+     "shared": 4,
+     "proxy_rate": 0.1435,
+     "mean": 108.53
+    },
+    "best_alternative_same_captain_by_proxy": {
+     "lineup": [
+      "Tyler Shough",
+      "Bijan Robinson",
+      "Chris Olave",
+      "Daniel Carlson",
+      "Juwan Johnson",
+      "Kevin Austin Jr."
+     ],
+     "proxy_rate": 0.1435,
+     "mean": 108.53
+    },
+    "proxy_advantage_over_best_alternative": 0.0005
+   },
+   {
+    "contest": "196285161",
+    "captain": "Chris Olave",
+    "lineup": [
+     "Chris Olave",
+     "Bijan Robinson",
+     "Daniel Carlson",
+     "Juwan Johnson",
+     "Treyton Welch",
+     "Tyler Shough"
+    ],
+    "salary": 50000,
+    "fillers": [
+     "Treyton Welch"
+    ],
+    "classification": {
+     "Treyton Welch": "LOW_OPPORTUNITY_SALARY_RELIEF"
+    },
+    "filler_mean": {
+     "Treyton Welch": 0.29
+    },
+    "p_first_place_proxy_when_filler_scores_0": {
+     "Treyton Welch": 0.173
+    },
+    "p_first_place_proxy_when_filler_scores_positive": {
+     "Treyton Welch": 0.2418
+    },
+    "proxy_rate": 0.1835,
+    "mean": 109.17,
+    "filler_p_scores": {
+     "Treyton Welch": 0.153
+    },
+    "filler_roster_position": {
+     "Treyton Welch": "TE"
+    },
+    "salary_unlocks": [
+     "Bijan Robinson",
+     "Juwan Johnson",
+     "Tyler Shough"
+    ],
+    "best_alternative_same_captain_most_shared": {
+     "lineup": [
+      "Chris Olave",
+      "Bijan Robinson",
+      "Daniel Carlson",
+      "Juwan Johnson",
+      "Nick Muse",
+      "Tyler Shough"
+     ],
+     "shared": 5,
+     "proxy_rate": 0.174,
+     "mean": 108.9
+    },
+    "best_alternative_same_captain_by_proxy": {
+     "lineup": [
+      "Chris Olave",
+      "Bijan Robinson",
+      "Daniel Carlson",
+      "Juwan Johnson",
+      "Nick Muse",
+      "Tyler Shough"
+     ],
+     "proxy_rate": 0.174,
+     "mean": 108.9
+    },
+    "proxy_advantage_over_best_alternative": 0.0095
+   },
+   {
+    "contest": "196285161",
+    "captain": "Tyler Shough",
+    "lineup": [
+     "Tyler Shough",
+     "Alvin Kamara",
+     "Chris Olave",
+     "Drake London",
+     "Juwan Johnson",
+     "Treyton Welch"
+    ],
+    "salary": 49800,
+    "fillers": [
+     "Treyton Welch"
+    ],
+    "classification": {
+     "Treyton Welch": "LOW_OPPORTUNITY_SALARY_RELIEF"
+    },
+    "filler_mean": {
+     "Treyton Welch": 0.29
+    },
+    "p_first_place_proxy_when_filler_scores_0": {
+     "Treyton Welch": 0.1175
+    },
+    "p_first_place_proxy_when_filler_scores_positive": {
+     "Treyton Welch": 0.1895
+    },
+    "proxy_rate": 0.1285,
+    "mean": 106.28,
+    "filler_p_scores": {
+     "Treyton Welch": 0.153
+    },
+    "filler_roster_position": {
+     "Treyton Welch": "TE"
+    },
+    "salary_unlocks": [
+     "Alvin Kamara",
+     "Chris Olave",
+     "Drake London",
+     "Juwan Johnson"
+    ],
+    "best_alternative_same_captain_most_shared": {
+     "lineup": [
+      "Tyler Shough",
+      "Alvin Kamara",
+      "Chris Olave",
+      "Drake London",
+      "Juwan Johnson",
+      "Nick Muse"
+     ],
+     "shared": 5,
+     "proxy_rate": 0.1225,
+     "mean": 106.0
+    },
+    "best_alternative_same_captain_by_proxy": {
+     "lineup": [
+      "Tyler Shough",
+      "Bijan Robinson",
+      "Chris Olave",
+      "Juwan Johnson",
+      "Nick Folk",
+      "Nick Muse"
+     ],
+     "proxy_rate": 0.144,
+     "mean": 107.46
+    },
+    "proxy_advantage_over_best_alternative": -0.0155
+   }
+  ],
+  "counts_by_contest": {
+   "196285137": 16,
+   "196285160": 7,
+   "196285161": 2
+  }
+ }
+}

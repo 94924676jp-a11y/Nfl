@@ -120,10 +120,13 @@ def relaxation_audit(R):
               'by_split': dict(collections.Counter(a['split'] for a in affected).most_common()),
               'by_salary_band': dict(collections.Counter(next(b for b, lo, hi in SP.SALARY_BANDS if lo <= a['salary'] <= hi)
                                                          for a in affected).most_common())}
-        why = (f"level 0 built {rungs[0]['built']}/{n}: under a {cap0['player']}-entry player cap, a "
-               f"{cap0['captain']}-entry captain cap and at most {cap0['overlap']} shared players, the lawful pool "
-               f"near the top-tail runs out of lineups that avoid the core (" +
-               ', '.join(sorted(over_p, key=lambda x: -over_p[x]['n'])[:4]) + ')')
+        core = ', '.join(sorted(over_p, key=lambda x: -over_p[x]['n'])[:4])
+        if rungs[0]['built'] >= n:
+            why = f"no relaxation needed: level 0 built {rungs[0]['built']}/{n}"
+        else:
+            why = (f"level 0 built {rungs[0]['built']}/{n}: under a {cap0['player']}-entry player cap, a "
+                   f"{cap0['captain']}-entry captain cap and at most {cap0['overlap']} shared players, the lawful pool "
+                   f"near the top-tail runs out of lineups that avoid the core ({core})")
         out[cid] = {'n_entries': n, 'rungs': rungs, 'players_above_original_cap': over_p,
                     'captains_above_original_cap': over_c, 'n_lineups_breaking_level0_rules': len(affected),
                     'affected_clusters': cl, 'WHY_RELAXATION_WAS_NEEDED': why,
@@ -202,6 +205,42 @@ def filler_audit(R):
             out['lineups'].append(rec)
     out['counts_by_contest'] = dict(collections.Counter(r['contest'] for r in out['lineups']))
     return out
+
+
+def relief_portfolio_test(R, cid, ban_names):
+    """Portfolio-level cost of forbidding players: the same ladder + swap polish on the candidate pool with the
+    banned players removed, against an UNRESTRICTED rebuild by the identical method (the rebuild's tie-break
+    uses no duplication index, so it is compared with itself, not with production)."""
+    hit, cands, by = R['hit'], R['cands'], R['by']
+    seats = [[c] + list(f) for c, f in cands]
+    n = len(R['finals'][cid])
+    n_w = hit.shape[1]
+    M = R['M']
+
+    def build(ban):
+        keep = [j for j in range(len(cands)) if not (set(seats[j]) & ban)]
+        cr = [{'first_place_proxy': float(hit[j].mean()), 'structural_duplication_index': 0} for j in keep]
+        ks = [seats[j] for j in keep]
+        P, _ = SP.ladder(hit[keep], cr, ks, n, n_w)
+        if P['short'] == 0:
+            P = SP.swap_polish(hit[keep], ks, P, n, n_w)
+        sel = [keep[j] for j in P['chosen']]
+        return {'built': len(sel), 'level': P['relaxation_level'], 'objective': round(P['objective']['value'], 4),
+                'coverage': round(float(hit[sel].any(axis=0).mean()), 4) if sel else 0.0,
+                'mean_points': round(float(M[sel].mean()), 2) if sel else None,
+                'lineups': [[by[k]['name'] for k in seats[i]] for i in sel] if n <= 2 else None}
+    ban = {k for k in by if by[k]['name'] in set(ban_names)}
+    base, alt = build(set()), build(ban)
+    prod = R['finals'][cid]
+    se = (base['coverage'] * (1 - base['coverage']) / n_w) ** 0.5
+    return {'banned': sorted(ban_names), 'production_coverage': round(float(hit[prod].any(axis=0).mean()), 4),
+            'unrestricted_same_method': base, 'without_banned': alt,
+            'objective_diff': round(alt['objective'] - base['objective'], 4),
+            'coverage_diff_pts': round(100 * (alt['coverage'] - base['coverage']), 2),
+            'mean_points_diff': (round(alt['mean_points'] - base['mean_points'], 2)
+                                 if alt['mean_points'] is not None else None),
+            'binomial_se_pts': round(100 * se, 2),
+            'MEANING': 'negative = the portfolio is worse without the banned players (objective = E[min(depth, m)])'}
 
 
 def run(export, sd):

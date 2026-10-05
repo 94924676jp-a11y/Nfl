@@ -42,7 +42,12 @@ def run(export, sd, shadow_dir):
     by, cands, hit = R['by'], R['cands'], R['hit']
     seats_of = [[c] + list(f) for c, f in cands]
     sizes = doc['field_size_estimates']
+    # earlier FC-only fields describe their source in prose; only the blend carries the MEAN_OF_FC_AND_OURS tag
+    src = 'BLEND' if doc.get('field_projection') == 'MEAN_OF_FC_AND_OURS' else 'FC_ONLY'
     board = {'ARTIFACT': 'SHOWDOWN_SHADOW_BOARD', 'label': SF.LABEL, 'VALIDATED': False, 'sigma': doc['sigma_chosen'],
+             'field_projection': doc.get('field_projection', 'FC_ONLY'), 'shadow_dir': str(shadow_dir),
+             'anchor_rmse': doc['sigma_sweep'][str(doc['sigma_chosen'])]['rmse'],
+             'PROMOTION_STATUS': 'NOT_PROMOTED (both field projections kept side by side)',
              'field_size_estimates': sizes, 'contests': {}}
     rows_own = []
     for cid, chosen in R['finals'].items():
@@ -78,6 +83,7 @@ def run(export, sd, shadow_dir):
             'pred_dupes_exact': {'mean': round(float(np.mean([x['pred_dupes_exact'] for x in d])), 1),
                                  'max': max(x['pred_dupes_exact'] for x in d),
                                  'n_over_guardrail': len(over), 'guardrail': GUARDRAIL},
+            'lineups_with_player_absent_from_shadow_field': sum(1 for x in d if x.get('players_absent_from_shadow_field')),
             'pred_dupes_product': {'mean': round(float(np.mean([x['pred_dupes_product'] for x in d])), 2),
                                    'max': max(x['pred_dupes_product'] for x in d)},
             'geomean_ownership_median': float(np.median([x['geomean_ownership'] for x in d])),
@@ -97,8 +103,9 @@ def run(export, sd, shadow_dir):
         }
         for e in lev:
             rows_own.append({'contest': cid, **e})
-    (sd / 'SHOWDOWN_ATL_NO_SHADOW_BOARD.json').write_text(json.dumps(board, indent=1, default=str))
-    with (sd / 'SHOWDOWN_ATL_NO_SHADOW_LEVERAGE.csv').open('w', newline='') as fh:
+    # one file per field projection, so FC_ONLY and BLEND sit side by side and neither overwrites the other
+    (sd / f'SHOWDOWN_ATL_NO_SHADOW_BOARD_{src}.json').write_text(json.dumps(board, indent=1, default=str))
+    with (sd / f'SHOWDOWN_ATL_NO_SHADOW_LEVERAGE_{src}.csv').open('w', newline='') as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows_own[0]))
         w.writeheader()
         w.writerows(rows_own)
