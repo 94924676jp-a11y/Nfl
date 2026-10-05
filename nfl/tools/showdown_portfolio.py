@@ -294,7 +294,10 @@ LADDER = (
 #:         which may share a core (the overlap cap still applies).
 #: A policy choice, declared; not fitted to any result.
 def depth_m(n):
-    return 1 if n >= 100 else (2 if n >= 3 else n)
+    # 1-2 entries: COVERAGE (m=1). Measured on ATL@NO BASE, m=n picked two lineups sharing a captain
+    # and four players at score correlation 0.965 -- one hypothesis entered twice. With m=1 the second
+    # entry must win in worlds the first does not.
+    return 1 if (n >= 100 or n <= 2) else 2
 
 
 def select(hit, cand_rows, seats_of, n, n_w, rung):
@@ -938,7 +941,13 @@ def run(export, draws_path, out_dir, prefix, *, inactives=None, proj_path=None, 
         'dst_coherence': dst_check,
         'n_eligible': len(eligible),
         'first_place_proxy': f'score >= (1 - {BAND}) x exact world optimum; a proxy, not P(win)',
-        'portfolio_diversification': {cid: diversification(M, seats_of, P['chosen']) for cid, P in portfolios.items()},
+        'portfolio_diversification': {cid: {**diversification(hit.astype(float), seats_of, P['chosen']),
+                                            'ON': 'first-place-proxy hit indicators per world (which worlds each lineup wins)',
+                                            'raw_score_basis': {k: v for k, v in diversification(M, seats_of, P['chosen']).items()
+                                                                if k in ('EFFECTIVE_HYPOTHESIS_COUNT', 'mean_pairwise_score_corr')},
+                                            'RAW_SCORE_NOTE': ('every lineup in one game shares the game\'s scoring level, so raw-score '
+                                                               'correlation is high by construction and understates distinct bets')}
+                                      for cid, P in portfolios.items()},
         'portfolios': {cid: {'contest': P['contest']['name'], 'n_entries': len(P['contest']['entries']),
                              'objective': P.get('objective'),
                              'n_built': len(P['chosen']), 'short': P['short'], 'caps': P['caps'],

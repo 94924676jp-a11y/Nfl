@@ -88,6 +88,22 @@ def run(export, tag, scenario, designations=None, outs=(), official_inactives=No
     return pf
 
 
+def portfolio_only(export, tag, scenario):
+    """Rebuild boards and portfolios for an existing scenario directory from its OWN frozen state,
+    projection and worlds. No football is recomputed; the scenario's SCENARIO.json is reused."""
+    from nfl.tools import showdown_slate_run as SR, showdown_portfolio as SPF
+    P = SR.paths(tag)
+    sd = P['dir'] / scenario
+    scen = json.loads((sd / 'SCENARIO.json').read_text())
+    pf = SPF.run(export, sd / P['draws'].name, sd, f'SHOWDOWN_{tag.split("_2026")[0]}',
+                 inactives=scen['absent_in_state'], proj_path=sd / P['proj'].name, state_path=sd / P['state'].name)
+    print('portfolio', pf.state.value, pf.code, pf.detail, flush=True)
+    audit = (pf.value if pf.state.value == 'PASS' else (pf.evidence or {}).get('audit'))
+    if audit:
+        final_board(audit, scen, sd / f'SHOWDOWN_{tag.split("_2026")[0]}_FINAL_BOARD', pf)
+    return pf
+
+
 def sunday_frozen_intact():
     m = json.loads((_REPO / 'nfl/dfs/salaries/postgame/FROZEN_2026W4_EARLY.json').read_text())
     import hashlib
@@ -200,7 +216,10 @@ def main():
     ap.add_argument('--confirmed-starters', help='JSON {name: CLUB}')
     ap.add_argument('--starter-tier', help='source label for the starter evidence')
     ap.add_argument('--depth-chart', help='captured nflverse depth_charts CSV for the two clubs')
+    ap.add_argument('--portfolio-only', action='store_true', help='rebuild portfolios on the scenario\'s frozen worlds')
     a = ap.parse_args()
+    if a.portfolio_only:
+        return 0 if portfolio_only(a.export, a.tag, a.scenario).state.value == 'PASS' else 1
     d = json.loads(pathlib.Path(a.designations).read_text()) if a.designations else None
     oi = json.loads(pathlib.Path(a.official_inactives).read_text()) if a.official_inactives else None
     cs = json.loads(pathlib.Path(a.confirmed_starters).read_text()) if a.confirmed_starters else None
