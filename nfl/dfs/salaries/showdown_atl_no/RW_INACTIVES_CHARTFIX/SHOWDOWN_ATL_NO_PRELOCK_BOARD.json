@@ -1,0 +1,4036 @@
+{
+ "ARTIFACT": "SHOWDOWN_PRELOCK_BOARD",
+ "scenario": "RW_INACTIVES_CHARTFIX",
+ "STATUS": "READY",
+ "BLOCKERS": [],
+ "FOOTBALL": {
+  "SHOWDOWN_COHERENCE_WARNING": {
+   "ours_by_team": {
+    "NO": {
+     "corr_team_td_vs_team_off_dk": 0.57,
+     "corr_team_points_vs_team_off_dk": 0.501
+    },
+    "ATL": {
+     "corr_team_td_vs_team_off_dk": 0.578,
+     "corr_team_points_vs_team_off_dk": 0.511
+    }
+   },
+   "ours_corr_home_points_vs_away_points": 0.027,
+   "ours_corr_home_off_dk_vs_away_off_dk": 0.175,
+   "history_2021_2025": {
+    "corr_team_td_vs_team_off_dk": 0.811,
+    "corr_team_points_vs_team_off_dk": 0.763,
+    "corr_home_points_vs_away_points": -0.038,
+    "corr_home_off_dk_vs_away_off_dk": 0.181,
+    "team_games": 2718
+   },
+   "FINDING": "DEFECT-COHERENCE (measured 2026-10-05): within a simulated world, a team's offensive DK points track its touchdowns and points far more loosely than in 2021-25 games (see the numbers). The TD identity holds, so this is not broken accounting: yardage/receptions are drawn too independently of scoring. Effect: same-team boom-together is understated, so stacks are undervalued in the top tail. NOT fixed tonight (no validated fix before lock; the sealed football model is preserved); registered as the first post-lock football item."
+  },
+  "CORRELATION_RECOVERY": [
+   {
+    "team": "ATL",
+    "pair": "QB-WR1",
+    "players": [
+     "Michael Penix Jr.",
+     "Drake London"
+    ],
+    "ours": 0.508,
+    "spikeweek_COR01": 0.542,
+    "fantasylabs_COR02": 0.54,
+    "ours_minus_spikeweek": -0.034,
+    "ours_minus_fantasylabs": -0.032
+   },
+   {
+    "team": "ATL",
+    "pair": "QB-WR2",
+    "players": [
+     "Michael Penix Jr.",
+     "Jahan Dotson"
+    ],
+    "ours": 0.33,
+    "spikeweek_COR01": 0.514,
+    "fantasylabs_COR02": 0.48,
+    "ours_minus_spikeweek": -0.184,
+    "ours_minus_fantasylabs": -0.15
+   },
+   {
+    "team": "ATL",
+    "pair": "QB-TE1",
+    "players": [
+     "Michael Penix Jr.",
+     "Kyle Pitts Sr."
+    ],
+    "ours": 0.383,
+    "spikeweek_COR01": 0.366,
+    "fantasylabs_COR02": 0.49,
+    "ours_minus_spikeweek": 0.017,
+    "ours_minus_fantasylabs": -0.107
+   },
+   {
+    "team": "ATL",
+    "pair": "QB-RB1",
+    "players": [
+     "Michael Penix Jr.",
+     "Bijan Robinson"
+    ],
+    "ours": 0.263,
+    "spikeweek_COR01": 0.09,
+    "fantasylabs_COR02": 0.38,
+    "ours_minus_spikeweek": 0.173,
+    "ours_minus_fantasylabs": -0.117
+   },
+   {
+    "team": "ATL",
+    "pair": "WR1-WR2_same_team",
+    "players": [
+     "Drake London",
+     "Jahan Dotson"
+    ],
+    "ours": 0.013,
+    "spikeweek_COR01": 0.345,
+    "fantasylabs_COR02": null,
+    "ours_minus_spikeweek": -0.332,
+    "ours_minus_fantasylabs": null
+   },
+   {
+    "team": "ATL",
+    "pair": "WR1-opposing_WR1",
+    "players": [
+     "Drake London",
+     "Chris Olave"
+    ],
+    "ours": 0.059,
+    "spikeweek_COR01": 0.56,
+    "fantasylabs_COR02": null,
+    "ours_minus_spikeweek": -0.501,
+    "ours_minus_fantasylabs": null
+   },
+   {
+    "team": "ATL",
+    "pair": "QB-own_DST",
+    "players": [
+     "Michael Penix Jr.",
+     "Falcons"
+    ],
+    "ours": -0.119,
+    "spikeweek_COR01": null,
+    "fantasylabs_COR02": 0.07,
+    "ours_minus_spikeweek": null,
+    "ours_minus_fantasylabs": -0.189
+   },
+   {
+    "team": "ATL",
+    "pair": "QB-opposing_DST",
+    "players": [
+     "Michael Penix Jr.",
+     "Saints"
+    ],
+    "ours": -0.302,
+    "spikeweek_COR01": null,
+    "fantasylabs_COR02": -0.16,
+    "ours_minus_spikeweek": null,
+    "ours_minus_fantasylabs": -0.142
+   },
+   {
+    "team": "NO",
+    "pair": "QB-WR1",
+    "players": [
+     "Tyler Shough",
+     "Chris Olave"
+    ],
+    "ours": 0.418,
+    "spikeweek_COR01": 0.542,
+    "fantasylabs_COR02": 0.54,
+    "ours_minus_spikeweek": -0.124,
+    "ours_minus_fantasylabs": -0.122
+   },
+   {
+    "team": "NO",
+    "pair": "QB-WR2",
+    "players": [
+     "Tyler Shough",
+     "Devaughn Vele"
+    ],
+    "ours": 0.321,
+    "spikeweek_COR01": 0.514,
+    "fantasylabs_COR02": 0.48,
+    "ours_minus_spikeweek": -0.193,
+    "ours_minus_fantasylabs": -0.159
+   },
+   {
+    "team": "NO",
+    "pair": "QB-TE1",
+    "players": [
+     "Tyler Shough",
+     "Juwan Johnson"
+    ],
+    "ours": 0.357,
+    "spikeweek_COR01": 0.366,
+    "fantasylabs_COR02": 0.49,
+    "ours_minus_spikeweek": -0.009,
+    "ours_minus_fantasylabs": -0.133
+   },
+   {
+    "team": "NO",
+    "pair": "QB-RB1",
+    "players": [
+     "Tyler Shough",
+     "Alvin Kamara"
+    ],
+    "ours": 0.176,
+    "spikeweek_COR01": 0.09,
+    "fantasylabs_COR02": 0.38,
+    "ours_minus_spikeweek": 0.086,
+    "ours_minus_fantasylabs": -0.204
+   },
+   {
+    "team": "NO",
+    "pair": "WR1-WR2_same_team",
+    "players": [
+     "Chris Olave",
+     "Devaughn Vele"
+    ],
+    "ours": 0.04,
+    "spikeweek_COR01": 0.345,
+    "fantasylabs_COR02": null,
+    "ours_minus_spikeweek": -0.305,
+    "ours_minus_fantasylabs": null
+   },
+   {
+    "team": "NO",
+    "pair": "WR1-opposing_WR1",
+    "players": [
+     "Chris Olave",
+     "Drake London"
+    ],
+    "ours": 0.059,
+    "spikeweek_COR01": 0.56,
+    "fantasylabs_COR02": null,
+    "ours_minus_spikeweek": -0.501,
+    "ours_minus_fantasylabs": null
+   },
+   {
+    "team": "NO",
+    "pair": "QB-own_DST",
+    "players": [
+     "Tyler Shough",
+     "Saints"
+    ],
+    "ours": -0.051,
+    "spikeweek_COR01": null,
+    "fantasylabs_COR02": 0.07,
+    "ours_minus_spikeweek": null,
+    "ours_minus_fantasylabs": -0.121
+   },
+   {
+    "team": "NO",
+    "pair": "QB-opposing_DST",
+    "players": [
+     "Tyler Shough",
+     "Falcons"
+    ],
+    "ours": -0.381,
+    "spikeweek_COR01": null,
+    "fantasylabs_COR02": -0.16,
+    "ours_minus_spikeweek": null,
+    "ours_minus_fantasylabs": -0.221
+   }
+  ],
+  "scenario": "RW_INACTIVES_CHARTFIX",
+  "official_inactives": [
+   "Malcolm DeWalt IV",
+   "Jared Ivey",
+   "Robert Longerbeam",
+   "Ethan Onianwa",
+   "Cooper Rush",
+   "Jack Strand",
+   "Kaden Elliss",
+   "Noah Fant",
+   "Carl Granderson",
+   "Anfernee Jennings",
+   "Christen Miller",
+   "Decamerion Richardson",
+   "Zach Wilson"
+  ],
+  "designations": {
+   "Travis Etienne Jr.": "OUT",
+   "Charlie Smyth": "OUT",
+   "Noah Fant": "QUESTIONABLE",
+   "Khalil Herbert": "OUT",
+   "Ty Chandler": "OUT",
+   "Trey Sermon": "OUT",
+   "Cash Jones": "OUT",
+   "Zamir White": "OUT",
+   "Beaux Collins": "OUT",
+   "Jordyn Tyson": "OUT",
+   "Cedric Tillman": "OUT",
+   "Dylan Drummond": "OUT",
+   "Antwane Wells Jr.": "OUT",
+   "Vinny Anthony II": "OUT",
+   "Trey Palmer": "OUT",
+   "Kyrese Rowan": "OUT",
+   "Jalen Moreno-Cropper": "OUT",
+   "Zach Wood": "OUT",
+   "Jack Velling": "OUT",
+   "Moliki Matavao": "OUT",
+   "Stone Smartt": "OUT",
+   "Mason Tipton": "OUT",
+   "Cal Adomitis": "NO_OFFENSIVE_ROLE"
+  },
+  "absent_in_state": [
+   "Antwane Wells Jr.",
+   "Beaux Collins",
+   "Cal Adomitis",
+   "Cash Jones",
+   "Cedric Tillman",
+   "Charlie Smyth",
+   "Cooper Rush",
+   "Dylan Drummond",
+   "Jack Strand",
+   "Jack Velling",
+   "Jalen Moreno-Cropper",
+   "Jordyn Tyson",
+   "Khalil Herbert",
+   "Kyrese Rowan",
+   "Mason Tipton",
+   "Moliki Matavao",
+   "Noah Fant",
+   "Stone Smartt",
+   "Travis Etienne Jr.",
+   "Trey Palmer",
+   "Trey Sermon",
+   "Ty Chandler",
+   "Vinny Anthony II",
+   "Zach Wilson",
+   "Zach Wood",
+   "Zamir White"
+  ],
+  "confirmed_starters": {
+   "Michael Penix Jr.": "ATL",
+   "Tyler Shough": "NO"
+  },
+  "starter_tier": "PUBLIC_DEPTH_CHART_AND_SNAPS_CITED",
+  "state_counts": {
+   "PROJECTED": 29,
+   "INACTIVE": 25,
+   "ZERO_OPPORTUNITY": 2
+  },
+  "football_sanity": {
+   "state": "PASS",
+   "code": "FOOTBALL_SANITY_PASS",
+   "detail": "56 rows, 2 clubs, no football contradiction",
+   "flags": null
+  },
+  "n_sims": 2000,
+  "seed": 20261005,
+  "projection_sha256": "3e6898124439a2e9ba33bd98da552c6d0795eb904051ecfec92ddfca46126cb9",
+  "state_sha256": "3a4795eadb29e26c0db70ebd1dc95023b404d2d0ba034545453e5e8ff518bdd4",
+  "players_mean_ge_1pt": [
+   {
+    "player": "Bijan Robinson",
+    "team": "ATL",
+    "pos": "RB",
+    "salary": "11800",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "1",
+    "pass_att": "0.0",
+    "carries": "20.52",
+    "targets": "6.61",
+    "sim_mean": "26.01",
+    "p90": "38.64",
+    "p_zero": "0.0",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Chris Olave",
+    "team": "NO",
+    "pos": "WR",
+    "salary": "10800",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "1",
+    "pass_att": "0.01",
+    "carries": "0.04",
+    "targets": "12.56",
+    "sim_mean": "25.67",
+    "p90": "39.7",
+    "p_zero": "0.0",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Tyler Shough",
+    "team": "NO",
+    "pos": "QB",
+    "salary": "9600",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "1",
+    "pass_att": "41.67",
+    "carries": "5.19",
+    "targets": "0.01",
+    "sim_mean": "22.46",
+    "p90": "34.13",
+    "p_zero": "0.0",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Drake London",
+    "team": "ATL",
+    "pos": "WR",
+    "salary": "10000",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "1",
+    "pass_att": "0.0",
+    "carries": "0.38",
+    "targets": "8.49",
+    "sim_mean": "20.0",
+    "p90": "33.16",
+    "p_zero": "0.0",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Juwan Johnson",
+    "team": "NO",
+    "pos": "TE",
+    "salary": "7400",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "1",
+    "pass_att": "0.0",
+    "carries": "1.31",
+    "targets": "7.47",
+    "sim_mean": "16.17",
+    "p90": "28.01",
+    "p_zero": "0.0",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Michael Penix Jr.",
+    "team": "ATL",
+    "pos": "QB",
+    "salary": "9000",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "1",
+    "pass_att": "31.39",
+    "carries": "2.39",
+    "targets": "0.01",
+    "sim_mean": "15.33",
+    "p90": "24.2",
+    "p_zero": "0.0",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Alvin Kamara",
+    "team": "NO",
+    "pos": "RB",
+    "salary": "7000",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "1",
+    "pass_att": "0.0",
+    "carries": "12.37",
+    "targets": "5.71",
+    "sim_mean": "13.66",
+    "p90": "22.02",
+    "p_zero": "0.0",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Devaughn Vele",
+    "team": "NO",
+    "pos": "WR",
+    "salary": "7800",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "2",
+    "pass_att": "0.0",
+    "carries": "1.02",
+    "targets": "6.9",
+    "sim_mean": "11.02",
+    "p90": "19.67",
+    "p_zero": "0.003",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Daniel Carlson",
+    "team": "NO",
+    "pos": "K",
+    "salary": "4800",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "",
+    "pass_att": "",
+    "carries": "",
+    "targets": "",
+    "sim_mean": "8.61",
+    "p90": "15.0",
+    "p_zero": "0.015",
+    "role_data": ""
+   },
+   {
+    "player": "Nick Folk",
+    "team": "ATL",
+    "pos": "K",
+    "salary": "5400",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "",
+    "pass_att": "",
+    "carries": "",
+    "targets": "",
+    "sim_mean": "7.87",
+    "p90": "15.0",
+    "p_zero": "0.058",
+    "role_data": ""
+   },
+   {
+    "player": "Saints",
+    "team": "NO",
+    "pos": "DST",
+    "salary": "4200",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "",
+    "pass_att": "",
+    "carries": "",
+    "targets": "",
+    "sim_mean": "6.55",
+    "p90": "12.92",
+    "p_zero": "0.046",
+    "role_data": ""
+   },
+   {
+    "player": "Falcons",
+    "team": "ATL",
+    "pos": "DST",
+    "salary": "3600",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "",
+    "pass_att": "",
+    "carries": "",
+    "targets": "",
+    "sim_mean": "5.61",
+    "p90": "13.01",
+    "p_zero": "0.126",
+    "role_data": ""
+   },
+   {
+    "player": "Kyle Pitts Sr.",
+    "team": "ATL",
+    "pos": "TE",
+    "salary": "5800",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "1",
+    "pass_att": "0.0",
+    "carries": "0.01",
+    "targets": "4.33",
+    "sim_mean": "5.13",
+    "p90": "10.14",
+    "p_zero": "0.021",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Brian Robinson Jr.",
+    "team": "ATL",
+    "pos": "RB",
+    "salary": "3800",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "2",
+    "pass_att": "0.0",
+    "carries": "9.7",
+    "targets": "1.1",
+    "sim_mean": "4.65",
+    "p90": "9.4",
+    "p_zero": "0.007",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Jahan Dotson",
+    "team": "ATL",
+    "pos": "WR",
+    "salary": "3000",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "2",
+    "pass_att": "0.0",
+    "carries": "0.03",
+    "targets": "3.74",
+    "sim_mean": "4.09",
+    "p90": "8.69",
+    "p_zero": "0.045",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Kendre Miller",
+    "team": "NO",
+    "pos": "RB",
+    "salary": "5000",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "2",
+    "pass_att": "0.0",
+    "carries": "7.1",
+    "targets": "1.52",
+    "sim_mean": "3.75",
+    "p90": "7.98",
+    "p_zero": "0.013",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Austin Hooper",
+    "team": "ATL",
+    "pos": "TE",
+    "salary": "2800",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "1",
+    "pass_att": "0.0",
+    "carries": "0.39",
+    "targets": "3.15",
+    "sim_mean": "3.64",
+    "p90": "8.29",
+    "p_zero": "0.123",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Bryce Lance",
+    "team": "NO",
+    "pos": "WR",
+    "salary": "1800",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "3",
+    "pass_att": "0.0",
+    "carries": "0.1",
+    "targets": "3.18",
+    "sim_mean": "2.7",
+    "p90": "7.0",
+    "p_zero": "0.181",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Olamide Zaccheaus",
+    "team": "ATL",
+    "pos": "WR",
+    "salary": "2000",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "3",
+    "pass_att": "0.0",
+    "carries": "0.08",
+    "targets": "2.96",
+    "sim_mean": "2.42",
+    "p90": "6.0",
+    "p_zero": "0.189",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Oscar Delp",
+    "team": "NO",
+    "pos": "TE",
+    "salary": "400",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "2",
+    "pass_att": "0.0",
+    "carries": "0.03",
+    "targets": "1.53",
+    "sim_mean": "1.47",
+    "p90": "4.12",
+    "p_zero": "0.413",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   }
+  ]
+ },
+ "PORTFOLIO": {
+  "196285137": {
+   "n": 150,
+   "objective": {
+    "m": 3,
+    "value": 2.9795,
+    "MEANING": "E[min(entries at the first-place proxy, m)] per world"
+   },
+   "proxy_coverage": 1.0,
+   "selection_method": "GREEDY_THEN_1SWAP_POLISH",
+   "polish": {
+    "rounds": 14,
+    "lineups_changed": 13,
+    "objective_greedy": 2.969,
+    "objective_final": 2.9795,
+    "coverage_greedy": 1.0,
+    "coverage_final": 1.0
+   },
+   "distinct_captains": 16,
+   "captain_exposure_pct": {
+    "Chris Olave": 21.3,
+    "Bijan Robinson": 20.0,
+    "Drake London": 16.0,
+    "Tyler Shough": 11.3,
+    "Juwan Johnson": 7.3,
+    "Alvin Kamara": 7.3,
+    "Devaughn Vele": 4.0,
+    "Falcons": 2.7,
+    "Daniel Carlson": 2.7,
+    "Saints": 2.0,
+    "Brian Robinson Jr.": 1.3,
+    "Michael Penix Jr.": 1.3,
+    "Kyle Pitts Sr.": 0.7,
+    "Nick Folk": 0.7,
+    "Austin Hooper": 0.7,
+    "Kendre Miller": 0.7
+   },
+   "player_exposure_pct": {
+    "Bijan Robinson": 65.3,
+    "Tyler Shough": 65.3,
+    "Chris Olave": 58.0,
+    "Drake London": 50.0,
+    "Michael Penix Jr.": 45.3,
+    "Juwan Johnson": 43.3,
+    "Alvin Kamara": 41.3,
+    "Daniel Carlson": 34.0,
+    "Falcons": 30.0,
+    "Saints": 29.3,
+    "Nick Folk": 24.7,
+    "Devaughn Vele": 24.0,
+    "Austin Hooper": 16.0,
+    "Jahan Dotson": 15.3,
+    "Brian Robinson Jr.": 15.3
+   },
+   "effective_hypotheses": 68.6,
+   "pairwise_shared_players": {
+    "max": 5,
+    "distribution": {
+     "0": 67,
+     "1": 1425,
+     "2": 4213,
+     "3": 3942,
+     "4": 1382,
+     "5": 146
+    }
+   },
+   "relaxation": {
+    "level_used": 2,
+    "rungs": [
+     {
+      "level": 0,
+      "caps": {
+       "player": 75,
+       "captain": 45,
+       "overlap": 4
+      },
+      "built": 132,
+      "needed": 150,
+      "EFFECTIVE_HYPOTHESIS_COUNT": 58.6
+     },
+     {
+      "level": 1,
+      "caps": {
+       "player": 75,
+       "captain": 45,
+       "overlap": 5
+      },
+      "built": 145,
+      "needed": 150,
+      "EFFECTIVE_HYPOTHESIS_COUNT": 68.8
+     },
+     {
+      "level": 2,
+      "caps": {
+       "player": 98,
+       "captain": 45,
+       "overlap": 5
+      },
+      "built": 150,
+      "needed": 150,
+      "EFFECTIVE_HYPOTHESIS_COUNT": 66.3
+     }
+    ],
+    "players_above_original_cap": {
+     "Chris Olave": {
+      "n": 87,
+      "final_pct": 58.0,
+      "orig_cap_n": 75,
+      "orig_cap_pct": 50.0
+     },
+     "Bijan Robinson": {
+      "n": 98,
+      "final_pct": 65.3,
+      "orig_cap_n": 75,
+      "orig_cap_pct": 50.0
+     },
+     "Tyler Shough": {
+      "n": 98,
+      "final_pct": 65.3,
+      "orig_cap_n": 75,
+      "orig_cap_pct": 50.0
+     }
+    },
+    "captains_above_original_cap": {},
+    "n_lineups_not_in_level0_build": 93,
+    "clusters": {
+     "by_origin": {
+      "RELAXATION": 84,
+      "SWAP_POLISH": 9
+     },
+     "by_captain": {
+      "Bijan Robinson": 17,
+      "Chris Olave": 16,
+      "Drake London": 14,
+      "Tyler Shough": 11,
+      "Alvin Kamara": 8,
+      "Juwan Johnson": 7,
+      "Devaughn Vele": 5,
+      "Daniel Carlson": 3,
+      "Falcons": 3,
+      "Brian Robinson Jr.": 2,
+      "Saints": 2,
+      "Michael Penix Jr.": 2,
+      "Kyle Pitts Sr.": 1,
+      "Nick Folk": 1,
+      "Austin Hooper": 1
+     },
+     "by_split": {
+      "2-4": 29,
+      "3-3": 22,
+      "4-2": 21,
+      "1-5": 11,
+      "5-1": 10
+     },
+     "by_salary_band": {
+      "49500-49900": 56,
+      "49000-49400": 15,
+      "50000": 12,
+      "48000-48900": 10
+     }
+    },
+    "why": "level 0 built 132/150: under a 75-entry player cap, a 45-entry captain cap and at most 4 shared players, the lawful pool near the top-tail runs out of lineups that avoid the core (Bijan Robinson, Tyler Shough, Chris Olave)",
+    "effective_hypotheses_last_unfilled_rung": 68.8,
+    "effective_hypotheses_final_rung": 66.3
+   },
+   "salary_relief_slots": {
+    "Treyton Welch": 2,
+    "Charlie Woerner": 2,
+    "Kevin Austin Jr.": 1,
+    "Nick Muse": 1
+   }
+  },
+  "196285160": {
+   "n": 20,
+   "objective": {
+    "m": 2,
+    "value": 1.4035,
+    "MEANING": "E[min(entries at the first-place proxy, m)] per world"
+   },
+   "proxy_coverage": 0.827,
+   "selection_method": "GREEDY_THEN_1SWAP_POLISH",
+   "polish": {
+    "rounds": 9,
+    "lineups_changed": 7,
+    "objective_greedy": 1.3475,
+    "objective_final": 1.4035,
+    "coverage_greedy": 0.7675,
+    "coverage_final": 0.827
+   },
+   "distinct_captains": 5,
+   "captain_exposure_pct": {
+    "Chris Olave": 30.0,
+    "Bijan Robinson": 30.0,
+    "Tyler Shough": 15.0,
+    "Drake London": 15.0,
+    "Juwan Johnson": 10.0
+   },
+   "player_exposure_pct": {
+    "Bijan Robinson": 65.0,
+    "Chris Olave": 65.0,
+    "Tyler Shough": 65.0,
+    "Alvin Kamara": 60.0,
+    "Juwan Johnson": 55.0,
+    "Drake London": 55.0,
+    "Oscar Delp": 45.0,
+    "Daniel Carlson": 40.0,
+    "Michael Penix Jr.": 35.0,
+    "Falcons": 30.0,
+    "Saints": 30.0,
+    "Bryce Lance": 15.0,
+    "Nick Folk": 15.0,
+    "Devaughn Vele": 10.0,
+    "Jahan Dotson": 5.0
+   },
+   "effective_hypotheses": 15.8,
+   "pairwise_shared_players": {
+    "max": 5,
+    "distribution": {
+     "0": 2,
+     "1": 14,
+     "2": 53,
+     "3": 74,
+     "4": 45,
+     "5": 2
+    }
+   },
+   "relaxation": {
+    "level_used": 2,
+    "rungs": [
+     {
+      "level": 0,
+      "caps": {
+       "player": 10,
+       "captain": 6,
+       "overlap": 4
+      },
+      "built": 16,
+      "needed": 20,
+      "EFFECTIVE_HYPOTHESIS_COUNT": 12.5
+     },
+     {
+      "level": 1,
+      "caps": {
+       "player": 10,
+       "captain": 6,
+       "overlap": 5
+      },
+      "built": 17,
+      "needed": 20,
+      "EFFECTIVE_HYPOTHESIS_COUNT": 11.5
+     },
+     {
+      "level": 2,
+      "caps": {
+       "player": 13,
+       "captain": 6,
+       "overlap": 5
+      },
+      "built": 20,
+      "needed": 20,
+      "EFFECTIVE_HYPOTHESIS_COUNT": 13.0
+     }
+    ],
+    "players_above_original_cap": {
+     "Juwan Johnson": {
+      "n": 11,
+      "final_pct": 55.0,
+      "orig_cap_n": 10,
+      "orig_cap_pct": 50.0
+     },
+     "Bijan Robinson": {
+      "n": 13,
+      "final_pct": 65.0,
+      "orig_cap_n": 10,
+      "orig_cap_pct": 50.0
+     },
+     "Chris Olave": {
+      "n": 13,
+      "final_pct": 65.0,
+      "orig_cap_n": 10,
+      "orig_cap_pct": 50.0
+     },
+     "Tyler Shough": {
+      "n": 13,
+      "final_pct": 65.0,
+      "orig_cap_n": 10,
+      "orig_cap_pct": 50.0
+     },
+     "Alvin Kamara": {
+      "n": 12,
+      "final_pct": 60.0,
+      "orig_cap_n": 10,
+      "orig_cap_pct": 50.0
+     },
+     "Drake London": {
+      "n": 11,
+      "final_pct": 55.0,
+      "orig_cap_n": 10,
+      "orig_cap_pct": 50.0
+     }
+    },
+    "captains_above_original_cap": {},
+    "n_lineups_not_in_level0_build": 14,
+    "clusters": {
+     "by_origin": {
+      "SWAP_POLISH": 6,
+      "RELAXATION": 8
+     },
+     "by_captain": {
+      "Chris Olave": 4,
+      "Bijan Robinson": 3,
+      "Drake London": 3,
+      "Juwan Johnson": 2,
+      "Tyler Shough": 2
+     },
+     "by_split": {
+      "3-3": 6,
+      "1-5": 4,
+      "2-4": 3,
+      "4-2": 1
+     },
+     "by_salary_band": {
+      "49500-49900": 6,
+      "50000": 6,
+      "49000-49400": 1,
+      "48000-48900": 1
+     }
+    },
+    "why": "level 0 built 16/20: under a 10-entry player cap, a 6-entry captain cap and at most 4 shared players, the lawful pool near the top-tail runs out of lineups that avoid the core (Bijan Robinson, Chris Olave, Tyler Shough, Alvin Kamara)",
+    "effective_hypotheses_last_unfilled_rung": 11.5,
+    "effective_hypotheses_final_rung": 13.0
+   },
+   "salary_relief_slots": {},
+   "lineups": [
+    {
+     "CPT": "Juwan Johnson",
+     "FLEX": [
+      "Bijan Robinson",
+      "Bryce Lance",
+      "Chris Olave",
+      "Daniel Carlson",
+      "Tyler Shough"
+     ],
+     "salary": 49900,
+     "mean_points": 109.69,
+     "first_place_proxy": 0.153
+    },
+    {
+     "CPT": "Chris Olave",
+     "FLEX": [
+      "Bijan Robinson",
+      "Jahan Dotson",
+      "Michael Penix Jr.",
+      "Oscar Delp",
+      "Tyler Shough"
+     ],
+     "salary": 50000,
+     "mean_points": 107.86,
+     "first_place_proxy": 0.1195
+    },
+    {
+     "CPT": "Tyler Shough",
+     "FLEX": [
+      "Alvin Kamara",
+      "Chris Olave",
+      "Drake London",
+      "Juwan Johnson",
+      "Oscar Delp"
+     ],
+     "salary": 50000,
+     "mean_points": 110.65,
+     "first_place_proxy": 0.1655
+    },
+    {
+     "CPT": "Chris Olave",
+     "FLEX": [
+      "Devaughn Vele",
+      "Falcons",
+      "Juwan Johnson",
+      "Nick Folk",
+      "Tyler Shough"
+     ],
+     "salary": 50000,
+     "mean_points": 101.63,
+     "first_place_proxy": 0.074
+    },
+    {
+     "CPT": "Bijan Robinson",
+     "FLEX": [
+      "Chris Olave",
+      "Drake London",
+      "Falcons",
+      "Juwan Johnson",
+      "Oscar Delp"
+     ],
+     "salary": 49900,
+     "mean_points": 107.93,
+     "first_place_proxy": 0.121
+    },
+    {
+     "CPT": "Bijan Robinson",
+     "FLEX": [
+      "Chris Olave",
+      "Falcons",
+      "Juwan Johnson",
+      "Oscar Delp",
+      "Tyler Shough"
+     ],
+     "salary": 49500,
+     "mean_points": 110.39,
+     "first_place_proxy": 0.163
+    },
+    {
+     "CPT": "Bijan Robinson",
+     "FLEX": [
+      "Daniel Carlson",
+      "Drake London",
+      "Juwan Johnson",
+      "Oscar Delp",
+      "Tyler Shough"
+     ],
+     "salary": 49900,
+     "mean_points": 107.72,
+     "first_place_proxy": 0.114
+    },
+    {
+     "CPT": "Drake London",
+     "FLEX": [
+      "Austin Hooper",
+      "Bijan Robinson",
+      "Chris Olave",
+      "Michael Penix Jr.",
+      "Oscar Delp"
+     ],
+     "salary": 49800,
+     "mean_points": 102.13,
+     "first_place_proxy": 0.0845
+    },
+    {
+     "CPT": "Bijan Robinson",
+     "FLEX": [
+      "Alvin Kamara",
+      "Chris Olave",
+      "Daniel Carlson",
+      "Falcons",
+      "Nick Folk"
+     ],
+     "salary": 49300,
+     "mean_points": 100.44,
+     "first_place_proxy": 0.0675
+    },
+    {
+     "CPT": "Chris Olave",
+     "FLEX": [
+      "Daniel Carlson",
+      "Drake London",
+      "Michael Penix Jr.",
+      "Oscar Delp",
+      "Tyler Shough"
+     ],
+     "salary": 50000,
+     "mean_points": 106.36,
+     "first_place_proxy": 0.117
+    },
+    {
+     "CPT": "Chris Olave",
+     "FLEX": [
+      "Alvin Kamara",
+      "Bijan Robinson",
+      "Daniel Carlson",
+      "Oscar Delp",
+      "Tyler Shough"
+     ],
+     "salary": 49800,
+     "mean_points": 110.71,
+     "first_place_proxy": 0.167
+    },
+    {
+     "CPT": "Tyler Shough",
+     "FLEX": [
+      "Alvin Kamara",
+      "Bijan Robinson",
+      "Daniel Carlson",
+      "Juwan Johnson",
+      "Saints"
+     ],
+     "salary": 49600,
+     "mean_points": 104.68,
+     "first_place_proxy": 0.079
+    },
+    {
+     "CPT": "Drake London",
+     "FLEX": [
+      "Alvin Kamara",
+      "Bijan Robinson",
+      "Bryce Lance",
+      "Daniel Carlson",
+      "Michael Penix Jr."
+     ],
+     "salary": 49400,
+     "mean_points": 96.31,
+     "first_place_proxy": 0.053
+    },
+    {
+     "CPT": "Chris Olave",
+     "FLEX": [
+      "Alvin Kamara",
+      "Juwan Johnson",
+      "Nick Folk",
+      "Saints",
+      "Tyler Shough"
+     ],
+     "salary": 49800,
+     "mean_points": 105.2,
+     "first_place_proxy": 0.1165
+    },
+    {
+     "CPT": "Bijan Robinson",
+     "FLEX": [
+      "Alvin Kamara",
+      "Drake London",
+      "Falcons",
+      "Juwan Johnson",
+      "Saints"
+     ],
+     "salary": 49900,
+     "mean_points": 101.01,
+     "first_place_proxy": 0.0725
+    },
+    {
+     "CPT": "Tyler Shough",
+     "FLEX": [
+      "Alvin Kamara",
+      "Bijan Robinson",
+      "Bryce Lance",
+      "Chris Olave",
+      "Saints"
+     ],
+     "salary": 50000,
+     "mean_points": 108.27,
+     "first_place_proxy": 0.109
+    },
+    {
+     "CPT": "Chris Olave",
+     "FLEX": [
+      "Alvin Kamara",
+      "Drake London",
+      "Falcons",
+      "Michael Penix Jr.",
+      "Saints"
+     ],
+     "salary": 50000,
+     "mean_points": 99.65,
+     "first_place_proxy": 0.0495
+    },
+    {
+     "CPT": "Drake London",
+     "FLEX": [
+      "Alvin Kamara",
+      "Juwan Johnson",
+      "Michael Penix Jr.",
+      "Olamide Zaccheaus",
+      "Tyler Shough"
+     ],
+     "salary": 50000,
+     "mean_points": 100.04,
+     "first_place_proxy": 0.0705
+    },
+    {
+     "CPT": "Bijan Robinson",
+     "FLEX": [
+      "Alvin Kamara",
+      "Daniel Carlson",
+      "Drake London",
+      "Michael Penix Jr.",
+      "Oscar Delp"
+     ],
+     "salary": 48900,
+     "mean_points": 98.09,
+     "first_place_proxy": 0.058
+    },
+    {
+     "CPT": "Juwan Johnson",
+     "FLEX": [
+      "Alvin Kamara",
+      "Devaughn Vele",
+      "Drake London",
+      "Saints",
+      "Tyler Shough"
+     ],
+     "salary": 49700,
+     "mean_points": 97.94,
+     "first_place_proxy": 0.0505
+    }
+   ]
+  },
+  "196285161": {
+   "n": 2,
+   "objective": {
+    "m": 1,
+    "value": 0.3165,
+    "MEANING": "E[min(entries at the first-place proxy, m)] per world"
+   },
+   "proxy_coverage": 0.3165,
+   "selection_method": "GREEDY_THEN_1SWAP_POLISH",
+   "polish": {
+    "rounds": 1,
+    "lineups_changed": 0,
+    "objective_greedy": 0.3165,
+    "objective_final": 0.3165,
+    "coverage_greedy": 0.3165,
+    "coverage_final": 0.3165
+   },
+   "distinct_captains": 2,
+   "captain_exposure_pct": {
+    "Chris Olave": 50.0,
+    "Tyler Shough": 50.0
+   },
+   "player_exposure_pct": {
+    "Chris Olave": 100.0,
+    "Juwan Johnson": 100.0,
+    "Tyler Shough": 100.0,
+    "Bijan Robinson": 50.0,
+    "Daniel Carlson": 50.0,
+    "Treyton Welch": 50.0,
+    "Alvin Kamara": 50.0,
+    "Drake London": 50.0,
+    "Oscar Delp": 50.0
+   },
+   "effective_hypotheses": 2.0,
+   "pairwise_shared_players": {
+    "max": 3,
+    "distribution": {
+     "3": 1
+    }
+   },
+   "relaxation": {
+    "level_used": 0,
+    "rungs": [
+     {
+      "level": 0,
+      "caps": {
+       "player": 2,
+       "captain": 2,
+       "overlap": 4
+      },
+      "built": 2,
+      "needed": 2,
+      "EFFECTIVE_HYPOTHESIS_COUNT": 2.0
+     }
+    ],
+    "players_above_original_cap": {},
+    "captains_above_original_cap": {},
+    "n_lineups_not_in_level0_build": 0,
+    "clusters": {
+     "by_origin": {},
+     "by_captain": {},
+     "by_split": {},
+     "by_salary_band": {}
+    },
+    "why": "no relaxation needed: level 0 built 2/2",
+    "effective_hypotheses_last_unfilled_rung": null,
+    "effective_hypotheses_final_rung": 2.0
+   },
+   "salary_relief_slots": {
+    "Treyton Welch": 1
+   },
+   "lineups": [
+    {
+     "CPT": "Chris Olave",
+     "FLEX": [
+      "Bijan Robinson",
+      "Daniel Carlson",
+      "Juwan Johnson",
+      "Treyton Welch",
+      "Tyler Shough"
+     ],
+     "salary": 50000,
+     "mean_points": 112.05,
+     "first_place_proxy": 0.194,
+     "SALARY_RELIEF": [
+      {
+       "player": "Treyton Welch",
+       "classification": "LOW_OPPORTUNITY_SALARY_RELIEF",
+       "LABEL": "SALARY RELIEF -- not a football conviction",
+       "sim_mean": 0.31,
+       "p_scores": 0.1725,
+       "proxy_when_he_scores_0": 0.1867,
+       "proxy_when_he_scores": 0.229
+      }
+     ],
+     "salary_unlocks": [
+      "Bijan Robinson",
+      "Juwan Johnson",
+      "Tyler Shough"
+     ],
+     "best_alternative_same_captain_most_shared": {
+      "lineup": [
+       "Chris Olave",
+       "Bijan Robinson",
+       "Daniel Carlson",
+       "Juwan Johnson",
+       "Nick Muse",
+       "Tyler Shough"
+      ],
+      "shared": 5,
+      "proxy_rate": 0.188,
+      "mean": 111.76
+     },
+     "best_alternative_same_captain_by_proxy": {
+      "lineup": [
+       "Chris Olave",
+       "Bijan Robinson",
+       "Daniel Carlson",
+       "Juwan Johnson",
+       "Nick Muse",
+       "Tyler Shough"
+      ],
+      "proxy_rate": 0.188,
+      "mean": 111.76
+     },
+     "proxy_diff_vs_best_alternative": 0.006,
+     "mean_points_diff_vs_best_alternative": 0.29
+    },
+    {
+     "CPT": "Tyler Shough",
+     "FLEX": [
+      "Alvin Kamara",
+      "Chris Olave",
+      "Drake London",
+      "Juwan Johnson",
+      "Oscar Delp"
+     ],
+     "salary": 50000,
+     "mean_points": 110.65,
+     "first_place_proxy": 0.1655
+    }
+   ],
+   "salary_relief_portfolio_test": {
+    "without_these": {
+     "banned": [
+      "Treyton Welch"
+     ],
+     "production_coverage": 0.3165,
+     "unrestricted_same_method": {
+      "built": 2,
+      "level": 0,
+      "objective": 0.3165,
+      "coverage": 0.3165,
+      "mean_points": 111.35,
+      "lineups": [
+       [
+        "Chris Olave",
+        "Bijan Robinson",
+        "Daniel Carlson",
+        "Juwan Johnson",
+        "Treyton Welch",
+        "Tyler Shough"
+       ],
+       [
+        "Tyler Shough",
+        "Alvin Kamara",
+        "Chris Olave",
+        "Drake London",
+        "Juwan Johnson",
+        "Oscar Delp"
+       ]
+      ]
+     },
+     "without_banned": {
+      "built": 2,
+      "level": 0,
+      "objective": 0.3125,
+      "coverage": 0.3125,
+      "mean_points": 111.21,
+      "lineups": [
+       [
+        "Chris Olave",
+        "Bijan Robinson",
+        "Daniel Carlson",
+        "Juwan Johnson",
+        "Nick Muse",
+        "Tyler Shough"
+       ],
+       [
+        "Tyler Shough",
+        "Alvin Kamara",
+        "Chris Olave",
+        "Drake London",
+        "Juwan Johnson",
+        "Oscar Delp"
+       ]
+      ]
+     },
+     "objective_diff": -0.004,
+     "coverage_diff_pts": -0.4,
+     "mean_points_diff": -0.14,
+     "binomial_se_pts": 1.04,
+     "MEANING": "negative = the portfolio is worse without the banned players (objective = E[min(depth, m)])"
+    },
+    "without_any_low_opportunity_or_filler": {
+     "banned": [
+      "Barion Brown",
+      "CJ Donaldson",
+      "Charlie Woerner",
+      "Chris Blair",
+      "Kevin Austin Jr.",
+      "Nick Muse",
+      "Spencer Rattler",
+      "Treyton Welch",
+      "Tua Tagovailoa",
+      "Zachariah Branch"
+     ],
+     "production_coverage": 0.3165,
+     "unrestricted_same_method": {
+      "built": 2,
+      "level": 0,
+      "objective": 0.3165,
+      "coverage": 0.3165,
+      "mean_points": 111.35,
+      "lineups": [
+       [
+        "Chris Olave",
+        "Bijan Robinson",
+        "Daniel Carlson",
+        "Juwan Johnson",
+        "Treyton Welch",
+        "Tyler Shough"
+       ],
+       [
+        "Tyler Shough",
+        "Alvin Kamara",
+        "Chris Olave",
+        "Drake London",
+        "Juwan Johnson",
+        "Oscar Delp"
+       ]
+      ]
+     },
+     "without_banned": {
+      "built": 2,
+      "level": 0,
+      "objective": 0.308,
+      "coverage": 0.308,
+      "mean_points": 110.52,
+      "lineups": [
+       [
+        "Bijan Robinson",
+        "Chris Olave",
+        "Falcons",
+        "Juwan Johnson",
+        "Oscar Delp",
+        "Tyler Shough"
+       ],
+       [
+        "Tyler Shough",
+        "Alvin Kamara",
+        "Chris Olave",
+        "Drake London",
+        "Juwan Johnson",
+        "Oscar Delp"
+       ]
+      ]
+     },
+     "objective_diff": -0.0085,
+     "coverage_diff_pts": -0.85,
+     "mean_points_diff": -0.83,
+     "binomial_se_pts": 1.04,
+     "MEANING": "negative = the portfolio is worse without the banned players (objective = E[min(depth, m)])"
+    }
+   }
+  }
+ },
+ "FIELD": {
+  "FC_ONLY": {
+   "label": "EXTERNAL_RESEARCH_SHADOW",
+   "VALIDATED": false,
+   "sigma": 0.6,
+   "field_projection": "FC_ONLY",
+   "anchor_rmse": 13.75,
+   "field_size_estimates": {
+    "196285137": 235294,
+    "196285160": 47059,
+    "196285161": 58824
+   },
+   "contests": {
+    "196285137": {
+     "pred_dupes_exact": {
+      "mean": 19.8,
+      "max": 188.2,
+      "n_over_guardrail": 39,
+      "guardrail": 20
+     },
+     "pred_dupes_product": {
+      "mean": 19.15,
+      "max": 124.77
+     },
+     "geomean_ownership_median": 16.244999999999997,
+     "lineups_with_player_absent_from_shadow_field": 64,
+     "salary_left": {
+      "ours": {
+       "0": 105,
+       "500": 29,
+       "1000": 9,
+       "1500": 7
+      },
+      "ours_mean": 395.0,
+      "shadow_field_mean": 1567.0
+     },
+     "team_split_away_home": {
+      "ours_pct": {
+       "1-5": 14.0,
+       "2-4": 29.3,
+       "3-3": 30.0,
+       "4-2": 18.7,
+       "5-1": 8.0
+      },
+      "shadow_field_pct": {
+       "1-5": 14.3,
+       "2-4": 37.6,
+       "3-3": 33.1,
+       "4-2": 13.0,
+       "5-1": 2.0
+      }
+     },
+     "shadow_portfolio_comparison": {
+      "built": 150,
+      "relaxation_level": 2,
+      "proxy_coverage": 1.0,
+      "production_proxy_coverage": 1.0,
+      "lineups_shared_with_production": 64,
+      "STATUS": "COMPARISON ONLY -- production is not replaced without an owner ruling"
+     },
+     "leverage_top12": [
+      {
+       "player": "Tyler Shough",
+       "shadow_cpt": 22.5,
+       "our_cpt": 11.3,
+       "cpt_leverage": -11.1,
+       "shadow_flex": 45.9,
+       "our_flex": 54.0,
+       "flex_leverage": 8.1
+      },
+      {
+       "player": "Bijan Robinson",
+       "shadow_cpt": 21.2,
+       "our_cpt": 20.0,
+       "cpt_leverage": -1.2,
+       "shadow_flex": 44.3,
+       "our_flex": 45.3,
+       "flex_leverage": 1.1
+      },
+      {
+       "player": "Chris Olave",
+       "shadow_cpt": 13.2,
+       "our_cpt": 21.3,
+       "cpt_leverage": 8.2,
+       "shadow_flex": 39.7,
+       "our_flex": 36.7,
+       "flex_leverage": -3.1
+      },
+      {
+       "player": "Kevin Austin Jr.",
+       "shadow_cpt": 1.7,
+       "our_cpt": 0.0,
+       "cpt_leverage": -1.7,
+       "shadow_flex": 50.9,
+       "our_flex": 0.7,
+       "flex_leverage": -50.3
+      },
+      {
+       "player": "Michael Penix Jr.",
+       "shadow_cpt": 9.2,
+       "our_cpt": 1.3,
+       "cpt_leverage": -7.9,
+       "shadow_flex": 39.7,
+       "our_flex": 44.0,
+       "flex_leverage": 4.3
+      },
+      {
+       "player": "Alvin Kamara",
+       "shadow_cpt": 7.4,
+       "our_cpt": 7.3,
+       "cpt_leverage": -0.1,
+       "shadow_flex": 39.7,
+       "our_flex": 34.0,
+       "flex_leverage": -5.7
+      },
+      {
+       "player": "Drake London",
+       "shadow_cpt": 7.8,
+       "our_cpt": 16.0,
+       "cpt_leverage": 8.2,
+       "shadow_flex": 34.6,
+       "our_flex": 34.0,
+       "flex_leverage": -0.6
+      },
+      {
+       "player": "Juwan Johnson",
+       "shadow_cpt": 5.7,
+       "our_cpt": 7.3,
+       "cpt_leverage": 1.6,
+       "shadow_flex": 32.7,
+       "our_flex": 36.0,
+       "flex_leverage": 3.3
+      },
+      {
+       "player": "Daniel Carlson",
+       "shadow_cpt": 3.0,
+       "our_cpt": 2.7,
+       "cpt_leverage": -0.3,
+       "shadow_flex": 32.3,
+       "our_flex": 31.3,
+       "flex_leverage": -1.0
+      },
+      {
+       "player": "Devaughn Vele",
+       "shadow_cpt": 4.1,
+       "our_cpt": 4.0,
+       "cpt_leverage": -0.1,
+       "shadow_flex": 28.0,
+       "our_flex": 20.0,
+       "flex_leverage": -8.0
+      },
+      {
+       "player": "Olamide Zaccheaus",
+       "shadow_cpt": 0.8,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.8,
+       "shadow_flex": 25.3,
+       "our_flex": 8.0,
+       "flex_leverage": -17.3
+      },
+      {
+       "player": "Kyle Pitts Sr.",
+       "shadow_cpt": 1.5,
+       "our_cpt": 0.7,
+       "cpt_leverage": -0.8,
+       "shadow_flex": 20.1,
+       "our_flex": 4.7,
+       "flex_leverage": -15.4
+      }
+     ],
+     "two_entry_lineups": null
+    },
+    "196285160": {
+     "pred_dupes_exact": {
+      "mean": 4.7,
+      "max": 28.2,
+      "n_over_guardrail": 1,
+      "guardrail": 20
+     },
+     "pred_dupes_product": {
+      "mean": 5.19,
+      "max": 24.77
+     },
+     "geomean_ownership_median": 21.604999999999997,
+     "lineups_with_player_absent_from_shadow_field": 9,
+     "salary_left": {
+      "ours": {
+       "0": 16,
+       "500": 3,
+       "1000": 1
+      },
+      "ours_mean": 230.0,
+      "shadow_field_mean": 1567.0
+     },
+     "team_split_away_home": {
+      "ours_pct": {
+       "1-5": 35.0,
+       "2-4": 20.0,
+       "3-3": 40.0,
+       "4-2": 5.0
+      },
+      "shadow_field_pct": {
+       "1-5": 14.3,
+       "2-4": 37.6,
+       "3-3": 33.1,
+       "4-2": 13.0,
+       "5-1": 2.0
+      }
+     },
+     "shadow_portfolio_comparison": {
+      "built": 20,
+      "relaxation_level": 2,
+      "proxy_coverage": 0.7675,
+      "production_proxy_coverage": 0.827,
+      "lineups_shared_with_production": 13,
+      "STATUS": "COMPARISON ONLY -- production is not replaced without an owner ruling"
+     },
+     "leverage_top12": [
+      {
+       "player": "Tyler Shough",
+       "shadow_cpt": 22.5,
+       "our_cpt": 15.0,
+       "cpt_leverage": -7.5,
+       "shadow_flex": 45.9,
+       "our_flex": 50.0,
+       "flex_leverage": 4.1
+      },
+      {
+       "player": "Bijan Robinson",
+       "shadow_cpt": 21.2,
+       "our_cpt": 30.0,
+       "cpt_leverage": 8.8,
+       "shadow_flex": 44.3,
+       "our_flex": 35.0,
+       "flex_leverage": -9.3
+      },
+      {
+       "player": "Chris Olave",
+       "shadow_cpt": 13.2,
+       "our_cpt": 30.0,
+       "cpt_leverage": 16.8,
+       "shadow_flex": 39.7,
+       "our_flex": 35.0,
+       "flex_leverage": -4.7
+      },
+      {
+       "player": "Kevin Austin Jr.",
+       "shadow_cpt": 1.7,
+       "our_cpt": 0.0,
+       "cpt_leverage": -1.7,
+       "shadow_flex": 50.9,
+       "our_flex": 0.0,
+       "flex_leverage": -50.9
+      },
+      {
+       "player": "Michael Penix Jr.",
+       "shadow_cpt": 9.2,
+       "our_cpt": 0.0,
+       "cpt_leverage": -9.2,
+       "shadow_flex": 39.7,
+       "our_flex": 35.0,
+       "flex_leverage": -4.7
+      },
+      {
+       "player": "Alvin Kamara",
+       "shadow_cpt": 7.4,
+       "our_cpt": 0.0,
+       "cpt_leverage": -7.4,
+       "shadow_flex": 39.7,
+       "our_flex": 60.0,
+       "flex_leverage": 20.3
+      },
+      {
+       "player": "Drake London",
+       "shadow_cpt": 7.8,
+       "our_cpt": 15.0,
+       "cpt_leverage": 7.2,
+       "shadow_flex": 34.6,
+       "our_flex": 40.0,
+       "flex_leverage": 5.4
+      },
+      {
+       "player": "Juwan Johnson",
+       "shadow_cpt": 5.7,
+       "our_cpt": 10.0,
+       "cpt_leverage": 4.3,
+       "shadow_flex": 32.7,
+       "our_flex": 45.0,
+       "flex_leverage": 12.3
+      },
+      {
+       "player": "Daniel Carlson",
+       "shadow_cpt": 3.0,
+       "our_cpt": 0.0,
+       "cpt_leverage": -3.0,
+       "shadow_flex": 32.3,
+       "our_flex": 40.0,
+       "flex_leverage": 7.7
+      },
+      {
+       "player": "Devaughn Vele",
+       "shadow_cpt": 4.1,
+       "our_cpt": 0.0,
+       "cpt_leverage": -4.1,
+       "shadow_flex": 28.0,
+       "our_flex": 10.0,
+       "flex_leverage": -18.0
+      },
+      {
+       "player": "Olamide Zaccheaus",
+       "shadow_cpt": 0.8,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.8,
+       "shadow_flex": 25.3,
+       "our_flex": 5.0,
+       "flex_leverage": -20.3
+      },
+      {
+       "player": "Kyle Pitts Sr.",
+       "shadow_cpt": 1.5,
+       "our_cpt": 0.0,
+       "cpt_leverage": -1.5,
+       "shadow_flex": 20.1,
+       "our_flex": 0.0,
+       "flex_leverage": -20.1
+      }
+     ],
+     "two_entry_lineups": null
+    },
+    "196285161": {
+     "pred_dupes_exact": {
+      "mean": 0.0,
+      "max": 0.0,
+      "n_over_guardrail": 0,
+      "guardrail": 20
+     },
+     "pred_dupes_product": {
+      "mean": 0.0,
+      "max": 0.0
+     },
+     "geomean_ownership_median": 1.0,
+     "lineups_with_player_absent_from_shadow_field": 2,
+     "salary_left": {
+      "ours": {
+       "0": 2
+      },
+      "ours_mean": 0.0,
+      "shadow_field_mean": 1567.0
+     },
+     "team_split_away_home": {
+      "ours_pct": {
+       "1-5": 100.0
+      },
+      "shadow_field_pct": {
+       "1-5": 14.3,
+       "2-4": 37.6,
+       "3-3": 33.1,
+       "4-2": 13.0,
+       "5-1": 2.0
+      }
+     },
+     "shadow_portfolio_comparison": {
+      "built": 2,
+      "relaxation_level": 0,
+      "proxy_coverage": 0.3165,
+      "production_proxy_coverage": 0.3165,
+      "lineups_shared_with_production": 2,
+      "STATUS": "COMPARISON ONLY -- production is not replaced without an owner ruling"
+     },
+     "leverage_top12": [
+      {
+       "player": "Tyler Shough",
+       "shadow_cpt": 22.5,
+       "our_cpt": 50.0,
+       "cpt_leverage": 27.5,
+       "shadow_flex": 45.9,
+       "our_flex": 50.0,
+       "flex_leverage": 4.1
+      },
+      {
+       "player": "Bijan Robinson",
+       "shadow_cpt": 21.2,
+       "our_cpt": 0.0,
+       "cpt_leverage": -21.2,
+       "shadow_flex": 44.3,
+       "our_flex": 50.0,
+       "flex_leverage": 5.7
+      },
+      {
+       "player": "Chris Olave",
+       "shadow_cpt": 13.2,
+       "our_cpt": 50.0,
+       "cpt_leverage": 36.8,
+       "shadow_flex": 39.7,
+       "our_flex": 50.0,
+       "flex_leverage": 10.3
+      },
+      {
+       "player": "Kevin Austin Jr.",
+       "shadow_cpt": 1.7,
+       "our_cpt": 0.0,
+       "cpt_leverage": -1.7,
+       "shadow_flex": 50.9,
+       "our_flex": 0.0,
+       "flex_leverage": -50.9
+      },
+      {
+       "player": "Michael Penix Jr.",
+       "shadow_cpt": 9.2,
+       "our_cpt": 0.0,
+       "cpt_leverage": -9.2,
+       "shadow_flex": 39.7,
+       "our_flex": 0.0,
+       "flex_leverage": -39.7
+      },
+      {
+       "player": "Alvin Kamara",
+       "shadow_cpt": 7.4,
+       "our_cpt": 0.0,
+       "cpt_leverage": -7.4,
+       "shadow_flex": 39.7,
+       "our_flex": 50.0,
+       "flex_leverage": 10.3
+      },
+      {
+       "player": "Drake London",
+       "shadow_cpt": 7.8,
+       "our_cpt": 0.0,
+       "cpt_leverage": -7.8,
+       "shadow_flex": 34.6,
+       "our_flex": 50.0,
+       "flex_leverage": 15.4
+      },
+      {
+       "player": "Juwan Johnson",
+       "shadow_cpt": 5.7,
+       "our_cpt": 0.0,
+       "cpt_leverage": -5.7,
+       "shadow_flex": 32.7,
+       "our_flex": 100.0,
+       "flex_leverage": 67.3
+      },
+      {
+       "player": "Daniel Carlson",
+       "shadow_cpt": 3.0,
+       "our_cpt": 0.0,
+       "cpt_leverage": -3.0,
+       "shadow_flex": 32.3,
+       "our_flex": 50.0,
+       "flex_leverage": 17.7
+      },
+      {
+       "player": "Devaughn Vele",
+       "shadow_cpt": 4.1,
+       "our_cpt": 0.0,
+       "cpt_leverage": -4.1,
+       "shadow_flex": 28.0,
+       "our_flex": 0.0,
+       "flex_leverage": -28.0
+      },
+      {
+       "player": "Olamide Zaccheaus",
+       "shadow_cpt": 0.8,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.8,
+       "shadow_flex": 25.3,
+       "our_flex": 0.0,
+       "flex_leverage": -25.3
+      },
+      {
+       "player": "Kyle Pitts Sr.",
+       "shadow_cpt": 1.5,
+       "our_cpt": 0.0,
+       "cpt_leverage": -1.5,
+       "shadow_flex": 20.1,
+       "our_flex": 0.0,
+       "flex_leverage": -20.1
+      }
+     ],
+     "two_entry_lineups": [
+      {
+       "captain": "Chris Olave",
+       "flex": [
+        "Bijan Robinson",
+        "Daniel Carlson",
+        "Juwan Johnson",
+        "Treyton Welch",
+        "Tyler Shough"
+       ],
+       "pred_dupes_exact": 0.0,
+       "pred_dupes_product": 0.0,
+       "geomean_ownership": 1.0,
+       "players_absent_from_shadow_field": [
+        "Treyton Welch|NO"
+       ],
+       "DUPES_STATUS": "UNDERSTATED_PLAYER_ABSENT_FROM_SHADOW_FIELD"
+      },
+      {
+       "captain": "Tyler Shough",
+       "flex": [
+        "Alvin Kamara",
+        "Chris Olave",
+        "Drake London",
+        "Juwan Johnson",
+        "Oscar Delp"
+       ],
+       "pred_dupes_exact": 0.0,
+       "pred_dupes_product": 0.0,
+       "geomean_ownership": 1.0,
+       "players_absent_from_shadow_field": [
+        "Oscar Delp|NO"
+       ],
+       "DUPES_STATUS": "UNDERSTATED_PLAYER_ABSENT_FROM_SHADOW_FIELD"
+      }
+     ]
+    }
+   }
+  },
+  "BLEND": {
+   "label": "EXTERNAL_RESEARCH_SHADOW",
+   "VALIDATED": false,
+   "sigma": 0.6,
+   "field_projection": "MEAN_OF_FC_AND_OURS",
+   "anchor_rmse": 10.87,
+   "field_size_estimates": {
+    "196285137": 235294,
+    "196285160": 47059,
+    "196285161": 58824
+   },
+   "contests": {
+    "196285137": {
+     "pred_dupes_exact": {
+      "mean": 51.8,
+      "max": 329.4,
+      "n_over_guardrail": 72,
+      "guardrail": 20
+     },
+     "pred_dupes_product": {
+      "mean": 32.23,
+      "max": 117.73
+     },
+     "geomean_ownership_median": 19.725,
+     "lineups_with_player_absent_from_shadow_field": 1,
+     "salary_left": {
+      "ours": {
+       "0": 105,
+       "500": 29,
+       "1000": 9,
+       "1500": 7
+      },
+      "ours_mean": 395.0,
+      "shadow_field_mean": 1019.0
+     },
+     "team_split_away_home": {
+      "ours_pct": {
+       "1-5": 14.0,
+       "2-4": 29.3,
+       "3-3": 30.0,
+       "4-2": 18.7,
+       "5-1": 8.0
+      },
+      "shadow_field_pct": {
+       "1-5": 14.3,
+       "2-4": 37.6,
+       "3-3": 33.5,
+       "4-2": 12.8,
+       "5-1": 1.8
+      }
+     },
+     "shadow_portfolio_comparison": {
+      "built": 150,
+      "relaxation_level": 2,
+      "proxy_coverage": 1.0,
+      "production_proxy_coverage": 1.0,
+      "lineups_shared_with_production": 45,
+      "STATUS": "COMPARISON ONLY -- production is not replaced without an owner ruling"
+     },
+     "leverage_top12": [
+      {
+       "player": "Tyler Shough",
+       "shadow_cpt": 19.9,
+       "our_cpt": 11.3,
+       "cpt_leverage": -8.6,
+       "shadow_flex": 44.1,
+       "our_flex": 54.0,
+       "flex_leverage": 9.9
+      },
+      {
+       "player": "Bijan Robinson",
+       "shadow_cpt": 19.6,
+       "our_cpt": 20.0,
+       "cpt_leverage": 0.4,
+       "shadow_flex": 42.5,
+       "our_flex": 45.3,
+       "flex_leverage": 2.8
+      },
+      {
+       "player": "Chris Olave",
+       "shadow_cpt": 17.6,
+       "our_cpt": 21.3,
+       "cpt_leverage": 3.8,
+       "shadow_flex": 40.8,
+       "our_flex": 36.7,
+       "flex_leverage": -4.2
+      },
+      {
+       "player": "Drake London",
+       "shadow_cpt": 10.3,
+       "our_cpt": 16.0,
+       "cpt_leverage": 5.7,
+       "shadow_flex": 36.9,
+       "our_flex": 34.0,
+       "flex_leverage": -2.9
+      },
+      {
+       "player": "Juwan Johnson",
+       "shadow_cpt": 7.8,
+       "our_cpt": 7.3,
+       "cpt_leverage": -0.4,
+       "shadow_flex": 37.8,
+       "our_flex": 36.0,
+       "flex_leverage": -1.8
+      },
+      {
+       "player": "Alvin Kamara",
+       "shadow_cpt": 6.9,
+       "our_cpt": 7.3,
+       "cpt_leverage": 0.4,
+       "shadow_flex": 38.1,
+       "our_flex": 34.0,
+       "flex_leverage": -4.1
+      },
+      {
+       "player": "Michael Penix Jr.",
+       "shadow_cpt": 8.1,
+       "our_cpt": 1.3,
+       "cpt_leverage": -6.7,
+       "shadow_flex": 36.8,
+       "our_flex": 44.0,
+       "flex_leverage": 7.2
+      },
+      {
+       "player": "Daniel Carlson",
+       "shadow_cpt": 2.9,
+       "our_cpt": 2.7,
+       "cpt_leverage": -0.3,
+       "shadow_flex": 33.3,
+       "our_flex": 31.3,
+       "flex_leverage": -1.9
+      },
+      {
+       "player": "Kevin Austin Jr.",
+       "shadow_cpt": 0.3,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.3,
+       "shadow_flex": 35.1,
+       "our_flex": 0.7,
+       "flex_leverage": -34.4
+      },
+      {
+       "player": "Devaughn Vele",
+       "shadow_cpt": 3.1,
+       "our_cpt": 4.0,
+       "cpt_leverage": 0.9,
+       "shadow_flex": 25.9,
+       "our_flex": 20.0,
+       "flex_leverage": -5.9
+      },
+      {
+       "player": "Nick Folk",
+       "shadow_cpt": 0.9,
+       "our_cpt": 0.7,
+       "cpt_leverage": -0.3,
+       "shadow_flex": 20.9,
+       "our_flex": 24.0,
+       "flex_leverage": 3.1
+      },
+      {
+       "player": "Saints",
+       "shadow_cpt": 0.9,
+       "our_cpt": 2.0,
+       "cpt_leverage": 1.1,
+       "shadow_flex": 19.2,
+       "our_flex": 27.3,
+       "flex_leverage": 8.1
+      }
+     ],
+     "two_entry_lineups": null
+    },
+    "196285160": {
+     "pred_dupes_exact": {
+      "mean": 16.9,
+      "max": 47.1,
+      "n_over_guardrail": 7,
+      "guardrail": 20
+     },
+     "pred_dupes_product": {
+      "mean": 10.26,
+      "max": 36.74
+     },
+     "geomean_ownership_median": 23.985,
+     "lineups_with_player_absent_from_shadow_field": 0,
+     "salary_left": {
+      "ours": {
+       "0": 16,
+       "500": 3,
+       "1000": 1
+      },
+      "ours_mean": 230.0,
+      "shadow_field_mean": 1019.0
+     },
+     "team_split_away_home": {
+      "ours_pct": {
+       "1-5": 35.0,
+       "2-4": 20.0,
+       "3-3": 40.0,
+       "4-2": 5.0
+      },
+      "shadow_field_pct": {
+       "1-5": 14.3,
+       "2-4": 37.6,
+       "3-3": 33.5,
+       "4-2": 12.8,
+       "5-1": 1.8
+      }
+     },
+     "shadow_portfolio_comparison": {
+      "built": 20,
+      "relaxation_level": 2,
+      "proxy_coverage": 0.7705,
+      "production_proxy_coverage": 0.827,
+      "lineups_shared_with_production": 7,
+      "STATUS": "COMPARISON ONLY -- production is not replaced without an owner ruling"
+     },
+     "leverage_top12": [
+      {
+       "player": "Tyler Shough",
+       "shadow_cpt": 19.9,
+       "our_cpt": 15.0,
+       "cpt_leverage": -4.9,
+       "shadow_flex": 44.1,
+       "our_flex": 50.0,
+       "flex_leverage": 5.9
+      },
+      {
+       "player": "Bijan Robinson",
+       "shadow_cpt": 19.6,
+       "our_cpt": 30.0,
+       "cpt_leverage": 10.4,
+       "shadow_flex": 42.5,
+       "our_flex": 35.0,
+       "flex_leverage": -7.5
+      },
+      {
+       "player": "Chris Olave",
+       "shadow_cpt": 17.6,
+       "our_cpt": 30.0,
+       "cpt_leverage": 12.4,
+       "shadow_flex": 40.8,
+       "our_flex": 35.0,
+       "flex_leverage": -5.8
+      },
+      {
+       "player": "Drake London",
+       "shadow_cpt": 10.3,
+       "our_cpt": 15.0,
+       "cpt_leverage": 4.7,
+       "shadow_flex": 36.9,
+       "our_flex": 40.0,
+       "flex_leverage": 3.1
+      },
+      {
+       "player": "Juwan Johnson",
+       "shadow_cpt": 7.8,
+       "our_cpt": 10.0,
+       "cpt_leverage": 2.2,
+       "shadow_flex": 37.8,
+       "our_flex": 45.0,
+       "flex_leverage": 7.2
+      },
+      {
+       "player": "Alvin Kamara",
+       "shadow_cpt": 6.9,
+       "our_cpt": 0.0,
+       "cpt_leverage": -6.9,
+       "shadow_flex": 38.1,
+       "our_flex": 60.0,
+       "flex_leverage": 21.9
+      },
+      {
+       "player": "Michael Penix Jr.",
+       "shadow_cpt": 8.1,
+       "our_cpt": 0.0,
+       "cpt_leverage": -8.1,
+       "shadow_flex": 36.8,
+       "our_flex": 35.0,
+       "flex_leverage": -1.8
+      },
+      {
+       "player": "Daniel Carlson",
+       "shadow_cpt": 2.9,
+       "our_cpt": 0.0,
+       "cpt_leverage": -2.9,
+       "shadow_flex": 33.3,
+       "our_flex": 40.0,
+       "flex_leverage": 6.7
+      },
+      {
+       "player": "Kevin Austin Jr.",
+       "shadow_cpt": 0.3,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.3,
+       "shadow_flex": 35.1,
+       "our_flex": 0.0,
+       "flex_leverage": -35.1
+      },
+      {
+       "player": "Devaughn Vele",
+       "shadow_cpt": 3.1,
+       "our_cpt": 0.0,
+       "cpt_leverage": -3.1,
+       "shadow_flex": 25.9,
+       "our_flex": 10.0,
+       "flex_leverage": -15.9
+      },
+      {
+       "player": "Nick Folk",
+       "shadow_cpt": 0.9,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.9,
+       "shadow_flex": 20.9,
+       "our_flex": 15.0,
+       "flex_leverage": -5.9
+      },
+      {
+       "player": "Saints",
+       "shadow_cpt": 0.9,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.9,
+       "shadow_flex": 19.2,
+       "our_flex": 30.0,
+       "flex_leverage": 10.8
+      }
+     ],
+     "two_entry_lineups": null
+    },
+    "196285161": {
+     "pred_dupes_exact": {
+      "mean": 47.1,
+      "max": 47.1,
+      "n_over_guardrail": 2,
+      "guardrail": 20
+     },
+     "pred_dupes_product": {
+      "mean": 3.28,
+      "max": 4.27
+     },
+     "geomean_ownership_median": 19.415,
+     "lineups_with_player_absent_from_shadow_field": 0,
+     "salary_left": {
+      "ours": {
+       "0": 2
+      },
+      "ours_mean": 0.0,
+      "shadow_field_mean": 1019.0
+     },
+     "team_split_away_home": {
+      "ours_pct": {
+       "1-5": 100.0
+      },
+      "shadow_field_pct": {
+       "1-5": 14.3,
+       "2-4": 37.6,
+       "3-3": 33.5,
+       "4-2": 12.8,
+       "5-1": 1.8
+      }
+     },
+     "shadow_portfolio_comparison": {
+      "built": 2,
+      "relaxation_level": 0,
+      "proxy_coverage": 0.2965,
+      "production_proxy_coverage": 0.3165,
+      "lineups_shared_with_production": 0,
+      "STATUS": "COMPARISON ONLY -- production is not replaced without an owner ruling"
+     },
+     "leverage_top12": [
+      {
+       "player": "Tyler Shough",
+       "shadow_cpt": 19.9,
+       "our_cpt": 50.0,
+       "cpt_leverage": 30.1,
+       "shadow_flex": 44.1,
+       "our_flex": 50.0,
+       "flex_leverage": 5.9
+      },
+      {
+       "player": "Bijan Robinson",
+       "shadow_cpt": 19.6,
+       "our_cpt": 0.0,
+       "cpt_leverage": -19.6,
+       "shadow_flex": 42.5,
+       "our_flex": 50.0,
+       "flex_leverage": 7.5
+      },
+      {
+       "player": "Chris Olave",
+       "shadow_cpt": 17.6,
+       "our_cpt": 50.0,
+       "cpt_leverage": 32.4,
+       "shadow_flex": 40.8,
+       "our_flex": 50.0,
+       "flex_leverage": 9.2
+      },
+      {
+       "player": "Drake London",
+       "shadow_cpt": 10.3,
+       "our_cpt": 0.0,
+       "cpt_leverage": -10.3,
+       "shadow_flex": 36.9,
+       "our_flex": 50.0,
+       "flex_leverage": 13.1
+      },
+      {
+       "player": "Juwan Johnson",
+       "shadow_cpt": 7.8,
+       "our_cpt": 0.0,
+       "cpt_leverage": -7.8,
+       "shadow_flex": 37.8,
+       "our_flex": 100.0,
+       "flex_leverage": 62.2
+      },
+      {
+       "player": "Alvin Kamara",
+       "shadow_cpt": 6.9,
+       "our_cpt": 0.0,
+       "cpt_leverage": -6.9,
+       "shadow_flex": 38.1,
+       "our_flex": 50.0,
+       "flex_leverage": 11.9
+      },
+      {
+       "player": "Michael Penix Jr.",
+       "shadow_cpt": 8.1,
+       "our_cpt": 0.0,
+       "cpt_leverage": -8.1,
+       "shadow_flex": 36.8,
+       "our_flex": 0.0,
+       "flex_leverage": -36.8
+      },
+      {
+       "player": "Daniel Carlson",
+       "shadow_cpt": 2.9,
+       "our_cpt": 0.0,
+       "cpt_leverage": -2.9,
+       "shadow_flex": 33.3,
+       "our_flex": 50.0,
+       "flex_leverage": 16.7
+      },
+      {
+       "player": "Kevin Austin Jr.",
+       "shadow_cpt": 0.3,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.3,
+       "shadow_flex": 35.1,
+       "our_flex": 0.0,
+       "flex_leverage": -35.1
+      },
+      {
+       "player": "Devaughn Vele",
+       "shadow_cpt": 3.1,
+       "our_cpt": 0.0,
+       "cpt_leverage": -3.1,
+       "shadow_flex": 25.9,
+       "our_flex": 0.0,
+       "flex_leverage": -25.9
+      },
+      {
+       "player": "Nick Folk",
+       "shadow_cpt": 0.9,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.9,
+       "shadow_flex": 20.9,
+       "our_flex": 0.0,
+       "flex_leverage": -20.9
+      },
+      {
+       "player": "Saints",
+       "shadow_cpt": 0.9,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.9,
+       "shadow_flex": 19.2,
+       "our_flex": 0.0,
+       "flex_leverage": -19.2
+      }
+     ],
+     "two_entry_lineups": [
+      {
+       "captain": "Chris Olave",
+       "flex": [
+        "Bijan Robinson",
+        "Daniel Carlson",
+        "Juwan Johnson",
+        "Treyton Welch",
+        "Tyler Shough"
+       ],
+       "pred_dupes_exact": 47.1,
+       "pred_dupes_product": 2.29,
+       "geomean_ownership": 18.41
+      },
+      {
+       "captain": "Tyler Shough",
+       "flex": [
+        "Alvin Kamara",
+        "Chris Olave",
+        "Drake London",
+        "Juwan Johnson",
+        "Oscar Delp"
+       ],
+       "pred_dupes_exact": 47.1,
+       "pred_dupes_product": 4.27,
+       "geomean_ownership": 20.42
+      }
+     ]
+    }
+   }
+  },
+  "DUPE_STACK": {
+   "FC_ONLY": {
+    "STATUS": "PRODUCTION_CANDIDATE -- NOT PROMOTED, NOT VALIDATED",
+    "NOT_FITTED": {
+     "targets": "optimizer-exposure shadow field ownership, not a fitted ownership model",
+     "archetype_prior": "DERIVED_FROM_OPTIMIZER_FIELD (joint away-count x QB-count x K/DST-count)",
+     "phi": "ASSUMED, swept [50.0, 200.0, 1000.0]; 200.0 carried to the board",
+     "contest_bucket": "one bucket for all three contests",
+     "E2": "ETR-seeded correlation factors only; salary-left and construction factors 1.0"
+    },
+    "phi_sweep": [
+     "50.0",
+     "200.0",
+     "1000.0"
+    ],
+    "calibration_residual_rmse_pts": {
+     "50.0": {
+      "cpt": 0.862,
+      "flex": 2.096
+     },
+     "200.0": {
+      "cpt": 0.308,
+      "flex": 1.768
+     },
+     "1000.0": {
+      "cpt": 0.111,
+      "flex": 1.581
+     }
+    },
+    "salary_left_archetype_field": {
+     "mean": 2278,
+     "p50": 1600.0,
+     "share_0": 0.035,
+     "share_le_900": 0.333,
+     "share_1000_1900": 0.225
+    },
+    "contests": {
+     "196285137": {
+      "mean": {
+       "E1": 19.15,
+       "E2": 24.22,
+       "E3_lower_bound_mean": 11.82,
+       "E4": 19.77
+      },
+      "flags": {
+       "PLAYER_ABSENT_FROM_FIELD_TARGETS": 64,
+       "E3_BELOW_RESOLUTION_E1_NOT": 19,
+       "E1_E3_DISAGREE_GT_2X": 26,
+       "None": 41
+      },
+      "by_phi_E3_mean": {
+       "50.0": 12.54,
+       "200.0": 11.82,
+       "1000.0": 11.51
+      },
+      "lineups": null
+     },
+     "196285160": {
+      "mean": {
+       "E1": 5.19,
+       "E2": 7.21,
+       "E3_lower_bound_mean": 2.77,
+       "E4": 4.7
+      },
+      "flags": {
+       "E3_BELOW_RESOLUTION_E1_NOT": 3,
+       "PLAYER_ABSENT_FROM_FIELD_TARGETS": 9,
+       "None": 4,
+       "E1_E3_DISAGREE_GT_2X": 4
+      },
+      "by_phi_E3_mean": {
+       "50.0": 2.81,
+       "200.0": 2.77,
+       "1000.0": 2.96
+      },
+      "lineups": [
+       {
+        "captain": "Juwan Johnson",
+        "flex": [
+         "Bijan Robinson",
+         "Bryce Lance",
+         "Chris Olave",
+         "Daniel Carlson",
+         "Tyler Shough"
+        ],
+        "E1_independent_product": 4.52,
+        "E2_adjusted_product": 4.52,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 28.2,
+        "FLAG": "E3_BELOW_RESOLUTION_E1_NOT",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Chris Olave",
+        "flex": [
+         "Bijan Robinson",
+         "Jahan Dotson",
+         "Michael Penix Jr.",
+         "Oscar Delp",
+         "Tyler Shough"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Oscar Delp"
+        ]
+       },
+       {
+        "captain": "Tyler Shough",
+        "flex": [
+         "Alvin Kamara",
+         "Chris Olave",
+         "Drake London",
+         "Juwan Johnson",
+         "Oscar Delp"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Oscar Delp"
+        ]
+       },
+       {
+        "captain": "Chris Olave",
+        "flex": [
+         "Devaughn Vele",
+         "Falcons",
+         "Juwan Johnson",
+         "Nick Folk",
+         "Tyler Shough"
+        ],
+        "E1_independent_product": 5.25,
+        "E2_adjusted_product": 10.49,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": 3.8,
+        "E3_count_in_field": 4,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Bijan Robinson",
+        "flex": [
+         "Chris Olave",
+         "Drake London",
+         "Falcons",
+         "Juwan Johnson",
+         "Oscar Delp"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Oscar Delp"
+        ]
+       },
+       {
+        "captain": "Bijan Robinson",
+        "flex": [
+         "Chris Olave",
+         "Falcons",
+         "Juwan Johnson",
+         "Oscar Delp",
+         "Tyler Shough"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Oscar Delp"
+        ]
+       },
+       {
+        "captain": "Bijan Robinson",
+        "flex": [
+         "Daniel Carlson",
+         "Drake London",
+         "Juwan Johnson",
+         "Oscar Delp",
+         "Tyler Shough"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Oscar Delp"
+        ]
+       },
+       {
+        "captain": "Drake London",
+        "flex": [
+         "Austin Hooper",
+         "Bijan Robinson",
+         "Chris Olave",
+         "Michael Penix Jr.",
+         "Oscar Delp"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Austin Hooper",
+         "Oscar Delp"
+        ]
+       },
+       {
+        "captain": "Bijan Robinson",
+        "flex": [
+         "Alvin Kamara",
+         "Chris Olave",
+         "Daniel Carlson",
+         "Falcons",
+         "Nick Folk"
+        ],
+        "E1_independent_product": 10.26,
+        "E2_adjusted_product": 10.26,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": 0.9,
+        "E3_count_in_field": 1,
+        "E4_optimizer_field": 9.4,
+        "FLAG": "E1_E3_DISAGREE_GT_2X",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Chris Olave",
+        "flex": [
+         "Daniel Carlson",
+         "Drake London",
+         "Michael Penix Jr.",
+         "Oscar Delp",
+         "Tyler Shough"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Oscar Delp"
+        ]
+       },
+       {
+        "captain": "Chris Olave",
+        "flex": [
+         "Alvin Kamara",
+         "Bijan Robinson",
+         "Daniel Carlson",
+         "Oscar Delp",
+         "Tyler Shough"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Oscar Delp"
+        ]
+       },
+       {
+        "captain": "Tyler Shough",
+        "flex": [
+         "Alvin Kamara",
+         "Bijan Robinson",
+         "Daniel Carlson",
+         "Juwan Johnson",
+         "Saints"
+        ],
+        "E1_independent_product": 24.77,
+        "E2_adjusted_product": 24.77,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": 12.2,
+        "E3_count_in_field": 13,
+        "E4_optimizer_field": 18.8,
+        "FLAG": "E1_E3_DISAGREE_GT_2X",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Drake London",
+        "flex": [
+         "Alvin Kamara",
+         "Bijan Robinson",
+         "Bryce Lance",
+         "Daniel Carlson",
+         "Michael Penix Jr."
+        ],
+        "E1_independent_product": 5.33,
+        "E2_adjusted_product": 10.66,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "E3_BELOW_RESOLUTION_E1_NOT",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Chris Olave",
+        "flex": [
+         "Alvin Kamara",
+         "Juwan Johnson",
+         "Nick Folk",
+         "Saints",
+         "Tyler Shough"
+        ],
+        "E1_independent_product": 7.85,
+        "E2_adjusted_product": 15.7,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": 3.8,
+        "E3_count_in_field": 4,
+        "E4_optimizer_field": 9.4,
+        "FLAG": "E1_E3_DISAGREE_GT_2X",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Bijan Robinson",
+        "flex": [
+         "Alvin Kamara",
+         "Drake London",
+         "Falcons",
+         "Juwan Johnson",
+         "Saints"
+        ],
+        "E1_independent_product": 6.73,
+        "E2_adjusted_product": 6.73,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": 2.8,
+        "E3_count_in_field": 3,
+        "E4_optimizer_field": 9.4,
+        "FLAG": "E1_E3_DISAGREE_GT_2X",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Tyler Shough",
+        "flex": [
+         "Alvin Kamara",
+         "Bijan Robinson",
+         "Bryce Lance",
+         "Chris Olave",
+         "Saints"
+        ],
+        "E1_independent_product": 5.97,
+        "E2_adjusted_product": 5.97,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "E3_BELOW_RESOLUTION_E1_NOT",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Chris Olave",
+        "flex": [
+         "Alvin Kamara",
+         "Drake London",
+         "Falcons",
+         "Michael Penix Jr.",
+         "Saints"
+        ],
+        "E1_independent_product": 5.07,
+        "E2_adjusted_product": 5.07,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": 2.8,
+        "E3_count_in_field": 3,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Drake London",
+        "flex": [
+         "Alvin Kamara",
+         "Juwan Johnson",
+         "Michael Penix Jr.",
+         "Olamide Zaccheaus",
+         "Tyler Shough"
+        ],
+        "E1_independent_product": 22.0,
+        "E2_adjusted_product": 44.01,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": 25.4,
+        "E3_count_in_field": 27,
+        "E4_optimizer_field": 18.8,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Bijan Robinson",
+        "flex": [
+         "Alvin Kamara",
+         "Daniel Carlson",
+         "Drake London",
+         "Michael Penix Jr.",
+         "Oscar Delp"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Oscar Delp"
+        ]
+       },
+       {
+        "captain": "Juwan Johnson",
+        "flex": [
+         "Alvin Kamara",
+         "Devaughn Vele",
+         "Drake London",
+         "Saints",
+         "Tyler Shough"
+        ],
+        "E1_independent_product": 5.98,
+        "E2_adjusted_product": 5.98,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": 3.8,
+        "E3_count_in_field": 4,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       }
+      ]
+     },
+     "196285161": {
+      "mean": {
+       "E1": 0.0,
+       "E2": 0.0,
+       "E3_lower_bound_mean": 0.0,
+       "E4": 0.0
+      },
+      "flags": {
+       "PLAYER_ABSENT_FROM_FIELD_TARGETS": 2
+      },
+      "by_phi_E3_mean": {
+       "50.0": 0.0,
+       "200.0": 0.0,
+       "1000.0": 0.0
+      },
+      "lineups": [
+       {
+        "captain": "Chris Olave",
+        "flex": [
+         "Bijan Robinson",
+         "Daniel Carlson",
+         "Juwan Johnson",
+         "Treyton Welch",
+         "Tyler Shough"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": "<1.2",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Treyton Welch"
+        ]
+       },
+       {
+        "captain": "Tyler Shough",
+        "flex": [
+         "Alvin Kamara",
+         "Chris Olave",
+         "Drake London",
+         "Juwan Johnson",
+         "Oscar Delp"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<1.2",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Oscar Delp"
+        ]
+       }
+      ]
+     }
+    }
+   },
+   "BLEND": {
+    "STATUS": "PRODUCTION_CANDIDATE -- NOT PROMOTED, NOT VALIDATED",
+    "NOT_FITTED": {
+     "targets": "optimizer-exposure shadow field ownership, not a fitted ownership model",
+     "archetype_prior": "DERIVED_FROM_OPTIMIZER_FIELD (joint away-count x QB-count x K/DST-count)",
+     "phi": "ASSUMED, swept [50.0, 200.0, 1000.0]; 200.0 carried to the board",
+     "contest_bucket": "one bucket for all three contests",
+     "E2": "ETR-seeded correlation factors only; salary-left and construction factors 1.0"
+    },
+    "phi_sweep": [
+     "50.0",
+     "200.0",
+     "1000.0"
+    ],
+    "calibration_residual_rmse_pts": {
+     "50.0": {
+      "cpt": 0.4,
+      "flex": 1.79
+     },
+     "200.0": {
+      "cpt": 0.296,
+      "flex": 1.786
+     },
+     "1000.0": {
+      "cpt": 0.141,
+      "flex": 1.484
+     }
+    },
+    "salary_left_archetype_field": {
+     "mean": 1939,
+     "p50": 1300.0,
+     "share_0": 0.057,
+     "share_le_900": 0.412,
+     "share_1000_1900": 0.217
+    },
+    "contests": {
+     "196285137": {
+      "mean": {
+       "E1": 32.23,
+       "E2": 41.42,
+       "E3_lower_bound_mean": 33.22,
+       "E4": 51.77
+      },
+      "flags": {
+       "E1_E3_DISAGREE_GT_2X": 43,
+       "None": 89,
+       "E3_BELOW_RESOLUTION_E1_NOT": 17,
+       "PLAYER_ABSENT_FROM_FIELD_TARGETS": 1
+      },
+      "by_phi_E3_mean": {
+       "50.0": 38.55,
+       "200.0": 33.22,
+       "1000.0": 35.89
+      },
+      "lineups": null
+     },
+     "196285160": {
+      "mean": {
+       "E1": 10.26,
+       "E2": 13.95,
+       "E3_lower_bound_mean": 13.46,
+       "E4": 16.93
+      },
+      "flags": {
+       "None": 9,
+       "E1_E3_DISAGREE_GT_2X": 9,
+       "E3_BELOW_RESOLUTION_E1_NOT": 2
+      },
+      "by_phi_E3_mean": {
+       "50.0": 16.09,
+       "200.0": 13.46,
+       "1000.0": 14.07
+      },
+      "lineups": [
+       {
+        "captain": "Juwan Johnson",
+        "flex": [
+         "Bijan Robinson",
+         "Bryce Lance",
+         "Chris Olave",
+         "Daniel Carlson",
+         "Tyler Shough"
+        ],
+        "E1_independent_product": 8.79,
+        "E2_adjusted_product": 8.79,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": 5.6,
+        "E3_count_in_field": 6,
+        "E4_optimizer_field": 28.2,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Chris Olave",
+        "flex": [
+         "Bijan Robinson",
+         "Jahan Dotson",
+         "Michael Penix Jr.",
+         "Oscar Delp",
+         "Tyler Shough"
+        ],
+        "E1_independent_product": 1.29,
+        "E2_adjusted_product": 2.57,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": 18.8,
+        "E3_count_in_field": 20,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "E1_E3_DISAGREE_GT_2X",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Tyler Shough",
+        "flex": [
+         "Alvin Kamara",
+         "Chris Olave",
+         "Drake London",
+         "Juwan Johnson",
+         "Oscar Delp"
+        ],
+        "E1_independent_product": 3.42,
+        "E2_adjusted_product": 3.42,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": 23.5,
+        "E3_count_in_field": 25,
+        "E4_optimizer_field": 37.6,
+        "FLAG": "E1_E3_DISAGREE_GT_2X",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Chris Olave",
+        "flex": [
+         "Devaughn Vele",
+         "Falcons",
+         "Juwan Johnson",
+         "Nick Folk",
+         "Tyler Shough"
+        ],
+        "E1_independent_product": 13.65,
+        "E2_adjusted_product": 27.31,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": 7.5,
+        "E3_count_in_field": 8,
+        "E4_optimizer_field": 37.6,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Bijan Robinson",
+        "flex": [
+         "Chris Olave",
+         "Drake London",
+         "Falcons",
+         "Juwan Johnson",
+         "Oscar Delp"
+        ],
+        "E1_independent_product": 1.61,
+        "E2_adjusted_product": 1.61,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": 8.5,
+        "E3_count_in_field": 9,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "E1_E3_DISAGREE_GT_2X",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Bijan Robinson",
+        "flex": [
+         "Chris Olave",
+         "Falcons",
+         "Juwan Johnson",
+         "Oscar Delp",
+         "Tyler Shough"
+        ],
+        "E1_independent_product": 1.93,
+        "E2_adjusted_product": 1.93,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "E3_BELOW_RESOLUTION_E1_NOT",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Bijan Robinson",
+        "flex": [
+         "Daniel Carlson",
+         "Drake London",
+         "Juwan Johnson",
+         "Oscar Delp",
+         "Tyler Shough"
+        ],
+        "E1_independent_product": 3.17,
+        "E2_adjusted_product": 3.17,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": 42.4,
+        "E3_count_in_field": 45,
+        "E4_optimizer_field": 9.4,
+        "FLAG": "E1_E3_DISAGREE_GT_2X",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Drake London",
+        "flex": [
+         "Austin Hooper",
+         "Bijan Robinson",
+         "Chris Olave",
+         "Michael Penix Jr.",
+         "Oscar Delp"
+        ],
+        "E1_independent_product": 0.05,
+        "E2_adjusted_product": 0.1,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Bijan Robinson",
+        "flex": [
+         "Alvin Kamara",
+         "Chris Olave",
+         "Daniel Carlson",
+         "Falcons",
+         "Nick Folk"
+        ],
+        "E1_independent_product": 18.25,
+        "E2_adjusted_product": 18.25,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": 8.5,
+        "E3_count_in_field": 9,
+        "E4_optimizer_field": 28.2,
+        "FLAG": "E1_E3_DISAGREE_GT_2X",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Chris Olave",
+        "flex": [
+         "Daniel Carlson",
+         "Drake London",
+         "Michael Penix Jr.",
+         "Oscar Delp",
+         "Tyler Shough"
+        ],
+        "E1_independent_product": 2.77,
+        "E2_adjusted_product": 5.55,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": 26.4,
+        "E3_count_in_field": 28,
+        "E4_optimizer_field": 37.6,
+        "FLAG": "E1_E3_DISAGREE_GT_2X",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Chris Olave",
+        "flex": [
+         "Alvin Kamara",
+         "Bijan Robinson",
+         "Daniel Carlson",
+         "Oscar Delp",
+         "Tyler Shough"
+        ],
+        "E1_independent_product": 3.31,
+        "E2_adjusted_product": 6.62,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": 28.2,
+        "E3_count_in_field": 30,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "E1_E3_DISAGREE_GT_2X",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Tyler Shough",
+        "flex": [
+         "Alvin Kamara",
+         "Bijan Robinson",
+         "Daniel Carlson",
+         "Juwan Johnson",
+         "Saints"
+        ],
+        "E1_independent_product": 36.74,
+        "E2_adjusted_product": 36.74,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": 25.4,
+        "E3_count_in_field": 27,
+        "E4_optimizer_field": 47.1,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Drake London",
+        "flex": [
+         "Alvin Kamara",
+         "Bijan Robinson",
+         "Bryce Lance",
+         "Daniel Carlson",
+         "Michael Penix Jr."
+        ],
+        "E1_independent_product": 9.12,
+        "E2_adjusted_product": 18.24,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": 2.8,
+        "E3_count_in_field": 3,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "E1_E3_DISAGREE_GT_2X",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Chris Olave",
+        "flex": [
+         "Alvin Kamara",
+         "Juwan Johnson",
+         "Nick Folk",
+         "Saints",
+         "Tyler Shough"
+        ],
+        "E1_independent_product": 21.17,
+        "E2_adjusted_product": 42.34,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": 11.3,
+        "E3_count_in_field": 12,
+        "E4_optimizer_field": 18.8,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Bijan Robinson",
+        "flex": [
+         "Alvin Kamara",
+         "Drake London",
+         "Falcons",
+         "Juwan Johnson",
+         "Saints"
+        ],
+        "E1_independent_product": 17.22,
+        "E2_adjusted_product": 17.22,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": 14.1,
+        "E3_count_in_field": 15,
+        "E4_optimizer_field": 18.8,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Tyler Shough",
+        "flex": [
+         "Alvin Kamara",
+         "Bijan Robinson",
+         "Bryce Lance",
+         "Chris Olave",
+         "Saints"
+        ],
+        "E1_independent_product": 11.26,
+        "E2_adjusted_product": 11.26,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": 8.5,
+        "E3_count_in_field": 9,
+        "E4_optimizer_field": 18.8,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Chris Olave",
+        "flex": [
+         "Alvin Kamara",
+         "Drake London",
+         "Falcons",
+         "Michael Penix Jr.",
+         "Saints"
+        ],
+        "E1_independent_product": 15.07,
+        "E2_adjusted_product": 15.07,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": 3.8,
+        "E3_count_in_field": 4,
+        "E4_optimizer_field": 18.8,
+        "FLAG": "E1_E3_DISAGREE_GT_2X",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Drake London",
+        "flex": [
+         "Alvin Kamara",
+         "Juwan Johnson",
+         "Michael Penix Jr.",
+         "Olamide Zaccheaus",
+         "Tyler Shough"
+        ],
+        "E1_independent_product": 22.46,
+        "E2_adjusted_product": 44.92,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": 26.4,
+        "E3_count_in_field": 28,
+        "E4_optimizer_field": 37.6,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Bijan Robinson",
+        "flex": [
+         "Alvin Kamara",
+         "Daniel Carlson",
+         "Drake London",
+         "Michael Penix Jr.",
+         "Oscar Delp"
+        ],
+        "E1_independent_product": 2.67,
+        "E2_adjusted_product": 2.67,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "E3_BELOW_RESOLUTION_E1_NOT",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Juwan Johnson",
+        "flex": [
+         "Alvin Kamara",
+         "Devaughn Vele",
+         "Drake London",
+         "Saints",
+         "Tyler Shough"
+        ],
+        "E1_independent_product": 11.29,
+        "E2_adjusted_product": 11.29,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": 7.5,
+        "E3_count_in_field": 8,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       }
+      ]
+     },
+     "196285161": {
+      "mean": {
+       "E1": 3.28,
+       "E2": 4.43,
+       "E3_lower_bound_mean": 49.4,
+       "E4": 47.1
+      },
+      "flags": {
+       "E1_E3_DISAGREE_GT_2X": 2
+      },
+      "by_phi_E3_mean": {
+       "50.0": 60.6,
+       "200.0": 49.4,
+       "1000.0": 58.85
+      },
+      "lineups": [
+       {
+        "captain": "Chris Olave",
+        "flex": [
+         "Bijan Robinson",
+         "Daniel Carlson",
+         "Juwan Johnson",
+         "Treyton Welch",
+         "Tyler Shough"
+        ],
+        "E1_independent_product": 2.29,
+        "E2_adjusted_product": 4.59,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": 69.4,
+        "E3_count_in_field": 59,
+        "E4_optimizer_field": 47.1,
+        "FLAG": "E1_E3_DISAGREE_GT_2X",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Tyler Shough",
+        "flex": [
+         "Alvin Kamara",
+         "Chris Olave",
+         "Drake London",
+         "Juwan Johnson",
+         "Oscar Delp"
+        ],
+        "E1_independent_product": 4.27,
+        "E2_adjusted_product": 4.27,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": 29.4,
+        "E3_count_in_field": 25,
+        "E4_optimizer_field": 47.1,
+        "FLAG": "E1_E3_DISAGREE_GT_2X",
+        "players_absent_from_field_targets": []
+       }
+      ]
+     }
+    }
+   }
+  },
+  "DUPE_SALARY_SENSITIVITY": {
+   "BLEND|FC08_90PCT_LE_500|phi200.0": {
+    "anchor_target_vs_achieved": {
+     "0-500": {
+      "target": 0.9,
+      "achieved": 0.891
+     },
+     "600-50000": {
+      "target": 0.1,
+      "achieved": 0.109
+     }
+    },
+    "calibration_residual_rmse_pts": {
+     "cpt": 0.147,
+     "flex": 0.921
+    },
+    "E3_mean_by_contest": {
+     "196285137": 101.24,
+     "196285160": 40.66,
+     "196285161": 78.25
+    },
+    "two_entry_E3": [
+     [
+      "Chris Olave",
+      62.4
+     ],
+     [
+      "Tyler Shough",
+      94.1
+     ]
+    ]
+   }
+  },
+  "PROMOTION_STATUS": "NOT_PROMOTED. Both field projections are EXTERNAL_RESEARCH_SHADOW and UNVALIDATED; the blend fits five unverified anchors better, which is not validation. Neither feeds the football or the production portfolio."
+ },
+ "EXTERNAL": {
+  "fc_comparison_largest_gaps": [
+   {
+    "player": "Kevin Austin Jr.",
+    "team": "NO",
+    "pos": "WR",
+    "our_mean": "0.75",
+    "fc_flex": "8.4",
+    "diff_ours_minus_fc": "-7.65",
+    "triage": "ROLE_OR_VOLUME",
+    "our_role": "FRINGE"
+   },
+   {
+    "player": "Chris Olave",
+    "team": "NO",
+    "pos": "WR",
+    "our_mean": "25.67",
+    "fc_flex": "20.85",
+    "diff_ours_minus_fc": "4.82",
+    "triage": "EFFICIENCY_OR_TD",
+    "our_role": "ALPHA"
+   },
+   {
+    "player": "Olamide Zaccheaus",
+    "team": "ATL",
+    "pos": "WR",
+    "our_mean": "2.42",
+    "fc_flex": "6.6",
+    "diff_ours_minus_fc": "-4.18",
+    "triage": "ROLE_OR_VOLUME",
+    "our_role": "ROTATIONAL"
+   },
+   {
+    "player": "Austin Hooper",
+    "team": "ATL",
+    "pos": "TE",
+    "our_mean": "3.64",
+    "fc_flex": "0.0",
+    "diff_ours_minus_fc": "3.64",
+    "triage": "DEPTH_OR_DATA (FC zero is not an inactive signal)",
+    "our_role": "SECONDARY"
+   },
+   {
+    "player": "Kyle Pitts Sr.",
+    "team": "ATL",
+    "pos": "TE",
+    "our_mean": "5.13",
+    "fc_flex": "8.72",
+    "diff_ours_minus_fc": "-3.59",
+    "triage": "ROLE_OR_VOLUME",
+    "our_role": "ALPHA"
+   },
+   {
+    "player": "Drake London",
+    "team": "ATL",
+    "pos": "WR",
+    "our_mean": "20.0",
+    "fc_flex": "16.91",
+    "diff_ours_minus_fc": "3.09",
+    "triage": "EFFICIENCY_OR_TD",
+    "our_role": "ALPHA"
+   },
+   {
+    "player": "Tyler Shough",
+    "team": "NO",
+    "pos": "QB",
+    "our_mean": "22.46",
+    "fc_flex": "25.2",
+    "diff_ours_minus_fc": "-2.74",
+    "triage": "",
+    "our_role": "ALPHA"
+   },
+   {
+    "player": "Juwan Johnson",
+    "team": "NO",
+    "pos": "TE",
+    "our_mean": "16.17",
+    "fc_flex": "14.0",
+    "diff_ours_minus_fc": "2.17",
+    "triage": "",
+    "our_role": "ALPHA"
+   },
+   {
+    "player": "Charlie Woerner",
+    "team": "ATL",
+    "pos": "TE",
+    "our_mean": "0.39",
+    "fc_flex": "2.55",
+    "diff_ours_minus_fc": "-2.16",
+    "triage": "",
+    "our_role": "ROTATIONAL"
+   },
+   {
+    "player": "Michael Penix Jr.",
+    "team": "ATL",
+    "pos": "QB",
+    "our_mean": "15.33",
+    "fc_flex": "17.37",
+    "diff_ours_minus_fc": "-2.04",
+    "triage": "",
+    "our_role": "ALPHA"
+   },
+   {
+    "player": "Devaughn Vele",
+    "team": "NO",
+    "pos": "WR",
+    "our_mean": "11.02",
+    "fc_flex": "13.01",
+    "diff_ours_minus_fc": "-1.99",
+    "triage": "",
+    "our_role": "SECONDARY"
+   },
+   {
+    "player": "Zachariah Branch",
+    "team": "ATL",
+    "pos": "WR",
+    "our_mean": "0.75",
+    "fc_flex": "2.65",
+    "diff_ours_minus_fc": "-1.9",
+    "triage": "",
+    "our_role": "FRINGE"
+   }
+  ],
+  "FC_IS_NOT_AN_INPUT": true,
+  "video_claims": [
+   {
+    "claim_id": "V01",
+    "player": "Kendre Miller",
+    "claim": "50+ rushing yards",
+    "their_number": "0.15",
+    "our_number": "0.066",
+    "ours_minus_theirs": "-0.084",
+    "status": "UNVERIFIED_EXTERNAL"
+   },
+   {
+    "claim_id": "V02",
+    "player": "Kendre Miller",
+    "claim": "15+ rushing attempts",
+    "their_number": "0.04",
+    "our_number": "0.019",
+    "ours_minus_theirs": "-0.021",
+    "status": "UNVERIFIED_EXTERNAL"
+   },
+   {
+    "claim_id": "V03",
+    "player": "Alvin Kamara",
+    "claim": "15+ rushing attempts",
+    "their_number": "0.21",
+    "our_number": "0.331",
+    "ours_minus_theirs": "0.121",
+    "status": "UNVERIFIED_EXTERNAL"
+   },
+   {
+    "claim_id": "V04",
+    "player": "Kendre Miller",
+    "claim": "rushing or receiving TD",
+    "their_number": "0.31",
+    "our_number": "0.112",
+    "ours_minus_theirs": "-0.198",
+    "status": "UNVERIFIED_EXTERNAL"
+   },
+   {
+    "claim_id": "V05",
+    "player": "Alvin Kamara",
+    "claim": "rushing or receiving TD",
+    "their_number": "0.39",
+    "our_number": "0.358",
+    "ours_minus_theirs": "-0.032",
+    "status": "UNVERIFIED_EXTERNAL"
+   },
+   {
+    "claim_id": "V06",
+    "player": "Drake London",
+    "claim": "with Penix: ~11 tgt/g, 35% share, >100 yds/g, 43% air, 40% RZ (13 games)",
+    "their_number": "",
+    "our_number": "",
+    "ours_minus_theirs": "",
+    "status": "VERIFIED_BY_US"
+   },
+   {
+    "claim_id": "V07",
+    "player": "Kyle Pitts Sr.",
+    "claim": "lower target share with Penix (~16%)",
+    "their_number": "0.16",
+    "our_number": "",
+    "ours_minus_theirs": "",
+    "status": "VERIFIED_BY_US"
+   },
+   {
+    "claim_id": "V08",
+    "player": "Bijan Robinson",
+    "claim": "CPT sim exposure ~29%",
+    "their_number": "0.29",
+    "our_number": "0.2",
+    "ours_minus_theirs": "-0.09",
+    "status": "UNVERIFIED_EXTERNAL"
+   },
+   {
+    "claim_id": "V09",
+    "player": "Alvin Kamara",
+    "claim": "projected ownership ~33% (CPT ~4%)",
+    "their_number": "0.33",
+    "our_number": "0.413",
+    "ours_minus_theirs": "0.083",
+    "status": "UNVERIFIED_EXTERNAL"
+   },
+   {
+    "claim_id": "V10",
+    "player": "Kendre Miller",
+    "claim": "projected ownership ~13% (CPT ~6%)",
+    "their_number": "0.13",
+    "our_number": "0.027",
+    "ours_minus_theirs": "-0.103",
+    "status": "UNVERIFIED_EXTERNAL"
+   },
+   {
+    "claim_id": "V11",
+    "player": "Bryce Lance",
+    "claim": "projected ownership ~25%",
+    "their_number": "0.25",
+    "our_number": "0.12",
+    "ours_minus_theirs": "-0.13",
+    "status": "UNVERIFIED_EXTERNAL"
+   },
+   {
+    "claim_id": "V12",
+    "player": "Jahan Dotson",
+    "claim": "projected ownership ~18%",
+    "their_number": "0.18",
+    "our_number": "0.153",
+    "ours_minus_theirs": "-0.027",
+    "status": "UNVERIFIED_EXTERNAL"
+   },
+   {
+    "claim_id": "V13",
+    "player": "Olamide Zaccheaus",
+    "claim": "field ~10%, their exposure <3%",
+    "their_number": "0.1",
+    "our_number": "0.08",
+    "ours_minus_theirs": "-0.02",
+    "status": "UNVERIFIED_EXTERNAL"
+   },
+   {
+    "claim_id": "V14",
+    "player": "Bijan Robinson",
+    "claim": "optimal rate ~45%",
+    "their_number": "0.45",
+    "our_number": "0.2135",
+    "ours_minus_theirs": "-0.237",
+    "status": "UNVERIFIED_EXTERNAL"
+   },
+   {
+    "claim_id": "V15",
+    "player": "Alvin Kamara",
+    "claim": "optimal rate ~35%",
+    "their_number": "0.35",
+    "our_number": "0.048",
+    "ours_minus_theirs": "-0.302",
+    "status": "UNVERIFIED_EXTERNAL"
+   },
+   {
+    "claim_id": "V16",
+    "player": "Tyler Shough",
+    "claim": "passing yards prop 257-261 (recorded, never used)",
+    "their_number": "259",
+    "our_number": "277.0",
+    "ours_minus_theirs": "",
+    "status": "MARKET_RECORDED_NOT_USED"
+   },
+   {
+    "claim_id": "V17",
+    "player": "Tyler Shough",
+    "claim": "132 pass attempts through 3 weeks",
+    "their_number": "132",
+    "our_number": "",
+    "ours_minus_theirs": "",
+    "status": "VERIFIED_BY_US"
+   },
+   {
+    "claim_id": "V18",
+    "player": "Alvin Kamara",
+    "claim": "rush attempts prop 11.5 (Miller 6.5) (recorded, never used)",
+    "their_number": "11.5",
+    "our_number": "12.41",
+    "ours_minus_theirs": "",
+    "status": "MARKET_RECORDED_NOT_USED"
+   },
+   {
+    "claim_id": "V19",
+    "player": "Noah Fant",
+    "claim": "likely active; Oscar Delp the cheap TE path if out",
+    "their_number": "",
+    "our_number": "",
+    "ours_minus_theirs": "",
+    "status": "UNVERIFIED_EXTERNAL"
+   },
+   {
+    "claim_id": "V20",
+    "player": "Saints/Falcons TE",
+    "claim": "9 of 20 NO red-zone targets to the tight ends",
+    "their_number": "9",
+    "our_number": "",
+    "ours_minus_theirs": "",
+    "status": "VERIFIED_BY_US"
+   }
+  ],
+  "HARD_ROCK": "NOT CAPTURED HERE -- only after the football freeze, by the networked agent (docs/AGENT_OUTBOX.md); never fed back into the projection; no wager is recommended"
+ },
+ "FILES": {
+  "uploads": {
+   "SHOWDOWN_ATL_NO_DK_UPLOAD_196285137.csv": {
+    "path": "nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX/SHOWDOWN_ATL_NO_DK_UPLOAD_196285137.csv",
+    "sha256": "4047a1895c3dec8dbe22da5bb2386c06558e39ddc1c2d5a78f5e9c236ab7e002",
+    "lineup_rows": 150
+   },
+   "SHOWDOWN_ATL_NO_DK_UPLOAD_196285160.csv": {
+    "path": "nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX/SHOWDOWN_ATL_NO_DK_UPLOAD_196285160.csv",
+    "sha256": "17e397b48d5944aa3ce6113eab64818285ac42355f49c0963e53f7fd40501f1f",
+    "lineup_rows": 20
+   },
+   "SHOWDOWN_ATL_NO_DK_UPLOAD_196285161.csv": {
+    "path": "nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX/SHOWDOWN_ATL_NO_DK_UPLOAD_196285161.csv",
+    "sha256": "a30f529fbca23633b5bc4b73a8bfd2b39c7995cbf051e8856fbe1321d7ac1612",
+    "lineup_rows": 2
+   }
+  },
+  "verifier": {
+   "n_rows": 172,
+   "violations": []
+  }
+ },
+ "NOT_SUBMITTED": "nothing here enters a contest or uploads to DraftKings; PROJECTION_SYSTEM_STATE NOT_VALIDATED; no wager is recommended"
+}
