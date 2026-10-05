@@ -216,6 +216,16 @@ def run(export, sd):
     blockers = []
     if not scen.get('official_inactives'):
         blockers.append('OFFICIAL_INACTIVES_NOT_INCORPORATED')
+    else:
+        # an inactive list from a SECONDARY source (aggregator, relayed screenshot) runs the full chain but can never
+        # make the board READY: promotion to OFFICIAL needs a provenance record that says OFFICIALLY_VERIFIED
+        prov = [json.loads(q.read_text()) for q in (_REPO / 'nfl/dfs/salaries/raw/showdown_atl_no_2026W4').glob('*INACTIVES_ATL_NO_2026W4.PROVENANCE.json')]
+        lst = sorted(n.strip() for n in scen['official_inactives'])
+        match = [q for q in prov if sorted(json.loads((_REPO / 'nfl/dfs/salaries/raw/showdown_atl_no_2026W4' / q['file']).read_text())) == lst]
+        verified = any(q.get('OFFICIALLY_VERIFIED') is True for q in match)
+        if not verified:
+            blockers.append('INACTIVES_FROM_SECONDARY_SOURCE_NOT_OFFICIALLY_VERIFIED'
+                            + (f" ({match[0]['EVIDENCE_TIER'][:60]})" if match else ' (no provenance record matches this list)'))
     if sanity != 'PASS':
         blockers.append(f'FOOTBALL_SANITY={sanity}')
     if not filled:
