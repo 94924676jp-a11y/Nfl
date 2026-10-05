@@ -35,9 +35,9 @@ step absent python3.12 -c "import json;s=json.load(open('$D/$SCEN/SCENARIO.json'
 step shadow_fc python3.12 nfl/field/showdown_shadow_field.py $E $FC $D/SHADOW_$SCEN --absent $D/SHADOW_ABSENT_$SCEN.json
 step shadow_blend python3.12 nfl/field/showdown_shadow_field.py $E $FC $D/SHADOW_${SCEN}_BLEND --absent $D/SHADOW_ABSENT_$SCEN.json --blend-draws $D/$SCEN/SHOWDOWN_ATL_NO_2026W4_DRAWS.json
 step finish env LOG=${LOG%.log}_finish.log bash nfl/tools/showdown_finish.sh $SCEN
-step cycle1 python3.12 nfl/tools/showdown_cycle1_checks.py $D/OFFICIAL
-step prelock python3.12 nfl/tools/showdown_prelock_board.py $E $D/OFFICIAL
+step cycle1 python3.12 nfl/tools/showdown_cycle1_checks.py $D/$SCEN
+step prelock python3.12 nfl/tools/showdown_prelock_board.py $E $D/$SCEN
 echo OFFICIAL_CORE_DONE >> $LOG
 step sal_fc08 python3.12 nfl/field/showdown_archetype_field.py $E $D/$SCEN $D/SHADOW_${SCEN}_BLEND --salary-anchor FC08_90PCT_LE_500 --phi 200
-step prelock_b python3.12 nfl/tools/showdown_prelock_board.py $E $D/OFFICIAL
+step prelock_b python3.12 nfl/tools/showdown_prelock_board.py $E $D/$SCEN
 echo OFFICIAL_ALL_DONE >> $LOG

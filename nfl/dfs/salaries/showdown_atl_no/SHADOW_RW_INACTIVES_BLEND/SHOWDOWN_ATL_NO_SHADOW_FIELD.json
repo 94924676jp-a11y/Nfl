@@ -1,0 +1,178 @@
+{
+ "ARTIFACT": "SHOWDOWN_SHADOW_FIELD",
+ "label": "EXTERNAL_RESEARCH_SHADOW",
+ "VALIDATED": false,
+ "NOT_A_FOOTBALL_INPUT": true,
+ "field_projection": "MEAN_OF_FC_AND_OURS",
+ "PROMOTION_STATUS": "NOT_PROMOTED: FC_ONLY and MEAN_OF_FC_AND_OURS are both kept and reported side by side. A better fit to five unverified anchor points is not validation; neither variant may replace the other or feed production without an owner ruling.",
+ "field_projection_note": "FLEX projection, x1.5 at CPT",
+ "k_lineups": 5000,
+ "sigma_sweep": {
+  "0.25": {
+   "anchor_errors_pct_pts": {
+    "Alvin Kamara": 12.9,
+    "Kendre Miller": -13.0,
+    "Bryce Lance": -21.2,
+    "Jahan Dotson": -12.7,
+    "Olamide Zaccheaus": 11.6
+   },
+   "rmse": 14.7
+  },
+  "0.4": {
+   "anchor_errors_pct_pts": {
+    "Alvin Kamara": 13.4,
+    "Kendre Miller": -12.1,
+    "Bryce Lance": -17.8,
+    "Jahan Dotson": -8.4,
+    "Olamide Zaccheaus": 11.0
+   },
+   "rmse": 12.92
+  },
+  "0.6": {
+   "anchor_errors_pct_pts": {
+    "Alvin Kamara": 11.9,
+    "Kendre Miller": -9.4,
+    "Bryce Lance": -15.4,
+    "Jahan Dotson": -4.5,
+    "Olamide Zaccheaus": 9.6
+   },
+   "rmse": 10.77
+  }
+ },
+ "sigma_chosen": 0.6,
+ "anchors": {
+  "Alvin Kamara": 33.0,
+  "Kendre Miller": 13.0,
+  "Bryce Lance": 25.0,
+  "Jahan Dotson": 18.0,
+  "Olamide Zaccheaus": 10.0
+ },
+ "anchor_source": "Stokastic ATL@NO show 2026-10-05 (owner transcript), 45:18 / 1:10:53 / 26:57; UNVERIFIED_EXTERNAL",
+ "salary_left": {
+  "mean": 1019.0,
+  "p50": 700.0,
+  "share_0": 0.092,
+  "NOTE": "an optimizer field spends nearly everything; real fields leave more"
+ },
+ "exact_duplication_in_shadow_field": {
+  "distinct_lineups": 2759,
+  "top": [
+   [
+    "Chris Olave|NO",
+    [
+     "Alvin Kamara|NO",
+     "Juwan Johnson|NO",
+     "Kevin Austin Jr.|NO",
+     "Michael Penix Jr.|ATL",
+     "Tyler Shough|NO"
+    ],
+    22
+   ],
+   [
+    "Bijan Robinson|ATL",
+    [
+     "Chris Olave|NO",
+     "Kevin Austin Jr.|NO",
+     "Michael Penix Jr.|ATL",
+     "Olamide Zaccheaus|ATL",
+     "Tyler Shough|NO"
+    ],
+    18
+   ],
+   [
+    "Tyler Shough|NO",
+    [
+     "Bijan Robinson|ATL",
+     "Chris Olave|NO",
+     "Drake London|ATL",
+     "Kevin Austin Jr.|NO",
+     "Olamide Zaccheaus|ATL"
+    ],
+    18
+   ],
+   [
+    "Tyler Shough|NO",
+    [
+     "Bijan Robinson|ATL",
+     "Chris Olave|NO",
+     "Daniel Carlson|NO",
+     "Juwan Johnson|NO",
+     "Kevin Austin Jr.|NO"
+    ],
+    17
+   ],
+   [
+    "Tyler Shough|NO",
+    [
+     "Alvin Kamara|NO",
+     "Chris Olave|NO",
+     "Devaughn Vele|NO",
+     "Kevin Austin Jr.|NO",
+     "Michael Penix Jr.|ATL"
+    ],
+    15
+   ],
+   [
+    "Drake London|ATL",
+    [
+     "Chris Olave|NO",
+     "Daniel Carlson|NO",
+     "Kevin Austin Jr.|NO",
+     "Michael Penix Jr.|ATL",
+     "Tyler Shough|NO"
+    ],
+    15
+   ],
+   [
+    "Tyler Shough|NO",
+    [
+     "Chris Olave|NO",
+     "Daniel Carlson|NO",
+     "Drake London|ATL",
+     "Kevin Austin Jr.|NO",
+     "Michael Penix Jr.|ATL"
+    ],
+    14
+   ],
+   [
+    "Juwan Johnson|NO",
+    [
+     "Alvin Kamara|NO",
+     "Bijan Robinson|ATL",
+     "Kevin Austin Jr.|NO",
+     "Michael Penix Jr.|ATL",
+     "Tyler Shough|NO"
+    ],
+    14
+   ],
+   [
+    "Alvin Kamara|NO",
+    [
+     "Bijan Robinson|ATL",
+     "Devaughn Vele|NO",
+     "Kevin Austin Jr.|NO",
+     "Michael Penix Jr.|ATL",
+     "Tyler Shough|NO"
+    ],
+    13
+   ],
+   [
+    "Bijan Robinson|ATL",
+    [
+     "Alvin Kamara|NO",
+     "Daniel Carlson|NO",
+     "Drake London|ATL",
+     "Kevin Austin Jr.|NO",
+     "Tyler Shough|NO"
+    ],
+    13
+   ]
+  ]
+ },
+ "field_size_estimates": {
+  "196285137": 235294,
+  "196285160": 47059,
+  "196285161": 58824
+ },
+ "FIELD_SIZE_NOTE": "ESTIMATE: prize / (fee x 0.85); replace with the real entry counts when known"
+}
