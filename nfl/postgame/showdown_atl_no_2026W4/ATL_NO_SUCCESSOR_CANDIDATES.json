@@ -1,0 +1,92 @@
+{
+ "ARTIFACT": "ATL_NO_SUCCESSOR_CANDIDATES",
+ "LAYER": "SUCCESSOR_CANDIDATE",
+ "RULE": "a candidate must beat the current model on held-out historical data before promotion; none is fitted to ATL@NO",
+ "candidates": [
+  {
+   "id": "SC-COH-1",
+   "targets": "DEFECT-COHERENCE",
+   "status": "SHADOW_SPEC (not implemented)",
+   "what": "allocate yards and receptions CONDITIONAL on the world's team scoring state (TD count), preserving every club identity (plays, pass/rush split, completions, targets, carries, yards, TD accounting, red-zone logic, sacks/turnovers)",
+   "current": {
+    "ATL": 0.05,
+    "NO": -0.05
+   },
+   "target_within_team_season": {
+    "raw": 5.16,
+    "within_team_season": 4.72,
+    "within_team_season_ci95": [
+     4.351,
+     5.086
+    ],
+    "MEANING": "DK from yards and receptions (TD points removed) per extra offensive TD"
+   },
+   "held_out_bar": "2025 season, simulated pregame with 2021-24 fitting only: yardage-DK-per-TD slope inside [4.351, 5.086], team TD vs offensive DK correlation inside [0.777, 0.806], and player PIT / CRPS no worse than current on the same games (week-blocked SE)"
+  },
+  {
+   "id": "SC-APPEAR-1",
+   "targets": "DEFECT-APPEARANCE (B8)",
+   "status": "SHADOW_SPEC (not implemented)",
+   "what": "P(plays) for an officially ACTIVE player conditioned on his own previous-3-team-game participation, instead of the depth-rank population rate",
+   "historical_rates_2024_2025": {
+    "carries": 0.04,
+    "targets": 0.0808
+   },
+   "flags_on_atl_no": [
+    "Brian Robinson Jr.|ATL carries",
+    "Bryce Lance|NO targets",
+    "CJ Donaldson|NO carries",
+    "Olamide Zaccheaus|ATL targets"
+   ],
+   "held_out_bar": "forward-chained 2025 weeks: unconditional opportunity MAE and zero-opportunity calibration better than current on held-out weeks by > 2 week-blocked SE, no regression for starters"
+  },
+  {
+   "id": "SC-DUPE-COUNT-1",
+   "targets": "S2 dupe mapping",
+   "status": "SHADOW_SPEC",
+   "what": "copies ~ Poisson/NB mean model in log product ownership (count scale, not log scale)",
+   "evidence_so_far": "MIXED -- NOT PROMOTION-GRADE. The declared metric (abs log error) favours the fitted mapping on both folds, but it is a regression of log(copies), so exp(prediction) estimates a median, not a mean: it under-predicts total copies by ~half and the most-duplicated decile by ~5x on both folds, where E1 is within ~1.5x. Our use is expected copies of OUR lineups, which live in that top tail. The calibration check was added after the folds were read and is reported, not used to flip the declared verdict. Successor candidate for the next slates: the same fit on the count scale (Poisson / negative-binomial mean model), declared now, scored on ATL@NO and later standings.",
+   "held_out_bar": "beats E1 on mean-scale calibration (total and top decile) AND abs log error on every held-out slate"
+  },
+  {
+   "id": "SC-SHAPE-STANDINGS-1",
+   "targets": "S1 shape prior",
+   "status": "NOT_DEMONSTRATED -- current kept",
+   "evidence_so_far": {
+    "split": {
+     "FC_ONLY": "NOT_DEMONSTRATED",
+     "BLEND": "NOT_DEMONSTRATED"
+    },
+    "qb_count": {
+     "FC_ONLY": "NOT_DEMONSTRATED",
+     "BLEND": "NOT_DEMONSTRATED"
+    },
+    "kd_count": {
+     "FC_ONLY": "NOT_DEMONSTRATED",
+     "BLEND": "NOT_DEMONSTRATED"
+    },
+    "cpt_pos": {
+     "FC_ONLY": "NOT_DEMONSTRATED",
+     "BLEND": "NOT_DEMONSTRATED"
+    }
+   }
+  },
+  {
+   "id": "SC-CPTFLEX-STANDINGS-1",
+   "targets": "S3 CPT:FLEX ratio",
+   "status": "NOT_DEMONSTRATED -- current kept",
+   "evidence_so_far": {
+    "FC_ONLY": "NOT_DEMONSTRATED",
+    "BLEND": "NOT_DEMONSTRATED"
+   }
+  },
+  {
+   "id": "SC-OBJ-1/2",
+   "targets": "portfolio objective",
+   "status": "DECLARED, NOT TESTABLE YET",
+   "what": "O1 dupe-adjusted proxy; O2 top-1% proxy; O3 current as control; per contest",
+   "blocker": "zero archived slates have both pre-kickoff worlds and full-field standings"
+  }
+ ],
+ "written_at": "2026-10-06T15:26:47.779963+00:00"
+}

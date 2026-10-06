@@ -1,0 +1,752 @@
+{
+ "ARTIFACT": "ATL_NO_PORTFOLIO_STUDY",
+ "LAYER": "POSTGAME_DIAGNOSIS",
+ "STATUS": "COUNTERFACTUAL_LEDGER -- ONE GAME, NOT A TEST OF OBJECTIVES, PROMOTES NOTHING",
+ "payout_curves": {
+  "196285137": {
+   "n": 150,
+   "best_points": 142.54,
+   "best_payout": 87.5,
+   "cash_line_points_lo": 108.84,
+   "field": 237812
+  },
+  "196285160": {
+   "n": 20,
+   "best_points": 110.45,
+   "best_payout": 0.5,
+   "cash_line_points_lo": 109.34,
+   "field": 47562
+  },
+  "196285161": {
+   "n": 2,
+   "best_points": 98.44,
+   "best_payout": 0.0,
+   "cash_line_points_lo": null,
+   "field": 59453
+  }
+ },
+ "reconciliation": "V2_FINAL_LIVE realised scores equal the 172 DK-graded owner entries exactly",
+ "curve_validation_on_live_portfolio": {
+  "196285137": {
+   "actual_return": 134.47,
+   "curve_estimate_for_live": 131.94
+  },
+  "196285160": {
+   "actual_return": 1.0,
+   "curve_estimate_for_live": 1.0
+  },
+  "196285161": {
+   "actual_return": 0.0,
+   "curve_estimate_for_live": null
+  }
+ },
+ "best_lineup_minus_owner_best_observed": {
+  "V2_FINAL_LIVE": {
+   "196285137": 0.0,
+   "196285160": 0.0,
+   "196285161": 0.0
+  },
+  "V1": {
+   "196285137": -0.09,
+   "196285160": 3.64,
+   "196285161": 0.0
+  },
+  "RW_CRN": {
+   "196285137": -5.95,
+   "196285160": 3.64,
+   "196285161": 0.0
+  },
+  "FANT_OUT": {
+   "196285137": -5.95,
+   "196285160": 3.64,
+   "196285161": 0.0
+  },
+  "FANT_OUT/_GREEDY_V3_SNAPSHOT": {
+   "196285137": -9.45,
+   "196285160": 3.64,
+   "196285161": 0.0
+  },
+  "BASE": {
+   "196285137": -12.62,
+   "196285160": 0.0,
+   "196285161": 0.0
+  },
+  "BASE/_GREEDY_V3_SNAPSHOT": {
+   "196285137": -12.62,
+   "196285160": 0.0,
+   "196285161": 0.0
+  },
+  "OFFICIAL_DRYRUN": {
+   "196285137": -5.95,
+   "196285160": 3.64,
+   "196285161": 0.0
+  },
+  "ABLATION_TOP_MEAN": {
+   "196285137": -20.05,
+   "196285160": -1.11,
+   "196285161": 0.0
+  },
+  "ABLATION_TOP_PROXY": {
+   "196285137": -13.5,
+   "196285160": 7.69,
+   "196285161": 0.0
+  }
+ },
+ "CURVE_LIMIT": "the curve has one observed point above 130 points (the 6th-place lineup at 142.54); a variant whose best lineup lands just below it is assigned the next observed (much lower) payout. V1's best scored 142.45, 0.09 below the live 6th-place lineup: in a 237,812 field that is a top-10 finish, so V1 and V2 were each one lineup from the same result. Read est_payout above 130 points as a floor, never as a ranking of variants.",
+ "realised_by_variant": {
+  "V2_FINAL_LIVE": {
+   "196285137": {
+    "n": 150,
+    "prelock_mean_of_means": 100.24,
+    "prelock_mean_proxy": 0.0556,
+    "actual_best": 142.54,
+    "actual_mean": 96.58,
+    "actual_median": 94.88,
+    "n_ge_owner_best_observed": 1,
+    "n_cashing_est": 29,
+    "est_payout": 131.94,
+    "est_roi": 0.7592,
+    "payout_from_best_lineup_share": 0.663,
+    "payout_flags": [
+     "INTERPOLATED",
+     "TOP_CAPPED"
+    ],
+    "distinct_lineups": 150,
+    "distinct_captains": 16
+   },
+   "196285160": {
+    "n": 20,
+    "prelock_mean_of_means": 104.33,
+    "prelock_mean_proxy": 0.1002,
+    "actual_best": 110.45,
+    "actual_mean": 95.4,
+    "actual_median": 95.3,
+    "n_ge_owner_best_observed": 1,
+    "n_cashing_est": 2,
+    "est_payout": 1.0,
+    "est_roi": -0.8,
+    "payout_from_best_lineup_share": 0.5,
+    "payout_flags": [
+     "AT_BEST_OBSERVED",
+     "INTERPOLATED"
+    ],
+    "distinct_lineups": 20,
+    "distinct_captains": 5
+   },
+   "196285161": {
+    "n": 2,
+    "prelock_mean_of_means": 111.35,
+    "prelock_mean_proxy": 0.1798,
+    "actual_best": 98.44,
+    "actual_mean": 97.12,
+    "actual_median": 97.12,
+    "n_ge_owner_best_observed": 1,
+    "n_cashing_est": null,
+    "est_payout": null,
+    "est_roi": null,
+    "payout_from_best_lineup_share": null,
+    "payout_flags": [
+     "NOT_AVAILABLE_TOO_FEW_POINTS"
+    ],
+    "distinct_lineups": 2,
+    "distinct_captains": 2
+   }
+  },
+  "V1": {
+   "196285137": {
+    "n": 150,
+    "prelock_mean_of_means": 101.24,
+    "prelock_mean_proxy": 0.0562,
+    "actual_best": 142.45,
+    "actual_mean": 96.94,
+    "actual_median": 96.0,
+    "n_ge_owner_best_observed": 0,
+    "n_cashing_est": 28,
+    "est_payout": 45.0,
+    "est_roi": -0.4,
+    "payout_from_best_lineup_share": 0.178,
+    "payout_flags": [
+     "BELOW_LOWEST_OBSERVED",
+     "INTERPOLATED"
+    ],
+    "distinct_lineups": 150,
+    "distinct_captains": 16
+   },
+   "196285160": {
+    "n": 20,
+    "prelock_mean_of_means": 105.08,
+    "prelock_mean_proxy": 0.1059,
+    "actual_best": 114.09,
+    "actual_mean": 93.4,
+    "actual_median": 94.65,
+    "n_ge_owner_best_observed": 1,
+    "n_cashing_est": 2,
+    "est_payout": 1.0,
+    "est_roi": -0.8,
+    "payout_from_best_lineup_share": 0.5,
+    "payout_flags": [
+     "BELOW_LOWEST_OBSERVED",
+     "INTERPOLATED",
+     "TOP_CAPPED"
+    ],
+    "distinct_lineups": 20,
+    "distinct_captains": 6
+   },
+   "196285161": {
+    "n": 2,
+    "prelock_mean_of_means": 111.78,
+    "prelock_mean_proxy": 0.181,
+    "actual_best": 98.44,
+    "actual_mean": 96.79,
+    "actual_median": 96.79,
+    "n_ge_owner_best_observed": 1,
+    "n_cashing_est": null,
+    "est_payout": null,
+    "est_roi": null,
+    "payout_from_best_lineup_share": null,
+    "payout_flags": [
+     "NOT_AVAILABLE_TOO_FEW_POINTS"
+    ],
+    "distinct_lineups": 2,
+    "distinct_captains": 2
+   }
+  },
+  "RW_CRN": {
+   "196285137": {
+    "n": 150,
+    "prelock_mean_of_means": 101.37,
+    "prelock_mean_proxy": 0.0597,
+    "actual_best": 136.59,
+    "actual_mean": 96.7,
+    "actual_median": 96.56,
+    "n_ge_owner_best_observed": 0,
+    "n_cashing_est": 27,
+    "est_payout": 40.5,
+    "est_roi": -0.46,
+    "payout_from_best_lineup_share": 0.198,
+    "payout_flags": [
+     "BELOW_LOWEST_OBSERVED",
+     "INTERPOLATED"
+    ],
+    "distinct_lineups": 150,
+    "distinct_captains": 17
+   },
+   "196285160": {
+    "n": 20,
+    "prelock_mean_of_means": 104.44,
+    "prelock_mean_proxy": 0.0996,
+    "actual_best": 114.09,
+    "actual_mean": 96.03,
+    "actual_median": 97.64,
+    "n_ge_owner_best_observed": 1,
+    "n_cashing_est": 1,
+    "est_payout": 0.5,
+    "est_roi": -0.9,
+    "payout_from_best_lineup_share": 1.0,
+    "payout_flags": [
+     "BELOW_LOWEST_OBSERVED",
+     "INTERPOLATED",
+     "TOP_CAPPED"
+    ],
+    "distinct_lineups": 20,
+    "distinct_captains": 6
+   },
+   "196285161": {
+    "n": 2,
+    "prelock_mean_of_means": 111.55,
+    "prelock_mean_proxy": 0.1733,
+    "actual_best": 98.44,
+    "actual_mean": 97.12,
+    "actual_median": 97.12,
+    "n_ge_owner_best_observed": 1,
+    "n_cashing_est": null,
+    "est_payout": null,
+    "est_roi": null,
+    "payout_from_best_lineup_share": null,
+    "payout_flags": [
+     "NOT_AVAILABLE_TOO_FEW_POINTS"
+    ],
+    "distinct_lineups": 2,
+    "distinct_captains": 2
+   }
+  },
+  "FANT_OUT": {
+   "196285137": {
+    "n": 150,
+    "prelock_mean_of_means": 100.63,
+    "prelock_mean_proxy": 0.0572,
+    "actual_best": 136.59,
+    "actual_mean": 97.27,
+    "actual_median": 95.69,
+    "n_ge_owner_best_observed": 0,
+    "n_cashing_est": 29,
+    "est_payout": 43.5,
+    "est_roi": -0.42,
+    "payout_from_best_lineup_share": 0.184,
+    "payout_flags": [
+     "INTERPOLATED"
+    ],
+    "distinct_lineups": 150,
+    "distinct_captains": 16
+   },
+   "196285160": {
+    "n": 20,
+    "prelock_mean_of_means": 104.4,
+    "prelock_mean_proxy": 0.1003,
+    "actual_best": 114.09,
+    "actual_mean": 95.82,
+    "actual_median": 96.96,
+    "n_ge_owner_best_observed": 2,
+    "n_cashing_est": 3,
+    "est_payout": 1.5,
+    "est_roi": -0.7,
+    "payout_from_best_lineup_share": 0.333,
+    "payout_flags": [
+     "AT_BEST_OBSERVED",
+     "BELOW_LOWEST_OBSERVED",
+     "INTERPOLATED",
+     "TOP_CAPPED"
+    ],
+    "distinct_lineups": 20,
+    "distinct_captains": 6
+   },
+   "196285161": {
+    "n": 2,
+    "prelock_mean_of_means": 111.68,
+    "prelock_mean_proxy": 0.1903,
+    "actual_best": 98.44,
+    "actual_mean": 97.12,
+    "actual_median": 97.12,
+    "n_ge_owner_best_observed": 1,
+    "n_cashing_est": null,
+    "est_payout": null,
+    "est_roi": null,
+    "payout_from_best_lineup_share": null,
+    "payout_flags": [
+     "NOT_AVAILABLE_TOO_FEW_POINTS"
+    ],
+    "distinct_lineups": 2,
+    "distinct_captains": 2
+   }
+  },
+  "FANT_OUT/_GREEDY_V3_SNAPSHOT": {
+   "196285137": {
+    "n": 150,
+    "prelock_mean_of_means": 100.92,
+    "prelock_mean_proxy": 0.0588,
+    "actual_best": 133.09,
+    "actual_mean": 97.73,
+    "actual_median": 95.94,
+    "n_ge_owner_best_observed": 0,
+    "n_cashing_est": 34,
+    "est_payout": 43.0,
+    "est_roi": -0.4267,
+    "payout_from_best_lineup_share": 0.07,
+    "payout_flags": [
+     "INTERPOLATED"
+    ],
+    "distinct_lineups": 150,
+    "distinct_captains": 16
+   },
+   "196285160": {
+    "n": 20,
+    "prelock_mean_of_means": 105.02,
+    "prelock_mean_proxy": 0.1055,
+    "actual_best": 114.09,
+    "actual_mean": 97.64,
+    "actual_median": 98.63,
+    "n_ge_owner_best_observed": 1,
+    "n_cashing_est": 2,
+    "est_payout": 1.0,
+    "est_roi": -0.8,
+    "payout_from_best_lineup_share": 0.5,
+    "payout_flags": [
+     "BELOW_LOWEST_OBSERVED",
+     "INTERPOLATED",
+     "TOP_CAPPED"
+    ],
+    "distinct_lineups": 20,
+    "distinct_captains": 5
+   },
+   "196285161": {
+    "n": 2,
+    "prelock_mean_of_means": 111.68,
+    "prelock_mean_proxy": 0.1903,
+    "actual_best": 98.44,
+    "actual_mean": 97.12,
+    "actual_median": 97.12,
+    "n_ge_owner_best_observed": 1,
+    "n_cashing_est": null,
+    "est_payout": null,
+    "est_roi": null,
+    "payout_from_best_lineup_share": null,
+    "payout_flags": [
+     "NOT_AVAILABLE_TOO_FEW_POINTS"
+    ],
+    "distinct_lineups": 2,
+    "distinct_captains": 2
+   }
+  },
+  "BASE": {
+   "196285137": {
+    "n": 150,
+    "prelock_mean_of_means": 98.44,
+    "prelock_mean_proxy": 0.0529,
+    "actual_best": 129.92,
+    "actual_mean": 95.87,
+    "actual_median": 93.24,
+    "n_ge_owner_best_observed": 0,
+    "n_cashing_est": 27,
+    "est_payout": 34.0,
+    "est_roi": -0.5467,
+    "payout_from_best_lineup_share": 0.088,
+    "payout_flags": [
+     "INTERPOLATED"
+    ],
+    "distinct_lineups": 150,
+    "distinct_captains": 15
+   },
+   "196285160": {
+    "n": 20,
+    "prelock_mean_of_means": 102.03,
+    "prelock_mean_proxy": 0.0927,
+    "actual_best": 110.45,
+    "actual_mean": 94.31,
+    "actual_median": 97.9,
+    "n_ge_owner_best_observed": 1,
+    "n_cashing_est": 2,
+    "est_payout": 1.0,
+    "est_roi": -0.8,
+    "payout_from_best_lineup_share": 0.5,
+    "payout_flags": [
+     "AT_BEST_OBSERVED",
+     "BELOW_LOWEST_OBSERVED",
+     "INTERPOLATED"
+    ],
+    "distinct_lineups": 20,
+    "distinct_captains": 6
+   },
+   "196285161": {
+    "n": 2,
+    "prelock_mean_of_means": 107.72,
+    "prelock_mean_proxy": 0.156,
+    "actual_best": 98.44,
+    "actual_mean": 97.12,
+    "actual_median": 97.12,
+    "n_ge_owner_best_observed": 1,
+    "n_cashing_est": null,
+    "est_payout": null,
+    "est_roi": null,
+    "payout_from_best_lineup_share": null,
+    "payout_flags": [
+     "NOT_AVAILABLE_TOO_FEW_POINTS"
+    ],
+    "distinct_lineups": 2,
+    "distinct_captains": 2
+   }
+  },
+  "BASE/_GREEDY_V3_SNAPSHOT": {
+   "196285137": {
+    "n": 150,
+    "prelock_mean_of_means": 98.82,
+    "prelock_mean_proxy": 0.0558,
+    "actual_best": 129.92,
+    "actual_mean": 95.82,
+    "actual_median": 93.97,
+    "n_ge_owner_best_observed": 0,
+    "n_cashing_est": 25,
+    "est_payout": 32.0,
+    "est_roi": -0.5733,
+    "payout_from_best_lineup_share": 0.094,
+    "payout_flags": [
+     "INTERPOLATED"
+    ],
+    "distinct_lineups": 150,
+    "distinct_captains": 15
+   },
+   "196285160": {
+    "n": 20,
+    "prelock_mean_of_means": 101.78,
+    "prelock_mean_proxy": 0.0964,
+    "actual_best": 110.45,
+    "actual_mean": 95.53,
+    "actual_median": 97.9,
+    "n_ge_owner_best_observed": 1,
+    "n_cashing_est": 2,
+    "est_payout": 1.0,
+    "est_roi": -0.8,
+    "payout_from_best_lineup_share": 0.5,
+    "payout_flags": [
+     "AT_BEST_OBSERVED",
+     "INTERPOLATED"
+    ],
+    "distinct_lineups": 20,
+    "distinct_captains": 6
+   },
+   "196285161": {
+    "n": 2,
+    "prelock_mean_of_means": 107.72,
+    "prelock_mean_proxy": 0.156,
+    "actual_best": 98.44,
+    "actual_mean": 97.12,
+    "actual_median": 97.12,
+    "n_ge_owner_best_observed": 1,
+    "n_cashing_est": null,
+    "est_payout": null,
+    "est_roi": null,
+    "payout_from_best_lineup_share": null,
+    "payout_flags": [
+     "NOT_AVAILABLE_TOO_FEW_POINTS"
+    ],
+    "distinct_lineups": 2,
+    "distinct_captains": 2
+   }
+  },
+  "OFFICIAL_DRYRUN": {
+   "196285137": {
+    "n": 150,
+    "prelock_mean_of_means": 100.63,
+    "prelock_mean_proxy": 0.0572,
+    "actual_best": 136.59,
+    "actual_mean": 97.27,
+    "actual_median": 95.69,
+    "n_ge_owner_best_observed": 0,
+    "n_cashing_est": 29,
+    "est_payout": 43.5,
+    "est_roi": -0.42,
+    "payout_from_best_lineup_share": 0.184,
+    "payout_flags": [
+     "INTERPOLATED"
+    ],
+    "distinct_lineups": 150,
+    "distinct_captains": 16
+   },
+   "196285160": {
+    "n": 20,
+    "prelock_mean_of_means": 104.4,
+    "prelock_mean_proxy": 0.1003,
+    "actual_best": 114.09,
+    "actual_mean": 95.82,
+    "actual_median": 96.96,
+    "n_ge_owner_best_observed": 2,
+    "n_cashing_est": 3,
+    "est_payout": 1.5,
+    "est_roi": -0.7,
+    "payout_from_best_lineup_share": 0.333,
+    "payout_flags": [
+     "AT_BEST_OBSERVED",
+     "BELOW_LOWEST_OBSERVED",
+     "INTERPOLATED",
+     "TOP_CAPPED"
+    ],
+    "distinct_lineups": 20,
+    "distinct_captains": 6
+   },
+   "196285161": {
+    "n": 2,
+    "prelock_mean_of_means": 111.68,
+    "prelock_mean_proxy": 0.1903,
+    "actual_best": 98.44,
+    "actual_mean": 97.12,
+    "actual_median": 97.12,
+    "n_ge_owner_best_observed": 1,
+    "n_cashing_est": null,
+    "est_payout": null,
+    "est_roi": null,
+    "payout_from_best_lineup_share": null,
+    "payout_flags": [
+     "NOT_AVAILABLE_TOO_FEW_POINTS"
+    ],
+    "distinct_lineups": 2,
+    "distinct_captains": 2
+   }
+  },
+  "ABLATION_TOP_MEAN": {
+   "196285137": {
+    "n": 150,
+    "prelock_mean_of_means": 108.45,
+    "prelock_mean_proxy": 0.1086,
+    "actual_best": 122.49,
+    "actual_mean": 99.0,
+    "actual_median": 96.84,
+    "n_ge_owner_best_observed": 0,
+    "n_cashing_est": 23,
+    "est_payout": 24.5,
+    "est_roi": -0.6733,
+    "payout_from_best_lineup_share": 0.061,
+    "payout_flags": [
+     "INTERPOLATED"
+    ],
+    "distinct_lineups": 150,
+    "distinct_captains": 12
+   },
+   "196285160": {
+    "n": 20,
+    "prelock_mean_of_means": 110.69,
+    "prelock_mean_proxy": 0.1463,
+    "actual_best": 109.34,
+    "actual_mean": 96.49,
+    "actual_median": 95.78,
+    "n_ge_owner_best_observed": 0,
+    "n_cashing_est": 1,
+    "est_payout": 0.5,
+    "est_roi": -0.9,
+    "payout_from_best_lineup_share": 1.0,
+    "payout_flags": [
+     "INTERPOLATED"
+    ],
+    "distinct_lineups": 20,
+    "distinct_captains": 6
+   },
+   "196285161": {
+    "n": 2,
+    "prelock_mean_of_means": 111.91,
+    "prelock_mean_proxy": 0.191,
+    "actual_best": 98.44,
+    "actual_mean": 98.44,
+    "actual_median": 98.44,
+    "n_ge_owner_best_observed": 2,
+    "n_cashing_est": null,
+    "est_payout": null,
+    "est_roi": null,
+    "payout_from_best_lineup_share": null,
+    "payout_flags": [
+     "NOT_AVAILABLE_TOO_FEW_POINTS"
+    ],
+    "distinct_lineups": 2,
+    "distinct_captains": 1
+   }
+  },
+  "ABLATION_TOP_PROXY": {
+   "196285137": {
+    "n": 150,
+    "prelock_mean_of_means": 108.03,
+    "prelock_mean_proxy": 0.1144,
+    "actual_best": 129.04,
+    "actual_mean": 97.65,
+    "actual_median": 96.44,
+    "n_ge_owner_best_observed": 0,
+    "n_cashing_est": 22,
+    "est_payout": 24.5,
+    "est_roi": -0.6733,
+    "payout_from_best_lineup_share": 0.082,
+    "payout_flags": [
+     "INTERPOLATED"
+    ],
+    "distinct_lineups": 150,
+    "distinct_captains": 7
+   },
+   "196285160": {
+    "n": 20,
+    "prelock_mean_of_means": 110.46,
+    "prelock_mean_proxy": 0.1578,
+    "actual_best": 118.14,
+    "actual_mean": 98.43,
+    "actual_median": 96.44,
+    "n_ge_owner_best_observed": 1,
+    "n_cashing_est": 2,
+    "est_payout": 1.0,
+    "est_roi": -0.8,
+    "payout_from_best_lineup_share": 0.5,
+    "payout_flags": [
+     "INTERPOLATED",
+     "TOP_CAPPED"
+    ],
+    "distinct_lineups": 20,
+    "distinct_captains": 4
+   },
+   "196285161": {
+    "n": 2,
+    "prelock_mean_of_means": 111.91,
+    "prelock_mean_proxy": 0.191,
+    "actual_best": 98.44,
+    "actual_mean": 98.44,
+    "actual_median": 98.44,
+    "n_ge_owner_best_observed": 2,
+    "n_cashing_est": null,
+    "est_payout": null,
+    "est_roi": null,
+    "payout_from_best_lineup_share": null,
+    "payout_flags": [
+     "NOT_AVAILABLE_TOO_FEW_POINTS"
+    ],
+    "distinct_lineups": 2,
+    "distinct_captains": 1
+   }
+  }
+ },
+ "prelock_worlds_by_variant": {
+  "V2_FINAL_LIVE": {
+   "196285137": {
+    "E_best_lineup_score": 135.11,
+    "p_best_ge_v2_median_best": 0.5,
+    "E_top_score_p95_world": 176.07
+   },
+   "196285160": {
+    "E_best_lineup_score": 130.51,
+    "p_best_ge_v2_median_best": 0.5,
+    "E_top_score_p95_world": 171.88
+   },
+   "196285161": {
+    "E_best_lineup_score": 118.44,
+    "p_best_ge_v2_median_best": 0.5,
+    "E_top_score_p95_world": 165.31
+   }
+  },
+  "ABLATION_TOP_MEAN": {
+   "196285137": {
+    "E_best_lineup_score": 131.15,
+    "p_best_ge_v2_median_best": 0.4435,
+    "E_top_score_p95_world": 174.93
+   },
+   "196285160": {
+    "E_best_lineup_score": 125.19,
+    "p_best_ge_v2_median_best": 0.42,
+    "E_top_score_p95_world": 170.75
+   },
+   "196285161": {
+    "E_best_lineup_score": 112.07,
+    "p_best_ge_v2_median_best": 0.4125,
+    "E_top_score_p95_world": 158.42
+   }
+  },
+  "ABLATION_TOP_PROXY": {
+   "196285137": {
+    "E_best_lineup_score": 132.29,
+    "p_best_ge_v2_median_best": 0.461,
+    "E_top_score_p95_world": 176.49
+   },
+   "196285160": {
+    "E_best_lineup_score": 125.26,
+    "p_best_ge_v2_median_best": 0.421,
+    "E_top_score_p95_world": 171.21
+   },
+   "196285161": {
+    "E_best_lineup_score": 112.07,
+    "p_best_ge_v2_median_best": 0.4125,
+    "E_top_score_p95_world": 158.42
+   }
+  },
+  "V1": {
+   "196285137": {
+    "E_best_lineup_score": 134.46,
+    "p_best_ge_v2_median_best": 0.4915,
+    "E_top_score_p95_world": 176.06
+   },
+   "196285160": {
+    "E_best_lineup_score": 129.39,
+    "p_best_ge_v2_median_best": 0.4735,
+    "E_top_score_p95_world": 170.75
+   },
+   "196285161": {
+    "E_best_lineup_score": 118.28,
+    "p_best_ge_v2_median_best": 0.5045,
+    "E_top_score_p95_world": 164.42
+   }
+  }
+ },
+ "PRELOCK_METRIC_NOTE": "computed on the sealed v2 worlds for every variant (V1 lineups re-scored in the v2 worlds); p_best_ge_v2_median_best uses the median of V2_FINAL best-lineup score as the bar. In-sample for V2 (its own worlds) -- the held-out-seed comparison is HOLDOUT_SEED2/HOLDOUT_PORTFOLIO_COMPARISON.json",
+ "CONTESTS_SEPARATE": true,
+ "SUCCESSOR_OBJECTIVES_HISTORICAL_TEST": "NOT RUNNABLE YET, and not faked. A historical objective test needs, per archived slate, PRE-KICKOFF sealed worlds plus full-field standings. Inventory: PIT@CLE has standings and worlds, but the worlds were sealed AFTER kickoff (forecast_artifact prospective_eligible false, \"DESCRIPTIVE ONLY\") under an older model; PHI@CHI has standings and no worlds and no salary file; ATL@NO has pre-kickoff worlds and no standings. So zero slates meet the bar. Declared successors to score as slates accrue: (O1) dupe-adjusted proxy -- each hit weighted by 1 / (1 + E[copies]) under the count-scale dupe model (S2 successor); (O2) top-1% proxy in place of first place, with the field score distribution from the standings-derived shape prior; (O3) current E[min(hits, m)] unchanged as control. Scored per contest, never pooled across contest sizes.",
+ "written_at": "2026-10-06T15:17:45.834880+00:00"
+}

@@ -1,0 +1,99 @@
+{
+ "ARTIFACT": "NEXT_SHOWDOWN_READINESS_BOARD",
+ "as_of": "2026-10-06T15:26:47.779920+00:00",
+ "OPERATIONAL_RELIABILITY": "no production module changed during the postgame work (git diff f0c28406 -- nfl/tools nfl/sim nfl/field nfl/product nfl/market is empty); the next slate runs on the sealed-tonight code path",
+ "defects_fixed": [
+  {
+   "id": "DEFECT-TE-ORDER",
+   "state": "PROMOTED",
+   "evidence": "ca9fb238; holdout seed 20261006 v2-v1 +0.046/+0.093/+0.014 (SE 0.012/0.017/0.006); live 2026-10-05"
+  },
+  {
+   "id": "GREEDY-SUBOPTIMALITY (swap polish)",
+   "state": "PROMOTED",
+   "evidence": "held-out +0.082/+0.017; live 2026-10-05"
+  },
+  {
+   "id": "RELAXATION/FILLER TRANSPARENCY",
+   "state": "IMPLEMENTED",
+   "evidence": "audit artifact per run"
+  }
+ ],
+ "defects_open": [
+  {
+   "id": "DEFECT-COHERENCE",
+   "severity": "HIGH (structural)",
+   "state": "OPEN -- confirmed like-for-like 2026-10-06",
+   "next": "SC-COH-1 held-out test; NOT for the next slate"
+  },
+  {
+   "id": "DEFECT-APPEARANCE (B8)",
+   "severity": "MEDIUM",
+   "state": "OPEN -- confirmed on 4 player-fields",
+   "next": "SC-APPEAR-1 forward-chained test; NOT for the next slate"
+  },
+  {
+   "id": "DEFECT-SPECIALIST-AUTO",
+   "severity": "LOW (guarded by hand designation)",
+   "state": "OPEN",
+   "next": "readiness check before the next slate: run nfl/tests/test_role_depth_adversarial.specialist_candidates on the captured chart and designate every flagged player NO_OFFENSIVE_ROLE (no model change)"
+  },
+  {
+   "id": "DEFECT-LABEL-CSV",
+   "severity": "LOW (reporting)",
+   "state": "OPEN",
+   "next": "label PROJECTIONS.csv volume columns as if-plays; propose-only (schema read by other tools)"
+  },
+  {
+   "id": "DOC-CHART-RANK",
+   "severity": "LOW (comment)",
+   "state": "OPEN",
+   "next": "proj_v1 calls _chart_rank \"the CAPTURED depth-chart rank\"; it is the state depth_rank = better of usage rank and chart rank (classic_slate_state._qb_rank). Behaviour is the declared rule; the comment is wrong"
+  }
+ ],
+ "candidate_model_changes": [
+  {
+   "id": "SC-COH-1",
+   "state": "SHADOW"
+  },
+  {
+   "id": "SC-APPEAR-1",
+   "state": "SHADOW"
+  },
+  {
+   "id": "SC-DUPE-COUNT-1",
+   "state": "SHADOW"
+  },
+  {
+   "id": "shadow ownership/field/dupe stack (MC-OWN/FIELD/DUPE-1)",
+   "state": "PRODUCTION_CANDIDATE -- not promoted (observation #1 has no standings yet)"
+  },
+  {
+   "id": "Hard Rock prop layer",
+   "state": "SHADOW / NOT_VALIDATED"
+  }
+ ],
+ "tests_passed": {
+  "test_showdown_finalization_gates": "PASS (run 2026-10-06 on HEAD; see commit)",
+  "test_archetype_field": "PASS (run 2026-10-06 on HEAD; see commit)",
+  "test_cycle1_checks": "PASS (run 2026-10-06 on HEAD; see commit)",
+  "test_postgame_role_coherence": "PASS (run 2026-10-06 on HEAD; see commit)",
+  "test_role_depth_adversarial": "PASS (run 2026-10-06 on HEAD; see commit)"
+ },
+ "tests_failed": [],
+ "historical_evidence_used": [
+  "nflverse pbp 2021-2025 (team coherence, roles)",
+  "nflverse snap counts 2024-2025 + players crosswalk (appearance)",
+  "DK standings PIT@CLE 196187080, PHI@CHI 196036243 (field LOSO)",
+  "ATL@NO owner entries (172, by Entry ID)"
+ ],
+ "MUST_PASS_BEFORE_NEXT_SHOWDOWN": [
+  "finalization gates suite green on the commit that runs the slate",
+  "official inactives captured and verified (READY gate unchanged)",
+  "specialist check: every DK skill player whose captured chart rows are special-teams only is designated",
+  "determinism: same inputs + seed reproduce the upload byte-for-byte (repro run before upload)",
+  "prop forecast sealed BEFORE any Hard Rock price is captured; a board captured after the seal and before kickoff",
+  "nothing in SHADOW changes a production lineup; no successor promoted without its held-out bar"
+ ],
+ "written_at": "2026-10-06T15:26:47.779963+00:00"
+}

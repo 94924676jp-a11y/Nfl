@@ -3949,3 +3949,15 @@ nfl/market/raw/HR_ATL_NO_BOARD_<UTC stamp>.csv, priority markets: player_recepti
 player_rushing_yards, player_passing_yards, player_passing_touchdowns, anytime touchdown. Push to
 claude/nfl-greenfield-architecture-stsxmk. This session then runs `atl_no_prop_shadow.py compare <board>`.
 DOWNSTREAM COMPARISON ONLY: nothing from the board touches the football model or any DFS lineup.
+
+## STATUS 2026-10-06 — ATL@NO postgame: M1 still outstanding; Hard Rock board never arrived
+
+- **M1 (owner, manual DK export) is still needed**: full-field standings for **196285137, 196285160, 196285161**
+  (My Contests -> contest -> Export Lineups to CSV), inside DK's ~10-day window (by ~2026-10-15). The zip supplied on
+  2026-10-06 (`contest-standings-196208417_1.zip`) is the Sunday classic contest, byte-identical to the existing capture
+  (CSV e7212baf), not ATL@NO. Until M1 lands, every pre-registered field measurement in
+  docs/NFL_SHOWDOWN_ATL_NO_POSTGAME_PREREGISTRATION.md, autopsy questions 3-4, and realised duplicate counts are
+  NOT_AVAILABLE (recorded so in nfl/postgame/showdown_atl_no_2026W4/).
+- **Hard Rock ATL@NO board (request 2026-10-05 23:50Z)**: nothing was pushed; the branch had no new commits on
+  2026-10-06. Recorded as `NO_VALID_PRELOCK_MARKET_CAPTURE` (ATL_NO_HARD_ROCK_STATUS.json). Do NOT backfill historical
+  prices for this game. For the next Showdown: capture the board after the prop seal and before kickoff, as requested.
