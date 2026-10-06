@@ -533,9 +533,11 @@ def diagnose(U):
          'duplicate_entries': U['dup_entries'],
          'self_duplicate_share_of_duplicate_entries': round(U['self_dup_entries'] / max(U['dup_entries'], 1), 4),
          'E1_mass_on_feasible_universe': round(float(e1.sum() / U['n_in']), 4),
-         'MEANING_E1_mass': ('sum of independent-product copies over FEASIBLE lineups divided by the entries there: below 1 '
-                             'means independence wastes probability on illegal lineups (cap, distinctness, both teams), so it '
-                             'under-counts every legal lineup by that factor before any behaviour is modelled')}
+         'MEANING_E1_mass': ('sum of independent-product copies (N x CPT share x product of FLEX shares) over the LEGAL '
+                             'lineups, divided by the entries there. E1 is not a normalised distribution: a value above 1 '
+                             'means it predicts more copies in total than there are entries, so where it still under-predicts '
+                             'the popular lineups its error is SHAPE (too flat), not missing mass'),
+    }
     tp = np.argsort(-a)[:200]
     d['top200_actual'] = {'actual': int(a[tp].sum()), 'E1': round(float(e1[tp].sum()), 1), 'B1_maxent': round(float(b1[tp].sum()), 1)}
     groups = {}
@@ -596,7 +598,10 @@ def run():
     U = {k: build_universe(v) for k, v in sl.items()}
     names_all = {'construction': ['stack_cpt_pc_own_qb', 'both_qbs', 'split_5_1', 'split_4_2', 'any_k_dst'],
                  'salary': [f'sal_{n}' for n in SAL_NAMES[:4]], 'fc': ['fc_gap_pts', 'fc_top100']}
-    diag = {k: diagnose(u) for k, u in U.items()}
+    diag = {}
+    for k, u in U.items():
+        diag[k] = diagnose(u)
+        (OUT / 'DUPE_RESEARCH_PARTIAL.json').write_text(json.dumps({'diagnosis': diag}, indent=1, default=float))
     folds = {}
     for test in SLATE_IDS:
         slate = TRAIN_OF[test]
@@ -618,6 +623,7 @@ def run():
             extra['owner_lineups'] = owner_rows
         folds[test] = {'train': [T['id'] for T in train], 'models': {m: metrics(U[test], p, extra) for m, p in P.items()},
                        'fit_info': info}
+        (OUT / 'DUPE_RESEARCH_PARTIAL.json').write_text(json.dumps({'diagnosis': diag, 'folds': folds}, indent=1, default=float))
     # candidate bars (pre-registered section 5)
     bars = candidate_bars(folds)
     doc = {'ARTIFACT': 'SHOWDOWN_DUPE_RESEARCH', 'STATUS': 'SHADOW_ONLY -- EXPLORATORY (ATL@NO is development data)',
