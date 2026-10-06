@@ -1,0 +1,149 @@
+{
+ "ARTIFACT": "SC_APPEAR_1_FORWARD_TEST",
+ "STATUS": "SHADOW_ONLY",
+ "fit": "depth table through 2024; SC-APPEAR-1 rates on 2024",
+ "scored": "2025 REG weeks >= 4, dressed players",
+ "sc_appear_1_rates_fit_2024": {
+  "RB_carries": 0.9424,
+  "RB_targets": 0.8847,
+  "WR_targets": 0.9518,
+  "TE_targets": 0.8973
+ },
+ "results": {
+  "ALL": {
+   "n_player_games": 4982,
+   "observed_rate": 0.8033,
+   "mean_p_current": 0.5951,
+   "mean_p_candidate": 0.6772,
+   "brier_current": 0.22054,
+   "brier_candidate": 0.18122,
+   "brier_improvement_week_blocked": {
+    "mean": 0.03926,
+    "se": 0.0028,
+    "n_weeks": 15,
+    "z": 14.04
+   },
+   "logloss_improvement_week_blocked": {
+    "mean": 0.12929,
+    "se": 0.01204,
+    "z": 10.74
+   }
+  },
+  "QUALIFYING_prior3_all": {
+   "n_player_games": 2827,
+   "observed_rate": 0.9356,
+   "mean_p_current": 0.7823,
+   "mean_p_candidate": 0.927,
+   "brier_current": 0.1292,
+   "brier_candidate": 0.05989,
+   "brier_improvement_week_blocked": {
+    "mean": 0.06968,
+    "se": 0.00559,
+    "n_weeks": 15,
+    "z": 12.46
+   },
+   "logloss_improvement_week_blocked": {
+    "mean": 0.22896,
+    "se": 0.02231,
+    "z": 10.26
+   }
+  },
+  "RANK_1": {
+   "n_player_games": 1659,
+   "observed_rate": 0.962,
+   "mean_p_current": 1.0,
+   "mean_p_candidate": 0.9286,
+   "brier_current": 0.03797,
+   "brier_candidate": 0.03925,
+   "brier_improvement_week_blocked": {
+    "mean": -0.00133,
+    "se": 0.00075,
+    "n_weeks": 15,
+    "z": -1.77
+   },
+   "logloss_improvement_week_blocked": {
+    "mean": 0.09031,
+    "se": 0.02469,
+    "z": 3.66
+   }
+  },
+  "RANK_2_PLUS_QUALIFYING": {
+   "n_player_games": 1323,
+   "observed_rate": 0.8919,
+   "mean_p_current": 0.5348,
+   "mean_p_candidate": 0.9336,
+   "brier_current": 0.24659,
+   "brier_candidate": 0.0969,
+   "brier_improvement_week_blocked": {
+    "mean": 0.15017,
+    "se": 0.01058,
+    "n_weeks": 15,
+    "z": 14.19
+   },
+   "logloss_improvement_week_blocked": {
+    "mean": 0.37497,
+    "se": 0.03138,
+    "z": 11.95
+   }
+  }
+ },
+ "qualifying_by_field": {
+  "RB_carries": {
+   "n": 721,
+   "observed": 0.9709,
+   "p_current_mean": 0.7834,
+   "p_candidate": 0.9424
+  },
+  "RB_targets": {
+   "n": 508,
+   "observed": 0.8957,
+   "p_current_mean": 0.8199,
+   "p_candidate": 0.8847
+  },
+  "WR_targets": {
+   "n": 1061,
+   "observed": 0.9406,
+   "p_current_mean": 0.7449,
+   "p_candidate": 0.9518
+  },
+  "TE_targets": {
+   "n": 537,
+   "observed": 0.9162,
+   "p_current_mean": 0.8192,
+   "p_candidate": 0.8973
+  }
+ },
+ "BAR_zero_opportunity_calibration": "PASS",
+ "unconditional_opportunity_mae_PROXY": {
+  "QUALIFYING_prior3_all": {
+   "mae_current": 2.7312,
+   "mae_candidate": 2.5638,
+   "improvement_week_blocked": {
+    "mean": 0.1666,
+    "se": 0.0247,
+    "z": 6.73
+   }
+  },
+  "RANK_1": {
+   "mae_current": 2.8428,
+   "mae_candidate": 2.7737,
+   "improvement_week_blocked": {
+    "mean": 0.0696,
+    "se": 0.0139,
+    "z": 5.02
+   }
+  },
+  "ALL": {
+   "mae_current": 2.2437,
+   "mae_candidate": 2.1488,
+   "improvement_week_blocked": {
+    "mean": 0.0947,
+    "se": 0.0139,
+    "z": 6.8
+   }
+  }
+ },
+ "BAR_unconditional_opportunity_MAE": "PASS -- PROXY: the if-plays volume is the prior-3-game mean when active, identical for both arms; the production conditional_volume was not replayed on 2025",
+ "VERDICT": "zero-opportunity half of the bar PASSES on held-out 2025; promotion still needs the MAE half and the owner",
+ "written_at": "2026-10-06T23:39:48.123565+00:00"
+}
