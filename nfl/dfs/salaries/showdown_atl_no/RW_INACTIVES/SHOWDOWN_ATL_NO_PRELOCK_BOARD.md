@@ -102,7 +102,7 @@
     - CPT Drake London + Alvin Kamara, Chris Olave, Juwan Johnson, Treyton Welch, Tyler Shough: E1 5.14, E2 5.14 ['none'], E3 92.9, E4 47.1, flag E1_E3_DISAGREE_GT_2X
 
 ### DUPE SALARY-LEFT SENSITIVITY (Cycle 1 FC-08 / FC-09 field-side anchors; SENSITIVITY, not a fitted model)
-- NOT_RUN
+- BLEND|FC08_90PCT_LE_500|phi200.0: anchor `{'0-500': {'target': 0.9, 'achieved': 0.893}, '600-50000': {'target': 0.1, 'achieved': 0.107}}`; residual `{'cpt': 0.332, 'flex': 1.036}`; E3 mean `{'196285137': 101.36, '196285160': 40.57, '196285161': 121.15}`; 2-entry E3 `[('Chris Olave', 64.7), ('Drake London', 177.6)]`
 
 ## EXTERNAL
 - Hard Rock: NOT CAPTURED HERE -- only after the football freeze, by the networked agent (docs/AGENT_OUTBOX.md); never fed back into the projection; no wager is recommended

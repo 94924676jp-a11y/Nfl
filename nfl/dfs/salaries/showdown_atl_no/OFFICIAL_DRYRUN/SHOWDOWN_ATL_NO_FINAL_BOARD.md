@@ -1,0 +1,30 @@
+# ATL @ NO DraftKings Showdown, ['ATL@NO'] -- final board (OFFICIAL_DRYRUN)
+
+**SHOWDOWN_PORTFOLIO_BUILT**
+
+- **CONTESTS**: `{"196285137": {"name": "NFL Showdown $100K mini-MAX [150 Entry Max] (ATL @ NO)", "entries": 150}, "196285160": {"name": "NFL Showdown $10K Quarter Jukebox [Just $0.25!] (ATL @ NO)", "entries": 20}, "196285161": {"name": "NFL Showdown $5K Dime Package [Just $0.10!]  (ATL @ NO)", "entries": 2}}`
+- **ENTRY_COUNTS**: `{"196285137": 150, "196285160": 20, "196285161": 2}`
+- **DK_PLAYER_ROWS**: `112`
+- **DK_FOOTBALL_PLAYERS**: `56`
+- **PROJECTED**: `29`
+- **PROJECTED_WITH_UNCERTAINTY**: `0`
+- **ZERO_OPPORTUNITY**: `5`
+- **INACTIVE**: `22`
+- **BLOCKED**: `0`
+- **BY_POSITION**: `{"QB": {"PROJECTED": 4, "ZERO_OPPORTUNITY": 3}, "RB": {"PROJECTED": 5, "INACTIVE": 6}, "WR": {"PROJECTED": 10, "INACTIVE": 10}, "TE": {"PROJECTED": 6, "INACTIVE": 5, "ZERO_OPPORTUNITY": 2}, "K": {"PROJECTED": 2, "INACTIVE": 1}, "DST": {"PROJECTED": 2}}`
+- **KICKER_STATUS**: `{"Daniel Carlson": {"distribution": {"mean": 8.532, "p75": 12.0, "p90": 15.0, "p95": 17.0, "p_zero": 0.02, "p_10_plus": 0.391, "p_15_plus": 0.1155}, "scoring_B": {"mean": 8.163, "p75": 11.0, "p90": 14.0, "p95": 16.0}, "fg_att": 2.089, "xp_att": 2.224, "cpt_eligible": true, "validated": false}, "Nick Folk": {"distribution": {"mean": 8.17, "p75": 12.0, "p90": 15.0, "p95": 17.0, "p_zero": 0.051, "p_10_plus": 0.3775, "p_15_plus": 0.1155}, "scoring_B": {"mean": 7.747, "p75": 11.0, "p90": 14.0, "p95": 16.0}, "fg_att": 2.114, "xp_att": 1.578, "cpt_eligible": true, "validated": false}}`
+- **KICKER_RULE_B**: `{"state": "COMPUTED", "MATERIAL": false, "MATERIAL_RULE": "the SCORING_A portfolio, scored under SCORING_B, covers more than 0.01 fewer worlds than a portfolio rebuilt under SCORING_B (coverage regret). share_changed is reported beside it as greedy-selection sensitivity: lineup identities can change while their value does not.", "top100_candidates_shared_A_B": 98, "contests": {"196285137": {"lineups_shared_A_B": 62, "n": 150, "share_changed": 0.587, "kicker_slots_A": 94, "kicker_slots_B": 84, "coverage_of_A_portfolio_under_B": 0.9995, "coverage_of_B_portfolio_under_B": 0.9995, "coverage_regret_if_B_is_true": 0.0}, "196285160": {"lineups_shared_A_B": 9, "n": 20, "share_changed": 0.55, "kicker_slots_A": 12, "kicker_slots_B": 10, "coverage_of_A_portfolio_under_B": 0.816, "coverage_of_B_portfolio_under_B": 0.823, "coverage_regret_if_B_is_true": 0.007}, "196285161": {"lineups_shared_A_B": 1, "n": 2, "share_changed": 0.5, "kicker_slots_A": 1, "kicker_slots_B": 1, "coverage_of_A_portfolio_under_B": 0.328, "coverage_of_B_portfolio_under_B": 0.33, "coverage_regret_if_B_is_true": 0.002}}}`
+- **DST_STATUS**: `{"state": "SHOWDOWN_DST_MODEL_WARNING", "by_dst": {"Saints": {"opponent": "ATL", "opposing_qb": "Michael Penix Jr.", "corr_dst_vs_opposing_qb_dk": -0.305, "corr_dst_vs_opposing_offense_points": -0.698, "corr_dst_takeaways_vs_opposing_qb_ints": 0.012, "mean_takeaways": 1.417, "mean_opposing_qb_ints": 0.627}, "Falcons": {"opponent": "NO", "opposing_qb": "Tyler Shough", "corr_dst_vs_opposing_qb_dk": -0.385, "corr_dst_vs_opposing_offense_points": -0.68, "corr_dst_takeaways_vs_opposing_qb_ints": 0.002, "mean_takeaways": 1.3, "mean_opposing_qb_ints": 0.837}}, "warnings": ["Saints: takeaways vs the opposing QB's interceptions corr 0.012 -- the same events are drawn independently (the declared limitation)", "Falcons: takeaways vs the opposing QB's interceptions corr 0.002 -- the same events are drawn independently (the declared limitation)"], "LIMITATION": "DST sacks/takeaways are not yet generated directly from the same opposing-QB event process.", "cpt_eligible": {"Saints": true, "Falcons": true}, "NOT_CALIBRATED": "DST captain rates are model outputs, not calibrated probabilities"}`
+- **FANT_STATUS**: `"QUESTIONABLE"`
+- **OFFICIAL_INACTIVES_STATUS**: `"APPLIED: 1 names"`
+- **SIMULATION_WORLDS**: `2000`
+- **CANDIDATES**: `5422`
+- **CANDIDATE_COVERAGE**: `{"by_captain_pos": {"QB": 1117, "RB": 931, "WR": 1848, "TE": 1007, "K": 266, "DST": 253}, "by_split_away_home": {"5-1": 201, "4-2": 956, "3-3": 1952, "2-4": 1660, "1-5": 653}, "split_orientation": "ATL-NO", "by_salary_band": {"50000": 259, "49500-49900": 1141, "49000-49400": 860, "48000-48900": 1169, "<48000": 1993}}`
+- **FINAL_LINEUPS_PER_CONTEST**: `{"196285137": 150, "196285160": 20, "196285161": 2}`
+- **VERIFIER_VIOLATIONS**: `0`
+- **RELAXATION_LEVEL_USED**: `{"196285137": 2, "196285160": 2, "196285161": 0}`
+- **DK_UPLOAD**: `"nfl/dfs/salaries/showdown_atl_no/OFFICIAL_DRYRUN/SHOWDOWN_ATL_NO_DK_UPLOAD.csv"`
+- **DK_UPLOAD_SHA256**: `"cc140570bf8e2087d731206f504aaacb14958ecbe302ec4221fcf00a9caaf7c4"`
+- **SUNDAY_FROZEN_RECORD**: `{"files": 11, "changed_or_missing": [], "graded_at_commit": "d170f333"}`
+
+nothing here enters a contest; PROJECTION_SYSTEM_STATE NOT_VALIDATED; no wager is recommended

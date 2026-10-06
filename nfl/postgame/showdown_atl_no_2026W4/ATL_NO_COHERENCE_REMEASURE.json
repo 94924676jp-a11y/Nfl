@@ -1,0 +1,398 @@
+{
+ "ARTIFACT": "ATL_NO_COHERENCE_REMEASURE",
+ "LAYER": "POSTGAME_DIAGNOSIS",
+ "game": "2026_04_ATL_NO",
+ "definition": {
+  "dk_core": "0.04 pass yd + 4 pass TD - INT + 0.1 rush yd + 6 rush TD + 0.1 rec yd + rec + 6 rec TD",
+  "excluded": "yardage bonuses; fumbles (not simulated)",
+  "team_td": "rush TD + rec TD",
+  "roles": "pregame: prior-week season-to-date targets / carries (history, actual); projected means (sim)"
+ },
+ "sources": {
+  "history_pbp": {
+   "2021": "nfl/research/postgame/pbp_2021.e8743a568f99667a.csv.gz",
+   "2022": "nfl/research/postgame/pbp_2022.0c69a71eb3949895.csv.gz",
+   "2023": "nfl/research/postgame/pbp_2023.4649804ee0f0a40b.csv.gz",
+   "2024": "nfl/research/postgame/pbp_2024.23370d5d10f8104d.csv.gz",
+   "2025": "nfl/research/postgame/pbp_2025.2f135887790a013f.csv.gz"
+  },
+  "actual_pbp": {
+   "file": "nfl/postgame/raw/showdown_atl_no_2026W4/NFLVERSE_PBP_2026.40fb5ce16256530d.csv.gz",
+   "sha256": "40fb5ce16256530d766690ea04931f358388b66be50c191f5b037506eb2c5410"
+  },
+  "sim_worlds": {
+   "dir": "nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX",
+   "worlds_sha256": "2280be4b41709dddd6e58949880074309f7656315e92067889bc563f081d87a9"
+  }
+ },
+ "history_2021_2025": {
+  "team_games": 2718,
+  "role_team_games": 2554,
+  "team": {
+   "td_vs_off_dk": {
+    "raw": 0.809,
+    "raw_ci95": [
+     0.795,
+     0.822
+    ],
+    "within_team_season": 0.792,
+    "within_team_season_ci95": [
+     0.777,
+     0.806
+    ]
+   },
+   "points_vs_off_dk": {
+    "raw": 0.76,
+    "raw_ci95": [
+     0.744,
+     0.776
+    ],
+    "within_team_season": 0.734,
+    "within_team_season_ci95": [
+     0.715,
+     0.751
+    ]
+   },
+   "kicker_dk_vs_off_dk": {
+    "raw": 0.16,
+    "raw_ci95": [
+     0.123,
+     0.195
+    ],
+    "within_team_season": 0.137,
+    "within_team_season_ci95": [
+     0.101,
+     0.171
+    ]
+   },
+   "kicker_dk_vs_points": {
+    "raw": 0.426,
+    "raw_ci95": [
+     0.396,
+     0.455
+    ],
+    "within_team_season": 0.421,
+    "within_team_season_ci95": [
+     0.39,
+     0.451
+    ]
+   },
+   "yardage_dk_per_td_slope": {
+    "raw": 5.16,
+    "within_team_season": 4.72,
+    "within_team_season_ci95": [
+     4.351,
+     5.086
+    ],
+    "MEANING": "DK from yards and receptions (TD points removed) per extra offensive TD"
+   }
+  },
+  "pairs": {
+   "QB-TGT1": {
+    "raw": 0.366,
+    "raw_ci95": [
+     0.332,
+     0.401
+    ],
+    "within_team_season": 0.361
+   },
+   "QB-TGT2": {
+    "raw": 0.306,
+    "raw_ci95": [
+     0.27,
+     0.343
+    ],
+    "within_team_season": 0.303
+   },
+   "QB-TGT3": {
+    "raw": 0.24,
+    "raw_ci95": [
+     0.203,
+     0.275
+    ],
+    "within_team_season": 0.229
+   },
+   "TGT1-TGT2": {
+    "raw": 0.031,
+    "raw_ci95": [
+     -0.005,
+     0.07
+    ],
+    "within_team_season": -0.029
+   },
+   "QB-RB1": {
+    "raw": 0.094,
+    "raw_ci95": [
+     0.057,
+     0.134
+    ],
+    "within_team_season": 0.08
+   },
+   "QB-OPP_TGT1": {
+    "raw": 0.074,
+    "raw_ci95": [
+     0.033,
+     0.112
+    ],
+    "within_team_season": 0.087
+   },
+   "TGT1-OPP_TGT1": {
+    "raw": 0.055,
+    "raw_ci95": [
+     0.005,
+     0.106
+    ],
+    "within_team_season": 0.047
+   }
+  }
+ },
+ "simulator_v2": {
+  "team": {
+   "ATL": {
+    "td_vs_off_dk": 0.628,
+    "points_vs_off_dk": 0.553,
+    "yardage_dk_per_td_slope": 0.05,
+    "kicker_dk_vs_off_dk": -0.071,
+    "kicker_dk_vs_points": 0.348
+   },
+   "NO": {
+    "td_vs_off_dk": 0.629,
+    "points_vs_off_dk": 0.55,
+    "yardage_dk_per_td_slope": -0.05,
+    "kicker_dk_vs_off_dk": -0.159,
+    "kicker_dk_vs_points": 0.194
+   }
+  },
+  "pairs": {
+   "ATL": {
+    "QB-TGT1": 0.489,
+    "QB-TGT2": 0.278,
+    "QB-TGT3": 0.377,
+    "TGT1-TGT2": 0.029,
+    "QB-RB1": 0.278,
+    "QB-OPP_TGT1": 0.152,
+    "TGT1-OPP_TGT1": 0.068
+   },
+   "NO": {
+    "QB-TGT1": 0.393,
+    "QB-TGT2": 0.34,
+    "QB-TGT3": 0.3,
+    "TGT1-TGT2": 0.005,
+    "QB-RB1": 0.176,
+    "QB-OPP_TGT1": 0.12,
+    "TGT1-OPP_TGT1": 0.068
+   }
+  },
+  "roles": {
+   "ATL": {
+    "QB": "Michael Penix Jr.|ATL",
+    "TGT1": "Drake London|ATL",
+    "TGT2": "Bijan Robinson|ATL",
+    "TGT3": "Kyle Pitts Sr.|ATL",
+    "RB1": "Bijan Robinson|ATL",
+    "K": "Nick Folk|ATL"
+   },
+   "NO": {
+    "QB": "Tyler Shough|NO",
+    "TGT1": "Chris Olave|NO",
+    "TGT2": "Juwan Johnson|NO",
+    "TGT3": "Devaughn Vele|NO",
+    "RB1": "Alvin Kamara|NO",
+    "K": "Daniel Carlson|NO"
+   }
+  },
+  "world_alignment_r": 0.9877,
+  "n_worlds": 2000
+ },
+ "actual_atl_no": {
+  "ATL": {
+   "off_dk": 106.72,
+   "td": 6,
+   "pts": 45,
+   "kicker_dk": 9,
+   "roles_dk": {
+    "QB": 12.72,
+    "TGT1": 14.6,
+    "TGT2": 27.7,
+    "TGT3": 13.4,
+    "RB1": 27.7
+   }
+  },
+  "NO": {
+   "off_dk": 97.04,
+   "td": 3,
+   "pts": 24,
+   "kicker_dk": 6,
+   "roles_dk": {
+    "QB": 15.94,
+    "TGT1": 19.6,
+    "TGT2": 17.4,
+    "TGT3": 11.9,
+    "RB1": 22.8
+   }
+  }
+ },
+ "actual_placement": {
+  "ATL": {
+   "actual_td": 6,
+   "actual_off_dk": 106.72,
+   "sim_marginal_pct_off_dk": 0.916,
+   "sim_marginal_pct_td": 0.999,
+   "sim_worlds_with_actual_td": 15,
+   "sim_conditional_off_dk_given_td": null,
+   "history_conditional_off_dk_given_td": {
+    "n": 43,
+    "mean": 131.67,
+    "sd": 14.52,
+    "pct_of_actual": 0.047
+   },
+   "sim_unconditional_off_dk": {
+    "mean": 78.82,
+    "sd": 19.85
+   },
+   "NOTE": "n = 1 team-game; a placement, not an estimate"
+  },
+  "NO": {
+   "actual_td": 3,
+   "actual_off_dk": 97.04,
+   "sim_marginal_pct_off_dk": 0.562,
+   "sim_marginal_pct_td": 0.735,
+   "sim_worlds_with_actual_td": 398,
+   "sim_conditional_off_dk_given_td": {
+    "mean": 99.84,
+    "sd": 17.58,
+    "pct_of_actual": 0.475
+   },
+   "history_conditional_off_dk_given_td": {
+    "n": 615,
+    "mean": 93.58,
+    "sd": 13.99,
+    "pct_of_actual": 0.61
+   },
+   "sim_unconditional_off_dk": {
+    "mean": 95.11,
+    "sd": 22.36
+   },
+   "NOTE": "n = 1 team-game; a placement, not an estimate"
+  }
+ },
+ "conditional_spread_off_dk_given_td": {
+  "ATL": [
+   {
+    "td": 0,
+    "sim_n": 525,
+    "sim_sd": 15.52,
+    "sim_mean": 64.77,
+    "hist_n": 206,
+    "hist_sd": 13.89,
+    "hist_mean": 51.44
+   },
+   {
+    "td": 1,
+    "sim_n": 429,
+    "sim_sd": 15.8,
+    "sim_mean": 71.11,
+    "hist_n": 548,
+    "hist_sd": 13.16,
+    "hist_mean": 66.58
+   },
+   {
+    "td": 2,
+    "sim_n": 458,
+    "sim_sd": 15.53,
+    "sim_mean": 81.87,
+    "hist_n": 797,
+    "hist_sd": 13.01,
+    "hist_mean": 81.08
+   },
+   {
+    "td": 3,
+    "sim_n": 340,
+    "sim_sd": 14.5,
+    "sim_mean": 89.29,
+    "hist_n": 615,
+    "hist_sd": 13.99,
+    "hist_mean": 93.58
+   },
+   {
+    "td": 4,
+    "sim_n": 158,
+    "sim_sd": 15.0,
+    "sim_mean": 97.98,
+    "hist_n": 369,
+    "hist_sd": 14.59,
+    "hist_mean": 108.69
+   },
+   {
+    "td": 5,
+    "sim_n": 73,
+    "sim_sd": 16.28,
+    "sim_mean": 106.24,
+    "hist_n": 129,
+    "hist_sd": 15.05,
+    "hist_mean": 118.36
+   }
+  ],
+  "NO": [
+   {
+    "td": 0,
+    "sim_n": 266,
+    "sim_sd": 16.2,
+    "sim_mean": 74.65,
+    "hist_n": 206,
+    "hist_sd": 13.89,
+    "hist_mean": 51.44
+   },
+   {
+    "td": 1,
+    "sim_n": 363,
+    "sim_sd": 17.72,
+    "sim_mean": 83.52,
+    "hist_n": 548,
+    "hist_sd": 13.16,
+    "hist_mean": 66.58
+   },
+   {
+    "td": 2,
+    "sim_n": 443,
+    "sim_sd": 18.36,
+    "sim_mean": 90.84,
+    "hist_n": 797,
+    "hist_sd": 13.01,
+    "hist_mean": 81.08
+   },
+   {
+    "td": 3,
+    "sim_n": 398,
+    "sim_sd": 17.58,
+    "sim_mean": 99.84,
+    "hist_n": 615,
+    "hist_sd": 13.99,
+    "hist_mean": 93.58
+   },
+   {
+    "td": 4,
+    "sim_n": 296,
+    "sim_sd": 16.7,
+    "sim_mean": 106.72,
+    "hist_n": 369,
+    "hist_sd": 14.59,
+    "hist_mean": 108.69
+   },
+   {
+    "td": 5,
+    "sim_n": 155,
+    "sim_sd": 16.53,
+    "sim_mean": 117.29,
+    "hist_n": 129,
+    "hist_sd": 15.05,
+    "hist_mean": 118.36
+   }
+  ]
+ },
+ "VERDICT_TEAM_TD_VS_OFF_DK": "DEFECT_CONFIRMED_LIKE_FOR_LIKE",
+ "VERDICT_RULE": "like-for-like target = history WITHIN team-season (one fixed matchup carries no between-team variation); defect confirmed only if every simulated team sits below that target's lower 95% bound (game-clustered bootstrap, 1000 resamples)",
+ "NOT_FITTED_TO_ATL_NO": true,
+ "NOT_A_FORECAST_INPUT": true,
+ "written_at": "2026-10-06T15:05:13.222973+00:00"
+}
