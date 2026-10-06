@@ -1,6 +1,6 @@
 {
  "ARTIFACT": "NEXT_SHOWDOWN_READINESS_BOARD",
- "as_of": "2026-10-06T15:26:47.779920+00:00",
+ "as_of": "2026-10-06T16:05:40.503164+00:00",
  "OPERATIONAL_RELIABILITY": "no production module changed during the postgame work (git diff f0c28406 -- nfl/tools nfl/sim nfl/field nfl/product nfl/market is empty); the next slate runs on the sealed-tonight code path",
  "defects_fixed": [
   {
@@ -31,6 +31,29 @@
    "severity": "MEDIUM",
    "state": "OPEN -- confirmed on 4 player-fields",
    "next": "SC-APPEAR-1 forward-chained test; NOT for the next slate"
+  },
+  {
+   "id": "DEFECT-DUPE-UNDERESTIMATE",
+   "severity": "HIGH (DFS decisions)",
+   "state": "OPEN -- measured on ATL@NO 2026-10-06",
+   "evidence": {
+    "196285137": {
+     "independence_factor": 2.97,
+     "owner_unique_lineups": 1,
+     "owner_median_copies": 62.5
+    },
+    "196285160": {
+     "independence_factor": 5.16,
+     "owner_unique_lineups": 0,
+     "owner_median_copies": 31.5
+    },
+    "196285161": {
+     "independence_factor": 5.93,
+     "owner_unique_lineups": 0,
+     "owner_median_copies": 48.0
+    }
+   },
+   "next": "report expected copies of our lineups with this measured miss beside them on the prelock board (reporting only); SC-DUPE-CORR-1 held-out test; no selection change for the next slate"
   },
   {
    "id": "DEFECT-SPECIALIST-AUTO",
@@ -65,8 +88,16 @@
    "state": "SHADOW"
   },
   {
+   "id": "SC-DUPE-CORR-1",
+   "state": "SHADOW"
+  },
+  {
+   "id": "SC-OWN-ROTATION-1",
+   "state": "SHADOW"
+  },
+  {
    "id": "shadow ownership/field/dupe stack (MC-OWN/FIELD/DUPE-1)",
-   "state": "PRODUCTION_CANDIDATE -- not promoted (observation #1 has no standings yet)"
+   "state": "PRODUCTION_CANDIDATE -- not promoted. Observation #1 scored: BLEND beat FC_ONLY on 24/24 ownership metric cells; every dupe estimator under-predicted our lineups 2-6x. One slate promotes nothing."
   },
   {
    "id": "Hard Rock prop layer",
@@ -84,7 +115,7 @@
  "historical_evidence_used": [
   "nflverse pbp 2021-2025 (team coherence, roles)",
   "nflverse snap counts 2024-2025 + players crosswalk (appearance)",
-  "DK standings PIT@CLE 196187080, PHI@CHI 196036243 (field LOSO)",
+  "DK standings PIT@CLE 196187080, PHI@CHI 196036243, ATL@NO 196285137 / 196285160 / 196285161 (field, LOSO)",
   "ATL@NO owner entries (172, by Entry ID)"
  ],
  "MUST_PASS_BEFORE_NEXT_SHOWDOWN": [
@@ -95,5 +126,5 @@
   "prop forecast sealed BEFORE any Hard Rock price is captured; a board captured after the seal and before kickoff",
   "nothing in SHADOW changes a production lineup; no successor promoted without its held-out bar"
  ],
- "written_at": "2026-10-06T15:26:47.779963+00:00"
+ "written_at": "2026-10-06T16:05:40.503211+00:00"
 }

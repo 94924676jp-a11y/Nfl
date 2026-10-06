@@ -45,8 +45,78 @@
    "targets": "S2 dupe mapping",
    "status": "SHADOW_SPEC",
    "what": "copies ~ Poisson/NB mean model in log product ownership (count scale, not log scale)",
-   "evidence_so_far": "MIXED -- NOT PROMOTION-GRADE. The declared metric (abs log error) favours the fitted mapping on both folds, but it is a regression of log(copies), so exp(prediction) estimates a median, not a mean: it under-predicts total copies by ~half and the most-duplicated decile by ~5x on both folds, where E1 is within ~1.5x. Our use is expected copies of OUR lineups, which live in that top tail. The calibration check was added after the folds were read and is reported, not used to flip the declared verdict. Successor candidate for the next slates: the same fit on the count scale (Poisson / negative-binomial mean model), declared now, scored on ATL@NO and later standings.",
+   "evidence_so_far": "NOT_DEMONSTRATED on 3 slates (PIT@CLE, PHI@CHI, ATL@NO 20-max)",
    "held_out_bar": "beats E1 on mean-scale calibration (total and top decile) AND abs log error on every held-out slate"
+  },
+  {
+   "id": "SC-DUPE-CORR-1",
+   "targets": "DEFECT-DUPE-UNDERESTIMATE",
+   "status": "SHADOW_SPEC (declared 2026-10-06, after ATL@NO)",
+   "what": "copies of OUR lineups are 3-6x what independent product ownership predicts even with the ACTUAL ownership: the field builds optimizer-like lineups together. Candidate: a lineup-level copy model with an optimizer-similarity term (distance of the lineup from the field-optimal set), fitted on archived slates only",
+   "evidence": {
+    "196285137": {
+     "actual_copies_by_others": 15823,
+     "E1_forecast_ownership": {
+      "FC_ONLY": 2872.7,
+      "BLEND": 4834.3
+     },
+     "E1_ACTUAL_ownership": 5333.7,
+     "E4_optimizer_field": {
+      "FC_ONLY": 2965.5,
+      "BLEND": 7765.4
+     },
+     "ownership_forecast_factor": {
+      "FC_ONLY": 1.86,
+      "BLEND": 1.1
+     },
+     "independence_factor": 2.97,
+     "MEANING": "actual / E1(actual ownership) is what the independence assumption misses for lineups like ours; E1(actual) / E1(forecast) is what the ownership forecast misses. Their product is the total miss."
+    },
+    "196285160": {
+     "actual_copies_by_others": 1028,
+     "E1_forecast_ownership": {
+      "FC_ONLY": 103.7,
+      "BLEND": 205.2
+     },
+     "E1_ACTUAL_ownership": 199.0,
+     "E4_optimizer_field": {
+      "FC_ONLY": 94.0,
+      "BLEND": 338.5
+     },
+     "ownership_forecast_factor": {
+      "FC_ONLY": 1.92,
+      "BLEND": 0.97
+     },
+     "independence_factor": 5.16,
+     "MEANING": "actual / E1(actual ownership) is what the independence assumption misses for lineups like ours; E1(actual) / E1(forecast) is what the ownership forecast misses. Their product is the total miss."
+    },
+    "196285161": {
+     "actual_copies_by_others": 94,
+     "E1_forecast_ownership": {
+      "FC_ONLY": 0.0,
+      "BLEND": 6.6
+     },
+     "E1_ACTUAL_ownership": 15.8,
+     "E4_optimizer_field": {
+      "FC_ONLY": 0.0,
+      "BLEND": 94.2
+     },
+     "ownership_forecast_factor": {
+      "FC_ONLY": 15840018309.23,
+      "BLEND": 2.4
+     },
+     "independence_factor": 5.93,
+     "MEANING": "actual / E1(actual ownership) is what the independence assumption misses for lineups like ours; E1(actual) / E1(forecast) is what the ownership forecast misses. Their product is the total miss."
+    }
+   },
+   "held_out_bar": "beats E1 and E4 on total and top-decile calibration of OUR lineups on every held-out slate (>= 5 slates)"
+  },
+  {
+   "id": "SC-OWN-ROTATION-1",
+   "targets": "ownership of cheap rotation players",
+   "status": "SHADOW_SPEC",
+   "what": "the optimizer-exposure field cannot give ownership to players kept out of optimal lineups by their projection (B. Robinson Jr. 17.6% actual FLEX vs 0.0 / 1.0 shadow; Bryce Lance 21.8 vs 6.4 / 9.4). Candidate: the pre-registered MC-OWN-1 ownership model with a salary-tier / rotation-role term",
+   "held_out_bar": "beats BLEND on FLEX RMSE and KL on every held-out slate; prereg proposal: >= 8 Showdown slates before any promotion decision"
   },
   {
    "id": "SC-SHAPE-STANDINGS-1",
@@ -88,5 +158,5 @@
    "blocker": "zero archived slates have both pre-kickoff worlds and full-field standings"
   }
  ],
- "written_at": "2026-10-06T15:26:47.779963+00:00"
+ "written_at": "2026-10-06T16:05:40.503211+00:00"
 }

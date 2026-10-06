@@ -152,6 +152,18 @@ def run():
         raise StudyError('V2_FINAL_DOES_NOT_RECONCILE_WITH_GRADED_ENTRIES')
     fees = {c: float(next(x['fee'] for x in csv.DictReader(open(OUT / 'ATL_NO_OWNER_ENTRIES_GRADED.csv')) if x['contest_id'] == c))
             for c in CONTESTS}
+    field_pts = {}
+    try:
+        from nfl.postgame import showdown_atl_no_field_actual as FA
+        for c in CONTESTS:
+            field_pts[c] = np.sort(np.array([e['points'] for e in FA.load_standings(c)['entries']]))[::-1]
+    except FileNotFoundError:
+        field_pts = {}
+    exact_rank = lambda c, s: int(1 + np.sum(field_pts[c] > s + 0.005))   # DK points are 2-decimal; exports carry ~1e-5 noise
+    if field_pts:
+        for x in csv.DictReader(open(OUT / 'ATL_NO_OWNER_ENTRIES_GRADED.csv')):
+            if exact_rank(x['contest_id'], round(float(x['dk_points']), 2)) != int(x['place']):
+                raise StudyError(f"EXACT_RANK_DOES_NOT_REPRODUCE_DK {x['entry_id']} {x['dk_points']} {x['place']}")
     table = {}
     for name, by in variants.items():
         table[name] = {}
@@ -173,6 +185,11 @@ def run():
                 'payout_from_best_lineup_share': (None if not tot else
                                                   round(max(paid) / tot, 3)),
                 'payout_flags': flags,
+                **({'exact_best_rank_in_real_field': exact_rank(c, best),
+                    'exact_top_1pct_count': int(sum(exact_rank(c, x) <= 0.01 * len(field_pts[c]) for x in sc)),
+                    'exact_top_10pct_count': int(sum(exact_rank(c, x) <= 0.10 * len(field_pts[c]) for x in sc)),
+                    'exact_median_rank_pct': round(float(np.median([100 * exact_rank(c, x) / len(field_pts[c]) for x in sc])), 2)}
+                   if c in field_pts else {}),
                 'distinct_lineups': len({(cp, tuple(sorted(f))) for cp, f, *_ in L}),
                 'distinct_captains': len({cp for cp, *_ in L})}
     # prelock-world comparison of the objective (where it is defined): P(any lineup >= p95 of the v2 lineup pool)
@@ -199,11 +216,14 @@ def run():
            'reconciliation': 'V2_FINAL_LIVE realised scores equal the 172 DK-graded owner entries exactly',
            'curve_validation_on_live_portfolio': curve_check,
            'best_lineup_minus_owner_best_observed': near_top,
+           'EXACT_RANKS': ('when the ATL@NO standings are present, each variant lineup is placed in the REAL field: rank = 1 + '
+                           'entries scoring strictly more (a tie shares the rank, as DK ranks). Ranks are exact; payouts '
+                           'still come from the conservative curve because the prize table is not in the export.'),
            'CURVE_LIMIT': ('the curve has one observed point above 130 points (the 6th-place lineup at 142.54); a variant whose '
-                           'best lineup lands just below it is assigned the next observed (much lower) payout. V1\'s best '
-                           'scored 142.45, 0.09 below the live 6th-place lineup: in a 237,812 field that is a top-10 finish, '
-                           'so V1 and V2 were each one lineup from the same result. Read est_payout above 130 points as a '
-                           'floor, never as a ranking of variants.'),
+                           'best lineup lands just below it is assigned the next observed (much lower) payout. Read est_payout '
+                           'above 130 points as a floor. CORRECTION 2026-10-06: an earlier version of this note called V1\'s '
+                           '142.45 a top-10 finish. Placed in the real field it is #126 -- directly behind the 120 entries tied '
+                           'at 6th (places 6-125) -- so V1 would NOT have shared the 6th-place prize pool.'),
            'realised_by_variant': table,
            'prelock_worlds_by_variant': prelock,
            'PRELOCK_METRIC_NOTE': ('computed on the sealed v2 worlds for every variant (V1 lineups re-scored in the v2 '

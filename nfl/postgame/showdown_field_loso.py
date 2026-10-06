@@ -5,7 +5,8 @@
 
 LAYER: POSTGAME_DIAGNOSIS -> SUCCESSOR_CANDIDATE evidence. RESEARCH ONLY; promotes nothing.
 
-SLATES. Two archived Showdown fields with full standings: PIT@CLE (196187080) and PHI@CHI (196036243), parsed by
+SLATES. Three Showdown fields with full standings: PIT@CLE (196187080), PHI@CHI (196036243) and, from 2026-10-06,
+ATL@NO (196285160, via nfl/postgame/showdown_atl_no_field_actual.py). The archived two were parsed by
 nfl/field/showdown_history_calibration.py into SHOWDOWN_HISTORY_CALIBRATION.json and UNIQUE_LINEUPS_*.csv. ATL@NO
 (196285137 / 160 / 161) has NO full-field standings in this repository -- the zip supplied on 2026-10-06 was the
 Sunday classic contest -- so the ATL@NO fold is NOT_AVAILABLE and is reported as such, never filled.
@@ -48,7 +49,8 @@ HIST = _REPO / 'nfl/postgame/showdown_history'
 ATL = _REPO / 'nfl/dfs/salaries/showdown_atl_no'
 V2 = ATL / 'RW_INACTIVES_CHARTFIX'
 OUT = _REPO / 'nfl/postgame/showdown_atl_no_2026W4'
-SLATES = ('PIT_CLE', 'PHI_CHI')
+SLATES = ('PIT_CLE', 'PHI_CHI', 'ATL_NO')
+ATL_NO_CONTEST = '196285160'      # 20-max $0.25 Quarter Jukebox: same contest type and field size as the archived two
 FLEX_FLOOR = 5.0
 
 
@@ -95,7 +97,7 @@ def hist_shapes(cal):
                  'cpt_pos': _cpt_pos(f['cpt_position']['pct'])}
         kd = collections.Counter()
         for k, v in f['k_plus_dst_count']['pct'].items():
-            kd['2+' if int(k) >= 2 else k] += v
+            kd['2+' if (k == '2+' or int(k) >= 2) else k] += v
         sh[s]['kd_count'] = _norm(kd)
     return sh
 
@@ -136,24 +138,24 @@ def s1(cal):
     for comp in ('split', 'qb_count', 'kd_count', 'cpt_pos'):
         folds = []
         for test in SLATES:
-            train = [s for s in SLATES if s != test][0]
-            succ = _tvd(H[train][comp], H[test][comp])
+            train = [s for s in SLATES if s != test]
+            avg = _norm({k: sum(H[t][comp].get(k, 0.0) for t in train) for k in set().union(*(H[t][comp] for t in train))})
+            succ = _tvd(avg, H[test][comp])
             cur = {src: _tvd(O[src][comp], H[test][comp]) for src in O}
             folds.append({'held_out': test, 'successor_other_slate_tvd': succ,
                           **{f'current_opt_field_{k}_tvd': v for k, v in cur.items()}})
         beats = {src: all(f['successor_other_slate_tvd'] < f[f'current_opt_field_{src}_tvd'] for f in folds) for src in O}
-        verdict[comp] = {src: 'SUCCESSOR_BEATS_CURRENT_ON_BOTH_FOLDS' if b else 'NOT_DEMONSTRATED' for src, b in beats.items()}
+        verdict[comp] = {src: 'SUCCESSOR_BEATS_CURRENT_ON_ALL_FOLDS' if b else 'NOT_DEMONSTRATED' for src, b in beats.items()}
         rows.append({'component': comp, 'folds': folds})
     return {'folds': rows, 'verdict': verdict, 'historical_shapes': H,
             'current_opt_field_shapes_ATL_NO': O,
-            'CAVEAT': ('current-method prior exists only for ATL@NO (our optimizer-exposure field); its distance to the PIT@CLE '
-                       'and PHI@CHI fields is cross-slate. The successor is also cross-slate (the other archived field). '
-                       'Both are judged on the same held-out fields, so the comparison is fair as a METHOD test; neither '
-                       'is a same-slate forecast.')}
+            'CAVEAT': ('current-method prior exists only for ATL@NO (our optimizer-exposure field). On the ATL_NO fold it is '
+                       'a same-slate prelock forecast; on PIT@CLE and PHI@CHI it is cross-slate. The successor (mean of the '
+                       'other slates\' realised fields) is cross-slate on every fold.')}
 
 
 def _lineups(s):
-    p = HIST / f'UNIQUE_LINEUPS_{s}.csv'
+    p = HIST / (f'UNIQUE_LINEUPS_ATL_NO_{ATL_NO_CONTEST}.csv' if s == 'ATL_NO' else f'UNIQUE_LINEUPS_{s}.csv')
     rows = [r for r in csv.DictReader(open(p)) if r['observed'] == '1']
     if not rows:
         raise LosoError(f'UNIQUE_LINEUPS_EMPTY {p}')
@@ -172,26 +174,54 @@ def _score(y, logpred):
             'top_decile_actual_over_pred': round(float(np.exp(y[top]).sum() / np.exp(logpred[top]).sum()), 4)}
 
 
+def _poisson(x, y_counts, iters=50):
+    """Poisson GLM, log link, copies ~ exp(a + b x), by IRLS. SC-DUPE-COUNT-1 (declared 2026-10-06 before ATL@NO
+    standings existed): the count-scale mean model, so exp(prediction) estimates a MEAN, not a median."""
+    X = np.column_stack([np.ones_like(x), x])
+    beta = np.array([np.log(y_counts.mean()), 0.0])
+    for _ in range(iters):
+        mu = np.exp(X @ beta)
+        z = X @ beta + (y_counts - mu) / mu
+        W = mu
+        beta_new = np.linalg.solve(X.T @ (W[:, None] * X), X.T @ (W * z))
+        if np.max(np.abs(beta_new - beta)) < 1e-10:
+            beta = beta_new
+            break
+        beta = beta_new
+    return beta
+
+
 def s2():
     data = {s: _lineups(s) for s in SLATES}
     folds = []
     for test in SLATES:
-        train = [s for s in SLATES if s != test][0]
-        yt, xt, _ = data[train]
+        train = [s for s in SLATES if s != test]
+        yt = np.concatenate([data[t][0] for t in train])
+        xt = np.concatenate([data[t][1] for t in train])
         b, a = np.polyfit(xt, yt, 1)
+        pa, pb = _poisson(xt, np.exp(yt))
         y, x, e1 = data[test]
         succ = _score(y, a + b * x)
+        pois = _score(y, pa + pb * x)
         cur = _score(y, np.log(np.maximum(e1, 1e-9)))
         folds.append({'held_out': test, 'fit_on': train, 'a': round(float(a), 4), 'b': round(float(b), 4),
-                      'n_test_lineups': int(len(y)), 'successor_fitted': succ, 'current_E1': cur})
+                      'poisson_a': round(float(pa), 4), 'poisson_b': round(float(pb), 4),
+                      'n_test_lineups': int(len(y)), 'successor_fitted': succ, 'SC_DUPE_COUNT_1_poisson': pois,
+                      'current_E1': cur})
     beats = {m: all(f['successor_fitted'][m] < f['current_E1'][m] for f in folds)
              for m in ('median_abs_log_err', 'mean_abs_log_err')}
     calib = {m: all(abs(np.log(f['successor_fitted'][m])) < abs(np.log(f['current_E1'][m])) for f in folds)
              for m in ('total_pred_over_actual', 'top_decile_actual_over_pred')}
+    sc1 = all(f['SC_DUPE_COUNT_1_poisson'][m] < f['current_E1'][m] for f in folds for m in ('median_abs_log_err', 'mean_abs_log_err')) \
+        and all(abs(np.log(f['SC_DUPE_COUNT_1_poisson'][m])) < abs(np.log(f['current_E1'][m]))
+                for f in folds for m in ('total_pred_over_actual', 'top_decile_actual_over_pred'))
     return {'folds': folds,
-            'verdict': {m: 'SUCCESSOR_BEATS_CURRENT_ON_BOTH_FOLDS' if v else 'NOT_DEMONSTRATED' for m, v in beats.items()},
+            'verdict': {m: 'SUCCESSOR_BEATS_CURRENT_ON_ALL_FOLDS' if v else 'NOT_DEMONSTRATED' for m, v in beats.items()},
+            'SC_DUPE_COUNT_1_verdict': ('BEATS E1 ON ALL FOLDS (abs log error AND mean-scale calibration) -- still SHADOW'
+                                        if sc1 else 'NOT_DEMONSTRATED'),
+            'SC_DUPE_COUNT_1_BAR': 'declared 2026-10-06 in ATL_NO_SUCCESSOR_CANDIDATES.json before these standings existed',
             'calibration_check_added_after_reading_folds': {
-                m: 'SUCCESSOR_CLOSER_TO_1_ON_BOTH_FOLDS' if v else 'SUCCESSOR_NOT_CLOSER' for m, v in calib.items()},
+                m: 'SUCCESSOR_CLOSER_TO_1_ON_ALL_FOLDS' if v else 'SUCCESSOR_NOT_CLOSER' for m, v in calib.items()},
             'OVERALL': ('MIXED -- NOT PROMOTION-GRADE. The declared metric (abs log error) favours the fitted mapping on both '
                         'folds, but it is a regression of log(copies), so exp(prediction) estimates a median, not a mean: it '
                         'under-predicts total copies by ~half and the most-duplicated decile by ~5x on both folds, where E1 is '
@@ -231,8 +261,8 @@ def s3(cal):
     SH = _atl_shadow_ratios()
     folds = []
     for test in SLATES:
-        train = [s for s in SLATES if s != test][0]
-        R = _ratios(P[train])
+        train = [s for s in SLATES if s != test]
+        R = _ratios([p for t in train for p in P[t]])
         ev = [p for p in P[test] if p['dk_flex_pct'] >= FLEX_FLOOR]
         pos = lambda p: 'KD' if p['position'] in ('K', 'DST') else p['position']
         mae = lambda ratio: round(float(np.mean([abs((ratio.get(pos(p)) or 0.0) * p['dk_flex_pct'] - p['dk_cpt_pct'])
@@ -245,19 +275,21 @@ def s3(cal):
     beats = {src: all(f['successor_other_slate_ratio_mae'] < f[f'current_shadow_{src}_ratio_mae'] for f in folds) for src in SH}
     return {'folds': folds,
             'current_shadow_ratios_ATL_NO': {k: {p: round(r, 4) for p, r in v.items() if r is not None} for k, v in SH.items()},
-            'verdict': {src: 'SUCCESSOR_BEATS_CURRENT_ON_BOTH_FOLDS' if b else 'NOT_DEMONSTRATED' for src, b in beats.items()},
+            'verdict': {src: 'SUCCESSOR_BEATS_CURRENT_ON_ALL_FOLDS' if b else 'NOT_DEMONSTRATED' for src, b in beats.items()},
             'ORACLE': 'FLEX ownership is the actual value; tests the CPT:FLEX structure only'}
 
 
 def run():
     cal = json.loads((HIST / 'SHOWDOWN_HISTORY_CALIBRATION.json').read_text())
+    blk = json.loads((HIST / 'ATL_NO_LOSO_BLOCKS.json').read_text())['contests'][ATL_NO_CONTEST]
+    cal['contests']['ATL_NO'] = blk
     doc = {'ARTIFACT': 'SHOWDOWN_FIELD_LOSO', 'LAYER': 'POSTGAME_DIAGNOSIS', 'STATUS': 'RESEARCH_ONLY_NOT_PROMOTED',
            'slates': {s: {'contest_id': cal['contests'][s]['contest_id'], 'raw_sha256': cal['contests'][s]['raw']['sha256']}
                       for s in SLATES},
-           'ATL_NO_FOLD': 'NOT_AVAILABLE -- full-field standings for 196285137/196285160/196285161 not in the repository '
-                          '(outbox request M1); the 2026-10-06 zip was the Sunday classic contest',
+           'ATL_NO_FOLD': (f'contest {ATL_NO_CONTEST} (20-max, the archived slates\' contest type); the 150-max and 2-entry '
+                           'are reported per contest in ATL_NO_FIELD_ACTUAL_PREREGISTERED.json. Three slates = three folds.'),
            'FALSIFIED_ANCHORS_NOT_USED': ['FC-08 (90% >= $49,500)', 'FC-09 (80% exactly $50,000)', 'CPT = 0.5 x FLEX'],
-           'DECISION_RULE': 'successor beats current only with the lower metric on BOTH held-out folds; never a promotion',
+           'DECISION_RULE': 'successor beats current only with the lower metric on EVERY held-out fold; never a promotion',
            'S1_shape_prior': s1(cal), 'S2_dupe_mapping': s2(), 'S3_cpt_flex_ratio': s3(cal),
            'written_at': dt.datetime.now(dt.timezone.utc).isoformat()}
     p = OUT / 'SHOWDOWN_FIELD_LOSO.json'

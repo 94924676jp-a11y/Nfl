@@ -3961,3 +3961,10 @@ DOWNSTREAM COMPARISON ONLY: nothing from the board touches the football model or
 - **Hard Rock ATL@NO board (request 2026-10-05 23:50Z)**: nothing was pushed; the branch had no new commits on
   2026-10-06. Recorded as `NO_VALID_PRELOCK_MARKET_CAPTURE` (ATL_NO_HARD_ROCK_STATUS.json). Do NOT backfill historical
   prices for this game. For the next Showdown: capture the board after the prop seal and before kickoff, as requested.
+
+## FULFILLED 2026-10-06 — M1 ATL@NO standings received
+
+The owner uploaded full-field standings for 196285137, 196285160 and 196285161 on 2026-10-06. Preserved content-addressed
+under nfl/postgame/raw/showdown_history/<cid>_ATL_NO/ (PROVENANCE.jsonl, sha256 of the uncompressed CSV). All five
+pre-registered measurements are scored in nfl/postgame/showdown_atl_no_2026W4/ATL_NO_FIELD_ACTUAL_PREREGISTERED.json.
+M2 (contests we did not enter) remains open and optional.
