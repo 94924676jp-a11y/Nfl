@@ -2330,3 +2330,30 @@ candidate needing its own freeze.
 `Q9B_PREREGISTRATION.md`, `Q9_FALLBACK_AUDIT.json`,
 `Q9_PRODUCTION_PARITY.json`, `Q9_PROSPECTIVE_FREEZE.json`.
 
+
+## 2026-10-07 — Owner ruling after the external gap-audit reconciliation
+
+Recorded from the owner's message of 2026-10-07 (OWNER_DECISIONS.md is propose-only for agents; this ledger records
+the ruling and the proposed OWNER_DECISIONS entry is the text below).
+
+- **Production change approved: the automatic specialist detector stays ON** (`showdown_slate_state.specialist_class`,
+  `SPECIALIST_AUTO` default on). Reason given: it preserved the ATL@NO output exactly and closes a real
+  role-contamination risk. **No other production promotion is authorized.**
+- The reconciliation `docs/NFL_GAP_AUDIT_RECONCILIATION_2026-10-07.md` is the source of truth.
+- The old SC-COH-1 result is development evidence only (market-matched candidate, outcome-derived pool; the clean
+  evaluation failed 3 of 4 pre-registered endpoints).
+- SC-APPEAR-1 stays shadow-only until validated end to end on the actual simulation path and then prospectively;
+  the gate alone is not to be plumbed through.
+- B4 / B3S: prelock sealed shadow reports only; never influence lineup selection; corrected copy-count semantics.
+- SC-OWN-ROTATION-1 is registered FAILED; a successor only after a new pre-registered design and bar
+  (declared: `docs/NFL_SHOWDOWN_OWNERSHIP_SUCCESSOR_2_PREREGISTRATION.md`).
+- Portfolio objective unchanged (coverage) until real payout tables, ownership stress testing, self-competition
+  handling and stronger field evidence exist.
+- Pre-existing suite defects are a remediation backlog and do not block next-slate readiness when the live path is
+  certified and fail-closed.
+- Priorities: (1) event-linked football-world coherence, no post-hoc correlation tuning; (2) appearance successor
+  (rates + gate) with zero mass proven in the simulated worlds, shadow-only; (3) B4/B3S evidence accumulation;
+  (4) ownership successor only after pre-registration; (5) suite backlog; (6) no objective change; (7) next Showdown
+  via the generic runner.
+
+Status register: `nfl/research/registry/CANDIDATE_STATUS_REGISTER.json`.
