@@ -43,6 +43,7 @@ from __future__ import annotations
 import collections
 import datetime as dt
 import json
+import os
 import pathlib
 import sys
 
@@ -201,6 +202,36 @@ def _starter_context(name, club, confirmed):
     }
 
 
+#: SPECIALIST SAFETY (owner directive 2026-10-07, item 6). A DraftKings skill-position listing is not evidence of an
+#: offensive role: DK lists long snappers as TE (NO Cal Adomitis, Zach Wood, 2026-10-05). Until now only a hand
+#: designation kept such a player out of the projection. Two independent signals now do it automatically:
+#: the ROSTER position (nflverse rosters, player_prior.position_index) and the CAPTURED depth chart's slots.
+SPECIALIST_ROSTER_POSITIONS = frozenset({'LS', 'P', 'K'})
+SPECIALIST_CHART_SLOTS = frozenset({'LS', 'P', 'PK', 'K', 'H'})
+RETURN_CHART_SLOTS = frozenset({'KR', 'PR'})
+SKILL_POSITIONS = frozenset({'QB', 'RB', 'WR', 'TE'})
+#: measurement-only kill switch; production leaves it on
+SPECIALIST_AUTO = os.environ.get('SPECIALIST_AUTO', '1') != '0'
+
+
+def specialist_class(dk_position, roster_position, chart_slots):
+    """('SPECIALIST', reason) -> no offensive role, excluded automatically; ('RETURNER_ONLY_REVIEW', reason) -> listed
+    for review, NOT excluded (a returner can take gadget snaps); (None, None) otherwise. chart_slots is the set of
+    slot abbreviations the captured chart lists for the player at its latest snapshot, or None if the chart does not
+    list him."""
+    if dk_position not in SKILL_POSITIONS:
+        return None, None
+    if roster_position in SPECIALIST_ROSTER_POSITIONS:
+        return 'SPECIALIST', f'ROSTER_POSITION_{roster_position}'
+    if chart_slots:
+        slots = set(chart_slots)
+        if slots & SPECIALIST_CHART_SLOTS and slots <= (SPECIALIST_CHART_SLOTS | RETURN_CHART_SLOTS):
+            return 'SPECIALIST', 'CHART_SLOTS_' + '_'.join(sorted(slots))
+        if slots <= RETURN_CHART_SLOTS:
+            return 'RETURNER_ONLY_REVIEW', 'CHART_SLOTS_' + '_'.join(sorted(slots))
+    return None, None
+
+
 def chart_from_capture(csv_path, clubs, capture_id):
     """A depth chart in classic_slate_state.captured_qb_depth's own shape, from a captured nflverse
     depth_charts CSV (latest dt per club). Read-only; the file is hashed in the raw directory."""
@@ -220,8 +251,13 @@ def chart_from_capture(csv_path, clubs, capture_id):
                     seen.add(r['gsis_id'])
                     o.append(r['gsis_id'])
             return o
+        slots = collections.defaultdict(set)
+        for r in cr:
+            if r['dt'] == last and r.get('pos_abb'):
+                slots[r['gsis_id']].add(r['pos_abb'])
         out[club] = {'order': order('QB'), 'by_pos': {p_: order(p_) for p_ in ('RB', 'WR', 'TE')},
-                     'dt': last, 'capture_id': capture_id}
+                     'dt': last, 'capture_id': capture_id,
+                     'slots_by_gsis': {g: sorted(v) for g, v in slots.items()}}
     return out
 
 
@@ -337,6 +373,7 @@ def build(export, *, designations=None, official_inactives=None,
     _out_gsis.discard(None)
 
     players, status_counts = {}, collections.Counter()
+    specialists, returner_review = {}, {}
     for dk_id, p in flat.items():
         nm = p['name']
         if nm in officials:
@@ -355,6 +392,17 @@ def build(export, *, designations=None, official_inactives=None,
             tier = AV.TIER_ROSTER_POSITION if desig[nm] == 'NO_OFFENSIVE_ROLE' else AV.TIER_OFFICIAL_RELEASE_CITED
         else:
             status, tier = AV.UNKNOWN_ACTIVE_STATE, AV.TIER_NONE
+        _g = (ids.get(dk_id) or {}).get('gsis_id') if p['position'] != 'DST' else None
+        _slots = ((depth_chart or {}).get(p['team'], {}).get('slots_by_gsis') or {}).get(_g) if _g else None
+        _cls, _why = specialist_class(p['position'], pos_of.get(_g) if _g else None, _slots)
+        if _cls == 'SPECIALIST':
+            specialists[nm] = {'team': p['team'], 'dk_position': p['position'], 'reason': _why,
+                               'roster_position': pos_of.get(_g), 'chart_slots': _slots,
+                               'prior_status': status, 'applied': SPECIALIST_AUTO and status not in AV.ABSENT_STATUSES}
+            if SPECIALIST_AUTO and status not in AV.ABSENT_STATUSES:
+                status, tier = AV.NO_OFFENSIVE_ROLE, AV.TIER_ROSTER_POSITION
+        elif _cls == 'RETURNER_ONLY_REVIEW':
+            returner_review[nm] = {'team': p['team'], 'dk_position': p['position'], 'reason': _why}
         status_counts[status] += 1
         v = slate['players'][S.player_key(nm, p['team'])]
         rec = ids.get(dk_id) or {}
@@ -442,6 +490,14 @@ def build(export, *, designations=None, official_inactives=None,
                                         'UNKNOWN_ACTIVE_STATE, not active. Reading silence as '
                                         'activity would activate the slate on no evidence.'),
             'designations_not_matched_to_the_slate': unmatched_desig,
+        },
+        'specialist_safety': {
+            'auto_enabled': SPECIALIST_AUTO,
+            'specialists_detected': specialists,
+            'returner_only_review': returner_review,
+            'RULE': ('a DK skill-position player whose roster position is LS/P/K, or whose captured chart slots are all '
+                     'special-teams specialist slots, is NO_OFFENSIVE_ROLE automatically; a returner-only listing is '
+                     'reported for review and NOT excluded'),
         },
         'WHAT_IS_MODELLED_HERE': 'nothing. This is a state artifact; every value is read or supplied.',
     }

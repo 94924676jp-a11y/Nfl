@@ -14,8 +14,9 @@ finding it, with the defect id, so it cannot be mistaken for a pass of the claim
   TE    Delp/Welch replay: chart-ranked TE sorts ahead of an unranked TE with a 10x larger claim
   ORDER allocator ordering is rank-first for RB, WR and TE (not only QB)
   K/DST sealed v2: team-unit rows carry no skill volume
-  LS    DEFECT-SPECIALIST-AUTO: a DK-listed TE whose captured chart rows are ALL special-teams slots (LS) reaches
-        the skill allocator unless hand-designated. The detector must flag Cal Adomitis on the captured chart.
+  LS    DEFECT-SPECIALIST-AUTO (FIXED 2026-10-07): a DK skill player whose roster position is LS/P/K or whose captured
+        chart slots are all specialist slots is NO_OFFENSIVE_ROLE automatically (showdown_slate_state.specialist_class);
+        tested across role families and end to end on the real ATL@NO inputs with the hand tag removed.
 """
 from __future__ import annotations
 
@@ -159,15 +160,58 @@ def test_specialist_detector():
     skill = {(r['player'], r['team']) for r in proj if r['pos'] in ('RB', 'WR', 'TE')}
     found = specialist_candidates(CHART, skill)
     names = {f['player'] for f in found}
-    check('Cal Adomitis' in names, f'DEFECT-SPECIALIST-AUTO detector flags Cal Adomitis (chart slots LS only): {found}')
-    src = (_REPO / 'nfl/tools/showdown_slate_state.py').read_text()
-    auto = 'specialist_candidates' in src or 'OFFENSIVE_GROUPS_PREFIX' in src
-    print(f'  info DEFECT-SPECIALIST-AUTO status: {"AUTOMATED" if auto else "OPEN -- NO_OFFENSIVE_ROLE comes only from hand designations"}')
+    check('Cal Adomitis' in names, f'chart-only detector flags Cal Adomitis (chart slots LS only): {found}')
+
+
+def test_specialist_class_role_families():
+    from nfl.tools import showdown_slate_state as SSS
+    c = SSS.specialist_class
+    cases = [  # (dk_pos, roster_pos, chart_slots) -> expected class
+        (('TE', 'LS', ['LS']), 'SPECIALIST'), (('TE', 'TE', ['LS']), 'SPECIALIST'),       # long snapper listed as TE
+        (('TE', 'LS', None), 'SPECIALIST'),                                                # roster says LS, no chart row
+        (('WR', 'P', ['P', 'H']), 'SPECIALIST'), (('QB', 'K', ['PK']), 'SPECIALIST'),     # punter / kicker as skill
+        (('RB', 'RB', ['KR']), 'RETURNER_ONLY_REVIEW'), (('WR', 'WR', ['KR', 'PR']), 'RETURNER_ONLY_REVIEW'),
+        (('WR', 'WR', ['WR', 'PR']), None), (('RB', 'RB', ['RB', 'KR']), None),           # offensive + return
+        (('QB', 'QB', ['QB', 'H']), None),                                                 # QB who holds
+        (('TE', 'TE', ['TE', 'LS']), None),                                                # dual-role TE stays
+        (('QB', 'QB', ['QB']), None), (('TE', 'TE', ['TE']), None), (('RB', 'RB', None), None),
+        (('K', 'K', ['PK']), None), (('DST', None, None), None),                           # not skill positions
+    ]
+    bad = [(a, e, c(*a)[0]) for a, e in cases if c(*a)[0] != e]
+    check(not bad, f'specialist_class across {len(cases)} role-family cases ({bad or "all correct"})')
+
+
+def test_specialist_auto_in_state_builder():
+    """End to end on the real ATL@NO inputs: remove the HAND designation for Cal Adomitis and the builder must still
+    make him NO_OFFENSIVE_ROLE from the roster position and chart; real skill players must be untouched."""
+    from nfl.tools import showdown_slate_state as SSS
+    from nfl.tools import availability as AV
+    R = _REPO / 'nfl/dfs/salaries/raw/showdown_atl_no_2026W4'
+    D = _REPO / 'nfl/dfs/salaries/showdown_atl_no'
+    des = json.loads((D / 'DESIGNATIONS_ATL_NO_2026W4_V4_RW_INACTIVES_CHARTFIX.json').read_text())
+    des.pop('Cal Adomitis', None)
+    chart = SSS.chart_from_capture(R / 'depth_charts_2026_ATL_NO.1e6aa6437a6ae01b.csv', ['ATL', 'NO'], 'TEST')
+    o = SSS.build(R / 'DKEntries_ATL_NO_SHOWDOWN_2026W4.fd0c1faa2271ca66.csv', designations=des,
+                  official_inactives=json.loads((R / 'OFFICIAL_INACTIVES_ATL_NO_2026W4.json').read_text()),
+                  confirmed_starters=json.loads((D / 'STARTERS_ATL_NO_2026W4.json').read_text()), depth_chart=chart)
+    check(o.state.value == 'PASS', f'state builds ({o.state.value} {getattr(o, "code", "")})')
+    if o.state.value != 'PASS':
+        return
+    st = o.value
+    by = {v['name']: v for v in st['players'].values()}
+    ad = by['Cal Adomitis']['current_availability']['status']
+    check(ad == AV.NO_OFFENSIVE_ROLE, f'Adomitis auto NO_OFFENSIVE_ROLE without a hand tag (got {ad})')
+    sp = st['specialist_safety']['specialists_detected']
+    check(set(sp) >= {'Cal Adomitis'} and all(v['dk_position'] in ('QB', 'RB', 'WR', 'TE') for v in sp.values()),
+          f"detected: {sorted(sp)}")
+    for nm in ('Juwan Johnson', 'Oscar Delp', 'Treyton Welch', 'Kyle Pitts Sr.', 'Brian Robinson Jr.', 'Bryce Lance'):
+        s_ = by[nm]['current_availability']['status']
+        check(s_ != AV.NO_OFFENSIVE_ROLE, f'{nm} not touched by the detector ({s_})')
 
 
 if __name__ == '__main__':
     for t in (test_qb, test_rb, test_wr, test_te_delp_welch_replay, test_rank_first_all_positions, test_sealed_v2,
-              test_specialist_detector):
+              test_specialist_detector, test_specialist_class_role_families, test_specialist_auto_in_state_builder):
         print(t.__name__)
         t()
     print(f'{P} passed, {F} failed')

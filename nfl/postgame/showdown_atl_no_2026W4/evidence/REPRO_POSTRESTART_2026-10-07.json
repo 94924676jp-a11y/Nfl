@@ -1,0 +1,57 @@
+{
+ "ARTIFACT": "REPRO_POSTRESTART",
+ "date": "2026-10-07",
+ "QUESTION": "after a container reset (derived cache, numpy and the clone lost), does the live Showdown pipeline rebuild and reproduce the frozen ATL@NO v2 upload byte for byte, with the automatic specialist detector on?",
+ "environment": {
+  "derived_cache": "rebuilt by nfl/tools/rebuild_derived.sh; rebuilt a second time from an EMPTY cache and every static artifact matched nfl/production/DERIVED_REBUILD_MANIFEST.json",
+  "numpy_pandas": "pip --target into a scratch PYLIB, on PYTHONPATH"
+ },
+ "reference": {
+  "scenario": "CHARTFIX_REPRO (= RW_INACTIVES_CHARTFIX, the v2 run)",
+  "sha256": {
+   "SHOWDOWN_ATL_NO_DK_UPLOAD.csv": "8f4d9a77f37957ab44b116ebc35a950a601fb2a2d39f1d8823f7fd847c6931d5",
+   "SHOWDOWN_ATL_NO_DK_UPLOAD_196285137.csv": "4047a1895c3dec8dbe22da5bb2386c06558e39ddc1c2d5a78f5e9c236ab7e002",
+   "SHOWDOWN_ATL_NO_DK_UPLOAD_196285160.csv": "17e397b48d5944aa3ce6113eab64818285ac42355f49c0963e53f7fd40501f1f",
+   "SHOWDOWN_ATL_NO_DK_UPLOAD_196285161.csv": "a30f529fbca23633b5bc4b73a8bfd2b39c7995cbf051e8856fbe1321d7ac1612",
+   "SHOWDOWN_ATL_NO_2026W4_DRAWS.json": "43d6938e0b65c8a18ddca3613ce16223751e621412074f5408ae82332bcbf7a0"
+  }
+ },
+ "runs": {
+  "REPRO_SPECAUTO": {
+   "designations": "DESIGNATIONS_ATL_NO_2026W4_V4_RW_INACTIVES_CHARTFIX.json (Adomitis hand-tagged)",
+   "sha256": {
+    "SHOWDOWN_ATL_NO_DK_UPLOAD.csv": "8f4d9a77f37957ab44b116ebc35a950a601fb2a2d39f1d8823f7fd847c6931d5",
+    "SHOWDOWN_ATL_NO_DK_UPLOAD_196285137.csv": "4047a1895c3dec8dbe22da5bb2386c06558e39ddc1c2d5a78f5e9c236ab7e002",
+    "SHOWDOWN_ATL_NO_DK_UPLOAD_196285160.csv": "17e397b48d5944aa3ce6113eab64818285ac42355f49c0963e53f7fd40501f1f",
+    "SHOWDOWN_ATL_NO_DK_UPLOAD_196285161.csv": "a30f529fbca23633b5bc4b73a8bfd2b39c7995cbf051e8856fbe1321d7ac1612",
+    "SHOWDOWN_ATL_NO_2026W4_DRAWS.json": "cad9338d48096ebc4028efdbbf60b531e9d69ef0a36db3c350536ae6db08ed61"
+   },
+   "specialists_detected": {
+    "Zach Wood": false,
+    "Cal Adomitis": false
+   },
+   "uploads_byte_identical": true,
+   "draws_file_byte_identical": false
+  },
+  "REPRO_SPECAUTO_NOTAG": {
+   "designations": "the same file with the Cal Adomitis NO_OFFENSIVE_ROLE hand tag REMOVED",
+   "sha256": {
+    "SHOWDOWN_ATL_NO_DK_UPLOAD.csv": "8f4d9a77f37957ab44b116ebc35a950a601fb2a2d39f1d8823f7fd847c6931d5",
+    "SHOWDOWN_ATL_NO_DK_UPLOAD_196285137.csv": "4047a1895c3dec8dbe22da5bb2386c06558e39ddc1c2d5a78f5e9c236ab7e002",
+    "SHOWDOWN_ATL_NO_DK_UPLOAD_196285160.csv": "17e397b48d5944aa3ce6113eab64818285ac42355f49c0963e53f7fd40501f1f",
+    "SHOWDOWN_ATL_NO_DK_UPLOAD_196285161.csv": "a30f529fbca23633b5bc4b73a8bfd2b39c7995cbf051e8856fbe1321d7ac1612",
+    "SHOWDOWN_ATL_NO_2026W4_DRAWS.json": "2bc4a24d0d4ddfb82f83e22affce5673b7e170dd6fabe0a03e50d8d756fcc4c4"
+   },
+   "specialists_detected": {
+    "Zach Wood": false,
+    "Cal Adomitis": true
+   },
+   "uploads_byte_identical": true,
+   "draws_file_byte_identical": false,
+   "draws_equal_except_state_sha256": true
+  }
+ },
+ "VERDICT": "PASS: every upload file is byte-identical to the frozen v2 run in both runs, and the draws are identical except the state-hash pointer. Without the hand tag the detector applied NO_OFFENSIVE_ROLE to Adomitis itself (Wood was already OUT: detected, not applied), so the specialist exclusion no longer depends on a manual tag, and it changed no output on this slate.",
+ "common_args": "--official-inactives ROTOWIRE_INACTIVES_ATL_NO_2026W4.json --confirmed-starters STARTERS_ATL_NO_2026W4.json --starter-tier PUBLIC_DEPTH_CHART_AND_SNAPS_CITED --depth-chart depth_charts_2026_ATL_NO.1e6aa6437a6ae01b.csv, seed and n_sims as SCENARIO.json",
+ "DRAWS_FILE_NOTE": "the draws file embeds the sha256 of the slate state it was drawn from; the state now carries the specialist_safety block (and, without the hand tag, Adomitis's status comes from the detector), so that one provenance field differs. Every other field, every draw included, is identical (checked on REPRO_SPECAUTO_NOTAG, whose directory is kept)."
+}
