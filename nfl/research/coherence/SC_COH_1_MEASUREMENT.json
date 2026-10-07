@@ -1,0 +1,1280 @@
+{
+ "ARTIFACT": "SC_COH_1_MEASUREMENT",
+ "STATUS": "SHADOW_ONLY",
+ "LAYER": "RESEARCH",
+ "evaluation": {
+  "season": 2025,
+  "weeks": "2-18",
+  "n_games": 256,
+  "n_team_games": 512,
+  "n_worlds_per_game": 400,
+  "sim_seed": 20261007,
+  "n_boot": 1000,
+  "boot_seed": 20261007
+ },
+ "sources": {
+  "pbp_eval": {
+   "file": "nfl/research/postgame/pbp_2025.2f135887790a013f.csv.gz",
+   "sha256": "2f135887790a013fd004e609e37096bb4816d5cc80b9f19122e1bad478961978"
+  },
+  "snaps_eval": {
+   "file": "nfl/postgame/raw/role_audit_history/snap_counts_2025.3fc2deb0e9ad86d3.csv.gz",
+   "sha256": "09d95b97772f2775984cdd2d91de4742b6f0ca452aa615c69830477b1f919c18"
+  },
+  "crosswalk": {
+   "file": "nfl/postgame/raw/role_audit_history/players_crosswalk.bea61fc25c863150.csv.gz",
+   "sha256": "1ac351dbd053b33bab5a2675af1cabed1c3125c2f95595893438a7119b2f486f"
+  },
+  "incumbent_inputs": {
+   "nfl/sim/SHARED_STATE.json": "440b1e28f9060153f82a720b4ef73c9b60484d58aaa0145fec1c3219965d7d58",
+   "nfl/sim/EFFICIENCY.json": "43c2067cb4e2f5d82a20d36e3aa5471e1bfef8e30facad35738fa93b3db03342",
+   "nfl/sim/VARIANCE_COMPONENTS.json": "fed8e75ff6e47ec26a9217326be4ebd0d3829da1d39bd875337cd0cb3db94b33",
+   "nfl/sim/USAGE_MODEL.json": "43b47f3fb4e6b0495debfd2c804c8dc4533d772dcf3c1664dcbea0a932a8cbc6"
+  }
+ },
+ "INCUMBENT_HELDOUT_CAVEAT": "the incumbent inputs SHARED_STATE (2000-2026) and EFFICIENCY (PLAYER_GAME 2021-2026) include 2025 games, so the incumbent is NOT out of sample on these games; any gap is measured despite that advantage",
+ "statistics": {
+  "team_dk_vs_team_points": {
+   "meaning": "corr(team offensive DK core, team points)",
+   "kind": "corr",
+   "history": {
+    "value": 0.7575,
+    "n_team_games": 512,
+    "n_games": 256,
+    "ci95_game_block": [
+     0.718,
+     0.7961
+    ]
+   },
+   "incumbent": {
+    "value": 0.5745,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     0.5704,
+     0.5789
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.2204,
+     -0.1432
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.2201,
+     -0.1398
+    ],
+    "gap_sim_minus_history": -0.183,
+    "gap_interval_excludes_zero_game_block": true
+   },
+   "candidate": {
+    "value": 0.749,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     0.7411,
+     0.7569
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.047,
+     0.0303
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.0448,
+     0.0346
+    ],
+    "gap_sim_minus_history": -0.0085,
+    "gap_interval_excludes_zero_game_block": false
+   }
+  },
+  "team_dk_vs_team_off_td": {
+   "meaning": "corr(team offensive DK core, team offensive TDs)",
+   "kind": "corr",
+   "history": {
+    "value": 0.8151,
+    "n_team_games": 512,
+    "n_games": 256,
+    "ci95_game_block": [
+     0.7865,
+     0.8401
+    ]
+   },
+   "incumbent": {
+    "value": 0.6474,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     0.6441,
+     0.6509
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.1925,
+     -0.1396
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.1962,
+     -0.135
+    ],
+    "gap_sim_minus_history": -0.1677,
+    "gap_interval_excludes_zero_game_block": true
+   },
+   "candidate": {
+    "value": 0.7999,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     0.7937,
+     0.8056
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.0414,
+     0.0134
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.0427,
+     0.0174
+    ],
+    "gap_sim_minus_history": -0.0152,
+    "gap_interval_excludes_zero_game_block": false
+   }
+  },
+  "yards_per_extra_td": {
+   "meaning": "OLS slope of team scrimmage yards on team offensive TDs",
+   "kind": "slope",
+   "history": {
+    "value": 35.3323,
+    "n_team_games": 512,
+    "n_games": 256,
+    "ci95_game_block": [
+     31.3187,
+     39.5841
+    ]
+   },
+   "incumbent": {
+    "value": 2.9434,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     2.6804,
+     3.2009
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -36.5706,
+     -28.4583
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -36.7433,
+     -27.5007
+    ],
+    "gap_sim_minus_history": -32.3889,
+    "gap_interval_excludes_zero_game_block": true
+   },
+   "candidate": {
+    "value": 34.4526,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     33.5956,
+     35.3121
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -5.3575,
+     3.3278
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -5.17,
+     3.9309
+    ],
+    "gap_sim_minus_history": -0.8797,
+    "gap_interval_excludes_zero_game_block": false
+   }
+  },
+  "pass_yards_vs_pass_td": {
+   "meaning": "corr(team passing yards, team passing TDs)",
+   "kind": "corr",
+   "history": {
+    "value": 0.4867,
+    "n_team_games": 512,
+    "n_games": 256,
+    "ci95_game_block": [
+     0.4219,
+     0.5489
+    ]
+   },
+   "incumbent": {
+    "value": -0.0548,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     -0.0602,
+     -0.0495
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.6047,
+     -0.4778
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.591,
+     -0.4852
+    ],
+    "gap_sim_minus_history": -0.5415,
+    "gap_interval_excludes_zero_game_block": true
+   },
+   "candidate": {
+    "value": 0.4782,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     0.4634,
+     0.4919
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.0713,
+     0.0565
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.0602,
+     0.0435
+    ],
+    "gap_sim_minus_history": -0.0085,
+    "gap_interval_excludes_zero_game_block": false
+   }
+  },
+  "qb_wr1": {
+   "meaning": "QB vs WR1 DK",
+   "kind": "corr",
+   "history": {
+    "value": 0.2929,
+    "n_team_games": 512,
+    "n_games": 256,
+    "ci95_game_block": [
+     0.2051,
+     0.3752
+    ]
+   },
+   "incumbent": {
+    "value": 0.3342,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     0.3149,
+     0.3533
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.0435,
+     0.1309
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.0325,
+     0.1134
+    ],
+    "gap_sim_minus_history": 0.0413,
+    "gap_interval_excludes_zero_game_block": false
+   },
+   "candidate": {
+    "value": 0.3417,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     0.3251,
+     0.3595
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.036,
+     0.1374
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.03,
+     0.1179
+    ],
+    "gap_sim_minus_history": 0.0488,
+    "gap_interval_excludes_zero_game_block": false
+   }
+  },
+  "qb_wr2": {
+   "meaning": "QB vs WR2 DK",
+   "kind": "corr",
+   "history": {
+    "value": 0.3222,
+    "n_team_games": 512,
+    "n_games": 256,
+    "ci95_game_block": [
+     0.2395,
+     0.4002
+    ]
+   },
+   "incumbent": {
+    "value": 0.3112,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     0.2957,
+     0.3281
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.0893,
+     0.071
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.0818,
+     0.0589
+    ],
+    "gap_sim_minus_history": -0.011,
+    "gap_interval_excludes_zero_game_block": false
+   },
+   "candidate": {
+    "value": 0.3008,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     0.2863,
+     0.3162
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.0993,
+     0.0626
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.0935,
+     0.0478
+    ],
+    "gap_sim_minus_history": -0.0214,
+    "gap_interval_excludes_zero_game_block": false
+   }
+  },
+  "qb_te1": {
+   "meaning": "QB vs TE1 DK",
+   "kind": "corr",
+   "history": {
+    "value": 0.3031,
+    "n_team_games": 511,
+    "n_games": 256,
+    "ci95_game_block": [
+     0.2243,
+     0.378
+    ]
+   },
+   "incumbent": {
+    "value": 0.2274,
+    "n_rows": 204400,
+    "ci95_game_block": [
+     0.2049,
+     0.2502
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.1536,
+     0.0007
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.1464,
+     -0.0105
+    ],
+    "gap_sim_minus_history": -0.0757,
+    "gap_interval_excludes_zero_game_block": false
+   },
+   "candidate": {
+    "value": 0.2179,
+    "n_rows": 204400,
+    "ci95_game_block": [
+     0.1945,
+     0.239
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.1651,
+     -0.0084
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.1561,
+     -0.0177
+    ],
+    "gap_sim_minus_history": -0.0852,
+    "gap_interval_excludes_zero_game_block": true
+   }
+  },
+  "wr1_wr2": {
+   "meaning": "WR1 vs WR2 DK",
+   "kind": "corr",
+   "history": {
+    "value": 0.0783,
+    "n_team_games": 512,
+    "n_games": 256,
+    "ci95_game_block": [
+     -0.0238,
+     0.1768
+    ]
+   },
+   "incumbent": {
+    "value": 0.0755,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     0.0484,
+     0.1015
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.1053,
+     0.0984
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.1152,
+     0.1041
+    ],
+    "gap_sim_minus_history": -0.0028,
+    "gap_interval_excludes_zero_game_block": false
+   },
+   "candidate": {
+    "value": 0.0014,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     -0.0192,
+     0.022
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.1756,
+     0.0182
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.186,
+     0.0279
+    ],
+    "gap_sim_minus_history": -0.0769,
+    "gap_interval_excludes_zero_game_block": false
+   }
+  },
+  "qb_rb1": {
+   "meaning": "QB vs RB1 DK",
+   "kind": "corr",
+   "history": {
+    "value": 0.0484,
+    "n_team_games": 512,
+    "n_games": 256,
+    "ci95_game_block": [
+     -0.0369,
+     0.1345
+    ]
+   },
+   "incumbent": {
+    "value": 0.1065,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     0.0825,
+     0.1301
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.0282,
+     0.1417
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.0475,
+     0.1472
+    ],
+    "gap_sim_minus_history": 0.0581,
+    "gap_interval_excludes_zero_game_block": false
+   },
+   "candidate": {
+    "value": 0.0265,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     0.0039,
+     0.0489
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.1047,
+     0.0617
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.1231,
+     0.0627
+    ],
+    "gap_sim_minus_history": -0.0219,
+    "gap_interval_excludes_zero_game_block": false
+   }
+  },
+  "rb1_own_dst": {
+   "meaning": "RB1 vs own DST DK",
+   "kind": "corr",
+   "history": {
+    "value": 0.0215,
+    "n_team_games": 512,
+    "n_games": 256,
+    "ci95_game_block": [
+     -0.0578,
+     0.1017
+    ]
+   },
+   "incumbent": {
+    "value": 0.0072,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     -0.0055,
+     0.0198
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.0943,
+     0.0655
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.0804,
+     0.0391
+    ],
+    "gap_sim_minus_history": -0.0143,
+    "gap_interval_excludes_zero_game_block": false
+   },
+   "candidate": {
+    "value": 0.049,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     0.0333,
+     0.0651
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.0506,
+     0.1072
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.0344,
+     0.0801
+    ],
+    "gap_sim_minus_history": 0.0275,
+    "gap_interval_excludes_zero_game_block": false
+   }
+  },
+  "rb1_opp_qb": {
+   "meaning": "RB1 vs opposing QB DK",
+   "kind": "corr",
+   "history": {
+    "value": 0.1389,
+    "n_team_games": 512,
+    "n_games": 256,
+    "ci95_game_block": [
+     0.0463,
+     0.2309
+    ]
+   },
+   "incumbent": {
+    "value": 0.0346,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     0.0141,
+     0.0537
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.1915,
+     -0.0134
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.1763,
+     -0.0255
+    ],
+    "gap_sim_minus_history": -0.1043,
+    "gap_interval_excludes_zero_game_block": true
+   },
+   "candidate": {
+    "value": 0.0348,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     0.0118,
+     0.0554
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.1907,
+     -0.0148
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.1749,
+     -0.0265
+    ],
+    "gap_sim_minus_history": -0.1041,
+    "gap_interval_excludes_zero_game_block": true
+   }
+  },
+  "qb_opp_qb": {
+   "meaning": "QB vs opposing QB DK (each game counted in both orientations)",
+   "kind": "corr",
+   "history": {
+    "value": 0.1852,
+    "n_team_games": 512,
+    "n_games": 256,
+    "ci95_game_block": [
+     0.0604,
+     0.2907
+    ]
+   },
+   "incumbent": {
+    "value": 0.084,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     0.0643,
+     0.1035
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.2069,
+     0.0201
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.1996,
+     0.008
+    ],
+    "gap_sim_minus_history": -0.1012,
+    "gap_interval_excludes_zero_game_block": false
+   },
+   "candidate": {
+    "value": 0.1325,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     0.101,
+     0.1634
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.1625,
+     0.0703
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.1581,
+     0.0557
+    ],
+    "gap_sim_minus_history": -0.0527,
+    "gap_interval_excludes_zero_game_block": false
+   }
+  },
+  "qb_opp_dst": {
+   "meaning": "QB vs opposing DST DK",
+   "kind": "corr",
+   "history": {
+    "value": -0.3578,
+    "n_team_games": 512,
+    "n_games": 256,
+    "ci95_game_block": [
+     -0.4299,
+     -0.281
+    ]
+   },
+   "incumbent": {
+    "value": -0.387,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     -0.3952,
+     -0.378
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.105,
+     0.0402
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.1065,
+     0.0537
+    ],
+    "gap_sim_minus_history": -0.0292,
+    "gap_interval_excludes_zero_game_block": false
+   },
+   "candidate": {
+    "value": -0.3612,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     -0.3755,
+     -0.3464
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.0779,
+     0.0661
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.0845,
+     0.0807
+    ],
+    "gap_sim_minus_history": -0.0034,
+    "gap_interval_excludes_zero_game_block": false
+   }
+  },
+  "team_dk_vs_opp_team_dk": {
+   "meaning": "team offensive DK vs opponent offensive DK",
+   "kind": "corr",
+   "history": {
+    "value": 0.2064,
+    "n_team_games": 512,
+    "n_games": 256,
+    "ci95_game_block": [
+     0.0736,
+     0.3258
+    ]
+   },
+   "incumbent": {
+    "value": 0.1682,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     0.1592,
+     0.1768
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.1564,
+     0.0961
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.1231,
+     0.0561
+    ],
+    "gap_sim_minus_history": -0.0382,
+    "gap_interval_excludes_zero_game_block": false
+   },
+   "candidate": {
+    "value": 0.1607,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     0.1258,
+     0.193
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.1612,
+     0.0844
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.1216,
+     0.0341
+    ],
+    "gap_sim_minus_history": -0.0457,
+    "gap_interval_excludes_zero_game_block": false
+   }
+  },
+  "team_points_vs_opp_points": {
+   "meaning": "team points vs opponent points",
+   "kind": "corr",
+   "history": {
+    "value": -0.0592,
+    "n_team_games": 512,
+    "n_games": 256,
+    "ci95_game_block": [
+     -0.1845,
+     0.0607
+    ]
+   },
+   "incumbent": {
+    "value": -0.0294,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     -0.0463,
+     -0.0125
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.0868,
+     0.1522
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.0553,
+     0.1217
+    ],
+    "gap_sim_minus_history": 0.0298,
+    "gap_interval_excludes_zero_game_block": false
+   },
+   "candidate": {
+    "value": -0.0523,
+    "n_rows": 204800,
+    "ci95_game_block": [
+     -0.083,
+     -0.022
+    ],
+    "gap_sim_minus_history_ci95_game_block": [
+     -0.1067,
+     0.1285
+    ],
+    "gap_sim_minus_history_ci95_week_block": [
+     -0.068,
+     0.0883
+    ],
+    "gap_sim_minus_history": 0.0069,
+    "gap_interval_excludes_zero_game_block": false
+   }
+  }
+ },
+ "marginal_guard": {
+  "pts": {
+   "n_team_games": 512,
+   "incumbent": {
+    "mae_of_mean": 7.229,
+    "pearson_r_mean_vs_actual": 0.4377,
+    "bias_mean_minus_actual": -0.38,
+    "coverage_p10_p90": 0.7969,
+    "coverage_nominal": 0.8
+   },
+   "candidate": {
+    "mae_of_mean": 7.349,
+    "pearson_r_mean_vs_actual": 0.4019,
+    "bias_mean_minus_actual": -0.698,
+    "coverage_p10_p90": 0.8008,
+    "coverage_nominal": 0.8
+   },
+   "mae_candidate_minus_incumbent_ci95_game_block": [
+    -0.0293,
+    0.2656
+   ]
+  },
+  "off_dk": {
+   "n_team_games": 512,
+   "incumbent": {
+    "mae_of_mean": 17.976,
+    "pearson_r_mean_vs_actual": 0.4072,
+    "bias_mean_minus_actual": 5.378,
+    "coverage_p10_p90": 0.7285,
+    "coverage_nominal": 0.8
+   },
+   "candidate": {
+    "mae_of_mean": 17.12,
+    "pearson_r_mean_vs_actual": 0.4073,
+    "bias_mean_minus_actual": 2.34,
+    "coverage_p10_p90": 0.7441,
+    "coverage_nominal": 0.8
+   },
+   "mae_candidate_minus_incumbent_ci95_game_block": [
+    -1.4192,
+    -0.311
+   ]
+  },
+  "QB": {
+   "n_team_games": 512,
+   "incumbent": {
+    "mae_of_mean": 5.954,
+    "pearson_r_mean_vs_actual": 0.3934,
+    "bias_mean_minus_actual": 0.587,
+    "coverage_p10_p90": 0.7207,
+    "coverage_nominal": 0.8
+   },
+   "candidate": {
+    "mae_of_mean": 5.907,
+    "pearson_r_mean_vs_actual": 0.4008,
+    "bias_mean_minus_actual": 0.603,
+    "coverage_p10_p90": 0.7344,
+    "coverage_nominal": 0.8
+   },
+   "mae_candidate_minus_incumbent_ci95_game_block": [
+    -0.1682,
+    0.0664
+   ]
+  },
+  "WR1": {
+   "n_team_games": 512,
+   "incumbent": {
+    "mae_of_mean": 7.386,
+    "pearson_r_mean_vs_actual": 0.2806,
+    "bias_mean_minus_actual": 3.102,
+    "coverage_p10_p90": 0.625,
+    "coverage_nominal": 0.8
+   },
+   "candidate": {
+    "mae_of_mean": 7.336,
+    "pearson_r_mean_vs_actual": 0.269,
+    "bias_mean_minus_actual": 2.894,
+    "coverage_p10_p90": 0.7734,
+    "coverage_nominal": 0.8
+   },
+   "mae_candidate_minus_incumbent_ci95_game_block": [
+    -0.1994,
+    0.0871
+   ]
+  },
+  "WR2": {
+   "n_team_games": 512,
+   "incumbent": {
+    "mae_of_mean": 5.422,
+    "pearson_r_mean_vs_actual": 0.3387,
+    "bias_mean_minus_actual": 0.828,
+    "coverage_p10_p90": 0.6328,
+    "coverage_nominal": 0.8
+   },
+   "candidate": {
+    "mae_of_mean": 5.409,
+    "pearson_r_mean_vs_actual": 0.3595,
+    "bias_mean_minus_actual": 0.963,
+    "coverage_p10_p90": 0.8066,
+    "coverage_nominal": 0.8
+   },
+   "mae_candidate_minus_incumbent_ci95_game_block": [
+    -0.105,
+    0.0788
+   ]
+  },
+  "TE1": {
+   "n_team_games": 511,
+   "incumbent": {
+    "mae_of_mean": 5.538,
+    "pearson_r_mean_vs_actual": 0.329,
+    "bias_mean_minus_actual": 1.163,
+    "coverage_p10_p90": 0.6634,
+    "coverage_nominal": 0.8
+   },
+   "candidate": {
+    "mae_of_mean": 5.253,
+    "pearson_r_mean_vs_actual": 0.3477,
+    "bias_mean_minus_actual": 0.473,
+    "coverage_p10_p90": 0.8297,
+    "coverage_nominal": 0.8
+   },
+   "mae_candidate_minus_incumbent_ci95_game_block": [
+    -0.4058,
+    -0.1598
+   ]
+  },
+  "RB1": {
+   "n_team_games": 512,
+   "incumbent": {
+    "mae_of_mean": 7.485,
+    "pearson_r_mean_vs_actual": 0.4182,
+    "bias_mean_minus_actual": 3.453,
+    "coverage_p10_p90": 0.6562,
+    "coverage_nominal": 0.8
+   },
+   "candidate": {
+    "mae_of_mean": 6.832,
+    "pearson_r_mean_vs_actual": 0.4245,
+    "bias_mean_minus_actual": 1.987,
+    "coverage_p10_p90": 0.7734,
+    "coverage_nominal": 0.8
+   },
+   "mae_candidate_minus_incumbent_ci95_game_block": [
+    -0.795,
+    -0.4965
+   ]
+  },
+  "DST": {
+   "n_team_games": 512,
+   "incumbent": {
+    "mae_of_mean": 4.329,
+    "pearson_r_mean_vs_actual": 0.3235,
+    "bias_mean_minus_actual": 0.352,
+    "coverage_p10_p90": 0.8086,
+    "coverage_nominal": 0.8
+   },
+   "candidate": {
+    "mae_of_mean": 4.352,
+    "pearson_r_mean_vs_actual": 0.2786,
+    "bias_mean_minus_actual": 0.403,
+    "coverage_p10_p90": 0.8027,
+    "coverage_nominal": 0.8
+   },
+   "mae_candidate_minus_incumbent_ci95_game_block": [
+    -0.0653,
+    0.1071
+   ]
+  }
+ },
+ "accounting_audit_incumbent_replay": {
+  "club_worlds": 204800,
+  "player_worlds": 2484800,
+  "pass_yards_ne_sum_rec_yards": 3,
+  "pass_td_ne_sum_rec_td": 0,
+  "player_rec_td_gt_receptions": 31386,
+  "player_rec_yards_without_reception": 115300,
+  "player_receptions_gt_targets": 0,
+  "player_rush_td_gt_carries": 6274,
+  "team_td_ne_pass_plus_rush_td": 7299,
+  "team_points_lt_6_x_off_td": 6977,
+  "team_points_not_integer": 151266
+ },
+ "accounting_audit_candidate_replay": {
+  "club_worlds": 204800,
+  "player_worlds": 2484800,
+  "pass_yards_ne_sum_rec_yards": 0,
+  "pass_td_ne_sum_rec_td": 0,
+  "player_rec_td_gt_receptions": 0,
+  "player_rec_yards_without_reception": 0,
+  "player_receptions_gt_targets": 0,
+  "player_rush_td_gt_carries": 0,
+  "team_td_ne_pass_plus_rush_td": 0,
+  "team_points_lt_6_x_off_td": 0,
+  "team_points_not_integer": 0
+ },
+ "archived_live_worlds_audit": {
+  "searched": "nfl/dfs/salaries/**/SHOWDOWN_*_WORLDS.npz",
+  "PIT_CLE_WORLDS": "NOT_PRESENT_IN_CHECKOUT",
+  "PHI_CHI_WORLDS": "NOT_PRESENT_IN_CHECKOUT",
+  "ATL_NO": {
+   "file": "nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX/SHOWDOWN_ATL_NO_2026W4_WORLDS.npz",
+   "sha256": "2280be4b41709dddd6e58949880074309f7656315e92067889bc563f081d87a9",
+   "n_worlds": 2000,
+   "per_club": {
+    "ATL": {
+     "worlds_pass_yards_ne_sum_rec_yards_gt_1yd": 0.9915,
+     "mean_abs_gap_pass_minus_rec_yards": 41.99,
+     "worlds_pass_td_ne_sum_rec_td": 0.0,
+     "player_worlds_rec_td_gt_receptions": 350,
+     "player_worlds_rec_yards_without_reception": 1348,
+     "player_worlds": 26000
+    },
+    "NO": {
+     "worlds_pass_yards_ne_sum_rec_yards_gt_1yd": 0.9735,
+     "mean_abs_gap_pass_minus_rec_yards": 18.77,
+     "worlds_pass_td_ne_sum_rec_td": 0.0005,
+     "player_worlds_rec_td_gt_receptions": 170,
+     "player_worlds_rec_yards_without_reception": 1050,
+     "player_worlds": 26000
+    }
+   }
+  },
+  "NOTE": "n = 1 game; descriptive. Shows what the live post-step does to the identities, estimates nothing."
+ },
+ "candidate": {
+  "library": {
+   "n_games": 1087,
+   "seasons": [
+    2021,
+    2022,
+    2023,
+    2024
+   ],
+   "max_season": 2024,
+   "k_neighbours": 33,
+   "K_RULE": "round(sqrt(n_games)), declared prior",
+   "line_scale_sd": [
+    4.3557,
+    6.0751
+   ]
+  },
+  "share_concentration": {
+   "season": 2024,
+   "targets": {
+    "alpha": 32.6031,
+    "state": "ESTIMATED",
+    "phi": 1.959,
+    "n_player_games": 4840
+   },
+   "carries": {
+    "alpha": 8.2972,
+    "state": "ESTIMATED",
+    "phi": 3.9274,
+    "n_player_games": 2796
+   },
+   "METHOD": "E[(n - T s)^2] = T s (1-s) (T + a)/(1 + a), pooled over player-games, solved for a; s = the player's season-to-date share over weeks < W renormalised over the snap pool, exactly as the replay builds it"
+  },
+  "k_sensitivity": {
+   "k=16": {
+    "team_dk_vs_team_points": {
+     "value": 0.7309,
+     "gap": -0.0266,
+     "gap_ci95_game_block": [
+      -0.0683,
+      0.0136
+     ]
+    },
+    "team_dk_vs_team_off_td": {
+     "value": 0.7882,
+     "gap": -0.0269,
+     "gap_ci95_game_block": [
+      -0.0547,
+      0.0026
+     ]
+    },
+    "yards_per_extra_td": {
+     "value": 33.1788,
+     "gap": -2.1535,
+     "gap_ci95_game_block": [
+      -6.6637,
+      2.1166
+     ]
+    },
+    "pass_yards_vs_pass_td": {
+     "value": 0.4592,
+     "gap": -0.0275,
+     "gap_ci95_game_block": [
+      -0.0935,
+      0.0364
+     ]
+    },
+    "qb_wr1": {
+     "value": 0.3329,
+     "gap": 0.04,
+     "gap_ci95_game_block": [
+      -0.0437,
+      0.1284
+     ]
+    },
+    "qb_wr2": {
+     "value": 0.292,
+     "gap": -0.0302,
+     "gap_ci95_game_block": [
+      -0.103,
+      0.0528
+     ]
+    },
+    "qb_te1": {
+     "value": 0.2329,
+     "gap": -0.0702,
+     "gap_ci95_game_block": [
+      -0.1488,
+      0.0085
+     ]
+    },
+    "wr1_wr2": {
+     "value": 0.0024,
+     "gap": -0.0759,
+     "gap_ci95_game_block": [
+      -0.1775,
+      0.0222
+     ]
+    },
+    "qb_rb1": {
+     "value": 0.0046,
+     "gap": -0.0438,
+     "gap_ci95_game_block": [
+      -0.1299,
+      0.0383
+     ]
+    },
+    "rb1_own_dst": {
+     "value": 0.0647,
+     "gap": 0.0432,
+     "gap_ci95_game_block": [
+      -0.0374,
+      0.1234
+     ]
+    },
+    "rb1_opp_qb": {
+     "value": 0.0243,
+     "gap": -0.1146,
+     "gap_ci95_game_block": [
+      -0.202,
+      -0.0257
+     ]
+    },
+    "qb_opp_qb": {
+     "value": 0.1115,
+     "gap": -0.0737,
+     "gap_ci95_game_block": [
+      -0.1874,
+      0.0546
+     ]
+    },
+    "qb_opp_dst": {
+     "value": -0.3429,
+     "gap": 0.0149,
+     "gap_ci95_game_block": [
+      -0.0623,
+      0.0866
+     ]
+    },
+    "team_dk_vs_opp_team_dk": {
+     "value": 0.1301,
+     "gap": -0.0763,
+     "gap_ci95_game_block": [
+      -0.1963,
+      0.0562
+     ]
+    },
+    "team_points_vs_opp_points": {
+     "value": -0.0684,
+     "gap": -0.0092,
+     "gap_ci95_game_block": [
+      -0.1265,
+      0.1192
+     ]
+    }
+   },
+   "k=66": {
+    "team_dk_vs_team_points": {
+     "value": 0.7444,
+     "gap": -0.0131,
+     "gap_ci95_game_block": [
+      -0.0515,
+      0.0263
+     ]
+    },
+    "team_dk_vs_team_off_td": {
+     "value": 0.7973,
+     "gap": -0.0178,
+     "gap_ci95_game_block": [
+      -0.0436,
+      0.01
+     ]
+    },
+    "yards_per_extra_td": {
+     "value": 34.0384,
+     "gap": -1.2939,
+     "gap_ci95_game_block": [
+      -5.6296,
+      2.8889
+     ]
+    },
+    "pass_yards_vs_pass_td": {
+     "value": 0.4743,
+     "gap": -0.0124,
+     "gap_ci95_game_block": [
+      -0.0765,
+      0.0517
+     ]
+    },
+    "qb_wr1": {
+     "value": 0.339,
+     "gap": 0.0461,
+     "gap_ci95_game_block": [
+      -0.0373,
+      0.1342
+     ]
+    },
+    "qb_wr2": {
+     "value": 0.2989,
+     "gap": -0.0233,
+     "gap_ci95_game_block": [
+      -0.0984,
+      0.0608
+     ]
+    },
+    "qb_te1": {
+     "value": 0.2175,
+     "gap": -0.0856,
+     "gap_ci95_game_block": [
+      -0.1624,
+      -0.0092
+     ]
+    },
+    "wr1_wr2": {
+     "value": -0.0006,
+     "gap": -0.0789,
+     "gap_ci95_game_block": [
+      -0.1793,
+      0.019
+     ]
+    },
+    "qb_rb1": {
+     "value": 0.0175,
+     "gap": -0.0309,
+     "gap_ci95_game_block": [
+      -0.1185,
+      0.0519
+     ]
+    },
+    "rb1_own_dst": {
+     "value": 0.0461,
+     "gap": 0.0246,
+     "gap_ci95_game_block": [
+      -0.0565,
+      0.1054
+     ]
+    },
+    "rb1_opp_qb": {
+     "value": 0.0278,
+     "gap": -0.1111,
+     "gap_ci95_game_block": [
+      -0.2,
+      -0.0219
+     ]
+    },
+    "qb_opp_qb": {
+     "value": 0.1365,
+     "gap": -0.0487,
+     "gap_ci95_game_block": [
+      -0.1535,
+      0.076
+     ]
+    },
+    "qb_opp_dst": {
+     "value": -0.3455,
+     "gap": 0.0123,
+     "gap_ci95_game_block": [
+      -0.0629,
+      0.0834
+     ]
+    },
+    "team_dk_vs_opp_team_dk": {
+     "value": 0.1616,
+     "gap": -0.0448,
+     "gap_ci95_game_block": [
+      -0.1632,
+      0.0841
+     ]
+    },
+    "team_points_vs_opp_points": {
+     "value": -0.0499,
+     "gap": 0.0093,
+     "gap_ci95_game_block": [
+      -0.1068,
+      0.1305
+     ]
+    }
+   },
+   "NOTE": "200 worlds per game; sensitivity only, the declared k = 33 is the headline"
+  }
+ },
+ "written_at": "2026-10-07T04:46:54.487918+00:00"
+}
