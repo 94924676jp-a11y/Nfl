@@ -4047,3 +4047,13 @@ claude/nfl-greenfield-architecture-stsxmk:
    board_sha256).
 9. **After the game, inside DK's 10-day window**: full-field standings for every contest entered (owner export), for
    `showdown_next_slate.py postgame`.
+
+## REQUEST 2026-10-07 — weekly 2026 nflverse refresh for the sealed appearance shadow (and every projection)
+
+The appearance successor sealed week-5 shadow predictions before the first kickoff
+(nfl/prospective/appearance/APPEARANCE_SUCCESSOR_W5_SEAL.json, written 2026-10-07T15:22:07Z). To grade it, and to seal
+weeks 6+ before their kickoffs (`python3.12 nfl/prospective/appearance/seal_appearance_w5.py --week W`), the repo needs,
+each week after Monday night: nflverse 2026 player stats (weekly), snap counts, and play-by-play for the completed
+week, so nfl/derived/USAGE_HISTORY_2021_2026.json can be rebuilt with that week's rows. Today the panel ends at 2026
+week 3 for every club (week 4 is missing). Save under nfl/postgame/raw/role_audit_history/ (or the existing
+nfl/vintage capture convention) with sha256 provenance rows; push to claude/nfl-greenfield-architecture-stsxmk.
