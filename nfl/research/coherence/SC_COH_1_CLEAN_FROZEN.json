@@ -1,0 +1,514 @@
+{
+ "ARTIFACT": "SC_COH_1_CLEAN_FROZEN",
+ "STATUS": "SHADOW_ONLY",
+ "cutoff": 2024,
+ "READ_NO_2025_ROW": true,
+ "fits_sha256": "19c7928d87c47aaa1926a4b1a759f752d71067f2de1129e91e17674834c86646",
+ "concentration": {
+  "season": 2024,
+  "pool": "SEASON_TO_DATE",
+  "targets": {
+   "alpha": 19.264,
+   "state": "ESTIMATED",
+   "phi": 2.5916,
+   "n_player_games": 6295
+  },
+  "carries": {
+   "alpha": 5.2446,
+   "state": "ESTIMATED",
+   "phi": 5.3502,
+   "n_player_games": 3834
+  }
+ },
+ "library": {
+  "n_games": 1087,
+  "seasons": [
+   2021,
+   2022,
+   2023,
+   2024
+  ],
+  "max_season": 2024,
+  "k_neighbours": 33,
+  "K_RULE": "round(sqrt(n_games)), declared prior (as the original candidate)",
+  "distance": "Euclidean on (football total centre, football home-margin centre), each / library SD",
+  "centre_scale_sd": [
+   5.7939,
+   5.4383
+  ]
+ },
+ "library_sha256": "607100ec74e81357680a9e2ee47cd41ef465ff240cf6a73c64644df3cea229a7",
+ "fit_summary": {
+  "football_residuals": {
+   "fit_seasons": [
+    2001,
+    2024
+   ],
+   "n_games": 6195,
+   "total_sd": 14.0291,
+   "margin_sd": 13.8508,
+   "margin_mean_home_field": 2.3011,
+   "pa_sd": 9.9242
+  },
+  "shared_state": {
+   "plays_form": {
+    "plays": {
+     "intercept": 57.62412,
+     "per_own_point": 0.20673,
+     "per_margin_point": -0.035032,
+     "residual_sd": 8.18016,
+     "n": 2174
+    },
+    "pass_share": {
+     "intercept": 0.55796,
+     "per_own_point": 0.000895,
+     "per_margin_point": -0.004015,
+     "residual_sd": 0.09307,
+     "n": 2174
+    }
+   },
+   "realised": {
+    "pass_attempts": {
+     "intercept": 32.0315,
+     "per_own_point": 0.1776,
+     "per_margin_point": -0.2699,
+     "residual_sd": 7.9008,
+     "n": 2174
+    },
+    "rush_attempts": {
+     "intercept": 25.5926,
+     "per_own_point": 0.0292,
+     "per_margin_point": 0.2348,
+     "residual_sd": 6.4576,
+     "n": 2174
+    }
+   },
+   "scoring": {
+    "points_per_offensive_td": 6.3569,
+    "points_not_from_offensive_td": 7.3977,
+    "residual_sd": 4.4771,
+    "n": 2174
+   },
+   "volume_seasons": [
+    2021,
+    2024
+   ]
+  },
+  "efficiency": {
+   "n_ypa": 2168,
+   "n_ypc": 2168,
+   "mean_ypa": 6.7018,
+   "mean_ypc": 4.4383,
+   "seasons": [
+    2021,
+    2024
+   ]
+  },
+  "variance_components": {
+   "receiving": {
+    "state": "ESTIMATED",
+    "concentration": 15.921,
+    "n_observations": 10200
+   },
+   "rushing": {
+    "state": "ESTIMATED",
+    "concentration": 12.8961,
+    "n_observations": 5293
+   },
+   "share_dispersion_targets": {
+    "state": "ESTIMATED",
+    "overdispersion_ratio": 1.2195,
+    "concentration": 142.12,
+    "n_player_seasons": 1128
+   },
+   "share_dispersion_carries": {
+    "state": "ESTIMATED",
+    "overdispersion_ratio": 2.868,
+    "concentration": 12.858,
+    "n_player_seasons": 530
+   }
+  },
+  "usage": {
+   "teammate_backs_implied_dirichlet_concentration": 18.467,
+   "n_club_games": 1000
+  },
+  "dst_bands": {
+   "0-10": 180,
+   "10-17": 415,
+   "17-24": 617,
+   "24-31": 523,
+   "31-1000000": 439
+  },
+  "int_rate": {
+   "int_per_attempt": 0.023059,
+   "attempts": 72641,
+   "interceptions": 1675,
+   "seasons": [
+    2021,
+    2022,
+    2023,
+    2024
+   ]
+  }
+ },
+ "scales": {
+  "pts": {
+   "sd": 9.8443,
+   "p90": 36.0,
+   "n": 512
+  },
+  "off_td": {
+   "sd": 1.4046,
+   "p90": 4.0,
+   "n": 512
+  },
+  "QB": {
+   "sd": 10.1805,
+   "p90": 27.374,
+   "n": 512
+  },
+  "RB1": {
+   "sd": 8.9255,
+   "p90": 25.2,
+   "n": 512
+  },
+  "WR1": {
+   "sd": 9.483,
+   "p90": 24.88,
+   "n": 512
+  },
+  "WR2": {
+   "sd": 7.9435,
+   "p90": 19.7,
+   "n": 512
+  },
+  "TE1": {
+   "sd": 6.9684,
+   "p90": 17.29,
+   "n": 512
+  },
+  "player_vars_sd": {
+   "dk": 7.9194,
+   "receptions": 2.2473,
+   "targets": 3.1349,
+   "rec_yards": 28.5177,
+   "carries": 4.3871,
+   "rush_yards": 21.9319,
+   "scrimmage_td": 0.4391,
+   "pass_yards": 125.2647,
+   "pass_td": 1.1324
+  },
+  "club_vars_sd": {
+   "team_points": 9.8443,
+   "team_off_td": 1.4046,
+   "team_pass_yards": 70.6316,
+   "team_rush_yards": 51.8296,
+   "dst_dk": 5.4806
+  }
+ },
+ "equivalence_margins": {
+  "team_dk_vs_team_points": {
+   "margin": 0.0712,
+   "season_values": {
+    "2021": 0.7576,
+    "2022": 0.7218,
+    "2023": 0.7931,
+    "2024": 0.7668
+   },
+   "consecutive_abs_deltas": [
+    0.0357,
+    0.0712,
+    0.0263
+   ]
+  },
+  "team_dk_vs_team_off_td": {
+   "margin": 0.0313,
+   "season_values": {
+    "2021": 0.8022,
+    "2022": 0.7946,
+    "2023": 0.8258,
+    "2024": 0.8035
+   },
+   "consecutive_abs_deltas": [
+    0.0076,
+    0.0313,
+    0.0223
+   ]
+  },
+  "yards_per_extra_td": {
+   "margin": 1.8105,
+   "season_values": {
+    "2021": 36.2575,
+    "2022": 34.447,
+    "2023": 35.1343,
+    "2024": 34.1886
+   },
+   "consecutive_abs_deltas": [
+    1.8105,
+    0.6873,
+    0.9457
+   ]
+  },
+  "pass_yards_vs_pass_td": {
+   "margin": 0.0402,
+   "season_values": {
+    "2021": 0.5168,
+    "2022": 0.501,
+    "2023": 0.5121,
+    "2024": 0.472
+   },
+   "consecutive_abs_deltas": [
+    0.0158,
+    0.0111,
+    0.0402
+   ]
+  },
+  "qb_wr1": {
+   "margin": 0.1699,
+   "season_values": {
+    "2021": 0.3286,
+    "2022": 0.2527,
+    "2023": 0.3858,
+    "2024": 0.2159
+   },
+   "consecutive_abs_deltas": [
+    0.0759,
+    0.1331,
+    0.1699
+   ]
+  },
+  "qb_wr2": {
+   "margin": 0.0598,
+   "season_values": {
+    "2021": 0.3023,
+    "2022": 0.2877,
+    "2023": 0.2279,
+    "2024": 0.2204
+   },
+   "consecutive_abs_deltas": [
+    0.0146,
+    0.0598,
+    0.0075
+   ]
+  },
+  "qb_te1": {
+   "margin": 0.0608,
+   "season_values": {
+    "2021": 0.1896,
+    "2022": 0.2389,
+    "2023": 0.1781,
+    "2024": 0.1319
+   },
+   "consecutive_abs_deltas": [
+    0.0493,
+    0.0608,
+    0.0462
+   ]
+  },
+  "wr1_wr2": {
+   "margin": 0.1159,
+   "season_values": {
+    "2021": 0.0377,
+    "2022": 0.0704,
+    "2023": -0.0455,
+    "2024": 0.0236
+   },
+   "consecutive_abs_deltas": [
+    0.0327,
+    0.1159,
+    0.0691
+   ]
+  },
+  "qb_rb1": {
+   "margin": 0.1038,
+   "season_values": {
+    "2021": 0.1215,
+    "2022": 0.0629,
+    "2023": 0.0445,
+    "2024": 0.1483
+   },
+   "consecutive_abs_deltas": [
+    0.0587,
+    0.0184,
+    0.1038
+   ]
+  },
+  "rb1_own_dst": {
+   "margin": 0.1391,
+   "season_values": {
+    "2021": 0.0871,
+    "2022": 0.009,
+    "2023": 0.0419,
+    "2024": 0.1809
+   },
+   "consecutive_abs_deltas": [
+    0.0782,
+    0.0329,
+    0.1391
+   ]
+  },
+  "rb1_opp_qb": {
+   "margin": 0.051,
+   "season_values": {
+    "2021": 0.0871,
+    "2022": 0.065,
+    "2023": 0.0141,
+    "2024": -0.0348
+   },
+   "consecutive_abs_deltas": [
+    0.0221,
+    0.051,
+    0.0489
+   ]
+  },
+  "qb_opp_qb": {
+   "margin": 0.1009,
+   "season_values": {
+    "2021": 0.0957,
+    "2022": 0.1966,
+    "2023": 0.1104,
+    "2024": 0.0337
+   },
+   "consecutive_abs_deltas": [
+    0.1009,
+    0.0863,
+    0.0767
+   ]
+  },
+  "qb_opp_dst": {
+   "margin": 0.1485,
+   "season_values": {
+    "2021": -0.3499,
+    "2022": -0.2062,
+    "2023": -0.3547,
+    "2024": -0.3358
+   },
+   "consecutive_abs_deltas": [
+    0.1437,
+    0.1485,
+    0.0189
+   ]
+  },
+  "team_dk_vs_opp_team_dk": {
+   "margin": 0.0644,
+   "season_values": {
+    "2021": 0.1832,
+    "2022": 0.2008,
+    "2023": 0.1364,
+    "2024": 0.1229
+   },
+   "consecutive_abs_deltas": [
+    0.0176,
+    0.0644,
+    0.0135
+   ]
+  },
+  "team_points_vs_opp_points": {
+   "margin": 0.2107,
+   "season_values": {
+    "2021": -0.1157,
+    "2022": 0.095,
+    "2023": -0.055,
+    "2024": -0.1014
+   },
+   "consecutive_abs_deltas": [
+    0.2107,
+    0.15,
+    0.0464
+   ]
+  }
+ },
+ "design": {
+  "CUTOFF": 2024,
+  "EVAL_SEASON": 2025,
+  "DEV_WEEKS": [
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9
+  ],
+  "CONF_WEEKS": [
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18
+  ],
+  "LIB_SEASONS": [
+   2021,
+   2022,
+   2023,
+   2024
+  ],
+  "CONC_SEASON": 2024,
+  "SCALE_SEASON": 2024,
+  "MARGIN_SEASONS": [
+   2021,
+   2022,
+   2023,
+   2024
+  ],
+  "N_WORLDS": 400,
+  "SIM_SEED": 20261008,
+  "N_BOOT": 2000,
+  "BOOT_SEED": 20261009,
+  "PIT_SEED": 20261010,
+  "PIT_BINS": 10,
+  "NI_RATIO_MARGIN": 1.02,
+  "LEVELS": [
+   0.5,
+   0.8,
+   0.9
+  ],
+  "VS_P": 0.5,
+  "POOL_MODES": [
+   "SEASON_TO_DATE",
+   "LAST_GAME"
+  ],
+  "PRIMARY_POOL": "SEASON_TO_DATE",
+  "VARIANTS": [
+   "INCUMBENT_PROD",
+   "INCUMBENT_RAW",
+   "CANDIDATE_RAW",
+   "CANDIDATE_POST"
+  ],
+  "PRIMARY_PAIR": [
+   "CANDIDATE_RAW",
+   "INCUMBENT_PROD"
+  ],
+  "ROLES": [
+   "QB",
+   "RB1",
+   "WR1",
+   "WR2",
+   "TE1"
+  ],
+  "PLAYER_VARS": [
+   "dk",
+   "receptions",
+   "targets",
+   "rec_yards",
+   "carries",
+   "rush_yards",
+   "scrimmage_td",
+   "pass_yards",
+   "pass_td"
+  ],
+  "CLUB_VARS": [
+   "team_points",
+   "team_off_td",
+   "team_pass_yards",
+   "team_rush_yards",
+   "dst_dk"
+  ]
+ },
+ "written_at": "2026-10-07T07:10:29.482482+00:00"
+}
