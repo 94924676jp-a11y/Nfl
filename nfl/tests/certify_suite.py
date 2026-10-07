@@ -140,6 +140,21 @@ def _nested(progress):
     return {'file': p.name, 'run_ids': len(ids), 'sha256': _sha(p)}
 
 
+def failing_modules(done):
+    """Modules the runner judged failing. OWN_PROCESS is a judged result (its own `failing` count decides);
+    any result that is neither OK nor OWN_PROCESS (FAIL, NO_TALLY, IMPORT_ERROR, PROCESS_SCOPED_UNREADABLE, ...)
+    is a failure. Counting OWN_PROCESS as a failure overstated the 2026-10-07 certified run by four modules."""
+    bad = set()
+    for r in done:
+        res = r.get('result')
+        if res == 'OWN_PROCESS':
+            if r.get('failing'):
+                bad.add(r['module'])
+        elif res != 'OK':
+            bad.add(r['module'])
+    return sorted(bad)
+
+
 def judge(expected, recs, rc, timed_out, stdout, manifest_after_ok):
     """Pure: the certificate verdict from the evidence. Every reason is named."""
     reasons = []
@@ -246,7 +261,7 @@ def certify(root=_REPO, timeout=7200, out_dir=None, runner_args=(), label='AUTHO
                                             'directory). Reported, not a verdict reason: the mode-boundary judge in '
                                             'run_suite.py owns that rule.'},
             'terminal_record': end,
-            'failing_modules': sorted({r['module'] for r in done if r.get('result') not in ('OK',)}),
+            'failing_modules': failing_modules(done),
             'module_results': {r['module']: {k: r.get(k) for k in ('result', 'n_fn', 'checks_ok', 'checks_failing')}
                                for r in done},
             'RULE': 'exit code 0 without a complete, identity-matched, terminal record is INCOMPLETE_NOT_CERTIFIED',

@@ -154,6 +154,10 @@ def test_empty_stale_duplicate_torn_changed_restricted():
 
 
 def test_pure_judge():
+    fm = CS.failing_modules([{'module': 'a', 'result': 'OK'}, {'module': 'b', 'result': 'OWN_PROCESS', 'failing': 0},
+                             {'module': 'c', 'result': 'OWN_PROCESS', 'failing': 2}, {'module': 'd', 'result': 'FAIL'},
+                             {'module': 'e', 'result': 'NO_TALLY'}, {'module': 'f', 'result': 'IMPORT_ERROR'}])
+    check(fm == ['c', 'd', 'e', 'f'], f'failing modules: OWN_PROCESS judged by its own count, unknown results fail ({fm})')
     exp = ['nfl/tests/test_a.py']
     rid = 'r1'
     recs = [{'run_id': rid, 'phase': 'suite_start', 'n_modules': 1},
