@@ -24,6 +24,7 @@ _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
+from nfl.tools import showdown_slate_env as SLATE  # noqa: E402
 from nfl.field import showdown_shadow_field as SF  # noqa: E402
 from nfl.tools import showdown_portfolio as SP, showdown_portfolio_audit as PA  # noqa: E402
 
@@ -32,7 +33,7 @@ GUARDRAIL = 20     # predicted copies; SaberSim's stated 20-25 guardrail, lower 
 
 def run(export, sd, shadow_dir):
     sd, shadow_dir = pathlib.Path(sd), pathlib.Path(shadow_dir)
-    doc = json.loads((shadow_dir / 'SHOWDOWN_ATL_NO_SHADOW_FIELD.json').read_text())
+    doc = json.loads((shadow_dir / f'{SLATE.PREFIX}_SHADOW_FIELD.json').read_text())
     lines = np.load(shadow_dir / 'shadow_field_lineups.npy', allow_pickle=True)
     field = [(r[0], tuple(sorted(r[1:]))) for r in lines]
     k = len(field)
@@ -58,7 +59,7 @@ def run(export, sd, shadow_dir):
         cexp = collections.Counter(c for c, _ in ours)
         fexp = collections.Counter(x for _, f in ours for x in f)
         lev = []
-        for key in sorted(set(cexp) | set(fexp) | {x for x in own if own[x]['total'] >= 5}, key=lambda x: -own.get(x, {}).get('total', 0)):
+        for key in sorted(set(cexp) | set(fexp) | {x for x in own if own[x]['total'] >= 5}, key=lambda x: (-own.get(x, {}).get('total', 0), x)):
             o = own.get(key, {'cpt': 0, 'flex': 0})
             lev.append({'player': by[key]['name'] if key in by else key, 'shadow_cpt': round(o['cpt'], 1),
                         'our_cpt': round(100 * cexp[key] / n, 1), 'cpt_leverage': round(100 * cexp[key] / n - o['cpt'], 1),
@@ -104,8 +105,8 @@ def run(export, sd, shadow_dir):
         for e in lev:
             rows_own.append({'contest': cid, **e})
     # one file per field projection, so FC_ONLY and BLEND sit side by side and neither overwrites the other
-    (sd / f'SHOWDOWN_ATL_NO_SHADOW_BOARD_{src}.json').write_text(json.dumps(board, indent=1, default=str))
-    with (sd / f'SHOWDOWN_ATL_NO_SHADOW_LEVERAGE_{src}.csv').open('w', newline='') as fh:
+    (sd / f'{SLATE.PREFIX}_SHADOW_BOARD_{src}.json').write_text(json.dumps(board, indent=1, default=str))
+    with (sd / f'{SLATE.PREFIX}_SHADOW_LEVERAGE_{src}.csv').open('w', newline='') as fh:
         w = csv.DictWriter(fh, fieldnames=list(rows_own[0]))
         w.writeheader()
         w.writerows(rows_own)

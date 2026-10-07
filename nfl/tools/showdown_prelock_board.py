@@ -29,9 +29,10 @@ _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
+from nfl.tools import showdown_slate_env as SLATE  # noqa: E402
 from nfl.tools import showdown_portfolio as SP, showdown_portfolio_audit as PA  # noqa: E402
 
-TWO_ENTRY = '196285161'
+TWO_ENTRY = SLATE.TWO_ENTRY
 SHADOW_SOURCES = ('FC_ONLY', 'BLEND')
 
 
@@ -50,7 +51,7 @@ def football(sd, scen):
                                'depth_rank', 'pass_att', 'carries', 'targets', 'sim_mean', 'p90', 'p_zero',
                                'role_data')}
             for r in sorted(proj, key=lambda r: -float(r['sim_mean'] or 0)) if r['sim_mean'] and float(r['sim_mean']) >= 1.0]
-    c1 = sd / 'SHOWDOWN_ATL_NO_CYCLE1_CHECKS.json'
+    c1 = sd / f'{SLATE.PREFIX}_CYCLE1_CHECKS.json'
     coh = json.loads(c1.read_text()) if c1.exists() else {}
     return {'SHOWDOWN_COHERENCE_WARNING': (coh.get('same_world_coherence') or 'NOT_RUN (nfl/tools/showdown_cycle1_checks.py)'),
             'CORRELATION_RECOVERY': coh.get('correlation_recovery', 'NOT_RUN'),
@@ -129,7 +130,7 @@ def portfolio(export, sd, R, audit, relax):
 def field(sd):
     out = {}
     for src in SHADOW_SOURCES:
-        p = sd / f'SHOWDOWN_ATL_NO_SHADOW_BOARD_{src}.json'
+        p = sd / f'{SLATE.PREFIX}_SHADOW_BOARD_{src}.json'
         if not p.exists():
             out[src] = 'NOT_BUILT'
             continue
@@ -146,7 +147,7 @@ def field(sd):
                                  for cid, v in b['contests'].items()}}
     out['DUPE_STACK'] = {}
     for src in SHADOW_SOURCES:
-        p = sd / f'SHOWDOWN_ATL_NO_DUPE_STACK_{src}.json'
+        p = sd / f'{SLATE.PREFIX}_DUPE_STACK_{src}.json'
         if not p.exists():
             out['DUPE_STACK'][src] = 'NOT_BUILT'
             continue
@@ -161,7 +162,7 @@ def field(sd):
                                                   for ph in d['by_phi']},
                                'lineups': v['lineups']} for cid, v in b['contests'].items()}}
     sens = {}
-    for p in sorted(sd.glob('SHOWDOWN_ATL_NO_DUPE_STACK_*_SAL_*.json')):
+    for p in sorted(sd.glob(f'{SLATE.PREFIX}_DUPE_STACK_*_SAL_*.json')):
         d = json.loads(p.read_text())
         for ph, b in d['by_phi'].items():
             sens[f"{d['field_projection']}|{d['salary_anchor']['name']}|phi{ph}"] = {
@@ -176,15 +177,30 @@ def field(sd):
     return out
 
 
+def _optional(sd, pat):
+    """An external context file this slate may not have: absent -> None (reported NOT_PROVIDED, never an empty
+    list, which would read as 'zero claims'); more than one is still an error."""
+    ps = sorted(sd.glob(pat))
+    if len(ps) > 1:
+        raise SystemExit(f'EXPECTED_AT_MOST_ONE {pat}: {[p.name for p in ps]}')
+    return ps[0] if ps else None
+
+
+NOT_PROVIDED = 'NOT_PROVIDED_FOR_THIS_SLATE'
+
+
 def external(sd):
-    fc = list(csv.DictReader(open(_one(sd, 'SHOWDOWN_*_FC_COMPARISON.csv'))))
-    fc.sort(key=lambda r: -abs(float(r['diff_ours_minus_fc'] or 0)))
-    cl = list(csv.DictReader(open(_one(sd, 'SHOWDOWN_*_EXTERNAL_VIDEO_CLAIMS.csv'))))
-    return {'fc_comparison_largest_gaps': [{k: r[k] for k in ('player', 'team', 'pos', 'our_mean', 'fc_flex',
-                                                              'diff_ours_minus_fc', 'triage', 'our_role')} for r in fc[:12]],
+    fp, cp = _optional(sd, 'SHOWDOWN_*_FC_COMPARISON.csv'), _optional(sd, 'SHOWDOWN_*_EXTERNAL_VIDEO_CLAIMS.csv')
+    fc = list(csv.DictReader(open(fp))) if fp else None
+    if fc is not None:
+        fc.sort(key=lambda r: -abs(float(r['diff_ours_minus_fc'] or 0)))
+    cl = list(csv.DictReader(open(cp))) if cp else None
+    return {'fc_comparison_largest_gaps': ([{k: r[k] for k in ('player', 'team', 'pos', 'our_mean', 'fc_flex',
+                                                               'diff_ours_minus_fc', 'triage', 'our_role')} for r in fc[:12]]
+                                           if fc is not None else NOT_PROVIDED),
             'FC_IS_NOT_AN_INPUT': True,
-            'video_claims': [{k: r[k] for k in ('claim_id', 'player', 'claim', 'their_number', 'our_number',
-                                                 'ours_minus_theirs', 'status')} for r in cl],
+            'video_claims': ([{k: r[k] for k in ('claim_id', 'player', 'claim', 'their_number', 'our_number',
+                                                  'ours_minus_theirs', 'status')} for r in cl] if cl is not None else NOT_PROVIDED),
             'HARD_ROCK': 'NOT CAPTURED HERE -- only after the football freeze, by the networked agent (docs/AGENT_OUTBOX.md); '
                          'never fed back into the projection; no wager is recommended'}
 
@@ -219,9 +235,9 @@ def run(export, sd):
     else:
         # an inactive list from a SECONDARY source (aggregator, relayed screenshot) runs the full chain but can never
         # make the board READY: promotion to OFFICIAL needs a provenance record that says OFFICIALLY_VERIFIED
-        prov = [json.loads(q.read_text()) for q in (_REPO / 'nfl/dfs/salaries/raw/showdown_atl_no_2026W4').glob('*INACTIVES_ATL_NO_2026W4.PROVENANCE.json')]
+        prov = [json.loads(q.read_text()) for q in SLATE.RAW_DIR.glob(f'*INACTIVES_{SLATE.TAG}.PROVENANCE.json')]
         lst = sorted(n.strip() for n in scen['official_inactives'])
-        match = [q for q in prov if sorted(json.loads((_REPO / 'nfl/dfs/salaries/raw/showdown_atl_no_2026W4' / q['file']).read_text())) == lst]
+        match = [q for q in prov if sorted(json.loads((SLATE.RAW_DIR / q['file']).read_text())) == lst]
         verified = any(q.get('OFFICIALLY_VERIFIED') is True for q in match)
         if not verified:
             blockers.append('INACTIVES_FROM_SECONDARY_SOURCE_NOT_OFFICIALLY_VERIFIED'
@@ -237,9 +253,9 @@ def run(export, sd):
              'FOOTBALL': fb, 'PORTFOLIO': pf, 'FIELD': field(sd), 'EXTERNAL': external(sd), 'FILES': fl,
              'NOT_SUBMITTED': 'nothing here enters a contest or uploads to DraftKings; PROJECTION_SYSTEM_STATE '
                               'NOT_VALIDATED; no wager is recommended'}
-    p = sd / 'SHOWDOWN_ATL_NO_PRELOCK_BOARD.json'
+    p = sd / f'{SLATE.PREFIX}_PRELOCK_BOARD.json'
     p.write_text(json.dumps(board, indent=1, default=str))
-    (sd / 'SHOWDOWN_ATL_NO_PRELOCK_BOARD.md').write_text(markdown(board))
+    (sd / f'{SLATE.PREFIX}_PRELOCK_BOARD.md').write_text(markdown(board))
     return p, board
 
 
@@ -304,7 +320,7 @@ def markdown(b):
             L.append(f"- {cid}: dupes exact `{v['pred_dupes_exact']}` product `{v['pred_dupes_product']}`; salary left "
                      f"`{v['salary_left']}`; split `{v['team_split_away_home']}`")
         L.append('  - CPT/FLEX ownership (150): ' + '; '.join(
-            f"{e['player']} {e['shadow_cpt']}/{e['shadow_flex']}" for e in f['contests'].get('196285137', {}).get('leverage_top12', [])))
+            f"{e['player']} {e['shadow_cpt']}/{e['shadow_flex']}" for e in f['contests'].get(SLATE.MAIN_CONTEST, {}).get('leverage_top12', [])))
     L += ['', '### DUPE STACK (MC-DUPE-1 / MC-FIELD-1: PRODUCTION_CANDIDATE, NOT PROMOTED)',
           '- E1 independent product x N; E2 E1 x ETR-seeded correlation factors (SEEDED_NOT_FITTED); E3 copies in the '
           'archetype-first generated field x N/K (linear scaling; "<x" = below resolution); E4 copies in the optimizer '
@@ -331,9 +347,13 @@ def markdown(b):
     else:
         L.append(f"- {ss}")
     L += ['', '## EXTERNAL', f"- Hard Rock: {b['EXTERNAL']['HARD_ROCK']}", '- FC comparison (largest gaps; FC is never an input):']
-    for r in b['EXTERNAL']['fc_comparison_largest_gaps']:
-        L.append(f"  - {r['player']} ({r['team']} {r['pos']}): ours {r['our_mean']} vs FC {r['fc_flex']} ({r['triage']})")
-    L.append(f"- video claims compared: {len(b['EXTERNAL']['video_claims'])} (UNVERIFIED_EXTERNAL)")
+    gaps, vc = b['EXTERNAL']['fc_comparison_largest_gaps'], b['EXTERNAL']['video_claims']
+    if gaps == NOT_PROVIDED:
+        L.append(f"  - {NOT_PROVIDED}")
+    else:
+        for r in gaps:
+            L.append(f"  - {r['player']} ({r['team']} {r['pos']}): ours {r['our_mean']} vs FC {r['fc_flex']} ({r['triage']})")
+    L.append(f"- video claims compared: {len(vc)} (UNVERIFIED_EXTERNAL)" if vc != NOT_PROVIDED else f"- video claims: {NOT_PROVIDED}")
     L += ['', '## FILES']
     for n, v in b['FILES']['uploads'].items():
         L.append(f"- `{v['path']}` -- {v['lineup_rows']} rows, sha256 `{v['sha256']}`")

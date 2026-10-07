@@ -21,6 +21,7 @@ _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
+from nfl.tools import showdown_slate_env as SLATE  # noqa: E402
 from nfl.tools import classic_slate_run as CR  # noqa: E402
 
 FIELDS = {f: i for i, f in enumerate(CR.WORLD_FIELDS)}
@@ -66,7 +67,7 @@ def run(sd):
     exp_flex, exp_cpt, n_all = {}, {}, 0
     fl = next(sd.glob('SHOWDOWN_*_FINAL_LINEUPS.csv'))
     for r in csv.DictReader(open(fl)):
-        if r['contest_id'] != '196285137':
+        if r['contest_id'] != SLATE.MAIN_CONTEST:
             continue
         n_all += 1
         exp_cpt[r['CPT']] = exp_cpt.get(r['CPT'], 0) + 1
@@ -109,7 +110,7 @@ def run(sd):
                 and typ != 'MARKET' else None)
         out.append({'claim_id': cid, 'player': pl, 'team': tm, 'type': typ, 'claim': claim, 'timestamp': ts,
                     'their_number': num, 'our_number': ours, 'ours_minus_theirs': diff, 'status': status, 'note': note})
-    p = sd / 'SHOWDOWN_ATL_NO_EXTERNAL_VIDEO_CLAIMS.csv'
+    p = sd / f'{SLATE.PREFIX}_EXTERNAL_VIDEO_CLAIMS.csv'
     with p.open('w', newline='') as fh:
         w = csv.DictWriter(fh, fieldnames=list(out[0]))
         w.writeheader()

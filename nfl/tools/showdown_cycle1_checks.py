@@ -23,6 +23,9 @@ import sys
 import numpy as np
 
 _REPO = pathlib.Path(__file__).resolve().parents[2]
+if str(_REPO) not in sys.path:
+    sys.path.insert(0, str(_REPO))
+from nfl.tools import showdown_slate_env as SLATE  # noqa: E402
 
 PUBLISHED = {   # pair: (Spikeweek COR-01, FantasyLabs COR-02); None = not published by that source
     'QB-WR1': (0.542, 0.54), 'QB-WR2': (0.514, 0.48), 'QB-TE1': (0.366, 0.49), 'QB-RB1': (0.09, 0.38),
@@ -97,7 +100,7 @@ def run(sd):
                              'model is preserved); registered as the first post-lock football item.')}
     own = {}
     for src, dname in (('FC_ONLY', 'SHADOW_' + sd.name), ('BLEND', 'SHADOW_' + sd.name + '_BLEND')):
-        p = sd.parent / dname / 'SHOWDOWN_ATL_NO_SHADOW_OWNERSHIP.csv'
+        p = sd.parent / dname / f'{SLATE.PREFIX}_SHADOW_OWNERSHIP.csv'
         if p.exists():
             own[src] = {r['player']: (float(r['shadow_cpt_own_pct']), float(r['shadow_flex_own_pct'])) for r in csv.DictReader(open(p))}
     data04 = [{'player': n, 'prior_ATL_slate_cpt_flex': v,
@@ -115,7 +118,7 @@ def run(sd):
            'same_world_coherence': coherence,
            'data04_cross_slate_ownership': data04,
            'DATA04_STATUS': 'different slate (prior ATL Showdown, 238K lineups); a sanity point, not a fit, not a target'}
-    p = sd / 'SHOWDOWN_ATL_NO_CYCLE1_CHECKS.json'
+    p = sd / f'{SLATE.PREFIX}_CYCLE1_CHECKS.json'
     p.write_text(json.dumps(doc, indent=1, default=str))
     return p, doc
 

@@ -31,6 +31,7 @@ _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
+from nfl.tools import showdown_slate_env as SLATE  # noqa: E402
 from nfl.tools import showdown_portfolio as SP  # noqa: E402
 
 
@@ -112,7 +113,7 @@ def relaxation_audit(R):
                 teams = collections.Counter(by[k]['team'] for k in seats_of[i])
                 affected.append({'captain': by[c]['name'], 'max_overlap': ov,
                                  'origin': ('SWAP_POLISH' if greedy is not None and i not in greedy else 'RELAXATION'),
-                                 'over_cap_players': [by[k]['name'] for k in set(seats_of[i]) & over_keys],
+                                 'over_cap_players': sorted(by[k]['name'] for k in set(seats_of[i]) & over_keys),
                                  'split': '-'.join(f"{teams.get(t, 0)}" for t in (R['L']['slate']['away'], R['L']['slate']['home'])),
                                  'salary': sal, 'proxy': round(float(hit[i].mean()), 4)})
         cl = {'by_origin': dict(collections.Counter(a['origin'] for a in affected)),
@@ -142,10 +143,10 @@ NO_OFFENSIVE_ROLE_POSITIONS = ('LS', 'P')     # roster positions with no offensi
 
 def roster_positions():
     import glob
-    p = sorted(glob.glob(str(_REPO / 'nfl/dfs/salaries/raw/showdown_atl_no_2026W4/roster_weekly_*.csv')))
+    p = sorted(glob.glob(str(SLATE.RAW_DIR / 'roster_weekly_*.csv')))
     if not p:
         return {}
-    return {r['gsis_id']: r['position'] for r in csv.DictReader(open(p[-1])) if r['week'] == '4'}
+    return {r['gsis_id']: r['position'] for r in csv.DictReader(open(p[-1])) if r['week'] == SLATE.WEEK}
 
 
 def filler_audit(R):

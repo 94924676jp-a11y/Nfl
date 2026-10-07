@@ -45,6 +45,7 @@ _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
+from nfl.tools import showdown_slate_env as SLATE  # noqa: E402
 from nfl.field import showdown_shadow_field as SF  # noqa: E402
 from nfl.tools import showdown_portfolio_audit as PA  # noqa: E402
 
@@ -255,7 +256,7 @@ def run(export, sd, shadow_dir, k=K, salary_anchor='NONE', phis=PHIS):
     sd, shadow_dir = pathlib.Path(sd), pathlib.Path(shadow_dir)
     R = PA.rebuild(export, sd)
     slate = R['L']['slate']
-    sdoc = json.loads((shadow_dir / 'SHOWDOWN_ATL_NO_SHADOW_FIELD.json').read_text())
+    sdoc = json.loads((shadow_dir / f'{SLATE.PREFIX}_SHADOW_FIELD.json').read_text())
     src = 'BLEND' if sdoc.get('field_projection') == 'MEAN_OF_FC_AND_OURS' else 'FC_ONLY'
     own, arche, opt_field = targets(shadow_dir, slate)
     pool = Pool(slate, own)
@@ -324,7 +325,7 @@ def run(export, sd, shadow_dir, k=K, salary_anchor='NONE', phis=PHIS):
         result['by_phi'][str(phi)] = block
     result['as_of_utc'] = __import__('datetime').datetime.now(__import__('datetime').timezone.utc).isoformat()
     sfx = '' if salary_anchor == 'NONE' else f'_SAL_{salary_anchor}'
-    p = sd / f'SHOWDOWN_ATL_NO_DUPE_STACK_{src}{sfx}.json'
+    p = sd / f'{SLATE.PREFIX}_DUPE_STACK_{src}{sfx}.json'
     p.write_text(json.dumps(result, indent=1, default=str))
     return p, result
 

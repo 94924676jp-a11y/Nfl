@@ -39,6 +39,7 @@ _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
+from nfl.tools import showdown_slate_env as SLATE  # noqa: E402
 from nfl.tools import showdown_to_portfolio as S  # noqa: E402
 from nfl.dfs.showdown import optimal_worlds as OW  # noqa: E402
 
@@ -50,7 +51,7 @@ ANCHORS = {'Alvin Kamara': 33.0, 'Kendre Miller': 13.0, 'Bryce Lance': 25.0, 'Ja
            'Olamide Zaccheaus': 10.0}
 ANCHOR_SOURCE = 'Stokastic ATL@NO show 2026-10-05 (owner transcript), 45:18 / 1:10:53 / 26:57; UNVERIFIED_EXTERNAL'
 #: prize pool and fee from the DK contest names; rake assumed 15% -> field ~ prize / (fee * 0.85). ESTIMATE.
-CONTEST_PRIZE = {'196285137': (100000, 0.50), '196285160': (10000, 0.25), '196285161': (5000, 0.10)}
+CONTEST_PRIZE = {c: (v['prize_pool'], v['entry_fee']) for c, v in SLATE.CONTESTS.items()}
 
 
 def fc_projection(fc_csv):
@@ -132,7 +133,7 @@ def run(export, fc_csv, out_dir, absent=(), blend_draws=None):
     exact = collections.Counter(L)
     out_dir = pathlib.Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
-    with (out_dir / 'SHOWDOWN_ATL_NO_SHADOW_OWNERSHIP.csv').open('w', newline='') as fh:
+    with (out_dir / f'{SLATE.PREFIX}_SHADOW_OWNERSHIP.csv').open('w', newline='') as fh:
         w = csv.writer(fh)
         w.writerow(['player', 'team', 'pos', 'salary', 'fc_flex_proj', 'shadow_cpt_own_pct', 'shadow_flex_own_pct',
                     'shadow_total_own_pct', 'label'])
@@ -153,7 +154,7 @@ def run(export, fc_csv, out_dir, absent=(), blend_draws=None):
            'exact_duplication_in_shadow_field': {'distinct_lineups': len(exact), 'top': [[c, list(f), n] for (c, f), n in exact.most_common(10)]},
            'field_size_estimates': {c: round(p / (f * 0.85)) for c, (p, f) in CONTEST_PRIZE.items()},
            'FIELD_SIZE_NOTE': 'ESTIMATE: prize / (fee x 0.85); replace with the real entry counts when known'}
-    (out_dir / 'SHOWDOWN_ATL_NO_SHADOW_FIELD.json').write_text(json.dumps(doc, indent=1, default=str))
+    (out_dir / f'{SLATE.PREFIX}_SHADOW_FIELD.json').write_text(json.dumps(doc, indent=1, default=str))
     np.save(out_dir / 'shadow_field_lineups.npy', np.array([[c] + list(f) for c, f in L], dtype=object), allow_pickle=True)
     return doc, own, exact, slate
 

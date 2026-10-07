@@ -39,6 +39,8 @@ SD = _REPO / 'nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX'
 OUT = _REPO / 'nfl/market/atl_no_2026W4'
 KICKOFF_UTC = '2026-10-06T00:15:00+00:00'
 LABEL = 'SHADOW / NOT_VALIDATED'
+#: artifact-name prefix; nfl/market/showdown_prop_shadow.py sets it (and SD, OUT, KICKOFF_UTC) for any other slate
+SLATE_NAME = 'ATL_NO'
 #: Hard Rock market name -> (our simulated variable, how to read it). Priority order from the owner directive.
 MARKETS = {
     'player_receptions': ('receptions', 'COUNT'),
@@ -92,7 +94,7 @@ def seal():
                                'worlds': [round(float(x), 2) for x in a]}
     if not players:
         raise SystemExit('PROP_SEAL_EMPTY')
-    body = {'ARTIFACT': 'ATL_NO_PROP_FORECAST_SEAL', 'label': LABEL, 'source_dir': str(SD.relative_to(_REPO)),
+    body = {'ARTIFACT': f'{SLATE_NAME}_PROP_FORECAST_SEAL', 'label': LABEL, 'source_dir': str(SD.relative_to(_REPO)),
             'worlds_projection_sha256': meta.get('projection_sha256'), 'n_worlds': len(next(iter(W.values()))['receptions']),
             'kickoff_utc': KICKOFF_UTC, 'validation': {k: {'status': v[0], 'rule': v[1]} for k, v in VALIDATION.items()},
             'players': players}
@@ -166,7 +168,7 @@ def compare(board_csv):
     order = {v: i for i, v in enumerate(['receptions', 'rec_yards', 'rush_yards', 'pass_yards', 'pass_td', 'anytime_td'])}
     out.sort(key=lambda x: (order[x['our_variable']], x['player'], x['line']))
     stamp = dt.datetime.now(dt.timezone.utc).strftime('%Y%m%dT%H%MZ')
-    res = {'ARTIFACT': 'ATL_NO_PROP_COMPARISON', 'label': LABEL, 'seal_sha256': seal_doc['seal_sha256'],
+    res = {'ARTIFACT': f'{SLATE_NAME}_PROP_COMPARISON', 'label': LABEL, 'seal_sha256': seal_doc['seal_sha256'],
            'seal_written_at': seal_doc['written_at'], 'board': str(board_csv),
            'board_sha256': hashlib.sha256(pathlib.Path(board_csv).read_bytes()).hexdigest(),
            'n_compared': len(out), 'n_refused': len(refused), 'refused': refused, 'rows': out}
