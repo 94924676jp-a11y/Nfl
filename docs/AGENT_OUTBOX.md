@@ -4020,3 +4020,30 @@ already hold original DK exports for, so it can be reconciled field by field:
 Save under nfl/postgame/raw/statapi_sample/ with a PROVENANCE.jsonl (url, retrieved_at, sha256, plan/terms). Do NOT
 purchase or sign up for a paid plan: that is an owner decision (recorded in the readiness report). If no free/allowed
 sample exists, record NOT_AVAILABLE and stop.
+
+## REQUEST 2026-10-07 — TB@DAL Showdown (2026_05_TB_DAL, kickoff 2026-10-09T00:15:00Z): captures for the generic runner
+
+Slate prepared at nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/ (SLATE.json draft + SLATE_PREP.json: what was
+reconstructed from the repo and what was not). The runner refuses until each item below exists; nothing is stubbed.
+Save into that directory unless stated, sha16-suffixed like the ATL@NO captures, and push to
+claude/nfl-greenfield-architecture-stsxmk:
+
+1. **DKEntries export** for the TB@DAL Showdown contests the owner enters (owner download):
+   `DKEntries_TB_DAL_SHOWDOWN_2026W5.<sha16>.csv`, plus each contest's id, prize pool, entry fee, max entries per
+   user and DK field size.
+2. **nflverse depth_charts** for TB and DAL captured this week: `depth_charts_2026_TB_DAL.<sha16>.csv` (same schema as
+   the ATL@NO capture). The newest committed chart is 2026-09-14 and is not used.
+3. **Week-4 box data**: nflverse player stats and snap counts for 2026 week 4 (at least 2026_04_GB_TB and
+   2026_04_DAL_HOU; ideally the whole week) — the committed panel ends at week 3 for every club.
+4. **Final injury designations** for both clubs (Wednesday's final report for TNF), with source URLs.
+5. **Starting QBs** confirmed by a current team/depth source (provisional from the panel: Baker Mayfield TB,
+   Dak Prescott DAL).
+6. **FC Showdown context file** (optional; the field shadow and B4 need it).
+7. **At the inactive deadline (~22:45Z Thu)**: the official inactive list
+   `OFFICIAL_INACTIVES_TB_DAL_2026W5.json` + `.PROVENANCE.json` (OFFICIALLY_VERIFIED true only for an official
+   team/NFL publication; its sha256 must equal the list's).
+8. **After SEAL_PROPS, before kickoff**: the Hard Rock board `nfl/market/raw/HR_TB_DAL_BOARD_<UTC>.csv` with its
+   `.CAPTURE.json` sidecar (book, jurisdiction, product, settlement_rules, captured_at_utc, captured_by,
+   board_sha256).
+9. **After the game, inside DK's 10-day window**: full-field standings for every contest entered (owner export), for
+   `showdown_next_slate.py postgame`.
