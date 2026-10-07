@@ -1,42 +1,169 @@
 {
  "ARTIFACT": "CANDIDATE_STATUS_REGISTER",
  "RULE": "APPEND-ONLY. One row per status change; a later row supersedes an earlier one for the same candidate. Every row cites the evidence it rests on. The declaration records (e.g. ATL_NO_SUCCESSOR_CANDIDATES.json) are never edited; this register says what became of each declaration. A FAILED candidate is never revived under the same id: a successor gets a new id and its own pre-registration.",
- "LADDER": ["IMPLEMENTED", "ON_EXECUTION_PATH", "CONSUMED_BY_NEXT_STAGE", "SUCCESS_TESTED", "REFUSAL_TESTED", "ADVERSARIAL_TESTED", "PROSPECTIVELY_VALIDATED", "PROMOTED"],
- "STATUS_VOCABULARY": ["DECLARED", "SHADOW", "SHADOW_ON_PATH_NOT_CONSUMED", "FAILED_PREREGISTERED_BAR", "DEVELOPMENT_EVIDENCE_ONLY", "PRODUCTION_OWNER_APPROVED", "SUPERSEDED"],
+ "LADDER": [
+  "IMPLEMENTED",
+  "ON_EXECUTION_PATH",
+  "CONSUMED_BY_NEXT_STAGE",
+  "SUCCESS_TESTED",
+  "REFUSAL_TESTED",
+  "ADVERSARIAL_TESTED",
+  "PROSPECTIVELY_VALIDATED",
+  "PROMOTED"
+ ],
+ "STATUS_VOCABULARY": [
+  "DECLARED",
+  "SHADOW",
+  "SHADOW_ON_PATH_NOT_CONSUMED",
+  "FAILED_PREREGISTERED_BAR",
+  "DEVELOPMENT_EVIDENCE_ONLY",
+  "PRODUCTION_OWNER_APPROVED",
+  "SUPERSEDED"
+ ],
  "rows": [
-  {"date": "2026-10-07", "candidate": "SC-OWN-ROTATION-1", "status": "FAILED_PREREGISTERED_BAR",
-   "ladder_reached": ["IMPLEMENTED", "SUCCESS_TESTED", "REFUSAL_TESTED", "ADVERSARIAL_TESTED"],
-   "evidence": ["docs/NFL_SHOWDOWN_CHEAP_OWNERSHIP_PREREGISTRATION.md", "nfl/postgame/dupe_research/CHEAP_OWNERSHIP_LOSO.json", "nfl/field/showdown_cheap_ownership_research.py", "nfl/tests/test_cheap_ownership_successor.py"],
+  {
+   "date": "2026-10-07",
+   "candidate": "SC-OWN-ROTATION-1",
+   "status": "FAILED_PREREGISTERED_BAR",
+   "ladder_reached": [
+    "IMPLEMENTED",
+    "SUCCESS_TESTED",
+    "REFUSAL_TESTED",
+    "ADVERSARIAL_TESTED"
+   ],
+   "evidence": [
+    "docs/NFL_SHOWDOWN_CHEAP_OWNERSHIP_PREREGISTRATION.md",
+    "nfl/postgame/dupe_research/CHEAP_OWNERSHIP_LOSO.json",
+    "nfl/field/showdown_cheap_ownership_research.py",
+    "nfl/tests/test_cheap_ownership_successor.py"
+   ],
    "finding": "failed both testable LOSO folds (fit PIT@CLE -> score ATL@NO vs FC_ONLY and BLEND; fit ATL@NO -> score PIT@CLE); PHI@CHI NOT_AVAILABLE (no salaries). The baseline misses cheap rotation players in opposite directions on the two slates (-6.7pp ATL, +8.5pp PIT), so a fixed bucket correction cannot work. Thresholds were ATL-motivated; the PIT@CLE baseline is reconstructed.",
    "owner_ruling": "2026-10-07: do not continue it as if it passed; register it as failed; preserve the evidence; a successor only after a new pre-registered design and bar.",
-   "successor": "SC-OWN-ROTATION-2 (docs/NFL_SHOWDOWN_OWNERSHIP_SUCCESSOR_2_PREREGISTRATION.md), DECLARED only"},
-  {"date": "2026-10-07", "candidate": "SC-COH-1 (analogue library, market-matched, 2026-10-07 first pass)", "status": "DEVELOPMENT_EVIDENCE_ONLY",
-   "evidence": ["nfl/research/coherence/SC_COH_1_MEASUREMENT.json", "nfl/research/coherence/SC_COH_1_CLEAN_EVAL.json"],
+   "successor": "SC-OWN-ROTATION-2 (docs/NFL_SHOWDOWN_OWNERSHIP_SUCCESSOR_2_PREREGISTRATION.md), DECLARED only"
+  },
+  {
+   "date": "2026-10-07",
+   "candidate": "SC-COH-1 (analogue library, market-matched, 2026-10-07 first pass)",
+   "status": "DEVELOPMENT_EVIDENCE_ONLY",
+   "evidence": [
+    "nfl/research/coherence/SC_COH_1_MEASUREMENT.json",
+    "nfl/research/coherence/SC_COH_1_CLEAN_EVAL.json"
+   ],
    "finding": "matched analogue games on sportsbook total/spread (governance rule 1), pooled from the evaluated game's snaps (outcome-derived), compared to an incumbent whose inputs saw 2025.",
-   "owner_ruling": "2026-10-07: treat the old SC-COH-1 result as development evidence only."},
-  {"date": "2026-10-07", "candidate": "SC-COH-1-CLEAN (analogue library, football-only)", "status": "FAILED_PREREGISTERED_BAR",
-   "ladder_reached": ["IMPLEMENTED", "SUCCESS_TESTED", "REFUSAL_TESTED", "ADVERSARIAL_TESTED"],
-   "evidence": ["docs/NFL_SC_COH_1_CLEAN_EVAL_PREREGISTRATION.md", "nfl/research/coherence/SC_COH_1_CLEAN_EVAL.json", "nfl/tests/test_sc_coh_1_clean.py"],
-   "finding": "confirmation 2025 wk 10-18: energy 1.000, variogram 1.011, team-points CRPS 1.037 [1.002,1.075] fail; player DK CRPS 0.980 pass (1 of 4). Live post-steps (yards rescale, DST anchor) re-break accounting in both arms."},
-  {"date": "2026-10-07", "candidate": "SC-APPEAR-1 (corrected appearance rates)", "status": "SHADOW",
-   "ladder_reached": ["IMPLEMENTED", "SUCCESS_TESTED", "REFUSAL_TESTED", "ADVERSARIAL_TESTED"],
-   "evidence": ["nfl/research/appearance/SC_APPEAR_1_PRODUCTION_PATH.json", "nfl/research/appearance/SC_APPEAR_1_PROPAGATION.json"],
+   "owner_ruling": "2026-10-07: treat the old SC-COH-1 result as development evidence only."
+  },
+  {
+   "date": "2026-10-07",
+   "candidate": "SC-COH-1-CLEAN (analogue library, football-only)",
+   "status": "FAILED_PREREGISTERED_BAR",
+   "ladder_reached": [
+    "IMPLEMENTED",
+    "SUCCESS_TESTED",
+    "REFUSAL_TESTED",
+    "ADVERSARIAL_TESTED"
+   ],
+   "evidence": [
+    "docs/NFL_SC_COH_1_CLEAN_EVAL_PREREGISTRATION.md",
+    "nfl/research/coherence/SC_COH_1_CLEAN_EVAL.json",
+    "nfl/tests/test_sc_coh_1_clean.py"
+   ],
+   "finding": "confirmation 2025 wk 10-18: energy 1.000, variogram 1.011, team-points CRPS 1.037 [1.002,1.075] fail; player DK CRPS 0.980 pass (1 of 4). Live post-steps (yards rescale, DST anchor) re-break accounting in both arms."
+  },
+  {
+   "date": "2026-10-07",
+   "candidate": "SC-APPEAR-1 (corrected appearance rates)",
+   "status": "SHADOW",
+   "ladder_reached": [
+    "IMPLEMENTED",
+    "SUCCESS_TESTED",
+    "REFUSAL_TESTED",
+    "ADVERSARIAL_TESTED"
+   ],
+   "evidence": [
+    "nfl/research/appearance/SC_APPEAR_1_PRODUCTION_PATH.json",
+    "nfl/research/appearance/SC_APPEAR_1_PROPAGATION.json"
+   ],
    "finding": "passes its declared bar through the production allocator (retrospective 2025); p_plays is dropped at showdown_draws.py:103 so the gain reaches the draws only through mean shares; gate on current rates FAILS (-0.0475, z -20.6); rates+gate +0.027 (z 8.2). 2025 read three times.",
-   "owner_ruling": "2026-10-07: keep shadow-only; no production until validated end to end on the actual simulation path and then prospectively."},
-  {"date": "2026-10-07", "candidate": "B4 duplication shadow", "status": "SHADOW_ON_PATH_NOT_CONSUMED",
-   "ladder_reached": ["IMPLEMENTED", "ON_EXECUTION_PATH", "SUCCESS_TESTED", "REFUSAL_TESTED", "ADVERSARIAL_TESTED"],
-   "evidence": ["nfl/postgame/dupe_research/DUPE_RESEARCH.json", "nfl/postgame/dupe_research/DUPE_COPY_COUNT_SEMANTICS.json", "nfl/postgame/dupe_research/SHADOW_DRYRUN_ATL_NO_B4_B3S_FULL.json", "nfl/field/showdown_dupe_shadow.py"],
+   "owner_ruling": "2026-10-07: keep shadow-only; no production until validated end to end on the actual simulation path and then prospectively."
+  },
+  {
+   "date": "2026-10-07",
+   "candidate": "B4 duplication shadow",
+   "status": "SHADOW_ON_PATH_NOT_CONSUMED",
+   "ladder_reached": [
+    "IMPLEMENTED",
+    "ON_EXECUTION_PATH",
+    "SUCCESS_TESTED",
+    "REFUSAL_TESTED",
+    "ADVERSARIAL_TESTED"
+   ],
+   "evidence": [
+    "nfl/postgame/dupe_research/DUPE_RESEARCH.json",
+    "nfl/postgame/dupe_research/DUPE_COPY_COUNT_SEMANTICS.json",
+    "nfl/postgame/dupe_research/SHADOW_DRYRUN_ATL_NO_B4_B3S_FULL.json",
+    "nfl/field/showdown_dupe_shadow.py"
+   ],
    "finding": "LOSO other-copies actual/pred on our lineups 1.01 / 1.03 / 0.70 (B0 2.92 / 5.00 / 5.70); three contests from one game plus two other slates.",
-   "owner_ruling": "2026-10-07: prelock sealed shadow report only; never influences lineup selection; corrected copy-count semantics; accumulate complete-field evidence."},
-  {"date": "2026-10-07", "candidate": "B3S duplication shadow", "status": "SHADOW_ON_PATH_NOT_CONSUMED",
-   "ladder_reached": ["IMPLEMENTED", "ON_EXECUTION_PATH", "SUCCESS_TESTED", "REFUSAL_TESTED", "ADVERSARIAL_TESTED"],
-   "evidence": ["nfl/postgame/dupe_research/DUPE_RESEARCH.json", "nfl/postgame/dupe_research/DUPE_COPY_COUNT_SEMANTICS.json"],
+   "owner_ruling": "2026-10-07: prelock sealed shadow report only; never influences lineup selection; corrected copy-count semantics; accumulate complete-field evidence."
+  },
+  {
+   "date": "2026-10-07",
+   "candidate": "B3S duplication shadow",
+   "status": "SHADOW_ON_PATH_NOT_CONSUMED",
+   "ladder_reached": [
+    "IMPLEMENTED",
+    "ON_EXECUTION_PATH",
+    "SUCCESS_TESTED",
+    "REFUSAL_TESTED",
+    "ADVERSARIAL_TESTED"
+   ],
+   "evidence": [
+    "nfl/postgame/dupe_research/DUPE_RESEARCH.json",
+    "nfl/postgame/dupe_research/DUPE_COPY_COUNT_SEMANTICS.json"
+   ],
    "finding": "LOSO other-copies 1.09 / 1.00 / 0.76; salary-free fallback.",
-   "owner_ruling": "2026-10-07: as B4."},
-  {"date": "2026-10-07", "candidate": "Automatic specialist detector (showdown_slate_state.specialist_class)", "status": "PRODUCTION_OWNER_APPROVED",
-   "ladder_reached": ["IMPLEMENTED", "ON_EXECUTION_PATH", "CONSUMED_BY_NEXT_STAGE", "SUCCESS_TESTED", "REFUSAL_TESTED", "ADVERSARIAL_TESTED", "PROMOTED"],
-   "evidence": ["nfl/tools/showdown_slate_state.py", "nfl/tests/test_role_depth_adversarial.py", "nfl/postgame/showdown_atl_no_2026W4/evidence/REPRO_POSTRESTART_2026-10-07.json"],
+   "owner_ruling": "2026-10-07: as B4."
+  },
+  {
+   "date": "2026-10-07",
+   "candidate": "Automatic specialist detector (showdown_slate_state.specialist_class)",
+   "status": "PRODUCTION_OWNER_APPROVED",
+   "ladder_reached": [
+    "IMPLEMENTED",
+    "ON_EXECUTION_PATH",
+    "CONSUMED_BY_NEXT_STAGE",
+    "SUCCESS_TESTED",
+    "REFUSAL_TESTED",
+    "ADVERSARIAL_TESTED",
+    "PROMOTED"
+   ],
+   "evidence": [
+    "nfl/tools/showdown_slate_state.py",
+    "nfl/tests/test_role_depth_adversarial.py",
+    "nfl/postgame/showdown_atl_no_2026W4/evidence/REPRO_POSTRESTART_2026-10-07.json"
+   ],
    "finding": "ATL@NO upload byte-identical with the detector on, with and without the Adomitis hand tag.",
-   "owner_ruling": "2026-10-07: keep enabled in production (safety change; preserved ATL@NO output exactly; closes a role-contamination risk). No other promotion authorized."}
+   "owner_ruling": "2026-10-07: keep enabled in production (safety change; preserved ATL@NO output exactly; closes a role-contamination risk). No other promotion authorized."
+  },
+  {
+   "date": "2026-10-07",
+   "candidate": "COH-EVENT-LINKED-1 (event-linked post-steps over the incumbent raw draw)",
+   "status": "FAILED_PREREGISTERED_BAR",
+   "ladder_reached": [
+    "IMPLEMENTED",
+    "SUCCESS_TESTED",
+    "REFUSAL_TESTED",
+    "ADVERSARIAL_TESTED"
+   ],
+   "evidence": [
+    "docs/NFL_COHERENCE_REPAIR_PREREGISTRATION.md",
+    "nfl/research/coherence/EVENT_LINKED_WORLD.json",
+    "nfl/research/coherence/event_linked_world.py",
+    "nfl/research/coherence/invariants.py",
+    "nfl/tests/test_event_linked_world.py"
+   ],
+   "finding": "zero violations of 46 invariants at every stage (incumbent: 647,834 raw -> 1,087,270 after DST on 2025 dev; 77,598 -> 131,610 on 2026 confirmation). 2025 dev met every non-inferiority bar; the one-time 2026 wk 2-3 confirmation (n=32 games) did not: player DK CRPS 1.0148 [1.0072,1.0224], team-points CRPS 1.0111 (week-block upper 1.0127 but game-block 1.0279), variogram 1.0074 [0.9911,1.0266]; energy passes. The gap is already present at the raw re-expression (receiving yards/TDs moved onto catching teammates).",
+   "owner_ruling": "2026-10-07: no post-hoc correlation tuning; nothing promoted. A successor needs a new id, a per-catch/drive model, and its own pre-registration; 2026 wk 2-3 are now read."
+  }
  ]
 }
