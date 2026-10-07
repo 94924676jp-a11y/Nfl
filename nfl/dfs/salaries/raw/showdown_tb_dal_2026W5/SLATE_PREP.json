@@ -6,32 +6,54 @@
  "RECONSTRUCTED_FROM_REPO": {
   "tag_and_kickoff": "schedule vintage (above)",
   "starting_QBs_PROVISIONAL": {
-   "TB": {
-    "name": "Baker Mayfield",
-    "gsis_id": "00-0034855",
-    "evidence": "2026 wk1-3 pass attempts 32/37/40 (panel); wk3 also Jalon Daniels 3"
-   },
    "DAL": {
     "name": "Dak Prescott",
     "gsis_id": "00-0033077",
-    "evidence": "2026 wk1-3 pass attempts 34/33/41 (panel)"
+    "evidence": "depth chart QB1 (nflverse 2026-10-07T14:25Z); 2026 wk1-4 pass attempts 34/33/41/48; not on the week-5 injury report",
+    "status": "CONFIRMABLE"
    },
-   "STATUS": "PROVISIONAL: STARTERS_TB_DAL_2026W5.json is written only after a current depth chart / team report confirms; the runner refuses without it"
+   "TB": {
+    "status": "UNRESOLVED",
+    "evidence": "Baker Mayfield INACTIVE week 4 (weekly roster status INA; thumb); Jalon Daniels started week 4 (30 att, 148 yds); week-5 roster lists Mayfield ACT, depth chart lists him QB1, but the first week-5 practice report has him DID NOT PARTICIPATE (thumb). A depth chart is not confirmation. Precompute both: PRECOMPUTE_TB_QB_MAYFIELD and PRECOMPUTE_TB_QB_DANIELS; the official run uses whichever the final report / official inactives confirm.",
+    "CORRECTION": "SLATE_PREP of 2026-10-07 (commit 7cdc2b5d) listed Mayfield as provisional starter from weeks 1-3 data; superseded by the week-4/5 captures"
+   }
   }
  },
  "NOT_RECONSTRUCTIBLE (external captures; the runner refuses until each exists)": {
   "DKEntries export": "the owner's DKEntries CSV for the TB@DAL Showdown contests (salaries, DK ids, entry ids)",
   "contests": "contest ids with prize pool, entry fee, max entries per user, and DK field size",
-  "depth_chart": "nflverse depth_charts capture for TB and DAL taken this week; the newest committed chart is 2026-09-14 (nfl/vintage/depth_charts.f66f0c2583dba463.raw.csv.gz), three weeks stale -> not used",
   "designations": "final injury-report designations (Wed-Fri reports; TNF: Tue-Wed practice reports and Wed final designations)",
   "official_inactives": "the official inactive list ~90 minutes before kickoff, with a PROVENANCE record (OFFICIALLY_VERIFIED only for an official team/NFL publication; sha256 of the list)",
   "fc": "FC Showdown context file (optional; field shadow and B4 need it)",
-  "week_4_box_data": "the committed panel ends at 2026 week 3 for every club; 2026_04_GB_TB and 2026_04_DAL_HOU (2026-10-04) are absent, so projections would use weeks 1-3 only unless the week-4 nflverse player stats / snap counts are captured",
   "hard_rock_board": "after SEAL_PROPS, before kickoff, with the CAPTURE.json sidecar (book, jurisdiction, product, settlement_rules, captured_at_utc, captured_by, board_sha256)"
  },
  "SEQUENCE": "bash nfl/tools/rebuild_derived.sh -> complete SLATE.json -> showdown_next_slate.py run SLATE.json --mode precompute (scenario PRECOMPUTE) -> official inactives -> run SLATE.json (scenario OFFICIAL) -> B4/B3S shadow -> prop seal -> FINAL VERIFY -> Hard Rock capture -> market -> commit before 2026-10-09T00:15:00Z -> postgame (standings within DK's 10-day window)",
  "NEXT_PRIMETIME_SHOWDOWNS": {
   "2026_05_BAL_ATL": "Sun 2026-10-11 20:20 ET -> 2026-10-12T00:20:00Z",
   "2026_05_BUF_LA": "Mon 2026-10-12 20:15 ET -> 2026-10-13T00:15:00Z"
+ },
+ "CAPTURED_2026-10-07": {
+  "pbp_2026 weeks 1-4": "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz (+ .provenance.json)",
+  "depth_charts": "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/depth_charts_2026_TB_DAL.9e86fc58e24e74ee.csv",
+  "weekly_rosters": "nfl/vintage/weekly_rosters.efd424c87b892728.* (weeks through 5)",
+  "injuries": "nfl/vintage/injuries.e5b9e6f6b790481d.csv.gz (week 5 practice statuses; report_status not yet published)",
+  "derived_cache": "generation 2 (nfl/production/DERIVED_REBUILD_MANIFEST.json), panel 2026 weeks 1-4, rebuilt twice byte-identically",
+  "injury_watch": {
+   "TB": [
+    "Baker Mayfield QB thumb DNP",
+    "Chase McLaughlin K groin DNP",
+    "Antoine Winfield Jr. S rib DNP",
+    "Benjamin Morrison CB DNP",
+    "SirVocea Dennis LB DNP",
+    "Ko Kieft TE limited",
+    "Anthony Nelson LB limited"
+   ],
+   "DAL": [
+    "Cobie Durant CB DNP",
+    "DeMarvion Overshown LB DNP",
+    "Drew Shelton T DNP",
+    "Tyler Smith G limited"
+   ]
+  }
  }
 }
