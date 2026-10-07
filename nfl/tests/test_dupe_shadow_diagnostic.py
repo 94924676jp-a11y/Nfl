@@ -134,7 +134,12 @@ def test_selection_isolation():
         for p in (_REPO / d).rglob('*.py'):
             if 'showdown_dupe_shadow' in p.read_text(errors='ignore'):
                 hits.append(str(p.relative_to(_REPO)))
-    check(hits == [], f'no selection/portfolio/production module references the shadow tool ({hits})')
+    runner = 'nfl/tools/showdown_next_slate.py'
+    check(sorted(set(hits) - {runner}) == [], f'no selection/portfolio/production module references the shadow tool ({hits})')
+    s = (_REPO / runner).read_text()
+    built, call = s.find("L.add('PROJECT_SIMULATE_BUILD', 'PASS'"), s.find('nfl/field/showdown_dupe_shadow.py')
+    check(0 < built < call and 'SHADOWS_NON_BLOCKING' in s[call:],
+          'the runner calls it only after the upload is written, as a subprocess, and records it non-blocking')
 
 
 def test_dry_run_artifact():

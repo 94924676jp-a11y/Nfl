@@ -3981,3 +3981,26 @@ DK player ids (the same fields as a DKEntries export). If a FantasyCruncher-styl
 exists anywhere in project storage, that too (it is used only as a description of what the field's optimizers saw,
 never as a football input). Save as nfl/dfs/salaries/raw/DK_DRAFTABLES_PHI_CHI_SHOWDOWN_2026W3.<sha16>.csv with a
 provenance line; push to claude/nfl-greenfield-architecture-stsxmk. Not blocking the next slate.
+
+## REQUEST 2026-10-07 — nflverse 2024-2025 weekly rosters and game-day inactives (SC-APPEAR-1 follow-up)
+
+SC-APPEAR-1 was replayed through the production allocator on held-out 2025 (nfl/research/appearance/
+SC_APPEAR_1_PRODUCTION_PATH.json). Two limits trace to data this checkout does not hold: "dressed" is approximated by
+presence in snap counts (an active player with zero snaps drops out of both arms, so observed zero shares are too low by
+an unmeasured amount), and practice-squad elevations cannot be identified (that cohort is a labelled proxy).
+
+Needed, for 2024 and 2025 regular seasons: nflverse `weekly_rosters` (roster_{season}_weekly: gsis_id, team, week,
+status, status_description_abbr, game_type) and any game-day inactive / active list per game (team, week, gsis_id or
+name, ACTIVE/INACTIVE). Save under nfl/postgame/raw/role_audit_history/ with sha256 rows added to its PROVENANCE.json;
+push to claude/nfl-greenfield-architecture-stsxmk. Not blocking the next slate; it decides whether the SC-APPEAR-1
+promotion recommendation survives the snap-count leak.
+
+## REQUEST 2026-10-07 — next Showdown: inputs for nfl/tools/showdown_next_slate.py, then the Hard Rock board
+
+The live path is now one command per phase from a slate config (template: nfl/dfs/salaries/NEXT_SLATE_CONFIG_TEMPLATE.json).
+For the next Showdown slate, needed in nfl/dfs/salaries/raw/showdown_<away>_<home>_2026W<n>/: the DKEntries export,
+the FC context file (optional; field shadow and B4 need it), the depth-chart capture for both clubs, confirmed starting
+QBs, and at the inactive deadline the OFFICIAL inactive list with a PROVENANCE record (OFFICIALLY_VERIFIED true only for
+an official team/NFL publication; its sha256 must equal the list's). After `run` prints SEAL_PROPS PASS: capture the Hard
+Rock board in the existing schema as nfl/market/raw/HR_<AWAY>_<HOME>_BOARD_<UTC stamp>.csv, before kickoff, and push;
+this session then runs `showdown_next_slate.py market`. The board is downstream only.

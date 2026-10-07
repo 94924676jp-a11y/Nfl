@@ -1,0 +1,123 @@
+{
+ "ARTIFACT": "SHOWDOWN_NEXT_SLATE_RUN_LEDGER",
+ "steps": [
+  {
+   "step": "DISCOVER",
+   "state": "PASS",
+   "at": "2026-10-07T04:28:59.849590+00:00",
+   "tag": "ATL_NO_2026W4",
+   "scenario": "REHEARSAL_RUNNER",
+   "mode": "final",
+   "inputs": {
+    "export": {
+     "path": "nfl/dfs/salaries/raw/showdown_atl_no_2026W4/DKEntries_ATL_NO_SHOWDOWN_2026W4.fd0c1faa2271ca66.csv",
+     "sha256": "fd0c1faa2271ca6622d3ecea4a1decf6843729a8e3a5c624466d5788df2d65a8"
+    },
+    "fc": {
+     "path": "nfl/dfs/salaries/raw/showdown_atl_no_2026W4/THIRDPARTY_FC_showdown_ATL_NO_2026W4_CONTEXT_ONLY.330fdd518c66ea57.csv",
+     "sha256": "330fdd518c66ea57651f799022af152f9997d1925097224edb2a527888da8b7a"
+    },
+    "designations": {
+     "path": "nfl/dfs/salaries/showdown_atl_no/DESIGNATIONS_ATL_NO_2026W4_V4_RW_INACTIVES_CHARTFIX.json",
+     "sha256": "58c716149053d1fdb15f97b9232781981eee8e9778126feec3447f6a8596307f"
+    },
+    "official_inactives": {
+     "path": "nfl/dfs/salaries/raw/showdown_atl_no_2026W4/OFFICIAL_INACTIVES_ATL_NO_2026W4.json",
+     "sha256": "411b0cd3fdaa420a89a6590daf1836547f0a6fad6dab180a435b06150fb46627"
+    },
+    "official_inactives_provenance": {
+     "path": "nfl/dfs/salaries/raw/showdown_atl_no_2026W4/OFFICIAL_INACTIVES_ATL_NO_2026W4.PROVENANCE.json",
+     "sha256": "4c5928b58cde4399756d065fb61ce64df10225cb06aac1c7a01506c5cce7505f"
+    },
+    "confirmed_starters": {
+     "path": "nfl/dfs/salaries/showdown_atl_no/STARTERS_ATL_NO_2026W4.json",
+     "sha256": "263aed57b3fed88049284158842dfbc09419bb7eef1e8bcb1fd91aa5e685711f"
+    },
+    "depth_chart": {
+     "path": "nfl/dfs/salaries/raw/showdown_atl_no_2026W4/depth_charts_2026_ATL_NO.1e6aa6437a6ae01b.csv",
+     "sha256": "7a54bca2911e0153cab41474429855ba83e8913307a19513469cf3509c6c5d07"
+    }
+   },
+   "REHEARSAL": true
+  },
+  {
+   "step": "VERIFY",
+   "state": "PASS",
+   "at": "2026-10-07T04:29:00.023708+00:00",
+   "derived": {
+    "verified": [
+     "DST_RATES.json",
+     "FORWARD_CHAIN.json",
+     "KICKER_RATES.json",
+     "KICKER_WORLD.json",
+     "TD_RATES.json",
+     "USAGE_HISTORY_2021_2026.json"
+    ]
+   },
+   "dk_input_gate": "DK_INPUT_GATE_PASS",
+   "dk_sha256": "fd0c1faa2271ca6622d3ecea4a1decf6843729a8e3a5c624466d5788df2d65a8",
+   "teams": [
+    "ATL",
+    "NO"
+   ],
+   "contests_in_export": [
+    "196285137",
+    "196285160",
+    "196285161"
+   ],
+   "official_inactives_n": 13,
+   "officially_verified": true,
+   "inactives_evidence_tier": "OFFICIAL_PUBLISHED_LIST_VERIFIED_BY_OWNER (Atlanta Falcons, New Orleans Saints and NFL.com official publications; verification relayed by the owner, not captured by this session, whose egress denies those hosts)",
+   "ready_eligible": false
+  },
+  {
+   "step": "FREEZE",
+   "state": "PASS",
+   "at": "2026-10-07T04:29:00.024344+00:00",
+   "freeze": "nfl/dfs/salaries/showdown_atl_no/FOOTBALL_REALITY_FREEZE_REHEARSAL_RUNNER.json",
+   "seal": "0a695b708684b3617420af36b75380a52d38d58bc8fc887d5ce6d972665bf5cc"
+  },
+  {
+   "step": "PROJECT_SIMULATE_BUILD",
+   "state": "PASS",
+   "at": "2026-10-07T04:35:25.211235+00:00",
+   "upload": "nfl/dfs/salaries/showdown_atl_no/REHEARSAL_RUNNER/SHOWDOWN_ATL_NO_DK_UPLOAD.csv",
+   "upload_sha256": "8f4d9a77f37957ab44b116ebc35a950a601fb2a2d39f1d8823f7fd847c6931d5",
+   "tail": "7.0344\n    QB  n=  4 mean 9.396\n    RB  n=  5 mean 9.992\n    WR  n= 10 mean 6.765\n    TE  n=  7 mean 3.786\n    PROJECTED: 26\n    NOT_PLAYING_REPORTED_INACTIVE: 26\n    PROJECTED_KICKER: 2\n    PROJECTED_DST: 2\n  -> nfl/dfs/salaries/showdown_atl_no/SHOWDOWN_ATL_NO_2026W4_PROJ.json\ndraws PASS SHOWDOWN_SLATE_DRAWN 30 players x 2000 worlds; sanity PASS[FOOTBALL_SANITY_PASS]\nportfolio PASS SHOWDOWN_PORTFOLIO_BUILT 5005 candidates; NFL Showdown $100K mini-MAX [150 Entry M 150/150 cov 1.000; NFL Showdown $10K Quarter Jukebox [Just  20/20 cov 0.827; NFL Showdown $5K Dime Package [Just $0.1 2/2 cov 0.317"
+  },
+  {
+   "step": "SHADOWS_NON_BLOCKING",
+   "state": "RECORDED",
+   "at": "2026-10-07T04:45:10.846737+00:00",
+   "shadow_fc": "PASS",
+   "shadow_blend": "PASS",
+   "audit": "PASS",
+   "board_blend": "PASS",
+   "board_fc": "PASS",
+   "arch_blend": "PASS",
+   "arch_fc": "PASS",
+   "fc_compare": "PASS",
+   "cycle1": "PASS",
+   "prelock_board": "FAIL rc=1: EXPECTED_ONE SHOWDOWN_*_EXTERNAL_VIDEO_CLAIMS.csv: []",
+   "B4_SHADOW": "PASS nfl/dfs/salaries/showdown_atl_no/DUPE_SHADOW_B4_REHEARSAL_RUNNER.json"
+  },
+  {
+   "step": "SEAL_PROPS",
+   "state": "PASS",
+   "at": "2026-10-07T04:45:11.199757+00:00",
+   "out": "nfl/market/rehearsal_atl_no_runner",
+   "tail": "/home/user/nfl/nfl/market/rehearsal_atl_no_runner/PROP_FORECAST_SEAL.json 85bf03ecc917754aad486b96244968cd031c17bf6239a8092e4ea759de3656c2 2026-10-07T04:45:11.151594+00:00 26 players"
+  },
+  {
+   "step": "FINAL_VERIFY",
+   "state": "NOT_READY",
+   "at": "2026-10-07T04:51:01.566200+00:00",
+   "upload_sha256": "8f4d9a77f37957ab44b116ebc35a950a601fb2a2d39f1d8823f7fd847c6931d5",
+   "reproduced_sha256": "8f4d9a77f37957ab44b116ebc35a950a601fb2a2d39f1d8823f7fd847c6931d5",
+   "blockers": [
+    "REHEARSAL_NOT_LIVE (kickoff and scenario are rehearsal values; never READY)"
+   ],
+   "NOT_SUBMITTED": "nothing is uploaded to DraftKings or entered; no wager is recommended"
+  }
+ ]
+}

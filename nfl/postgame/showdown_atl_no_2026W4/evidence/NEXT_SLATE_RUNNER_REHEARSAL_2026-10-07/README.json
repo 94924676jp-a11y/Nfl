@@ -1,0 +1,18 @@
+{
+ "ARTIFACT": "NEXT_SLATE_RUNNER_REHEARSAL",
+ "date": "2026-10-07",
+ "what": "nfl/tools/showdown_next_slate.py run on the frozen ATL@NO inputs with rehearsal=true, a stand-in kickoff 4h ahead, official inactives (OFFICIALLY_VERIFIED provenance)",
+ "result": "DISCOVER, VERIFY, FREEZE, PROJECT_SIMULATE_BUILD, SHADOWS (all but prelock_board), SEAL_PROPS PASS; FINAL_VERIFY reproduced the upload from frozen worlds byte-for-byte (8f4d9a77...); NOT_READY with the single blocker REHEARSAL_NOT_LIVE, as designed",
+ "found_and_fixed_after_this_run": [
+  "prelock_board required the ATL-only external video-claims file (now NOT_PROVIDED_FOR_THIS_SLATE when absent; ATL board unchanged; PRELOCK_BOARD_AFTER_FIX.json built on the same scenario)",
+  "the B4 shadow was labelled PRELOCK in a rehearsal (now passed --dry-run)"
+ ],
+ "B4_NOTE": "DUPE_SHADOW_B4_REHEARSAL_RUNNER.json trained WITH ATL@NO (no exclusion; the live path trains on every archived slate), so on this slate it is in-sample and is not evidence about B4; the out-of-sample ATL dry run is nfl/postgame/dupe_research/SHADOW_DRYRUN_ATL_NO_B4_B3S_FULL.json",
+ "files": [
+  "DUPE_SHADOW_B4_REHEARSAL_RUNNER.json",
+  "FINISH_CHAIN_CHECK.json",
+  "FOOTBALL_REALITY_FREEZE_REHEARSAL_RUNNER.json",
+  "PRELOCK_BOARD_AFTER_FIX.json",
+  "RUN_LEDGER_REHEARSAL_RUNNER.json"
+ ]
+}
