@@ -47,6 +47,12 @@ build kicker_model  nfl/derived/KICKER_RATES.json            python3.12 nfl/tool
 build kicker_world  nfl/derived/KICKER_WORLD.json            python3.12 nfl/tools/kicker_world.py
 build dst_model     nfl/derived/DST_RATES.json               python3.12 -c "import sys; sys.path.insert(0, '.'); from nfl.tools import dst_model as M; r = M.build(); sys.exit(0 if isinstance(r, tuple) else 1)"
 build forward_chain nfl/derived/FORWARD_CHAIN.json           python3.12 nfl/tools/forward_chain.py
+# The P4B research binaries (gitignored, read in place by research and several tests). regenerate.py verifies every
+# leaf and both output hashes against ABC_MPR_IDENTITY and refuses on any mismatch; only verified bytes are copied.
+RG=$(mktemp -d)
+build p4b_regen "$RG/panel_enriched.pkl" python3.12 nfl/research/repro/regenerate.py --emit "$RG"
+git checkout -q -- nfl/research/repro/regeneration_report.json 2>/dev/null || true   # its run report is not a rebuild output
+cp "$RG/panel_enriched.pkl" "$RG/volume_store.npy" nfl/research/p4b/ && rm -rf "$RG" && echo "ok   p4b research binaries placed"
 
 python3.12 - "$MANIFEST" "$RECORD" <<'PY'
 import hashlib, json, pathlib, sys

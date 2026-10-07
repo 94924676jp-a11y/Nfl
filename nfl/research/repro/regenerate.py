@@ -52,6 +52,13 @@ for _y in range(2020, 2026):
 
 CODE_DIRS = ('p1', 'p2', 'p3', 'p4b')
 
+#: Leaves in INPUT_MANIFEST.json that are NOT inputs of the P1-P4B chain. They are hash-verified like every other
+#: leaf and then deliberately not staged. Without this declaration R7's dc25_daily.csv (added 2026-09-10, read in
+#: place by nfl/production/nonqb/appearance_r7.py and qb_room_v2.py) made every regeneration refuse LEAF_UNPLACED
+#: from that commit until 2026-10-07. The chain's output hashes matching the spec is what proves the exclusion.
+NOT_A_CHAIN_INPUT = {'dc25_daily.csv': 'read in place by nfl/production/nonqb/appearance_r7.py and qb_room_v2.py; '
+                                       'no file under p1/p2/p3/p4b references it'}
+
 
 class RegenerationRefused(RuntimeError):
     """Any condition under which an artifact must not be trusted."""
@@ -110,6 +117,9 @@ def stage_inputs(work):
                 f'{got[:12]}, manifest says {meta["sha256_decompressed"][:12]}')
         if len(raw) != meta['bytes_decompressed']:
             raise RegenerationRefused(f'LEAF_SIZE_MISMATCH: {name}')
+        if name in NOT_A_CHAIN_INPUT and name not in PLACEMENT:
+            placed[name] = got          # verified above; declared not to be a chain input, so not staged
+            continue
         sub = PLACEMENT.get(name)
         if sub is None:
             raise RegenerationRefused(f'LEAF_UNPLACED: {name} has no declared '
