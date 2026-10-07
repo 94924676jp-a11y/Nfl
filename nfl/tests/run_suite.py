@@ -369,6 +369,14 @@ def main(argv=None):
           + (f"  violations {[v['path'] for v in mode_boundary['violations'][:6]]}"
              if mode_boundary.get('violations') else ''))
     os.environ['NFL_SUITE_RUN_ID'] = _RUN_ID
+    # UNDER A COMPLETION CERTIFICATE (nfl/tests/certify_suite.py sets NFL_SUITE_CERTIFY) the progress file belongs to
+    # THIS run alone. Harness self-tests launch nested runners that inherit the environment; before 2026-10-07 they
+    # appended their own suite_start/module_done/suite_done records to it (11 run ids in one certified run), which
+    # makes completion unprovable. Anything this process spawns now writes to a sibling file instead. A caller that
+    # passes its own NFL_SUITE_PROGRESS explicitly is unaffected; ordinary runs (no certificate) are unchanged.
+    if os.environ.get('NFL_SUITE_CERTIFY'):
+        os.environ['NFL_SUITE_PROGRESS_PARENT'] = PROGRESS_PATH
+        os.environ['NFL_SUITE_PROGRESS'] = PROGRESS_PATH + '.nested.jsonl'
     os.environ.setdefault('NFL_CONTROL_HITS', os.path.join(ROOT, 'nfl/tests/_control_hits.jsonl'))
     _emit({'phase': 'suite_start', 'n_modules': len(files), 'order': order_note,
            'shuffle_seed': shuffle_seed, 'reverse': reverse},

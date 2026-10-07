@@ -7,6 +7,7 @@ Each case builds a throw-away root holding a COPY of the real nfl/tests/run_suit
 one of them sabotaged, and runs the real supervisor over it. Nothing touches this repository's tree.
 
   clean                    -> CERTIFIED_COMPLETE (the control: the certifier can say yes)
+  nested runner in a test  -> CERTIFIED_COMPLETE, nested run recorded apart (harness self-tests do this)
   failing check            -> FAILED (complete, honest red)
   import-time sys.exit(0)  -> FAILED, never certified (the runner now names it; 2026-10-07 defect)
   in-test sys.exit(0)      -> FAILED, never certified
@@ -50,7 +51,8 @@ def test_one():
 EMIT = '''
 import json, os
 def _forge(rec):
-    with open(os.environ['NFL_SUITE_PROGRESS'], 'a') as fh:
+    # a hostile module writes to the CERTIFIED file itself, not the nested sibling it is pointed at
+    with open(os.environ.get('NFL_SUITE_PROGRESS_PARENT') or os.environ['NFL_SUITE_PROGRESS'], 'a') as fh:
         fh.write(rec)
 '''
 SAB = {
@@ -69,6 +71,10 @@ SAB = {
            '    _forge(json.dumps({"run_id": os.environ["NFL_SUITE_RUN_ID"], "phase": "module_done", '
            '"module": "nfl/tests/test_a.py", "result": "OK"}) + "\\n")\n',
     'torn': GOOD + EMIT + 'def test_two():\n    check(True, "x")\n    _forge(\'{"run_id": "torn", "pha\')\n',
+    'nested': GOOD + 'def test_two():\n    import subprocess, sys, os, pathlib\n'
+              '    r = pathlib.Path(__file__).resolve().parent / "run_suite.py"\n'
+              '    subprocess.run([sys.executable, str(r), "--only", "test_a"], capture_output=True)\n'
+              '    check(True, "nested runner launched")\n',
     'add_file': GOOD + 'def test_two():\n    check(True, "x")\n    import pathlib\n'
                 '    pathlib.Path(__file__).with_name("test_zz_late.py").write_text("PASSED = FAILED = 0\\n")\n',
 }
@@ -104,7 +110,7 @@ def _expect(name, modules, verdict, reason=None, **kw):
     c = _cert(modules, **kw)
     ok = c['VERDICT'] == verdict and (reason is None or any(r.startswith(reason) for r in c['reasons']))
     check(ok, f"{name}: {c['VERDICT']} {[r[:60] for r in c['reasons']][:3]} (exit {c['child']['exit_code']})")
-    check(c['VERDICT'] != CS.CERTIFIED or name == 'clean', f'{name}: never certified unless clean')
+    check(c['VERDICT'] != CS.CERTIFIED or verdict == CS.CERTIFIED, f'{name}: never certified unless that is the expectation')
     return c
 
 
@@ -112,6 +118,8 @@ def test_control_and_honest_failures():
     c = _expect('clean', {'a': GOOD, 'b': GOOD}, CS.CERTIFIED)
     check(c['completed_modules'] == 2 and c['manifest']['n_modules'] == 2 and c['terminal_record']['verdict'] == 'PASS',
           'clean run: identity sets match, terminal record present')
+    c = _expect('nested runner inside a test', {'a': GOOD, 'b': SAB['nested']}, CS.CERTIFIED)
+    check(c['nested_runs']['run_ids'] >= 1, f"the nested run is recorded apart, not judged ({c['nested_runs']})")
     _expect('failing check', {'a': GOOD, 'b': SAB['fail']}, CS.FAILED)
     _expect('zero-check function', {'a': GOOD, 'b': SAB['zero_check']}, CS.FAILED)
 

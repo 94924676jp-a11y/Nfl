@@ -84,6 +84,15 @@ def _git(root, *a):
         return None
 
 
+def _porcelain(root):
+    """`git status --porcelain` lines, NOT stripped: the leading space is part of the two-letter status code."""
+    try:
+        out = subprocess.run(['git', 'status', '--porcelain'], cwd=root, capture_output=True, text=True, timeout=60).stdout
+    except (OSError, subprocess.TimeoutExpired):
+        return []
+    return [l for l in out.splitlines() if l.strip()]
+
+
 def environment(root):
     deps = {}
     for mod in ('numpy', 'pandas'):
@@ -115,6 +124,20 @@ def read_records(path):
         except ValueError:
             probs.append(f'TRUNCATED_RECORD: line {n} does not parse: {line[:80]!r}')
     return recs, probs
+
+
+def _nested(progress):
+    """Nested runners launched by harness self-tests write here (NFL_SUITE_CERTIFY redirect). Reported, not judged."""
+    p = pathlib.Path(str(progress) + '.nested.jsonl')
+    if not p.exists():
+        return {'file': None, 'run_ids': 0}
+    ids = set()
+    for line in p.read_text(errors='replace').splitlines():
+        try:
+            ids.add(json.loads(line).get('run_id'))
+        except ValueError:
+            pass
+    return {'file': p.name, 'run_ids': len(ids), 'sha256': _sha(p)}
 
 
 def judge(expected, recs, rc, timed_out, stdout, manifest_after_ok):
@@ -180,12 +203,12 @@ def certify(root=_REPO, timeout=7200, out_dir=None, runner_args=(), label='AUTHO
     cert_id = f'{stamp}-{os.getpid()}'
     expected, msha = manifest(root)
     env_rec = environment(root)
-    tree_before = set((_git(root, 'status', '--porcelain') or '').splitlines())
+    tree_before = set(_porcelain(root))
     progress = out_dir / f'SUITE_PROGRESS_{cert_id}.jsonl'
     log = out_dir / f'SUITE_LOG_{cert_id}.txt'
     if progress.exists():
         raise SystemExit(f'PROGRESS_FILE_EXISTS {progress}')
-    env = dict(os.environ, NFL_SUITE_PROGRESS=str(progress))
+    env = dict(os.environ, NFL_SUITE_PROGRESS=str(progress), NFL_SUITE_CERTIFY='1')
     t0 = time.time()
     timed_out, rc = False, None
     with open(log, 'w') as fh:
@@ -201,7 +224,7 @@ def certify(root=_REPO, timeout=7200, out_dir=None, runner_args=(), label='AUTHO
     recs, rprobs = read_records(progress)
     after, msha_after = manifest(root)
     rel_out = str(out_dir.resolve().relative_to(root)) if out_dir.resolve().is_relative_to(root) else None
-    tree_after = set((_git(root, 'status', '--porcelain') or '').splitlines())
+    tree_after = set(_porcelain(root))
     mutated = sorted(l[3:] for l in tree_after - tree_before if not (rel_out and l[3:].startswith(rel_out)))
     verdict, reasons, runner_verdict = judge(expected, recs, rc, timed_out, stdout, msha_after == msha)
     if rprobs:
@@ -217,6 +240,7 @@ def certify(root=_REPO, timeout=7200, out_dir=None, runner_args=(), label='AUTHO
                       'log': log.name, 'log_sha256': _sha(log), 'progress': progress.name,
                       'progress_sha256': _sha(progress) if progress.exists() else None},
             'completed_modules': len({r.get('module') for r in done}),
+            'nested_runs': _nested(progress),
             'TREE_MUTATED_BY_RUN': {'paths': mutated, 'n': len(mutated),
                                     'NOTE': 'working-tree entries that changed while the suite ran (outside the certificate '
                                             'directory). Reported, not a verdict reason: the mode-boundary judge in '
