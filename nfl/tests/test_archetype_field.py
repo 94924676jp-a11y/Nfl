@@ -20,7 +20,7 @@ P = F = 0
 
 def check(ok, msg):
     global P, F
-    P, F = P + ok, F + (not ok)
+    P, F = P + int(bool(ok)), F + int(not ok)
     print(('  ok   ' if ok else '  FAIL ') + msg)
 
 
@@ -97,8 +97,9 @@ def test_stack_flags():
     check(rows[0]['FLAG'] == want, f'the >2x disagreement flag follows its definition (E1 {e1}, E3 {e3}, flag {rows[0]["FLAG"]})')
 
 
-for t in (test_guarantees, test_stack_flags):
-    print('##', t.__name__)
-    t()
-print(f'\nPASSED {P} FAILED {F}')
-sys.exit(1 if F else 0)
+if __name__ == '__main__':
+    for t in (test_guarantees, test_stack_flags):
+        print('##', t.__name__)
+        t()
+    print(f'\nPASSED {P} FAILED {F}')
+    sys.exit(1 if F else 0)

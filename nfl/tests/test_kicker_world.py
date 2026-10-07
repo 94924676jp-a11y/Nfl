@@ -56,8 +56,9 @@ def test_kicker_moves_with_his_offence():
           f'34-point world {sum(hi) / 4000:.2f} vs 10-point world {sum(lo) / 4000:.2f}')
 
 
-for t in (test_rates_are_measured_not_typed, test_identities_per_world, test_kicker_moves_with_his_offence):
-    print('##', t.__name__)
-    t()
-print(f'\nPASSED {P} FAILED {F}')
-sys.exit(1 if F else 0)
+if __name__ == '__main__':
+    for t in (test_rates_are_measured_not_typed, test_identities_per_world, test_kicker_moves_with_his_offence):
+        print('##', t.__name__)
+        t()
+    print(f'\nPASSED {P} FAILED {F}')
+    sys.exit(1 if F else 0)

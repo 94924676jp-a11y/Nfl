@@ -132,8 +132,9 @@ def test_swap_polish():
         check(ok, f"trial {trial}: objective {P['objective']['value']:.4f} -> {Q['objective']['value']:.4f}, caps/overlap held")
 
 
-for t in (test_dk_input_gate, test_ladder_fills_or_blocks, test_verifier_catches_tampering, test_swap_polish):
-    print('##', t.__name__)
-    t()
-print(f'\nPASSED {P} FAILED {F}')
-sys.exit(1 if F else 0)
+if __name__ == '__main__':
+    for t in (test_dk_input_gate, test_ladder_fills_or_blocks, test_verifier_catches_tampering, test_swap_polish):
+        print('##', t.__name__)
+        t()
+    print(f'\nPASSED {P} FAILED {F}')
+    sys.exit(1 if F else 0)

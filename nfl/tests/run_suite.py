@@ -445,7 +445,11 @@ def main(argv=None):
         try:
             with redirect_stdout(buf):
                 spec.loader.exec_module(mod)
-        except Exception:                                        # noqa: BLE001
+        # SystemExit TOO. It is a BaseException, so `except Exception` let a module that calls sys.exit() at
+        # import END THIS RUNNER with the module's own exit status -- found 2026-10-07 when
+        # test_archetype_field.py's top-level sys.exit(0) stopped a 364-module run at module 12 and the run
+        # exited 0 with no summary: a truncated suite reading as a green one.
+        except (Exception, SystemExit):                          # noqa: BLE001
             n_raise += 1
             problems.append(f'IMPORT {f}\n{traceback.format_exc(limit=3)}')
             _emit({'phase': 'module_done', 'i': i, 'module': f,
@@ -509,7 +513,7 @@ def main(argv=None):
             try:
                 with redirect_stdout(buf):
                     getattr(mod, n)()
-            except Exception:                                    # noqa: BLE001
+            except (Exception, SystemExit):                      # noqa: BLE001  (see the import guard above)
                 raised_here = True
                 n_raise += 1
                 problems.append(f'RAISED {f}::{n}\n'

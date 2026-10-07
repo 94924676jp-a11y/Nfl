@@ -25,6 +25,12 @@ if ! python3.12 -c "import numpy, pandas" 2>/dev/null; then
   export PYTHONPATH=$PYLIB${PYTHONPATH:+:$PYTHONPATH}
 fi
 echo "PYTHONPATH=${PYTHONPATH:-}"
+# A fresh container's clone can be SHALLOW, and the frozen-candidate tests read pinned blobs from history
+# (test_appearance_candidate_b: FROZEN_BLOB_NOT_RETRIEVABLE on 2026-10-07). Fetch the history; if that fails, say so.
+if [ "$(git rev-parse --is-shallow-repository 2>/dev/null)" = "true" ]; then
+  git fetch --quiet --unshallow origin "$(git rev-parse --abbrev-ref HEAD)" && echo "history: unshallowed" \
+    || echo "WARN SHALLOW_CLONE: pinned-blob tests will fail until history is fetched"
+fi
 
 build() {  # name artifact command...
   name=$1; art=$2; shift 2

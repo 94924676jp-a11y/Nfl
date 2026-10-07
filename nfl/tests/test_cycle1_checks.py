@@ -55,8 +55,9 @@ def test_tonight():
     check(not bad, f'board cpt_mean = 1.5 x sim_mean for every player (rounding 0.01) {bad[:5]}')
 
 
-for t in (test_synthetic, test_tonight):
-    print('##', t.__name__)
-    t()
-print(f'\nPASSED {P} FAILED {F}')
-sys.exit(1 if F else 0)
+if __name__ == '__main__':
+    for t in (test_synthetic, test_tonight):
+        print('##', t.__name__)
+        t()
+    print(f'\nPASSED {P} FAILED {F}')
+    sys.exit(1 if F else 0)
