@@ -131,6 +131,27 @@ def test_run_refusals():
             ledger.unlink()
 
 
+def test_postgame_phase():
+    import io
+    from contextlib import redirect_stdout
+    with tempfile.TemporaryDirectory() as td:
+        cfg = _write(td, {**BASE, 'scenario': 'TEST_POSTGAME'})
+        _refused(lambda: NS.postgame(cfg, []), 'POSTGAME_NEEDS_STANDINGS', 'postgame without standings is refused')
+        _refused(lambda: NS.postgame(cfg, ['999=x.zip']), 'POSTGAME_UNDECLARED_CONTEST',
+                 'standings for an undeclared contest are refused')
+        out = _REPO / D / 'POSTGAME_TEST_POSTGAME.json'
+        try:
+            with redirect_stdout(io.StringIO()):
+                rc = NS.postgame(cfg, ['196285160=already-archived'])
+            doc = json.loads(out.read_text())
+            c = doc['contests']['196285160']
+            check(rc == 0 and c['reconciliation'] == 'RECONCILED' and str(c['grade']).startswith('NOT_GRADED: no sealed shadow'),
+                  f"archived ATL@NO 20-max reconciles; with no sealed shadow it is NOT_GRADED, never zero ({c.get('grade')})")
+        finally:
+            if out.exists():
+                out.unlink()
+
+
 def test_slate_env_defaults_are_atl():
     from nfl.tools import showdown_slate_env as E
     check(E.PREFIX == 'SHOWDOWN_ATL_NO' and E.TAG == 'ATL_NO_2026W4' and E.WEEK == '4'
@@ -151,7 +172,7 @@ def test_slate_env_defaults_are_atl():
 
 
 if __name__ == '__main__':
-    for t in (test_discover, test_verify_inputs, test_run_refusals, test_slate_env_defaults_are_atl):
+    for t in (test_discover, test_verify_inputs, test_run_refusals, test_postgame_phase, test_slate_env_defaults_are_atl):
         print(t.__name__)
         t()
     print(f'{PASSED} passed, {FAILED} failed')

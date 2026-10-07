@@ -3,6 +3,7 @@
 
     python3.12 nfl/tools/showdown_next_slate.py run    SLATE.json [--mode final|precompute]
     python3.12 nfl/tools/showdown_next_slate.py market SLATE.json HARDROCK_BOARD.csv     # after the seal, before kickoff
+    python3.12 nfl/tools/showdown_next_slate.py postgame SLATE.json --standings CID=standings.zip [--actuals A.json]
 
 ORDER (readiness directive, 2026-10-07):
     DISCOVER -> VERIFY -> FREEZE FOOTBALL REALITY -> PROJECT -> SIMULATE -> BUILD DFS PORTFOLIOS -> RUN B4 SHADOW
@@ -349,19 +350,74 @@ def market(cfg_path, board):
     return r.returncode
 
 
+def postgame(cfg_path, standings, actuals=None):
+    """After the game: archive each contest's full-field standings (immutable), reconcile them, grade the sealed B4/B3S
+    shadow against them (prelock records only), and settle props if official actuals are given. Evidence accumulation
+    only; nothing here changes a model, a lineup or an objective."""
+    from nfl.field import showdown_field_archive as FA
+    from nfl.tools import showdown_slate_run as SR
+    cfg = json.loads(pathlib.Path(cfg_path).read_text())
+    slug = cfg['tag'].split('_2026')[0]
+    P = SR.paths(cfg['tag'])
+    out = {'ARTIFACT': 'SHOWDOWN_POSTGAME_EVIDENCE', 'tag': cfg['tag'], 'scenario': cfg.get('scenario'),
+           'STATUS': 'SHADOW_ONLY -- EVIDENCE ACCUMULATION', 'contests': {}, 'at': _now().isoformat()}
+    if not standings:
+        raise SlateError('POSTGAME_NEEDS_STANDINGS (CID=path, one per contest)')
+    shadow = P['dir'] / f"DUPE_SHADOW_B4_{cfg.get('scenario')}.json"
+    for spec in standings:
+        cid, _, path = spec.partition('=')
+        if cid not in cfg['contests']:
+            raise SlateError(f'POSTGAME_UNDECLARED_CONTEST {cid}')
+        d = FA._dir(cid, slug)
+        try:
+            if not (d / 'PROVENANCE.jsonl').exists():
+                FA.ingest(path, cid, slug, cfg['contests'][cid].get('name') or cid,
+                          'DK contest standings export, owner download')
+            rec = FA.reconcile(cid, slug, _REPO / cfg['export'])
+            (d / 'RECONCILIATION.json').write_text(json.dumps(rec, indent=1))
+            c = {'reconciliation': rec['VERDICT'], 'problems': rec['problems'], 'counts': {
+                k: rec['counts'][k] for k in ('entries_filled', 'distinct_lineups', 'score_ties_among_distinct_lineups')}}
+            if rec['VERDICT'] != 'RECONCILED':
+                c['grade'] = 'NOT_GRADED: field not reconciled'
+            elif not shadow.exists():
+                c['grade'] = f'NOT_GRADED: no sealed shadow at {shadow.name}'
+            else:
+                g = FA.grade(cid, slug, shadow)
+                gp = d / f"DUPE_SHADOW_GRADE.{g['shadow_seal'][:12]}.json"
+                if not gp.exists():
+                    gp.write_text(json.dumps(g, indent=1, default=str))
+                c['grade'] = g['summary']
+        except FA.ArchiveError as e:
+            c = {'REFUSED': str(e)}
+        out['contests'][cid] = c
+    if actuals:
+        r = subprocess.run([PY, 'nfl/market/showdown_prop_shadow.py', 'settle', '--out-dir', str(market_dir(cfg)),
+                            '--slate', slug, str(actuals)], cwd=_REPO, capture_output=True, text=True)
+        out['props'] = (r.stdout or r.stderr).strip()[-400:]
+    pth = P['dir'] / f"POSTGAME_{cfg.get('scenario')}.json"
+    pth.write_text(json.dumps(out, indent=1, default=str))
+    print(pth)
+    print(json.dumps(out['contests'], default=str)[:1500])
+    return 0 if all('REFUSED' not in v for v in out['contests'].values()) else 3
+
+
 if __name__ == '__main__':
     import argparse
     ap = argparse.ArgumentParser()
-    ap.add_argument('phase', choices=('run', 'market'))
+    ap.add_argument('phase', choices=('run', 'market', 'postgame'))
     ap.add_argument('config')
     ap.add_argument('board', nargs='?')
     ap.add_argument('--mode', choices=('final', 'precompute'), default='final')
+    ap.add_argument('--standings', action='append', help='postgame: CONTEST_ID=standings.zip')
+    ap.add_argument('--actuals', help='postgame: official actuals JSON for prop settlement')
     a = ap.parse_args()
     try:
         if a.phase == 'run':
             st, bl = run(a.config, a.mode)
             print(st, bl)
             sys.exit(0 if st == 'READY' else 4)
+        if a.phase == 'postgame':
+            sys.exit(postgame(a.config, a.standings, a.actuals))
         if not a.board:
             raise SlateError('MARKET_NEEDS_BOARD')
         sys.exit(market(a.config, a.board))
