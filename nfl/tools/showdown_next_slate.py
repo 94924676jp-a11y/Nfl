@@ -14,7 +14,8 @@ SLATE.json (paths relative to the repository root):
      "export": ".../DKEntries_....csv", "fc": ".../THIRDPARTY_FC_..._CONTEXT_ONLY....csv" (optional),
      "designations": "...json", "official_inactives": "...json", "official_inactives_provenance": "...json",
      "confirmed_starters": "...json", "starter_tier": "...", "depth_chart": "...csv",
-     "contests": {"<id>": {"prize_pool": 100000, "entry_fee": 0.5, "max_entries": 150, "field_size": 237812}}}
+     "contests": {"<id>": {"prize_pool": 100000, "entry_fee": 0.5, "max_entries": 150, "field_size": 237812}},
+     "snaps": ".../snap_counts_2026.<sha16>.csv" (optional; the SC-OWN-ROTATION-2 ownership shadow needs it)}
 
 FAIL-CLOSED. A missing official inactive list, a starter not confirmed for both clubs, a depth chart that does not
 cover both clubs, a DK salary / ID failure, or a derived cache that does not match its manifest stops the run before
@@ -260,6 +261,22 @@ def _run_body(cfg, cfg_path, mode, hashes, P, scen, sd, pre, L):
         rc, tail = _run([PY] + c, env, name)
         shadows[name] = 'PASS' if rc == 0 else f'FAIL rc={rc}: {tail[-300:]}'
     own = P['dir'] / f'SHADOW_{scen}_BLEND' / f'{pre}_SHADOW_OWNERSHIP.csv'
+    # SC-OWN-ROTATION-2 ownership shadow (frozen 2026-10-07; sealed per slate; never read by selection)
+    if own.exists() and cfg.get('snaps'):
+        proj = sd / f'{pre}_PROJECTIONS.csv'
+        ow = _REPO / 'nfl/research/ownership/predictions' / f"SC_OWN_ROTATION_2_{cfg['tag']}_{scen}.json"
+        c = [PY, 'nfl/research/ownership/predict_sc_own_rotation_2.py', '--slate', cfg['tag'],
+             '--week', cfg['tag'].rsplit('W', 1)[-1], '--kickoff', cfg['kickoff_utc'], '--export', _REPO / cfg['export'],
+             '--baseline', own, '--projection', proj, '--depth-chart', _REPO / cfg['depth_chart'],
+             '--designations', _REPO / cfg['designations'], '--snaps', _REPO / cfg['snaps'], '--out', ow]
+        if cfg.get('official_inactives'):
+            c += ['--inactives', _REPO / cfg['official_inactives']]
+        if cfg.get('rehearsal'):
+            c += ['--dry-run', '--label', 'REHEARSAL']
+        rc, tail = _run(c, env, 'own2')
+        shadows['OWNERSHIP_SC_OWN_ROTATION_2'] = ('PASS ' + str(ow.relative_to(_REPO))) if rc == 0 else f'FAIL rc={rc}: {tail[-300:]}'
+    else:
+        shadows['OWNERSHIP_SC_OWN_ROTATION_2'] = 'NOT_RUN: needs the BLEND shadow ownership and a snaps capture (SLATE.json "snaps")'
     b4 = P['dir'] / f'DUPE_SHADOW_B4_{scen}.json'
     if own.exists():
         sizes = []
@@ -394,6 +411,22 @@ def postgame(cfg_path, standings, actuals=None):
         r = subprocess.run([PY, 'nfl/market/showdown_prop_shadow.py', 'settle', '--out-dir', str(market_dir(cfg)),
                             '--slate', slug, str(actuals)], cwd=_REPO, capture_output=True, text=True)
         out['props'] = (r.stdout or r.stderr).strip()[-400:]
+    pred = _REPO / 'nfl/research/ownership/predictions' / f"SC_OWN_ROTATION_2_{cfg['tag']}_{cfg.get('scenario')}.json"
+    if pred.exists():
+        for cid, c in out['contests'].items():
+            if c.get('reconciliation') != 'RECONCILED':
+                continue
+            gp = _REPO / 'nfl/research/ownership/grades' / f"SC_OWN_ROTATION_2_{cfg['tag']}_{cid}.json"
+            gp.parent.mkdir(parents=True, exist_ok=True)
+            if gp.exists():
+                c['ownership_grade'] = f'EXISTS {gp.relative_to(_REPO)}'
+                continue
+            r = subprocess.run([PY, 'nfl/research/ownership/grade_sc_own_rotation_2.py', 'grade', '--prediction', str(pred),
+                                '--contest-id', cid, '--slate', slug, '--out', str(gp)], cwd=_REPO, capture_output=True, text=True)
+            c['ownership_grade'] = (f'PASS {gp.relative_to(_REPO)}' if r.returncode == 0
+                                    else f'REFUSED rc={r.returncode}: {(r.stdout + r.stderr)[-300:]}')
+    else:
+        out['ownership_grade'] = f'NOT_GRADED: no sealed SC-OWN-ROTATION-2 prediction at {pred.relative_to(_REPO)}'
     pth = P['dir'] / f"POSTGAME_{cfg.get('scenario')}.json"
     pth.write_text(json.dumps(out, indent=1, default=str))
     print(pth)
