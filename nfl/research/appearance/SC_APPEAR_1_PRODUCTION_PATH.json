@@ -1,0 +1,3626 @@
+{
+ "ARTIFACT": "SC_APPEAR_1_PRODUCTION_PATH",
+ "STATUS": "SHADOW_ONLY",
+ "candidate": "SC-APPEAR-1",
+ "written_at": "2026-10-07T04:37:40.204688+00:00",
+ "EVIDENCE_CLASS": "RETROSPECTIVE OUT-OF-SAMPLE: fitted on <= 2024, replayed on 2025. Not prospective, and 2025 has now been read twice, so it is not a sealed holdout for any variant chosen after this.",
+ "production_path": {
+  "file": "nfl/tools/proj_v1.py",
+  "sha256_before": "48e0c0091e8e6b97cf23b429d86bac8189530c0f00b38329f77118b0498f26d2",
+  "sha256_after": "48e0c0091e8e6b97cf23b429d86bac8189530c0f00b38329f77118b0498f26d2",
+  "production_file_edited": false,
+  "appearance_rate_consumed_at": "proj_v1.allocate_opportunity line 879: appear[i] = row.get(\"appearance_rate\")",
+  "row_selected_at": "line 856: row = dr.get(f\"rank_{rank}\") or _deepest (rank = allocator rank in club group)",
+  "rank_order_at": "lines 827-834: is_predicted_starter, _chart_rank, role_band, raw claim (no appearance term)",
+  "enters_expected_opportunity_at": "line 912 claims *= appear; lines 916-943 normalised; r[field] = team_total * w_i / sum w",
+  "zero_mass": "1 - p_plays[field] (line 942). The claim is a share GIVEN he plays, so P(0 opportunities) is carried by P(plays) alone; no consumer in nfl/sim reads p_plays (grep), so this is the projection-layer zero mass, not a simulator one",
+  "table_built_at": "proj_v1.depth_shares line 1467: appearance_rate = share of club-weeks with >= r position players holding any panel row",
+  "conditional_volume_at": "proj_v1.build lines 1321-1338: second allocation per target with force_appearance_for",
+  "harness": "nfl/tools/forward_chain.project_week (lines 306-424) calls V.project_player (406) and V.allocate_opportunity (416): it is the production allocator. Claims here are built the same way; the allocation universe is the dressed roster (production post-inactives) with forward_chain's own pool as a sensitivity",
+  "hook": "no edit and no monkeypatch: per-field allocator calls with a copied depth table whose rank-r row carries the candidate rate for the allocator's rank-r player; verified after every call"
+ },
+ "fit": {
+  "through": 2024,
+  "sc_appear_1_rates": {
+   "RB_carries": 0.942434,
+   "RB_targets": 0.884712,
+   "WR_targets": 0.95183,
+   "TE_targets": 0.897287
+  },
+  "n_fit_units": {
+   "RB_carries": 608,
+   "RB_targets": 399,
+   "WR_targets": 1038,
+   "TE_targets": 516
+  },
+  "rates_match_forward_test_artifact": {
+   "RB_carries": true,
+   "RB_targets": true,
+   "WR_targets": true,
+   "TE_targets": true
+  },
+  "depth_table_through_2024_appearance_rates": {
+   "QB": {
+    "rank_1": 1.0,
+    "rank_2": 0.12191
+   },
+   "RB": {
+    "rank_1": 1.0,
+    "rank_2": 0.56043,
+    "rank_3": 0.16203,
+    "rank_4": 0.01979
+   },
+   "WR": {
+    "rank_1": 1.0,
+    "rank_2": 0.81914,
+    "rank_3": 0.46946,
+    "rank_4": 0.17316,
+    "rank_5": 0.04714,
+    "rank_6": 0.00433
+   },
+   "TE": {
+    "rank_1": 1.0,
+    "rank_2": 0.52776,
+    "rank_3": 0.08049,
+    "rank_4": 0.00509
+   }
+  },
+  "depth_table_sha16": "041100801d93c2ad"
+ },
+ "definitions": {
+  "unit": "one dressed player x scored week x field (QB pass_attempts; RB carries and targets; WR/TE targets)",
+  "dressed": "present in nflverse 2025 REG snap counts for that club-game (offense or special teams)",
+  "qualifies": "dressed AND >= 1 of the field in each of the club's previous 3 games (sc_appear_1_forward definition)",
+  "actual": "panel count for that week; a dressed player with no panel row recorded 0 (the panel is built from play-by-play)",
+  "expected_opportunity": "production unconditional r[field] from allocate_opportunity",
+  "rank": "the allocator's own depth_rank_in_group on the position's table field (RB carries, WR/TE targets, QB pass attempts)",
+  "week_blocked_se": "SE of the 15 per-week means; club-blocked SE also given for paired differences",
+  "elevation_proxy": "PROXY, practice-squad elevations are NOT identifiable for 2025 in the committed data (no 2025 weekly rosters, transactions or game-day status). Proxy: dressed this week, not dressed in the club's previous game, and no target/carry/pass attempt anywhere earlier in 2025",
+  "returning_from_absence_proxy": "dressed this week, not dressed in the club's previous game, and >= 1 opportunity for this club earlier in 2025. Cause of absence (injury, suspension, healthy scratch) is not identified"
+ },
+ "PRIMARY_DRESSED_UNIVERSE": {
+  "universe": "DRESSED",
+  "n_units": 7278,
+  "n_weeks": 15,
+  "weeks": [
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18
+  ],
+  "n_club_weeks": 448,
+  "cohorts": {
+   "ALL_RB_WR_TE": {
+    "n_units": 6709,
+    "n_players": 546,
+    "n_weeks": 15,
+    "mean_actual": 3.4952,
+    "current": {
+     "mean_expected_opportunity": 3.4394,
+     "signed_error_pred_minus_actual": {
+      "pooled": -0.0557,
+      "mean_of_block_means": -0.05637,
+      "se": 0.01979,
+      "n_blocks": 15,
+      "z": -2.85
+     },
+     "abs_error": {
+      "pooled": 2.2727,
+      "mean_of_block_means": 2.27235,
+      "se": 0.02626,
+      "n_blocks": 15,
+      "z": 86.53
+     },
+     "predicted_P0": 0.4964,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.1828,
+      "mean_of_block_means": 0.18292,
+      "se": 0.00385,
+      "n_blocks": 15,
+      "z": 47.52
+     },
+     "zero_brier": 0.2574,
+     "conditional_volume_abs_error_if_dressed": 2.6013
+    },
+    "candidate": {
+     "mean_expected_opportunity": 3.4817,
+     "signed_error_pred_minus_actual": {
+      "pooled": -0.0135,
+      "mean_of_block_means": -0.01421,
+      "se": 0.01968,
+      "n_blocks": 15,
+      "z": -0.72
+     },
+     "abs_error": {
+      "pooled": 1.952,
+      "mean_of_block_means": 1.95092,
+      "se": 0.02598,
+      "n_blocks": 15,
+      "z": 75.11
+     },
+     "predicted_P0": 0.3863,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.0727,
+      "mean_of_block_means": 0.07261,
+      "se": 0.00433,
+      "n_blocks": 15,
+      "z": 16.77
+     },
+     "zero_brier": 0.1868,
+     "conditional_volume_abs_error_if_dressed": 2.356
+    },
+    "observed_zero_share": 0.3136,
+    "improvement_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.32143,
+      "se": 0.01229,
+      "n_blocks": 15,
+      "z": 26.16
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.32311,
+      "se": 0.04379,
+      "n_blocks": 32,
+      "z": 7.38
+     }
+    },
+    "improvement_zero_brier": {
+     "week_blocked": {
+      "mean_of_block_means": 0.0709,
+      "se": 0.00286,
+      "n_blocks": 15,
+      "z": 24.82
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.0704,
+      "se": 0.00597,
+      "n_blocks": 32,
+      "z": 11.8
+     }
+    },
+    "improvement_conditional_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.24572,
+      "se": 0.00851,
+      "n_blocks": 15,
+      "z": 28.86
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.24642,
+      "se": 0.0262,
+      "n_blocks": 32,
+      "z": 9.4
+     }
+    },
+    "change_mean_expected_opportunity_cand_minus_cur": {
+     "mean_of_block_means": 0.04216,
+     "se": 0.00182,
+     "n_blocks": 15,
+     "z": 23.14
+    },
+    "change_mean_p_plays_cand_minus_cur": 0.11002
+   },
+   "QUALIFYING_RB_WR_TE": {
+    "n_units": 2939,
+    "n_players": 338,
+    "n_weeks": 15,
+    "mean_actual": 6.0487,
+    "current": {
+     "mean_expected_opportunity": 5.5978,
+     "signed_error_pred_minus_actual": {
+      "pooled": -0.4508,
+      "mean_of_block_means": -0.45855,
+      "se": 0.07803,
+      "n_blocks": 15,
+      "z": -5.88
+     },
+     "abs_error": {
+      "pooled": 3.1531,
+      "mean_of_block_means": 3.15502,
+      "se": 0.04881,
+      "n_blocks": 15,
+      "z": 64.64
+     },
+     "predicted_P0": 0.324,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.2573,
+      "mean_of_block_means": 0.25866,
+      "se": 0.00698,
+      "n_blocks": 15,
+      "z": 37.07
+     },
+     "zero_brier": 0.22286,
+     "conditional_volume_abs_error_if_dressed": 2.8488
+    },
+    "candidate": {
+     "mean_expected_opportunity": 5.989,
+     "signed_error_pred_minus_actual": {
+      "pooled": -0.0597,
+      "mean_of_block_means": -0.06421,
+      "se": 0.07587,
+      "n_blocks": 15,
+      "z": -0.85
+     },
+     "abs_error": {
+      "pooled": 2.5846,
+      "mean_of_block_means": 2.58644,
+      "se": 0.03711,
+      "n_blocks": 15,
+      "z": 69.69
+     },
+     "predicted_P0": 0.0728,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.0062,
+      "mean_of_block_means": 0.00653,
+      "se": 0.00341,
+      "n_blocks": 15,
+      "z": 1.92
+     },
+     "zero_brier": 0.0617,
+     "conditional_volume_abs_error_if_dressed": 2.6244
+    },
+    "observed_zero_share": 0.0667,
+    "improvement_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.56858,
+      "se": 0.02782,
+      "n_blocks": 15,
+      "z": 20.44
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.55692,
+      "se": 0.08085,
+      "n_blocks": 32,
+      "z": 6.89
+     }
+    },
+    "improvement_zero_brier": {
+     "week_blocked": {
+      "mean_of_block_means": 0.16226,
+      "se": 0.00693,
+      "n_blocks": 15,
+      "z": 23.42
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.15876,
+      "se": 0.01303,
+      "n_blocks": 32,
+      "z": 12.19
+     }
+    },
+    "improvement_conditional_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.22251,
+      "se": 0.02156,
+      "n_blocks": 15,
+      "z": 10.32
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.2186,
+      "se": 0.02956,
+      "n_blocks": 32,
+      "z": 7.39
+     }
+    },
+    "change_mean_expected_opportunity_cand_minus_cur": {
+     "mean_of_block_means": 0.39434,
+     "se": 0.01861,
+     "n_blocks": 15,
+     "z": 21.19
+    },
+    "change_mean_p_plays_cand_minus_cur": 0.25115
+   },
+   "NON_QUALIFYING_RB_WR_TE": {
+    "n_units": 3770,
+    "n_players": 474,
+    "n_weeks": 15,
+    "mean_actual": 1.5045,
+    "current": {
+     "mean_expected_opportunity": 1.7568,
+     "signed_error_pred_minus_actual": {
+      "pooled": 0.2523,
+      "mean_of_block_means": 0.25938,
+      "se": 0.04394,
+      "n_blocks": 15,
+      "z": 5.9
+     },
+     "abs_error": {
+      "pooled": 1.5862,
+      "mean_of_block_means": 1.58272,
+      "se": 0.03412,
+      "n_blocks": 15,
+      "z": 46.39
+     },
+     "predicted_P0": 0.6307,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.1246,
+      "mean_of_block_means": 0.12409,
+      "se": 0.00643,
+      "n_blocks": 15,
+      "z": 19.29
+     },
+     "zero_brier": 0.28433,
+     "conditional_volume_abs_error_if_dressed": 2.4084
+    },
+    "candidate": {
+     "mean_expected_opportunity": 1.5271,
+     "signed_error_pred_minus_actual": {
+      "pooled": 0.0226,
+      "mean_of_block_means": 0.02839,
+      "se": 0.03944,
+      "n_blocks": 15,
+      "z": 0.72
+     },
+     "abs_error": {
+      "pooled": 1.4589,
+      "mean_of_block_means": 1.45378,
+      "se": 0.03416,
+      "n_blocks": 15,
+      "z": 42.55
+     },
+     "predicted_P0": 0.6307,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.1246,
+      "mean_of_block_means": 0.12409,
+      "se": 0.00643,
+      "n_blocks": 15,
+      "z": 19.29
+     },
+     "zero_brier": 0.28433,
+     "conditional_volume_abs_error_if_dressed": 2.1468
+    },
+    "observed_zero_share": 0.5061,
+    "improvement_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.12894,
+      "se": 0.00934,
+      "n_blocks": 15,
+      "z": 13.81
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.13113,
+      "se": 0.01688,
+      "n_blocks": 32,
+      "z": 7.77
+     }
+    },
+    "improvement_zero_brier": {
+     "week_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 15,
+      "z": null
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 32,
+      "z": null
+     }
+    },
+    "improvement_conditional_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.26396,
+      "se": 0.0111,
+      "n_blocks": 15,
+      "z": 23.78
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.26662,
+      "se": 0.02625,
+      "n_blocks": 32,
+      "z": 10.16
+     }
+    },
+    "change_mean_expected_opportunity_cand_minus_cur": {
+     "mean_of_block_means": -0.23099,
+     "se": 0.01047,
+     "n_blocks": 15,
+     "z": -22.07
+    },
+    "change_mean_p_plays_cand_minus_cur": 0.0
+   },
+   "RANK1_RB_WR_TE": {
+    "n_units": 1792,
+    "n_players": 189,
+    "n_weeks": 15,
+    "mean_actual": 6.5469,
+    "current": {
+     "mean_expected_opportunity": 8.4367,
+     "signed_error_pred_minus_actual": {
+      "pooled": 1.8898,
+      "mean_of_block_means": 1.88665,
+      "se": 0.08022,
+      "n_blocks": 15,
+      "z": 23.52
+     },
+     "abs_error": {
+      "pooled": 3.2135,
+      "mean_of_block_means": 3.21649,
+      "se": 0.04696,
+      "n_blocks": 15,
+      "z": 68.49
+     },
+     "predicted_P0": 0.0055,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": -0.0759,
+      "mean_of_block_means": -0.07608,
+      "se": 0.00559,
+      "n_blocks": 15,
+      "z": -13.62
+     },
+     "zero_brier": 0.08125,
+     "conditional_volume_abs_error_if_dressed": 3.213
+    },
+    "candidate": {
+     "mean_expected_opportunity": 7.1096,
+     "signed_error_pred_minus_actual": {
+      "pooled": 0.5627,
+      "mean_of_block_means": 0.55904,
+      "se": 0.07655,
+      "n_blocks": 15,
+      "z": 7.3
+     },
+     "abs_error": {
+      "pooled": 2.7215,
+      "mean_of_block_means": 2.723,
+      "se": 0.04075,
+      "n_blocks": 15,
+      "z": 66.81
+     },
+     "predicted_P0": 0.061,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": -0.0204,
+      "mean_of_block_means": -0.02063,
+      "se": 0.00588,
+      "n_blocks": 15,
+      "z": -3.51
+     },
+     "zero_brier": 0.08211,
+     "conditional_volume_abs_error_if_dressed": 2.7716
+    },
+    "observed_zero_share": 0.0815,
+    "improvement_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.49349,
+      "se": 0.03168,
+      "n_blocks": 15,
+      "z": 15.58
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.49205,
+      "se": 0.06587,
+      "n_blocks": 32,
+      "z": 7.47
+     }
+    },
+    "improvement_zero_brier": {
+     "week_blocked": {
+      "mean_of_block_means": -0.00083,
+      "se": 0.00068,
+      "n_blocks": 15,
+      "z": -1.22
+     },
+     "club_blocked": {
+      "mean_of_block_means": -0.00085,
+      "se": 0.00068,
+      "n_blocks": 32,
+      "z": -1.25
+     }
+    },
+    "improvement_conditional_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.4433,
+      "se": 0.02514,
+      "n_blocks": 15,
+      "z": 17.64
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.44134,
+      "se": 0.06072,
+      "n_blocks": 32,
+      "z": 7.27
+     }
+    },
+    "change_mean_expected_opportunity_cand_minus_cur": {
+     "mean_of_block_means": -1.32761,
+     "se": 0.01377,
+     "n_blocks": 15,
+     "z": -96.45
+    },
+    "change_mean_p_plays_cand_minus_cur": -0.05548
+   },
+   "RB2_carries": {
+    "n_units": 448,
+    "n_players": 76,
+    "n_weeks": 15,
+    "mean_actual": 5.9732,
+    "current": {
+     "mean_expected_opportunity": 4.7395,
+     "signed_error_pred_minus_actual": {
+      "pooled": -1.2338,
+      "mean_of_block_means": -1.23,
+      "se": 0.13932,
+      "n_blocks": 15,
+      "z": -8.83
+     },
+     "abs_error": {
+      "pooled": 4.0248,
+      "mean_of_block_means": 4.02278,
+      "se": 0.15069,
+      "n_blocks": 15,
+      "z": 26.7
+     },
+     "predicted_P0": 0.4396,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.1985,
+      "mean_of_block_means": 0.19808,
+      "se": 0.01319,
+      "n_blocks": 15,
+      "z": 15.02
+     },
+     "zero_brier": 0.22236,
+     "conditional_volume_abs_error_if_dressed": 4.4135
+    },
+    "candidate": {
+     "mean_expected_opportunity": 5.7903,
+     "signed_error_pred_minus_actual": {
+      "pooled": -0.1829,
+      "mean_of_block_means": -0.18083,
+      "se": 0.13947,
+      "n_blocks": 15,
+      "z": -1.3
+     },
+     "abs_error": {
+      "pooled": 3.7322,
+      "mean_of_block_means": 3.73098,
+      "se": 0.14036,
+      "n_blocks": 15,
+      "z": 26.58
+     },
+     "predicted_P0": 0.2469,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.0058,
+      "mean_of_block_means": 0.00541,
+      "se": 0.01341,
+      "n_blocks": 15,
+      "z": 0.4
+     },
+     "zero_brier": 0.13338,
+     "conditional_volume_abs_error_if_dressed": 4.2441
+    },
+    "observed_zero_share": 0.2411,
+    "improvement_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.2918,
+      "se": 0.07673,
+      "n_blocks": 15,
+      "z": 3.8
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.29259,
+      "se": 0.09373,
+      "n_blocks": 32,
+      "z": 3.12
+     }
+    },
+    "improvement_zero_brier": {
+     "week_blocked": {
+      "mean_of_block_means": 0.08896,
+      "se": 0.00379,
+      "n_blocks": 15,
+      "z": 23.5
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.08898,
+      "se": 0.01134,
+      "n_blocks": 32,
+      "z": 7.85
+     }
+    },
+    "improvement_conditional_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.16834,
+      "se": 0.0247,
+      "n_blocks": 15,
+      "z": 6.81
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.16935,
+      "se": 0.04811,
+      "n_blocks": 32,
+      "z": 3.52
+     }
+    },
+    "change_mean_expected_opportunity_cand_minus_cur": {
+     "mean_of_block_means": 1.04917,
+     "se": 0.06007,
+     "n_blocks": 15,
+     "z": 17.47
+    },
+    "change_mean_p_plays_cand_minus_cur": 0.19271,
+    "n_qualifying_units": 226
+   },
+   "RB2_targets": {
+    "n_units": 448,
+    "n_players": 76,
+    "n_weeks": 15,
+    "mean_actual": 1.5379,
+    "current": {
+     "mean_expected_opportunity": 1.2201,
+     "signed_error_pred_minus_actual": {
+      "pooled": -0.3179,
+      "mean_of_block_means": -0.31721,
+      "se": 0.08644,
+      "n_blocks": 15,
+      "z": -3.67
+     },
+     "abs_error": {
+      "pooled": 1.2525,
+      "mean_of_block_means": 1.25228,
+      "se": 0.05311,
+      "n_blocks": 15,
+      "z": 23.58
+     },
+     "predicted_P0": 0.508,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.1017,
+      "mean_of_block_means": 0.10143,
+      "se": 0.01539,
+      "n_blocks": 15,
+      "z": 6.59
+     },
+     "zero_brier": 0.26522,
+     "conditional_volume_abs_error_if_dressed": 1.516
+    },
+    "candidate": {
+     "mean_expected_opportunity": 1.3308,
+     "signed_error_pred_minus_actual": {
+      "pooled": -0.2072,
+      "mean_of_block_means": -0.2078,
+      "se": 0.08815,
+      "n_blocks": 15,
+      "z": -2.36
+     },
+     "abs_error": {
+      "pooled": 1.2217,
+      "mean_of_block_means": 1.22119,
+      "se": 0.04078,
+      "n_blocks": 15,
+      "z": 29.95
+     },
+     "predicted_P0": 0.4098,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.0036,
+      "mean_of_block_means": 0.00353,
+      "se": 0.01768,
+      "n_blocks": 15,
+      "z": 0.2
+     },
+     "zero_brier": 0.23262,
+     "conditional_volume_abs_error_if_dressed": 1.4019
+    },
+    "observed_zero_share": 0.4062,
+    "improvement_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.0311,
+      "se": 0.02022,
+      "n_blocks": 15,
+      "z": 1.54
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.03084,
+      "se": 0.0215,
+      "n_blocks": 32,
+      "z": 1.43
+     }
+    },
+    "improvement_zero_brier": {
+     "week_blocked": {
+      "mean_of_block_means": 0.03248,
+      "se": 0.00643,
+      "n_blocks": 15,
+      "z": 5.05
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.03261,
+      "se": 0.01036,
+      "n_blocks": 32,
+      "z": 3.15
+     }
+    },
+    "improvement_conditional_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.11423,
+      "se": 0.01752,
+      "n_blocks": 15,
+      "z": 6.52
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.11414,
+      "se": 0.02145,
+      "n_blocks": 32,
+      "z": 5.32
+     }
+    },
+    "change_mean_expected_opportunity_cand_minus_cur": {
+     "mean_of_block_means": 0.10941,
+     "se": 0.01391,
+     "n_blocks": 15,
+     "z": 7.86
+    },
+    "change_mean_p_plays_cand_minus_cur": 0.09813,
+    "n_qualifying_units": 126
+   },
+   "WR3_WR4_targets": {
+    "n_units": 891,
+    "n_players": 156,
+    "n_weeks": 15,
+    "mean_actual": 2.3086,
+    "current": {
+     "mean_expected_opportunity": 1.437,
+     "signed_error_pred_minus_actual": {
+      "pooled": -0.8716,
+      "mean_of_block_means": -0.87305,
+      "se": 0.07034,
+      "n_blocks": 15,
+      "z": -12.41
+     },
+     "abs_error": {
+      "pooled": 1.9255,
+      "mean_of_block_means": 1.93162,
+      "se": 0.05957,
+      "n_blocks": 15,
+      "z": 32.43
+     },
+     "predicted_P0": 0.6779,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.349,
+      "mean_of_block_means": 0.3478,
+      "se": 0.01723,
+      "n_blocks": 15,
+      "z": 20.19
+     },
+     "zero_brier": 0.3556,
+     "conditional_volume_abs_error_if_dressed": 2.4355
+    },
+    "candidate": {
+     "mean_expected_opportunity": 2.1945,
+     "signed_error_pred_minus_actual": {
+      "pooled": -0.1142,
+      "mean_of_block_means": -0.11721,
+      "se": 0.08082,
+      "n_blocks": 15,
+      "z": -1.45
+     },
+     "abs_error": {
+      "pooled": 1.6461,
+      "mean_of_block_means": 1.64973,
+      "se": 0.05588,
+      "n_blocks": 15,
+      "z": 29.52
+     },
+     "predicted_P0": 0.4454,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.1165,
+      "mean_of_block_means": 0.11542,
+      "se": 0.01797,
+      "n_blocks": 15,
+      "z": 6.42
+     },
+     "zero_brier": 0.2252,
+     "conditional_volume_abs_error_if_dressed": 2.2351
+    },
+    "observed_zero_share": 0.3288,
+    "improvement_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.28189,
+      "se": 0.03153,
+      "n_blocks": 15,
+      "z": 8.94
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.27813,
+      "se": 0.08425,
+      "n_blocks": 32,
+      "z": 3.3
+     }
+    },
+    "improvement_zero_brier": {
+     "week_blocked": {
+      "mean_of_block_means": 0.12999,
+      "se": 0.00694,
+      "n_blocks": 15,
+      "z": 18.73
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.13006,
+      "se": 0.01862,
+      "n_blocks": 32,
+      "z": 6.98
+     }
+    },
+    "improvement_conditional_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.19883,
+      "se": 0.01635,
+      "n_blocks": 15,
+      "z": 12.16
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.20023,
+      "se": 0.02785,
+      "n_blocks": 32,
+      "z": 7.19
+     }
+    },
+    "change_mean_expected_opportunity_cand_minus_cur": {
+     "mean_of_block_means": 0.75584,
+     "se": 0.03689,
+     "n_blocks": 15,
+     "z": 20.49
+    },
+    "change_mean_p_plays_cand_minus_cur": 0.23249,
+    "n_qualifying_units": 333
+   },
+   "TE2_TE3_targets": {
+    "n_units": 866,
+    "n_players": 111,
+    "n_weeks": 15,
+    "mean_actual": 1.4515,
+    "current": {
+     "mean_expected_opportunity": 1.0981,
+     "signed_error_pred_minus_actual": {
+      "pooled": -0.3534,
+      "mean_of_block_means": -0.35857,
+      "se": 0.0497,
+      "n_blocks": 15,
+      "z": -7.22
+     },
+     "abs_error": {
+      "pooled": 1.5159,
+      "mean_of_block_means": 1.51728,
+      "se": 0.03917,
+      "n_blocks": 15,
+      "z": 38.74
+     },
+     "predicted_P0": 0.6881,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.2493,
+      "mean_of_block_means": 0.25241,
+      "se": 0.01717,
+      "n_blocks": 15,
+      "z": 14.7
+     },
+     "zero_brier": 0.3557,
+     "conditional_volume_abs_error_if_dressed": 2.1073
+    },
+    "candidate": {
+     "mean_expected_opportunity": 1.5001,
+     "signed_error_pred_minus_actual": {
+      "pooled": 0.0486,
+      "mean_of_block_means": 0.04406,
+      "se": 0.04203,
+      "n_blocks": 15,
+      "z": 1.05
+     },
+     "abs_error": {
+      "pooled": 1.2692,
+      "mean_of_block_means": 1.2686,
+      "se": 0.03332,
+      "n_blocks": 15,
+      "z": 38.07
+     },
+     "predicted_P0": 0.5311,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.0923,
+      "mean_of_block_means": 0.09498,
+      "se": 0.01654,
+      "n_blocks": 15,
+      "z": 5.74
+     },
+     "zero_brier": 0.25833,
+     "conditional_volume_abs_error_if_dressed": 1.917
+    },
+    "observed_zero_share": 0.4388,
+    "improvement_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.24868,
+      "se": 0.02412,
+      "n_blocks": 15,
+      "z": 10.31
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.24742,
+      "se": 0.0874,
+      "n_blocks": 32,
+      "z": 2.83
+     }
+    },
+    "improvement_zero_brier": {
+     "week_blocked": {
+      "mean_of_block_means": 0.09826,
+      "se": 0.01,
+      "n_blocks": 15,
+      "z": 9.82
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.09719,
+      "se": 0.02216,
+      "n_blocks": 32,
+      "z": 4.39
+     }
+    },
+    "improvement_conditional_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.19032,
+      "se": 0.01398,
+      "n_blocks": 15,
+      "z": 13.62
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.1926,
+      "se": 0.03085,
+      "n_blocks": 32,
+      "z": 6.24
+     }
+    },
+    "change_mean_expected_opportunity_cand_minus_cur": {
+     "mean_of_block_means": 0.40263,
+     "se": 0.02483,
+     "n_blocks": 15,
+     "z": 16.22
+    },
+    "change_mean_p_plays_cand_minus_cur": 0.15704,
+    "n_qualifying_units": 224
+   },
+   "BACKUP_QB_pass_attempts": {
+    "n_units": 121,
+    "n_players": 48,
+    "n_weeks": 15,
+    "mean_actual": 10.4628,
+    "current": {
+     "mean_expected_opportunity": 3.4336,
+     "signed_error_pred_minus_actual": {
+      "pooled": -7.0292,
+      "mean_of_block_means": -6.66667,
+      "se": 0.99448,
+      "n_blocks": 15,
+      "z": -6.7
+     },
+     "abs_error": {
+      "pooled": 8.7254,
+      "mean_of_block_means": 8.39806,
+      "se": 0.9181,
+      "n_blocks": 15,
+      "z": 9.15
+     },
+     "predicted_P0": 0.8781,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.5971,
+      "mean_of_block_means": 0.58656,
+      "se": 0.03753,
+      "n_blocks": 15,
+      "z": 15.63
+     },
+     "zero_brier": 0.55856,
+     "conditional_volume_abs_error_if_dressed": 10.582
+    },
+    "candidate": {
+     "mean_expected_opportunity": 3.4336,
+     "signed_error_pred_minus_actual": {
+      "pooled": -7.0292,
+      "mean_of_block_means": -6.66667,
+      "se": 0.99448,
+      "n_blocks": 15,
+      "z": -6.7
+     },
+     "abs_error": {
+      "pooled": 8.7254,
+      "mean_of_block_means": 8.39806,
+      "se": 0.9181,
+      "n_blocks": 15,
+      "z": 9.15
+     },
+     "predicted_P0": 0.8781,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.5971,
+      "mean_of_block_means": 0.58656,
+      "se": 0.03753,
+      "n_blocks": 15,
+      "z": 15.63
+     },
+     "zero_brier": 0.55856,
+     "conditional_volume_abs_error_if_dressed": 10.582
+    },
+    "observed_zero_share": 0.281,
+    "improvement_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 15,
+      "z": null
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 32,
+      "z": null
+     }
+    },
+    "improvement_zero_brier": {
+     "week_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 15,
+      "z": null
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 32,
+      "z": null
+     }
+    },
+    "improvement_conditional_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 15,
+      "z": null
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 32,
+      "z": null
+     }
+    },
+    "change_mean_expected_opportunity_cand_minus_cur": {
+     "mean_of_block_means": 0.0,
+     "se": 0.0,
+     "n_blocks": 15,
+     "z": null
+    },
+    "change_mean_p_plays_cand_minus_cur": 0.0
+   },
+   "RANK1_QB_pass_attempts": {
+    "n_units": 448,
+    "n_players": 64,
+    "n_weeks": 15,
+    "mean_actual": 31.4196,
+    "current": {
+     "mean_expected_opportunity": 33.9601,
+     "signed_error_pred_minus_actual": {
+      "pooled": 2.5405,
+      "mean_of_block_means": 2.46752,
+      "se": 0.56709,
+      "n_blocks": 15,
+      "z": 4.35
+     },
+     "abs_error": {
+      "pooled": 7.9232,
+      "mean_of_block_means": 7.84818,
+      "se": 0.49868,
+      "n_blocks": 15,
+      "z": 15.74
+     },
+     "predicted_P0": 0.0,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": -0.0201,
+      "mean_of_block_means": -0.01962,
+      "se": 0.0069,
+      "n_blocks": 15,
+      "z": -2.84
+     },
+     "zero_brier": 0.02009,
+     "conditional_volume_abs_error_if_dressed": 7.9232
+    },
+    "candidate": {
+     "mean_expected_opportunity": 33.9601,
+     "signed_error_pred_minus_actual": {
+      "pooled": 2.5405,
+      "mean_of_block_means": 2.46752,
+      "se": 0.56709,
+      "n_blocks": 15,
+      "z": 4.35
+     },
+     "abs_error": {
+      "pooled": 7.9232,
+      "mean_of_block_means": 7.84818,
+      "se": 0.49868,
+      "n_blocks": 15,
+      "z": 15.74
+     },
+     "predicted_P0": 0.0,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": -0.0201,
+      "mean_of_block_means": -0.01962,
+      "se": 0.0069,
+      "n_blocks": 15,
+      "z": -2.84
+     },
+     "zero_brier": 0.02009,
+     "conditional_volume_abs_error_if_dressed": 7.9232
+    },
+    "observed_zero_share": 0.0201,
+    "improvement_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 15,
+      "z": null
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 32,
+      "z": null
+     }
+    },
+    "improvement_zero_brier": {
+     "week_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 15,
+      "z": null
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 32,
+      "z": null
+     }
+    },
+    "improvement_conditional_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 15,
+      "z": null
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 32,
+      "z": null
+     }
+    },
+    "change_mean_expected_opportunity_cand_minus_cur": {
+     "mean_of_block_means": 0.0,
+     "se": 0.0,
+     "n_blocks": 15,
+     "z": null
+    },
+    "change_mean_p_plays_cand_minus_cur": 0.0
+   },
+   "ELEVATION_PROXY_RB_WR_TE": {
+    "n_units": 275,
+    "n_players": 174,
+    "n_weeks": 15,
+    "mean_actual": 0.8727,
+    "current": {
+     "mean_expected_opportunity": 2.4596,
+     "signed_error_pred_minus_actual": {
+      "pooled": 1.5869,
+      "mean_of_block_means": 1.55789,
+      "se": 0.16717,
+      "n_blocks": 15,
+      "z": 9.32
+     },
+     "abs_error": {
+      "pooled": 2.1891,
+      "mean_of_block_means": 2.22108,
+      "se": 0.14922,
+      "n_blocks": 15,
+      "z": 14.88
+     },
+     "predicted_P0": 0.5959,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": -0.1095,
+      "mean_of_block_means": -0.1145,
+      "se": 0.03924,
+      "n_blocks": 15,
+      "z": -2.92
+     },
+     "zero_brier": 0.29769,
+     "conditional_volume_abs_error_if_dressed": 3.5066
+    },
+    "candidate": {
+     "mean_expected_opportunity": 2.125,
+     "signed_error_pred_minus_actual": {
+      "pooled": 1.2523,
+      "mean_of_block_means": 1.23485,
+      "se": 0.15917,
+      "n_blocks": 15,
+      "z": 7.76
+     },
+     "abs_error": {
+      "pooled": 1.9085,
+      "mean_of_block_means": 1.94473,
+      "se": 0.13034,
+      "n_blocks": 15,
+      "z": 14.92
+     },
+     "predicted_P0": 0.5959,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": -0.1095,
+      "mean_of_block_means": -0.1145,
+      "se": 0.03924,
+      "n_blocks": 15,
+      "z": -2.92
+     },
+     "zero_brier": 0.29769,
+     "conditional_volume_abs_error_if_dressed": 3.0961
+    },
+    "observed_zero_share": 0.7055,
+    "improvement_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.27635,
+      "se": 0.0327,
+      "n_blocks": 15,
+      "z": 8.45
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.27691,
+      "se": 0.05354,
+      "n_blocks": 32,
+      "z": 5.17
+     }
+    },
+    "improvement_zero_brier": {
+     "week_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 15,
+      "z": null
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 32,
+      "z": null
+     }
+    },
+    "improvement_conditional_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.40556,
+      "se": 0.03503,
+      "n_blocks": 15,
+      "z": 11.58
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.40257,
+      "se": 0.06054,
+      "n_blocks": 32,
+      "z": 6.65
+     }
+    },
+    "change_mean_expected_opportunity_cand_minus_cur": {
+     "mean_of_block_means": -0.32304,
+     "se": 0.03804,
+     "n_blocks": 15,
+     "z": -8.49
+    },
+    "change_mean_p_plays_cand_minus_cur": 0.0,
+    "n_qualifying_units": 0
+   },
+   "RETURNING_FROM_ABSENCE_PROXY_RB_WR_TE": {
+    "n_units": 329,
+    "n_players": 198,
+    "n_weeks": 15,
+    "mean_actual": 2.6657,
+    "current": {
+     "mean_expected_opportunity": 3.237,
+     "signed_error_pred_minus_actual": {
+      "pooled": 0.5714,
+      "mean_of_block_means": 0.60308,
+      "se": 0.26663,
+      "n_blocks": 15,
+      "z": 2.26
+     },
+     "abs_error": {
+      "pooled": 2.1356,
+      "mean_of_block_means": 2.1752,
+      "se": 0.14663,
+      "n_blocks": 15,
+      "z": 14.83
+     },
+     "predicted_P0": 0.4915,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.0873,
+      "mean_of_block_means": 0.094,
+      "se": 0.02789,
+      "n_blocks": 15,
+      "z": 3.37
+     },
+     "zero_brier": 0.22534,
+     "conditional_volume_abs_error_if_dressed": 2.8275
+    },
+    "candidate": {
+     "mean_expected_opportunity": 2.7721,
+     "signed_error_pred_minus_actual": {
+      "pooled": 0.1065,
+      "mean_of_block_means": 0.11505,
+      "se": 0.23384,
+      "n_blocks": 15,
+      "z": 0.49
+     },
+     "abs_error": {
+      "pooled": 1.9137,
+      "mean_of_block_means": 1.91938,
+      "se": 0.13854,
+      "n_blocks": 15,
+      "z": 13.85
+     },
+     "predicted_P0": 0.4915,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.0873,
+      "mean_of_block_means": 0.094,
+      "se": 0.02789,
+      "n_blocks": 15,
+      "z": 3.37
+     },
+     "zero_brier": 0.22534,
+     "conditional_volume_abs_error_if_dressed": 2.4732
+    },
+    "observed_zero_share": 0.4043,
+    "improvement_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.25583,
+      "se": 0.07604,
+      "n_blocks": 15,
+      "z": 3.36
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.22445,
+      "se": 0.04537,
+      "n_blocks": 32,
+      "z": 4.95
+     }
+    },
+    "improvement_zero_brier": {
+     "week_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 15,
+      "z": null
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 32,
+      "z": null
+     }
+    },
+    "improvement_conditional_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.38746,
+      "se": 0.07959,
+      "n_blocks": 15,
+      "z": 4.87
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.36666,
+      "se": 0.06084,
+      "n_blocks": 32,
+      "z": 6.03
+     }
+    },
+    "change_mean_expected_opportunity_cand_minus_cur": {
+     "mean_of_block_means": -0.48803,
+     "se": 0.05715,
+     "n_blocks": 15,
+     "z": -8.54
+    },
+    "change_mean_p_plays_cand_minus_cur": 0.0,
+    "n_qualifying_units": 0
+   }
+  },
+  "suppression_defect": {
+   "ALL_3_PRIOR_GAMES|RANK_1": {
+    "n_units": 1326,
+    "n_qualifying": 1326,
+    "observed_P_ge1": 0.9721,
+    "mean_p_current": 0.9967,
+    "mean_p_candidate": 0.9217,
+    "suppression_gap_obs_minus_pred_current": -0.0246,
+    "suppression_gap_obs_minus_pred_candidate": 0.0504,
+    "delta_p": {
+     "mean": -0.07498,
+     "max_abs": 0.324282,
+     "share_raised": 0.0075,
+     "share_lowered": 0.9925,
+     "share_unchanged": 0.0
+    },
+    "mean_expected_opportunity_current": 9.1927,
+    "mean_expected_opportunity_candidate": 7.77,
+    "mean_actual_opportunity": 7.6056
+   },
+   "ALL_3_PRIOR_GAMES|RANK_2_PLUS": {
+    "n_units": 1613,
+    "n_qualifying": 1613,
+    "observed_P_ge1": 0.9014,
+    "mean_p_current": 0.4124,
+    "mean_p_candidate": 0.9316,
+    "suppression_gap_obs_minus_pred_current": 0.489,
+    "suppression_gap_obs_minus_pred_candidate": -0.0302,
+    "delta_p": {
+     "mean": 0.51926,
+     "max_abs": 0.9475,
+     "share_raised": 0.9988,
+     "share_lowered": 0.0012,
+     "share_unchanged": 0.0
+    },
+    "mean_expected_opportunity_current": 2.6426,
+    "mean_expected_opportunity_candidate": 4.5248,
+    "mean_actual_opportunity": 4.7688
+   },
+   "NONE_0_OF_3|RANK_1": {
+    "n_units": 143,
+    "n_qualifying": 0,
+    "observed_P_ge1": 0.5175,
+    "mean_p_current": 0.9911,
+    "mean_p_candidate": 0.9911,
+    "suppression_gap_obs_minus_pred_current": -0.4736,
+    "suppression_gap_obs_minus_pred_candidate": -0.4736,
+    "delta_p": {
+     "mean": 0.0,
+     "max_abs": 0.0,
+     "share_raised": 0.0,
+     "share_lowered": 0.0,
+     "share_unchanged": 1.0
+    },
+    "mean_expected_opportunity_current": 6.0165,
+    "mean_expected_opportunity_candidate": 4.9208,
+    "mean_actual_opportunity": 2.035
+   },
+   "NONE_0_OF_3|RANK_2_PLUS": {
+    "n_units": 1357,
+    "n_qualifying": 0,
+    "observed_P_ge1": 0.2417,
+    "mean_p_current": 0.2403,
+    "mean_p_candidate": 0.2403,
+    "suppression_gap_obs_minus_pred_current": 0.0014,
+    "suppression_gap_obs_minus_pred_candidate": 0.0014,
+    "delta_p": {
+     "mean": 0.0,
+     "max_abs": 0.0,
+     "share_raised": 0.0,
+     "share_lowered": 0.0,
+     "share_unchanged": 1.0
+    },
+    "mean_expected_opportunity_current": 1.0095,
+    "mean_expected_opportunity_candidate": 0.9006,
+    "mean_actual_opportunity": 0.5269
+   },
+   "SOME_1_OR_2|RANK_1": {
+    "n_units": 323,
+    "n_qualifying": 0,
+    "observed_P_ge1": 0.8762,
+    "mean_p_current": 0.9868,
+    "mean_p_candidate": 0.9868,
+    "suppression_gap_obs_minus_pred_current": -0.1106,
+    "suppression_gap_obs_minus_pred_candidate": -0.1106,
+    "delta_p": {
+     "mean": 0.0,
+     "max_abs": 0.0,
+     "share_raised": 0.0,
+     "share_lowered": 0.0,
+     "share_unchanged": 1.0
+    },
+    "mean_expected_opportunity_current": 6.4046,
+    "mean_expected_opportunity_candidate": 5.3675,
+    "mean_actual_opportunity": 4.1981
+   },
+   "SOME_1_OR_2|RANK_2_PLUS": {
+    "n_units": 1947,
+    "n_qualifying": 0,
+    "observed_P_ge1": 0.6045,
+    "mean_p_current": 0.3111,
+    "mean_p_candidate": 0.3111,
+    "suppression_gap_obs_minus_pred_current": 0.2935,
+    "suppression_gap_obs_minus_pred_candidate": 0.2935,
+    "delta_p": {
+     "mean": 0.0,
+     "max_abs": 0.0,
+     "share_raised": 0.0,
+     "share_lowered": 0.0,
+     "share_unchanged": 1.0
+    },
+    "mean_expected_opportunity_current": 1.1938,
+    "mean_expected_opportunity_candidate": 1.0773,
+    "mean_actual_opportunity": 1.7001
+   },
+   "NON_QUALIFYING_ALL": {
+    "n_units": 3770,
+    "max_abs_delta_p": 0.0,
+    "mean_delta_expected_opportunity": -0.22975,
+    "NOTE": "appearance probability is untouched for every non-qualifier; their expected opportunity still moves because the allocator renormalises the club total"
+   }
+  },
+  "role_ranking_concordance": {
+   "ALL": {
+    "concordance_current": 0.7612,
+    "concordance_candidate": 0.818,
+    "n_pairs": 7411,
+    "improvement_cand_minus_cur_week_blocked": {
+     "mean_of_block_means": 0.05695,
+     "se": 0.00285,
+     "n_blocks": 15,
+     "z": 19.98
+    }
+   },
+   "QB": {
+    "concordance_current": 0.775,
+    "concordance_candidate": 0.775,
+    "n_pairs": 120,
+    "improvement_cand_minus_cur_week_blocked": {
+     "mean_of_block_means": 0.0,
+     "se": 0.0,
+     "n_blocks": 15,
+     "z": null
+    }
+   },
+   "RB": {
+    "concordance_current": 0.8025,
+    "concordance_candidate": 0.8628,
+    "n_pairs": 1706,
+    "improvement_cand_minus_cur_week_blocked": {
+     "mean_of_block_means": 0.06073,
+     "se": 0.00437,
+     "n_blocks": 15,
+     "z": 13.89
+    }
+   },
+   "WR": {
+    "concordance_current": 0.7562,
+    "concordance_candidate": 0.803,
+    "n_pairs": 4274,
+    "improvement_cand_minus_cur_week_blocked": {
+     "mean_of_block_means": 0.04703,
+     "se": 0.00411,
+     "n_blocks": 15,
+     "z": 11.45
+    }
+   },
+   "TE": {
+    "concordance_current": 0.7223,
+    "concordance_candidate": 0.8124,
+    "n_pairs": 1311,
+    "improvement_cand_minus_cur_week_blocked": {
+     "mean_of_block_means": 0.09071,
+     "se": 0.0072,
+     "n_blocks": 15,
+     "z": 12.6
+    }
+   }
+  },
+  "backup_calibration_rank2plus_RB_WR_TE": {
+   "current": {
+    "bins": [
+     {
+      "bin": "[0.0,0.1)",
+      "n": 1412,
+      "mean_predicted_P_ge1": 0.0433,
+      "observed_P_ge1": 0.4589
+     },
+     {
+      "bin": "[0.1,0.2)",
+      "n": 1261,
+      "mean_predicted_P_ge1": 0.1659,
+      "observed_P_ge1": 0.5678
+     },
+     {
+      "bin": "[0.4,0.5)",
+      "n": 448,
+      "mean_predicted_P_ge1": 0.4695,
+      "observed_P_ge1": 0.7009
+     },
+     {
+      "bin": "[0.5,0.6)",
+      "n": 1329,
+      "mean_predicted_P_ge1": 0.5494,
+      "observed_P_ge1": 0.6509
+     },
+     {
+      "bin": "[0.8,0.9)",
+      "n": 448,
+      "mean_predicted_P_ge1": 0.8191,
+      "observed_P_ge1": 0.9018
+     },
+     {
+      "bin": "[0.9,1.0)",
+      "n": 19,
+      "mean_predicted_P_ge1": 1.0,
+      "observed_P_ge1": 0.6316
+     }
+    ],
+    "expected_calibration_error": 0.2799
+   },
+   "candidate": {
+    "bins": [
+     {
+      "bin": "[0.0,0.1)",
+      "n": 1124,
+      "mean_predicted_P_ge1": 0.0406,
+      "observed_P_ge1": 0.3612
+     },
+     {
+      "bin": "[0.1,0.2)",
+      "n": 881,
+      "mean_predicted_P_ge1": 0.1656,
+      "observed_P_ge1": 0.4211
+     },
+     {
+      "bin": "[0.4,0.5)",
+      "n": 272,
+      "mean_predicted_P_ge1": 0.4695,
+      "observed_P_ge1": 0.5882
+     },
+     {
+      "bin": "[0.5,0.6)",
+      "n": 853,
+      "mean_predicted_P_ge1": 0.5473,
+      "observed_P_ge1": 0.5147
+     },
+     {
+      "bin": "[0.8,0.9)",
+      "n": 631,
+      "mean_predicted_P_ge1": 0.8731,
+      "observed_P_ge1": 0.8177
+     },
+     {
+      "bin": "[0.9,1.0)",
+      "n": 1156,
+      "mean_predicted_P_ge1": 0.9493,
+      "observed_P_ge1": 0.923
+     }
+    ],
+    "expected_calibration_error": 0.1446
+   }
+  },
+  "backup_calibration_backup_QB_current_only": {
+   "bins": [
+    {
+     "bin": "[0.1,0.2)",
+     "n": 121,
+     "mean_predicted_P_ge1": 0.1219,
+     "observed_P_ge1": 0.719
+    }
+   ],
+   "expected_calibration_error": 0.5971
+  },
+  "conservation": {
+   "n_club_week_fields": 1344,
+   "max_abs_sum_minus_club_total_current": 7.105427357601002e-15,
+   "max_abs_sum_minus_club_total_candidate": 7.105427357601002e-15,
+   "mean_sum_p_plays_current": 8.8239,
+   "mean_sum_p_plays_candidate": 9.3731,
+   "NOTE": "the allocator normalises weights across the club, so expected opportunity sums to the club total in both arms; the sum of P(plays) is NOT conserved and is reported"
+  },
+  "hook_off_identity": {
+   "club_weeks": 448,
+   "n_values": 17451,
+   "comparison": "EXACT == on every r[field], p_plays[field] and allocation record"
+  },
+  "DECLARED_BAR_CHECKS": {
+   "qualifying_abs_error_improvement_z_gt_2": true,
+   "qualifying_zero_brier_improvement_z_gt_2": true,
+   "rank1_abs_error_not_worse_by_2se": true,
+   "rank1_zero_brier_not_worse_by_2se": true,
+   "club_totals_conserved_both_arms": true,
+   "non_qualifying_p_exactly_unchanged": true,
+   "hook_off_identity_exact": true
+  },
+  "DECLARED_BAR": "PASS"
+ },
+ "SENSITIVITY_FORWARD_CHAIN_POOL": {
+  "universe": "FORWARD_CHAIN_POOL",
+  "n_units": 6453,
+  "n_club_weeks": 448,
+  "cohorts": {
+   "ALL_RB_WR_TE": {
+    "n_units": 5916,
+    "n_players": 470,
+    "n_weeks": 15,
+    "mean_actual": 3.8857,
+    "current": {
+     "mean_expected_opportunity": 3.1188,
+     "signed_error_pred_minus_actual": {
+      "pooled": -0.7669,
+      "mean_of_block_means": -0.76046,
+      "se": 0.04811,
+      "n_blocks": 15,
+      "z": -15.81
+     },
+     "abs_error": {
+      "pooled": 2.3759,
+      "mean_of_block_means": 2.37457,
+      "se": 0.02793,
+      "n_blocks": 15,
+      "z": 85.02
+     },
+     "predicted_P0": 0.548,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.2948,
+      "mean_of_block_means": 0.2938,
+      "se": 0.00825,
+      "n_blocks": 15,
+      "z": 35.6
+     },
+     "zero_brier": 0.3069,
+     "conditional_volume_abs_error_if_dressed": 2.3971
+    },
+    "candidate": {
+     "mean_expected_opportunity": 3.3117,
+     "signed_error_pred_minus_actual": {
+      "pooled": -0.574,
+      "mean_of_block_means": -0.56938,
+      "se": 0.04072,
+      "n_blocks": 15,
+      "z": -13.98
+     },
+     "abs_error": {
+      "pooled": 2.0035,
+      "mean_of_block_means": 2.00388,
+      "se": 0.02689,
+      "n_blocks": 15,
+      "z": 74.52
+     },
+     "predicted_P0": 0.3918,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.1386,
+      "mean_of_block_means": 0.13751,
+      "se": 0.00772,
+      "n_blocks": 15,
+      "z": 17.81
+     },
+     "zero_brier": 0.2002,
+     "conditional_volume_abs_error_if_dressed": 2.1992
+    },
+    "observed_zero_share": 0.2532,
+    "improvement_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.37069,
+      "se": 0.01607,
+      "n_blocks": 15,
+      "z": 23.07
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.37512,
+      "se": 0.04866,
+      "n_blocks": 32,
+      "z": 7.71
+     }
+    },
+    "improvement_zero_brier": {
+     "week_blocked": {
+      "mean_of_block_means": 0.10666,
+      "se": 0.00383,
+      "n_blocks": 15,
+      "z": 27.87
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.10638,
+      "se": 0.00944,
+      "n_blocks": 32,
+      "z": 11.26
+     }
+    },
+    "improvement_conditional_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.19697,
+      "se": 0.01107,
+      "n_blocks": 15,
+      "z": 17.79
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.19644,
+      "se": 0.02615,
+      "n_blocks": 32,
+      "z": 7.51
+     }
+    },
+    "change_mean_expected_opportunity_cand_minus_cur": {
+     "mean_of_block_means": 0.19108,
+     "se": 0.00951,
+     "n_blocks": 15,
+     "z": 20.1
+    },
+    "change_mean_p_plays_cand_minus_cur": 0.15622
+   },
+   "QUALIFYING_RB_WR_TE": {
+    "n_units": 2937,
+    "n_players": 338,
+    "n_weeks": 15,
+    "mean_actual": 6.0521,
+    "current": {
+     "mean_expected_opportunity": 4.9658,
+     "signed_error_pred_minus_actual": {
+      "pooled": -1.0863,
+      "mean_of_block_means": -1.09347,
+      "se": 0.06496,
+      "n_blocks": 15,
+      "z": -16.83
+     },
+     "abs_error": {
+      "pooled": 3.2648,
+      "mean_of_block_means": 3.26738,
+      "se": 0.05606,
+      "n_blocks": 15,
+      "z": 58.28
+     },
+     "predicted_P0": 0.3875,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.3208,
+      "mean_of_block_means": 0.32195,
+      "se": 0.00902,
+      "n_blocks": 15,
+      "z": 35.68
+     },
+     "zero_brier": 0.27666,
+     "conditional_volume_abs_error_if_dressed": 2.7717
+    },
+    "candidate": {
+     "mean_expected_opportunity": 5.5537,
+     "signed_error_pred_minus_actual": {
+      "pooled": -0.4983,
+      "mean_of_block_means": -0.50268,
+      "se": 0.05352,
+      "n_blocks": 15,
+      "z": -9.39
+     },
+     "abs_error": {
+      "pooled": 2.5937,
+      "mean_of_block_means": 2.59711,
+      "se": 0.03365,
+      "n_blocks": 15,
+      "z": 77.17
+     },
+     "predicted_P0": 0.0729,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.0061,
+      "mean_of_block_means": 0.0065,
+      "se": 0.00341,
+      "n_blocks": 15,
+      "z": 1.91
+     },
+     "zero_brier": 0.06174,
+     "conditional_volume_abs_error_if_dressed": 2.6052
+    },
+    "observed_zero_share": 0.0667,
+    "improvement_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.67027,
+      "se": 0.04466,
+      "n_blocks": 15,
+      "z": 15.01
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.66991,
+      "se": 0.09127,
+      "n_blocks": 32,
+      "z": 7.34
+     }
+    },
+    "improvement_zero_brier": {
+     "week_blocked": {
+      "mean_of_block_means": 0.21601,
+      "se": 0.01003,
+      "n_blocks": 15,
+      "z": 21.54
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.2143,
+      "se": 0.01963,
+      "n_blocks": 32,
+      "z": 10.92
+     }
+    },
+    "improvement_conditional_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.16398,
+      "se": 0.02353,
+      "n_blocks": 15,
+      "z": 6.97
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.16185,
+      "se": 0.03319,
+      "n_blocks": 32,
+      "z": 4.88
+     }
+    },
+    "change_mean_expected_opportunity_cand_minus_cur": {
+     "mean_of_block_means": 0.59079,
+     "se": 0.02924,
+     "n_blocks": 15,
+     "z": 20.2
+    },
+    "change_mean_p_plays_cand_minus_cur": 0.31468
+   },
+   "NON_QUALIFYING_RB_WR_TE": {
+    "n_units": 2979,
+    "n_players": 397,
+    "n_weeks": 15,
+    "mean_actual": 1.7499,
+    "current": {
+     "mean_expected_opportunity": 1.2979,
+     "signed_error_pred_minus_actual": {
+      "pooled": -0.452,
+      "mean_of_block_means": -0.42645,
+      "se": 0.07535,
+      "n_blocks": 15,
+      "z": -5.66
+     },
+     "abs_error": {
+      "pooled": 1.4994,
+      "mean_of_block_means": 1.49476,
+      "se": 0.04585,
+      "n_blocks": 15,
+      "z": 32.6
+     },
+     "predicted_P0": 0.7062,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.2691,
+      "mean_of_block_means": 0.26595,
+      "se": 0.0105,
+      "n_blocks": 15,
+      "z": 25.33
+     },
+     "zero_brier": 0.33671,
+     "conditional_volume_abs_error_if_dressed": 2.0278
+    },
+    "candidate": {
+     "mean_expected_opportunity": 1.1012,
+     "signed_error_pred_minus_actual": {
+      "pooled": -0.6487,
+      "mean_of_block_means": -0.62617,
+      "se": 0.06786,
+      "n_blocks": 15,
+      "z": -9.23
+     },
+     "abs_error": {
+      "pooled": 1.4217,
+      "mean_of_block_means": 1.41435,
+      "se": 0.04632,
+      "n_blocks": 15,
+      "z": 30.54
+     },
+     "predicted_P0": 0.7062,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.2691,
+      "mean_of_block_means": 0.26595,
+      "se": 0.0105,
+      "n_blocks": 15,
+      "z": 25.33
+     },
+     "zero_brier": 0.33671,
+     "conditional_volume_abs_error_if_dressed": 1.799
+    },
+    "observed_zero_share": 0.4371,
+    "improvement_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.08041,
+      "se": 0.01153,
+      "n_blocks": 15,
+      "z": 6.97
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.07834,
+      "se": 0.01444,
+      "n_blocks": 32,
+      "z": 5.43
+     }
+    },
+    "improvement_zero_brier": {
+     "week_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 15,
+      "z": null
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 32,
+      "z": null
+     }
+    },
+    "improvement_conditional_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.23133,
+      "se": 0.01368,
+      "n_blocks": 15,
+      "z": 16.91
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.22739,
+      "se": 0.02488,
+      "n_blocks": 32,
+      "z": 9.14
+     }
+    },
+    "change_mean_expected_opportunity_cand_minus_cur": {
+     "mean_of_block_means": -0.19971,
+     "se": 0.01227,
+     "n_blocks": 15,
+     "z": -16.28
+    },
+    "change_mean_p_plays_cand_minus_cur": 0.0
+   },
+   "RANK1_RB_WR_TE": {
+    "n_units": 1397,
+    "n_players": 108,
+    "n_weeks": 15,
+    "mean_actual": 7.1596,
+    "current": {
+     "mean_expected_opportunity": 8.5819,
+     "signed_error_pred_minus_actual": {
+      "pooled": 1.4222,
+      "mean_of_block_means": 1.42952,
+      "se": 0.08682,
+      "n_blocks": 15,
+      "z": 16.47
+     },
+     "abs_error": {
+      "pooled": 2.9617,
+      "mean_of_block_means": 2.96724,
+      "se": 0.04806,
+      "n_blocks": 15,
+      "z": 61.74
+     },
+     "predicted_P0": 0.0042,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": -0.0387,
+      "mean_of_block_means": -0.03887,
+      "se": 0.00428,
+      "n_blocks": 15,
+      "z": -9.08
+     },
+     "zero_brier": 0.0432,
+     "conditional_volume_abs_error_if_dressed": 2.9613
+    },
+    "candidate": {
+     "mean_expected_opportunity": 7.1398,
+     "signed_error_pred_minus_actual": {
+      "pooled": -0.0199,
+      "mean_of_block_means": -0.01481,
+      "se": 0.08496,
+      "n_blocks": 15,
+      "z": -0.17
+     },
+     "abs_error": {
+      "pooled": 2.564,
+      "mean_of_block_means": 2.56583,
+      "se": 0.05139,
+      "n_blocks": 15,
+      "z": 49.93
+     },
+     "predicted_P0": 0.0666,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.0237,
+      "mean_of_block_means": 0.02351,
+      "se": 0.00453,
+      "n_blocks": 15,
+      "z": 5.19
+     },
+     "zero_brier": 0.04442,
+     "conditional_volume_abs_error_if_dressed": 2.5936
+    },
+    "observed_zero_share": 0.0429,
+    "improvement_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.40142,
+      "se": 0.04195,
+      "n_blocks": 15,
+      "z": 9.57
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.41352,
+      "se": 0.0885,
+      "n_blocks": 32,
+      "z": 4.67
+     }
+    },
+    "improvement_zero_brier": {
+     "week_blocked": {
+      "mean_of_block_means": -0.00119,
+      "se": 0.00115,
+      "n_blocks": 15,
+      "z": -1.04
+     },
+     "club_blocked": {
+      "mean_of_block_means": -0.0014,
+      "se": 0.00121,
+      "n_blocks": 32,
+      "z": -1.15
+     }
+    },
+    "improvement_conditional_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.37125,
+      "se": 0.03556,
+      "n_blocks": 15,
+      "z": 10.44
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.38793,
+      "se": 0.07678,
+      "n_blocks": 32,
+      "z": 5.05
+     }
+    },
+    "change_mean_expected_opportunity_cand_minus_cur": {
+     "mean_of_block_means": -1.44433,
+     "se": 0.02481,
+     "n_blocks": 15,
+     "z": -58.22
+    },
+    "change_mean_p_plays_cand_minus_cur": -0.0624
+   },
+   "RB2_carries": {
+    "n_units": 350,
+    "n_players": 51,
+    "n_weeks": 15,
+    "mean_actual": 7.3514,
+    "current": {
+     "mean_expected_opportunity": 4.9428,
+     "signed_error_pred_minus_actual": {
+      "pooled": -2.4087,
+      "mean_of_block_means": -2.37091,
+      "se": 0.26572,
+      "n_blocks": 15,
+      "z": -8.92
+     },
+     "abs_error": {
+      "pooled": 4.2778,
+      "mean_of_block_means": 4.26692,
+      "se": 0.15863,
+      "n_blocks": 15,
+      "z": 26.9
+     },
+     "predicted_P0": 0.4396,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.3167,
+      "mean_of_block_means": 0.31762,
+      "se": 0.01315,
+      "n_blocks": 15,
+      "z": 24.16
+     },
+     "zero_brier": 0.20807,
+     "conditional_volume_abs_error_if_dressed": 4.0235
+    },
+    "candidate": {
+     "mean_expected_opportunity": 6.2916,
+     "signed_error_pred_minus_actual": {
+      "pooled": -1.0598,
+      "mean_of_block_means": -1.01745,
+      "se": 0.27387,
+      "n_blocks": 15,
+      "z": -3.72
+     },
+     "abs_error": {
+      "pooled": 3.8442,
+      "mean_of_block_means": 3.84177,
+      "se": 0.17559,
+      "n_blocks": 15,
+      "z": 21.88
+     },
+     "predicted_P0": 0.1853,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.0624,
+      "mean_of_block_means": 0.06189,
+      "se": 0.01172,
+      "n_blocks": 15,
+      "z": 5.28
+     },
+     "zero_brier": 0.09474,
+     "conditional_volume_abs_error_if_dressed": 3.9368
+    },
+    "observed_zero_share": 0.1229,
+    "improvement_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.42515,
+      "se": 0.06939,
+      "n_blocks": 15,
+      "z": 6.13
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.38519,
+      "se": 0.1437,
+      "n_blocks": 32,
+      "z": 2.68
+     }
+    },
+    "improvement_zero_brier": {
+     "week_blocked": {
+      "mean_of_block_means": 0.11426,
+      "se": 0.00736,
+      "n_blocks": 15,
+      "z": 15.52
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.11467,
+      "se": 0.01284,
+      "n_blocks": 32,
+      "z": 8.93
+     }
+    },
+    "improvement_conditional_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.09933,
+      "se": 0.04931,
+      "n_blocks": 15,
+      "z": 2.01
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.07326,
+      "se": 0.073,
+      "n_blocks": 32,
+      "z": 1.0
+     }
+    },
+    "change_mean_expected_opportunity_cand_minus_cur": {
+     "mean_of_block_means": 1.35346,
+     "se": 0.04677,
+     "n_blocks": 15,
+     "z": 28.94
+    },
+    "change_mean_p_plays_cand_minus_cur": 0.25431,
+    "n_qualifying_units": 233
+   },
+   "RB2_targets": {
+    "n_units": 350,
+    "n_players": 51,
+    "n_weeks": 15,
+    "mean_actual": 1.72,
+    "current": {
+     "mean_expected_opportunity": 0.9843,
+     "signed_error_pred_minus_actual": {
+      "pooled": -0.7357,
+      "mean_of_block_means": -0.73051,
+      "se": 0.10951,
+      "n_blocks": 15,
+      "z": -6.67
+     },
+     "abs_error": {
+      "pooled": 1.2362,
+      "mean_of_block_means": 1.23102,
+      "se": 0.08192,
+      "n_blocks": 15,
+      "z": 15.03
+     },
+     "predicted_P0": 0.5443,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.2043,
+      "mean_of_block_means": 0.2059,
+      "se": 0.02513,
+      "n_blocks": 15,
+      "z": 8.19
+     },
+     "zero_brier": 0.28467,
+     "conditional_volume_abs_error_if_dressed": 1.2436
+    },
+    "candidate": {
+     "mean_expected_opportunity": 1.1484,
+     "signed_error_pred_minus_actual": {
+      "pooled": -0.5716,
+      "mean_of_block_means": -0.56534,
+      "se": 0.10827,
+      "n_blocks": 15,
+      "z": -5.22
+     },
+     "abs_error": {
+      "pooled": 1.1763,
+      "mean_of_block_means": 1.17118,
+      "se": 0.06802,
+      "n_blocks": 15,
+      "z": 17.22
+     },
+     "predicted_P0": 0.4115,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.0715,
+      "mean_of_block_means": 0.07188,
+      "se": 0.02919,
+      "n_blocks": 15,
+      "z": 2.46
+     },
+     "zero_brier": 0.23875,
+     "conditional_volume_abs_error_if_dressed": 1.1981
+    },
+    "observed_zero_share": 0.34,
+    "improvement_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.05984,
+      "se": 0.03068,
+      "n_blocks": 15,
+      "z": 1.95
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.07196,
+      "se": 0.03839,
+      "n_blocks": 32,
+      "z": 1.87
+     }
+    },
+    "improvement_zero_brier": {
+     "week_blocked": {
+      "mean_of_block_means": 0.04664,
+      "se": 0.00978,
+      "n_blocks": 15,
+      "z": 4.77
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.04417,
+      "se": 0.01872,
+      "n_blocks": 32,
+      "z": 2.36
+     }
+    },
+    "improvement_conditional_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.04797,
+      "se": 0.02643,
+      "n_blocks": 15,
+      "z": 1.81
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.0714,
+      "se": 0.02336,
+      "n_blocks": 32,
+      "z": 3.06
+     }
+    },
+    "change_mean_expected_opportunity_cand_minus_cur": {
+     "mean_of_block_means": 0.16517,
+     "se": 0.01833,
+     "n_blocks": 15,
+     "z": 9.01
+    },
+    "change_mean_p_plays_cand_minus_cur": 0.13278,
+    "n_qualifying_units": 119
+   },
+   "WR3_WR4_targets": {
+    "n_units": 649,
+    "n_players": 102,
+    "n_weeks": 15,
+    "mean_actual": 2.5639,
+    "current": {
+     "mean_expected_opportunity": 1.4874,
+     "signed_error_pred_minus_actual": {
+      "pooled": -1.0766,
+      "mean_of_block_means": -1.07392,
+      "se": 0.05242,
+      "n_blocks": 15,
+      "z": -20.49
+     },
+     "abs_error": {
+      "pooled": 1.8537,
+      "mean_of_block_means": 1.86037,
+      "se": 0.05511,
+      "n_blocks": 15,
+      "z": 33.76
+     },
+     "predicted_P0": 0.6643,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.3947,
+      "mean_of_block_means": 0.39364,
+      "se": 0.01543,
+      "n_blocks": 15,
+      "z": 25.5
+     },
+     "zero_brier": 0.33975,
+     "conditional_volume_abs_error_if_dressed": 2.2373
+    },
+    "candidate": {
+     "mean_expected_opportunity": 2.2825,
+     "signed_error_pred_minus_actual": {
+      "pooled": -0.2814,
+      "mean_of_block_means": -0.2832,
+      "se": 0.0795,
+      "n_blocks": 15,
+      "z": -3.56
+     },
+     "abs_error": {
+      "pooled": 1.6848,
+      "mean_of_block_means": 1.69535,
+      "se": 0.05327,
+      "n_blocks": 15,
+      "z": 31.83
+     },
+     "predicted_P0": 0.3972,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.1275,
+      "mean_of_block_means": 0.12771,
+      "se": 0.02127,
+      "n_blocks": 15,
+      "z": 6.0
+     },
+     "zero_brier": 0.21417,
+     "conditional_volume_abs_error_if_dressed": 2.0535
+    },
+    "observed_zero_share": 0.2696,
+    "improvement_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.16502,
+      "se": 0.03627,
+      "n_blocks": 15,
+      "z": 4.55
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.15583,
+      "se": 0.06766,
+      "n_blocks": 32,
+      "z": 2.3
+     }
+    },
+    "improvement_zero_brier": {
+     "week_blocked": {
+      "mean_of_block_means": 0.1254,
+      "se": 0.0081,
+      "n_blocks": 15,
+      "z": 15.48
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.12196,
+      "se": 0.01662,
+      "n_blocks": 32,
+      "z": 7.34
+     }
+    },
+    "improvement_conditional_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.18788,
+      "se": 0.02661,
+      "n_blocks": 15,
+      "z": 7.06
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.18551,
+      "se": 0.02417,
+      "n_blocks": 32,
+      "z": 7.68
+     }
+    },
+    "change_mean_expected_opportunity_cand_minus_cur": {
+     "mean_of_block_means": 0.79072,
+     "se": 0.04154,
+     "n_blocks": 15,
+     "z": 19.03
+    },
+    "change_mean_p_plays_cand_minus_cur": 0.26714,
+    "n_qualifying_units": 298
+   },
+   "TE2_TE3_targets": {
+    "n_units": 697,
+    "n_players": 79,
+    "n_weeks": 15,
+    "mean_actual": 1.8235,
+    "current": {
+     "mean_expected_opportunity": 1.0967,
+     "signed_error_pred_minus_actual": {
+      "pooled": -0.7269,
+      "mean_of_block_means": -0.72611,
+      "se": 0.04804,
+      "n_blocks": 15,
+      "z": -15.12
+     },
+     "abs_error": {
+      "pooled": 1.6164,
+      "mean_of_block_means": 1.60816,
+      "se": 0.0408,
+      "n_blocks": 15,
+      "z": 39.41
+     },
+     "predicted_P0": 0.6699,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.3256,
+      "mean_of_block_means": 0.32901,
+      "se": 0.01983,
+      "n_blocks": 15,
+      "z": 16.59
+     },
+     "zero_brier": 0.37474,
+     "conditional_volume_abs_error_if_dressed": 1.8557
+    },
+    "candidate": {
+     "mean_expected_opportunity": 1.5248,
+     "signed_error_pred_minus_actual": {
+      "pooled": -0.2987,
+      "mean_of_block_means": -0.29747,
+      "se": 0.0531,
+      "n_blocks": 15,
+      "z": -5.6
+     },
+     "abs_error": {
+      "pooled": 1.3356,
+      "mean_of_block_means": 1.32939,
+      "se": 0.04773,
+      "n_blocks": 15,
+      "z": 27.85
+     },
+     "predicted_P0": 0.4817,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.1374,
+      "mean_of_block_means": 0.14076,
+      "se": 0.02107,
+      "n_blocks": 15,
+      "z": 6.68
+     },
+     "zero_brier": 0.2682,
+     "conditional_volume_abs_error_if_dressed": 1.6801
+    },
+    "observed_zero_share": 0.3443,
+    "improvement_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.27877,
+      "se": 0.03445,
+      "n_blocks": 15,
+      "z": 8.09
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.27223,
+      "se": 0.09139,
+      "n_blocks": 32,
+      "z": 2.98
+     }
+    },
+    "improvement_zero_brier": {
+     "week_blocked": {
+      "mean_of_block_means": 0.10746,
+      "se": 0.0139,
+      "n_blocks": 15,
+      "z": 7.73
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.10554,
+      "se": 0.02394,
+      "n_blocks": 32,
+      "z": 4.41
+     }
+    },
+    "improvement_conditional_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.17617,
+      "se": 0.01292,
+      "n_blocks": 15,
+      "z": 13.63
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.18855,
+      "se": 0.0327,
+      "n_blocks": 32,
+      "z": 5.77
+     }
+    },
+    "change_mean_expected_opportunity_cand_minus_cur": {
+     "mean_of_block_means": 0.42864,
+     "se": 0.03692,
+     "n_blocks": 15,
+     "z": 11.61
+    },
+    "change_mean_p_plays_cand_minus_cur": 0.18815,
+    "n_qualifying_units": 229
+   },
+   "BACKUP_QB_pass_attempts": {
+    "n_units": 178,
+    "n_players": 50,
+    "n_weeks": 15,
+    "mean_actual": 20.3483,
+    "current": {
+     "mean_expected_opportunity": 2.3548,
+     "signed_error_pred_minus_actual": {
+      "pooled": -17.9935,
+      "mean_of_block_means": -18.11618,
+      "se": 0.80457,
+      "n_blocks": 15,
+      "z": -22.52
+     },
+     "abs_error": {
+      "pooled": 18.6617,
+      "mean_of_block_means": 18.8397,
+      "se": 0.77621,
+      "n_blocks": 15,
+      "z": 24.27
+     },
+     "predicted_P0": 0.8781,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.7264,
+      "mean_of_block_means": 0.7104,
+      "se": 0.02673,
+      "n_blocks": 15,
+      "z": 26.57
+     },
+     "zero_brier": 0.65634,
+     "conditional_volume_abs_error_if_dressed": 14.4213
+    },
+    "candidate": {
+     "mean_expected_opportunity": 2.3548,
+     "signed_error_pred_minus_actual": {
+      "pooled": -17.9935,
+      "mean_of_block_means": -18.11618,
+      "se": 0.80457,
+      "n_blocks": 15,
+      "z": -22.52
+     },
+     "abs_error": {
+      "pooled": 18.6617,
+      "mean_of_block_means": 18.8397,
+      "se": 0.77621,
+      "n_blocks": 15,
+      "z": 24.27
+     },
+     "predicted_P0": 0.8781,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.7264,
+      "mean_of_block_means": 0.7104,
+      "se": 0.02673,
+      "n_blocks": 15,
+      "z": 26.57
+     },
+     "zero_brier": 0.65634,
+     "conditional_volume_abs_error_if_dressed": 14.4213
+    },
+    "observed_zero_share": 0.1517,
+    "improvement_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 15,
+      "z": null
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 30,
+      "z": null
+     }
+    },
+    "improvement_zero_brier": {
+     "week_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 15,
+      "z": null
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 30,
+      "z": null
+     }
+    },
+    "improvement_conditional_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 15,
+      "z": null
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 30,
+      "z": null
+     }
+    },
+    "change_mean_expected_opportunity_cand_minus_cur": {
+     "mean_of_block_means": 0.0,
+     "se": 0.0,
+     "n_blocks": 15,
+     "z": null
+    },
+    "change_mean_p_plays_cand_minus_cur": 0.0
+   },
+   "RANK1_QB_pass_attempts": {
+    "n_units": 359,
+    "n_players": 39,
+    "n_weeks": 15,
+    "mean_actual": 31.7716,
+    "current": {
+     "mean_expected_opportunity": 32.5684,
+     "signed_error_pred_minus_actual": {
+      "pooled": 0.7968,
+      "mean_of_block_means": 0.7072,
+      "se": 0.72383,
+      "n_blocks": 15,
+      "z": 0.98
+     },
+     "abs_error": {
+      "pooled": 7.8605,
+      "mean_of_block_means": 7.82225,
+      "se": 0.51971,
+      "n_blocks": 15,
+      "z": 15.05
+     },
+     "predicted_P0": 0.0,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": -0.0139,
+      "mean_of_block_means": -0.01414,
+      "se": 0.00711,
+      "n_blocks": 15,
+      "z": -1.99
+     },
+     "zero_brier": 0.01392,
+     "conditional_volume_abs_error_if_dressed": 7.8605
+    },
+    "candidate": {
+     "mean_expected_opportunity": 32.5684,
+     "signed_error_pred_minus_actual": {
+      "pooled": 0.7968,
+      "mean_of_block_means": 0.7072,
+      "se": 0.72383,
+      "n_blocks": 15,
+      "z": 0.98
+     },
+     "abs_error": {
+      "pooled": 7.8605,
+      "mean_of_block_means": 7.82225,
+      "se": 0.51971,
+      "n_blocks": 15,
+      "z": 15.05
+     },
+     "predicted_P0": 0.0,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": -0.0139,
+      "mean_of_block_means": -0.01414,
+      "se": 0.00711,
+      "n_blocks": 15,
+      "z": -1.99
+     },
+     "zero_brier": 0.01392,
+     "conditional_volume_abs_error_if_dressed": 7.8605
+    },
+    "observed_zero_share": 0.0139,
+    "improvement_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 15,
+      "z": null
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 32,
+      "z": null
+     }
+    },
+    "improvement_zero_brier": {
+     "week_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 15,
+      "z": null
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 32,
+      "z": null
+     }
+    },
+    "improvement_conditional_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 15,
+      "z": null
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 32,
+      "z": null
+     }
+    },
+    "change_mean_expected_opportunity_cand_minus_cur": {
+     "mean_of_block_means": 0.0,
+     "se": 0.0,
+     "n_blocks": 15,
+     "z": null
+    },
+    "change_mean_p_plays_cand_minus_cur": 0.0
+   },
+   "ELEVATION_PROXY_RB_WR_TE": {
+    "n_units": 0,
+    "state": "EMPTY_COHORT"
+   },
+   "RETURNING_FROM_ABSENCE_PROXY_RB_WR_TE": {
+    "n_units": 329,
+    "n_players": 198,
+    "n_weeks": 15,
+    "mean_actual": 2.6657,
+    "current": {
+     "mean_expected_opportunity": 2.53,
+     "signed_error_pred_minus_actual": {
+      "pooled": -0.1357,
+      "mean_of_block_means": 0.00882,
+      "se": 0.28739,
+      "n_blocks": 15,
+      "z": 0.03
+     },
+     "abs_error": {
+      "pooled": 2.088,
+      "mean_of_block_means": 2.14216,
+      "se": 0.17163,
+      "n_blocks": 15,
+      "z": 12.48
+     },
+     "predicted_P0": 0.6041,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.1998,
+      "mean_of_block_means": 0.19044,
+      "se": 0.03348,
+      "n_blocks": 15,
+      "z": 5.69
+     },
+     "zero_brier": 0.26649,
+     "conditional_volume_abs_error_if_dressed": 2.68
+    },
+    "candidate": {
+     "mean_expected_opportunity": 2.0999,
+     "signed_error_pred_minus_actual": {
+      "pooled": -0.5658,
+      "mean_of_block_means": -0.4525,
+      "se": 0.24875,
+      "n_blocks": 15,
+      "z": -1.82
+     },
+     "abs_error": {
+      "pooled": 1.8794,
+      "mean_of_block_means": 1.90179,
+      "se": 0.16471,
+      "n_blocks": 15,
+      "z": 11.55
+     },
+     "predicted_P0": 0.6041,
+     "zero_mass_error_pred_minus_obs": {
+      "pooled": 0.1998,
+      "mean_of_block_means": 0.19044,
+      "se": 0.03348,
+      "n_blocks": 15,
+      "z": 5.69
+     },
+     "zero_brier": 0.26649,
+     "conditional_volume_abs_error_if_dressed": 2.3162
+    },
+    "observed_zero_share": 0.4043,
+    "improvement_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.24037,
+      "se": 0.07439,
+      "n_blocks": 15,
+      "z": 3.23
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.21255,
+      "se": 0.04011,
+      "n_blocks": 32,
+      "z": 5.3
+     }
+    },
+    "improvement_zero_brier": {
+     "week_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 15,
+      "z": null
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.0,
+      "se": 0.0,
+      "n_blocks": 32,
+      "z": null
+     }
+    },
+    "improvement_conditional_abs_error": {
+     "week_blocked": {
+      "mean_of_block_means": 0.38838,
+      "se": 0.07628,
+      "n_blocks": 15,
+      "z": 5.09
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.36676,
+      "se": 0.04834,
+      "n_blocks": 32,
+      "z": 7.59
+     }
+    },
+    "change_mean_expected_opportunity_cand_minus_cur": {
+     "mean_of_block_means": -0.46132,
+     "se": 0.06235,
+     "n_blocks": 15,
+     "z": -7.4
+    },
+    "change_mean_p_plays_cand_minus_cur": 0.0,
+    "n_qualifying_units": 0
+   }
+  },
+  "conservation": {
+   "n_club_week_fields": 1344,
+   "max_abs_sum_minus_club_total_current": 7.105427357601002e-15,
+   "max_abs_sum_minus_club_total_candidate": 7.105427357601002e-15,
+   "mean_sum_p_plays_current": 9.5133,
+   "mean_sum_p_plays_candidate": 10.2009,
+   "NOTE": "the allocator normalises weights across the club, so expected opportunity sums to the club total in both arms; the sum of P(plays) is NOT conserved and is reported"
+  },
+  "DECLARED_BAR_CHECKS": {
+   "qualifying_abs_error_improvement_z_gt_2": true,
+   "qualifying_zero_brier_improvement_z_gt_2": true,
+   "rank1_abs_error_not_worse_by_2se": true,
+   "rank1_zero_brier_not_worse_by_2se": true,
+   "club_totals_conserved_both_arms": true,
+   "non_qualifying_p_exactly_unchanged": true,
+   "hook_off_identity_exact": "NOT_CHECKED_IN_THIS_UNIVERSE"
+  },
+  "DECLARED_BAR": "PASS"
+ },
+ "COHORT_TABLE_COMPACT": {
+  "ALL_RB_WR_TE": {
+   "n_units": 6709,
+   "n_qualifying_units": null,
+   "mean_actual": 3.4952,
+   "mean_expected_cur_cand": [
+    3.4394,
+    3.4817
+   ],
+   "signed_error_cur_cand_with_se": [
+    [
+     -0.0557,
+     0.01979
+    ],
+    [
+     -0.0135,
+     0.01968
+    ]
+   ],
+   "abs_error_cur_cand": [
+    2.2727,
+    1.952
+   ],
+   "abs_error_improvement_week_blocked": {
+    "mean_of_block_means": 0.32143,
+    "se": 0.01229,
+    "n_blocks": 15,
+    "z": 26.16
+   },
+   "P0_pred_cur_cand_obs": [
+    0.4964,
+    0.3863,
+    0.3136
+   ],
+   "zero_mass_error_cur_cand_with_se": [
+    [
+     0.1828,
+     0.00385
+    ],
+    [
+     0.0727,
+     0.00433
+    ]
+   ],
+   "zero_brier_improvement_week_blocked": {
+    "mean_of_block_means": 0.0709,
+    "se": 0.00286,
+    "n_blocks": 15,
+    "z": 24.82
+   }
+  },
+  "QUALIFYING_RB_WR_TE": {
+   "n_units": 2939,
+   "n_qualifying_units": null,
+   "mean_actual": 6.0487,
+   "mean_expected_cur_cand": [
+    5.5978,
+    5.989
+   ],
+   "signed_error_cur_cand_with_se": [
+    [
+     -0.4508,
+     0.07803
+    ],
+    [
+     -0.0597,
+     0.07587
+    ]
+   ],
+   "abs_error_cur_cand": [
+    3.1531,
+    2.5846
+   ],
+   "abs_error_improvement_week_blocked": {
+    "mean_of_block_means": 0.56858,
+    "se": 0.02782,
+    "n_blocks": 15,
+    "z": 20.44
+   },
+   "P0_pred_cur_cand_obs": [
+    0.324,
+    0.0728,
+    0.0667
+   ],
+   "zero_mass_error_cur_cand_with_se": [
+    [
+     0.2573,
+     0.00698
+    ],
+    [
+     0.0062,
+     0.00341
+    ]
+   ],
+   "zero_brier_improvement_week_blocked": {
+    "mean_of_block_means": 0.16226,
+    "se": 0.00693,
+    "n_blocks": 15,
+    "z": 23.42
+   }
+  },
+  "NON_QUALIFYING_RB_WR_TE": {
+   "n_units": 3770,
+   "n_qualifying_units": null,
+   "mean_actual": 1.5045,
+   "mean_expected_cur_cand": [
+    1.7568,
+    1.5271
+   ],
+   "signed_error_cur_cand_with_se": [
+    [
+     0.2523,
+     0.04394
+    ],
+    [
+     0.0226,
+     0.03944
+    ]
+   ],
+   "abs_error_cur_cand": [
+    1.5862,
+    1.4589
+   ],
+   "abs_error_improvement_week_blocked": {
+    "mean_of_block_means": 0.12894,
+    "se": 0.00934,
+    "n_blocks": 15,
+    "z": 13.81
+   },
+   "P0_pred_cur_cand_obs": [
+    0.6307,
+    0.6307,
+    0.5061
+   ],
+   "zero_mass_error_cur_cand_with_se": [
+    [
+     0.1246,
+     0.00643
+    ],
+    [
+     0.1246,
+     0.00643
+    ]
+   ],
+   "zero_brier_improvement_week_blocked": {
+    "mean_of_block_means": 0.0,
+    "se": 0.0,
+    "n_blocks": 15,
+    "z": null
+   }
+  },
+  "RANK1_RB_WR_TE": {
+   "n_units": 1792,
+   "n_qualifying_units": null,
+   "mean_actual": 6.5469,
+   "mean_expected_cur_cand": [
+    8.4367,
+    7.1096
+   ],
+   "signed_error_cur_cand_with_se": [
+    [
+     1.8898,
+     0.08022
+    ],
+    [
+     0.5627,
+     0.07655
+    ]
+   ],
+   "abs_error_cur_cand": [
+    3.2135,
+    2.7215
+   ],
+   "abs_error_improvement_week_blocked": {
+    "mean_of_block_means": 0.49349,
+    "se": 0.03168,
+    "n_blocks": 15,
+    "z": 15.58
+   },
+   "P0_pred_cur_cand_obs": [
+    0.0055,
+    0.061,
+    0.0815
+   ],
+   "zero_mass_error_cur_cand_with_se": [
+    [
+     -0.0759,
+     0.00559
+    ],
+    [
+     -0.0204,
+     0.00588
+    ]
+   ],
+   "zero_brier_improvement_week_blocked": {
+    "mean_of_block_means": -0.00083,
+    "se": 0.00068,
+    "n_blocks": 15,
+    "z": -1.22
+   }
+  },
+  "RB2_carries": {
+   "n_units": 448,
+   "n_qualifying_units": 226,
+   "mean_actual": 5.9732,
+   "mean_expected_cur_cand": [
+    4.7395,
+    5.7903
+   ],
+   "signed_error_cur_cand_with_se": [
+    [
+     -1.2338,
+     0.13932
+    ],
+    [
+     -0.1829,
+     0.13947
+    ]
+   ],
+   "abs_error_cur_cand": [
+    4.0248,
+    3.7322
+   ],
+   "abs_error_improvement_week_blocked": {
+    "mean_of_block_means": 0.2918,
+    "se": 0.07673,
+    "n_blocks": 15,
+    "z": 3.8
+   },
+   "P0_pred_cur_cand_obs": [
+    0.4396,
+    0.2469,
+    0.2411
+   ],
+   "zero_mass_error_cur_cand_with_se": [
+    [
+     0.1985,
+     0.01319
+    ],
+    [
+     0.0058,
+     0.01341
+    ]
+   ],
+   "zero_brier_improvement_week_blocked": {
+    "mean_of_block_means": 0.08896,
+    "se": 0.00379,
+    "n_blocks": 15,
+    "z": 23.5
+   }
+  },
+  "RB2_targets": {
+   "n_units": 448,
+   "n_qualifying_units": 126,
+   "mean_actual": 1.5379,
+   "mean_expected_cur_cand": [
+    1.2201,
+    1.3308
+   ],
+   "signed_error_cur_cand_with_se": [
+    [
+     -0.3179,
+     0.08644
+    ],
+    [
+     -0.2072,
+     0.08815
+    ]
+   ],
+   "abs_error_cur_cand": [
+    1.2525,
+    1.2217
+   ],
+   "abs_error_improvement_week_blocked": {
+    "mean_of_block_means": 0.0311,
+    "se": 0.02022,
+    "n_blocks": 15,
+    "z": 1.54
+   },
+   "P0_pred_cur_cand_obs": [
+    0.508,
+    0.4098,
+    0.4062
+   ],
+   "zero_mass_error_cur_cand_with_se": [
+    [
+     0.1017,
+     0.01539
+    ],
+    [
+     0.0036,
+     0.01768
+    ]
+   ],
+   "zero_brier_improvement_week_blocked": {
+    "mean_of_block_means": 0.03248,
+    "se": 0.00643,
+    "n_blocks": 15,
+    "z": 5.05
+   }
+  },
+  "WR3_WR4_targets": {
+   "n_units": 891,
+   "n_qualifying_units": 333,
+   "mean_actual": 2.3086,
+   "mean_expected_cur_cand": [
+    1.437,
+    2.1945
+   ],
+   "signed_error_cur_cand_with_se": [
+    [
+     -0.8716,
+     0.07034
+    ],
+    [
+     -0.1142,
+     0.08082
+    ]
+   ],
+   "abs_error_cur_cand": [
+    1.9255,
+    1.6461
+   ],
+   "abs_error_improvement_week_blocked": {
+    "mean_of_block_means": 0.28189,
+    "se": 0.03153,
+    "n_blocks": 15,
+    "z": 8.94
+   },
+   "P0_pred_cur_cand_obs": [
+    0.6779,
+    0.4454,
+    0.3288
+   ],
+   "zero_mass_error_cur_cand_with_se": [
+    [
+     0.349,
+     0.01723
+    ],
+    [
+     0.1165,
+     0.01797
+    ]
+   ],
+   "zero_brier_improvement_week_blocked": {
+    "mean_of_block_means": 0.12999,
+    "se": 0.00694,
+    "n_blocks": 15,
+    "z": 18.73
+   }
+  },
+  "TE2_TE3_targets": {
+   "n_units": 866,
+   "n_qualifying_units": 224,
+   "mean_actual": 1.4515,
+   "mean_expected_cur_cand": [
+    1.0981,
+    1.5001
+   ],
+   "signed_error_cur_cand_with_se": [
+    [
+     -0.3534,
+     0.0497
+    ],
+    [
+     0.0486,
+     0.04203
+    ]
+   ],
+   "abs_error_cur_cand": [
+    1.5159,
+    1.2692
+   ],
+   "abs_error_improvement_week_blocked": {
+    "mean_of_block_means": 0.24868,
+    "se": 0.02412,
+    "n_blocks": 15,
+    "z": 10.31
+   },
+   "P0_pred_cur_cand_obs": [
+    0.6881,
+    0.5311,
+    0.4388
+   ],
+   "zero_mass_error_cur_cand_with_se": [
+    [
+     0.2493,
+     0.01717
+    ],
+    [
+     0.0923,
+     0.01654
+    ]
+   ],
+   "zero_brier_improvement_week_blocked": {
+    "mean_of_block_means": 0.09826,
+    "se": 0.01,
+    "n_blocks": 15,
+    "z": 9.82
+   }
+  },
+  "BACKUP_QB_pass_attempts": {
+   "n_units": 121,
+   "n_qualifying_units": null,
+   "mean_actual": 10.4628,
+   "mean_expected_cur_cand": [
+    3.4336,
+    3.4336
+   ],
+   "signed_error_cur_cand_with_se": [
+    [
+     -7.0292,
+     0.99448
+    ],
+    [
+     -7.0292,
+     0.99448
+    ]
+   ],
+   "abs_error_cur_cand": [
+    8.7254,
+    8.7254
+   ],
+   "abs_error_improvement_week_blocked": {
+    "mean_of_block_means": 0.0,
+    "se": 0.0,
+    "n_blocks": 15,
+    "z": null
+   },
+   "P0_pred_cur_cand_obs": [
+    0.8781,
+    0.8781,
+    0.281
+   ],
+   "zero_mass_error_cur_cand_with_se": [
+    [
+     0.5971,
+     0.03753
+    ],
+    [
+     0.5971,
+     0.03753
+    ]
+   ],
+   "zero_brier_improvement_week_blocked": {
+    "mean_of_block_means": 0.0,
+    "se": 0.0,
+    "n_blocks": 15,
+    "z": null
+   }
+  },
+  "RANK1_QB_pass_attempts": {
+   "n_units": 448,
+   "n_qualifying_units": null,
+   "mean_actual": 31.4196,
+   "mean_expected_cur_cand": [
+    33.9601,
+    33.9601
+   ],
+   "signed_error_cur_cand_with_se": [
+    [
+     2.5405,
+     0.56709
+    ],
+    [
+     2.5405,
+     0.56709
+    ]
+   ],
+   "abs_error_cur_cand": [
+    7.9232,
+    7.9232
+   ],
+   "abs_error_improvement_week_blocked": {
+    "mean_of_block_means": 0.0,
+    "se": 0.0,
+    "n_blocks": 15,
+    "z": null
+   },
+   "P0_pred_cur_cand_obs": [
+    0.0,
+    0.0,
+    0.0201
+   ],
+   "zero_mass_error_cur_cand_with_se": [
+    [
+     -0.0201,
+     0.0069
+    ],
+    [
+     -0.0201,
+     0.0069
+    ]
+   ],
+   "zero_brier_improvement_week_blocked": {
+    "mean_of_block_means": 0.0,
+    "se": 0.0,
+    "n_blocks": 15,
+    "z": null
+   }
+  },
+  "ELEVATION_PROXY_RB_WR_TE": {
+   "n_units": 275,
+   "n_qualifying_units": 0,
+   "mean_actual": 0.8727,
+   "mean_expected_cur_cand": [
+    2.4596,
+    2.125
+   ],
+   "signed_error_cur_cand_with_se": [
+    [
+     1.5869,
+     0.16717
+    ],
+    [
+     1.2523,
+     0.15917
+    ]
+   ],
+   "abs_error_cur_cand": [
+    2.1891,
+    1.9085
+   ],
+   "abs_error_improvement_week_blocked": {
+    "mean_of_block_means": 0.27635,
+    "se": 0.0327,
+    "n_blocks": 15,
+    "z": 8.45
+   },
+   "P0_pred_cur_cand_obs": [
+    0.5959,
+    0.5959,
+    0.7055
+   ],
+   "zero_mass_error_cur_cand_with_se": [
+    [
+     -0.1095,
+     0.03924
+    ],
+    [
+     -0.1095,
+     0.03924
+    ]
+   ],
+   "zero_brier_improvement_week_blocked": {
+    "mean_of_block_means": 0.0,
+    "se": 0.0,
+    "n_blocks": 15,
+    "z": null
+   }
+  },
+  "RETURNING_FROM_ABSENCE_PROXY_RB_WR_TE": {
+   "n_units": 329,
+   "n_qualifying_units": 0,
+   "mean_actual": 2.6657,
+   "mean_expected_cur_cand": [
+    3.237,
+    2.7721
+   ],
+   "signed_error_cur_cand_with_se": [
+    [
+     0.5714,
+     0.26663
+    ],
+    [
+     0.1065,
+     0.23384
+    ]
+   ],
+   "abs_error_cur_cand": [
+    2.1356,
+    1.9137
+   ],
+   "abs_error_improvement_week_blocked": {
+    "mean_of_block_means": 0.25583,
+    "se": 0.07604,
+    "n_blocks": 15,
+    "z": 3.36
+   },
+   "P0_pred_cur_cand_obs": [
+    0.4915,
+    0.4915,
+    0.4043
+   ],
+   "zero_mass_error_cur_cand_with_se": [
+    [
+     0.0873,
+     0.02789
+    ],
+    [
+     0.0873,
+     0.02789
+    ]
+   ],
+   "zero_brier_improvement_week_blocked": {
+    "mean_of_block_means": 0.0,
+    "se": 0.0,
+    "n_blocks": 15,
+    "z": null
+   }
+  }
+ },
+ "LIMITATIONS": [
+  "DRESSED PROXY LEAKS A LITTLE OUTCOME: \"dressed\" is presence in snap counts, i.e. >= 1 offensive or special-teams snap. An officially active player who took no snap is absent from both the pool and the scored set, so observed zero shares are understated in BOTH arms and the 2024 candidate rates are measured under the same proxy. Live, the official ACTIVE list would admit those players and the realised rate for qualifiers would be lower. The size of this effect is not measured here (needs 2024-2025 game-day inactives, not in the committed data).",
+  "BACKUP QB COHORT IS DOMINATED BY THAT PROXY: a backup quarterback appears in snap counts essentially only when he plays, so the observed 0.72 P(>=1 pass attempt) is conditional on taking a snap and is NOT a calibration of the current model for dressed backups. SC-APPEAR-1 does not apply to QB (RB/WR/TE only); the cohort is reported as current-model figures only and the two arms are identical on QB pass attempts by construction.",
+  "ELEVATIONS: practice-squad elevations are not identifiable for 2025 from committed data; the cohort is a proxy.",
+  "RETURNING PLAYERS: absence cause is unknown; by construction none of them qualify (a missed game breaks the 3-game condition), so their appearance probability is unchanged and only renormalisation moves their volume.",
+  "RANK-1 QUALIFIERS ARE LOWERED: the candidate replaces a rank-1 P(plays) of 1.0 with the pooled 2024 rate, which sits below the observed rank-1 qualifier rate; the starter bar still passes because expected opportunity for starters was over-allocated by the current model, but the zero-mass Brier for rank-1 is slightly worse (within 2 SE).",
+  "RESIDUAL SUPPRESSION REMAINS for partially established players (1-2 of 3 prior games) at rank >= 2, whom the candidate does not touch by design.",
+  "HARNESS IS NOT LIVE PRODUCTION: no role state, no captured chart rank, no market response, QB starter proxy from prior pass attempts. The allocator, its depth table and its conditional pass are production code.",
+  "WEEK-BLOCKED SEs rest on 15 blocks; club-blocked SEs are reported alongside and are wider.",
+  "2025 HAS NOW BEEN READ TWICE (forward test, this replay). Any variant chosen after this read needs a new holdout."
+ ],
+ "AUDIT_LADDER": {
+  "reached": "ADVERSARIAL_TESTED",
+  "IMPLEMENTED": "yes -- research module, production untouched",
+  "ON_EXECUTION_PATH": "yes -- the candidate rate is the value the production allocator reads at proj_v1 line 879, checked after every call (HOOK_NOT_ON_EXECUTION_PATH otherwise)",
+  "SUCCESS_TESTED": "yes -- nfl/tests/test_sc_appear_1_production_path.py (hook-off identity, hook-on reaches the read)",
+  "REFUSAL_TESTED": "yes -- empty panel, empty dressed set, no scored units, fit season not held out",
+  "ADVERSARIAL_TESTED": "yes -- truncating the panel at 2024 leaves every fitted object identical; perturbing week >= W data leaves week-W predictions identical; the depth table and proj_v1 constants are unmutated",
+  "PROSPECTIVELY_VALIDATED": "NO -- 2025 is retrospective out-of-sample"
+ },
+ "PROMOTION_RECOMMENDATION": {
+  "STATUS": "RECOMMENDATION_ONLY -- NOTHING PROMOTED, NO PRODUCTION DEFAULT CHANGED",
+  "declared_bar_result_primary": "PASS",
+  "declared_bar_result_sensitivity": "PASS",
+  "passed": [
+   "qualifying_abs_error_improvement_z_gt_2",
+   "qualifying_zero_brier_improvement_z_gt_2",
+   "rank1_abs_error_not_worse_by_2se",
+   "rank1_zero_brier_not_worse_by_2se",
+   "club_totals_conserved_both_arms",
+   "non_qualifying_p_exactly_unchanged",
+   "hook_off_identity_exact"
+  ],
+  "failed": [],
+  "headline_z_week_blocked": {
+   "qualifying_abs_error": 20.44,
+   "qualifying_zero_brier": 23.42,
+   "rank1_abs_error": 15.58,
+   "rank1_zero_brier": -1.22,
+   "all_rb_wr_te_abs_error": 26.16,
+   "non_qualifying_abs_error": 13.81
+  },
+  "remains": [
+   "PROSPECTIVE validation: 2025 is retrospective out-of-sample and has now been read twice; a sealed forward window (2026 weeks scored after a frozen declaration) is the confirmatory test",
+   "the dressed condition used snap-count presence (>= 1 snap) as the stand-in for the official ACTIVE list; production would use the official inactives, which admits active-but-zero-snap players the replay never saw",
+   "practice-squad elevations are not identifiable in committed 2025 data; the cohort is a labelled proxy",
+   "the candidate also changes rank-1 qualifiers (P(plays) 1.0 -> the 2024 rate); a rank>=2-only variant was NOT tested and must not be chosen on these 2025 numbers",
+   "a production change is its own commit with its own baseline (governing rule 2), plus a proj_v1 keyword/hook defaulting to current behaviour, and the downstream showdown/classic boards re-run"
+  ],
+  "what_the_owner_would_be_approving": "replacing, for dressed RB/WR/TE who recorded >= 1 of a field in each of the club's previous 3 games, the depth-rank appearance rate read at proj_v1.allocate_opportunity line 879 with the 2024-measured rate for that condition (RB carries/targets, WR targets, TE targets); everyone else keeps the depth-rank rate. Club totals stay conserved, so the change REDISTRIBUTES opportunity inside a club toward established backups and away from starters and non-qualifiers; it does not add volume."
+ }
+}
