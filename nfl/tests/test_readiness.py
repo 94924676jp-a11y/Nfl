@@ -24,6 +24,23 @@ from nfl.tests import _registry  # noqa: E402
 RESULTS = []
 
 
+#: readiness.build() WRITES the tracked nfl/production/READINESS.json, so every check below used to
+#: rewrite the working tree -- including with deliberately poisoned STAGES, which then relied on a
+#: rebuild in `finally` to put a live board back (certified run 20261007T083657Z-18364,
+#: TREE_MUTATED_BY_RUN). Every assertion here reads the returned value and never the file, so the
+#: file is written into a temporary directory instead. What is measured is unchanged.
+_SCRATCH = pathlib.Path(__import__('tempfile').mkdtemp(prefix='readiness_'))
+
+
+def _build():
+    saved = readiness.OUT
+    readiness.OUT = _SCRATCH / saved.name
+    try:
+        return readiness.build()
+    finally:
+        readiness.OUT = saved
+
+
 def check(name):
     def deco(fn):
         RESULTS.append((name, fn))
@@ -33,7 +50,7 @@ def check(name):
 
 @check('the board assesses every declared stage and reaches a product mode')
 def t_build():
-    o = readiness.build()
+    o = _build()
     assert o.state is State.PASS, o
     v = o.value
     assert len(v['stages']) == len(readiness.STAGES)
@@ -88,7 +105,7 @@ def t_saturday_legality():
 
 @check('a stage past its declared tolerance reads STALE and blocks FULL_PROPRIETARY')
 def t_stale():
-    o = readiness.build()
+    o = _build()
     v = o.value
     stale = [r for r in v['stages'] if r['state'] != 'FRESH']
     if stale and any(r['tier'] in ('SLATE', 'DECISION') for r in stale):
@@ -103,13 +120,13 @@ def t_stale():
         for st in readiness.STAGES:
             if st['tier'] == 'SLATE':
                 st['max_age_hours'] = 0.0
-        o2 = readiness.build()
+        o2 = _build()
         assert o2.value['PRODUCT_MODE'] != 'FULL_PROPRIETARY', o2.value['PRODUCT_MODE']
         names = [r['name'] for r in o2.value['stages'] if r['state'] == 'STALE']
         assert names
     finally:
         readiness.STAGES[:] = saved
-        readiness.build()
+        _build()
     return f'with a zero tolerance the slate stages read STALE and the mode drops'
 
 
@@ -122,19 +139,19 @@ def t_missing():
                                  'path': 'nfl/warehouse/DOES_NOT_EXIST.json',
                                  'max_age_hours': 999, 'tier': 'FOUNDATION', 'depends_on': [],
                                  'why': 'a stage pointing at nothing'})
-        o = readiness.build()
+        o = _build()
         assert o.value['PRODUCT_MODE'] == 'NOT_PRODUCTION_READY', o.value['PRODUCT_MODE']
         row = next(r for r in o.value['stages'] if r['name'] == 'warehouse.invented')
         assert row['state'] == 'MISSING'
     finally:
         readiness.STAGES[:] = saved
-        readiness.build()
+        _build()
     return 'a foundation stage pointing at nothing drops the mode to NOT_PRODUCTION_READY'
 
 
 @check('the freshness proxy is labelled wherever it is a proxy')
 def t_labelled():
-    o = readiness.build()
+    o = _build()
     v = o.value
     present = [r for r in v['stages'] if r['state'] != 'MISSING']
     assert present
@@ -151,7 +168,7 @@ def t_labelled():
 
 @check('an artifact older than its own inputs is flagged rather than passed as fresh')
 def t_behind_inputs():
-    o = readiness.build()
+    o = _build()
     v = o.value
     flagged = [r['name'] for r in v['stages'] if r['state'] == 'FRESH_BUT_BEHIND_ITS_INPUTS']
     # either something is currently behind, or the field exists on every row and is empty
@@ -163,7 +180,7 @@ def t_behind_inputs():
 
 @check('the external fallback mode exists as a definition and is not reachable from here')
 def t_no_external():
-    o = readiness.build()
+    o = _build()
     v = o.value
     assert 'EXTERNAL_FALLBACK' in v['PRODUCT_MODES_DEFINED']
     assert v['PRODUCT_MODE'] != 'EXTERNAL_FALLBACK'

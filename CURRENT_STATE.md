@@ -1,6 +1,6 @@
 # NFL — current state
 
-**Generated** by `nfl/tools/system_state.py` at 2026-09-28T23:58:58.097606+00:00 from `SYSTEM_STATE.json`. Do not hand-edit this file: regenerate it.
+**Generated** by `nfl/tools/system_state.py` at 2026-10-07T18:09:11.299169+00:00 from `SYSTEM_STATE.json`. Do not hand-edit this file: regenerate it.
 
 Every value under `measured` was computed by reading this repository at the timestamp above. Every value under `declared` was asserted by somebody and says who, when, and why it cannot be measured here. Do not quote one as the other.
 
@@ -11,59 +11,57 @@ Every value under `measured` was computed by reading this repository at the time
 |  |  |
 |---|---|
 | branch | `claude/nfl-greenfield-architecture-stsxmk` |
-| HEAD | `82a049c4` — Archiving was opt-in the wrong way round: the test suite filled the permanent record |
-| HEAD committed | 2026-09-28T23:47:21+00:00 |
-| commits on branch | 1408 |
-| source scope | clean |
-| dirty tree entries (source and not) | 4 |
-| code_version | `82a049c45e9c779b04ac3cf483cadddeeb649702+src1[44aa01d03783de18]` |
-| python modules | 980 |
-| lines of python | 302,032 |
+| HEAD | `5ba94c83` — Runner: SC-OWN-ROTATION-2 ownership shadow (sealed, non-blocking) after the BLEND baseline; ownership grading in postgame |
+| HEAD committed | 2026-10-07T17:53:21+00:00 |
+| commits on branch | 1568 |
+| source scope | 1 dirty source file(s) |
+| dirty tree entries (source and not) | 14 |
+| code_version | `5ba94c8337a62ad136e2a9d04d4279c6bb9ced1b+src1[9df9648fbaf1c195]` |
+| python modules | 1113 |
+| lines of python | 346,449 |
 
 ## 2. Test suite
 
-Source: `nfl/research/suite_attribution/SUITE_DIFF_p6_p7.json`. measured at WORKING_TREE, HEAD is 82a049c. This total is not a statement about the tree as it stands.
+Source: `nfl/research/suite_attribution/SUITE_DIFF_p9_discovery.json`. measured at WORKING_TREE, HEAD is 5ba94c8. This total is not a statement about the tree as it stands.
 
-|  | at WORKING_TREE | baseline 44ff8ed | delta |
+|  | at WORKING_TREE | baseline 20468a5 | delta |
 |---|---|---|---|
-| modules | 181 | 179 | 2 |
-| test functions | 1963 | 1944 | 19 |
-| checks | 10406 | 10335 | 71 |
-| failing checks | 61 | 61 | 0 |
+| modules | 184 | 183 | 1 |
+| test functions | 1997 | 1987 | 10 |
+| checks | 10632 | 10583 | 49 |
+| failing checks | 61 | 63 | -2 |
 | raised | 21 | 21 | 0 |
 | zero check functions | 0 | 0 | 0 |
 | blocked functions | 23 | 23 | 0 |
 
-Verdict: **SUITE FAIL**. Classification against the baseline: {'NEWLY_INTRODUCED': 1, 'PRE_EXISTING': 132, 'RESOLVED_SINCE_BASELINE': 1}.
+Verdict: **SUITE FAIL**. Classification against the baseline: {'PRE_EXISTING': 133, 'RESOLVED_SINCE_BASELINE': 3}.
 
-Newly introduced since the baseline:
-
-- `nfl/tests/test_determinism_proof.py` [FAILING_CHECK] FAIL  no module outside nfl/identity/ CALLS git for working-tree state -- ['nfl/tools/agent_state.py', 'nfl/tools/system_state.py', 'sportsplatform/governance/c
+No item is newly introduced since the baseline.
 
 ## 3. Captured evidence
 
-`nfl/vintage_manifest.jsonl` carries **6757 rows**; the vintage store holds **2069 files**. Retrieval spans 2026-09-06T18:50:49.540119+00:00 to 2026-09-21T17:53:10.980895+00:00.
+`nfl/vintage_manifest.jsonl` carries **12443 rows**; the vintage store holds **3626 files**. Retrieval spans 2026-09-06T18:50:49.540119+00:00 to 2026-10-07T16:57:30.957907+00:00.
 
 | source | manifest rows |
 |---|---|
-| depth_charts | 694 |
-| dk_entries | 1 |
+| depth_charts | 1262 |
+| dk_entries | 2 |
 | dk_salaries | 1 |
-| dk_salaries_early | 1 |
-| espn_injuries_json | 685 |
+| dk_salaries_early | 2 |
+| espn_injuries_json | 1253 |
 | hardrock_market_snapshot | 1 |
-| injuries | 695 |
-| official_inactives | 704 |
-| official_injury_report | 688 |
+| injuries | 1263 |
+| official_inactives | 1273 |
+| official_injury_report | 1256 |
 | official_status_evidence | 1 |
-| official_transactions | 684 |
+| official_transactions | 1253 |
 | pbp | 4 |
-| pbp_participation | 605 |
-| schedules | 694 |
-| snap_counts | 605 |
-| weekly_rosters | 694 |
+| pbp_participation | 1174 |
+| schedules | 1262 |
+| snap_counts | 1174 |
+| weekly_rosters | 1262 |
 
-Manifest row states: {'BLOCKED': 798, 'DEFERRED': 251, 'FAIL': 108, 'NOT_APPLICABLE': 1210, 'PASS': 4390}.
+Manifest row states: {'BLOCKED': 1370, 'DEFERRED': 819, 'FAIL': 110, 'NOT_APPLICABLE': 2348, 'PASS': 7796}.
 
 ## 4. Governed assumptions
 
@@ -100,7 +98,7 @@ Not implemented:
 
 164 `run_status.json` file(s), by status {'REFUSED': 14, 'SEALED': 150}. 18 live board directory(ies).
 
-Prospective evaluation ledger: 2 rows over 1 block(s) ['DET_BUF_2026W2'], by status {'AWAITING_OUTCOME': 1, 'GRADED': 1}. Captured game outcomes: 1 (DET_BUF_2026W2).
+Prospective evaluation ledger: 3 rows over 2 block(s) ['DET_BUF_2026W2', 'PIT_CLE_2026W4_SHOWDOWN'], by status {'AWAITING_OUTCOME': 2, 'GRADED': 1}. Captured game outcomes: 1 (DET_BUF_2026W2).
 
 Production readiness (`nfl/production/production_readiness.json`, updated 2026-09-08): {'BASELINE': 1, 'GREEN': 10, 'PARTIAL': 1} over 12 capabilities.
 

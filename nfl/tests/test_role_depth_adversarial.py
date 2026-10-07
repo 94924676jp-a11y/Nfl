@@ -191,9 +191,21 @@ def test_specialist_auto_in_state_builder():
     des = json.loads((D / 'DESIGNATIONS_ATL_NO_2026W4_V4_RW_INACTIVES_CHARTFIX.json').read_text())
     des.pop('Cal Adomitis', None)
     chart = SSS.chart_from_capture(R / 'depth_charts_2026_ATL_NO.1e6aa6437a6ae01b.csv', ['ATL', 'NO'], 'TEST')
-    o = SSS.build(R / 'DKEntries_ATL_NO_SHOWDOWN_2026W4.fd0c1faa2271ca66.csv', designations=des,
-                  official_inactives=json.loads((R / 'OFFICIAL_INACTIVES_ATL_NO_2026W4.json').read_text()),
-                  confirmed_starters=json.loads((D / 'STARTERS_ATL_NO_2026W4.json').read_text()), depth_chart=chart)
+    # SSS.build() WRITES its state to the tracked nfl/dfs/salaries/SHOWDOWN_TONIGHT_STATE.json. This
+    # test builds a deliberately altered state (Adomitis's hand designation removed), so every
+    # suite run overwrote the slate state other modules read with a test fixture (certified run
+    # 20261007T083657Z-18364, TREE_MUTATED_BY_RUN). The state is written into a temporary
+    # directory instead; every check below reads the returned value, never the file.
+    import tempfile
+    saved_out = SSS.OUT
+    SSS.OUT = pathlib.Path(tempfile.mkdtemp(prefix='showdown_state_')) / saved_out.name
+    try:
+        o = SSS.build(R / 'DKEntries_ATL_NO_SHOWDOWN_2026W4.fd0c1faa2271ca66.csv', designations=des,
+                      official_inactives=json.loads((R / 'OFFICIAL_INACTIVES_ATL_NO_2026W4.json').read_text()),
+                      confirmed_starters=json.loads((D / 'STARTERS_ATL_NO_2026W4.json').read_text()),
+                      depth_chart=chart)
+    finally:
+        SSS.OUT = saved_out
     check(o.state.value == 'PASS', f'state builds ({o.state.value} {getattr(o, "code", "")})')
     if o.state.value != 'PASS':
         return

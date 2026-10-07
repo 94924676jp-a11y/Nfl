@@ -1,6 +1,6 @@
 {
  "spec_version": "nfl-guard-reachability-2",
- "n_guards": 91,
+ "n_guards": 92,
  "rows": [
   {
    "guard": "assert_allocation_conserves",
@@ -11,7 +11,7 @@
    "fails_by": "RETURN",
    "callers_prod": 1,
    "callers_prod_external": 1,
-   "callers_test": 4,
+   "callers_test": 8,
    "callers_research": 0,
    "effect_on_failure": [
     "VERDICT_REGISTERED:OPPORTUNITY_CONSERVATION"
@@ -104,7 +104,7 @@
    "guard": "assert_blockers_independent",
    "protects": "Clearing one blocker must not change any other's computed state.",
    "defined_in": "nfl/prospective/q9shadow/ledger.py",
-   "line": 998,
+   "line": 1010,
    "n_definitions": 1,
    "fails_by": "RETURN",
    "callers_prod": 1,
@@ -242,24 +242,24 @@
    "guard": "assert_complete",
    "protects": "Raise unless every non-DST DK row resolved to exactly one identity.",
    "defined_in": "nfl/dfs/identity_crosswalk.py",
-   "line": 146,
+   "line": 155,
    "n_definitions": 1,
    "fails_by": "RAISE",
    "callers_prod": 0,
    "callers_prod_external": 0,
-   "callers_test": 0,
+   "callers_test": 3,
    "callers_research": 0,
    "effect_on_failure": [
     "NO_PRODUCTION_CALLER"
    ],
-   "reachability": "NO_CALLER_AT_ALL",
+   "reachability": "NO_PROD_CALLER",
    "caller_modules": [],
    "caller_modules_excluding_cli_demo": [],
    "only_called_in_cli_demo": false,
    "caller_entry_points": {},
    "runnable_caller": false,
    "caller_referenced_outside_python": false,
-   "direct_test_coverage": false,
+   "direct_test_coverage": true,
    "load_bearing_proof": "NONE",
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
@@ -276,7 +276,7 @@
    "fails_by": "RETURN",
    "callers_prod": 0,
    "callers_prod_external": 0,
-   "callers_test": 1,
+   "callers_test": 5,
    "callers_research": 0,
    "effect_on_failure": [
     "NO_PRODUCTION_CALLER"
@@ -300,12 +300,12 @@
    "guard": "assert_consumer",
    "protects": "May `consumer` READ an adjusted quantity? Reading is not re-applying.",
    "defined_in": "nfl/production/adjustment_registry.py",
-   "line": 341,
+   "line": 363,
    "n_definitions": 1,
    "fails_by": "RETURN",
    "callers_prod": 0,
    "callers_prod_external": 0,
-   "callers_test": 8,
+   "callers_test": 9,
    "callers_research": 0,
    "effect_on_failure": [
     "NO_PRODUCTION_CALLER"
@@ -329,7 +329,7 @@
    "guard": "assert_counts_are_counts",
    "protects": "Support validity for every declared count. ASSERTS; never repairs.",
    "defined_in": "nfl/production/stat_contract.py",
-   "line": 425,
+   "line": 426,
    "n_definitions": 1,
    "fails_by": "RETURN",
    "callers_prod": 1,
@@ -487,7 +487,7 @@
    "fails_by": "RETURN",
    "callers_prod": 1,
    "callers_prod_external": 0,
-   "callers_test": 8,
+   "callers_test": 12,
    "callers_research": 1,
    "effect_on_failure": [
     "DOWNGRADE"
@@ -503,18 +503,18 @@
    "caller_entry_points": {
     "nfl/prospective/q9shadow/reuse.py": {
      "has_main": true,
-     "referenced_outside_python": false
+     "referenced_outside_python": true
     }
    },
    "runnable_caller": true,
-   "caller_referenced_outside_python": false,
+   "caller_referenced_outside_python": true,
    "direct_test_coverage": true,
    "load_bearing_proof": "NONE",
    "load_bearing_proof_determinism": {},
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
    "prod_sites": [
-    "nfl/prospective/q9shadow/reuse.py:290:DOWNGRADE"
+    "nfl/prospective/q9shadow/reuse.py:297:DOWNGRADE"
    ],
    "n_definitions_of_this_name": 1
   },
@@ -522,7 +522,7 @@
    "guard": "assert_cut_lawful",
    "protects": "Spec s.4: every vintage reachable from F has learned_at < cut(F).",
    "defined_in": "nfl/production/pipeline.py",
-   "line": 1332,
+   "line": 1334,
    "n_definitions": 1,
    "fails_by": "RETURN",
    "callers_prod": 1,
@@ -751,7 +751,7 @@
    "guard": "assert_events_within_opportunity",
    "protects": "Every declared event <= its opportunity, per draw cell. ASSERTS only.",
    "defined_in": "nfl/production/stat_contract.py",
-   "line": 511,
+   "line": 512,
    "n_definitions": 1,
    "fails_by": "RETURN",
    "callers_prod": 1,
@@ -906,8 +906,8 @@
    "classification": "LOAD_BEARING",
    "classification_reason": "appending one name to Q9.FEATURE_NAMES makes it FAIL[Q9_LIVE_FEATURE_SCHEMA_MISMATCH] carrying BOTH hashes, and build() then refuses instead of emitting features -- a builder that emits a different schema is building for a different candidate. Also covered: with freeze_identity() returning None it BLOCKS with Q9_FREEZE_ARTIFACT_ABSENT rather than passing, which is the NOT_EVALUATED-is-not-PASS discipline. Same lineage caveat",
    "prod_sites": [
-    "nfl/prospective/q9shadow/live_features.py:593:ANNOTATE",
-    "nfl/prospective/q9shadow/live_features.py:944:NOTHING"
+    "nfl/prospective/q9shadow/live_features.py:598:ANNOTATE",
+    "nfl/prospective/q9shadow/live_features.py:949:NOTHING"
    ],
    "n_definitions_of_this_name": 1
   },
@@ -936,11 +936,11 @@
    "caller_entry_points": {
     "nfl/production/nonqb/rushing_a1.py": {
      "has_main": false,
-     "referenced_outside_python": false
+     "referenced_outside_python": true
     }
    },
    "runnable_caller": false,
-   "caller_referenced_outside_python": false,
+   "caller_referenced_outside_python": true,
    "direct_test_coverage": true,
    "load_bearing_proof": "nfl/tests/test_a1_frame_closure_guard.py",
    "load_bearing_proof_determinism": {
@@ -958,7 +958,7 @@
    "guard": "assert_fresh",
    "protects": "The upstream freshness gate. Refuse BEFORE simulation, not at sealing.",
    "defined_in": "nfl/production/nonqb/current_season_evidence.py",
-   "line": 199,
+   "line": 211,
    "n_definitions": 1,
    "fails_by": "RETURN",
    "callers_prod": 1,
@@ -1163,12 +1163,12 @@
    "guard": "assert_implementations_exist",
    "protects": "A layer claiming IMPLEMENTED must have a module that imports.",
    "defined_in": "nfl/production/nonqb/eligibility.py",
-   "line": 196,
+   "line": 205,
    "n_definitions": 1,
    "fails_by": "RETURN",
    "callers_prod": 0,
    "callers_prod_external": 0,
-   "callers_test": 2,
+   "callers_test": 4,
    "callers_research": 0,
    "effect_on_failure": [
     "NO_PRODUCTION_CALLER"
@@ -1192,7 +1192,7 @@
    "guard": "assert_inactive_qbs_own_nothing",
    "protects": "Every officially inactive quarterback owns EXACTLY zero, in every draw.",
    "defined_in": "nfl/production/qb_accounting.py",
-   "line": 782,
+   "line": 800,
    "n_definitions": 1,
    "fails_by": "RETURN",
    "callers_prod": 2,
@@ -1454,7 +1454,7 @@
    "fails_by": "RETURN",
    "callers_prod": 0,
    "callers_prod_external": 0,
-   "callers_test": 1,
+   "callers_test": 3,
    "callers_research": 0,
    "effect_on_failure": [
     "NO_PRODUCTION_CALLER"
@@ -1505,11 +1505,11 @@
     },
     "nfl/production/nonqb/rushing_a1.py": {
      "has_main": false,
-     "referenced_outside_python": false
+     "referenced_outside_python": true
     }
    },
    "runnable_caller": false,
-   "caller_referenced_outside_python": false,
+   "caller_referenced_outside_python": true,
    "direct_test_coverage": true,
    "load_bearing_proof": "NONE",
    "load_bearing_proof_determinism": {},
@@ -1594,12 +1594,12 @@
    "guard": "assert_no_double_counted_qb_carries",
    "protects": "The sum a consumer must never form.",
    "defined_in": "nfl/production/nonqb/accounting.py",
-   "line": 394,
+   "line": 402,
    "n_definitions": 1,
    "fails_by": "RETURN",
    "callers_prod": 0,
    "callers_prod_external": 0,
-   "callers_test": 1,
+   "callers_test": 3,
    "callers_research": 0,
    "effect_on_failure": [
     "NO_PRODUCTION_CALLER"
@@ -1628,7 +1628,7 @@
    "fails_by": "RETURN",
    "callers_prod": 1,
    "callers_prod_external": 1,
-   "callers_test": 5,
+   "callers_test": 11,
    "callers_research": 0,
    "effect_on_failure": [
     "STOP"
@@ -1644,11 +1644,11 @@
    "caller_entry_points": {
     "nfl/dfs/salaries/emit_package.py": {
      "has_main": true,
-     "referenced_outside_python": false
+     "referenced_outside_python": true
     }
    },
    "runnable_caller": true,
-   "caller_referenced_outside_python": false,
+   "caller_referenced_outside_python": true,
    "direct_test_coverage": true,
    "load_bearing_proof": "nfl/tests/test_publication_refusal_is_load_bearing.py",
    "load_bearing_proof_determinism": {
@@ -1670,19 +1670,19 @@
    "fails_by": "RETURN",
    "callers_prod": 0,
    "callers_prod_external": 0,
-   "callers_test": 0,
+   "callers_test": 5,
    "callers_research": 0,
    "effect_on_failure": [
     "NO_PRODUCTION_CALLER"
    ],
-   "reachability": "NO_CALLER_AT_ALL",
+   "reachability": "NO_PROD_CALLER",
    "caller_modules": [],
    "caller_modules_excluding_cli_demo": [],
    "only_called_in_cli_demo": false,
    "caller_entry_points": {},
    "runnable_caller": false,
    "caller_referenced_outside_python": false,
-   "direct_test_coverage": false,
+   "direct_test_coverage": true,
    "load_bearing_proof": "NONE",
    "load_bearing_proof_determinism": {},
    "classification": "SUPERSEDED",
@@ -1768,7 +1768,7 @@
    "classification": "LOAD_BEARING",
    "classification_reason": "the invariant at the leakage boundary, and the ABSENCE case is the one that matters: a realised field must be PRESENT and None, because omitting it lets a later .get default it to zero, \"which is how an unplayed game acquires a realised result\". Proven on all three shapes -- present-and-None clean, populated refused, OMITTED refused -- plus the inverted case that a row from an earlier season may carry its outcome. Same lineage caveat",
    "prod_sites": [
-    "nfl/prospective/q9shadow/live_features.py:644:STOP"
+    "nfl/prospective/q9shadow/live_features.py:649:STOP"
    ],
    "n_definitions_of_this_name": 1
   },
@@ -1863,6 +1863,44 @@
    "n_definitions_of_this_name": 1
   },
   {
+   "guard": "assert_no_post_cutoff_outcomes",
+   "protects": "No outcome-bearing field may carry a value for a game kicking off after `cutoff`.",
+   "defined_in": "nfl/production/world_clock.py",
+   "line": 283,
+   "n_definitions": 1,
+   "fails_by": "RETURN",
+   "callers_prod": 1,
+   "callers_prod_external": 0,
+   "callers_test": 6,
+   "callers_research": 0,
+   "effect_on_failure": [
+    "DOWNGRADE"
+   ],
+   "reachability": "INTERNAL_ONLY",
+   "caller_modules": [
+    "nfl/production/world_clock.py"
+   ],
+   "caller_modules_excluding_cli_demo": [],
+   "only_called_in_cli_demo": true,
+   "caller_entry_points": {
+    "nfl/production/world_clock.py": {
+     "has_main": true,
+     "referenced_outside_python": true
+    }
+   },
+   "runnable_caller": true,
+   "caller_referenced_outside_python": true,
+   "direct_test_coverage": true,
+   "load_bearing_proof": "NONE",
+   "load_bearing_proof_determinism": {},
+   "classification": "NOT_ESTABLISHED",
+   "classification_reason": "",
+   "prod_sites": [
+    "nfl/production/world_clock.py:365:DOWNGRADE"
+   ],
+   "n_definitions_of_this_name": 1
+  },
+  {
    "guard": "assert_no_postgame_inputs",
    "protects": "A stage may not declare a postgame field as an input.",
    "defined_in": "nfl/production/pipeline.py",
@@ -1942,7 +1980,7 @@
    "classification": "LOAD_BEARING",
    "classification_reason": "all seven ROSTER_STATUS_FIELDS seeded onto a player descriptor give FAIL[Q9_LIVE_ROSTER_STATUS_SUPPLIED] out of build(), and bypassing it falls through to NO_TEAMS. Roster status is post-decision information, so a pregame build that accepted it would be conditioning on the answer. Same lineage caveat",
    "prod_sites": [
-    "nfl/prospective/q9shadow/live_features.py:592:ANNOTATE"
+    "nfl/prospective/q9shadow/live_features.py:597:ANNOTATE"
    ],
    "n_definitions_of_this_name": 1
   },
@@ -1955,7 +1993,7 @@
    "fails_by": "RETURN",
    "callers_prod": 0,
    "callers_prod_external": 0,
-   "callers_test": 2,
+   "callers_test": 4,
    "callers_research": 0,
    "effect_on_failure": [
     "NO_PRODUCTION_CALLER"
@@ -2301,12 +2339,12 @@
    "guard": "assert_participation_supports_allocation",
    "protects": "The gate. Allocation may divide only a denominator that is established.",
    "defined_in": "nfl/production/universe/participation.py",
-   "line": 295,
+   "line": 307,
    "n_definitions": 1,
    "fails_by": "RETURN",
    "callers_prod": 1,
    "callers_prod_external": 1,
-   "callers_test": 5,
+   "callers_test": 9,
    "callers_research": 0,
    "effect_on_failure": [
     "VERDICT_REGISTERED:PARTICIPATION_COMPLETENESS"
@@ -2341,12 +2379,12 @@
    "guard": "assert_partition_covers_required",
    "protects": "SHARED and ARM must exactly cover the nine required layers.",
    "defined_in": "nfl/prospective/q9shadow/complete.py",
-   "line": 99,
+   "line": 168,
    "n_definitions": 1,
    "fails_by": "RETURN",
    "callers_prod": 1,
    "callers_prod_external": 0,
-   "callers_test": 3,
+   "callers_test": 4,
    "callers_research": 0,
    "effect_on_failure": [
     "STOP"
@@ -2373,7 +2411,7 @@
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
    "prod_sites": [
-    "nfl/prospective/q9shadow/complete.py:270:STOP"
+    "nfl/prospective/q9shadow/complete.py:339:STOP"
    ],
    "n_definitions_of_this_name": 1
   },
@@ -2386,7 +2424,7 @@
    "fails_by": "RETURN",
    "callers_prod": 1,
    "callers_prod_external": 0,
-   "callers_test": 9,
+   "callers_test": 12,
    "callers_research": 0,
    "effect_on_failure": [
     "STOP"
@@ -2415,7 +2453,7 @@
    "classification": "LOAD_BEARING",
    "classification_reason": "bad state -> FAIL -> the caller returns the refusal and the usage rows never reach the model. The forecast week ITSELF is tested, not only week+1, because the comparison is >= and a >-bug would survive the easier case; bypassed, the leaked week is handed downstream",
    "prod_sites": [
-    "nfl/production/nonqb/current_season_evidence.py:104:STOP"
+    "nfl/production/nonqb/current_season_evidence.py:116:STOP"
    ],
    "n_definitions_of_this_name": 1
   },
@@ -2428,7 +2466,7 @@
    "fails_by": "RETURN",
    "callers_prod": 1,
    "callers_prod_external": 0,
-   "callers_test": 5,
+   "callers_test": 9,
    "callers_research": 0,
    "effect_on_failure": [
     "STOP"
@@ -2455,7 +2493,7 @@
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
    "prod_sites": [
-    "nfl/production/review/slate_report.py:332:STOP"
+    "nfl/production/review/slate_report.py:350:STOP"
    ],
    "n_definitions_of_this_name": 1
   },
@@ -2590,7 +2628,7 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/prospective/q9shadow/inputs.py:321:NOTHING",
-    "nfl/prospective/q9shadow/live_features.py:658:STOP"
+    "nfl/prospective/q9shadow/live_features.py:663:STOP"
    ],
    "n_definitions_of_this_name": 1
   },
@@ -2598,12 +2636,12 @@
    "guard": "assert_promotable",
    "protects": "May `consumer` be promoted, given the assumptions it depends on?",
    "defined_in": "sportsplatform/governance/assumption.py",
-   "line": 188,
+   "line": 191,
    "n_definitions": 1,
    "fails_by": "RETURN",
    "callers_prod": 2,
    "callers_prod_external": 2,
-   "callers_test": 12,
+   "callers_test": 18,
    "callers_research": 0,
    "effect_on_failure": [
     "STOP"
@@ -2621,7 +2659,7 @@
    "caller_entry_points": {
     "nfl/production/adjustment_registry.py": {
      "has_main": false,
-     "referenced_outside_python": false
+     "referenced_outside_python": true
     },
     "nfl/production/assumptions/run_audit.py": {
      "has_main": true,
@@ -2629,7 +2667,7 @@
     }
    },
    "runnable_caller": true,
-   "caller_referenced_outside_python": false,
+   "caller_referenced_outside_python": true,
    "direct_test_coverage": true,
    "load_bearing_proof": "NONE",
    "load_bearing_proof_determinism": {},
@@ -2677,8 +2715,8 @@
    "line": 162,
    "n_definitions": 1,
    "fails_by": "RETURN",
-   "callers_prod": 3,
-   "callers_prod_external": 2,
+   "callers_prod": 4,
+   "callers_prod_external": 3,
    "callers_test": 7,
    "callers_research": 0,
    "effect_on_failure": [
@@ -2688,18 +2726,20 @@
    "caller_modules": [
     "nfl/prospective/q9shadow/reuse.py",
     "nfl/prospective/q9shadow/seal.py",
-    "nfl/prospective/q9shadow/timebasis.py"
+    "nfl/prospective/q9shadow/timebasis.py",
+    "nfl/prospective/showdown_family.py"
    ],
    "caller_modules_excluding_cli_demo": [
     "nfl/prospective/q9shadow/reuse.py",
     "nfl/prospective/q9shadow/seal.py",
-    "nfl/prospective/q9shadow/timebasis.py"
+    "nfl/prospective/q9shadow/timebasis.py",
+    "nfl/prospective/showdown_family.py"
    ],
    "only_called_in_cli_demo": false,
    "caller_entry_points": {
     "nfl/prospective/q9shadow/reuse.py": {
      "has_main": true,
-     "referenced_outside_python": false
+     "referenced_outside_python": true
     },
     "nfl/prospective/q9shadow/seal.py": {
      "has_main": true,
@@ -2708,6 +2748,10 @@
     "nfl/prospective/q9shadow/timebasis.py": {
      "has_main": false,
      "referenced_outside_python": false
+    },
+    "nfl/prospective/showdown_family.py": {
+     "has_main": false,
+     "referenced_outside_python": true
     }
    },
    "runnable_caller": true,
@@ -2718,6 +2762,7 @@
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
    "prod_sites": [
+    "nfl/prospective/showdown_family.py:318:STOP",
     "nfl/prospective/q9shadow/timebasis.py:227:STOP",
     "nfl/prospective/q9shadow/reuse.py:147:STOP",
     "nfl/prospective/q9shadow/seal.py:580:STOP"
@@ -2775,7 +2820,7 @@
    "fails_by": "RETURN",
    "callers_prod": 1,
    "callers_prod_external": 1,
-   "callers_test": 4,
+   "callers_test": 7,
    "callers_research": 0,
    "effect_on_failure": [
     "ANNOTATE"
@@ -2810,12 +2855,12 @@
    "guard": "assert_ranking_admissible",
    "protects": "Strip from a ranked table any row whose metric is under a warning.",
    "defined_in": "nfl/product/model_health.py",
-   "line": 205,
+   "line": 210,
    "n_definitions": 1,
    "fails_by": "RETURN",
    "callers_prod": 0,
    "callers_prod_external": 0,
-   "callers_test": 2,
+   "callers_test": 6,
    "callers_research": 0,
    "effect_on_failure": [
     "NO_PRODUCTION_CALLER"
@@ -2868,12 +2913,12 @@
    "guard": "assert_redistribution_supported",
    "protects": "Conservation proves the SUM. This asks where the missing mass went.",
    "defined_in": "nfl/production/universe/allocation.py",
-   "line": 357,
+   "line": 376,
    "n_definitions": 1,
    "fails_by": "RETURN",
    "callers_prod": 1,
    "callers_prod_external": 1,
-   "callers_test": 1,
+   "callers_test": 4,
    "callers_research": 0,
    "effect_on_failure": [
     "VERDICT_REGISTERED:REDISTRIBUTION_PLAUSIBILITY"
@@ -2908,12 +2953,12 @@
    "guard": "assert_research_tree_unchanged",
    "protects": "Snapshot, run production, assert the research tree is byte-identical.",
    "defined_in": "nfl/production/derived.py",
-   "line": 206,
+   "line": 212,
    "n_definitions": 1,
    "fails_by": "RETURN",
    "callers_prod": 0,
    "callers_prod_external": 0,
-   "callers_test": 2,
+   "callers_test": 3,
    "callers_research": 0,
    "effect_on_failure": [
     "NO_PRODUCTION_CALLER"
@@ -2942,7 +2987,7 @@
    "fails_by": "RETURN",
    "callers_prod": 1,
    "callers_prod_external": 1,
-   "callers_test": 8,
+   "callers_test": 13,
    "callers_research": 0,
    "effect_on_failure": [
     "VERDICT_REGISTERED:ROLE_PLAUSIBILITY"
@@ -3029,7 +3074,7 @@
    "fails_by": "RETURN",
    "callers_prod": 1,
    "callers_prod_external": 0,
-   "callers_test": 2,
+   "callers_test": 6,
    "callers_research": 0,
    "effect_on_failure": [
     "ANNOTATE"
@@ -3043,18 +3088,18 @@
    "caller_entry_points": {
     "nfl/production/gate_ids.py": {
      "has_main": true,
-     "referenced_outside_python": false
+     "referenced_outside_python": true
     }
    },
    "runnable_caller": true,
-   "caller_referenced_outside_python": false,
+   "caller_referenced_outside_python": true,
    "direct_test_coverage": true,
    "load_bearing_proof": "NONE",
    "load_bearing_proof_determinism": {},
    "classification": "ORPHANED_CONTROL",
    "classification_reason": "its only call site is inside gate_ids.main(), printing a table, and NOTHING in the repository imports gate_ids -- ownership_audit.py only names the file in a DISPOSITIONS string. So the gate registry it queries (YES/NO/UNDECIDED per scope, with the right discipline inline that an UNDECIDED gate blocks exactly as a NO does) decides nothing. It is a parallel, unconsumed registry: verdict.EDGE_GATES and quality_gates._HARD_GATES are the live mechanisms, so this is duplication to consolidate rather than missing enforcement. Counted in the 19-module orphaned-guard ratchet added with DEF-080",
    "prod_sites": [
-    "nfl/production/gate_ids.py:243:ANNOTATE"
+    "nfl/production/gate_ids.py:249:ANNOTATE"
    ],
    "n_definitions_of_this_name": 1
   },
@@ -3102,12 +3147,12 @@
    "guard": "assert_shared_draws",
    "protects": "DK-scored players must be players the football layers emitted.",
    "defined_in": "nfl/dfs/salaries/build_postinactives_package.py",
-   "line": 156,
+   "line": 193,
    "n_definitions": 1,
    "fails_by": "RETURN",
    "callers_prod": 1,
    "callers_prod_external": 1,
-   "callers_test": 4,
+   "callers_test": 8,
    "callers_research": 0,
    "effect_on_failure": [
     "STOP"
@@ -3123,11 +3168,11 @@
    "caller_entry_points": {
     "nfl/dfs/salaries/emit_package.py": {
      "has_main": true,
-     "referenced_outside_python": false
+     "referenced_outside_python": true
     }
    },
    "runnable_caller": true,
-   "caller_referenced_outside_python": false,
+   "caller_referenced_outside_python": true,
    "direct_test_coverage": true,
    "load_bearing_proof": "nfl/tests/test_publication_refusal_is_load_bearing.py",
    "load_bearing_proof_determinism": {
@@ -3144,7 +3189,7 @@
    "guard": "assert_single_divergence",
    "protects": "Shared layers identical between arms; arm layers actually differing.",
    "defined_in": "nfl/prospective/q9shadow/complete.py",
-   "line": 224,
+   "line": 293,
    "n_definitions": 1,
    "fails_by": "RETURN",
    "callers_prod": 1,
@@ -3176,7 +3221,7 @@
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
    "prod_sites": [
-    "nfl/prospective/q9shadow/complete.py:334:DOWNGRADE"
+    "nfl/prospective/q9shadow/complete.py:414:DOWNGRADE"
    ],
    "n_definitions_of_this_name": 1
   },
@@ -3218,7 +3263,7 @@
    "classification": "LOAD_BEARING",
    "classification_reason": "build() returns the guard Outcome, proven through the real entry point rather than read: each of the four FORBIDDEN_SOURCES seeded into a build gives FAIL[Q9_LIVE_SOURCE_NOT_PERMITTED], every PERMITTED_SOURCES entry does not, and bypassing the guard makes the seeded call fall through to build own Q9_LIVE_NO_TEAMS -- so the refusal was the guard. LINEAGE CAVEAT: live_features.py is in no executing tree, so this is LOAD_BEARING in logic and NOT OBSERVED in execution",
    "prod_sites": [
-    "nfl/prospective/q9shadow/live_features.py:591:ANNOTATE"
+    "nfl/prospective/q9shadow/live_features.py:596:ANNOTATE"
    ],
    "n_definitions_of_this_name": 1
   },
@@ -3398,7 +3443,7 @@
    "fails_by": "RETURN",
    "callers_prod": 0,
    "callers_prod_external": 0,
-   "callers_test": 6,
+   "callers_test": 9,
    "callers_research": 0,
    "effect_on_failure": [
     "NO_PRODUCTION_CALLER"

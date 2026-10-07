@@ -1,33 +1,43 @@
 {
  "audit": {
-  "code": "EVERY_VINTAGE_READ_DECLARED",
-  "evidence": {},
-  "state": "PASS",
-  "value": {
-   "edges_not_exercised": [],
-   "n_edges": 31,
-   "n_reads": 34,
-   "n_runtime_keyed": 3,
-   "n_sites": 37,
-   "n_writes": 3,
-   "runtime_keyed": [
+  "code": "UNDECLARED_VINTAGE_READ",
+  "evidence": {
+   "unattributable": [],
+   "undeclared": [
     {
-     "function": "_has_declared_rows",
-     "line": 213,
-     "module": "nfl/capture/coverage.py"
+     "expr": "pathlib.Path__file__.resolve.parents3nflvintage_manifest.jsonl",
+     "line": 107,
+     "module": "nfl/production/universe/usage_vintage.py",
+     "producer": "vintage_manifest"
     },
     {
-     "function": "store_raw",
-     "line": 233,
-     "module": "nfl/capture/delivered_injuries.py"
+     "expr": "pathlib.Path__file__.resolve.parents3nflvintage_manifest.jsonl",
+     "line": 92,
+     "module": "nfl/dfs/salaries/early_only.py",
+     "producer": "vintage_manifest"
     },
     {
-     "function": "attempt_recovery",
-     "line": 340,
-     "module": "nfl/capture/persisted_provenance.py"
+     "expr": "gzippathlib.Path__file__.resolve.parents3nflvintageweekly_rosters.73f1d36a204ec591.raw.csv.gzrt",
+     "line": 78,
+     "module": "nfl/dfs/salaries/emit_package.py",
+     "producer": "weekly_rosters"
+    },
+    {
+     "expr": "PathsourceifsourceelsePathnflvintage_manifest.jsonlSHARD_INDEX.json",
+     "line": 124,
+     "module": "nfl/capture/manifest_store.py",
+     "producer": "vintage_manifest"
+    },
+    {
+     "expr": "PathdestifdestelsePathnflvintage_manifestf{shard_keynext{shshard_keyrawmode:_linesPathsourceifsourceelseMONOLITHshfileforshinjson.loadssrcINDEX_NAME.read_textsh",
+     "line": 177,
+     "module": "nfl/capture/manifest_store.py",
+     "producer": "vintage_manifest"
     }
    ]
-  }
+  },
+  "state": "FAIL",
+  "value": null
  },
  "audited_roots": [
   "nfl/production/",
@@ -244,6 +254,32 @@
     ],
     "kind": "COLUMNS",
     "why": "stamps the vintage of each gating input onto the gate record."
+   },
+   {
+    "basis": "READ_BY_HAND",
+    "consumer": "nfl/production/fixture_assembler.py",
+    "fields": [
+     "source",
+     "state",
+     "blob",
+     "blob_file_sha256"
+    ],
+    "kind": "COLUMNS",
+    "why": "DK-4. Builds a run's `source_hashes` from the manifest: which blob a PASS capture of each source names, and the hash that capture recorded for it. It reads the recorded hash only to CROSS-CHECK its own measurement -- the blob is opened and rehashed here -- and refuses when the two disagree rather than preferring either. Projects nothing into a forecast; it decides which bytes the run declares, and `vintage_selector` independently decides which bytes the layers read. That those two now agree is the point of the module."
+   },
+   {
+    "basis": "READ_BY_HAND",
+    "consumer": "nfl/production/nonqb/current_season_panel.py",
+    "fields": [
+     "source",
+     "state",
+     "season",
+     "capture_id",
+     "blob",
+     "provenance"
+    ],
+    "kind": "COLUMNS",
+    "why": "FIX-CSP-STORE. Finds the governed play-by-play captures for the current season so the widest LAWFUL one can be chosen. It reads `provenance.retrieved_at` only to apply the clock -- a capture not strictly before the forecast instant is dropped and counted -- and `n_games` only to prefer the wider of two lawful captures. It projects no column into a forecast; the football columns come from the blob, under the same clock this read enforces."
    },
    {
     "basis": "READ_BY_HAND",

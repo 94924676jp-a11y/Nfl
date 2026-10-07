@@ -188,6 +188,13 @@ def t_readiness_refuses():
                                 'why': 'CONTENT_CHANGED_SINCE_BUILD'}]
         out['any_stale_dependency'] = True
         return out
+    # readiness.build() WRITES the tracked nfl/production/READINESS.json. Built here under a
+    # poisoned lineage, it wrote a poisoned board into the working tree and relied on the rebuild
+    # in `finally` to put a live one back -- which still left the tracked file rewritten by every
+    # suite run (certified run 20261007T083657Z-18364, TREE_MUTATED_BY_RUN). Both builds now write
+    # into a temporary directory; the assertions read the returned value, never the file.
+    saved_out = readiness.OUT
+    readiness.OUT = pathlib.Path(tempfile.mkdtemp(prefix='readiness_')) / saved_out.name
     try:
         lineage.audit = poisoned
         o = readiness.build()
@@ -200,6 +207,7 @@ def t_readiness_refuses():
     finally:
         lineage.audit = real
         readiness.build()
+        readiness.OUT = saved_out
     return 'a single stale dependency drops the product mode to NOT_PRODUCTION_READY'
 
 

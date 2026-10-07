@@ -140,7 +140,18 @@ def t_empty_refusal():
 
 @check('the absence is BLOCKED on DATA, names the contests, and does not fabricate a calibration')
 def t_status_blocked():
-    o = CO.status()
+    # THE STATUS IS MEASURED, NOT PUBLISHED. status() rewrites the tracked
+    # OWNERSHIP_ACQUISITION_MANIFEST.json on every call, so the suite mutated the working tree each
+    # time this check ran (certified run 20261007T083657Z-18364, TREE_MUTATED_BY_RUN). The
+    # manifest is redirected into a temporary directory for the duration; the outcome asserted
+    # below is the same object either way.
+    saved = CO.MANIFEST
+    tmp = pathlib.Path(tempfile.mkdtemp(prefix='ownership_manifest_'))
+    try:
+        CO.MANIFEST = tmp / saved.name
+        o = CO.status()
+    finally:
+        CO.MANIFEST = saved
     if o.state.name == 'PASS':
         return f'archived ownership is now present ({o.value["n_loaded"]} files); this check retires'
     assert o.state.name == 'BLOCKED' and o.code == 'NO_ARCHIVED_CONTEST_OWNERSHIP', o.code

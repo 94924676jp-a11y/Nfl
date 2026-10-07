@@ -64,7 +64,7 @@
    "why_not_measurable": "routines live in a scheduler this executor cannot query. The previous `CURRENT_STATE.md` asserted a routine was DISABLED and recorded, in the same file, that a later firing reported success with no commit ever reaching the branch \u2014 an unresolved contradiction that it presented as state."
   }
  ],
- "generated_at": "2026-09-28T23:58:58.097606+00:00",
+ "generated_at": "2026-10-07T18:09:11.299169+00:00",
  "generated_by": "nfl/tools/system_state.py",
  "measured": {
   "assumptions": {
@@ -108,64 +108,65 @@
   },
   "capture": {
    "by_source": {
-    "depth_charts": 694,
-    "dk_entries": 1,
-    "dk_salaries": 1,
-    "dk_salaries_early": 1,
-    "espn_injuries_json": 685,
-    "hardrock_market_snapshot": 1,
-    "injuries": 695,
-    "official_inactives": 704,
-    "official_injury_report": 688,
-    "official_status_evidence": 1,
-    "official_transactions": 684,
-    "pbp": 4,
-    "pbp_participation": 605,
-    "schedules": 694,
-    "snap_counts": 605,
-    "weekly_rosters": 694
-   },
-   "by_state": {
-    "BLOCKED": 798,
-    "DEFERRED": 251,
-    "FAIL": 108,
-    "NOT_APPLICABLE": 1210,
-    "PASS": 4390
-   },
-   "manifest_rows": 6757,
-   "retrieved_at_earliest": "2026-09-06T18:50:49.540119+00:00",
-   "retrieved_at_latest": "2026-09-21T17:53:10.980895+00:00",
-   "vintage_store_by_family": {
-    "delivered_injury_evidence": 1,
-    "depth_charts": 32,
+    "depth_charts": 1262,
     "dk_entries": 2,
     "dk_salaries": 1,
     "dk_salaries_early": 2,
-    "espn_injuries_json": 648,
+    "espn_injuries_json": 1253,
     "hardrock_market_snapshot": 1,
-    "injuries": 14,
+    "injuries": 1263,
+    "official_inactives": 1273,
+    "official_injury_report": 1256,
+    "official_status_evidence": 1,
+    "official_transactions": 1253,
+    "pbp": 4,
+    "pbp_participation": 1174,
+    "schedules": 1262,
+    "snap_counts": 1174,
+    "weekly_rosters": 1262
+   },
+   "by_state": {
+    "BLOCKED": 1370,
+    "DEFERRED": 819,
+    "FAIL": 110,
+    "NOT_APPLICABLE": 2348,
+    "PASS": 7796
+   },
+   "manifest_rows": 12443,
+   "retrieved_at_earliest": "2026-09-06T18:50:49.540119+00:00",
+   "retrieved_at_latest": "2026-10-07T16:57:30.957907+00:00",
+   "vintage_store_by_family": {
+    "SYNC_PROVENANCE": 1,
+    "delivered_injury_evidence": 1,
+    "depth_charts": 59,
+    "dk_entries": 3,
+    "dk_salaries": 1,
+    "dk_salaries_early": 3,
+    "espn_injuries_json": 1215,
+    "hardrock_market_snapshot": 1,
+    "injuries": 24,
     "official_inactives": 367,
-    "official_injury_report": 574,
+    "official_injury_report": 1141,
     "official_status_evidence": 1,
     "pbp_2024": 1,
     "pbp_2025": 1,
     "pbp_2026": 1,
-    "schedules": 393,
-    "weekly_rosters": 30
+    "schedules": 753,
+    "weekly_rosters": 53
    },
-   "vintage_store_files": 2069
+   "vintage_store_files": 3626
   },
   "code": {
    "TOTAL": {
-    "lines": 302032,
-    "modules": 980
+    "lines": 346449,
+    "modules": 1113
    },
    "nfl/capture": {
-    "lines": 7072,
+    "lines": 7128,
     "modules": 19
    },
    "nfl/dfs": {
-    "lines": 10428,
+    "lines": 10585,
     "modules": 48
    },
    "nfl/identity": {
@@ -173,35 +174,35 @@
     "modules": 5
    },
    "nfl/postgame": {
-    "lines": 3220,
-    "modules": 15
+    "lines": 7201,
+    "modules": 26
    },
    "nfl/product": {
-    "lines": 8735,
+    "lines": 8828,
     "modules": 23
    },
    "nfl/production": {
-    "lines": 56080,
-    "modules": 131
+    "lines": 57070,
+    "modules": 134
    },
    "nfl/prospective": {
-    "lines": 7642,
-    "modules": 19
+    "lines": 8653,
+    "modules": 22
    },
    "nfl/research": {
-    "lines": 70381,
-    "modules": 305
+    "lines": 81003,
+    "modules": 324
    },
    "nfl/tests": {
-    "lines": 104503,
-    "modules": 318
+    "lines": 119341,
+    "modules": 377
    },
    "nfl/tools": {
-    "lines": 30432,
-    "modules": 84
+    "lines": 42922,
+    "modules": 122
    },
    "sportsplatform": {
-    "lines": 2455,
+    "lines": 2634,
     "modules": 13
    }
   },
@@ -250,22 +251,26 @@
   },
   "git": {
    "branch": "claude/nfl-greenfield-architecture-stsxmk",
-   "dirty_source_files": [],
-   "head": "82a049c45e9c779b04ac3cf483cadddeeb649702",
-   "head_committed_at": "2026-09-28T23:47:21+00:00",
-   "head_short": "82a049c4",
-   "head_subject": "Archiving was opt-in the wrong way round: the test suite filled the permanent record",
-   "is_clean": true,
-   "n_commits_on_branch": 1408,
-   "remote_head": "a1475f432687c1f4f046b31fb5e497a99e677ce3",
+   "dirty_source_files": [
+    "nfl/production/ownership_audit.py"
+   ],
+   "head": "5ba94c8337a62ad136e2a9d04d4279c6bb9ced1b",
+   "head_committed_at": "2026-10-07T17:53:21+00:00",
+   "head_short": "5ba94c83",
+   "head_subject": "Runner: SC-OWN-ROTATION-2 ownership shadow (sealed, non-blocking) after the BLEND baseline; ownership grading in postgame",
+   "is_clean": false,
+   "n_commits_on_branch": 1568,
+   "remote_head": "5ba94c8337a62ad136e2a9d04d4279c6bb9ced1b",
    "worktree": {
-    "code_version": "82a049c45e9c779b04ac3cf483cadddeeb649702+src1[44aa01d03783de18]",
-    "commit": "82a049c45e9c779b04ac3cf483cadddeeb649702",
-    "dirty_source_files": [],
-    "n_dirty_source_files": 0,
-    "n_dirty_tree_entries_observed": 4,
+    "code_version": "5ba94c8337a62ad136e2a9d04d4279c6bb9ced1b+src1[9df9648fbaf1c195]",
+    "commit": "5ba94c8337a62ad136e2a9d04d4279c6bb9ced1b",
+    "dirty_source_files": [
+     "nfl/production/ownership_audit.py"
+    ],
+    "n_dirty_source_files": 1,
+    "n_dirty_tree_entries_observed": 14,
     "scope_note": "dirty_source_files is SOURCE scope only -- the .py files the identity contract hashes. A changed .md or .json is counted in n_dirty_tree_entries_observed and is not listed.",
-    "source_scope_clean": true
+    "source_scope_clean": false
    }
   },
   "governance": {
@@ -301,58 +306,52 @@
    },
    "prospective_evaluation_ledger": {
     "blocks": [
-     "DET_BUF_2026W2"
+     "DET_BUF_2026W2",
+     "PIT_CLE_2026W4_SHOWDOWN"
     ],
     "by_status": {
-     "AWAITING_OUTCOME": 1,
+     "AWAITING_OUTCOME": 2,
      "GRADED": 1
     },
-    "rows": 2
+    "rows": 3
    }
   },
   "suite": {
-   "artifact": "nfl/research/suite_attribution/SUITE_DIFF_p6_p7.json",
-   "baseline_commit": "44ff8ed",
+   "artifact": "nfl/research/suite_attribution/SUITE_DIFF_p9_discovery.json",
+   "baseline_commit": "20468a5",
    "baseline_totals": {
     "blocked_functions": 23,
-    "checks": 10335,
-    "failing_checks": 61,
-    "modules": 179,
+    "checks": 10583,
+    "failing_checks": 63,
+    "modules": 183,
     "raised": 21,
-    "test_functions": 1944,
+    "test_functions": 1987,
     "zero_check_functions": 0
    },
    "counts_by_classification": {
-    "NEWLY_INTRODUCED": 1,
-    "PRE_EXISTING": 132,
-    "RESOLVED_SINCE_BASELINE": 1
+    "PRE_EXISTING": 133,
+    "RESOLVED_SINCE_BASELINE": 3
    },
    "delta_totals": {
     "blocked_functions": 0,
-    "checks": 71,
-    "failing_checks": 0,
-    "modules": 2,
+    "checks": 49,
+    "failing_checks": -2,
+    "modules": 1,
     "raised": 0,
-    "test_functions": 19,
+    "test_functions": 10,
     "zero_check_functions": 0
    },
    "is_current_head": false,
    "measured_at_commit": "WORKING_TREE",
-   "newly_introduced": [
-    {
-     "detail": "FAIL  no module outside nfl/identity/ CALLS git for working-tree state -- ['nfl/tools/agent_state.py', 'nfl/tools/system_state.py', 'sportsplatform/governance/c",
-     "kind": "FAILING_CHECK",
-     "module": "nfl/tests/test_determinism_proof.py"
-    }
-   ],
-   "staleness_note": "measured at WORKING_TREE, HEAD is 82a049c. This total is not a statement about the tree as it stands.",
+   "newly_introduced": [],
+   "staleness_note": "measured at WORKING_TREE, HEAD is 5ba94c8. This total is not a statement about the tree as it stands.",
    "totals": {
     "blocked_functions": 23,
-    "checks": 10406,
+    "checks": 10632,
     "failing_checks": 61,
-    "modules": 181,
+    "modules": 184,
     "raised": 21,
-    "test_functions": 1963,
+    "test_functions": 1997,
     "zero_check_functions": 0
    },
    "verdict": "SUITE FAIL"

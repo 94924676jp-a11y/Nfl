@@ -764,10 +764,31 @@ def test_20_the_comparison_is_paired_and_clustered():
 _DRYRUN = {}
 
 
+def _scratch_dryrun_ledger():
+    """Point the DRY-RUN seal ledger at a temporary file; return the real path to restore.
+
+    `seal.seal_season(dry_run=True)` appends every seal it makes to the TRACKED
+    `Q9_SHADOW_DRYRUN_SEAL_LEDGER.jsonl`, so each suite run grew that ledger by the rows these
+    tests sealed (certified run 20261007T083657Z-18364, TREE_MUTATED_BY_RUN). A suite run is not a
+    dry run anybody performed, and its rows do not belong in the record. Nothing asserted here
+    reads the ledger back, so redirecting it changes what is recorded and not what is checked.
+    """
+    import pathlib
+    import tempfile
+    saved = SEAL.DRYRUN_SEAL_LEDGER
+    SEAL.DRYRUN_SEAL_LEDGER = (pathlib.Path(tempfile.mkdtemp(prefix='q9_dryrun_ledger_'))
+                               / saved.name)
+    return saved
+
+
 def _dryrun():
     """dryrun.run() once per process. It writes no artifact of its own."""
     if not _DRYRUN:
-        _DRYRUN['out'] = DR.run()
+        saved = _scratch_dryrun_ledger()
+        try:
+            _DRYRUN['out'] = DR.run()
+        finally:
+            SEAL.DRYRUN_SEAL_LEDGER = saved
     return _DRYRUN['out']
 
 
@@ -884,9 +905,13 @@ def test_21b_the_stored_dry_run_proof_agrees_with_the_run():
 
 def test_22_the_sealed_artifact_passes_the_governed_contract():
     print('\n-- the sealed artifact against the artifact contract --')
-    out = SEAL.seal_season(2024, source=SH.HISTORICAL_FRAME, n_games=1,
-                           out_root=str(SEAL.DRYRUN / 'suite'), n_draws=120,
-                           written_at='2026-09-12T12:00:00Z', dry_run=True)
+    saved = _scratch_dryrun_ledger()
+    try:
+        out = SEAL.seal_season(2024, source=SH.HISTORICAL_FRAME, n_games=1,
+                               out_root=str(SEAL.DRYRUN / 'suite'), n_draws=120,
+                               written_at='2026-09-12T12:00:00Z', dry_run=True)
+    finally:
+        SEAL.DRYRUN_SEAL_LEDGER = saved
     check('the dry-run seal produced forecasts', out['status'] == 'OK',
           str(out.get('detail'))[:150])
     if out['status'] != 'OK':

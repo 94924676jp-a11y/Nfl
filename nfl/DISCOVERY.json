@@ -2,32 +2,39 @@
  "candidates": [
   {
    "evidence": {
-    "days_since_first_success": 19.3,
-    "first_success_utc": "2026-09-07T13:06:37+00:00",
-    "n_distinct_blobs": 14,
-    "previously_recorded_absent_as": {
-     "SOURCE_NOT_YET_PUBLISHED": 40
-    },
-    "source": "injuries",
-    "why_it_matters": "this source was recorded absent and is now publishing; anything that treated it as unavailable may be acting on a stale fact"
+    "action": "PROSPECTIVE_ONLY",
+    "age_basis": "evidence_as_of_utc",
+    "claim_age_days": 10.94,
+    "evidence_as_of_utc": "2026-09-26T19:35:22Z",
+    "evidence_status": "RESTATED 2026-09-19 from nfl/vintage_manifest.jsonl. The 2026-09-10 correction stands unchanged: role CHANGE within a week still needs our own capture, role LEVEL does not. What is now MEASURED rather",
+    "has_no_date_at_all": false,
+    "id": "GAP-PREGAME-ROLE",
+    "last_rechecked_utc": "2026-09-26",
+    "newest_date_in_claim": "2026-09-26T19:35:22Z",
+    "recheck_assignment": null,
+    "recheck_executable_here": true,
+    "recheck_horizon_basis": "declared",
+    "recheck_horizon_days": 7,
+    "recheck_state": "PAST_HORIZON",
+    "stale_beyond_recheck_horizon": true
    },
-   "impact_evidence": "a source recorded absent is now publishing, so any layer that was blocked on it may not be blocked any more",
-   "measurability_evidence": "14 content-addressed vintage(s) already captured in this repository",
+   "impact_evidence": "the gap is recorded as blocking or held on a claim whose evidence is 10.94 days old against a 7-day horizon",
+   "measurability_evidence": "rechecking is a capture attempt, not a model change",
    "ranking": "NOT SCORED HERE -- see nfl/WORK_QUEUE.md",
-   "subject": "injuries",
-   "trigger": "SOURCE_NEWLY_PUBLISHING"
+   "subject": "GAP-PREGAME-ROLE",
+   "trigger": "GAP_CLAIM_OLDER_THAN_RECHECK_HORIZON"
   },
   {
    "evidence": {
     "action": "PROSPECTIVE_ONLY",
     "age_basis": "evidence_as_of_utc",
-    "claim_age_days": 11.57,
-    "evidence_as_of_utc": "2026-09-15T06:37:05Z",
-    "evidence_status": "RESTATED 2026-09-19 from nfl/availability_manifest.jsonl, 24 probes. The previous claim -- \"MEASURED: both 404 for 2026 as of 2026-09-08\" -- was true when written and is now HALF FALSE. snap_counts re",
+    "claim_age_days": 10.48,
+    "evidence_as_of_utc": "2026-09-27T06:34:57Z",
+    "evidence_status": "RESTATED 2026-09-27T15:10Z from origin/main:nfl/availability_manifest.jsonl. The previous restatement (2026-09-19) said \"THE WATCH HAS NOT RUN SINCE 2026-09-15T06:37:05Z\" -- that is now FALSE: main ca",
     "has_no_date_at_all": false,
     "id": "GAP-2026-PARTICIPATION",
-    "last_rechecked_utc": "2026-09-19",
-    "newest_date_in_claim": "2026-09-15T06:37:05Z",
+    "last_rechecked_utc": "2026-09-27T15:10:00Z",
+    "newest_date_in_claim": "2026-09-27T06:34:57Z",
     "recheck_assignment": "OUT-019 (pbp_participation 2026) and OUT-024 (the availability watch has been dead since 2026-09-15T06:37:05Z)",
     "recheck_executable_here": false,
     "recheck_horizon_basis": "declared",
@@ -35,11 +42,59 @@
     "recheck_state": "ASSIGNED_PAST_HORIZON",
     "stale_beyond_recheck_horizon": true
    },
-   "impact_evidence": "the gap is recorded as blocking or held on a claim whose evidence is 11.57 days old against a 2-day horizon",
+   "impact_evidence": "the gap is recorded as blocking or held on a claim whose evidence is 10.48 days old against a 2-day horizon",
    "measurability_evidence": "NOT EXECUTABLE HERE -- assigned as OUT-019 (pbp_participation 2026) and OUT-024 (the availability watch has been dead since 2026-09-15T06:37:05Z)",
    "ranking": "NOT SCORED HERE -- see nfl/WORK_QUEUE.md",
    "subject": "GAP-2026-PARTICIPATION",
    "trigger": "GAP_RECHECK_ASSIGNED_AND_PAST_HORIZON"
+  },
+  {
+   "evidence": {
+    "action": "CHEAP_PROBE",
+    "age_basis": "evidence_as_of_utc",
+    "claim_age_days": 10.94,
+    "evidence_as_of_utc": "2026-09-26T19:35:22Z",
+    "evidence_status": "CONSUMED by R7. depth_vintage.py selects point-in-time and appearance_r7.py fits on the result. Before R7 the feature was computed on 57,160 of 83,144 panel rows and read by NEITHER featuriser.",
+    "has_no_date_at_all": false,
+    "id": "GAP-DEPTH-CHART-PIT",
+    "last_rechecked_utc": "2026-09-26",
+    "newest_date_in_claim": "2026-09-26T19:35:22Z",
+    "recheck_assignment": null,
+    "recheck_executable_here": true,
+    "recheck_horizon_basis": "declared",
+    "recheck_horizon_days": 7,
+    "recheck_state": "PAST_HORIZON",
+    "stale_beyond_recheck_horizon": true
+   },
+   "impact_evidence": "the gap is recorded as blocking or held on a claim whose evidence is 10.94 days old against a 7-day horizon",
+   "measurability_evidence": "rechecking is a capture attempt, not a model change",
+   "ranking": "NOT SCORED HERE -- see nfl/WORK_QUEUE.md",
+   "subject": "GAP-DEPTH-CHART-PIT",
+   "trigger": "GAP_CLAIM_OLDER_THAN_RECHECK_HORIZON"
+  },
+  {
+   "evidence": {
+    "action": "PROSPECTIVE_ONLY",
+    "age_basis": "evidence_as_of_utc",
+    "claim_age_days": 10.94,
+    "evidence_as_of_utc": "2026-09-26T19:35:22Z",
+    "evidence_status": "RESTATED 2026-09-19 from nfl/vintage_manifest.jsonl. \"capture running since 2026-09-06\" was a status, not evidence. Measured: injuries 624 PASS over 12 distinct blobs and 40 DEFERRED on SOURCE_NOT_YET",
+    "has_no_date_at_all": false,
+    "id": "GAP-INJURY-VINTAGE",
+    "last_rechecked_utc": "2026-09-26",
+    "newest_date_in_claim": "2026-09-26T19:35:22Z",
+    "recheck_assignment": null,
+    "recheck_executable_here": true,
+    "recheck_horizon_basis": "declared",
+    "recheck_horizon_days": 7,
+    "recheck_state": "PAST_HORIZON",
+    "stale_beyond_recheck_horizon": true
+   },
+   "impact_evidence": "the gap is recorded as blocking or held on a claim whose evidence is 10.94 days old against a 7-day horizon",
+   "measurability_evidence": "rechecking is a capture attempt, not a model change",
+   "ranking": "NOT SCORED HERE -- see nfl/WORK_QUEUE.md",
+   "subject": "GAP-INJURY-VINTAGE",
+   "trigger": "GAP_CLAIM_OLDER_THAN_RECHECK_HORIZON"
   },
   {
    "evidence": {
@@ -118,7 +173,7 @@
   }
  ],
  "empty_is_a_result": "An empty candidate list means do validation and monitoring, not find something to build.",
- "generated_at": "2026-09-26T20:16:21.097701+00:00",
+ "generated_at": "2026-10-07T18:08:13.027312+00:00",
  "generated_by": "nfl/tools/discovery.py",
  "ranking_rule": "Candidates are DETECTED here and RANKED in nfl/WORK_QUEUE.md. The four factors -- downstream impact, uncertainty, measurability, expected value of information -- are judgements, and none is measurable from this repository. A number for any of them here would be a silent constant wearing a measurement's clothes.",
  "signals": {
@@ -204,30 +259,30 @@
   "captures": {
    "depth_charts": {
     "absent_codes_recorded": {},
-    "days_since_first_success": 20.06,
-    "days_since_last_success": 2.59,
+    "days_since_first_success": 30.97,
+    "days_since_last_success": 0.05,
     "first_success_utc": "2026-09-06T18:50:49.946312+00:00",
-    "last_success_utc": "2026-09-24T06:07:41+00:00",
-    "n_distinct_blobs": 22,
+    "last_success_utc": "2026-10-07T16:57:20+00:00",
+    "n_distinct_blobs": 48,
     "states": {
-     "PASS": 694
+     "PASS": 1262
     }
    },
    "dk_entries": {
     "absent_codes_recorded": {},
-    "days_since_first_success": 6.65,
-    "days_since_last_success": 6.65,
+    "days_since_first_success": 17.56,
+    "days_since_last_success": 4.04,
     "first_success_utc": "2026-09-20T04:42:37+00:00",
-    "last_success_utc": "2026-09-20T04:42:37+00:00",
-    "n_distinct_blobs": 1,
+    "last_success_utc": "2026-10-03T17:09:46+00:00",
+    "n_distinct_blobs": 2,
     "states": {
-     "PASS": 1
+     "PASS": 2
     }
    },
    "dk_salaries": {
     "absent_codes_recorded": {},
-    "days_since_first_success": 6.72,
-    "days_since_last_success": 6.72,
+    "days_since_first_success": 17.63,
+    "days_since_last_success": 17.63,
     "first_success_utc": "2026-09-20T03:01:58+00:00",
     "last_success_utc": "2026-09-20T03:01:58+00:00",
     "n_distinct_blobs": 1,
@@ -237,31 +292,31 @@
    },
    "dk_salaries_early": {
     "absent_codes_recorded": {},
-    "days_since_first_success": 6.65,
-    "days_since_last_success": 6.65,
+    "days_since_first_success": 17.56,
+    "days_since_last_success": 4.04,
     "first_success_utc": "2026-09-20T04:42:37+00:00",
-    "last_success_utc": "2026-09-20T04:42:37+00:00",
-    "n_distinct_blobs": 1,
+    "last_success_utc": "2026-10-03T17:09:46+00:00",
+    "n_distinct_blobs": 2,
     "states": {
-     "PASS": 1
+     "PASS": 2
     }
    },
    "espn_injuries_json": {
     "absent_codes_recorded": {},
-    "days_since_first_success": 19.83,
-    "days_since_last_success": 2.34,
+    "days_since_first_success": 30.74,
+    "days_since_last_success": 4.13,
     "first_success_utc": "2026-09-07T00:24:48+00:00",
-    "last_success_utc": "2026-09-24T12:07:43+00:00",
-    "n_distinct_blobs": 648,
+    "last_success_utc": "2026-10-03T15:03:07+00:00",
+    "n_distinct_blobs": 1215,
     "states": {
-     "BLOCKED": 37,
-     "PASS": 648
+     "BLOCKED": 38,
+     "PASS": 1215
     }
    },
    "hardrock_market_snapshot": {
     "absent_codes_recorded": {},
-    "days_since_first_success": 13.09,
-    "days_since_last_success": 13.09,
+    "days_since_first_success": 24.0,
+    "days_since_last_success": 24.0,
     "first_success_utc": "2026-09-13T18:13:12.712000+00:00",
     "last_success_utc": "2026-09-13T18:13:12.712000+00:00",
     "n_distinct_blobs": 1,
@@ -273,47 +328,47 @@
     "absent_codes_recorded": {
      "SOURCE_NOT_YET_PUBLISHED": 40
     },
-    "days_since_first_success": 19.3,
-    "days_since_last_success": 2.59,
+    "days_since_first_success": 30.21,
+    "days_since_last_success": 0.05,
     "first_success_utc": "2026-09-07T13:06:37+00:00",
-    "last_success_utc": "2026-09-24T06:07:41+00:00",
-    "n_distinct_blobs": 14,
+    "last_success_utc": "2026-10-07T16:57:20+00:00",
+    "n_distinct_blobs": 24,
     "states": {
      "DEFERRED": 40,
-     "PASS": 655
+     "PASS": 1223
     }
    },
    "official_inactives": {
     "absent_codes_recorded": {},
-    "days_since_first_success": 19.83,
-    "days_since_last_success": 8.86,
+    "days_since_first_success": 30.74,
+    "days_since_last_success": 19.77,
     "first_success_utc": "2026-09-07T00:24:48+00:00",
     "last_success_utc": "2026-09-17T23:41:00+00:00",
     "n_distinct_blobs": 367,
     "states": {
-     "BLOCKED": 37,
-     "DEFERRED": 211,
+     "BLOCKED": 38,
+     "DEFERRED": 779,
      "FAIL": 54,
      "PASS": 402
     }
    },
    "official_injury_report": {
     "absent_codes_recorded": {},
-    "days_since_first_success": 19.83,
-    "days_since_last_success": 2.34,
+    "days_since_first_success": 30.74,
+    "days_since_last_success": 4.13,
     "first_success_utc": "2026-09-07T00:24:48+00:00",
-    "last_success_utc": "2026-09-24T12:07:43+00:00",
-    "n_distinct_blobs": 574,
+    "last_success_utc": "2026-10-03T15:03:07+00:00",
+    "n_distinct_blobs": 1141,
     "states": {
-     "BLOCKED": 40,
+     "BLOCKED": 41,
      "FAIL": 54,
-     "PASS": 594
+     "PASS": 1161
     }
    },
    "official_status_evidence": {
     "absent_codes_recorded": {},
-    "days_since_first_success": 13.09,
-    "days_since_last_success": 13.09,
+    "days_since_first_success": 24.0,
+    "days_since_last_success": 24.0,
     "first_success_utc": "2026-09-13T18:12:01.430000+00:00",
     "last_success_utc": "2026-09-13T18:12:01.430000+00:00",
     "n_distinct_blobs": 1,
@@ -329,13 +384,13 @@
     "last_success_utc": null,
     "n_distinct_blobs": 0,
     "states": {
-     "BLOCKED": 684
+     "BLOCKED": 1253
     }
    },
    "pbp": {
     "absent_codes_recorded": {},
-    "days_since_first_success": 9.05,
-    "days_since_last_success": 9.05,
+    "days_since_first_success": 19.97,
+    "days_since_last_success": 19.96,
     "first_success_utc": "2026-09-17T18:57:54+00:00",
     "last_success_utc": "2026-09-17T19:00:50+00:00",
     "n_distinct_blobs": 3,
@@ -351,18 +406,19 @@
     "last_success_utc": null,
     "n_distinct_blobs": 0,
     "states": {
-     "NOT_APPLICABLE": 605
+     "NOT_APPLICABLE": 1174
     }
    },
    "schedules": {
     "absent_codes_recorded": {},
-    "days_since_first_success": 20.06,
-    "days_since_last_success": 2.48,
+    "days_since_first_success": 30.97,
+    "days_since_last_success": 0.05,
     "first_success_utc": "2026-09-06T18:50:50.687826+00:00",
-    "last_success_utc": "2026-09-24T08:39:57+00:00",
-    "n_distinct_blobs": 347,
+    "last_success_utc": "2026-10-07T16:57:20+00:00",
+    "n_distinct_blobs": 707,
     "states": {
-     "PASS": 694
+     "FAIL": 2,
+     "PASS": 1260
     }
    },
    "snap_counts": {
@@ -373,18 +429,18 @@
     "last_success_utc": null,
     "n_distinct_blobs": 0,
     "states": {
-     "NOT_APPLICABLE": 605
+     "NOT_APPLICABLE": 1174
     }
    },
    "weekly_rosters": {
     "absent_codes_recorded": {},
-    "days_since_first_success": 20.06,
-    "days_since_last_success": 2.59,
+    "days_since_first_success": 30.97,
+    "days_since_last_success": 0.05,
     "first_success_utc": "2026-09-06T18:50:51.018040+00:00",
-    "last_success_utc": "2026-09-24T06:07:41+00:00",
-    "n_distinct_blobs": 21,
+    "last_success_utc": "2026-10-07T16:57:20+00:00",
+    "n_distinct_blobs": 43,
     "states": {
-     "PASS": 694
+     "PASS": 1262
     }
    }
   },
@@ -392,7 +448,7 @@
    {
     "action": "BLOCKED",
     "age_basis": "evidence_as_of_utc",
-    "claim_age_days": 18.84,
+    "claim_age_days": 29.76,
     "evidence_as_of_utc": "2026-09-08",
     "evidence_status": "UNTESTED. Explicitly not classified as failed or information-constrained.",
     "has_no_date_at_all": false,
@@ -409,7 +465,7 @@
    {
     "action": "PROSPECTIVE_ONLY",
     "age_basis": "evidence_as_of_utc",
-    "claim_age_days": 0.03,
+    "claim_age_days": 10.94,
     "evidence_as_of_utc": "2026-09-26T19:35:22Z",
     "evidence_status": "RESTATED 2026-09-19 from nfl/vintage_manifest.jsonl. The 2026-09-10 correction stands unchanged: role CHANGE within a week still needs our own capture, role LEVEL does not. What is now MEASURED rather",
     "has_no_date_at_all": false,
@@ -420,19 +476,19 @@
     "recheck_executable_here": true,
     "recheck_horizon_basis": "declared",
     "recheck_horizon_days": 7,
-    "recheck_state": "CURRENT",
-    "stale_beyond_recheck_horizon": false
+    "recheck_state": "PAST_HORIZON",
+    "stale_beyond_recheck_horizon": true
    },
    {
     "action": "PROSPECTIVE_ONLY",
     "age_basis": "evidence_as_of_utc",
-    "claim_age_days": 11.57,
-    "evidence_as_of_utc": "2026-09-15T06:37:05Z",
-    "evidence_status": "RESTATED 2026-09-19 from nfl/availability_manifest.jsonl, 24 probes. The previous claim -- \"MEASURED: both 404 for 2026 as of 2026-09-08\" -- was true when written and is now HALF FALSE. snap_counts re",
+    "claim_age_days": 10.48,
+    "evidence_as_of_utc": "2026-09-27T06:34:57Z",
+    "evidence_status": "RESTATED 2026-09-27T15:10Z from origin/main:nfl/availability_manifest.jsonl. The previous restatement (2026-09-19) said \"THE WATCH HAS NOT RUN SINCE 2026-09-15T06:37:05Z\" -- that is now FALSE: main ca",
     "has_no_date_at_all": false,
     "id": "GAP-2026-PARTICIPATION",
-    "last_rechecked_utc": "2026-09-19",
-    "newest_date_in_claim": "2026-09-15T06:37:05Z",
+    "last_rechecked_utc": "2026-09-27T15:10:00Z",
+    "newest_date_in_claim": "2026-09-27T06:34:57Z",
     "recheck_assignment": "OUT-019 (pbp_participation 2026) and OUT-024 (the availability watch has been dead since 2026-09-15T06:37:05Z)",
     "recheck_executable_here": false,
     "recheck_horizon_basis": "declared",
@@ -443,7 +499,7 @@
    {
     "action": "HOLD",
     "age_basis": "evidence_as_of_utc",
-    "claim_age_days": 18.84,
+    "claim_age_days": 29.76,
     "evidence_as_of_utc": "2026-09-08",
     "evidence_status": "MARKED UNAVAILABLE in the TD1 pre-registration rather than approximated",
     "has_no_date_at_all": false,
@@ -460,7 +516,7 @@
    {
     "action": "HOLD",
     "age_basis": "evidence_as_of_utc",
-    "claim_age_days": 18.84,
+    "claim_age_days": 29.76,
     "evidence_as_of_utc": "2026-09-08",
     "evidence_status": "audited in RC1; the split was NOT used as a decomposition axis",
     "has_no_date_at_all": false,
@@ -477,7 +533,7 @@
    {
     "action": "HOLD",
     "age_basis": "evidence_as_of_utc",
-    "claim_age_days": 18.84,
+    "claim_age_days": 29.76,
     "evidence_as_of_utc": "2026-09-08",
     "evidence_status": "UNTESTED",
     "has_no_date_at_all": false,
@@ -494,7 +550,7 @@
    {
     "action": "HOLD",
     "age_basis": "evidence_as_of_utc",
-    "claim_age_days": 18.84,
+    "claim_age_days": 29.76,
     "evidence_as_of_utc": "2026-09-08",
     "evidence_status": "UNTESTED",
     "has_no_date_at_all": false,
@@ -511,7 +567,7 @@
    {
     "action": "CHEAP_PROBE",
     "age_basis": "evidence_as_of_utc",
-    "claim_age_days": 0.03,
+    "claim_age_days": 10.94,
     "evidence_as_of_utc": "2026-09-26T19:35:22Z",
     "evidence_status": "CONSUMED by R7. depth_vintage.py selects point-in-time and appearance_r7.py fits on the result. Before R7 the feature was computed on 57,160 of 83,144 panel rows and read by NEITHER featuriser.",
     "has_no_date_at_all": false,
@@ -522,13 +578,13 @@
     "recheck_executable_here": true,
     "recheck_horizon_basis": "declared",
     "recheck_horizon_days": 7,
-    "recheck_state": "CURRENT",
-    "stale_beyond_recheck_horizon": false
+    "recheck_state": "PAST_HORIZON",
+    "stale_beyond_recheck_horizon": true
    },
    {
     "action": "PROSPECTIVE_ONLY",
     "age_basis": "evidence_as_of_utc",
-    "claim_age_days": 0.03,
+    "claim_age_days": 10.94,
     "evidence_as_of_utc": "2026-09-26T19:35:22Z",
     "evidence_status": "RESTATED 2026-09-19 from nfl/vintage_manifest.jsonl. \"capture running since 2026-09-06\" was a status, not evidence. Measured: injuries 624 PASS over 12 distinct blobs and 40 DEFERRED on SOURCE_NOT_YET",
     "has_no_date_at_all": false,
@@ -539,13 +595,13 @@
     "recheck_executable_here": true,
     "recheck_horizon_basis": "declared",
     "recheck_horizon_days": 7,
-    "recheck_state": "CURRENT",
-    "stale_beyond_recheck_horizon": false
+    "recheck_state": "PAST_HORIZON",
+    "stale_beyond_recheck_horizon": true
    },
    {
     "action": "CHEAP_PROBE",
     "age_basis": "evidence_as_of_utc",
-    "claim_age_days": 18.84,
+    "claim_age_days": 29.76,
     "evidence_as_of_utc": "2026-09-08",
     "evidence_status": "DECOMPOSED, not characterised. Funding conversion modelling on the 75% figure alone would be the exact mistake RC1 was designed to prevent.",
     "has_no_date_at_all": false,
@@ -560,47 +616,36 @@
     "stale_beyond_recheck_horizon": false
    }
   ],
-  "newly_publishing": [
-   {
-    "days_since_first_success": 19.3,
-    "first_success_utc": "2026-09-07T13:06:37+00:00",
-    "n_distinct_blobs": 14,
-    "previously_recorded_absent_as": {
-     "SOURCE_NOT_YET_PUBLISHED": 40
-    },
-    "source": "injuries",
-    "why_it_matters": "this source was recorded absent and is now publishing; anything that treated it as unavailable may be acting on a stale fact"
-   }
-  ],
+  "newly_publishing": [],
   "prospective": {
    "blocks": [
-    "DET_BUF_2026W2"
+    "DET_BUF_2026W2",
+    "PIT_CLE_2026W4_SHOWDOWN"
    ],
    "by_status": {
-    "AWAITING_OUTCOME": 1,
+    "AWAITING_OUTCOME": 2,
     "GRADED": 1
    },
    "captured_game_outcomes": 1,
-   "ledger_rows": 2,
+   "ledger_rows": 3,
    "n_graded_blocks": 1,
    "note": "the calibration gate is a GATE and its floor is 300 graded units, rising to 500 below 0.2 implied probability. These counts are blocks and games, not graded units, and they are not the same thing -- do not read one for the other."
   },
   "suite": {
-   "artifact": "nfl/research/suite_attribution/SUITE_DIFF_p6_p7.json",
+   "artifact": "nfl/research/suite_attribution/SUITE_DIFF_p9_discovery.json",
    "counts_by_classification": {
-    "NEWLY_INTRODUCED": 1,
-    "PRE_EXISTING": 132,
-    "RESOLVED_SINCE_BASELINE": 1
+    "PRE_EXISTING": 133,
+    "RESOLVED_SINCE_BASELINE": 3
    },
    "measured_at_commit": "WORKING_TREE",
-   "n_newly_introduced": 1,
+   "n_newly_introduced": 0,
    "totals": {
     "blocked_functions": 23,
-    "checks": 10406,
+    "checks": 10632,
     "failing_checks": 61,
-    "modules": 181,
+    "modules": 184,
     "raised": 21,
-    "test_functions": 1963,
+    "test_functions": 1997,
     "zero_check_functions": 0
    }
   },

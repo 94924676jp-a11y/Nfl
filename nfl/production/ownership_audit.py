@@ -659,6 +659,20 @@ DISPOSITIONS[('weather_v1', 'nfl/sim/football_points.py')] = {
                  "weather is not among them."),
     'read_on': '2026-10-02',
 }
+# nfl/postgame/showdown_atl_no_coherence.py (ATL@NO postgame item 5, added 2026-10-06). Read
+# 2026-10-07 while classifying the certified-suite backlog: its one application-candidate hit
+# left the audit at OWNERSHIP_AUDIT_UNREVIEWED_SITE, which is the regression this entry repairs.
+DISPOSITIONS[('score_state_v1', 'nfl/postgame/showdown_atl_no_coherence.py')] = {
+    'verdict': 'HOMONYM_NOT_APPLICATION',
+    'evidence': ("`wp` at :216 is WORLD POINTS -- `np.asarray(d['world_points']['points'])`, each "
+                 "club's final score in every sealed simulated world of the SHOWDOWN_*_DRAWS.json "
+                 "it reads -- and its only other uses (:235, :236, :239) correlate that column with "
+                 "the same worlds' offensive DK points and kicker DK points. It is not a win "
+                 "probability and no game-state value is read. The module is POSTGAME_DIAGNOSIS "
+                 "(docstring :5-:6): it writes ATL_NO_COHERENCE_REMEASURE.json and changes no "
+                 "simulator input and no forecast."),
+    'read_on': '2026-10-07',
+}
 
 def audit() -> Outcome:
     files = _files()

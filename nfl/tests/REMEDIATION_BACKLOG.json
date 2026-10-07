@@ -1,0 +1,3239 @@
+{
+ "ARTIFACT": "NFL_SUITE_REMEDIATION_BACKLOG",
+ "source_certificate": "nfl/tests/certificates/SUITE_CERTIFICATE_20261007T083657Z-18364.json",
+ "certificate_head": "a77fa3e47555630e3f57ba108265fd2a15e8405e",
+ "measured_in": "/home/user/nfl, branch claude/nfl-greenfield-architecture-stsxmk, python3.12, each module run alone via run_suite.py --modules <stem> with --watch on the ten mutated paths; tracked outputs restored to HEAD bytes between modules",
+ "measured_at_heads": {
+  "before": "d3634c1f",
+  "after": "16fd3ae6 at start of the final pass, 5ba94c83 by its end"
+ },
+ "ENVIRONMENT_MOVED_DURING_THE_RUN": "other agents committed 7cdc2b5d, d3a0f5d0, c3d37d77, 0a81c60b, 16fd3ae6 between the before and after passes. None touched a file this backlog modified, but 0a81c60b added a fifth 2026 pbp vintage (nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz), new vintage blobs and a populated ignored nfl_vintage/raw, and rebuilt derived caches. Every before->after change NOT listed under fixes_applied is attributable to that, not to this work (test_vintage_selector now passes; test_showdown_family and test_r5_active_pool got worse).",
+ "CLASSES": {
+  "a": "genuine defect (model, code, test-contract drift, or a ratchet that rose)",
+  "b": "missing external data",
+  "c": "deployment / governance state",
+  "d": "generated-file / environment"
+ },
+ "RULES_KEPT": [
+  "no ratchet or baseline lowered",
+  "no tolerance raised",
+  "no test deleted, skipped or quarantined",
+  "no check weakened; test edits are confined to redirecting tracked-file WRITES to temp dirs",
+  "no production projection, simulation, lineup or upload output changed",
+  "no protected file edited",
+  "no workflow edited",
+  "no data fabricated or rehydrated"
+ ],
+ "population": {
+  "certificate_FAIL_modules": 58,
+  "certificate_raise_only_modules": 9,
+  "total": 67,
+  "note": "the certificate also listed 4 OWN_PROCESS modules as failing; each reported 0 failing checks and certify_suite.failing_modules() already excludes them (certify_suite.py:143-150)."
+ },
+ "counts_by_class": {
+  "all_67": {
+   "a": 37,
+   "b": 9,
+   "c": 10,
+   "d": 11
+  },
+  "status_before": {
+   "a": {
+    "failing": 37,
+    "passing": 0
+   },
+   "b": {
+    "failing": 9,
+    "passing": 0
+   },
+   "c": {
+    "failing": 10,
+    "passing": 0
+   },
+   "d": {
+    "failing": 8,
+    "passing": 3
+   }
+  },
+  "status_after": {
+   "a": {
+    "failing": 34,
+    "passing": 3
+   },
+   "b": {
+    "failing": 8,
+    "passing": 1
+   },
+   "c": {
+    "failing": 10,
+    "passing": 0
+   },
+   "d": {
+    "failing": 4,
+    "passing": 7
+   }
+  }
+ },
+ "rows": [
+  {
+   "module": "nfl/tests/test_agent_state.py",
+   "class": "d",
+   "subclass": "GENERATED_FILE_STALE",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 9,
+    "checks_ok": 36,
+    "checks_failing": 2
+   },
+   "failing_checks": [
+    "it names the current HEAD  d3634c1f"
+   ],
+   "raised_functions": [],
+   "root_cause": "nfl/HANDOFF.md named an older HEAD. A file cannot contain the hash of the commit that contains it, so the \"names the current HEAD\" check fails on every committed tree by construction.",
+   "evidence": "nfl/tests/test_agent_state.py:176-177 (live head_short in HANDOFF.md); generator nfl/tools/agent_state.py --write",
+   "fixable_locally": true,
+   "fix_applied": "Regenerated nfl/AGENT_STATE.json + nfl/HANDOFF.md with python3.12 nfl/tools/agent_state.py --write; the module passes in this working tree.",
+   "residual": "Will fail again as soon as the regenerated file is committed (by construction). PROPOSAL for owner/governance (test NOT edited): accept HEAD or HEAD~1 when every path HEAD changes is a generated file (HANDOFF.md, AGENT_STATE.json, SYSTEM_STATE.json, CURRENT_STATE.md), or have HANDOFF.md record \"generated at parent <sha>\" and assert that parent == HEAD~1 and HEAD touches only generated files.",
+   "residual_owner": "owner / governance (test semantics)",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 38,
+    "failing": 1,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 38,
+    "failing": 0,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [],
+   "status_before": "FAIL",
+   "status_after": "PASS"
+  },
+  {
+   "module": "nfl/tests/test_audit_migration.py",
+   "class": "b",
+   "subclass": "MISSING_RAW_BLOB",
+   "certified_run": {
+    "result": "OK",
+    "n_fn": 10,
+    "checks_ok": 43,
+    "checks_failing": 0
+   },
+   "failing_checks": [],
+   "raised_functions": [
+    "test_shared_conflicts_differ_only_in_declared_attribution",
+    "test_the_conflict_set_is_unchanged_except_for_the_out_correction"
+   ],
+   "root_cause": "nfl/vintage/weekly_rosters.197453cb51cb7383.raw.csv.gz is absent: never committed (git log --all empty) and nfl/vintage holds only the .reduced.csv.gz for that capture (manifest capture_id 20260922T124141Z, durability reduce). nfl/production/universe/player_universe.build(2026, 2, \"2026_02_CAR_ATL\", \"2026-09-22T23:00:00Z\") opens the raw file.",
+   "evidence": "RAISED x2 FileNotFoundError via nfl/tests/test_dossier_migration.py:53 fixture()",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Needs the raw weekly_rosters capture 197453cb51cb7383 (2,582,763 bytes, captured 2026-09-22T12:41Z) from the capture-prod raw store / networked agent, placed at nfl/vintage/weekly_rosters.197453cb51cb7383.raw.csv.gz.",
+   "residual_owner": "networked agent (capture-prod raw store)",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 43,
+    "failing": 0,
+    "raised": 2,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 43,
+    "failing": 0,
+    "raised": 2,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_availability_semantics.py",
+   "class": "b",
+   "subclass": "MISSING_RAW_BLOB",
+   "certified_run": {
+    "result": "OK",
+    "n_fn": 13,
+    "checks_ok": 56,
+    "checks_failing": 0
+   },
+   "failing_checks": [],
+   "raised_functions": [
+    "test_even_a_complete_board_does_not_produce_active",
+    "test_every_availability_change_is_enumerated",
+    "test_the_grade_separates_complete_from_partial"
+   ],
+   "root_cause": "nfl/vintage/weekly_rosters.197453cb51cb7383.raw.csv.gz is absent: never committed (git log --all empty) and nfl/vintage holds only the .reduced.csv.gz for that capture (manifest capture_id 20260922T124141Z, durability reduce). nfl/production/universe/player_universe.build(2026, 2, \"2026_02_CAR_ATL\", \"2026-09-22T23:00:00Z\") opens the raw file.",
+   "evidence": "RAISED x3 FileNotFoundError",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Same blob as test_audit_migration.",
+   "residual_owner": "networked agent",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 56,
+    "failing": 0,
+    "raised": 3,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 56,
+    "failing": 0,
+    "raised": 3,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_c1_denominator.py",
+   "class": "a",
+   "subclass": "FROZEN_IDENTITY_BROKEN",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 7,
+    "checks_ok": 24,
+    "checks_failing": 1
+   },
+   "failing_checks": [
+    "so the sealed Q9 candidate identity still reproduces  82c8b52699bbeb00"
+   ],
+   "raised_functions": [],
+   "root_cause": "nfl/production/nonqb/layers.py no longer hashes to the Q9 freeze: Q9_PROSPECTIVE_FREEZE.json records 481f005f682cd721 = layers.py at 8e586509 (2026-09-11). First broken by 45f0ff4c (2026-09-16), which also added a third governance='HOLD_TENTATIVE'; then 16d3c453, db5bdb22, 88012258, 638af4f6, f9666056, 15318ff6 (now f984354f2a31d585).",
+   "evidence": "nfl/tests/test_c1_denominator.py:100-125 (sealed Q9 candidate identity 82c8b52699bbeb00 no longer reproduces)",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Owner decision: either revert layers.py to the frozen 8e586509 bytes (changes production behaviour -- not allowed here) or declare a new Q9 freeze identity. Same root cause as test_governance_transport, test_p6_false_greens FG8 and test_q9_live_feature_builder candidate drift.",
+   "residual_owner": "owner (Q9 freeze)",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 25,
+    "failing": 1,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 25,
+    "failing": 1,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "so the sealed Q9 candidate identity still reproduces  82c8b52699bbeb00"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_canonical_state.py",
+   "class": "b",
+   "subclass": "MISSING_RAW_BLOB",
+   "certified_run": {
+    "result": "OK",
+    "n_fn": 18,
+    "checks_ok": 29,
+    "checks_failing": 0
+   },
+   "failing_checks": [],
+   "raised_functions": [
+    "test_a_game_id_that_names_no_game_is_refused",
+    "test_availability_is_unknown_when_no_inactive_list_is_given",
+    "test_every_universe_key_is_accounted_for",
+    "test_field_by_field_equivalence",
+    "test_inactive_handling_is_equivalent",
+    "test_no_sportsbook_field_is_read",
+    "test_offensive_and_special_teams_depth_stay_separate",
+    "test_the_artifact_is_replayable",
+    "test_the_content_hash_is_stable_and_sensitive",
+    "test_the_fixture_is_stated_honestly",
+    "test_the_state_carries_its_identity",
+    "test_unavailable_never_becomes_zero"
+   ],
+   "root_cause": "nfl/vintage/weekly_rosters.197453cb51cb7383.raw.csv.gz is absent: never committed (git log --all empty) and nfl/vintage holds only the .reduced.csv.gz for that capture (manifest capture_id 20260922T124141Z, durability reduce). nfl/production/universe/player_universe.build(2026, 2, \"2026_02_CAR_ATL\", \"2026-09-22T23:00:00Z\") opens the raw file.",
+   "evidence": "RAISED x12 FileNotFoundError",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Same blob as test_audit_migration.",
+   "residual_owner": "networked agent",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 29,
+    "failing": 0,
+    "raised": 12,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 29,
+    "failing": 0,
+    "raised": 12,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_capture_deployment_integrity.py",
+   "class": "c",
+   "subclass": "CAPTURE_RELEASE_NOT_APPROVED",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 5,
+    "checks_ok": 19,
+    "checks_failing": 2
+   },
+   "failing_checks": [
+    "the running surface matches the validated contract  {\"verdict\": \"SURFACE_DIFFERS\", \"running_capture_code_sha\": \"2a59c19e4c87ef08fa69dd8618b0963c6e4a13fc91ee03d8cc774dd2a7c9750a\", \"validated_capture_code_sha\": \"8094370a1878c8a2c988b58324b42c056daec18610",
+    "the branch the scheduler checks out (origin/capture-prod) runs the VALIDATED capture implementation  CAPTURE_DEPLOYMENT_DRIFT: 6 validated capture module(s) do not exist in the running tree: ['nfl/capture/coverage.py', 'nfl/capture/evidence_layers.py', 'nfl/capture/payload_contract.py', 'nfl/capture/persisted_provenance.py', 'nfl/capture/registry.py', 'nfl/tools/capture_vintage.py']. This is not o"
+   ],
+   "raised_functions": [],
+   "root_cause": "The running capture surface hashes to 2a59c19e4c87ef08 while the approved release CAPREL-361a020a66c673b8 validated 8094370a1878c8a2 (15318ff6 changed nfl/capture/* under Rule 1 and its own message says the mismatch persists \"until a new release is approved\"). Separately origin/capture-prod is not fetched here, so the six validated capture modules read as missing from the running tree.",
+   "evidence": "nfl/capture/APPROVED_RELEASE.json; nfl/tools/capture_release.py; refs/remotes/origin/capture-prod does not exist locally (git branch -a lists only main and the feature branch); origin/main is f2b89b66 while the remote reports 478a6655. Needs git fetch origin '+refs/heads/*:refs/remotes/origin/*' -- network, so not runnable here.",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Owner approves a new capture release for the current surface (capture_release.py), then deploy it to capture-prod; then fetch capture-prod locally.",
+   "residual_owner": "owner (release approval) + networked agent (deploy/fetch)",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 21,
+    "failing": 2,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 21,
+    "failing": 2,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "the running surface matches the validated contract  {\"verdict\": \"SURFACE_DIFFERS\", \"running_capture_code_sha\": \"2a59c19e4c87ef08fa69dd8618b0963c6e4a13fc91ee03d8cc774dd2a7c9750a\", \"validated_capture_code_sha\": \"8094370a1878c8a2c988b58324b42c056daec18610",
+    "the branch the scheduler checks out (origin/capture-prod) runs the VALIDATED capture implementation  CAPTURE_DEPLOYMENT_DRIFT: 6 validated capture module(s) do not exist in the running tree: ['nfl/capture/coverage.py', 'nfl/capture/evidence_layers.py', 'nfl/capture/payload_contract.py', 'nfl/capture/persisted_provenance.py', 'nfl/capture/registry.py', 'nfl/tools/capture_vintage.py']. This is not o"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_capture_obligations.py",
+   "class": "a",
+   "subclass": "MIXED",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 21,
+    "checks_ok": 101,
+    "checks_failing": 4
+   },
+   "failing_checks": [
+    "with exactly 48 orphans, the number WS13 counted independently  51",
+    "and its game-anchored rows are reported as uncredited evidence  20",
+    "and not one reads as a content mismatch  ['PERSISTED_CONTENT_SHA256_MISMATCH', 'PERSISTED_DIGEST_ABSENT_HISTORICAL', 'RAW_ARTIFACT_MISSING_ON_DISK', 'SOURCE_HAS_NO_ROWS_YET']",
+    "the T-90 workflow carries cron entries  18"
+   ],
+   "raised_functions": [],
+   "root_cause": "Four independent causes: (1) orphan blobs 48->51: nfl/vintage/SYNC_PROVENANCE.jsonl (a log written by nfl/tools/sync_captures.py into the blob directory, 2026-10-02) plus dk_entries.2c82fe5560677f56.csv.gz and dk_salaries_early.35f38b43e29d0e89.csv.gz (2026-09-27) match check_retention STORES[\"vintage\"].glob with no manifest row naming them; (2) 4 pbp rows read PERSISTED_CONTENT_SHA256_MISMATCH although the bytes are intact: their sha256_is_of is \"the bytes as served, before any parse\" (the .csv.gz file itself; sha of the file = b69f55a1..., 2f135887..., 23370d5d...) and nfl/capture/coverage.py:~276 hashes read_blob() output, which DECOMPRESSES; (3) n_uncredited_game_anchored 18->20 from new captures (data drift against the D20 record); (4) nfl-t90.yml now carries 18 cron entries, the test pins 16 (workflow rolled weekly).",
+   "evidence": "nfl/tests/test_capture_obligations.py:152,233,353,547; nfl/capture/coverage.py:225-286; nfl/tools/check_retention.py STORES",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "(1) move SYNC_PROVENANCE.jsonl out of nfl/vintage or exclude it from the retention glob, and give the dk_* blobs manifest rows (capture code; release-gated). (2) coverage.py must hash the stored file bytes when sha256_is_of names the served bytes (capture surface edit -> needs a new capture release). (3)/(4) re-adjudicate the D20 count and the cron count with the owner of the T-90 schedule.",
+   "residual_owner": "capture-surface owner (release-gated) + owner (D20, T-90 schedule)",
+   "per_check_class": {
+    "orphans 48": "a",
+    "uncredited 18": "c",
+    "content mismatch": "a",
+    "cron entries 16": "c"
+   },
+   "this_tree_before": {
+    "checks": 105,
+    "failing": 4,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 105,
+    "failing": 4,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "with exactly 48 orphans, the number WS13 counted independently  51",
+    "and its game-anchored rows are reported as uncredited evidence  20",
+    "and not one reads as a content mismatch  ['PERSISTED_CONTENT_SHA256_MISMATCH', 'PERSISTED_DIGEST_ABSENT_HISTORICAL', 'RAW_ARTIFACT_MISSING_ON_DISK', 'SOURCE_HAS_NO_ROWS_YET']",
+    "the T-90 workflow carries cron entries  18"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_capture_prod_deployment.py",
+   "class": "c",
+   "subclass": "CAPTURE_RELEASE_NOT_APPROVED",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 6,
+    "checks_ok": 42,
+    "checks_failing": 5
+   },
+   "failing_checks": [
+    "this tree matches the approved release  CAPTURE_EXECUTOR_SURFACE_MISMATCH the running capture surface hashes to 2a59c19e4c87ef08 but the approved release CAPREL-361a020a66c673b8 is 8094370a1878c",
+    "and says the commit does not resolve  CAPTURE_EXECUTOR_SURFACE_MISMATCH",
+    "a resolvable commit that does NOT descend REFUSES  CAPTURE_EXECUTOR_SURFACE_MISMATCH",
+    "but a DESCENDANT commit does not, because capture moves the tip  CAPTURE_EXECUTOR_SURFACE_MISMATCH",
+    "and the descent is stated in the evidence  None"
+   ],
+   "raised_functions": [],
+   "root_cause": "CAPTURE_EXECUTOR_SURFACE_MISMATCH: running capture surface 2a59c19e4c87ef08 vs approved CAPREL-361a020a66c673b8 (8094370a1878c8a2). Every descent/resolution check refuses on the surface mismatch first.",
+   "evidence": "nfl/tests/test_capture_prod_deployment.py; nfl/capture/APPROVED_RELEASE.json",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Same as test_capture_deployment_integrity: approve a release for the current surface.",
+   "residual_owner": "owner (release approval)",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 47,
+    "failing": 5,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 47,
+    "failing": 5,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "this tree matches the approved release  CAPTURE_EXECUTOR_SURFACE_MISMATCH the running capture surface hashes to 2a59c19e4c87ef08 but the approved release CAPREL-361a020a66c673b8 is 8094370a1878c",
+    "and says the commit does not resolve  CAPTURE_EXECUTOR_SURFACE_MISMATCH",
+    "a resolvable commit that does NOT descend REFUSES  CAPTURE_EXECUTOR_SURFACE_MISMATCH",
+    "but a DESCENDANT commit does not, because capture moves the tip  CAPTURE_EXECUTOR_SURFACE_MISMATCH",
+    "and the descent is stated in the evidence  None"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_completeness_ratchet.py",
+   "class": "a",
+   "subclass": "RATCHET_ROSE",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 4,
+    "checks_ok": 6,
+    "checks_failing": 3
+   },
+   "failing_checks": [
+    "FIXTURE_PINNED 37 <= 24: rose to 37; the audit measured 24. Route the new join through nfl/production/contracts/completeness.py, or lower the baseline if you removed one.",
+    "untested refusal codes 741 <= 511 (of 1354): rose to 741. A refusal path nothing exercises is an untested guarantee.",
+    "orphaned guard modules 20 <= 19: rose to 20. A module defining an assert_* guard that nothing imports is documentation. New ones: ['nfl/tools/projection_source.py']"
+   ],
+   "raised_functions": [],
+   "root_cause": "Three ratchets rose. FIXTURE_PINNED 24->37: 13 single-game modules added under PRODUCTION_TREES since the 2026-09-26 baseline: nfl/postgame/classic_week.py (2026W4), classic_week_report.py, standings_addendum.py, showdown_atl_no_coherence.py, showdown_atl_no_field_actual.py, showdown_atl_no_final.py, showdown_atl_no_portfolio_study.py, showdown_atl_no_postgame.py, showdown_atl_no_role_audit.py, showdown_dupe_portfolio_study.py, showdown_field_loso.py, nfl/market/atl_no_prop_shadow.py (all 2026-10-04..06). UNTESTED_REFUSAL_CODES 511->741 of 1354 (230 refusal codes added with no test naming them). ORPHANED_GUARD_MODULES 19->20: nfl/tools/projection_source.py defines assert_* guards no non-test module imports.",
+   "evidence": "nfl/tests/test_completeness_ratchet.py:36-62; nfl/tools/cross_layer_audit.py relation_counts/untested_refusal_codes",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Not small: move the single-game postgame/market scripts under nfl/research/ (outside PRODUCTION_TREES) or parameterise them by game id; add tests naming the 230 new refusal codes; import projection_source guards from the stage that consumes the ledger. Baselines NOT raised.",
+   "residual_owner": "authors of the 2026-10-04..06 postgame work",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 9,
+    "failing": 3,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 9,
+    "failing": 3,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "FIXTURE_PINNED 37 <= 24: rose to 37; the audit measured 24. Route the new join through nfl/production/contracts/completeness.py, or lower the baseline if you removed one.",
+    "untested refusal codes 747 <= 511 (of 1365): rose to 747. A refusal path nothing exercises is an untested guarantee.",
+    "orphaned guard modules 20 <= 19: rose to 20. A module defining an assert_* guard that nothing imports is documentation. New ones: ['nfl/tools/projection_source.py']"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_conservation.py",
+   "class": "a",
+   "subclass": "CORPUS_CONTAINS_NON_BOARD_DRAWS",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 21,
+    "checks_ok": 219,
+    "checks_failing": 3
+   },
+   "failing_checks": [
+    "sealed runs were found -- a scan over zero boards is not a clean scan  114",
+    "fced077d0db6ab41 produced a state the fence cannot score  CONSERVATION_RUN_INCOMPLETE",
+    "post_inactives_V1_CANDIDATE_R9_W1P_GA_OFFICIAL produced a state the fence cannot score  CONSERVATION_RUN_INCOMPLETE"
+   ],
+   "raised_functions": [],
+   "root_cause": "nfl/research/live/2026_02_DET_BUF/post_inactives_V1_CANDIDATE/fced077d0db6ab41 (a REFUSED run: player_draws.npz + run_status.json, no board.json/forecast_artifact.json) and nfl/research/live/2026_02_DET_BUF/post_inactives_V1_CANDIDATE_R9_W1P_GA_OFFICIAL (a derived \"Skyler Bell zeroed\" ARTIFACT.json + player_draws.npz, which its own ARTIFACT.json says is NOT a board) were committed in 1ad9d57e (2026-09-17), after the corpus fences froze at 112 runs (91db769d, 2026-09-16). sealed_index.live_draw_files() finds them by content (any player_draws.npz) while sealed_index.discover_all() does not (no seal marker), so the fences count 114 runs and then cannot load board.json.",
+   "evidence": "nfl/tests/test_conservation.py:162-163 (SEALED runs 112), 692-712; nfl/research/sealed_index.py:229-255",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Decide whether the two DET_BUF directories are sealed boards. If not: move them out of nfl/research/live or make live_draw_files() require the seal marker discover_all() uses (one discovery rule). If they are: they need board.json/forecast_artifact.json and an owner-approved re-freeze. Fixes 6 modules at once.",
+   "residual_owner": "author of 1ad9d57e / owner of the corpus fences",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 222,
+    "failing": 3,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 222,
+    "failing": 3,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "sealed runs were found -- a scan over zero boards is not a clean scan  114",
+    "fced077d0db6ab41 produced a state the fence cannot score  CONSERVATION_RUN_INCOMPLETE",
+    "post_inactives_V1_CANDIDATE_R9_W1P_GA_OFFICIAL produced a state the fence cannot score  CONSERVATION_RUN_INCOMPLETE"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_detbuf_conservation.py",
+   "class": "a",
+   "subclass": "MODEL_DEFECT",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 2,
+    "checks_ok": 10,
+    "checks_failing": 4
+   },
+   "failing_checks": [
+    "BUF 5  passing yards == receiving yards  4/8000, worst 1.29e+03",
+    "BUF 6  passing TD == receiving TD  1897/8000",
+    "DET 5  passing yards == receiving yards  3/8000, worst 6.24e+02",
+    "DET 6  passing TD == receiving TD  1926/8000"
+   ],
+   "raised_functions": [],
+   "root_cause": "Sealed DET_BUF boards break the passing==receiving identity: passing TD != receiving TD in 1897/8000 (BUF) and 1926/8000 (DET) draws; yards differ in 4 and 3 draws (worst 1.29e+03).",
+   "evidence": "nfl/tests/test_detbuf_conservation.py",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Simulation coupling defect in sealed artifacts; repair belongs to the engine owner and cannot alter sealed boards. Same family as test_product_orchestration (shared_pass halt).",
+   "residual_owner": "engine owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 14,
+    "failing": 4,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 14,
+    "failing": 4,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "BUF 5  passing yards == receiving yards  4/8000, worst 1.29e+03",
+    "BUF 6  passing TD == receiving TD  1897/8000",
+    "DET 5  passing yards == receiving yards  3/8000, worst 6.24e+02",
+    "DET 6  passing TD == receiving TD  1926/8000"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_determinism_proof.py",
+   "class": "a",
+   "subclass": "RULE_VIOLATION_NON_MODEL",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 25,
+    "checks_ok": 57,
+    "checks_failing": 1
+   },
+   "failing_checks": [
+    "no module outside nfl/identity/ CALLS git for working-tree state -- ['sportsplatform/governance/commit_claim.py']"
+   ],
+   "raised_functions": [],
+   "root_cause": "sportsplatform/governance/commit_claim.py:157 runs git status --porcelain itself (verify(): working-tree report). Rule 1 says only nfl/identity/** may; agent_state/system_state were repaired by routing through nfl.identity.code_identity, commit_claim never was.",
+   "evidence": "nfl/tests/test_determinism_proof.py:556-566; sportsplatform/governance/commit_claim.py:154-160",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Not a one-liner: commit_claim takes an arbitrary repo= argument and lives in the platform layer, so calling nfl.identity would invert the layering. Remedy: move a repo-parameterised porcelain reader into the identity subtree (or a platform identity module the rule declares) and call it from commit_claim.",
+   "residual_owner": "governance module owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 58,
+    "failing": 1,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 58,
+    "failing": 1,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "no module outside nfl/identity/ CALLS git for working-tree state -- ['sportsplatform/governance/commit_claim.py']"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_discovery.py",
+   "class": "d",
+   "subclass": "GENERATED_FILE_STALE",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 15,
+    "checks_ok": 97,
+    "checks_failing": 3
+   },
+   "failing_checks": [
+    "the detected candidate subjects match a live run  regenerate: python3.12 nfl/tools/discovery.py --write",
+    "every detected candidate subject is either queued or already named in the queue  ['GAP-DEPTH-CHART-PIT']",
+    "so the detector fires on it  []"
+   ],
+   "raised_functions": [],
+   "root_cause": "nfl/DISCOVERY.json was stale. Two further checks are not generated-file issues: GAP-DEPTH-CHART-PIT is detected and not named in WORK_QUEUE.md (a hand-written decision file), and \"the detector fires on injuries\" depends on the wall clock: injuries first succeeded more than NEWLY_PUBLISHING_DAYS ago, so nfl/tools/discovery.py newly_publishing() correctly stops firing.",
+   "evidence": "nfl/tests/test_discovery.py:80-98; nfl/tools/discovery.py:158-183",
+   "fixable_locally": true,
+   "fix_applied": "Regenerated nfl/DISCOVERY.json with python3.12 nfl/tools/discovery.py --write; \"the detected candidate subjects match a live run\" now passes.",
+   "residual": "(c) queue GAP-DEPTH-CHART-PIT in WORK_QUEUE.md (decision, owner). (d) the injuries assertion is clock-dependent: pin a reference clock in the test (owner decision; test not edited).",
+   "residual_owner": "owner (queue) + test owner (clock)",
+   "per_check_class": {
+    "match live run": "d",
+    "queued": "c",
+    "detector fires": "d"
+   },
+   "this_tree_before": {
+    "checks": 100,
+    "failing": 3,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 100,
+    "failing": 2,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "every detected candidate subject is either queued or already named in the queue  ['GAP-DEPTH-CHART-PIT']",
+    "so the detector fires on it  []"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_discovery_boundary.py",
+   "class": "a",
+   "subclass": "RATCHET_ROSE",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 5,
+    "checks_ok": 8,
+    "checks_failing": 1
+   },
+   "failing_checks": [
+    "total discovery primitives have not increased  45 against a baseline of 42"
+   ],
+   "raised_functions": [],
+   "root_cause": "Discovery primitives 42->45. The three new hits (all 2026-09-28): nfl/production/readiness.py:202 (max_by_mtime: stage age from st_mtime) and nfl/production/run_archive.py:251, :304 (iterdir over the run archive). None globs the vintage store; they read the product's own artifacts.",
+   "evidence": "nfl/tests/test_discovery_boundary.py:56-57; nfl/production/discovery_audit.scan()",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Route run_archive through its CURRENT.json/index instead of iterdir, and take stage age from a declared artifact cutoff instead of mtime (readiness already labels mtime a FALLBACK); otherwise an explicit owner decision to admit them. Baseline NOT raised.",
+   "residual_owner": "author of readiness/run_archive (2026-09-28)",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 9,
+    "failing": 1,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 9,
+    "failing": 1,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "total discovery primitives have not increased  45 against a baseline of 42"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_dossier_migration.py",
+   "class": "b",
+   "subclass": "MISSING_RAW_BLOB",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 11,
+    "checks_ok": 13,
+    "checks_failing": 2
+   },
+   "failing_checks": [
+    "the governed state builds: SOURCE_BLOB_MISSING",
+    "and dossiers build from it: UNIVERSE_EMPTY"
+   ],
+   "raised_functions": [
+    "test_equivalence_field_by_field",
+    "test_missing_optional_evidence_reduces_confidence_without_inventing",
+    "test_no_room_derivation_remains_in_the_dossier",
+    "test_not_on_inactive_list_is_not_active_anywhere",
+    "test_provenance_is_preserved_not_flattened",
+    "test_the_canonical_state_path_also_builds",
+    "test_the_two_entry_points_agree",
+    "test_unavailable_is_not_zero",
+    "test_unknown_starter_is_not_false",
+    "test_whole_dossier_hashes_match"
+   ],
+   "root_cause": "nfl/vintage/weekly_rosters.197453cb51cb7383.raw.csv.gz is absent: never committed (git log --all empty) and nfl/vintage holds only the .reduced.csv.gz for that capture (manifest capture_id 20260922T124141Z, durability reduce). nfl/production/universe/player_universe.build(2026, 2, \"2026_02_CAR_ATL\", \"2026-09-22T23:00:00Z\") opens the raw file. The governed-state path reports SOURCE_BLOB_MISSING and then UNIVERSE_EMPTY for the same reason; the TypeError/AttributeError raises are downstream of the None fixture.",
+   "evidence": "RAISED x10; FAIL \"the governed state builds: SOURCE_BLOB_MISSING\"",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Same blob as test_audit_migration.",
+   "residual_owner": "networked agent",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 15,
+    "failing": 2,
+    "raised": 10,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 15,
+    "failing": 2,
+    "raised": 10,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "the governed state builds: SOURCE_BLOB_MISSING",
+    "and dossiers build from it: UNIVERSE_EMPTY"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_draw_coherence.py",
+   "class": "a",
+   "subclass": "MIXED",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 11,
+    "checks_ok": 100,
+    "checks_failing": 1
+   },
+   "failing_checks": [
+    "the engine no longer CALLS the incumbent credit (the name still appears, in the replacement's docstring, naming what it replaces)"
+   ],
+   "raised_functions": [
+    "test_every_sealed_artifact_is_rescanned_against_the_frozen_baseline",
+    "test_negative_yardage_is_left_alone_and_the_reason_is_measured",
+    "test_the_incumbent_scheme_produces_the_impossible_states_and_the_new_one_does_not"
+   ],
+   "root_cause": "nfl/research/live/2026_02_DET_BUF/post_inactives_V1_CANDIDATE/fced077d0db6ab41 (a REFUSED run: player_draws.npz + run_status.json, no board.json/forecast_artifact.json) and nfl/research/live/2026_02_DET_BUF/post_inactives_V1_CANDIDATE_R9_W1P_GA_OFFICIAL (a derived \"Skyler Bell zeroed\" ARTIFACT.json + player_draws.npz, which its own ARTIFACT.json says is NOT a board) were committed in 1ad9d57e (2026-09-17), after the corpus fences froze at 112 runs (91db769d, 2026-09-16). sealed_index.live_draw_files() finds them by content (any player_draws.npz) while sealed_index.discover_all() does not (no seal marker), so the fences count 114 runs and then cannot load board.json. Separately, the check \"the engine no longer CALLS the incumbent credit\" is a source-TEXT match for 'cr = credit_passing_line(A, IN' while nfl/production/nonqb/football_engine.py:1871 reads 'cr = credit_passing_line(\\n A, IN, ...' since 638af4f6. The property holds (no SP.credit_to_passers call).",
+   "evidence": "nfl/tests/test_draw_coherence.py:820-824; nfl/production/nonqb/football_engine.py:1871",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "DET_BUF corpus decision (see test_conservation). PROPOSAL (test not edited): make check 820 an AST check (a Call to credit_passing_line exists; no Call to SP.credit_to_passers) -- same property, no formatting dependence. Reformatting production code to satisfy a string match was rejected.",
+   "residual_owner": "corpus owner + test owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 101,
+    "failing": 1,
+    "raised": 3,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 101,
+    "failing": 1,
+    "raised": 3,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "the engine no longer CALLS the incumbent credit (the name still appears, in the replacement's docstring, naming what it replaces)"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_eligibility_gate.py",
+   "class": "b",
+   "subclass": "MISSING_RAW_STORE",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 24,
+    "checks_ok": 30,
+    "checks_failing": 1
+   },
+   "failing_checks": [
+    "the pre-kickoff week-1 roster capture is retained  /home/user/nfl/nfl_vintage/raw/weekly_rosters.cef497eaeddef07b.csv"
+   ],
+   "raised_functions": [
+    "test_a_determination_cannot_be_given_a_scenario_weight",
+    "test_a_player_the_snapshot_never_saw_is_refused",
+    "test_a_posthoc_roster_status_is_refused_not_used",
+    "test_choice_set_removes_the_determined_and_names_every_removal",
+    "test_equal_rank_disagreement_refuses",
+    "test_no_inactive_list_is_recorded_as_ignorance_not_as_nobody_out",
+    "test_positive_controls_every_remaining_eligibility_refusal_trips",
+    "test_scenarios_refuse_to_invent_a_weight",
+    "test_snapshot_is_audited_row_by_row",
+    "test_supplied_weights_build_discrete_worlds_that_sum_to_one",
+    "test_tonights_determined_ineligible_hold_zero_in_every_stored_draw",
+    "test_unresolved_is_not_ineligible"
+   ],
+   "root_cause": "nfl_vintage/ (the ephemeral raw store, .gitignore:7) does not exist in this checkout: the test hard-codes nfl_vintage/raw/weekly_rosters.bdab6ecee12d44a4.csv and .cef497eaeddef07b.csv. All 9 UNVALIDATED_CONTROL_NOT_EXECUTED detectors are this module's controls (eligibility_gate ZERO_OPPORTUNITY_*, CHOICE_SET_PLAYER_NOT_IN_SNAPSHOT, SCENARIO_*, ELIGIBILITY_AUTHORITY_CONFLICT, ELIGIBILITY_POSTHOC_STATUS) and never execute for the same reason.",
+   "evidence": "nfl/tests/test_eligibility_gate.py:48-56",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "bdab6ecee12d44a4 IS recoverable from the durable store: nfl/vintage/weekly_rosters.bdab6ecee12d44a4.raw.csv.gz decompresses to bytes whose sha256 is exactly bdab6ecee12d44a46d4913f81cb9f33f83f18422457a82f273970ae54df614f3 (the manifest sha256). NOT materialised here, because one check asserts the ephemeral store RETAINED the capture and rehydrating it would manufacture that. cef497eaeddef07b exists only as .reduced (status column dropped): needs the raw capture from the networked agent. Proposal: resolve raw blobs through nfl.capture.persisted_provenance.resolve_blob instead of the ephemeral path.",
+   "residual_owner": "networked agent (cef497) + test owner (resolver)",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 31,
+    "failing": 1,
+    "raised": 13,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 31,
+    "failing": 1,
+    "raised": 13,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "the pre-kickoff week-1 roster capture is retained  /home/user/nfl/nfl_vintage/raw/weekly_rosters.cef497eaeddef07b.csv"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_execution_lineage.py",
+   "class": "d",
+   "subclass": "REMOTE_REF_NOT_FETCHED",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 14,
+    "checks_ok": 51,
+    "checks_failing": 4
+   },
+   "failing_checks": [
+    "check_retention runs from more than one tree ['origin/main']",
+    "and one of them is capture-prod",
+    "no entry point missing from its own tree {'nfl-capture.yml': ['nfl/tools/capture_release.py', 'nfl/tools/capture_vintage.py', 'nfl/tools/check_retention.py'], 'nfl-t90.yml': ['nfl/tools/capture_release.py', 'nfl/tools/capture_vintage.py', 'nfl/tools/check_retention.py']}",
+    "origin/main matches the remote local f2b89b66c98e vs remote 478a66557fc3 -- run git fetch origin '+refs/heads/*:refs/remotes/origin/*'",
+    "origin/capture-prod has a closure 0"
+   ],
+   "raised_functions": [],
+   "root_cause": "refs/remotes/origin/capture-prod does not exist locally (git branch -a lists only main and the feature branch); origin/main is f2b89b66 while the remote reports 478a6655. Needs git fetch origin '+refs/heads/*:refs/remotes/origin/*' -- network, so not runnable here.",
+   "evidence": "FAIL origin/main matches the remote: local f2b89b66c98e vs remote 478a66557fc3; origin/capture-prod has a closure 0",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Networked agent runs the fetch; then re-run. Remaining failures, if any, are (c).",
+   "residual_owner": "networked agent",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 55,
+    "failing": 5,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 55,
+    "failing": 5,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "check_retention runs from more than one tree ['origin/main']",
+    "and one of them is capture-prod",
+    "no entry point missing from its own tree {'nfl-capture.yml': ['nfl/tools/capture_release.py', 'nfl/tools/capture_vintage.py', 'nfl/tools/check_retention.py'], 'nfl-t90.yml': ['nfl/tools/capture_release.py', 'nfl/tools/capture_vintage.py', 'nfl/tools/check_retention.py']}",
+    "origin/main matches the remote local f2b89b66c98e vs remote 478a66557fc3 -- run git fetch origin '+refs/heads/*:refs/remotes/origin/*'",
+    "origin/capture-prod has a closure 0"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_football_only_arm.py",
+   "class": "d",
+   "subclass": "GITIGNORED_DERIVED_INPUT_ABSENT",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 7,
+    "checks_ok": 2,
+    "checks_failing": 4
+   },
+   "failing_checks": [],
+   "raised_functions": [
+    "test_02_under_football_only_moving_every_line_by_7_and_7_leaves_every_player_k",
+    "test_03_control_under_the_incumbent_market_arm_the_same_perturbation_moves_the",
+    "test_04_kickers_are_identical_across_arms_the_kicking_layer_never_read_the_mar",
+    "test_06_the_draws_builder_draws_around_the_football_centre_with_the_football_r"
+   ],
+   "root_cause": "nfl/derived/SHOWDOWN_TONIGHT_ROLE_STATE.json does not exist (nfl/derived/ is gitignored, .gitignore:17). proj_v1.main() BLOCKS with V1_INPUT_ABSENT, the test swallows the ValueError path and then opens a projection file that was never written. No generator invocation is named for this file.",
+   "evidence": "nfl/tests/test_football_only_arm.py:31,95-110; reproduced: BLOCKED[V1_INPUT_ABSENT] role state missing",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Declare the generator (nfl/tools/role_state.py run for the tonight slate with OUT overridden) or build the role state into a temp dir inside the test. Not regenerated here: it is a production projection input.",
+   "residual_owner": "author of 7d3d0e90",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 6,
+    "failing": 4,
+    "raised": 5,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 6,
+    "failing": 4,
+    "raised": 5,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_full_slate_rehearsal.py",
+   "class": "a",
+   "subclass": "MIXED",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 7,
+    "checks_ok": 3,
+    "checks_failing": 2
+   },
+   "failing_checks": [
+    "every game seals  ['REFUSED', 'REFUSED', 'REFUSED', 'REFUSED', 'REFUSED', 'REFUSED', 'REFUSED', 'REFUSED', 'REFUSED', 'REFUSED', 'REFUSED', 'REFUSED', 'REFUSED', 'REFUSED', 'REFUSED', 'REFUSED']",
+    "and no game reports an unnamed failure  [[{'stage': 'feature_build', 'code': 'STAGE_DECLARED_UNIMPLEMENTED', 'category': 'OTHER_NAMED', 'detail': \"feature_build: the accepted research baseline 'prior-only, ordinal prefix cut' has no production implementation. Declared as debt rather than reported as a successful forecast.\"}, {'stage': 'qb_layer', 'code': 'INCOMPLETE_PLAYER_ACCOUNTING', 'category':"
+   ],
+   "raised_functions": [
+    "test_A_empty_artifact_is_refused",
+    "test_B_a_stage_cannot_claim_a_spec_and_produce_nothing",
+    "test_C_completeness_is_computed_not_asserted",
+    "test_E_unidentified_players_are_excluded_and_named"
+   ],
+   "root_cause": "(1) the fixture calls SL.roster(2026, 1) with no cut and production now raises ROSTER_CUT_REQUIRED (\"Pass written_at; do not fall back to a glob\") -- test lags a deliberate contract change; (2) every one of 16 games REFUSES: feature_build STAGE_DECLARED_UNIMPLEMENTED plus qb_layer/engine refusals -- the real state of the model.",
+   "evidence": "nfl/tests/test_full_slate_rehearsal.py:49,68",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Fixture must pass a written_at cut (test owner). The REFUSED seals are genuine model debt (feature_build has no production implementation).",
+   "residual_owner": "model owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 8,
+    "failing": 2,
+    "raised": 5,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 8,
+    "failing": 2,
+    "raised": 5,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "every game seals  ['REFUSED', 'REFUSED', 'REFUSED', 'REFUSED', 'REFUSED', 'REFUSED', 'REFUSED', 'REFUSED', 'REFUSED', 'REFUSED', 'REFUSED', 'REFUSED', 'REFUSED', 'REFUSED', 'REFUSED', 'REFUSED']",
+    "and no game reports an unnamed failure  [[{'stage': 'feature_build', 'code': 'STAGE_DECLARED_UNIMPLEMENTED', 'category': 'OTHER_NAMED', 'detail': \"feature_build: the accepted research baseline 'prior-only, ordinal prefix cut' has no production implementation. Declared as debt rather than reported as a successful forecast.\"}, {'stage': 'qb_layer', 'code': 'INCOMPLETE_PLAYER_ACCOUNTING', 'category':"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_fullslate_adjudication.py",
+   "class": "a",
+   "subclass": "SILENT_CONSTANT",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 14,
+    "checks_ok": 92,
+    "checks_failing": 1
+   },
+   "failing_checks": [
+    "no correlation coefficient from the report appears as a CODE literal in production, product or dfs  ['nfl/production/dependence.py:307=0.368', 'nfl/production/dependence.py:307=0.274', 'nfl/production/dependence.py:307=0.296', 'nfl/production/dependence.py:307=0.318', 'nfl/production/dependence.py:308=0.208', 'nfl/production/dependence.py:308=0.259']"
+   ],
+   "raised_functions": [],
+   "root_cause": "Correlation coefficients from the adjudication report appear as code literals at nfl/production/dependence.py:307-308 (0.368, 0.274, 0.296, 0.318, 0.208, 0.259).",
+   "evidence": "nfl/tests/test_fullslate_adjudication.py",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Production model code: load them from the declared artifact with provenance. Not changed here (would alter production dependence).",
+   "residual_owner": "model owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 93,
+    "failing": 1,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 93,
+    "failing": 1,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "no correlation coefficient from the report appears as a CODE literal in production, product or dfs  ['nfl/production/dependence.py:307=0.368', 'nfl/production/dependence.py:307=0.274', 'nfl/production/dependence.py:307=0.296', 'nfl/production/dependence.py:307=0.318', 'nfl/production/dependence.py:308=0.208', 'nfl/production/dependence.py:308=0.259']"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_gadget_rush.py",
+   "class": "a",
+   "subclass": "TEST_VINTAGE_SELECTION",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 2,
+    "checks_ok": 58,
+    "checks_failing": 1
+   },
+   "failing_checks": [
+    "BUF Greg Dortch is on the game roster :: PRACTICE_SQUAD"
+   ],
+   "raised_functions": [],
+   "root_cause": "BUF Greg Dortch takes gadget carries in the sealed board while the test grades him PRACTICE_SQUAD. The test builds roster classes from EVERY nfl/vintage/weekly_rosters.*raw.csv* in content-hash order, first row wins, not from the capture the engine used (comment says otherwise). Dortch is week-2 ACT in 8 raw captures and DEV in 3 (0a6374ac, 698183b8, 6ff9a498); which wins depends on which raw files exist locally.",
+   "evidence": "nfl/tests/test_gadget_rush.py:108-119,170-182",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Read the class from the roster capture recorded in the board's own manifest (cut-aware). Until then it cannot be told whether the board or the test is wrong.",
+   "residual_owner": "test owner / engine owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 59,
+    "failing": 1,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 59,
+    "failing": 1,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "BUF Greg Dortch is on the game roster :: PRACTICE_SQUAD"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_gate_ids.py",
+   "class": "a",
+   "subclass": "UNREVIEWED_OWNERSHIP_SITE",
+   "certified_run": {
+    "result": "OK",
+    "n_fn": 8,
+    "checks_ok": 25,
+    "checks_failing": 0
+   },
+   "failing_checks": [],
+   "raised_functions": [
+    "test_C_ownership_gate_matches_the_audit"
+   ],
+   "root_cause": "ownership_audit returned OWNERSHIP_AUDIT_UNREVIEWED_SITE for ('score_state_v1', 'nfl/postgame/showdown_atl_no_coherence.py'): the identifier `wp` at :216 matched the score-state family and no disposition existed, so evidence lacked single_adjustment_ownership_verified (KeyError).",
+   "evidence": "nfl/production/ownership_audit.py DISPOSITIONS; nfl/postgame/showdown_atl_no_coherence.py:216-239",
+   "fixable_locally": true,
+   "fix_applied": "Read the site and recorded a disposition in nfl/production/ownership_audit.py: HOMONYM_NOT_APPLICATION -- `wp` is world points (each club's final score per simulated world from SHOWDOWN_*_DRAWS.json), used only for postgame correlations; module is POSTGAME_DIAGNOSIS. Same pattern as the existing football_points.py `wp` disposition. Audit now BLOCKED[OWNERSHIP_AUDIT_NO_APPLICATIONS], the state the tests require.",
+   "residual": null,
+   "residual_owner": null,
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 25,
+    "failing": 0,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 28,
+    "failing": 0,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [],
+   "status_before": "FAIL",
+   "status_after": "PASS"
+  },
+  {
+   "module": "nfl/tests/test_gate_migration.py",
+   "class": "c",
+   "subclass": "PROTECTED_FILE_PROPOSAL_PENDING",
+   "certified_run": {
+    "result": "OK",
+    "n_fn": 15,
+    "checks_ok": 64,
+    "checks_failing": 0
+   },
+   "failing_checks": [],
+   "raised_functions": [
+    "test_end_to_end_changes_are_only_the_out_correction",
+    "test_refusal_states_are_preserved",
+    "test_the_gate_change_alone_changes_nothing"
+   ],
+   "root_cause": "nfl.production.review.gate has no PLAYER_REVIEW_NO_DOSSIERS: the patch is a recorded proposal (coordination/EVIDENCE/proposals/) because gate.py is PROTECTED. Two further raises are the missing raw blob.",
+   "evidence": "15318ff6 commit message; nfl/vintage/weekly_rosters.197453cb51cb7383.raw.csv.gz is absent: never committed (git log --all empty) and nfl/vintage holds only the .reduced.csv.gz for that capture (manifest capture_id 20260922T124141Z, durability reduce). nfl/production/universe/player_universe.build(2026, 2, \"2026_02_CAR_ATL\", \"2026-09-22T23:00:00Z\") opens the raw file.",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Owner applies the gate.py proposal; networked agent supplies weekly_rosters.197453cb51cb7383.raw.csv.gz.",
+   "residual_owner": "owner (protected gate.py) + networked agent",
+   "per_check_class": {
+    "PLAYER_REVIEW_NO_DOSSIERS": "c",
+    "raw blob": "b"
+   },
+   "this_tree_before": {
+    "checks": 64,
+    "failing": 0,
+    "raised": 3,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 64,
+    "failing": 0,
+    "raised": 3,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_governance_transport.py",
+   "class": "a",
+   "subclass": "FROZEN_IDENTITY_BROKEN",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 23,
+    "checks_ok": 73,
+    "checks_failing": 1
+   },
+   "failing_checks": [
+    "both TD layers declare HOLD_TENTATIVE  3"
+   ],
+   "raised_functions": [],
+   "root_cause": "nfl/production/nonqb/layers.py no longer hashes to the Q9 freeze: Q9_PROSPECTIVE_FREEZE.json records 481f005f682cd721 = layers.py at 8e586509 (2026-09-11). First broken by 45f0ff4c (2026-09-16), which also added a third governance='HOLD_TENTATIVE'; then 16d3c453, db5bdb22, 88012258, 638af4f6, f9666056, 15318ff6 (now f984354f2a31d585). The third governance='HOLD_TENTATIVE' arrived with 45f0ff4c; the test says layers.py \"no workstream may edit\".",
+   "evidence": "nfl/tests/test_governance_transport.py (count == 2, got 3)",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Owner decision on the Q9 freeze (see test_c1_denominator).",
+   "residual_owner": "owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 74,
+    "failing": 1,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 74,
+    "failing": 1,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "both TD layers declare HOLD_TENTATIVE  3"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_guard_census_is_not_stale.py",
+   "class": "d",
+   "subclass": "GENERATED_FILE_STALE",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 9,
+    "checks_ok": 10,
+    "checks_failing": 4
+   },
+   "failing_checks": [
+    "no row has drifted  assert_allocation_conserves.callers_test: committed 4 but code says 8; assert_blockers_independent.line: committed 998 but code says 1010; assert_complete.line: committed 146 but code says 155; assert_complete.callers_test: committed 0 but code says 3; assert_complete.reachability: committed 'NO_CALLER_AT_ALL' but code says 'NO_PROD_CALLER'; assert_complete.direct_test_coverage",
+    "n_guards matches  fresh 92 vs committed 91 -- regenerate with: python3.12 nfl/tools/guard_reachability.py --json > nfl/research/audit/GUARD_REACHABILITY.json",
+    "no guard is missing from the committed file  [('assert_no_post_cutoff_outcomes', 'nfl/production/world_clock.py')]",
+    "the committed census is byte-current with the generator  the file is 112284 bytes, a fresh census is 113630 -- regenerate with: python3.12 nfl/tools/guard_reachability.py --json > nfl/research/audit/GUARD_REACHABILITY.json"
+   ],
+   "raised_functions": [],
+   "root_cause": "nfl/research/audit/GUARD_REACHABILITY.json was stale (91 guards committed, 92 live; assert_no_post_cutoff_outcomes in nfl/production/world_clock.py missing; line/caller drift).",
+   "evidence": "nfl/tests/test_guard_census_is_not_stale.py",
+   "fixable_locally": true,
+   "fix_applied": "Regenerated with python3.12 nfl/tools/guard_reachability.py --json > nfl/research/audit/GUARD_REACHABILITY.json.",
+   "residual": "Goes stale again on any edit that moves a guard line; regenerate in the commit that moves it.",
+   "residual_owner": null,
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 14,
+    "failing": 4,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 14,
+    "failing": 0,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [],
+   "status_before": "FAIL",
+   "status_after": "PASS"
+  },
+  {
+   "module": "nfl/tests/test_inactives_drill.py",
+   "class": "a",
+   "subclass": "TEST_CONTRACT_DRIFT",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 9,
+    "checks_ok": 58,
+    "checks_failing": 5
+   },
+   "failing_checks": [
+    "which names the club that got nothing  ['49ers', 'Rams']",
+    "and the label filter did real work  {'49ers': 0, 'Rams': 0}",
+    "guards 1 and 2 defeated: the size ceiling refuses  INACTIVES_TEAM_HAS_NO_NAMES",
+    "a realistic 6-and-6 list still passes  DEFERRED INACTIVES_TEAM_HAS_NO_NAMES",
+    "2. both clubs parse  INACTIVES_TEAM_HAS_NO_NAMES"
+   ],
+   "raised_functions": [
+    "test_an_ambiguous_identity_refuses_the_whole_list"
+   ],
+   "root_cause": "The parser was re-segmented against real populated documents in 86f426db (2026-09-24); the drill's synthetic documents no longer yield names per club (INACTIVES_TEAM_HAS_NO_NAMES), and resolve() is then handed None (AttributeError at nfl/production/nonqb/inactives.py:594).",
+   "evidence": "nfl/tests/test_inactives_drill.py:204,297-305",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Either the synthetic fixtures must use the real page structure, or the parser regressed on a form it should accept; also resolve() should refuse a None parse rather than raise. Parser owner decides.",
+   "residual_owner": "author of 86f426db",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 63,
+    "failing": 5,
+    "raised": 2,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 63,
+    "failing": 5,
+    "raised": 2,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "which names the club that got nothing  ['49ers', 'Rams']",
+    "and the label filter did real work  {'49ers': 0, 'Rams': 0}",
+    "guards 1 and 2 defeated: the size ceiling refuses  INACTIVES_TEAM_HAS_NO_NAMES",
+    "a realistic 6-and-6 list still passes  DEFERRED INACTIVES_TEAM_HAS_NO_NAMES",
+    "2. both clubs parse  INACTIVES_TEAM_HAS_NO_NAMES"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_inactives_substance.py",
+   "class": "c",
+   "subclass": "RECORD_COUNT_STALE",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 7,
+    "checks_ok": 17,
+    "checks_failing": 4
+   },
+   "failing_checks": [
+    "every one carries the page's own empty-state sentence  48 of 50",
+    "and the count matches what D20 records  382 -- if this drifts, D20 needs updating, not this test",
+    "the 18 delivered game-anchored rows stay visible as uncredited  20",
+    "and exactly the 374 landing pages are excluded, not 392  382"
+   ],
+   "raised_functions": [],
+   "root_cause": "New official_inactives captures moved the counts the D20 record states: 382 landing pages vs 374, 2 of 50 pages lack the empty-state sentence, 20 uncredited game-anchored rows vs 18. The test says: \"if this drifts, D20 needs updating, not this test\".",
+   "evidence": "nfl/tests/test_inactives_substance.py; nfl/research/live/OPEN_DEFECTS.json D20",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "D20 owner re-adjudicates the 8 new landing pages and the 2 pages without the empty-state sentence (they may be populated lists) and updates D20.",
+   "residual_owner": "D20 owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 21,
+    "failing": 4,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 21,
+    "failing": 4,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "every one carries the page's own empty-state sentence  48 of 50",
+    "and the count matches what D20 records  382 -- if this drifts, D20 needs updating, not this test",
+    "the 18 delivered game-anchored rows stay visible as uncredited  20",
+    "and exactly the 374 landing pages are excluded, not 392  382"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_integrity_producers.py",
+   "class": "c",
+   "subclass": "PROTECTED_FILE",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 14,
+    "checks_ok": 105,
+    "checks_failing": 1
+   },
+   "failing_checks": [
+    "and every invariant the report covers names the producer version that ran: {'DUPLICATE_PLAYER_IDENTITY': 'nfl-identity-integrity-0', 'INACTIVE_PLAYER_IN_SIMULATION_OR_OPTIMIZER_POOL': 'nfl-dfs-eligibility-integrity-0', 'MISSING_ROW_IDS': 'nfl-simulation-integrity-0', 'OPPORTUNITY_CONSERVATION_FAILURE': 'nfl-conservation-integrity-0', 'OPPORTUNITY_CONSUMER_OUT_OF_SCOPE': 'nfl-conservation-integrity"
+   ],
+   "raised_functions": [],
+   "root_cause": "The integrity report now carries OPPORTUNITY_CONSERVATION_FAILURE and OPPORTUNITY_CONSUMER_OUT_OF_SCOPE from the conservation producer, which are in neither GATE.ADVERTISED_INTEGRITY nor GATE.OBSERVED_INTEGRITY ({}).",
+   "evidence": "nfl/production/review/gate.py:112,185 (PROTECTED); nfl/tests/test_integrity_producers.py:115-120",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Declare the two codes in gate.py (protected) -- owner.",
+   "residual_owner": "owner (protected gate.py)",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 106,
+    "failing": 1,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 106,
+    "failing": 1,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "and every invariant the report covers names the producer version that ran: {'DUPLICATE_PLAYER_IDENTITY': 'nfl-identity-integrity-0', 'INACTIVE_PLAYER_IN_SIMULATION_OR_OPTIMIZER_POOL': 'nfl-dfs-eligibility-integrity-0', 'MISSING_ROW_IDS': 'nfl-simulation-integrity-0', 'OPPORTUNITY_CONSERVATION_FAILURE': 'nfl-conservation-integrity-0', 'OPPORTUNITY_CONSUMER_OUT_OF_SCOPE': 'nfl-conservation-integrity"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_kicker_resolution.py",
+   "class": "a",
+   "subclass": "RESOLVER_NOT_CUT_AWARE",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 6,
+    "checks_ok": 20,
+    "checks_failing": 1
+   },
+   "failing_checks": [
+    "all 32 clubs resolve a kicker at 2026 week 2  31/32 refused={'KICKER_ELIGIBILITY_DISAGREES_ACROSS_VINTAGES': ['NYJ']}"
+   ],
+   "raised_functions": [],
+   "root_cause": "NYJ refuses KICKER_ELIGIBILITY_DISAGREES_ACROSS_VINTAGES: player 00-0034794 grades ELIGIBLE in some 2026 week-2 roster vintages and NOT_GAME_ROSTER in others. A real roster event; kicking.resolve_kicker pools every vintage for the week instead of selecting the one lawful at the slate cut.",
+   "evidence": "nfl/tests/test_kicker_resolution.py:159-180; nfl/production/kicking.py resolve_kicker",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Resolve eligibility at the cut via vintage_selector (production change -- owner).",
+   "residual_owner": "kicking owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 21,
+    "failing": 1,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 21,
+    "failing": 1,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "all 32 clubs resolve a kicker at 2026 week 2  31/32 refused={'KICKER_ELIGIBILITY_DISAGREES_ACROSS_VINTAGES': ['NYJ']}"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_lineage.py",
+   "class": "d",
+   "subclass": "GITIGNORED_DERIVED_STALE",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 9,
+    "checks_ok": 7,
+    "checks_failing": 1
+   },
+   "failing_checks": [
+    "the production role artifact is stamped against its own builder"
+   ],
+   "raised_functions": [
+    "test_06_the_production_role_artifact_is_stamped_against_its_own_builder"
+   ],
+   "root_cause": "STALE_DEPENDENCY: nfl/derived/ROLE_STATE.json (gitignored) does not match its builder nfl/tools/role_state.py. readiness also reports sim.dst stale. The module also REWROTE the tracked nfl/production/READINESS.json.",
+   "evidence": "nfl/tests/test_lineage.py test_06; readiness PRODUCT_MODE NOT_PRODUCTION_READY because [\"sim.dst\", \"derived.role_state\"]",
+   "fixable_locally": true,
+   "fix_applied": "Test-side only: t_readiness_refuses now writes readiness.build() output to a temp dir (it never read the file), so the module no longer mutates READINESS.json. The role artifact was NOT rebuilt.",
+   "residual": "Passes in the final pass because another agent rebuilt the derived caches during this run (0a81c60b \"derived cache generation 2\", nfl/production/DERIVED_REBUILD_MANIFEST.json) -- not because of this work. This work only stopped the module writing READINESS.json.",
+   "residual_owner": "production owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 8,
+    "failing": 1,
+    "raised": 2,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 8,
+    "failing": 0,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [],
+   "status_before": "FAIL",
+   "status_after": "PASS"
+  },
+  {
+   "module": "nfl/tests/test_live_capture_den_kc.py",
+   "class": "a",
+   "subclass": "VERIFIER_VOCABULARY",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 17,
+    "checks_ok": 18,
+    "checks_failing": 1
+   },
+   "failing_checks": [
+    "the bundle builds at the cutoff  FAIL[ARTIFACT_VERIFICATION_FAILED] 2026_01_DEN_KC: ['schedules'] have manifest rows whose digests do not match the bytes on disk."
+   ],
+   "raised_functions": [],
+   "root_cause": "The schedules blob is intact (nfl/vintage/schedules.f3b08e609ebe88d9.csv.gz decompresses to sha256 f3b08e60...e95e = the row's sha256) but nfl/capture/live_game_evidence.py verify_on_disk() only accepts a legacy single digest when sha256_is_of contains \"persisted_uncompressed_bytes\"; this row (capture 20260914T163922Z, durability commit_raw) says \"uncompressed_bytes\", so it falls to ABSENT_FROM_ROW, is_failure=True. 3,055 manifest rows use that vocabulary.",
+   "evidence": "nfl/capture/live_game_evidence.py:255-311",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Accept \"uncompressed_bytes\" on commit_raw rows in verify_on_disk(). One-line, but nfl/capture is the release-gated capture surface; an edit needs a new approved capture release.",
+   "residual_owner": "capture-surface owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 19,
+    "failing": 1,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 19,
+    "failing": 1,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "the bundle builds at the cutoff  FAIL[ARTIFACT_VERIFICATION_FAILED] 2026_01_DEN_KC: ['schedules'] have manifest rows whose digests do not match the bytes on disk."
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_non_evidentiary_refusal.py",
+   "class": "a",
+   "subclass": "UNREVIEWED_OWNERSHIP_SITE",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 21,
+    "checks_ok": 57,
+    "checks_failing": 1
+   },
+   "failing_checks": [
+    "positive control (live tree): no adjustment family applies in production, so the audit is BLOCKED/EMPTY_INPUT and not COMPLETE  FAIL[OWNERSHIP_AUDIT_UNREVIEWED_SITE] cause=Cause.GOVERNANCE"
+   ],
+   "raised_functions": [
+    "test_13_ownership_audit_over_zero_applications"
+   ],
+   "root_cause": "Same unreviewed ownership site as test_gate_ids; also the 1 UNVALIDATED_CONTROL_DID_NOT_TRIP detector (nfl.production.ownership_audit:audit:OWNERSHIP_AUDIT_NO_APPLICATIONS -- the audit returned UNREVIEWED_SITE instead).",
+   "evidence": "test_13_ownership_audit_over_zero_applications",
+   "fixable_locally": true,
+   "fix_applied": "Disposition recorded (see test_gate_ids); module passes and the control trips.",
+   "residual": null,
+   "residual_owner": null,
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 58,
+    "failing": 1,
+    "raised": 2,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 60,
+    "failing": 0,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [],
+   "status_before": "FAIL",
+   "status_after": "PASS"
+  },
+  {
+   "module": "nfl/tests/test_non_g0a_isolation.py",
+   "class": "c",
+   "subclass": "WORKFLOW_IDENTITY_CONFLICT",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 12,
+    "checks_ok": 50,
+    "checks_failing": 2
+   },
+   "failing_checks": [
+    "the G0A workflow still carries its frozen identity  identity changed",
+    "the G0A workflow declares the frozen identity  SCHED-d07af566f4c375dd"
+   ],
+   "raised_functions": [],
+   "root_cause": ".github/workflows/nfl-t90.yml (the G0A workflow) is regenerated weekly and its schedule identity changed (now SCHED-d07af566f4c375dd); this test pins the frozen G0A identity while test_t90_workflow demands regeneration for week 5. Both cannot pass.",
+   "evidence": "nfl/tests/test_non_g0a_isolation.py:34,76-92",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Owner rules whether the G0A identity is frozen or rolls weekly; workflows not touched here.",
+   "residual_owner": "owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 52,
+    "failing": 2,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 52,
+    "failing": 2,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "the G0A workflow still carries its frozen identity  identity changed",
+    "the G0A workflow declares the frozen identity  SCHED-d07af566f4c375dd"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_nonqb_r3.py",
+   "class": "a",
+   "subclass": "TEST_CONTRACT_DRIFT",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 28,
+    "checks_ok": 127,
+    "checks_failing": 2
+   },
+   "failing_checks": [
+    "rushing_conversion is declared NOT_IMPLEMENTED rather than left blank"
+   ],
+   "raised_functions": [],
+   "root_cause": "eligibility.matrix() now declares rushing_conversion IMPLEMENTED (nfl/production/nonqb/eligibility.py:84, module nfl.production.nonqb.rushing_conversion exists); the test asserts NOT_IMPLEMENTED.",
+   "evidence": "nfl/tests/test_nonqb_r3.py:307-310",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "The test owner confirms the declaration and updates the assertion (not edited here).",
+   "residual_owner": "test owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 129,
+    "failing": 1,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 129,
+    "failing": 1,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "rushing_conversion is declared NOT_IMPLEMENTED rather than left blank"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_own9_write_guard.py",
+   "class": "d",
+   "subclass": "WORKTREE_PATH",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 6,
+    "checks_ok": 20,
+    "checks_failing": 1
+   },
+   "failing_checks": [],
+   "raised_functions": [],
+   "root_cause": "Failed only in the certification worktree (scratchpad/head2), whose path does not name the NFL root.",
+   "evidence": "passes in /home/user/nfl (0 failing)",
+   "fixable_locally": true,
+   "fix_applied": "None needed: passes in this tree.",
+   "residual": null,
+   "residual_owner": null,
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 21,
+    "failing": 0,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 21,
+    "failing": 0,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [],
+   "status_before": "PASS",
+   "status_after": "PASS"
+  },
+  {
+   "module": "nfl/tests/test_ownership_audit.py",
+   "class": "a",
+   "subclass": "UNREVIEWED_OWNERSHIP_SITE",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 11,
+    "checks_ok": 33,
+    "checks_failing": 4
+   },
+   "failing_checks": [
+    "and the real audit is back to its own verdict afterwards:",
+    "and is no longer REFUSED once the disposition is restored: State.FAIL[OWNERSHIP_AUDIT_UNREVIEWED_SITE]",
+    "but does not PASS either: zero applying sites is nothing measured, not ownership: State.FAIL[OWNERSHIP_AUDIT_UNREVIEWED_SITE]",
+    "the audit completes its scan and refuses to call it a pass over zero applications: State.FAIL[OWNERSHIP_AUDIT_UNREVIEWED_SITE]"
+   ],
+   "raised_functions": [
+    "test_G_the_audit_over_the_real_tree",
+    "test_H_ownership_is_not_asserted"
+   ],
+   "root_cause": "Same as test_gate_ids.",
+   "evidence": "4 failing + 3 raised all on OWNERSHIP_AUDIT_UNREVIEWED_SITE",
+   "fixable_locally": true,
+   "fix_applied": "Disposition recorded; 53 checks, 0 failing.",
+   "residual": null,
+   "residual_owner": null,
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 37,
+    "failing": 4,
+    "raised": 3,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 53,
+    "failing": 0,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [],
+   "status_before": "FAIL",
+   "status_after": "PASS"
+  },
+  {
+   "module": "nfl/tests/test_p6_false_greens.py",
+   "class": "a",
+   "subclass": "DELIBERATE_REPRODUCTIONS",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 12,
+    "checks_ok": 26,
+    "checks_failing": 18
+   },
+   "failing_checks": [
+    "the one-level glob these three modules use finds every sealed board  ONE_LEVEL_GLOB_NARROWS_THE_FRAME: 107 of 124; missed ['2026_01_SF_LA/pre_inactives_V1_CANDIDATE/board.json', '2026_01_SF_LA/pre_inactives_V1_CANDIDATE_R5/board.json', '2026_01_SF_LA/pre_inactives_V1_CANDIDATE_R6/board.json', '2026_01_SF_LA/pre_inactives_V1_CANDIDATE_R7/board.json', '2026_01_SF_LA/pre_inactives_V1_CANDIDATE_R8/boa",
+    "and every R8 board in particular  R8_BOARDS_MISSED: 65 of 66",
+    "nfl/research/same_day_retrospective.py no longer hard-codes one level  FIXED_DEPTH_BOARD_GLOB still present",
+    "nfl/research/v2/d7/d7_central_tendency.py no longer hard-codes one level  FIXED_DEPTH_BOARD_GLOB still present",
+    "nfl/research/market_outcome_audit.py no longer hard-codes one level  FIXED_DEPTH_BOARD_GLOB still present",
+    "SF_LA is not the one game in the slate with a single seal, while ten boards sit in its directory  ALL_SEALS_IS_NOT_ALL_SEALS: SF_LA contributes 1 seal(s) against 4-8 elsewhere, with 10 board.json on disk",
+    "Q6_DIAGNOSTICS.csv.gz:recon_error is not a constant column  CONSTANT_RECONCILIATION_STATISTIC: '0.0' on 276968 rows",
+    "Q9B_FAMILY_ROWS.csv.gz:recon_error is not a constant column  CONSTANT_RECONCILIATION_STATISTIC: '0.0' on 104130 rows",
+    "Q9_DIAGNOSTICS.csv:max_reconciliation_error is not a constant column  CONSTANT_RECONCILIATION_STATISTIC: '0.0' on 4348 rows",
+    "state_qb_game.csv.gz:scrambles is not structurally constant  STRUCTURALLY_DEGENERATE_COLUMN: '0' in 4023 of 4024 rows. build_state_panel.py:160 counts qb_scramble against passer_player_id, which a scramble play does not carry",
+    "starter_class carries a value  EMPTY_PUBLISHED_COLUMN: '' in 21558 of 21558 rows. panel_csv() writes r.get(\"starter_class\", \"\") and refbands.py:493 assigns the key later, so the default is what ships.",
+    "no other module reads the superseded panel  SUPERSEDED_ARTIFACT_STILL_READ: v3/h1/h1_frame.py reads q7_qb_game.csv.gz, whose scramble column q7 repaired into q7_qb_game_r2.csv.gz. Q7_PANEL_SUPERSESSION.json lists the artifacts drawn from the old panel and does not list the code still reading it.",
+    "every \"fails when bypassed\" proof reaches the code it claims to prove load-bearing  TAUTOLOGICAL_BYPASS_PROOF: nfl/tests/test_capture_manifest_integrity.py::test_the_guards_fail_when_bypassed [3 literal-vs-literal comparison(s), reaches no production alias of ['CV']]; nfl/tests/test_own10_dependence_metric.py::test_the_guard_fails_when_bypassed [0 literal-vs-literal comparison(s), reaches no produ",
+    "the stream-separation bypass proof calls the production seeding it claims to prove  TAUTOLOGICAL_BYPASS_PROOF: it calls ['array_equal', 'binomial', 'check', 'default_rng'] and reaches no production seeding path",
+    "a required stage moved past the window is still caught  NEGATIVE_WINDOW_NARROWS_SILENTLY: the seeded chain declares 'qb_layer' non-halting at character 511 and the 220-character window reports []. The halting guarantee is proven by a substring search over a region that shrinks relative to what it must cover.",
+    "the 3000-character staging window covers exactly the function it names  WINDOW_DOES_NOT_MATCH_ITS_SUBJECT: stage_inputs is 1680 characters, so the window under-covers it when it grows past 3000 (a new mkdtemp beyond that is invisible) and today over-covers it by 1320 characters of neighbouring functions",
+    "nfl.production.nonqb.layers still hashes to what the freeze recorded  FREEZE_NO_LONGER_DESCRIBES_THE_CANDIDATE: recorded 481f005f682cd721, source now f984354f2a31d585",
+    "there exists a class-count vector for which a stat-contract identity fails  SELF_PROVING_IDENTITY: all three identities held on 2000 of 2000 RANDOM count vectors, including vectors no play stream could produce. The check restates AGGREGATES rather than testing anything the rows decided."
+   ],
+   "raised_functions": [],
+   "root_cause": "18 deliberate reproductions of open false greens (file header: \"EVERY FAILING CHECK HERE IS DELIBERATE\"). Includes FG8 = the layers.py freeze break and FG1 board selectors missing 17 of 124 boards.",
+   "evidence": "nfl/research/v4/p6/P6_INVARIANT_MANIFEST.md",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Each repair belongs in the named module by its owner (same_day_retrospective.py, d7_central_tendency.py, market_outcome_audit.py, q6/forward_chain.py, q9b/family.py, track1/build_state_panel.py:160, refbands/build_refbands.py:84, v3/h1/h1_frame.py:40, the bypass-proof tests, layers.py freeze).",
+   "residual_owner": "module owners",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 44,
+    "failing": 18,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 44,
+    "failing": 18,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "the one-level glob these three modules use finds every sealed board  ONE_LEVEL_GLOB_NARROWS_THE_FRAME: 107 of 124; missed ['2026_01_SF_LA/pre_inactives_V1_CANDIDATE/board.json', '2026_01_SF_LA/pre_inactives_V1_CANDIDATE_R5/board.json', '2026_01_SF_LA/pre_inactives_V1_CANDIDATE_R6/board.json', '2026_01_SF_LA/pre_inactives_V1_CANDIDATE_R7/board.json', '2026_01_SF_LA/pre_inactives_V1_CANDIDATE_R8/boa",
+    "and every R8 board in particular  R8_BOARDS_MISSED: 65 of 66",
+    "nfl/research/same_day_retrospective.py no longer hard-codes one level  FIXED_DEPTH_BOARD_GLOB still present",
+    "nfl/research/v2/d7/d7_central_tendency.py no longer hard-codes one level  FIXED_DEPTH_BOARD_GLOB still present",
+    "nfl/research/market_outcome_audit.py no longer hard-codes one level  FIXED_DEPTH_BOARD_GLOB still present",
+    "SF_LA is not the one game in the slate with a single seal, while ten boards sit in its directory  ALL_SEALS_IS_NOT_ALL_SEALS: SF_LA contributes 1 seal(s) against 4-8 elsewhere, with 10 board.json on disk",
+    "Q6_DIAGNOSTICS.csv.gz:recon_error is not a constant column  CONSTANT_RECONCILIATION_STATISTIC: '0.0' on 276968 rows",
+    "Q9B_FAMILY_ROWS.csv.gz:recon_error is not a constant column  CONSTANT_RECONCILIATION_STATISTIC: '0.0' on 104130 rows",
+    "Q9_DIAGNOSTICS.csv:max_reconciliation_error is not a constant column  CONSTANT_RECONCILIATION_STATISTIC: '0.0' on 4348 rows",
+    "state_qb_game.csv.gz:scrambles is not structurally constant  STRUCTURALLY_DEGENERATE_COLUMN: '0' in 4023 of 4024 rows. build_state_panel.py:160 counts qb_scramble against passer_player_id, which a scramble play does not carry",
+    "starter_class carries a value  EMPTY_PUBLISHED_COLUMN: '' in 21558 of 21558 rows. panel_csv() writes r.get(\"starter_class\", \"\") and refbands.py:493 assigns the key later, so the default is what ships.",
+    "no other module reads the superseded panel  SUPERSEDED_ARTIFACT_STILL_READ: v3/h1/h1_frame.py reads q7_qb_game.csv.gz, whose scramble column q7 repaired into q7_qb_game_r2.csv.gz. Q7_PANEL_SUPERSESSION.json lists the artifacts drawn from the old panel and does not list the code still reading it.",
+    "every \"fails when bypassed\" proof reaches the code it claims to prove load-bearing  TAUTOLOGICAL_BYPASS_PROOF: nfl/tests/test_capture_manifest_integrity.py::test_the_guards_fail_when_bypassed [3 literal-vs-literal comparison(s), reaches no production alias of ['CV']]; nfl/tests/test_own10_dependence_metric.py::test_the_guard_fails_when_bypassed [0 literal-vs-literal comparison(s), reaches no produ",
+    "the stream-separation bypass proof calls the production seeding it claims to prove  TAUTOLOGICAL_BYPASS_PROOF: it calls ['array_equal', 'binomial', 'check', 'default_rng'] and reaches no production seeding path",
+    "a required stage moved past the window is still caught  NEGATIVE_WINDOW_NARROWS_SILENTLY: the seeded chain declares 'qb_layer' non-halting at character 511 and the 220-character window reports []. The halting guarantee is proven by a substring search over a region that shrinks relative to what it must cover.",
+    "the 3000-character staging window covers exactly the function it names  WINDOW_DOES_NOT_MATCH_ITS_SUBJECT: stage_inputs is 1680 characters, so the window under-covers it when it grows past 3000 (a new mkdtemp beyond that is invisible) and today over-covers it by 1320 characters of neighbouring functions",
+    "nfl.production.nonqb.layers still hashes to what the freeze recorded  FREEZE_NO_LONGER_DESCRIBES_THE_CANDIDATE: recorded 481f005f682cd721, source now f984354f2a31d585",
+    "there exists a class-count vector for which a stat-contract identity fails  SELF_PROVING_IDENTITY: all three identities held on 2000 of 2000 RANDOM count vectors, including vectors no play stream could produce. The check restates AGGREGATES rather than testing anything the rows decided."
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_p7_dag.py",
+   "class": "a",
+   "subclass": "UNDECLARED_READS",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 30,
+    "checks_ok": 90,
+    "checks_failing": 2
+   },
+   "failing_checks": [
+    "audit_declared_reads passes on the tree as it stands  UNDECLARED_VINTAGE_READ: {'undeclared': [{'module': 'nfl/production/universe/usage_vintage.py', 'line': 107, 'producer': 'vintage_manifest', 'expr': 'pathlib.Path__file__.resolve.parents3nflvintage_manifest.jsonl'}, {'module': 'nfl/dfs/salaries/early_only.py', 'line': 92, 'producer': 'vintage_manifest', 'expr': 'pathlib.Path__file__.resolve.par",
+    "the committed inventory matches a live audit of the tree  regenerate: python3.12 nfl/production/pipeline.py --write-read-inventory"
+   ],
+   "raised_functions": [],
+   "root_cause": "audit_declared_reads FAILS UNDECLARED_VINTAGE_READ: nfl/production/universe/usage_vintage.py:107, nfl/dfs/salaries/early_only.py:92 (vintage_manifest), nfl/dfs/salaries/emit_package.py:78 (weekly_rosters), nfl/capture/manifest_store.py:124,177 (vintage_manifest). The committed inventory was ALSO stale and recorded PASS -- a false green.",
+   "evidence": "nfl/production/pipeline.py audit_declared_reads / read_inventory; nfl/tests/test_p7_dag.py:629-646",
+   "fixable_locally": false,
+   "fix_applied": "Regenerated nfl/research/v4/p7/P7_DECLARED_READS.json (python3.12 nfl/production/pipeline.py --write-read-inventory): \"matches a live audit\" now passes, and the file now records the true audit state (FAIL), so \"it records the audit state\" fails honestly instead of the stale file claiming PASS. Failing count unchanged (2).",
+   "residual": "Declare these reads as DAG edges in nfl/production/pipeline.py EDGES or route them through the declared vintage reader; then regenerate. Owner of each module.",
+   "residual_owner": "authors of usage_vintage/early_only/emit_package",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 92,
+    "failing": 2,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 92,
+    "failing": 2,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "audit_declared_reads passes on the tree as it stands  UNDECLARED_VINTAGE_READ: {'undeclared': [{'module': 'nfl/production/universe/usage_vintage.py', 'line': 107, 'producer': 'vintage_manifest', 'expr': 'pathlib.Path__file__.resolve.parents3nflvintage_manifest.jsonl'}, {'module': 'nfl/dfs/salaries/early_only.py', 'line': 92, 'producer': 'vintage_manifest', 'expr': 'pathlib.Path__file__.resolve.par",
+    "it records the audit state rather than implying one  {'code': 'UNDECLARED_VINTAGE_READ', 'evidence': {'unattributable': [], 'undeclared': [{'expr': 'pathlib.Path__file__.resolve.parents3nflvintage_manifest.jsonl',"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_p7_data_plane.py",
+   "class": "a",
+   "subclass": "REGISTRY_INCOMPLETE",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 15,
+    "checks_ok": 59,
+    "checks_failing": 3
+   },
+   "failing_checks": [
+    "every source with a stored capture is declared somewhere",
+    "every stored source outside the fetch registry is a DELIVERED one, so no capture obligation is manufactured for an artifact with no endpoint",
+    "and every delivered source does have a stored capture, so the declaration is not describing an artifact nobody has"
+   ],
+   "raised_functions": [],
+   "root_cause": "Manifest sources with no declaration in nfl/capture/registry.py: ['dk_entries', 'dk_salaries_early', 'pbp'].",
+   "evidence": "nfl/tests/test_p7_data_plane.py:540-570",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Declare them (pbp in the fetch registry; dk_* as DELIVERED). nfl/capture is release-gated.",
+   "residual_owner": "capture-surface owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 62,
+    "failing": 3,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 62,
+    "failing": 3,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "every source with a stored capture is declared somewhere",
+    "every stored source outside the fetch registry is a DELIVERED one, so no capture obligation is manufactured for an artifact with no endpoint",
+    "and every delivered source does have a stored capture, so the declaration is not describing an artifact nobody has"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_p8_tails_and_counts.py",
+   "class": "a",
+   "subclass": "CORPUS_CONTAINS_NON_BOARD_DRAWS",
+   "certified_run": {
+    "result": "OK",
+    "n_fn": 8,
+    "checks_ok": 44,
+    "checks_failing": 0
+   },
+   "failing_checks": [],
+   "raised_functions": [
+    "test_g_the_carry_defect_is_measured_and_its_stated_shape_is_corrected"
+   ],
+   "root_cause": "nfl/research/live/2026_02_DET_BUF/post_inactives_V1_CANDIDATE/fced077d0db6ab41 (a REFUSED run: player_draws.npz + run_status.json, no board.json/forecast_artifact.json) and nfl/research/live/2026_02_DET_BUF/post_inactives_V1_CANDIDATE_R9_W1P_GA_OFFICIAL (a derived \"Skyler Bell zeroed\" ARTIFACT.json + player_draws.npz, which its own ARTIFACT.json says is NOT a board) were committed in 1ad9d57e (2026-09-17), after the corpus fences froze at 112 runs (91db769d, 2026-09-16). sealed_index.live_draw_files() finds them by content (any player_draws.npz) while sealed_index.discover_all() does not (no seal marker), so the fences count 114 runs and then cannot load board.json.",
+   "evidence": "RAISED FileNotFoundError .../post_inactives_V1_CANDIDATE_R9_W1P_GA_OFFICIAL/board.json",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "See test_conservation.",
+   "residual_owner": "corpus owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 44,
+    "failing": 0,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 44,
+    "failing": 0,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_persisted_provenance.py",
+   "class": "b",
+   "subclass": "MISSING_RAW_STORE",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 14,
+    "checks_ok": 93,
+    "checks_failing": 1
+   },
+   "failing_checks": [
+    "every recorded recovery re-derives from the raw bytes today  0/9 -- if the gitignored raw store was cleared this is 0 and the recovery is no longer re-runnable"
+   ],
+   "raised_functions": [
+    "test_recovery_is_earned_from_bytes_and_re_derived_here"
+   ],
+   "root_cause": "nfl_vintage/ (the ephemeral raw store, .gitignore:7) does not exist in this checkout; 0/9 recorded recoveries can be re-derived because every recovered_from path is under nfl_vintage/raw (depth_charts 76d7bcb384ec11e3, a14e8dfe865a4b03, db0a09454965e6fc; weekly_rosters 3b0d5d40dc7816f7, 5ec59c5228198f57, cef497eaeddef07b, fb79560b5c4738a2).",
+   "evidence": "nfl/tests/test_persisted_provenance.py:415-447",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Networked agent restores those raw captures to nfl_vintage/raw (or they are declared unrecoverable).",
+   "residual_owner": "networked agent",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 94,
+    "failing": 1,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 94,
+    "failing": 1,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "every recorded recovery re-derives from the raw bytes today  0/9 -- if the gitignored raw store was cleared this is 0 and the recovery is no longer re-runnable"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_preflight.py",
+   "class": "c",
+   "subclass": "WORKFLOW_STALE",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 6,
+    "checks_ok": 7,
+    "checks_failing": 2
+   },
+   "failing_checks": [
+    "no check fails for a reason other than the week being over  [('anchored workflow matches the current schedule', 'WORKFLOW_STALE')]",
+    "and restoring it clears the check"
+   ],
+   "raised_functions": [],
+   "root_cause": "preflight_t90 reports WORKFLOW_STALE: nfl-t90.yml no longer matches the current kickoff schedule.",
+   "evidence": "nfl/tests/test_preflight.py; nfl/tools/preflight_t90.py",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Regenerate the workflow (gen_t90_schedule.py --season 2026 --week 5 --write) AND deploy it to the default branch -- a workflow/deployment change, not done here.",
+   "residual_owner": "owner of the T-90 schedule",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 9,
+    "failing": 2,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 9,
+    "failing": 2,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "no check fails for a reason other than the week being over  [('anchored workflow matches the current schedule', 'WORKFLOW_STALE')]",
+    "and restoring it clears the check"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_product_orchestration.py",
+   "class": "a",
+   "subclass": "MODEL_DEFECT",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 14,
+    "checks_ok": 46,
+    "checks_failing": 1
+   },
+   "failing_checks": [
+    "the reproduction run sealed  REFUSED"
+   ],
+   "raised_functions": [],
+   "root_cause": "The reproduction of the stored SF_LA board REFUSES: the non-QB engine halts at shared_pass (draw 752: 23 completions against 21 completable attempts), feature_build is STAGE_DECLARED_UNIMPLEMENTED, and sealing refuses INVARIANT_VERDICT_MISSING [unavailable_owns_nothing]. Reproduced directly with make_board.build_one.",
+   "evidence": "nfl/tests/test_product_orchestration.py:93-110",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Engine coherence defect + declared feature_build debt; model owner.",
+   "residual_owner": "engine owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 47,
+    "failing": 1,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 47,
+    "failing": 1,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "the reproduction run sealed  REFUSED"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_publication_semantics.py",
+   "class": "a",
+   "subclass": "CORPUS_CONTAINS_NON_BOARD_DRAWS",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 6,
+    "checks_ok": 22,
+    "checks_failing": 1
+   },
+   "failing_checks": [
+    "no board loaded with an error  [('/home/user/nfl/nfl/research/live/2026_02_DET_BUF/post_inactives_V1_CANDIDATE/fced077d0db6ab41', \"FileNotFoundError(2, 'No such file or directory')\"), ('/home/user/nfl/nfl/research/live/2026_02_DET_BUF/post_inactives_V1_CANDIDATE_R9_W1P_GA_OFFICIAL', \"FileNotFoundError(2, 'No such file or directory')\")]"
+   ],
+   "raised_functions": [],
+   "root_cause": "nfl/research/live/2026_02_DET_BUF/post_inactives_V1_CANDIDATE/fced077d0db6ab41 (a REFUSED run: player_draws.npz + run_status.json, no board.json/forecast_artifact.json) and nfl/research/live/2026_02_DET_BUF/post_inactives_V1_CANDIDATE_R9_W1P_GA_OFFICIAL (a derived \"Skyler Bell zeroed\" ARTIFACT.json + player_draws.npz, which its own ARTIFACT.json says is NOT a board) were committed in 1ad9d57e (2026-09-17), after the corpus fences froze at 112 runs (91db769d, 2026-09-16). sealed_index.live_draw_files() finds them by content (any player_draws.npz) while sealed_index.discover_all() does not (no seal marker), so the fences count 114 runs and then cannot load board.json.",
+   "evidence": "FAIL no board loaded with an error (FileNotFoundError on both DET_BUF dirs)",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "See test_conservation.",
+   "residual_owner": "corpus owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 23,
+    "failing": 1,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 23,
+    "failing": 1,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "no board loaded with an error  [('/home/user/nfl/nfl/research/live/2026_02_DET_BUF/post_inactives_V1_CANDIDATE/fced077d0db6ab41', \"FileNotFoundError(2, 'No such file or directory')\"), ('/home/user/nfl/nfl/research/live/2026_02_DET_BUF/post_inactives_V1_CANDIDATE_R9_W1P_GA_OFFICIAL', \"FileNotFoundError(2, 'No such file or directory')\")]"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_q7_panel_nondegeneracy.py",
+   "class": "b",
+   "subclass": "MISSING_EXTERNAL_DATA",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 7,
+    "checks_ok": 17,
+    "checks_failing": 1
+   },
+   "failing_checks": [
+    "the six raw play-by-play files are present"
+   ],
+   "raised_functions": [],
+   "root_cause": "nfl/research/track1/raw/play_by_play_{2020..2025}.csv.gz are absent (directory gitignored, .gitignore:22).",
+   "evidence": "nfl/tests/test_q7_panel_nondegeneracy.py:176-179",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "nflverse play_by_play_2020..2025.csv.gz (the releases the q7 panel was built from) placed in nfl/research/track1/raw/.",
+   "residual_owner": "networked agent",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 18,
+    "failing": 1,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 18,
+    "failing": 1,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "the six raw play-by-play files are present"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_q9_live_feature_builder.py",
+   "class": "a",
+   "subclass": "MIXED",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 35,
+    "checks_ok": 369,
+    "checks_failing": 6
+   },
+   "failing_checks": [
+    "and on the in-window comparison, which both spans cover whole  record 482/0 vs run 481/0",
+    "2024_01_ARI_BUF/ARI: no candidate drift",
+    "2024_01_ARI_BUF/BUF: no candidate drift",
+    "2025_01_ARI_NO/ARI: no candidate drift",
+    "2025_01_ARI_NO/NO: no candidate drift",
+    "the slate board is present to audit  /tmp/slate_2026_09_13/RESEARCH_DAILY_BOARD.csv"
+   ],
+   "raised_functions": [],
+   "root_cause": "(1) four \"no candidate drift\" failures: the Q9 candidate identity hashes layers.py (freeze broken, see test_c1_denominator); (2) parity record 482 players compared vs a live re-run of 481; (3) the slate board is read from /tmp/slate_2026_09_13/RESEARCH_DAILY_BOARD.csv, an ephemeral path outside the repo.",
+   "evidence": "nfl/tests/test_q9_live_feature_builder.py; nfl/prospective/q9shadow/Q9_LIVE_FEATURE_PARITY.json",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "(1) owner Q9 freeze decision; (2) explain the one-player drift before re-recording the parity artifact (a prospective record, not regenerated here); (3) test must read a repo path.",
+   "residual_owner": "owner + Q9 owner",
+   "per_check_class": {
+    "candidate drift": "a",
+    "parity 482/481": "a",
+    "/tmp board": "d"
+   },
+   "this_tree_before": {
+    "checks": 375,
+    "failing": 6,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 375,
+    "failing": 6,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "and on the in-window comparison, which both spans cover whole  record 482/0 vs run 481/0",
+    "2024_01_ARI_BUF/ARI: no candidate drift",
+    "2024_01_ARI_BUF/BUF: no candidate drift",
+    "2025_01_ARI_NO/ARI: no candidate drift",
+    "2025_01_ARI_NO/NO: no candidate drift",
+    "the slate board is present to audit  /tmp/slate_2026_09_13/RESEARCH_DAILY_BOARD.csv"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_qb2_production.py",
+   "class": "a",
+   "subclass": "TEST_CONTRACT_DRIFT",
+   "certified_run": {
+    "result": "OK",
+    "n_fn": 20,
+    "checks_ok": 40,
+    "checks_failing": 0
+   },
+   "failing_checks": [
+    "the run seals  [REFUSED]",
+    "the QB stage ran  [[{'stage': 'qb_layer', 'state': 'NOT_APPLICABLE', 'code': 'STAGE_NOT_REACHED', 'detail': 'not run: the pipeline refused at capture_validation with REQUIRED_SOURCE_NOT_DECLARED. Running a model on inputs that failed validation would produce a number nobody should read.', 'input_hashes': {}, 'spec_version': 'qb-v1-aggregate-then-allocate-1', 'warnings': [], 'refusal_code': None, '",
+    "the known limitations travel with the result",
+    "with the right code  [[{'code': 'REQUIRED_SOURCE_NOT_DECLARED', 'stage': 'capture_validation', 'detail': \"capture_validation: the run declared ['schedules'] and its own layers select vintages of ['depth_charts', 'injuries', 'schedules', 'weekly_rosters']. Undeclared: ['depth_charts', 'injuries', 'weekly_rosters']. A capture this stage never saw cannot have been validated by it, whatever the layers",
+    "a missing QB artifact refuses too  [[{'code': 'REQUIRED_SOURCE_NOT_DECLARED', 'stage': 'capture_validation', 'detail': \"capture_validation: the run declared ['schedules'] and its own layers select vintages of ['depth_charts', 'injuries', 'schedules', 'weekly_rosters']. Undeclared: ['depth_charts', 'injuries', 'weekly_rosters']. A capture this stage never saw cannot have been validated by it, whate",
+    "with IDENTITY_UNRESOLVED, and the refusal says fuzzy name matching is forbidden  [[{'code': 'REQUIRED_SOURCE_NOT_DECLARED', 'stage': 'capture_validation', 'detail': \"capture_validation: the run declared ['schedules'] and its own layers select vintages of ['depth_charts', 'injuries', 'schedules', 'weekly_rosters']. Undeclared: ['depth_charts', 'injuries', 'weekly_rosters']. A capture this stage nev",
+    "the skip is recorded, not silent, and names what refused  [{'stage': 'qb_layer', 'state': 'NOT_APPLICABLE', 'code': 'STAGE_NOT_REACHED', 'detail': 'not run: the pipeline refused at capture_validation with REQUIRED_SOURCE_NOT_DECLARED. Running a model on inputs that failed validation would produce a number nobody should read.', 'input_hashes': {}, 'spec_version': 'qb-v1-aggregate-then-allocate-1', ",
+    "named INCOMPLETE_PLAYER_ACCOUNTING  [[{'code': 'REQUIRED_SOURCE_NOT_DECLARED', 'stage': 'capture_validation', 'detail': \"capture_validation: the run declared ['schedules'] and its own layers select vintages of ['depth_charts', 'injuries', 'schedules', 'weekly_rosters']. Undeclared: ['depth_charts', 'injuries', 'weekly_rosters']. A capture this stage never saw cannot have been validated by it, what",
+    "joint reconciliation ran  [[{'stage': 'joint_reconciliation', 'state': 'NOT_APPLICABLE', 'code': 'STAGE_NOT_REACHED', 'detail': 'not run: the pipeline refused at capture_validation with REQUIRED_SOURCE_NOT_DECLARED. Running a model on inputs that failed validation would produce a number nobody should read.', 'input_hashes': {}, 'spec_version': 'minimum-viable production coupling', 'warnings': [], ",
+    "and an artifact was sealed",
+    "and NOT refused with qb_accounting.reconcile_draws bypassed -- therefore the guard caught it  [REFUSED]",
+    "and NOT refused with qb_accounting.reconcile_draws bypassed -- therefore the guard caught it  [REFUSED]",
+    "and NOT refused with qb_v1.identity_check AND qb_accounting.reconcile_draws both bypassed  [REFUSED]"
+   ],
+   "raised_functions": [
+    "test_17_guard_deletions"
+   ],
+   "root_cause": "production capture_validation now refuses REQUIRED_SOURCE_NOT_DECLARED: the fixture runs declare ['schedules'] while their own layers select depth_charts, injuries, schedules, weekly_rosters (nfl/production/run_forecast.py capture_validation stage). The fixtures predate the tightened contract, so every downstream assertion sees STAGE_NOT_REACHED.",
+   "evidence": "13 failing checks, all REQUIRED_SOURCE_NOT_DECLARED / STAGE_NOT_REACHED; test_17_guard_deletions raises because the bypassed guard is never reached",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Fixtures must declare the four sources their layers read. Test owner.",
+   "residual_owner": "test owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 79,
+    "failing": 13,
+    "raised": 2,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 79,
+    "failing": 13,
+    "raised": 2,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "the run seals  [REFUSED]",
+    "the QB stage ran  [[{'stage': 'qb_layer', 'state': 'NOT_APPLICABLE', 'code': 'STAGE_NOT_REACHED', 'detail': 'not run: the pipeline refused at capture_validation with REQUIRED_SOURCE_NOT_DECLARED. Running a model on inputs that failed validation would produce a number nobody should read.', 'input_hashes': {}, 'spec_version': 'qb-v1-aggregate-then-allocate-1', 'warnings': [], 'refusal_code': None, '",
+    "the known limitations travel with the result",
+    "with the right code  [[{'code': 'REQUIRED_SOURCE_NOT_DECLARED', 'stage': 'capture_validation', 'detail': \"capture_validation: the run declared ['schedules'] and its own layers select vintages of ['depth_charts', 'injuries', 'schedules', 'weekly_rosters']. Undeclared: ['depth_charts', 'injuries', 'weekly_rosters']. A capture this stage never saw cannot have been validated by it, whatever the layers",
+    "a missing QB artifact refuses too  [[{'code': 'REQUIRED_SOURCE_NOT_DECLARED', 'stage': 'capture_validation', 'detail': \"capture_validation: the run declared ['schedules'] and its own layers select vintages of ['depth_charts', 'injuries', 'schedules', 'weekly_rosters']. Undeclared: ['depth_charts', 'injuries', 'weekly_rosters']. A capture this stage never saw cannot have been validated by it, whate",
+    "with IDENTITY_UNRESOLVED, and the refusal says fuzzy name matching is forbidden  [[{'code': 'REQUIRED_SOURCE_NOT_DECLARED', 'stage': 'capture_validation', 'detail': \"capture_validation: the run declared ['schedules'] and its own layers select vintages of ['depth_charts', 'injuries', 'schedules', 'weekly_rosters']. Undeclared: ['depth_charts', 'injuries', 'weekly_rosters']. A capture this stage nev",
+    "the skip is recorded, not silent, and names what refused  [{'stage': 'qb_layer', 'state': 'NOT_APPLICABLE', 'code': 'STAGE_NOT_REACHED', 'detail': 'not run: the pipeline refused at capture_validation with REQUIRED_SOURCE_NOT_DECLARED. Running a model on inputs that failed validation would produce a number nobody should read.', 'input_hashes': {}, 'spec_version': 'qb-v1-aggregate-then-allocate-1', ",
+    "named INCOMPLETE_PLAYER_ACCOUNTING  [[{'code': 'REQUIRED_SOURCE_NOT_DECLARED', 'stage': 'capture_validation', 'detail': \"capture_validation: the run declared ['schedules'] and its own layers select vintages of ['depth_charts', 'injuries', 'schedules', 'weekly_rosters']. Undeclared: ['depth_charts', 'injuries', 'weekly_rosters']. A capture this stage never saw cannot have been validated by it, what",
+    "joint reconciliation ran  [[{'stage': 'joint_reconciliation', 'state': 'NOT_APPLICABLE', 'code': 'STAGE_NOT_REACHED', 'detail': 'not run: the pipeline refused at capture_validation with REQUIRED_SOURCE_NOT_DECLARED. Running a model on inputs that failed validation would produce a number nobody should read.', 'input_hashes': {}, 'spec_version': 'minimum-viable production coupling', 'warnings': [], ",
+    "and an artifact was sealed",
+    "and NOT refused with qb_accounting.reconcile_draws bypassed -- therefore the guard caught it  [REFUSED]",
+    "and NOT refused with qb_accounting.reconcile_draws bypassed -- therefore the guard caught it  [REFUSED]",
+    "and NOT refused with qb_v1.identity_check AND qb_accounting.reconcile_draws both bypassed  [REFUSED]"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_qb_eligibility_den_kc.py",
+   "class": "a",
+   "subclass": "TEST_CONTRACT_DRIFT",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 7,
+    "checks_ok": 24,
+    "checks_failing": 1
+   },
+   "failing_checks": [
+    "a status refusal is returned, not swallowed"
+   ],
+   "raised_functions": [],
+   "root_cause": "nfl/production/run_forecast.py now DELIBERATELY falls back to participant_class.classify() when roster_status.status_map refuses (comment block \"NO ACT COLUMN FOR THIS WEEK IS NOT AN EMPTY LEAGUE\", added for 2026 week 2), and wraps the NAMES lookup in try/except -> {}. The test still asserts the older rule that a status refusal is fatal and that the branch has no except.",
+   "evidence": "nfl/tests/test_qb_eligibility_den_kc.py ('return st' in body); run_forecast._candidate_qb_compute",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Two recorded rules conflict (status refusal is fatal vs graded participation fallback). Owner reconciles; the try/except around NAMES.lookup is a genuine silent-fallback to review.",
+   "residual_owner": "owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 25,
+    "failing": 1,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 25,
+    "failing": 1,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "a status refusal is returned, not swallowed"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_qb_room_composition.py",
+   "class": "a",
+   "subclass": "SEAL_MISSING_FIELD",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 7,
+    "checks_ok": 57,
+    "checks_failing": 1
+   },
+   "failing_checks": [
+    "every sealed forecast reconstructs its QB room from its own bytes  [('nfl/research/showdown_live/2026_04_PIT_CLE/PROJ_V1_FOOTBALL_ONLY_JOINT_CENTRED_2000/f9952662f26aac6f', 'PREGAME_ROOM_MEMBERSHIP_SOURCE_ABSENT'), ('nfl/research/showdown_live/2026_04_PIT_CLE/PROJ_V1_JOINT_CENTRED_QBTGT_2000/d8664b6bdab77ad5', 'PREGAME_ROOM_MEMBERSHIP_SOURCE_ABSENT')]"
+   ],
+   "raised_functions": [],
+   "root_cause": "Two Showdown seals in the new nfl/research/showdown_live namespace cannot reconstruct their QB room: PREGAME_ROOM_MEMBERSHIP_SOURCE_ABSENT (2026_04_PIT_CLE PROJ_V1_FOOTBALL_ONLY_JOINT_CENTRED_2000/f9952662f26aac6f and PROJ_V1_JOINT_CENTRED_QBTGT_2000/d8664b6bdab77ad5).",
+   "evidence": "nfl/tests/test_qb_room_composition.py; nfl/research/sealed_index.py NAMESPACES (showdown_live added 4f6362e8)",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Showdown seals must carry the pregame room membership source, or the fence must scope to families that record it. Owner of the Showdown lane.",
+   "residual_owner": "Showdown family owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 58,
+    "failing": 1,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 58,
+    "failing": 1,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "every sealed forecast reconstructs its QB room from its own bytes  [('nfl/research/showdown_live/2026_04_PIT_CLE/PROJ_V1_FOOTBALL_ONLY_JOINT_CENTRED_2000/f9952662f26aac6f', 'PREGAME_ROOM_MEMBERSHIP_SOURCE_ABSENT'), ('nfl/research/showdown_live/2026_04_PIT_CLE/PROJ_V1_JOINT_CENTRED_QBTGT_2000/d8664b6bdab77ad5', 'PREGAME_ROOM_MEMBERSHIP_SOURCE_ABSENT')]"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_r5_active_pool.py",
+   "class": "a",
+   "subclass": "TEST_CONTRACT_DRIFT",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 8,
+    "checks_ok": 20,
+    "checks_failing": 2
+   },
+   "failing_checks": [
+    "the R5 branch returns a fatal on a status refusal",
+    "it never falls back to the unfiltered list"
+   ],
+   "raised_functions": [],
+   "root_cause": "nfl/production/run_forecast.py now DELIBERATELY falls back to participant_class.classify() when roster_status.status_map refuses (comment block \"NO ACT COLUMN FOR THIS WEEK IS NOT AN EMPTY LEAGUE\", added for 2026 week 2), and wraps the NAMES lookup in try/except -> {}. The test still asserts the older rule that a status refusal is fatal and that the branch has no except. AFTER another agent created nfl_vintage/raw (commit 0a81c60b era), a third check fails: status_map now reaches the selector and refuses ROSTER_STATUS_NO_ELIGIBLE_VINTAGE where the test expects ROSTER_STATUS_UNAVAILABLE -- the expectation encodes the absence of the raw store.",
+   "evidence": "nfl/tests/test_r5_active_pool.py:143-150; nfl/production/run_forecast.py \"if fl.get('active_roster_only')\" branch",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Same rule conflict as test_qb_eligibility_den_kc.",
+   "residual_owner": "owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 22,
+    "failing": 2,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 22,
+    "failing": 3,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "the R5 branch returns a fatal on a status refusal",
+    "it never falls back to the unfiltered list",
+    "status is unavailable and says so by name  ROSTER_STATUS_NO_ELIGIBLE_VINTAGE"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_rc1_receiving.py",
+   "class": "d",
+   "subclass": "ENVIRONMENT_RESOLVED",
+   "certified_run": {
+    "result": "OK",
+    "n_fn": 11,
+    "checks_ok": 34,
+    "checks_failing": 0
+   },
+   "failing_checks": [],
+   "raised_functions": [],
+   "root_cause": "Raised in the certified run because nfl/research/p4b/panel_enriched.pkl was not placed (regenerate.py defect).",
+   "evidence": "passes here (72 checks, 0 failing) after fba8cddb",
+   "fixable_locally": true,
+   "fix_applied": "Already fixed upstream (fba8cddb); passes.",
+   "residual": null,
+   "residual_owner": null,
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 72,
+    "failing": 0,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 72,
+    "failing": 0,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [],
+   "status_before": "PASS",
+   "status_after": "PASS"
+  },
+  {
+   "module": "nfl/tests/test_recheck_methods_name_their_tree.py",
+   "class": "d",
+   "subclass": "REMOTE_REF_NOT_FETCHED",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 4,
+    "checks_ok": 8,
+    "checks_failing": 1
+   },
+   "failing_checks": [
+    "both trees readable  capture-prod=None main=4311"
+   ],
+   "raised_functions": [],
+   "root_cause": "refs/remotes/origin/capture-prod does not exist locally (git branch -a lists only main and the feature branch); origin/main is f2b89b66 while the remote reports 478a6655. Needs git fetch origin '+refs/heads/*:refs/remotes/origin/*' -- network, so not runnable here.",
+   "evidence": "FAIL both trees readable: capture-prod=None main=4311",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Fetch origin/capture-prod (networked agent).",
+   "residual_owner": "networked agent",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 9,
+    "failing": 1,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 9,
+    "failing": 1,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "both trees readable  capture-prod=None main=4311"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_rushing_survivorship.py",
+   "class": "a",
+   "subclass": "FROZEN_ARTIFACT_STALE",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 2,
+    "checks_ok": 14,
+    "checks_failing": 1
+   },
+   "failing_checks": [
+    "audit_total_matches_measured_drop :: audit=22821 measured=21895"
+   ],
+   "raised_functions": [],
+   "root_cause": "nfl/production/nonqb/SURVIVORSHIP_AUDIT.json (7528413c, 2026-09-16) records total_dropped 22821; the module now measures 21895 on the current inputs (roster/pbp vintages added since).",
+   "evidence": "nfl/tests/test_rushing_survivorship.py",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Re-derive the audit with the module owner and explain the 926-carry difference before re-recording.",
+   "residual_owner": "rushing_conversion owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 15,
+    "failing": 1,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 15,
+    "failing": 1,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "audit_total_matches_measured_drop :: audit=22821 measured=21162"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_sc2_interception_reservation.py",
+   "class": "a",
+   "subclass": "MODEL_DEFECT_KNOWN_OPEN",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 9,
+    "checks_ok": 42,
+    "checks_failing": 1
+   },
+   "failing_checks": [
+    "the_injected_week1_population_matches_the_fitted_one :: fitted base rate 0.5390 on 4176 week-1 frame row(s) against injected 0.9251 on 454 row(s), gap 0.3861. KNOWN OPEN: the panel is built from snap counts and the frame from the panel UNION the depth chart, so a healthy scratch has a row in one and none in the other. See nfl/research/sc2/W1_PANEL_SURVIVORSHIP.md"
+   ],
+   "raised_functions": [],
+   "root_cause": "KNOWN OPEN: injected week-1 population base rate 0.9251 on 454 rows vs fitted 0.5390 on 4176 (panel from snap counts, frame from panel UNION depth chart).",
+   "evidence": "nfl/research/sc2/W1_PANEL_SURVIVORSHIP.md",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Model owner.",
+   "residual_owner": "model owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 43,
+    "failing": 1,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 43,
+    "failing": 1,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "the_injected_week1_population_matches_the_fitted_one :: fitted base rate 0.5390 on 4176 week-1 frame row(s) against injected 0.9232 on 456 row(s), gap 0.3842. KNOWN OPEN: the panel is built from snap counts and the frame from the panel UNION the depth chart, so a healthy scratch has a row in one and none in the other. See nfl/research/sc2/W1_PANEL_SURVIVORSHIP.md"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_scheduled_workflow_pinning.py",
+   "class": "c",
+   "subclass": "WORKFLOW_DEPLOYMENT",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 6,
+    "checks_ok": 11,
+    "checks_failing": 4
+   },
+   "failing_checks": [
+    "nfl-availability.yml: every checkout pins a ref: 1 of 1 checkout step(s) take the default branch by omission, so this timer runs whatever main happens to hold. Pin it, or declare it in INTENTIONALLY_DEFAULT_BRANCH with a reason.",
+    "nfl-status.yml: every checkout pins a ref: 1 of 1 checkout step(s) take the default branch by omission, so this timer runs whatever main happens to hold. Pin it, or declare it in INTENTIONALLY_DEFAULT_BRANCH with a reason.",
+    "no scheduled workflow edit is stranded off the default branch: ['nfl-availability.yml', 'nfl-product-board.yml', 'nfl-status.yml', 'nfl-t90.yml'] differ between this branch and origin/main. A scheduled run executes the default-branch copy, so these edits are INERT where they sit. Either deploy them or stop recording them as deployed.",
+    "every scheduled workflow exists on the default branch: ['nfl-capture-liveness.yml'] carry a cron but are absent from origin/main, so GitHub never registers them and they have never fired once. A timer on a feature branch is not a timer.",
+    "origin/main is current before asserting what is deployed: STALE: origin/main is f2b89b66c98e but the remote is at 478a66557fc3. `git fetch origin main` moves FETCH_HEAD ONLY -- use `git fetch origin '+refs/heads/*:refs/remotes/origin/*'`. Every claim this test makes about main is being read from the older tree."
+   ],
+   "raised_functions": [],
+   "root_cause": "nfl-availability.yml and nfl-status.yml check out the default branch by omission; four scheduled workflows differ between this branch and origin/main; nfl-capture-liveness.yml carries a cron and is absent from origin/main; origin/main is stale locally (needs fetch).",
+   "evidence": "nfl/tests/test_scheduled_workflow_pinning.py",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Owner pins/declares the two checkouts and deploys or withdraws the stranded edits on main. Workflows not touched here.",
+   "residual_owner": "owner (workflows/deployment)",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 15,
+    "failing": 5,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 15,
+    "failing": 5,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "nfl-availability.yml: every checkout pins a ref: 1 of 1 checkout step(s) take the default branch by omission, so this timer runs whatever main happens to hold. Pin it, or declare it in INTENTIONALLY_DEFAULT_BRANCH with a reason.",
+    "nfl-status.yml: every checkout pins a ref: 1 of 1 checkout step(s) take the default branch by omission, so this timer runs whatever main happens to hold. Pin it, or declare it in INTENTIONALLY_DEFAULT_BRANCH with a reason.",
+    "no scheduled workflow edit is stranded off the default branch: ['nfl-availability.yml', 'nfl-product-board.yml', 'nfl-status.yml', 'nfl-t90.yml'] differ between this branch and origin/main. A scheduled run executes the default-branch copy, so these edits are INERT where they sit. Either deploy them or stop recording them as deployed.",
+    "every scheduled workflow exists on the default branch: ['nfl-capture-liveness.yml'] carry a cron but are absent from origin/main, so GitHub never registers them and they have never fired once. A timer on a feature branch is not a timer.",
+    "origin/main is current before asserting what is deployed: STALE: origin/main is f2b89b66c98e but the remote is at 478a66557fc3. `git fetch origin main` moves FETCH_HEAD ONLY -- use `git fetch origin '+refs/heads/*:refs/remotes/origin/*'`. Every claim this test makes about main is being read from the older tree."
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_sealed_corpus_census.py",
+   "class": "a",
+   "subclass": "CORPUS_CONTAINS_NON_BOARD_DRAWS",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 4,
+    "checks_ok": 9,
+    "checks_failing": 1
+   },
+   "failing_checks": [
+    "every directory holding sealed draws is discovered by content  2026_02_DET_BUF/post_inactives_V1_CANDIDATE/fced077d0db6ab41, 2026_02_DET_BUF/post_inactives_V1_CANDIDATE_R9_W1P_GA_OFFICIAL"
+   ],
+   "raised_functions": [],
+   "root_cause": "nfl/research/live/2026_02_DET_BUF/post_inactives_V1_CANDIDATE/fced077d0db6ab41 (a REFUSED run: player_draws.npz + run_status.json, no board.json/forecast_artifact.json) and nfl/research/live/2026_02_DET_BUF/post_inactives_V1_CANDIDATE_R9_W1P_GA_OFFICIAL (a derived \"Skyler Bell zeroed\" ARTIFACT.json + player_draws.npz, which its own ARTIFACT.json says is NOT a board) were committed in 1ad9d57e (2026-09-17), after the corpus fences froze at 112 runs (91db769d, 2026-09-16). sealed_index.live_draw_files() finds them by content (any player_draws.npz) while sealed_index.discover_all() does not (no seal marker), so the fences count 114 runs and then cannot load board.json.",
+   "evidence": "FAIL every directory holding sealed draws is discovered by content",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "See test_conservation.",
+   "residual_owner": "corpus owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 10,
+    "failing": 1,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 10,
+    "failing": 1,
+    "raised": 1,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "every directory holding sealed draws is discovered by content  2026_02_DET_BUF/post_inactives_V1_CANDIDATE/fced077d0db6ab41, 2026_02_DET_BUF/post_inactives_V1_CANDIDATE_R9_W1P_GA_OFFICIAL"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_showdown_family.py",
+   "class": "a",
+   "subclass": "SEAL_DATA_CUTOFF_NOT_CUT_AWARE",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 13,
+    "checks_ok": 1,
+    "checks_failing": 11
+   },
+   "failing_checks": [
+    "ADMISSIBLE when sealed live before kickoff with every field present"
+   ],
+   "raised_functions": [
+    "test_03_admissible_when_sealed_live_before_kickoff_with_every_field_present"
+   ],
+   "root_cause": "In the certified run 11 of 12 checks failed because test_role_depth_adversarial (alphabetically earlier) overwrote the tracked SHOWDOWN_TONIGHT_STATE.json with an ATL@NO test fixture; reproduced exactly (11 failing, 12 raised) and removed by the test-side redirect in test_role_depth_adversarial. The 1 remaining failure is genuine: a seal written at the fixed 2026-10-02T00:01:57Z is REUSE_INADMISSIBLE with TIME_BASIS_RETRIEVED_AFTER_WRITTEN_AT, because the seal enumerates every roster capture on disk (\"all eleven roster captures the resolver globs\") including ones retrieved after written_at. AFTER commit 0a81c60b (2026-10-07 17:07Z, another agent) added nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz, the same defect widened: the seal now takes that blob as its depth vintage with retrieved_at = FILE_MTIME 2026-10-07T16:59Z (after the fixed written_at), so test_01 refuses and the other 10 functions cascade (KeyError: ok). Nothing in this backlog caused that; it is the same not-cut-aware vintage enumeration plus an mtime used as an evidence clock.",
+   "evidence": "nfl/tests/test_showdown_family.py:44-48; nfl/prospective/showdown_family.py; nfl/prospective/q9shadow/timebasis.py:81",
+   "fixable_locally": false,
+   "fix_applied": "Order-dependence removed (see test_role_depth_adversarial row).",
+   "residual": "The seal must select captures lawful at written_at (vintage_selector), not every capture on disk -- a leakage-shaped defect in the prospective lane. Owner of the Showdown lane.",
+   "residual_owner": "Showdown family owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 12,
+    "failing": 1,
+    "raised": 2,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 12,
+    "failing": 10,
+    "raised": 11,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "a seal is written with every required identity field, from inputs not typed in"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_stat_contract.py",
+   "class": "a",
+   "subclass": "CORPUS_GLOB_UNPINNED",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 15,
+    "checks_ok": 81,
+    "checks_failing": 13
+   },
+   "failing_checks": [
+    "223910 plays examined  got 223910",
+    "class att = 90748  got 95858",
+    "class sack = 6601  got 6963",
+    "class spike = 347  got 369",
+    "class scramble = 5054  got 5386",
+    "class kneel = 2104  got 2233",
+    "class designed_rush = 66657  got 70497",
+    "att_raw = 97696  got 103190",
+    "dropbacks = 102403  got 108207",
+    "rush attempts = 73815  got 78116",
+    "and it is 6,948 plays of 97,696 att_raw (7.11%)  got 7332",
+    "114 sealed run(s) carry 543000 carry cell(s)  114 runs, 543000 cells",
+    "243766 of them are non-integer (50.04%) -- the defect, fenced at its measured size  got 271691"
+   ],
+   "raised_functions": [],
+   "root_cause": "PBP = glob nfl/research/postgame/pbp_*.csv.gz now picks up FOUR overlapping 2026 vintages (1415dd98: wk1 1738 rows; 6643f82a: wk1-2; 79b02496: wk1-3; d9e442ae: wk1 323 rows), so 2026 plays are counted up to four times (223,910 vs the frozen 211,755). The sealed-run count also includes the two DET_BUF dirs (114 vs 112).",
+   "evidence": "nfl/tests/test_stat_contract.py:68-69,95-97; ls nfl/research/postgame/pbp_2026*",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Pin the corpus to one vintage per season. ALSO A PRODUCTION FINDING: nfl/production/kicking.py:108 globs pbp_20*.csv.gz with no de-duplication, so kicking.fit(202602) counts 2026 week-1 plays (and the per-club TD tallies keyed by (game, team)) up to four times. Not changed here (production model).",
+   "residual_owner": "test owner + kicking owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 94,
+    "failing": 13,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 94,
+    "failing": 13,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "233719 plays examined  got 233719",
+    "class att = 90748  got 100054",
+    "class sack = 6601  got 7242",
+    "class spike = 347  got 389",
+    "class scramble = 5054  got 5629",
+    "class kneel = 2104  got 2335",
+    "class designed_rush = 66657  got 73568",
+    "att_raw = 97696  got 107685",
+    "dropbacks = 102403  got 112925",
+    "rush attempts = 73815  got 81532",
+    "and it is 6,948 plays of 97,696 att_raw (7.11%)  got 7631",
+    "114 sealed run(s) carry 543000 carry cell(s)  114 runs, 543000 cells",
+    "243766 of them are non-integer (50.04%) -- the defect, fenced at its measured size  got 271691"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_sunday_run.py",
+   "class": "c",
+   "subclass": "PRODUCT_NOT_PRODUCTION_READY",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 8,
+    "checks_ok": 4,
+    "checks_failing": 3
+   },
+   "failing_checks": [
+    "the run delivers, and every step passes",
+    "LOAD-BEARING: a failed step cannot be reported as a delivered run"
+   ],
+   "raised_functions": [
+    "test_01_the_run_delivers_and_every_step_passes",
+    "test_05_load_bearing_a_failed_step_cannot_be_reported_as_a_delivered_run",
+    "test_07_the_run_submits_nothing_and_recommends_nothing"
+   ],
+   "root_cause": "readiness PRODUCT_MODE is NOT_PRODUCTION_READY (\"built from content that no longer exists: sim.dst, derived.role_state\"), so sunday.run() refuses before any step; test_01/05 expect a delivered week-3 run, test_07 reads a GOVERNANCE block only written on delivery. The module also rewrites the tracked READINESS.json and SUNDAY_RUN_REPORT.json.",
+   "evidence": "nfl/production/sunday.py:236-249; nfl/production/readiness.py:305",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Production owner rebuilds the stale derived artifacts (not done: changes projections). Redirect of the two tracked writes is PROPOSED only: run(archive=True) archives the repo-path READINESS/REPORT via run_archive.RUN_OUTPUTS, so redirecting OUT/REPORT in the test would archive stale files.",
+   "residual_owner": "production owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 7,
+    "failing": 3,
+    "raised": 4,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 7,
+    "failing": 3,
+    "raised": 4,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "the run delivers, and every step passes",
+    "LOAD-BEARING: a failed step cannot be reported as a delivered run"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_system_state.py",
+   "class": "d",
+   "subclass": "GENERATED_FILE_STALE",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 11,
+    "checks_ok": 35,
+    "checks_failing": 5
+   },
+   "failing_checks": [
+    "the live module count appears in the rendered file  1109",
+    "the live manifest row count appears",
+    "the live HEAD appears",
+    "the live suite check count appears",
+    "the code inventory matches a live count  {'lines': 302032, 'modules': 980} vs {'modules': 1109, 'lines': 344437}; regenerate: python3.12 nfl/tools/system_state.py --write",
+    "the capture manifest row count matches  regenerate: python3.12 nfl/tools/system_state.py --write"
+   ],
+   "raised_functions": [],
+   "root_cause": "SYSTEM_STATE.json / CURRENT_STATE.md were stale (980 modules / 302,032 lines committed vs 1,109 / 344,437 live; manifest row count; HEAD).",
+   "evidence": "nfl/tests/test_system_state.py",
+   "fixable_locally": true,
+   "fix_applied": "Regenerated with python3.12 nfl/tools/system_state.py --write.",
+   "residual": "Regenerated three times during this run because other agents committed between passes (module count 1099 -> 1109 -> 1113). It embeds HEAD and live counts, so it is stale after the next commit by construction; regenerate in the final commit.",
+   "residual_owner": null,
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 40,
+    "failing": 6,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 40,
+    "failing": 0,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [],
+   "status_before": "FAIL",
+   "status_after": "PASS"
+  },
+  {
+   "module": "nfl/tests/test_t90_workflow.py",
+   "class": "c",
+   "subclass": "WORKFLOW_STALE",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 7,
+    "checks_ok": 30,
+    "checks_failing": 12
+   },
+   "failing_checks": [
+    "119 nominal firings, none outside a window  [datetime.datetime(2026, 10, 1, 22, 45, tzinfo=datetime.timezone.utc), datetime.datetime(2026, 10, 1, 22, 50, tzinfo=datetime.timezone.utc), datetime.datetime(2026, 10, 1, 22, 55, tzinfo=datetime.timezone.utc)]",
+    "10-08 22:45Z (80m): 0 firings  0 for a 80m window",
+    "10-11 12:00Z (80m): 0 firings  0 for a 80m window",
+    "10-11 15:30Z (80m): 0 firings  0 for a 80m window",
+    "10-11 18:35Z (80m): 0 firings  0 for a 80m window",
+    "10-11 18:55Z (80m): 0 firings  0 for a 80m window",
+    "10-11 22:50Z (80m): 0 firings  0 for a 80m window",
+    "10-12 22:45Z (80m): 0 firings  0 for a 80m window",
+    "no window is left with zero entries",
+    "the committed file matches today",
+    "and the committed file is byte-identical to its output -- if this fails, a kickoff moved and the cron is stale  regenerate: python3.12 nfl/tools/gen_t90_schedule.py --season 2026 --week 5 --write",
+    "it names the SCHEDULE IDENTITY, not the snapshot filename -- the filename churns on every re-capture and made this guard cry wolf  SCHED-d61929baa45764d7"
+   ],
+   "raised_functions": [],
+   "root_cause": ".github/workflows/nfl-t90.yml is the week-4 schedule: firings fall outside windows (10-01) and seven week-5 windows have zero firings; the test names the generator gen_t90_schedule.py --season 2026 --week 5 --write.",
+   "evidence": "nfl/tests/test_t90_workflow.py",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Regenerating rewrites a scheduled workflow (and changes the G0A identity test_non_g0a_isolation pins) and is inert until deployed to main: a deployment decision, not done here.",
+   "residual_owner": "owner of the T-90 schedule",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 42,
+    "failing": 12,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 42,
+    "failing": 12,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "119 nominal firings, none outside a window  [datetime.datetime(2026, 10, 1, 22, 45, tzinfo=datetime.timezone.utc), datetime.datetime(2026, 10, 1, 22, 50, tzinfo=datetime.timezone.utc), datetime.datetime(2026, 10, 1, 22, 55, tzinfo=datetime.timezone.utc)]",
+    "10-08 22:45Z (80m): 0 firings  0 for a 80m window",
+    "10-11 12:00Z (80m): 0 firings  0 for a 80m window",
+    "10-11 15:30Z (80m): 0 firings  0 for a 80m window",
+    "10-11 18:35Z (80m): 0 firings  0 for a 80m window",
+    "10-11 18:55Z (80m): 0 firings  0 for a 80m window",
+    "10-11 22:50Z (80m): 0 firings  0 for a 80m window",
+    "10-12 22:45Z (80m): 0 firings  0 for a 80m window",
+    "no window is left with zero entries",
+    "the committed file matches today",
+    "and the committed file is byte-identical to its output -- if this fails, a kickoff moved and the cron is stale  regenerate: python3.12 nfl/tools/gen_t90_schedule.py --season 2026 --week 5 --write",
+    "it names the SCHEDULE IDENTITY, not the snapshot filename -- the filename churns on every re-capture and made this guard cry wolf  SCHED-d577f05fff8d8ca9"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_td2_recoverability.py",
+   "class": "d",
+   "subclass": "ENVIRONMENT_RESOLVED",
+   "certified_run": {
+    "result": "OK",
+    "n_fn": 8,
+    "checks_ok": 28,
+    "checks_failing": 0
+   },
+   "failing_checks": [],
+   "raised_functions": [],
+   "root_cause": "Raised in the certified run (panel_enriched.pkl absent in head2).",
+   "evidence": "passes here (52 checks)",
+   "fixable_locally": true,
+   "fix_applied": "Already fixed upstream (fba8cddb); passes.",
+   "residual": null,
+   "residual_owner": null,
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 52,
+    "failing": 0,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 52,
+    "failing": 0,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [],
+   "status_before": "PASS",
+   "status_after": "PASS"
+  },
+  {
+   "module": "nfl/tests/test_v1_draw_artifact.py",
+   "class": "a",
+   "subclass": "TEST_CONTRACT_DRIFT",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 17,
+    "checks_ok": 113,
+    "checks_failing": 3
+   },
+   "failing_checks": [
+    "with the declared EMPTY_FORECAST_ARTIFACT code, raised at player_draws  [[{'code': 'REQUIRED_SOURCE_NOT_DECLARED', 'stage': 'capture_validation', 'detail': \"capture_validation: the run declared ['schedules'] and its own layers select vintages of ['depth_charts', 'injuries', 'schedules', 'weekly_rosters']. Undeclared: ['depth_charts', 'injuries', 'weekly_rosters']. A capture this stage never saw ca",
+    "a DECLARED fixture run is NOT_APPLICABLE, not a claim that draws were stored  [['STAGE_NOT_REACHED']]",
+    "and its artifact is stamped TEST_ONLY rather than sealed as a forecast  [REFUSED]"
+   ],
+   "raised_functions": [],
+   "root_cause": "production capture_validation now refuses REQUIRED_SOURCE_NOT_DECLARED: the fixture runs declare ['schedules'] while their own layers select depth_charts, injuries, schedules, weekly_rosters (nfl/production/run_forecast.py capture_validation stage). The fixtures predate the tightened contract, so every downstream assertion sees STAGE_NOT_REACHED.",
+   "evidence": "3 failing checks REQUIRED_SOURCE_NOT_DECLARED / STAGE_NOT_REACHED",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Fixture must declare its sources. Test owner.",
+   "residual_owner": "test owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 116,
+    "failing": 3,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 116,
+    "failing": 3,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "with the declared EMPTY_FORECAST_ARTIFACT code, raised at player_draws  [[{'code': 'REQUIRED_SOURCE_NOT_DECLARED', 'stage': 'capture_validation', 'detail': \"capture_validation: the run declared ['schedules'] and its own layers select vintages of ['depth_charts', 'injuries', 'schedules', 'weekly_rosters']. Undeclared: ['depth_charts', 'injuries', 'weekly_rosters']. A capture this stage never saw ca",
+    "a DECLARED fixture run is NOT_APPLICABLE, not a claim that draws were stored  [['STAGE_NOT_REACHED']]",
+    "and its artifact is stamped TEST_ONLY rather than sealed as a forecast  [REFUSED]"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_v1_rushing_a1.py",
+   "class": "a",
+   "subclass": "TEST_CONTRACT_DRIFT",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 27,
+    "checks_ok": 145,
+    "checks_failing": 3
+   },
+   "failing_checks": [
+    "an absent source BLOCKS  A1_PBP_SOURCES",
+    "with cause DATA",
+    "and it names the exact fields it needs"
+   ],
+   "raised_functions": [],
+   "root_cause": "rushing_a1.pbp_sources() now treats the committed nfl/research/postgame corpus as a declared source (docstring: \"THE COMMITTED CORPUS IS A DECLARED SOURCE\"), so unsetting the env vars no longer produces A1_PBP_SOURCE_NOT_LOCATED -- it returns A1_PBP_SOURCES.",
+   "evidence": "nfl/production/nonqb/rushing_a1.py:263-300; nfl/tests/test_v1_rushing_a1.py 9d",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "The absence test must hide the committed corpus too (point the search root at an empty dir). Test owner.",
+   "residual_owner": "test owner",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 148,
+    "failing": 3,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 148,
+    "failing": 3,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "an absent source BLOCKS  A1_PBP_SOURCES",
+    "with cause DATA",
+    "and it names the exact fields it needs"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  },
+  {
+   "module": "nfl/tests/test_vintage_selector.py",
+   "class": "b",
+   "subclass": "MISSING_RAW_STORE",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 24,
+    "checks_ok": 280,
+    "checks_failing": 1
+   },
+   "failing_checks": [
+    "roster_status refuses with no clock, in its own vocabulary  ROSTER_STATUS_UNAVAILABLE"
+   ],
+   "raised_functions": [],
+   "root_cause": "nfl_vintage/ (the ephemeral raw store, .gitignore:7) does not exist in this checkout: roster_status.status_map checks for raw files (ROSTER_STATUS_UNAVAILABLE) before it checks the clock, so the \"refuses with no clock\" probe gets UNAVAILABLE.",
+   "evidence": "nfl/production/nonqb/roster_status.py:123-153; nfl/tests/test_vintage_selector.py:287-290",
+   "fixable_locally": false,
+   "fix_applied": "None by this work. It PASSES after another agent populated nfl_vintage/raw (weekly_rosters.efd424c87b892728.csv), which confirms the root cause.",
+   "residual": "Raw weekly_rosters captures in nfl_vintage/raw (networked agent). Arguably also (a): the clock guard could run first; owner call.",
+   "residual_owner": "networked agent",
+   "per_check_class": null,
+   "this_tree_before": {
+    "checks": 281,
+    "failing": 1,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 285,
+    "failing": 0,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [],
+   "status_before": "FAIL",
+   "status_after": "PASS"
+  },
+  {
+   "module": "nfl/tests/test_volatility.py",
+   "class": "b",
+   "subclass": "MISSING_RAW_STORE",
+   "certified_run": {
+    "result": "FAIL",
+    "n_fn": 15,
+    "checks_ok": 79,
+    "checks_failing": 3
+   },
+   "failing_checks": [
+    "there are real nflverse payloads to test against  0",
+    "the two masked pages have the same line count -- so the difference is a substitution, not a structural rewrite  209 vs 212",
+    "only a small number of lines differ  92"
+   ],
+   "raised_functions": [],
+   "root_cause": "nfl_vintage/ (the ephemeral raw store, .gitignore:7) does not exist in this checkout (0 real nflverse payloads). Separately N7 picks the two most frequent official_injury_report page versions; as captures accumulated those became two different weeks' reports (209 vs 212 lines), so the \"substitution only\" premise no longer holds for that pair.",
+   "evidence": "nfl/tests/test_volatility.py:37,528-560",
+   "fixable_locally": false,
+   "fix_applied": null,
+   "residual": "Raw csv captures in nfl_vintage/raw; N7 must choose a pair that differs only by a nonce (test owner).",
+   "residual_owner": "networked agent + test owner",
+   "per_check_class": {
+    "payloads": "b",
+    "N7 line count / diff size": "a"
+   },
+   "this_tree_before": {
+    "checks": 82,
+    "failing": 3,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "this_tree_after": {
+    "checks": 84,
+    "failing": 2,
+    "raised": 0,
+    "zero_check_fns": 0
+   },
+   "after_failing_checks": [
+    "the two masked pages have the same line count -- so the difference is a substitution, not a structural rewrite  209 vs 212",
+    "only a small number of lines differ  92"
+   ],
+   "status_before": "FAIL",
+   "status_after": "FAIL"
+  }
+ ],
+ "zero_check_functions": [
+  {
+   "function": "nfl/tests/test_capture_surface_is_executable.py::test_a_a_clean_deployed_checkout_proves_its_own_release",
+   "class": "d",
+   "root_cause": "origin/capture-prod not fetched; the function calls not_executed() and returns. not_executed() appends to a list run_suite does not read, so the runner sees ZERO checks rather than a BLOCKED count.",
+   "remedy": "fetch capture-prod (networked agent); PROPOSAL: have not_executed() increment a BLOCKED int the runner recognises (test-side; not applied because it moves the result from zero-check to declared-blocked, which is a reporting change for the owner to accept)."
+  },
+  {
+   "function": "nfl/tests/test_capture_surface_is_executable.py::test_c_a_data_commit_does_not_invalidate_the_executor",
+   "class": "d",
+   "root_cause": "same",
+   "remedy": "same"
+  },
+  {
+   "function": "nfl/tests/test_capture_surface_is_executable.py::test_d_a_surface_edit_still_fails_closed",
+   "class": "d",
+   "root_cause": "same",
+   "remedy": "same"
+  },
+  {
+   "function": "nfl/tests/test_capture_surface_is_executable.py::test_g_a_capture_cycle_does_not_invalidate_the_next_capture",
+   "class": "d",
+   "root_cause": "same",
+   "remedy": "same"
+  },
+  {
+   "function": "nfl/tests/test_inactives_propagation.py::test_tonights_roster_capture_is_free_of_posthoc_contamination",
+   "class": "b",
+   "root_cause": "roster_status.status_map returns ROSTER_STATUS_UNAVAILABLE (nfl_vintage/raw absent) and the function prints \"skipped\" and returns with no blocked() record (nfl/tests/test_inactives_propagation.py:263-268).",
+   "remedy": "raw weekly_rosters captures (networked agent); PROPOSAL: record the skip as blocked()."
+  }
+ ],
+ "unvalidated_detectors": [
+  {
+   "status": "UNVALIDATED_CONTROL_DID_NOT_TRIP",
+   "n": 1,
+   "detectors": [
+    "nfl.production.ownership_audit:audit:OWNERSHIP_AUDIT_NO_APPLICATIONS"
+   ],
+   "root_cause": "control test_13 got OWNERSHIP_AUDIT_UNREVIEWED_SITE (unreviewed postgame site).",
+   "class": "a",
+   "fix": "ownership disposition recorded; the control now trips (VALIDATED in the after run)."
+  },
+  {
+   "status": "UNVALIDATED_CONTROL_NOT_EXECUTED",
+   "n": 9,
+   "detectors": [
+    "nfl.production.eligibility_gate:assert_zero_opportunity_over_draws:ZERO_OPPORTUNITY_MATRIX_MISSING",
+    "nfl.production.eligibility_gate:assert_zero_opportunity_over_draws:ZERO_OPPORTUNITY_NO_LAYERS",
+    "nfl.production.eligibility_gate:assert_zero_opportunity_over_draws:ZERO_OPPORTUNITY_SHAPE_MISMATCH",
+    "nfl.production.eligibility_gate:choice_set:CHOICE_SET_PLAYER_NOT_IN_SNAPSHOT",
+    "nfl.production.eligibility_gate:scenarios:SCENARIO_UNKNOWN_PLAYER",
+    "nfl.production.eligibility_gate:scenarios:SCENARIO_WEIGHTS_A_DETERMINATION",
+    "nfl.production.eligibility_gate:scenarios:SCENARIO_WEIGHT_OUT_OF_RANGE",
+    "nfl.production.eligibility_gate:snapshot:ELIGIBILITY_AUTHORITY_CONFLICT",
+    "nfl.production.eligibility_gate:snapshot:ELIGIBILITY_POSTHOC_STATUS"
+   ],
+   "root_cause": "all controls live in nfl/tests/test_eligibility_gate.py, whose fixture raises FileNotFoundError on nfl_vintage/raw/weekly_rosters.bdab6ecee12d44a4.csv before reaching them.",
+   "class": "b",
+   "fix": null
+  }
+ ],
+ "tree_mutations": [
+  {
+   "path": "nfl/dfs/salaries/DK_WEEK3_PLACEHOLDER_PORTFOLIO_AUDIT.json",
+   "writer_test": "test_fc_firewall_and_projection_source (own process)",
+   "writer_code": "nfl/tools/portfolio_audit.run() -> PA.OUT",
+   "fixed": false,
+   "note": "changed only in suite order (an earlier module alters an input); unchanged when the module runs alone. PROPOSAL: redirect PA.OUT to a temp dir around the five PA.run() calls (test reads PA.OUT at :165, so read the redirected file)."
+  },
+  {
+   "path": "nfl/dfs/salaries/DK_WEEK3_PROJECTION_SOURCE_LEDGER.json",
+   "writer_test": "test_fc_firewall_and_projection_source",
+   "writer_code": "nfl/tools/projection_source.run() writes a HARD-CODED path with generated_at_utc=now, so every call changes it",
+   "fixed": false,
+   "note": "not test-side fixable: needs an OUT constant in nfl/tools/projection_source.py (tool edit, no output change) before a test can redirect it."
+  },
+  {
+   "path": "nfl/dfs/salaries/SHOWDOWN_TONIGHT_STATE.json",
+   "writer_test": "test_role_depth_adversarial",
+   "writer_code": "nfl/tools/showdown_slate_state.build() -> SSS.OUT",
+   "fixed": true,
+   "note": "the test overwrote the committed PIT@CLE slate state with an ATL@NO fixture (Adomitis designation removed); that is what failed 11 of 12 checks in test_showdown_family in suite order. Redirected to a temp dir."
+  },
+  {
+   "path": "nfl/dfs/salaries/SLATE_STATUS_BOARD.json",
+   "writer_test": "test_slate_to_portfolio (own process)",
+   "writer_code": "nfl/tools/slate_to_portfolio OUT_BOARD",
+   "fixed": false,
+   "note": "PROPOSAL: redirect SP.OUT_BOARD/OUT_MD/OUT_CSV together (the test reads all three back)."
+  },
+  {
+   "path": "nfl/dfs/salaries/SLATE_STATUS_BOARD.md",
+   "writer_test": "test_slate_to_portfolio",
+   "writer_code": "OUT_MD",
+   "fixed": false,
+   "note": "as above"
+  },
+  {
+   "path": "nfl/field/OWNERSHIP_ACQUISITION_MANIFEST.json",
+   "writer_test": "test_contest_ownership",
+   "writer_code": "nfl/field/contest_ownership.status() -> CO.MANIFEST",
+   "fixed": true,
+   "note": "redirected to a temp dir"
+  },
+  {
+   "path": "nfl/production/READINESS.json",
+   "writer_test": "test_readiness, test_lineage, test_sunday_run",
+   "writer_code": "nfl/production/readiness.build() -> readiness.OUT",
+   "fixed": "PARTIAL",
+   "note": "test_readiness and test_lineage redirected; test_sunday_run still writes it (archive semantics, proposal only)."
+  },
+  {
+   "path": "nfl/production/SUNDAY_RUN_REPORT.json",
+   "writer_test": "test_sunday_run",
+   "writer_code": "nfl/production/sunday.run() -> REPORT",
+   "fixed": false,
+   "note": "PROPOSAL: give run_archive an injectable output map so the test can redirect READINESS/REPORT and archive the redirected copies."
+  },
+  {
+   "path": "nfl/prospective/q9shadow/Q9_SHADOW_DRYRUN_SEAL_LEDGER.jsonl",
+   "writer_test": "test_q9_prospective_shadow (test_21 via dryrun.run, test_22)",
+   "writer_code": "nfl/prospective/q9shadow/seal.seal_season(dry_run=True) appends to SEAL.DRYRUN_SEAL_LEDGER",
+   "fixed": true,
+   "note": "every suite run appended its seals to a tracked ledger; redirected to a temp file. dryrun.py's docstring (\"writes only under dryrun/proof\") is wrong for the same reason."
+  },
+  {
+   "path": "nfl/research/v2/r5/active_board_pointer.json",
+   "writer_test": "test_quality_gates",
+   "writer_code": "nfl/product/board_pointer swap()/begin_candidate()/_write_pointer() -> BP.POINTER",
+   "fixed": false,
+   "note": "PROPOSAL: redirect BP.STATE_DIR and BP.POINTER to a temp dir seeded with a copy of the live pointer around test_q/test_t/test_u (test_s reads the live pointer, so it must read the copy)."
+  },
+  {
+   "path": "nfl/tests/_suite_progress.jsonl",
+   "writer_test": "run_suite.py itself (every non-certified run)",
+   "writer_code": "nfl/tests/run_suite.py PROGRESS_PATH default",
+   "fixed": false,
+   "note": "NOT in the certificate list because certify_suite redirects it; a tracked file appended by every ordinary run. PROPOSAL: gitignore it or default PROGRESS_PATH outside the tree."
+  }
+ ],
+ "neighbours_rerun": [
+  {
+   "module": "nfl/tests/test_artifact_claim.py",
+   "checks": 37,
+   "failing": 0,
+   "raised": 0,
+   "zero_check_fns": 0,
+   "watched_paths_changed": []
+  },
+  {
+   "module": "nfl/tests/test_board_pass_judgement.py",
+   "checks": 32,
+   "failing": 0,
+   "raised": 0,
+   "zero_check_fns": 0,
+   "watched_paths_changed": []
+  },
+  {
+   "module": "nfl/tests/test_bridge.py",
+   "checks": 71,
+   "failing": 0,
+   "raised": 0,
+   "zero_check_fns": 0,
+   "watched_paths_changed": []
+  },
+  {
+   "module": "nfl/tests/test_capture_surface_is_executable.py",
+   "checks": 32,
+   "failing": 0,
+   "raised": 0,
+   "zero_check_fns": 4,
+   "watched_paths_changed": []
+  },
+  {
+   "module": "nfl/tests/test_contest_ownership.py",
+   "checks": 9,
+   "failing": 0,
+   "raised": 0,
+   "zero_check_fns": 0,
+   "watched_paths_changed": []
+  },
+  {
+   "module": "nfl/tests/test_inactives_propagation.py",
+   "checks": 41,
+   "failing": 0,
+   "raised": 0,
+   "zero_check_fns": 1,
+   "watched_paths_changed": []
+  },
+  {
+   "module": "nfl/tests/test_mode_boundaries.py",
+   "checks": 38,
+   "failing": 0,
+   "raised": 0,
+   "zero_check_fns": 0,
+   "watched_paths_changed": []
+  },
+  {
+   "module": "nfl/tests/test_non_evidentiary_refusal_dfs_gov.py",
+   "checks": 65,
+   "failing": 0,
+   "raised": 0,
+   "zero_check_fns": 0,
+   "watched_paths_changed": []
+  },
+  {
+   "module": "nfl/tests/test_orchestrator.py",
+   "checks": 276,
+   "failing": 0,
+   "raised": 0,
+   "zero_check_fns": 0,
+   "watched_paths_changed": []
+  },
+  {
+   "module": "nfl/tests/test_q9_prospective_shadow.py",
+   "checks": 254,
+   "failing": 0,
+   "raised": 0,
+   "zero_check_fns": 0,
+   "watched_paths_changed": []
+  },
+  {
+   "module": "nfl/tests/test_readiness.py",
+   "checks": 8,
+   "failing": 0,
+   "raised": 0,
+   "zero_check_fns": 0,
+   "watched_paths_changed": []
+  },
+  {
+   "module": "nfl/tests/test_role_depth_adversarial.py",
+   "checks": 30,
+   "failing": 0,
+   "raised": 0,
+   "zero_check_fns": 0,
+   "watched_paths_changed": []
+  },
+  {
+   "module": "nfl/tests/test_role_state_history.py",
+   "checks": 9,
+   "failing": 0,
+   "raised": 0,
+   "zero_check_fns": 0,
+   "watched_paths_changed": []
+  },
+  {
+   "module": "nfl/tests/test_shrinkage_study.py",
+   "checks": 9,
+   "failing": 0,
+   "raised": 0,
+   "zero_check_fns": 0,
+   "watched_paths_changed": []
+  },
+  {
+   "module": "nfl/tests/test_uncalled_governance_guards.py",
+   "checks": 13,
+   "failing": 1,
+   "raised": 0,
+   "zero_check_fns": 0,
+   "watched_paths_changed": []
+  }
+ ],
+ "newly_exposed_by_regeneration": [
+  {
+   "module": "nfl/tests/test_uncalled_governance_guards.py",
+   "check": "the old one still has no caller",
+   "cause": "Regenerating GUARD_REACHABILITY.json (the fix for test_guard_census_is_not_stale) records the truth: assert_no_inactive_survived (nfl/dfs/salaries/postinactives_board.py:155) now has 5 TEST callers, so its reachability is NO_PROD_CALLER, not NO_CALLER_AT_ALL. The check passed only because it read the stale census -- a false green the regeneration removed. Production behaviour is unchanged.",
+   "class": "a",
+   "remedy": "Test owner: the supersession claim is \"no PRODUCTION caller\" (reachability in {NO_CALLER_AT_ALL, NO_PROD_CALLER}); the census must not be reverted to stale bytes to keep this green."
+  },
+  {
+   "module": "nfl/tests/test_p7_dag.py",
+   "check": "it records the audit state rather than implying one",
+   "cause": "The committed P7_DECLARED_READS.json said PASS while the live audit FAILS UNDECLARED_VINTAGE_READ. Regenerated, it now records FAIL, so this check fails instead of \"matches a live audit\". Count unchanged.",
+   "class": "a",
+   "remedy": "Declare the five undeclared reads (see the test_p7_dag row)."
+  }
+ ]
+}
