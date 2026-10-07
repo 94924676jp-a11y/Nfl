@@ -3968,3 +3968,16 @@ The owner uploaded full-field standings for 196285137, 196285160 and 196285161 o
 under nfl/postgame/raw/showdown_history/<cid>_ATL_NO/ (PROVENANCE.jsonl, sha256 of the uncompressed CSV). All five
 pre-registered measurements are scored in nfl/postgame/showdown_atl_no_2026W4/ATL_NO_FIELD_ACTUAL_PREREGISTERED.json.
 M2 (contests we did not enter) remains open and optional.
+
+## REQUEST 2026-10-07 — PHI@CHI Showdown salaries (and any public projection file) for contest 196036243
+
+For the duplication study (docs/NFL_SHOWDOWN_DUPLICATION_PREREGISTRATION.md). PHI@CHI (Showdown, 2026-09-28,
+contest 196036243, DK $10K Quarter Jukebox 20-max) has full standings in the repo but **no salaries**, so its feasible
+lineup universe cannot apply the $50,000 cap and every salary- or projection-conditioned duplication model can only be
+tested PIT@CLE <-> ATL@NO (two folds instead of three).
+
+Needed: the DK draftables for that contest's draft group -- per player: name, team, position, FLEX salary, CPT salary,
+DK player ids (the same fields as a DKEntries export). If a FantasyCruncher-style Showdown projection file for that slate
+exists anywhere in project storage, that too (it is used only as a description of what the field's optimizers saw,
+never as a football input). Save as nfl/dfs/salaries/raw/DK_DRAFTABLES_PHI_CHI_SHOWDOWN_2026W3.<sha16>.csv with a
+provenance line; push to claude/nfl-greenfield-architecture-stsxmk. Not blocking the next slate.
