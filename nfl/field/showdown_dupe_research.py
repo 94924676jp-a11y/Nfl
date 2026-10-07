@@ -209,7 +209,14 @@ def forecast_universe(sid, cpt_share, flex_share, meta, fc, N):
     """A universe from FORECAST slot ownership only (no entries): the 32 players with the largest forecast total
     ownership; targets are the forecast shares renormalised inside the universe. Used for prelock-knowable fields."""
     tot = {p: cpt_share.get(p, 0.0) + flex_share.get(p, 0.0) for p in set(cpt_share) | set(flex_share)}
-    players = sorted(tot, key=lambda p: -tot[p])[:K_PLAYERS]
+    players = [p for p in sorted(tot, key=lambda p: -tot[p]) if p in meta][:K_PLAYERS]
+    # fewer forecast players than the universe width: pad with zero-ownership pool players (pinned out by the solver,
+    # so they carry no mass -- a 0% forecast means no lineups with him in a prelock field)
+    for p in sorted(meta):
+        if len(players) >= K_PLAYERS:
+            break
+        if p not in players and meta[p].get('team'):
+            players.append(p)
     U = universe_from_players(sid, players, meta, fc, all(meta[p].get('flex_salary') for p in players))
     c = np.array([cpt_share.get(p, 0.0) for p in players])
     f = np.array([flex_share.get(p, 0.0) for p in players])
@@ -319,7 +326,7 @@ def _stats(U, a, b, th, F):
     return logZ, m_c, m_f, E_F, H, q
 
 
-def _expfam(Us, names, theta_fixed=None, iters=40, tol=2e-6):
+def _expfam(Us, names, theta_fixed=None, iters=120, tol=2e-6):
     """Joint maximum likelihood over one or more contests: per-contest a, b (always matched to that contest's own
     marginals at the optimum) and, unless theta_fixed is given, a shared theta. Convex; Newton with backtracking.
     Players with a zero target in a slot are pinned at -50 in that slot."""
@@ -371,27 +378,39 @@ def _expfam(Us, names, theta_fixed=None, iters=40, tol=2e-6):
                 Hb[-d:, off:off + nf] = U['n_in'] * C.T
                 Hb[-d:, -d:] += U['n_in'] * H[2 * K:, 2 * K:]
                 g[-d:] += U['n_in'] * (e - E_F)
-                gmax = max(gmax, float(np.max(np.abs(e - E_F))))
             off += nf
+        if free_th:
+            # the shared theta's gradient is the entry-weighted SUM over contests; each contest's own residual need not
+            # vanish at the joint optimum (they disagree, and the optimum balances them)
+            gmax = max(gmax, float(np.max(np.abs(g[-d:]))) / sum(U['n_in'] for U in Us))
         if gmax < tol:
             break
-        ridge = 1e-9 * max(1.0, np.trace(Hb) / len(Hb))
-        step = np.linalg.solve(Hb + ridge * np.eye(len(Hb)), g)
-        t = 1.0
-        while True:
-            new_st, off = [], 0
-            for x in st:
-                L = x['live']
-                v = np.concatenate([x['a'], x['b']])
-                nf = int(L.sum())
-                v[L] = v[L] + t * step[off:off + nf]
-                off += nf
-                new_st.append({'a': v[:K], 'b': v[K:], 'live': L})
-            new_th = th + t * step[-d:] if free_th else th
-            ll2, res2 = evaluate(new_st, new_th)
-            if ll2 >= ll - 1e-7 * abs(ll) or t < 1e-4:
+        # Levenberg-Marquardt: start near pure Newton; if no backtracked step improves the likelihood, damp harder
+        # (the per-contest gauge directions -- CPT shares sum to 1, FLEX to 5 -- make the Hessian singular).
+        scale = max(1.0, np.trace(Hb) / len(Hb))
+        improved = False
+        for lam in (1e-9, 1e-6, 1e-4, 1e-2, 1e-1, 1.0, 10.0):
+            step = np.linalg.solve(Hb + lam * scale * np.eye(len(Hb)), g)
+            t = 1.0
+            while t >= 1e-3:
+                new_st, off = [], 0
+                for x in st:
+                    L = x['live']
+                    v = np.concatenate([x['a'], x['b']])
+                    nf = int(L.sum())
+                    v[L] = v[L] + t * step[off:off + nf]
+                    off += nf
+                    new_st.append({'a': v[:K], 'b': v[K:], 'live': L})
+                new_th = th + t * step[-d:] if free_th else th
+                ll2, res2 = evaluate(new_st, new_th)
+                if ll2 > ll:
+                    improved = True
+                    break
+                t /= 2
+            if improved:
                 break
-            t /= 2
+        if not improved:
+            break
         st, th, ll, res = new_st, new_th, ll2, res2
     need(gmax < 1e-4, 'EXPFAM_NOT_CONVERGED', f"{[U['id'] for U in Us]} {names} gmax {gmax:.2e}")
     for U, x in zip(Us, st):

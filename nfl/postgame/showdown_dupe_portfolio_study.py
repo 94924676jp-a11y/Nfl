@@ -129,7 +129,10 @@ def field_scores(lineups, weights, by, chunk=200):
     """Per world: field scores sorted descending with cumulative weights (for rank lookups)."""
     keys = list(by)
     kix = {k: i for i, k in enumerate(keys)}
-    D = np.stack([by[k]['draws'] for k in keys]).astype(np.float32)
+    n_w = max(len(np.atleast_1d(by[k]['draws'])) for k in keys if by[k].get('draws') is not None)
+    # an absent (inactive) player carries no draws: he scores 0 in every world
+    D = np.stack([np.asarray(by[k]['draws'], np.float32) if by[k].get('draws') is not None
+                  and len(np.atleast_1d(by[k]['draws'])) == n_w else np.zeros(n_w, np.float32) for k in keys])
     C = np.array([kix[c] for c, _ in lineups])
     Fm = np.array([[kix[x] for x in f] for _, f in lineups])
     W = np.asarray(weights, float)
