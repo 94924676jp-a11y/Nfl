@@ -98,7 +98,8 @@ def discover(cfg_path, mode):
     if '_2026' not in cfg['tag'] or len(cfg['tag'].split('_2026')[0].split('_')) != 2:
         raise SlateError(f'SLATE_TAG_SHAPE {cfg["tag"]} (expected AWAY_HOME_2026W<n>)')
     files = {k: cfg[k] for k in ('export', 'fc', 'designations', 'official_inactives', 'official_inactives_provenance',
-                                 'confirmed_starters', 'depth_chart') if cfg.get(k)}
+                                 'confirmed_starters', 'confirmed_starters_provenance', 'depth_chart', 'snaps')
+             if cfg.get(k)}
     absent = [f'{k}={v}' for k, v in files.items() if not (_REPO / v).is_file() or (_REPO / v).stat().st_size == 0]
     if absent:
         raise SlateError(f'INPUT_FILE_MISSING_OR_EMPTY {absent}')
@@ -167,7 +168,17 @@ def verify_football_inputs(cfg, mode):
                     'inactives_evidence_tier': prov.get('EVIDENCE_TIER')})
     elif mode == 'final':
         raise SlateError('OFFICIAL_INACTIVES_REQUIRED')
-    out['ready_eligible'] = mode == 'final' and official and not cfg.get('rehearsal')
+    # STARTERS: a chart or a scenario file names a starter; READY needs CONFIRMATION (owner ruling 2026-10-07: TB@DAL
+    # runs only with a confirmed TB starting QB). A provenance record whose sha256 is the starters file's and which says
+    # CONFIRMED true (with its source) is the confirmation. Without it the run may proceed and is never READY.
+    confirmed = False
+    if cfg.get('confirmed_starters_provenance'):
+        sp = json.loads((_REPO / cfg['confirmed_starters_provenance']).read_text())
+        if sp.get('sha256') != _sha(_REPO / cfg['confirmed_starters']):
+            raise SlateError('STARTERS_PROVENANCE_DESCRIBES_ANOTHER_FILE')
+        confirmed = sp.get('CONFIRMED') is True and bool(sp.get('source'))
+    out['starters_confirmed'] = confirmed
+    out['ready_eligible'] = mode == 'final' and official and confirmed and not cfg.get('rehearsal')
     return out
 
 
@@ -261,22 +272,6 @@ def _run_body(cfg, cfg_path, mode, hashes, P, scen, sd, pre, L):
         rc, tail = _run([PY] + c, env, name)
         shadows[name] = 'PASS' if rc == 0 else f'FAIL rc={rc}: {tail[-300:]}'
     own = P['dir'] / f'SHADOW_{scen}_BLEND' / f'{pre}_SHADOW_OWNERSHIP.csv'
-    # SC-OWN-ROTATION-2 ownership shadow (frozen 2026-10-07; sealed per slate; never read by selection)
-    if own.exists() and cfg.get('snaps'):
-        proj = sd / f'{pre}_PROJECTIONS.csv'
-        ow = _REPO / 'nfl/research/ownership/predictions' / f"SC_OWN_ROTATION_2_{cfg['tag']}_{scen}.json"
-        c = [PY, 'nfl/research/ownership/predict_sc_own_rotation_2.py', '--slate', cfg['tag'],
-             '--week', cfg['tag'].rsplit('W', 1)[-1], '--kickoff', cfg['kickoff_utc'], '--export', _REPO / cfg['export'],
-             '--baseline', own, '--projection', proj, '--depth-chart', _REPO / cfg['depth_chart'],
-             '--designations', _REPO / cfg['designations'], '--snaps', _REPO / cfg['snaps'], '--out', ow]
-        if cfg.get('official_inactives'):
-            c += ['--inactives', _REPO / cfg['official_inactives']]
-        if cfg.get('rehearsal'):
-            c += ['--dry-run', '--label', 'REHEARSAL']
-        rc, tail = _run(c, env, 'own2')
-        shadows['OWNERSHIP_SC_OWN_ROTATION_2'] = ('PASS ' + str(ow.relative_to(_REPO))) if rc == 0 else f'FAIL rc={rc}: {tail[-300:]}'
-    else:
-        shadows['OWNERSHIP_SC_OWN_ROTATION_2'] = 'NOT_RUN: needs the BLEND shadow ownership and a snaps capture (SLATE.json "snaps")'
     b4 = P['dir'] / f'DUPE_SHADOW_B4_{scen}.json'
     if own.exists():
         sizes = []
@@ -299,15 +294,48 @@ def _run_body(cfg, cfg_path, mode, hashes, P, scen, sd, pre, L):
             shadows['B4_SHADOW_FIELD_SIZE'] = 'ESTIMATE prize / (fee x 0.85); declare field_size when DK shows it'
     else:
         shadows['B4_SHADOW'] = 'NOT_RUN: no shadow ownership forecast (needs the FC-based field shadow)'
+    # SC-OWN-ROTATION-2 ownership shadow (frozen 2026-10-07; sealed per slate; never read by selection)
+    if own.exists() and cfg.get('snaps'):
+        proj = sd / f'{pre}_PROJECTIONS.csv'
+        ow = _REPO / 'nfl/research/ownership/predictions' / f"SC_OWN_ROTATION_2_{cfg['tag']}_{scen}.json"
+        c = [PY, 'nfl/research/ownership/predict_sc_own_rotation_2.py', '--slate', cfg['tag'],
+             '--week', cfg['tag'].rsplit('W', 1)[-1], '--kickoff', cfg['kickoff_utc'], '--export', _REPO / cfg['export'],
+             '--baseline', own, '--projection', proj, '--depth-chart', _REPO / cfg['depth_chart'],
+             '--designations', _REPO / cfg['designations'], '--snaps', _REPO / cfg['snaps'], '--out', ow]
+        if cfg.get('official_inactives'):
+            c += ['--inactives', _REPO / cfg['official_inactives']]
+        if cfg.get('rehearsal'):
+            c += ['--dry-run', '--label', 'REHEARSAL']
+        rc, tail = _run(c, env, 'own2')
+        shadows['OWNERSHIP_SC_OWN_ROTATION_2'] = ('PASS ' + str(ow.relative_to(_REPO))) if rc == 0 else f'FAIL rc={rc}: {tail[-300:]}'
+    else:
+        shadows['OWNERSHIP_SC_OWN_ROTATION_2'] = 'NOT_RUN: needs the BLEND shadow ownership and a snaps capture (SLATE.json "snaps")'
+    # APPEARANCE SUCCESSOR: sealed per WEEK for every game before that week's first kickoff (nfl/prospective/appearance).
+    # The runner does not recompute it; it verifies that this game is covered by a valid prelock seal and records it.
+    try:
+        from nfl.research.appearance import grade_appearance_seal as GA
+        wk = int(cfg['tag'].rsplit('W', 1)[-1])
+        sealp = _REPO / f'nfl/prospective/appearance/APPEARANCE_SUCCESSOR_W{wk}_SEAL.json'
+        doc = GA.load_seal(sealp)
+        gid = f"2026_{wk:02d}_{cfg['tag'].split('_2026')[0]}"
+        shadows['APPEARANCE_SUCCESSOR'] = (f"SEALED {sealp.relative_to(_REPO)} seal {doc['seal_sha256'][:12]} written {doc['written_at']}"
+                                           if gid in (doc.get('games') or {}) else f'NOT_COVERED: {gid} not in the week-{wk} seal')
+    except Exception as e:  # noqa: BLE001 -- a shadow never blocks; its failure is recorded by name
+        shadows['APPEARANCE_SUCCESSOR'] = f'NOT_VERIFIED: {type(e).__name__}: {str(e)[:200]}'
     L.add('SHADOWS_NON_BLOCKING', 'RECORDED', **shadows)
 
-    # ---- SEAL PROP DISTRIBUTIONS (blocking for the market phase, not for the DFS upload)
-    mk = market_dir(cfg)
-    rc, tail = _run([PY, 'nfl/market/showdown_prop_shadow.py', 'seal', '--scenario-dir', sd, '--out-dir', mk,
-                     '--slate', cfg['tag'].split('_2026')[0], '--kickoff', cfg['kickoff_utc']], env, 'seal')
-    L.add('SEAL_PROPS', 'PASS' if rc == 0 else 'FAIL', out=str(mk.relative_to(_REPO)), tail=tail[-300:])
+    # ---- SEAL PROP DISTRIBUTIONS (final mode only: the seal is write-once per slate, so a precompute must not take it;
+    #      blocking for the market phase, not for the DFS upload)
+    if mode != 'final':
+        L.add('SEAL_PROPS', 'SKIPPED_PRECOMPUTE', why='the prop seal is taken once, by the final run')
+        rc = 0
+    else:
+        mk = market_dir(cfg)
+        rc, tail = _run([PY, 'nfl/market/showdown_prop_shadow.py', 'seal', '--scenario-dir', sd, '--out-dir', mk,
+                         '--slate', cfg['tag'].split('_2026')[0], '--kickoff', cfg['kickoff_utc']], env, 'seal')
+        L.add('SEAL_PROPS', 'PASS' if rc == 0 else 'FAIL', out=str(mk.relative_to(_REPO)), tail=tail[-300:])
 
-    return final_verify(cfg, cfg_path, hashes, ver, L, P, sd, pre, env, prop_seal_ok=rc == 0)
+    return final_verify(cfg, cfg_path, hashes, ver, L, P, sd, pre, env, prop_seal_ok=(None if mode != 'final' else rc == 0))
 
 
 # ---------------------------------------------------------------- FINAL VERIFY
@@ -340,9 +368,11 @@ def final_verify(cfg, cfg_path, hashes, ver, L, P, sd, pre, env, prop_seal_ok):
         blockers.append('FINAL_BOARD_ABSENT')
     if cfg.get('rehearsal'):
         blockers.append('REHEARSAL_NOT_LIVE (kickoff and scenario are rehearsal values; never READY)')
+    elif not ver.get('starters_confirmed'):
+        blockers.append('STARTERS_NOT_CONFIRMED (no confirmed_starters_provenance with CONFIRMED true and a source)')
     elif not ver.get('ready_eligible'):
         blockers.append('INACTIVES_NOT_OFFICIALLY_VERIFIED_OR_PRECOMPUTE_MODE')
-    if not prop_seal_ok:
+    if prop_seal_ok is False:          # None = precompute (the seal belongs to the final run)
         blockers.append('PROP_SEAL_FAILED (market phase unavailable; DFS unaffected)')
     if _now() >= _ts(cfg['kickoff_utc']):
         blockers.append('FINAL_VERIFY_AFTER_KICKOFF')
@@ -427,6 +457,21 @@ def postgame(cfg_path, standings, actuals=None):
                                     else f'REFUSED rc={r.returncode}: {(r.stdout + r.stderr)[-300:]}')
     else:
         out['ownership_grade'] = f'NOT_GRADED: no sealed SC-OWN-ROTATION-2 prediction at {pred.relative_to(_REPO)}'
+    wk = int(cfg['tag'].rsplit('W', 1)[-1])
+    sealp = _REPO / f'nfl/prospective/appearance/APPEARANCE_SUCCESSOR_W{wk}_SEAL.json'
+    if sealp.exists() and cfg.get('snaps'):
+        import glob as _g
+        sched = max(_g.glob(str(_REPO / 'nfl/vintage/schedules.*.csv.gz')), key=lambda f: pathlib.Path(f).stat().st_mtime)
+        gout = _REPO / 'nfl/research/appearance/grades' / f"APPEARANCE_SUCCESSOR_W{wk}_{cfg['tag']}.json"
+        gout.parent.mkdir(parents=True, exist_ok=True)
+        r = subprocess.run([PY, 'nfl/research/appearance/grade_appearance_seal.py', '--seal', str(sealp),
+                            '--panel', str(_REPO / 'nfl/derived/USAGE_HISTORY_2021_2026.json'), '--snaps', str(_REPO / cfg['snaps']),
+                            '--crosswalk', str(_REPO / 'nfl/postgame/raw/role_audit_history/players_crosswalk.bea61fc25c863150.csv.gz'),
+                            '--schedule', sched, '--out', str(gout)], cwd=_REPO, capture_output=True, text=True)
+        out['appearance_grade'] = (f'PASS {gout.relative_to(_REPO)}' if r.returncode == 0 else
+                                   f'NOT_GRADED rc={r.returncode}: {(r.stdout + r.stderr)[-300:]} (needs the week-{wk} snap counts and panel rows)')
+    else:
+        out['appearance_grade'] = 'NOT_GRADED: no week seal or no snaps capture'
     pth = P['dir'] / f"POSTGAME_{cfg.get('scenario')}.json"
     pth.write_text(json.dumps(out, indent=1, default=str))
     print(pth)

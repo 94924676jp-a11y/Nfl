@@ -2357,3 +2357,19 @@ the ruling and the proposed OWNER_DECISIONS entry is the text below).
   via the generic runner.
 
 Status register: `nfl/research/registry/CANDIDATE_STATUS_REGISTER.json`.
+
+## 2026-10-07 — Owner ruling: TB@DAL execution mode
+
+- **Approved:** the specialist detector stays ON; the fresh-capture data generation for TB@DAL (2026 week-4 play-by-play,
+  current depth charts, rosters, injuries; derived cache generation 2, `nfl/production/DERIVED_REBUILD_MANIFEST.json`),
+  with the ATL@NO generation preserved separately (`DERIVED_REBUILD_MANIFEST.ATL_NO_REPRO_2026-10-07.json`); B4, B3S,
+  SC-OWN-ROTATION-2 and the appearance successor run prospectively, SHADOW_ONLY, exactly as sealed/frozen.
+- **Not approved:** any model promotion; Q9 re-freeze or revert; protected gate.py changes; portfolio-objective changes;
+  Stat-api purchase; retuning the failed coherence candidate.
+- **Scope note (agent):** this approves the DATA generation. The capture CODE release item in the suite backlog
+  (running capture surface 2a59c19e vs approved CAPREL-361a020a) is a separate governance item and is NOT treated as
+  approved by this ruling.
+- `nfl/production/kicking.py` duplicate-vintage defect: separate remediation item; not on the Showdown path; does not
+  delay TB@DAL.
+- Execution: precompute both TB QB scenarios while the starter is unresolved, isolated and deterministic; the final run
+  may be READY only with the official inactive list, verified provenance, a confirmed TB starting QB, and fresh hashes.

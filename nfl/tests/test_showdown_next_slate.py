@@ -88,8 +88,21 @@ def test_discover():
 def test_verify_inputs():
     with tempfile.TemporaryDirectory(dir=_REPO / 'nfl/tests') as td:
         v = NS.verify_football_inputs(BASE, 'final')
-        check(v['ready_eligible'] and v['officially_verified'] and v['teams'] == ['ATL', 'NO'],
-              f"official ATL@NO inputs verify ({v['official_inactives_n']} inactives)")
+        check(v['officially_verified'] and v['teams'] == ['ATL', 'NO'] and not v['starters_confirmed']
+              and not v['ready_eligible'],
+              f"official ATL@NO inputs verify ({v['official_inactives_n']} inactives) but with no starter confirmation "
+              f"the run is never READY")
+        import hashlib as _h
+        sha = _h.sha256((_REPO / BASE['confirmed_starters']).read_bytes()).hexdigest()
+        okp = _tmpfile(td, 'sp.json', {'sha256': sha, 'CONFIRMED': True, 'source': 'unit test fixture'})
+        v = NS.verify_football_inputs({**BASE, 'confirmed_starters_provenance': okp}, 'final')
+        check(v['starters_confirmed'] and v['ready_eligible'], 'confirmed starters + official inactives -> READY-eligible')
+        nosrc = _tmpfile(td, 'sp2.json', {'sha256': sha, 'CONFIRMED': True})
+        check(not NS.verify_football_inputs({**BASE, 'confirmed_starters_provenance': nosrc}, 'final')['ready_eligible'],
+              'a confirmation without a source is not a confirmation')
+        bad = _tmpfile(td, 'sp3.json', {'sha256': '0' * 64, 'CONFIRMED': True, 'source': 'x'})
+        _refused(lambda: NS.verify_football_inputs({**BASE, 'confirmed_starters_provenance': bad}, 'final'),
+                 'STARTERS_PROVENANCE_DESCRIBES_ANOTHER_FILE', 'starter provenance for another file is refused')
         _refused(lambda: NS.verify_football_inputs({**BASE, 'tag': 'ATL_TB_2026W4'}, 'final'), 'SLATE_TEAMS_MISMATCH',
                  'an export for other clubs is refused')
         one = _tmpfile(td, 's.json', {'Michael Penix Jr.': 'ATL'})
@@ -106,7 +119,7 @@ def test_verify_inputs():
         v = NS.verify_football_inputs(rw, 'final')
         check(not v['ready_eligible'] and not v['officially_verified'],
               'a secondary-source list verifies but can never make the run READY')
-        check(not NS.verify_football_inputs({**BASE, 'rehearsal': True}, 'final')['ready_eligible'],
+        check(not NS.verify_football_inputs({**BASE, 'rehearsal': True, 'confirmed_starters_provenance': okp}, 'final')['ready_eligible'],
               'a rehearsal is never READY-eligible')
         import csv
         rows = [r for r in csv.DictReader(open(_REPO / BASE['depth_chart'])) if r['team'] == 'ATL']
@@ -152,6 +165,13 @@ def test_postgame_phase():
                 out.unlink()
 
 
+def test_appearance_seal_covers_tb_dal():
+    from nfl.research.appearance import grade_appearance_seal as GA
+    doc = GA.load_seal(_REPO / 'nfl/prospective/appearance/APPEARANCE_SUCCESSOR_W5_SEAL.json')
+    check('2026_05_TB_DAL' in doc['games'] and doc['written_at'] < doc['first_kickoff_utc'],
+          f"the week-5 appearance seal verifies and covers TB@DAL, written {doc['written_at']} before {doc['first_kickoff_utc']}")
+
+
 def test_slate_env_defaults_are_atl():
     from nfl.tools import showdown_slate_env as E
     check(E.PREFIX == 'SHOWDOWN_ATL_NO' and E.TAG == 'ATL_NO_2026W4' and E.WEEK == '4'
@@ -172,7 +192,8 @@ def test_slate_env_defaults_are_atl():
 
 
 if __name__ == '__main__':
-    for t in (test_discover, test_verify_inputs, test_run_refusals, test_postgame_phase, test_slate_env_defaults_are_atl):
+    for t in (test_discover, test_verify_inputs, test_run_refusals, test_postgame_phase, test_appearance_seal_covers_tb_dal,
+              test_slate_env_defaults_are_atl):
         print(t.__name__)
         t()
     print(f'{PASSED} passed, {FAILED} failed')
