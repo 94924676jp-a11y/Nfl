@@ -4057,3 +4057,17 @@ each week after Monday night: nflverse 2026 player stats (weekly), snap counts, 
 week, so nfl/derived/USAGE_HISTORY_2021_2026.json can be rebuilt with that week's rows. Today the panel ends at 2026
 week 3 for every club (week 4 is missing). Save under nfl/postgame/raw/role_audit_history/ (or the existing
 nfl/vintage capture convention) with sha256 provenance rows; push to claude/nfl-greenfield-architecture-stsxmk.
+
+## UPDATE 2026-10-07 17:20Z — TB@DAL: captured here, still needed from you
+
+**Now captured in the repo (no longer needed):** nflverse depth charts (2026-10-07T14:25Z), weekly rosters through
+week 5, injuries with week-5 practice statuses, play-by-play weeks 1-4 (derived cache rebuilt, generation 2).
+
+**TB starting QB is UNRESOLVED.** Baker Mayfield was INACTIVE in week 4 (thumb); Jalon Daniels started (30 att).
+Mayfield is ACT on the week-5 roster and QB1 on the chart but DID NOT PARTICIPATE in the first week-5 practice report.
+Please capture the official TB injury report designations as they publish (Tue/Wed for TNF; final status), with
+source URLs, and any official team statement on the starter. Also watch: TB K Chase McLaughlin (groin, DNP).
+
+**Still needed (unchanged):** the owner's DKEntries export + contest metadata (prize, fee, max entries, field size)
+— DK is unreachable from here; the FC context file; the official inactive list + provenance at the deadline; the
+Hard Rock board + capture sidecar after SEAL_PROPS; full-field standings after the game.
