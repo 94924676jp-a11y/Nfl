@@ -6,8 +6,8 @@
         [--model B4 --model B3S] [--legacy-dupe-stack SHOWDOWN_..._DUPE_STACK_BLEND.json] \
         [--exclude-train ATL_NO] --kickoff 2026-10-12T17:00:00Z --out OUT.json [--dry-run]
 
-Run BEFORE LOCK on the exact production lineups. For every lineup it records the predicted number of OTHER entries
-with the identical lineup under
+Run BEFORE LOCK on the exact production lineups. For every lineup it records the predicted number of entries in the field
+holding the identical lineup (all copies; see CONVENTIONS) under
   * B0 / E1 -- the legacy independent-product estimator the production boards print (N x cpt% x prod flex%);
   * E2 / E3 / E4 -- the legacy archetype-field estimates, when a DUPE_STACK artifact is passed (it stores per-lineup
     rows only for small contests; elsewhere they are NOT_STORED, never zero);
@@ -262,7 +262,10 @@ def run(a, now=None):
                        for k, p in (('export', a.export), ('ownership', a.ownership), ('lineups', a.lineups),
                                     ('fc', a.fc)) if p},
             'legacy_dupe_stack': leg_src, 'contest_sizes': sizes,
-            'CONVENTIONS': {'copies': 'expected number of OTHER entries with the identical lineup (N x q)',
+            'CONVENTIONS': {'copies': ('expected number of entries in the field holding the identical lineup (N x q, ALL '
+                                       'copies under independent entry); for one of our entered lineups the expected '
+                                       'OTHER-copies count is (N-1) x q. Unique-lineup units. Score ties are not copies. '
+                                       'See nfl/postgame/dupe_research/DUPE_COPY_COUNT_SEMANTICS.json'),
                             'disagreement': f'log2 ratios; |log2| > {DISAGREE_LOG2} (2x) is flagged',
                             'cheap_flex_bands': {b: [lo, hi] for b, lo, hi in CHEAP_BANDS}},
             'summary': summary, 'lineups': rows}

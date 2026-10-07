@@ -1,0 +1,121 @@
+{
+ "ARTIFACT": "DUPE_COPY_COUNT_SEMANTICS",
+ "date": "2026-10-07",
+ "STATUS": "SHADOW_ONLY",
+ "FINDING": "DUPE_RESEARCH.json counts a lineup's ACTUAL as every entry in the full contest holding it (ALL copies, our own entry included) and predicts N x q. On our own lineups the reported actual/pred therefore includes one own copy per lineup. We entered no lineup twice (ATL_NO_OWNER_ENTRIES_GRADED.csv: 150/20/2 unique), so OTHER copies = all copies minus one per lineup located in the universe (the 150-max has 149 or 150 located; both bounds shown).",
+ "UNITS": "unique-lineup units (one row per distinct owner lineup); entry-weighted and all-field panels are not computed here",
+ "MODEL_SIDE": "N x q under independent entry is the expected ALL-copies count of a lineup; for one of our entered lineups the expected OTHER-copies count is (N-1) x q, which differs from N x q by q (negligible at these N)",
+ "by_contest": {
+  "ATL_NO_137": {
+   "B0": {
+    "all_copies_actual": 15973,
+    "pred_N_times_q": 5427.9,
+    "all_copies_ratio": 2.9428,
+    "other_copies_actual_upper": 15824,
+    "other_copies_actual_lower": 15823,
+    "other_copies_ratio": [
+     2.9151,
+     2.9153
+    ]
+   },
+   "B3S": {
+    "all_copies_actual": 15973,
+    "pred_N_times_q": 14481.1,
+    "all_copies_ratio": 1.103,
+    "other_copies_actual_upper": 15824,
+    "other_copies_actual_lower": 15823,
+    "other_copies_ratio": [
+     1.0927,
+     1.0927
+    ]
+   },
+   "B4": {
+    "all_copies_actual": 15973,
+    "pred_N_times_q": 15677.5,
+    "all_copies_ratio": 1.0188,
+    "other_copies_actual_upper": 15824,
+    "other_copies_actual_lower": 15823,
+    "other_copies_ratio": [
+     1.0093,
+     1.0093
+    ]
+   }
+  },
+  "ATL_NO_160": {
+   "B0": {
+    "all_copies_actual": 1048,
+    "pred_N_times_q": 205.5,
+    "all_copies_ratio": 5.0998,
+    "other_copies_actual_upper": 1029,
+    "other_copies_actual_lower": 1028,
+    "other_copies_ratio": [
+     5.0024,
+     5.0073
+    ]
+   },
+   "B3S": {
+    "all_copies_actual": 1048,
+    "pred_N_times_q": 1032.1,
+    "all_copies_ratio": 1.0154,
+    "other_copies_actual_upper": 1029,
+    "other_copies_actual_lower": 1028,
+    "other_copies_ratio": [
+     0.996,
+     0.997
+    ]
+   },
+   "B4": {
+    "all_copies_actual": 1048,
+    "pred_N_times_q": 999.4,
+    "all_copies_ratio": 1.0486,
+    "other_copies_actual_upper": 1029,
+    "other_copies_actual_lower": 1028,
+    "other_copies_ratio": [
+     1.0286,
+     1.0296
+    ]
+   }
+  },
+  "ATL_NO_161": {
+   "B0": {
+    "all_copies_actual": 96,
+    "pred_N_times_q": 16.5,
+    "all_copies_ratio": 5.8182,
+    "other_copies_actual_upper": 95,
+    "other_copies_actual_lower": 94,
+    "other_copies_ratio": [
+     5.697,
+     5.7576
+    ]
+   },
+   "B3S": {
+    "all_copies_actual": 96,
+    "pred_N_times_q": 123.7,
+    "all_copies_ratio": 0.7761,
+    "other_copies_actual_upper": 95,
+    "other_copies_actual_lower": 94,
+    "other_copies_ratio": [
+     0.7599,
+     0.768
+    ]
+   },
+   "B4": {
+    "all_copies_actual": 96,
+    "pred_N_times_q": 135.1,
+    "all_copies_ratio": 0.7106,
+    "other_copies_actual_upper": 95,
+    "other_copies_actual_lower": 94,
+    "other_copies_ratio": [
+     0.6958,
+     0.7032
+    ]
+   }
+  }
+ },
+ "CONSEQUENCE": "B4 other-copies calibration on our lineups is ~1.01 (150-max), ~1.03 (20-max), ~0.70 (2-entry); the earlier all-copies figures (1.02 / 1.05 / 0.71) are not wrong as all-copies figures, but they are not other-copies figures. Score ties are a different thing and are not counted here. Three contests from one game: not a promotion basis.",
+ "SUPERSEDES_WORDING_IN": [
+  "nfl/postgame/dupe_research/SHADOW_DRYRUN_ATL_NO_B4.json",
+  "nfl/postgame/dupe_research/SHADOW_DRYRUN_ATL_NO_B4_B3S_FULL.json",
+  "(sealed, write-once: their \"OTHER entries\" label should read \"entries in the field with this lineup\")"
+ ]
+}
