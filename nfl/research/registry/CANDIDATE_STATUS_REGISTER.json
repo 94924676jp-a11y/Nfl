@@ -184,6 +184,25 @@
    ],
    "finding": "zero mass enters the simulated worlds exactly (count is 0 iff the gate is closed: 0 mismatches over 26 player-fields x 3,000 worlds end to end through efficiency, DST and DK scoring; club totals conserved). 2025 DEVELOPMENT (4th read): zero-opportunity Brier 0.2123 -> 0.1442 (week-blocked z 17.0, club-blocked 8.4); positive-count CRPS better than current (+0.130) but WORSE than the ungated candidate (-0.194, z -13.7), concentrated in h=0 players; rank-1 neutral. Week-5 shadow predictions SEALED 2026-10-07T15:22:07Z for 15/15 games (437 units), before the first kickoff; ungraded.",
    "owner_ruling": "2026-10-07: shadow-only until validated end to end on the actual simulation path and then prospectively. Verdict only after >= 4 graded weeks (prereg)."
+  },
+  {
+   "date": "2026-10-07",
+   "candidate": "SC-OWN-ROTATION-2",
+   "status": "SHADOW",
+   "ladder_reached": [
+    "IMPLEMENTED",
+    "SUCCESS_TESTED",
+    "REFUSAL_TESTED",
+    "ADVERSARIAL_TESTED"
+   ],
+   "evidence": [
+    "docs/NFL_SHOWDOWN_OWNERSHIP_SUCCESSOR_2_PREREGISTRATION.md",
+    "nfl/research/ownership/SC_OWN_ROTATION_2_FREEZE.json",
+    "nfl/research/ownership/SC_OWN_ROTATION_2_DRYRUN_ATL_NO.json",
+    "nfl/tests/test_sc_own_rotation_2.py"
+   ],
+   "finding": "fitted on PIT@CLE + ATL@NO (385,354 entries; Newton 8 iterations, max_abs_grad 6.7e-14, all parameters identified) and FROZEN 2026-10-07T17:44:19Z, ~30.5 h before the TB@DAL lock; solver falsification test passes on all five archived contests. In-sample dry run only (not evidence). Evaluation is prospective: TB@DAL onward, N >= 4 slates before any verdict.",
+   "owner_ruling": "2026-10-07: build only after pre-registration (done); shadow-only; not promoted."
   }
  ]
 }

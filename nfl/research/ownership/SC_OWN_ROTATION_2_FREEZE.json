@@ -1,0 +1,743 @@
+{
+ "ARTIFACT": "SC_OWN_ROTATION_2_FREEZE",
+ "candidate_id": "SC-OWN-ROTATION-2",
+ "LABEL": "SHADOW_ONLY",
+ "STATUS": "FROZEN -- SHADOW_ONLY; NOT prospectively validated; nothing promoted; no refit during evaluation",
+ "NOT_A_FOOTBALL_INPUT": true,
+ "ON_EXECUTION_PATH": false,
+ "INFLUENCES_SELECTION": false,
+ "prereg": {
+  "path": "docs/NFL_SHOWDOWN_OWNERSHIP_SUCCESSOR_2_PREREGISTRATION.md",
+  "sha256": "9013fb7cacaa9a12ce519eae99862475453ab93149890d3212b49217bff6e922",
+  "commit": "8de91b62"
+ },
+ "modules_enforced": {
+  "nfl/research/ownership/sc_own_rotation_2.py": "aba2dc5aca39dc4de0d49b1ea523bdac7ec1f8415bdaa65349ca58f0410f8a00",
+  "nfl/research/ownership/predict_sc_own_rotation_2.py": "a89f324fd353b8a2f770d8c57a6eef034291903b613b44858813e868b11b6209",
+  "nfl/research/ownership/grade_sc_own_rotation_2.py": "db178fcc827c2699832b052184f41ce26f641dfa72b012ea8de56e033ca4bdc6",
+  "nfl/field/showdown_dupe_research.py": "af765a5fb089d0908ee2be865fdbc7cd471433c41113eff232392e9e2f7b2dd3",
+  "nfl/field/showdown_cheap_ownership_research.py": "45c4eee2442862314a97f3855f37b39a9348ab81fda1c80e7790962d0365c14c"
+ },
+ "modules_recorded_not_enforced": {
+  "nfl/field/showdown_shadow_field.py": "bf238065b3ed632504d27ac203c3af7095c7cf578bed5f823465c3022a0fd647",
+  "nfl/field/showdown_history_calibration.py": "9a2413d4e30fab882a5c76a68f41a3dcef8499f90b360db4a8bbb84f441b9b36",
+  "nfl/field/showdown_field_archive.py": "5d849ac18b3ed46248cffbe40cedf59f114c81dabe1e5d97f2db8a63c7a4eaef",
+  "nfl/postgame/showdown_atl_no_field_actual.py": "5c51d412c6a3aea203945e8f0e2150e94132622d89032888e9da82dbdba26ef0",
+  "nfl/tools/showdown_to_portfolio.py": "66afa8c2e168853edefe51e93c16ece0ce71d6546ea65a0a01bf73d9fd352d7f",
+  "nfl/dfs/showdown/optimal_worlds.py": "9cdb6947a995c4796792fcacef021bceff1db5b022826e0cfa37513d817260e5"
+ },
+ "constants": {
+  "EPS": 0.001,
+  "LAMBDA": 1.0,
+  "FLOOR_PCT": 0.05,
+  "K_PLAYERS": 32,
+  "CAP": 50000,
+  "PLAYER_FEATURES": [
+   "log_base",
+   "value_z",
+   "salary_rank_at_pos",
+   "role_depth_inv",
+   "role_snap_share",
+   "opened",
+   "cheap_active"
+  ],
+  "THETA_FEATURES": [
+   "stack_cpt_pc_own_qb",
+   "both_qbs",
+   "split_5_1",
+   "split_4_2",
+   "any_k_dst"
+  ],
+  "SOLVER_TOL": 1e-06,
+  "FIT_TOL": 1e-06
+ },
+ "readings_declared": {
+  "R1": "\u03b20_s is NOT IDENTIFIED: every legal lineup has exactly one CPT and five FLEX, so \u03b20_CPT + 5\u00b7\u03b20_FLEX adds the same constant to every lineup and cancels in the normalisation. Recorded as 0.",
+  "R2": "base is a FRACTION of entries per slot (shadow pct / 100; FLEX in [0, 1], summing to 5), so \u03b5 = 0.001 is 0.1 pp.",
+  "R3": "role is two columns sharing the \u03b24 label: role_depth_inv = 1 / prelock depth-chart rank (0 if not listed) and role_snap_share = mean 2026 REG offensive snap share over weeks strictly before the slate week (0 if no row).",
+  "R4": "value = football-only projected FLEX points per $1,000 of FLEX salary, z-scored over the slate's ACTIVE pool players. An active player the projection lists blank or omits gets 0.0 points (the projection's own statement of no projected opportunity; counted in the freeze/prediction). Nothing is ever filled from outcomes.",
+  "R5": "salary_rank_at_pos = 1 + number of ACTIVE players at his DK position with a strictly lower FLEX salary.",
+  "R6": "absent (\"not officially active\") = official inactive list \u222a designation OUT. opened = 1 if a player listed ahead of him (lower pos_rank, same club, same depth position) on the latest depth-chart snapshot strictly before kickoff is absent.",
+  "R7": "cheap(i)\u00b7active(i) = SC-OWN-ROTATION-1's prelock bucket CHEAP_ACTIVE_ROTATION, computed by its own frozen prelock_features (nfl/field/showdown_cheap_ownership_research.py) unchanged.",
+  "R8": "universe (prelock, no entries): the 32 active players ranked by base total ownership, ties (including every zero-base player) broken by our projected points, then FLEX salary, then name. The B-family forecast universe rule (top-32 by forecast ownership) with a prelock tie-break instead of alphabetical padding. Entries holding a player outside it are outside the likelihood (coverage recorded). With fewer than 32 active players the width is reached with absent players PINNED at -50 in both slots (the B-family pin); their marginals are set to exactly 0 and entries holding them are outside the likelihood.",
+  "R9": "penalty: maximise \u03a3_entries log p(L) - (\u03bb/2)\u00b7||(\u03b21..\u03b26, \u03b8)||\u00b2, \u03bb = 1.0. Every entry counts once, so the ATL@NO 150-max contest (237,105 entries) carries most of the weight; the per-contest weights are in the freeze.",
+  "R10": "an active player outside the 32-player universe has a raw forecast of 0 (he cannot appear in a modelled lineup); the smoothing floor gives him 0.05% per slot for the log score only, exactly as for any other model.",
+  "R11": "the PIT@CLE base is a postgame reconstruction of the BLEND from prelock-dated inputs (no frozen PIT BLEND exists); PIT@CLE has no designations artifact, so absent there is its inactive list alone (see NOT_AVAILABLE)."
+ },
+ "coefficients": {
+  "cpt": {
+   "beta0": {
+    "value": 0.0,
+    "state": "NOT_IDENTIFIED (reading R1)"
+   },
+   "beta1": {
+    "feature": "log_base",
+    "value": 1.2575196368602608
+   },
+   "beta2": {
+    "feature": "value_z",
+    "value": 0.6112860901497373
+   },
+   "beta3": {
+    "feature": "salary_rank_at_pos",
+    "value": -0.05170666804647723
+   },
+   "beta4_depth": {
+    "feature": "role_depth_inv",
+    "value": -0.1969614911197481
+   },
+   "beta4_snap": {
+    "feature": "role_snap_share",
+    "value": 1.270448893648059
+   },
+   "beta5": {
+    "feature": "opened",
+    "value": -0.8574795193110469
+   },
+   "beta6": {
+    "feature": "cheap_active",
+    "value": 0.8216890328081413
+   }
+  },
+  "flex": {
+   "beta0": {
+    "value": 0.0,
+    "state": "NOT_IDENTIFIED (reading R1)"
+   },
+   "beta1": {
+    "feature": "log_base",
+    "value": 0.28525489659928344
+   },
+   "beta2": {
+    "feature": "value_z",
+    "value": 0.6301511022478727
+   },
+   "beta3": {
+    "feature": "salary_rank_at_pos",
+    "value": -0.047910542783053615
+   },
+   "beta4_depth": {
+    "feature": "role_depth_inv",
+    "value": 1.2192266941483858
+   },
+   "beta4_snap": {
+    "feature": "role_snap_share",
+    "value": 2.2050199391861827
+   },
+   "beta5": {
+    "feature": "opened",
+    "value": -1.2879670540817185
+   },
+   "beta6": {
+    "feature": "cheap_active",
+    "value": -0.22478260206316597
+   }
+  },
+  "theta": {
+   "stack_cpt_pc_own_qb": 0.6954093695653148,
+   "both_qbs": -0.8265929569612652,
+   "split_5_1": 0.1264330403963149,
+   "split_4_2": 0.04386270439839336,
+   "any_k_dst": 0.3401947012050681
+  },
+  "vector_order": [
+   "cpt.log_base",
+   "cpt.value_z",
+   "cpt.salary_rank_at_pos",
+   "cpt.role_depth_inv",
+   "cpt.role_snap_share",
+   "cpt.opened",
+   "cpt.cheap_active",
+   "flex.log_base",
+   "flex.value_z",
+   "flex.salary_rank_at_pos",
+   "flex.role_depth_inv",
+   "flex.role_snap_share",
+   "flex.opened",
+   "flex.cheap_active",
+   "theta.stack_cpt_pc_own_qb",
+   "theta.both_qbs",
+   "theta.split_5_1",
+   "theta.split_4_2",
+   "theta.any_k_dst"
+  ],
+  "vector": [
+   1.2575196368602608,
+   0.6112860901497373,
+   -0.05170666804647723,
+   -0.1969614911197481,
+   1.270448893648059,
+   -0.8574795193110469,
+   0.8216890328081413,
+   0.28525489659928344,
+   0.6301511022478727,
+   -0.047910542783053615,
+   1.2192266941483858,
+   2.2050199391861827,
+   -1.2879670540817185,
+   -0.22478260206316597,
+   0.6954093695653148,
+   -0.8265929569612652,
+   0.1264330403963149,
+   0.04386270439839336,
+   0.3401947012050681
+  ]
+ },
+ "fit": {
+  "objective": -4182521.3147687973,
+  "objective_per_entry": -10.85371194997015,
+  "n_entries_in_likelihood": 385354.0,
+  "iterations": 8,
+  "max_abs_grad_per_entry": 6.74437545681716e-14,
+  "max_abs_grad_raw": 2.5989720597863197e-08,
+  "converged": true,
+  "tolerance": 1e-06,
+  "hessian_min_eig": 498.66208776444444,
+  "hessian_max_eig": 12635070.3430609,
+  "history": [
+   {
+    "iter": 0,
+    "objective_per_entry": -15.302500928418393,
+    "max_abs_grad_per_entry": 8.150747110520161
+   },
+   {
+    "iter": 1,
+    "objective_per_entry": -11.384439605344557,
+    "max_abs_grad_per_entry": 2.111052840955279
+   },
+   {
+    "iter": 2,
+    "objective_per_entry": -10.912024543574695,
+    "max_abs_grad_per_entry": 0.5561589052698929
+   },
+   {
+    "iter": 3,
+    "objective_per_entry": -10.855403778100827,
+    "max_abs_grad_per_entry": 0.08553344182235373
+   },
+   {
+    "iter": 4,
+    "objective_per_entry": -10.85371680366083,
+    "max_abs_grad_per_entry": 0.002814325378165596
+   },
+   {
+    "iter": 5,
+    "objective_per_entry": -10.853711951893274,
+    "max_abs_grad_per_entry": 1.4044290564089399e-05
+   },
+   {
+    "iter": 6,
+    "objective_per_entry": -10.85371194997015,
+    "max_abs_grad_per_entry": 8.696803806232413e-09
+   },
+   {
+    "iter": 7,
+    "objective_per_entry": -10.85371194997015,
+    "max_abs_grad_per_entry": 6.74437545681716e-14
+   }
+  ]
+ },
+ "fit_weights": {
+  "PIT_CLE:196187080": 46255.0,
+  "ATL_NO:196285160": 46508.0,
+  "ATL_NO:196285137": 234806.0,
+  "ATL_NO:196285161": 57785.0
+ },
+ "fit_in_sample_marginal_mae_DESCRIPTIVE_NOT_EVIDENCE": {
+  "PIT_CLE:196187080": {
+   "cpt_mae_in_universe_pp": 1.4600485784209294,
+   "flex_mae_in_universe_pp": 7.573196408212886
+  },
+  "ATL_NO:196285160": {
+   "cpt_mae_in_universe_pp": 1.2143217055827473,
+   "flex_mae_in_universe_pp": 5.6013575688161055
+  },
+  "ATL_NO:196285137": {
+   "cpt_mae_in_universe_pp": 1.2169954045363194,
+   "flex_mae_in_universe_pp": 4.9725629432907645
+  },
+  "ATL_NO:196285161": {
+   "cpt_mae_in_universe_pp": 1.2250983107535314,
+   "flex_mae_in_universe_pp": 5.868179626015308
+  }
+ },
+ "fitting_data": {
+  "PIT_CLE": {
+   "inputs": {
+    "export": {
+     "path": "nfl/dfs/salaries/raw/DKEntries_PIT_CLE_SHOWDOWN_2026W4.csv",
+     "sha256": "67229d912fd7ed058ad2c44bcac9b1f142039c9508591a1dbddc030825c8a2eb"
+    },
+    "baseline": {
+     "state": "RECONSTRUCTED_POSTGAME_FROM_PRELOCK_INPUTS",
+     "k": 5000,
+     "sigma": 0.6,
+     "seed": 20261005,
+     "fc_rows_not_matching_pool_exactly": [
+      "KC Concepcion|CLE",
+      "Lew Nichols III|PIT",
+      "Michael Pittman|PIT"
+     ],
+     "n_players_with_our_draws": 45,
+     "fc": {
+      "path": "nfl/dfs/salaries/raw/THIRDPARTY_showdown_PIT_CLE_2026W4_CONTEXT_ONLY.csv",
+      "sha256": "1199bfcf9c262280763cb6b1c0c6b3b1edc8dd0dc1268a3c13ff728d8d68a1bc"
+     },
+     "draws": {
+      "path": "nfl/dfs/salaries/SHOWDOWN_TONIGHT_DRAWS.json",
+      "sha256": "f81d27dbbf968c54dbf63055ac9bc71fa16afe02c94b090ab4ab250a23f21cc1"
+     },
+     "reconstructed_sha256": "7cab9d80187778732ce47d03378c5e685bea75836e9f54f129d324a51d321807"
+    },
+    "projection": {
+     "path": "nfl/dfs/salaries/SHOWDOWN_TONIGHT_PROJ_FOOTBALL_ONLY.json",
+     "sha256": "35de920def1301189ca30eb6a552975473d867305452b36e0de021c0d876bf57"
+    },
+    "depth": {
+     "path": "nfl/vintage/depth_charts.f0d38b65a6ab0439.raw.csv.gz",
+     "sha256": "1aa9da51af762bff3f56692eb076d515b50152438b4f67247b78d124d800d634"
+    },
+    "inactives": {
+     "path": "nfl/dfs/salaries/raw/OFFICIAL_INACTIVES_PIT_CLE_2026W4.json",
+     "sha256": "5ccd12c5d73eaf899a0273a992238c1455705eb317f67aa8d9c489c145cb5192"
+    },
+    "designations": "NOT_AVAILABLE",
+    "snaps": {
+     "path": "nfl/dfs/salaries/raw/showdown_atl_no_2026W4/snap_counts_2026.53720f396f9c2bfa.csv",
+     "sha256": "53720f396f9c2bfaf869c8a7af644f043caae278c6a3c1d6b4ed52ec597c8061",
+     "weeks_used": "2026 REG weeks < 4"
+    },
+    "kickoff": "2026-10-02T00:15:00Z"
+   },
+   "declared_features": {
+    "n_pool": 51,
+    "n_active": 45,
+    "n_absent": 6,
+    "absent": [
+     "Drew Allar",
+     "Eli Heidenreich",
+     "Rico Dowdle",
+     "Taylen Green",
+     "Tylan Wallace",
+     "Will Howard"
+    ],
+    "projection_states": {
+     "PROJECTED": 45
+    },
+    "projection_zero_filled": [],
+    "depth_snapshot_dt": {
+     "CLE": "2026-10-01T14:25:58Z",
+     "PIT": "2026-10-01T14:25:58Z"
+    },
+    "depth_rows_unmatched_to_pool": [],
+    "active_listed_on_depth_chart": 34,
+    "opened_players": [
+     "Dillon Gabriel",
+     "Malachi Corley",
+     "Travis Homer"
+    ],
+    "cheap_active_players": [
+     "Blake Whiteheart",
+     "Darnell Washington",
+     "Germie Bernard",
+     "Isaiah Bond",
+     "Jerry Jeudy"
+    ],
+    "value_mean_pts_per_k": 1.0418096109017294,
+    "value_sd_pts_per_k": 1.1029739089430879,
+    "universe_rule": "R8",
+    "universe": [
+     "Jaylen Warren",
+     "Deshaun Watson",
+     "Aaron Rodgers",
+     "Harold Fannin Jr.",
+     "DK Metcalf",
+     "Quinshon Judkins",
+     "Pat Freiermuth",
+     "Steelers",
+     "Chris Boswell",
+     "Roman Wilson",
+     "Denzel Boston",
+     "Browns",
+     "Jerry Jeudy",
+     "Andre Szmyt",
+     "Germie Bernard",
+     "KC Concepcion Jr.",
+     "Raheim Sanders",
+     "Darnell Washington",
+     "Travis Homer",
+     "Riley Nowakowski",
+     "Isaiah Bond",
+     "Blake Whiteheart",
+     "Jaleel McLaughlin",
+     "Jimmy Horn Jr.",
+     "Michael Pittman Jr.",
+     "Robert Tonyan",
+     "Carsen Ryan",
+     "Cole Burgess",
+     "Dylan Sampson",
+     "Malachi Corley",
+     "Lew Nichols",
+     "Mason Rudolph"
+    ],
+    "universe_pads_pinned_out": [],
+    "universe_zero_base_players": [
+     "Carsen Ryan",
+     "Cole Burgess",
+     "Dylan Sampson",
+     "Malachi Corley",
+     "Lew Nichols",
+     "Mason Rudolph"
+    ]
+   },
+   "feature_rows_sha256": "00340f2650c90baad4d64f73b2e5bfd1e55312d48d8f20b74baad1dfeebb743a",
+   "universe_feasible_lineups": 5332827,
+   "contests": {
+    "196187080": {
+     "standings_raw_sha256": "1888ebb3e4c35df52e6bb8054fedcb8d9f6958fd89637c9d5da731800d509a65",
+     "filled_entries": 47329,
+     "entries_in_likelihood": 46255.0,
+     "coverage": 0.977308,
+     "outside_universe": 1074
+    }
+   }
+  },
+  "ATL_NO": {
+   "inputs": {
+    "export": {
+     "path": "nfl/dfs/salaries/raw/showdown_atl_no_2026W4/DKEntries_ATL_NO_SHOWDOWN_2026W4.fd0c1faa2271ca66.csv",
+     "sha256": "fd0c1faa2271ca6622d3ecea4a1decf6843729a8e3a5c624466d5788df2d65a8"
+    },
+    "baseline": {
+     "state": "FROZEN_PRELOCK (committed 9736516d 2026-10-05T23:47Z, before the 2026-10-06T00:15Z lock)",
+     "path": "nfl/dfs/salaries/showdown_atl_no/SHADOW_RW_INACTIVES_CHARTFIX_BLEND/SHOWDOWN_ATL_NO_SHADOW_OWNERSHIP.csv",
+     "sha256": "00ca6a862db28bc338e0391397f6bb9a1cfc910ea40cdecf54ec3ca6c8678bc9"
+    },
+    "projection": {
+     "path": "nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX/SHOWDOWN_ATL_NO_PROJECTIONS.csv",
+     "sha256": "ffbd5002fa843e749b08e42ca49ee5962a9383202fc253c636011a2565c4fbb2"
+    },
+    "depth": {
+     "path": "nfl/dfs/salaries/raw/showdown_atl_no_2026W4/depth_charts_2026_ATL_NO.1e6aa6437a6ae01b.csv",
+     "sha256": "7a54bca2911e0153cab41474429855ba83e8913307a19513469cf3509c6c5d07"
+    },
+    "inactives": {
+     "path": "nfl/dfs/salaries/raw/showdown_atl_no_2026W4/OFFICIAL_INACTIVES_ATL_NO_2026W4.json",
+     "sha256": "411b0cd3fdaa420a89a6590daf1836547f0a6fad6dab180a435b06150fb46627"
+    },
+    "designations": {
+     "path": "nfl/dfs/salaries/showdown_atl_no/DESIGNATIONS_ATL_NO_2026W4_V4_RW_INACTIVES_CHARTFIX.json",
+     "sha256": "58c716149053d1fdb15f97b9232781981eee8e9778126feec3447f6a8596307f"
+    },
+    "snaps": {
+     "path": "nfl/dfs/salaries/raw/showdown_atl_no_2026W4/snap_counts_2026.53720f396f9c2bfa.csv",
+     "sha256": "53720f396f9c2bfaf869c8a7af644f043caae278c6a3c1d6b4ed52ec597c8061",
+     "weeks_used": "2026 REG weeks < 4"
+    },
+    "kickoff": "2026-10-06T00:15:00Z"
+   },
+   "declared_features": {
+    "n_pool": 56,
+    "n_active": 31,
+    "n_absent": 25,
+    "absent": [
+     "Antwane Wells Jr.",
+     "Beaux Collins",
+     "Cash Jones",
+     "Cedric Tillman",
+     "Charlie Smyth",
+     "Cooper Rush",
+     "Dylan Drummond",
+     "Jack Strand",
+     "Jack Velling",
+     "Jalen Moreno-Cropper",
+     "Jordyn Tyson",
+     "Khalil Herbert",
+     "Kyrese Rowan",
+     "Mason Tipton",
+     "Moliki Matavao",
+     "Noah Fant",
+     "Stone Smartt",
+     "Travis Etienne Jr.",
+     "Trey Palmer",
+     "Trey Sermon",
+     "Ty Chandler",
+     "Vinny Anthony II",
+     "Zach Wilson",
+     "Zach Wood",
+     "Zamir White"
+    ],
+    "projection_states": {
+     "PROJECTED": 30,
+     "BLANK_ZERO": 1
+    },
+    "projection_zero_filled": [
+     "Cal Adomitis"
+    ],
+    "depth_snapshot_dt": {
+     "ATL": "2026-10-05T15:53:14Z",
+     "NO": "2026-10-05T15:53:14Z"
+    },
+    "depth_rows_unmatched_to_pool": [],
+    "active_listed_on_depth_chart": 28,
+    "opened_players": [
+     "Oscar Delp",
+     "Treyton Welch"
+    ],
+    "cheap_active_players": [
+     "Austin Hooper",
+     "Brian Robinson Jr.",
+     "Bryce Lance",
+     "CJ Donaldson",
+     "Jahan Dotson",
+     "Olamide Zaccheaus",
+     "Zachariah Branch"
+    ],
+    "value_mean_pts_per_k": 1.2561898364273942,
+    "value_sd_pts_per_k": 0.8520960828052654,
+    "universe_rule": "R8",
+    "universe": [
+     "Tyler Shough",
+     "Bijan Robinson",
+     "Chris Olave",
+     "Drake London",
+     "Juwan Johnson",
+     "Alvin Kamara",
+     "Michael Penix Jr.",
+     "Daniel Carlson",
+     "Kevin Austin Jr.",
+     "Devaughn Vele",
+     "Nick Folk",
+     "Saints",
+     "Olamide Zaccheaus",
+     "Falcons",
+     "Kyle Pitts Sr.",
+     "Jahan Dotson",
+     "Bryce Lance",
+     "Kendre Miller",
+     "Charlie Woerner",
+     "Oscar Delp",
+     "Brian Robinson Jr.",
+     "Austin Hooper",
+     "Treyton Welch",
+     "Zachariah Branch",
+     "CJ Donaldson",
+     "Barion Brown",
+     "Chris Blair",
+     "Spencer Rattler",
+     "Tua Tagovailoa",
+     "Nick Muse",
+     "Cal Adomitis"
+    ],
+    "universe_pads_pinned_out": [
+     "Travis Etienne Jr."
+    ],
+    "universe_zero_base_players": [
+     "CJ Donaldson",
+     "Barion Brown",
+     "Chris Blair",
+     "Spencer Rattler",
+     "Tua Tagovailoa",
+     "Nick Muse",
+     "Cal Adomitis"
+    ]
+   },
+   "feature_rows_sha256": "015913046b6876417e7c13171dc70a9e43ac9c8dc36266489ee56151af10ae21",
+   "universe_feasible_lineups": 5290778,
+   "contests": {
+    "196285160": {
+     "standings_raw_sha256": "56d02640ee67ee973b4deaaf30d2da78105bda48331e5ae3f45395a057cfc815",
+     "filled_entries": 47308,
+     "entries_in_likelihood": 46508.0,
+     "coverage": 0.98309,
+     "outside_universe": 800
+    },
+    "196285137": {
+     "standings_raw_sha256": "d2a595410ab774db50f8e37a6c951f64500182400d9864da4e8e6cdf22a42c4d",
+     "filled_entries": 237105,
+     "entries_in_likelihood": 234806.0,
+     "coverage": 0.990304,
+     "outside_universe": 2299
+    },
+    "196285161": {
+     "standings_raw_sha256": "2c91ae8234d4eb762ea67926c472dfe9487c95f0687121b2af016bb1f7d35b75",
+     "filled_entries": 59083,
+     "entries_in_likelihood": 57785.0,
+     "coverage": 0.978031,
+     "outside_universe": 1298
+    }
+   }
+  }
+ },
+ "blend_method_check": {
+  "state": "REPRODUCES_FROZEN_ATL_NO_BLEND",
+  "max_abs_diff_pct_pts": 0.0,
+  "sigma": 0.6,
+  "k": 5000,
+  "seed": 20261005,
+  "fc_rows_not_matching_pool_exactly": [
+   "Brian Robinson|ATL"
+  ],
+  "n_players_with_our_draws": 30,
+  "inputs": {
+   "fc": {
+    "path": "nfl/dfs/salaries/raw/showdown_atl_no_2026W4/THIRDPARTY_FC_showdown_ATL_NO_2026W4_CONTEXT_ONLY.330fdd518c66ea57.csv",
+    "sha256": "330fdd518c66ea57651f799022af152f9997d1925097224edb2a527888da8b7a"
+   },
+   "draws": {
+    "path": "nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX/SHOWDOWN_ATL_NO_2026W4_DRAWS.json",
+    "sha256": "43d6938e0b65c8a18ddca3613ce16223751e621412074f5408ae82332bcbf7a0"
+   },
+   "absent": {
+    "path": "nfl/dfs/salaries/showdown_atl_no/SHADOW_ABSENT_RW_INACTIVES_CHARTFIX.json",
+    "sha256": "4fcc7d7283a570205c02e0ece5790627ae3ceb4190b2d627ce06131f417f0af6"
+   }
+  }
+ },
+ "NOT_AVAILABLE": {
+  "PHI_CHI": "NOT_AVAILABLE for every term: contest 196036243 has standings but no DK salaries (outbox 2026-10-07; still absent at the freeze), no frozen BLEND shadow ownership and no football-only projection, so neither base nor any salary term exists, and the salary-free \u03b8 alone is not this candidate. Used only in the solver falsification test (which needs no salaries).",
+  "PIT_CLE.designations": "NOT_AVAILABLE: no separate designations artifact for PIT@CLE; absent = the official inactive list only (which already carries the OUT players). Declared, not imputed.",
+  "PIT_CLE.baseline": "NO FROZEN PRELOCK BLEND EXISTS for PIT@CLE. base is RECONSTRUCTED postgame with the frozen BLEND method (showdown_shadow_field: mean of FC and our sim mean, K=5000, seed 20261005, sigma = the ATL@NO BLEND sigma) from prelock-dated inputs only: the game-day FC sheet (capture time NOT_RECORDED) and our draws committed b05e476a 2026-10-02T00:01:57Z, before the 00:15Z lock. Exact (name, club) FC matching as SF.run does (FC rows named without the DK suffix contribute nothing, listed in the freeze). The method is first required to reproduce the frozen ATL@NO BLEND.",
+  "PIT_CLE.depth": "depth chart rows are the nflverse snapshot timestamped 2026-10-01 (dt < kickoff) from a vintage file CAPTURED 2026-10-07 (postgame); the rows are timestamped prelock, the capture is not."
+ },
+ "solver_falsification": {
+  "threshold_max_abs_grad": 1e-06,
+  "prelock_universe": {
+   "PIT_CLE:196187080": {
+    "universe": "PRELOCK_R8",
+    "feasible_lineups": 5332827,
+    "entries_in_universe": 46255.0,
+    "coverage": 0.977308,
+    "theta_0": {
+     "max_abs_grad": 5.8492655163888685e-12,
+     "iters": 7,
+     "PASS": true
+    },
+    "theta_fitted_fixed": {
+     "max_abs_grad": 9.471035067321054e-12,
+     "iters": 7,
+     "PASS": true
+    }
+   },
+   "ATL_NO:196285160": {
+    "universe": "PRELOCK_R8",
+    "feasible_lineups": 5290778,
+    "entries_in_universe": 46508.0,
+    "coverage": 0.98309,
+    "theta_0": {
+     "max_abs_grad": 2.435964374658539e-09,
+     "iters": 8,
+     "PASS": true
+    },
+    "theta_fitted_fixed": {
+     "max_abs_grad": 2.4569202228263975e-09,
+     "iters": 8,
+     "PASS": true
+    }
+   },
+   "ATL_NO:196285137": {
+    "universe": "PRELOCK_R8",
+    "feasible_lineups": 5290778,
+    "entries_in_universe": 234806.0,
+    "coverage": 0.990304,
+    "theta_0": {
+     "max_abs_grad": 3.027639250419156e-11,
+     "iters": 8,
+     "PASS": true
+    },
+    "theta_fitted_fixed": {
+     "max_abs_grad": 3.2991165355156227e-11,
+     "iters": 8,
+     "PASS": true
+    }
+   },
+   "ATL_NO:196285161": {
+    "universe": "PRELOCK_R8",
+    "feasible_lineups": 5290778,
+    "entries_in_universe": 57785.0,
+    "coverage": 0.978031,
+    "theta_0": {
+     "max_abs_grad": 1.649836156580875e-09,
+     "iters": 8,
+     "PASS": true
+    },
+    "theta_fitted_fixed": {
+     "max_abs_grad": 1.688217121653679e-09,
+     "iters": 8,
+     "PASS": true
+    }
+   }
+  },
+  "b_family_archival_universe": {
+   "PIT_CLE": {
+    "universe": "B_FAMILY_MOST_ENTERED_32",
+    "feasible_lineups": 5330723,
+    "entries_in_universe": 47199.0,
+    "coverage": 0.997253,
+    "theta_0": {
+     "max_abs_grad": 6.663281038044033e-12,
+     "iters": 7,
+     "PASS": true
+    }
+   },
+   "PHI_CHI": {
+    "universe": "B_FAMILY_MOST_ENTERED_32",
+    "feasible_lineups": 5332866,
+    "entries_in_universe": 47221.0,
+    "coverage": 0.997634,
+    "theta_0": {
+     "max_abs_grad": 5.85234083416708e-11,
+     "iters": 5,
+     "PASS": true
+    }
+   },
+   "ATL_NO_160": {
+    "universe": "B_FAMILY_MOST_ENTERED_32",
+    "feasible_lineups": 5310044,
+    "entries_in_universe": 47116.0,
+    "coverage": 0.995941,
+    "theta_0": {
+     "max_abs_grad": 2.408747867832517e-09,
+     "iters": 8,
+     "PASS": true
+    }
+   },
+   "ATL_NO_137": {
+    "universe": "B_FAMILY_MOST_ENTERED_32",
+    "feasible_lineups": 5312622,
+    "entries_in_universe": 236560.0,
+    "coverage": 0.997701,
+    "theta_0": {
+     "max_abs_grad": 2.932781795195183e-11,
+     "iters": 8,
+     "PASS": true
+    }
+   },
+   "ATL_NO_161": {
+    "universe": "B_FAMILY_MOST_ENTERED_32",
+    "feasible_lineups": 5310044,
+    "entries_in_universe": 58726.0,
+    "coverage": 0.993958,
+    "theta_0": {
+     "max_abs_grad": 1.7018143005920194e-09,
+     "iters": 8,
+     "PASS": true
+    }
+   }
+  },
+  "VERDICT": "PASS"
+ },
+ "evaluation": {
+  "first_eval_slate": "TB_DAL_2026W5",
+  "first_eval_lock": "2026-10-09T00:15:00Z",
+  "excluded_development_slates": [
+   "PIT_CLE",
+   "PHI_CHI",
+   "ATL_NO"
+  ],
+  "covers": "every DK NFL Showdown slate whose lock is strictly after written_at and whose prediction is sealed before its lock (prereg section 4); none excluded by the freeze time, TB@DAL 2026-10-09T00:15:00Z included",
+  "min_slates_for_verdict": 4
+ },
+ "written_at": "2026-10-07T17:44:19.360427+00:00",
+ "content_sha256": "e575f92cdb9e0e3f80b3f5ab000a4d5e0ead89d5f943148203e8edf7eefa0a8a"
+}
