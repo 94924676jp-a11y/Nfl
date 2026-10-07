@@ -4004,3 +4004,19 @@ QBs, and at the inactive deadline the OFFICIAL inactive list with a PROVENANCE r
 an official team/NFL publication; its sha256 must equal the list's). After `run` prints SEAL_PROPS PASS: capture the Hard
 Rock board in the existing schema as nfl/market/raw/HR_<AWAY>_<HOME>_BOARD_<UTC stamp>.csv, before kickoff, and push;
 this session then runs `showdown_next_slate.py market`. The board is downstream only.
+
+## REQUEST 2026-10-07 — Stat-api: a VERIFICATION SAMPLE only (no purchase, no bulk ingest)
+
+The external gap audit (2026-10-07) cites Stat-api's FAQ: DK contest lineups from 2021, separate CPT/FLEX ownership,
+complete-field ownership for complete contests, `mode=pre` = data at kickoff, personal plans prohibit publishing. Vendor
+documentation is not validation. Before anyone recommends buying anything, we need an ALLOWED sample for contests we
+already hold original DK exports for, so it can be reconciled field by field:
+
+- contest ids: 196285137, 196285160, 196285161 (ATL@NO 2026-10-05), 196187080 (PIT@CLE), 196036243 (PHI@CHI);
+- per contest: entry count, every lineup (CPT identity + five FLEX identities), rank, score, payout, CPT and FLEX
+  ownership per player, finality flag and capture timestamps, contest metadata (fee, pool, entry cap, payout table);
+- the terms of use for the sample and for any paid plan (internal research use, retention, no publication), in writing.
+
+Save under nfl/postgame/raw/statapi_sample/ with a PROVENANCE.jsonl (url, retrieved_at, sha256, plan/terms). Do NOT
+purchase or sign up for a paid plan: that is an owner decision (recorded in the readiness report). If no free/allowed
+sample exists, record NOT_AVAILABLE and stop.
