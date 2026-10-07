@@ -1,0 +1,2739 @@
+{
+ "ARTIFACT": "CHEAP_OWNERSHIP_LOSO",
+ "LABEL": "SHADOW_ONLY",
+ "STATUS": "SHADOW_ONLY -- EXPLORATORY (ATL@NO is development data; two testable folds)",
+ "successor_id": "SC-OWN-ROTATION-1",
+ "FINDINGS_DESCRIPTIVE_NOT_IN_BAR": {
+  "baseline_cheap_flex_bias_by_test": {
+   "ATL_NO:196285160:FC_ONLY": {
+    "baseline_bias_pp": -6.6965,
+    "candidate_bias_pp": -10.4018
+   },
+   "ATL_NO:196285160:BLEND": {
+    "baseline_bias_pp": -6.5994,
+    "candidate_bias_pp": -10.4367
+   },
+   "PIT_CLE:196187080:FC_ONLY": {
+    "baseline_bias_pp": 8.5323,
+    "candidate_bias_pp": 9.2995
+   }
+  },
+  "baseline_cheap_miss_direction_differs_between_slates": true,
+  "READING": "when the baseline over-owns the cheap bucket on one slate and under-owns it on the other, a slate-invariant bucket multiplier fitted on one slate moves the other slate the wrong way"
+ },
+ "prereg": "docs/NFL_SHOWDOWN_CHEAP_OWNERSHIP_PREREGISTRATION.md",
+ "prereg_sha256": "8e70ab1bfe6ad6a948d15e1909043d02a9e0e2bbacd3e0c31a1ce9cb7fdd0ff5",
+ "prereg_sha256_at_write": "8e70ab1bfe6ad6a948d15e1909043d02a9e0e2bbacd3e0c31a1ce9cb7fdd0ff5",
+ "prereg_sha256_matches": true,
+ "NOT_A_FOOTBALL_INPUT": true,
+ "ON_EXECUTION_PATH": false,
+ "PROSPECTIVELY_VALIDATED": false,
+ "AUDIT_LADDER": "ADVERSARIAL_TESTED (nfl/tests/test_cheap_ownership_successor.py); NOT on the execution path; NOT prospectively validated",
+ "FC_BOUNDARY": "FantasyCruncher enters only via the baseline shadow ownership (showdown_shadow_field.py, FLEX FC column), as it already does; no FC column is a successor feature; FC is never a football input",
+ "LEAKAGE_CONTROL": "prelock_features() takes no entries; realised ownership of the evaluated slate is used only to score it; snap/usage history filtered to weeks < slate week; fold refuses train == test",
+ "constants": {
+  "CHEAP_SALARY": 1000,
+  "MID_SALARY": 4000,
+  "STAR_SALARY": 8000,
+  "ROLE_SLOTS": {
+   "QB": 1,
+   "RB": 2,
+   "WR": 4,
+   "TE": 2
+  },
+  "STARTER_SLOTS": {
+   "QB": 1,
+   "RB": 1,
+   "WR": 3,
+   "TE": 1
+  },
+  "ROLE_SNAP_SHARE": 0.2,
+  "KAPPA": 0.5,
+  "LAMBDA": 0.01,
+  "THETA_PRIOR": [
+   1.0,
+   0.0,
+   0.0,
+   0.0,
+   0.0
+  ],
+  "FEATURES": [
+   "log_baseline_plus_kappa",
+   "is_cheap_active_rotation",
+   "is_punt_fringe",
+   "snap_share_mean",
+   "injury_opp"
+  ],
+  "MARGIN_PP": {
+   "flex": 1.0,
+   "cpt": 0.5,
+   "total": 1.0
+  },
+  "MIN_CHEAP_N": 3
+ },
+ "baselines": {
+  "PIT_CLE": {
+   "state": "RECONSTRUCTED_POSTGAME_FROM_PRELOCK_INPUTS",
+   "sigma": 0.6,
+   "k": 5000,
+   "seed": 20261005,
+   "fc_file": "nfl/dfs/salaries/raw/THIRDPARTY_showdown_PIT_CLE_2026W4_CONTEXT_ONLY.csv",
+   "fc_sha256": "1199bfcf9c262280763cb6b1c0c6b3b1edc8dd0dc1268a3c13ff728d8d68a1bc",
+   "fc_aliases": {
+    "KC Concepcion|CLE": "KC Concepcion Jr.|CLE",
+    "Michael Pittman|PIT": "Michael Pittman Jr.|PIT",
+    "Lew Nichols III|PIT": "Lew Nichols|PIT"
+   },
+   "fc_unresolved": [],
+   "FC_CAPTURE_TIME": "NOT_RECORDED (supplied by the owner on game day 2026-10-01)",
+   "absent_file": "nfl/dfs/salaries/raw/OFFICIAL_INACTIVES_PIT_CLE_2026W4.json",
+   "absent_sha256": "5ccd12c5d73eaf899a0273a992238c1455705eb317f67aa8d9c489c145cb5192"
+  },
+  "ATL_NO": {
+   "state": "FROZEN_PRELOCK (committed 9736516 before lock)",
+   "FC_ONLY": {
+    "path": "nfl/dfs/salaries/showdown_atl_no/SHADOW_RW_INACTIVES_CHARTFIX/SHOWDOWN_ATL_NO_SHADOW_OWNERSHIP.csv",
+    "sha256": "5ebcd4dd7de8e64a71d80eefa1b24dae9a269871e7538a234a7ac61f700c8ad4"
+   },
+   "BLEND": {
+    "path": "nfl/dfs/salaries/showdown_atl_no/SHADOW_RW_INACTIVES_CHARTFIX_BLEND/SHOWDOWN_ATL_NO_SHADOW_OWNERSHIP.csv",
+    "sha256": "00ca6a862db28bc338e0391397f6bb9a1cfc910ea40cdecf54ec3ca6c8678bc9"
+   }
+  },
+  "PHI_CHI": {
+   "state": "NONE -- no salaries, no public projection"
+  }
+ },
+ "reconstruction_method_check_on_atl": {
+  "sigma": 0.6,
+  "k": 5000,
+  "players": 20,
+  "max_abs_diff_pct_pts": 0.0,
+  "state": "REPRODUCES_FROZEN_FC_ONLY",
+  "fc_file": "nfl/dfs/salaries/raw/showdown_atl_no_2026W4/THIRDPARTY_FC_showdown_ATL_NO_2026W4_CONTEXT_ONLY.330fdd518c66ea57.csv",
+  "fc_sha256": "330fdd518c66ea57651f799022af152f9997d1925097224edb2a527888da8b7a"
+ },
+ "inputs": {
+  "snaps": {
+   "path": "nfl/dfs/salaries/raw/showdown_atl_no_2026W4/snap_counts_2026.53720f396f9c2bfa.csv",
+   "sha256": "53720f396f9c2bfaf869c8a7af644f043caae278c6a3c1d6b4ed52ec597c8061",
+   "weeks_used": "REG 2026 weeks < 4"
+  },
+  "usage": {
+   "path": "nfl/derived/USAGE_HISTORY_2021_2026.json",
+   "sha256": "46eb5ae2bbeceacacdac5212057d342a50bbb69373b3d78bdd8d5bbeecbebacd"
+  },
+  "roster_identity_only": {
+   "path": "nfl/dfs/salaries/raw/showdown_atl_no_2026W4/roster_weekly_2026.0f72f882f3974ff2.csv",
+   "sha256": "0f72f882f3974ff2d524ce838fb750f2d2f2fb8b3f081728ed45e832972292c3"
+  },
+  "exports": {
+   "PIT_CLE": {
+    "path": "nfl/dfs/salaries/raw/DKEntries_PIT_CLE_SHOWDOWN_2026W4.csv",
+    "sha256": "67229d912fd7ed058ad2c44bcac9b1f142039c9508591a1dbddc030825c8a2eb"
+   },
+   "ATL_NO": {
+    "path": "nfl/dfs/salaries/raw/showdown_atl_no_2026W4/DKEntries_ATL_NO_SHOWDOWN_2026W4.fd0c1faa2271ca66.csv",
+    "sha256": "fd0c1faa2271ca6622d3ecea4a1decf6843729a8e3a5c624466d5788df2d65a8"
+   }
+  },
+  "absent": {
+   "PIT_CLE": "nfl/dfs/salaries/raw/OFFICIAL_INACTIVES_PIT_CLE_2026W4.json",
+   "ATL_NO": "nfl/dfs/salaries/showdown_atl_no/SHADOW_ABSENT_RW_INACTIVES_CHARTFIX.json"
+  },
+  "standings_raw_sha256": {
+   "196187080": "1888ebb3e4c35df52e6bb8054fedcb8d9f6958fd89637c9d5da731800d509a65",
+   "196285160": "56d02640ee67ee973b4deaaf30d2da78105bda48331e5ae3f45395a057cfc815",
+   "196285137": "d2a595410ab774db50f8e37a6c951f64500182400d9864da4e8e6cdf22a42c4d",
+   "196285161": "2c91ae8234d4eb762ea67926c472dfe9487c95f0687121b2af016bb1f7d35b75"
+  },
+  "filled_entries": {
+   "196187080": 47329,
+   "196285160": 47308,
+   "196285137": 237105,
+   "196285161": 59083
+  },
+  "routes": "NOT_AVAILABLE in this repository"
+ },
+ "bucket_counts_active": {
+  "PIT_CLE": {
+   "STAR": 6,
+   "K_DST": 4,
+   "PUNT_FRINGE": 24,
+   "CHEAP_ACTIVE_ROTATION": 5,
+   "MIDRANGE": 6
+  },
+  "ATL_NO": {
+   "MIDRANGE": 5,
+   "CHEAP_ACTIVE_ROTATION": 7,
+   "PUNT_FRINGE": 9,
+   "STAR": 5,
+   "K_DST": 4
+  }
+ },
+ "folds": {
+  "A": {
+   "trained_on": [
+    "PIT_CLE:196187080:FC_ONLY"
+   ],
+   "test_slate": "ATL_NO",
+   "model": {
+    "cpt": {
+     "features": [
+      "log_baseline_plus_kappa",
+      "is_cheap_active_rotation",
+      "is_punt_fringe",
+      "snap_share_mean",
+      "injury_opp"
+     ],
+     "objective": 2.53890745897521,
+     "iterations": 6,
+     "converged": true,
+     "n_train_active": 45,
+     "kappa": 0.5,
+     "lambda": 0.01,
+     "max_abs_theta": 1.8597718141263484,
+     "theta": {
+      "log_baseline_plus_kappa": 1.1612,
+      "is_cheap_active_rotation": -0.796,
+      "is_punt_fringe": -1.8598,
+      "snap_share_mean": -0.9877,
+      "injury_opp": -0.3344
+     }
+    },
+    "flex": {
+     "features": [
+      "log_baseline_plus_kappa",
+      "is_cheap_active_rotation",
+      "is_punt_fringe",
+      "snap_share_mean",
+      "injury_opp"
+     ],
+     "objective": 2.8871710974578426,
+     "iterations": 5,
+     "converged": true,
+     "n_train_active": 45,
+     "kappa": 0.5,
+     "lambda": 0.01,
+     "max_abs_theta": 1.0687746764997372,
+     "theta": {
+      "log_baseline_plus_kappa": 1.0688,
+      "is_cheap_active_rotation": -0.9871,
+      "is_punt_fringe": -0.4373,
+      "snap_share_mean": -0.202,
+      "injury_opp": -0.022
+     }
+    }
+   },
+   "tests": [
+    {
+     "fold": "A",
+     "trained_on": [
+      "PIT_CLE"
+     ],
+     "test_slate": "ATL_NO",
+     "test_contest": "196285160",
+     "baseline": "FC_ONLY",
+     "baseline_state": "FROZEN_PRELOCK_9736516",
+     "role": "PRIMARY",
+     "score": {
+      "buckets": {
+       "STAR": {
+        "n": 5,
+        "baseline_cpt": {
+         "mae": 4.0408,
+         "bias": -0.1445
+        },
+        "baseline_flex": {
+         "mae": 7.3259,
+         "bias": -3.4594
+        },
+        "candidate_cpt": {
+         "mae": 2.6577,
+         "bias": -1.1714
+        },
+        "candidate_flex": {
+         "mae": 6.2975,
+         "bias": -1.5988
+        }
+       },
+       "MIDRANGE": {
+        "n": 5,
+        "baseline_cpt": {
+         "mae": 1.5848,
+         "bias": 0.2118
+        },
+        "baseline_flex": {
+         "mae": 8.5386,
+         "bias": 4.6242
+        },
+        "candidate_cpt": {
+         "mae": 1.3995,
+         "bias": 0.2045
+        },
+        "candidate_flex": {
+         "mae": 10.5112,
+         "bias": 6.7509
+        }
+       },
+       "CHEAP_ACTIVE_ROTATION": {
+        "n": 7,
+        "baseline_cpt": {
+         "mae": 0.5067,
+         "bias": -0.3449
+        },
+        "baseline_flex": {
+         "mae": 11.1123,
+         "bias": -6.6965
+        },
+        "candidate_cpt": {
+         "mae": 0.3887,
+         "bias": -0.2552
+        },
+        "candidate_flex": {
+         "mae": 10.6381,
+         "bias": -10.4018
+        }
+       },
+       "PUNT_FRINGE": {
+        "n": 9,
+        "baseline_cpt": {
+         "mae": 0.2226,
+         "bias": 0.1484
+        },
+        "baseline_flex": {
+         "mae": 7.6378,
+         "bias": 3.4078
+        },
+        "candidate_cpt": {
+         "mae": 0.1185,
+         "bias": 0.0752
+        },
+        "candidate_flex": {
+         "mae": 6.2839,
+         "bias": 2.388
+        }
+       },
+       "K_DST": {
+        "n": 4,
+        "baseline_cpt": {
+         "mae": 0.9091,
+         "bias": 0.2268
+        },
+        "baseline_flex": {
+         "mae": 3.844,
+         "bias": 3.0055
+        },
+        "candidate_cpt": {
+         "mae": 1.5725,
+         "bias": 1.5274
+        },
+        "candidate_flex": {
+         "mae": 6.8002,
+         "bias": 6.8002
+        }
+       }
+      },
+      "n_active": 30,
+      "total_ownership_mae": {
+       "baseline": 8.6651,
+       "candidate": 8.6623
+      },
+      "SC_OWN_ROTATION_1_registered_metrics_REPORTED_NOT_IN_BAR": {
+       "flex_rmse": {
+        "baseline": 12.4821,
+        "candidate": 11.8642
+       },
+       "flex_kl_actual_vs_pred": {
+        "baseline": 0.6792,
+        "candidate": 0.5683
+       }
+      },
+      "cheap_rows": [
+       {
+        "name": "Austin Hooper",
+        "team": "ATL",
+        "pos": "TE",
+        "salary": 2800,
+        "depth_rank_active": 3,
+        "injury_opp": 0,
+        "snap_share_mean": 0.2967,
+        "baseline_flex": 0.0,
+        "candidate_flex": 0.1594,
+        "actual_flex": 11.4188,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.1991,
+        "actual_cpt": 0.4693
+       },
+       {
+        "name": "Brian Robinson Jr.",
+        "team": "ATL",
+        "pos": "RB",
+        "salary": 3800,
+        "depth_rank_active": 2,
+        "injury_opp": 0,
+        "snap_share_mean": 0.3333,
+        "baseline_flex": 0.0,
+        "candidate_flex": 0.1583,
+        "actual_flex": 21.4425,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.192,
+        "actual_cpt": 1.2197
+       },
+       {
+        "name": "Bryce Lance",
+        "team": "NO",
+        "pos": "WR",
+        "salary": 1800,
+        "depth_rank_active": 3,
+        "injury_opp": 0,
+        "snap_share_mean": 0.7333,
+        "baseline_flex": 6.42,
+        "candidate_flex": 2.4207,
+        "actual_flex": 23.7761,
+        "baseline_cpt": 0.08,
+        "candidate_cpt": 0.1537,
+        "actual_cpt": 0.7018
+       },
+       {
+        "name": "CJ Donaldson",
+        "team": "NO",
+        "pos": "RB",
+        "salary": 1400,
+        "depth_rank_active": 3,
+        "injury_opp": 1,
+        "snap_share_mean": 0.2067,
+        "baseline_flex": 0.0,
+        "candidate_flex": 0.1588,
+        "actual_flex": 4.9231,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.1557,
+        "actual_cpt": 0.1141
+       },
+       {
+        "name": "Jahan Dotson",
+        "team": "ATL",
+        "pos": "WR",
+        "salary": 3000,
+        "depth_rank_active": 2,
+        "injury_opp": 0,
+        "snap_share_mean": 0.68,
+        "baseline_flex": 11.18,
+        "candidate_flex": 4.2814,
+        "actual_flex": 15.9825,
+        "baseline_cpt": 0.18,
+        "candidate_cpt": 0.1948,
+        "actual_cpt": 0.6024
+       },
+       {
+        "name": "Olamide Zaccheaus",
+        "team": "ATL",
+        "pos": "WR",
+        "salary": 2000,
+        "depth_rank_active": 3,
+        "injury_opp": 0,
+        "snap_share_mean": 0.3567,
+        "baseline_flex": 25.28,
+        "candidate_flex": 10.652,
+        "actual_flex": 9.825,
+        "baseline_cpt": 0.78,
+        "candidate_cpt": 0.5589,
+        "actual_cpt": 0.2135
+       },
+       {
+        "name": "Zachariah Branch",
+        "team": "ATL",
+        "pos": "WR",
+        "salary": 2400,
+        "depth_rank_active": 5,
+        "injury_opp": 0,
+        "snap_share_mean": 0.2267,
+        "baseline_flex": 1.66,
+        "candidate_flex": 0.7726,
+        "actual_flex": 4.0479,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.2133,
+        "actual_cpt": 0.1332
+       }
+      ],
+      "absent_players_realised_pct_NOT_SCORED": {
+       "Antwane Wells Jr.": {
+        "cpt": 0.0021,
+        "flex": 0.0042
+       },
+       "Beaux Collins": {
+        "cpt": 0.0,
+        "flex": 0.0021
+       },
+       "Cal Adomitis": {
+        "cpt": 0.0021,
+        "flex": 0.0106
+       },
+       "Cash Jones": {
+        "cpt": 0.0021,
+        "flex": 0.0254
+       },
+       "Cedric Tillman": {
+        "cpt": 0.0042,
+        "flex": 0.055
+       },
+       "Charlie Smyth": {
+        "cpt": 0.0042,
+        "flex": 0.3128
+       },
+       "Cooper Rush": {
+        "cpt": 0.0423,
+        "flex": 0.0063
+       },
+       "Dylan Drummond": {
+        "cpt": 0.0021,
+        "flex": 0.0169
+       },
+       "Jack Strand": {
+        "cpt": 0.0,
+        "flex": 0.055
+       },
+       "Jack Velling": {
+        "cpt": 0.0,
+        "flex": 0.0106
+       },
+       "Jalen Moreno-Cropper": {
+        "cpt": 0.0042,
+        "flex": 0.0655
+       },
+       "Khalil Herbert": {
+        "cpt": 0.0106,
+        "flex": 0.2008
+       },
+       "Kyrese Rowan": {
+        "cpt": 0.0042,
+        "flex": 0.0063
+       },
+       "Mason Tipton": {
+        "cpt": 0.0063,
+        "flex": 0.0
+       },
+       "Moliki Matavao": {
+        "cpt": 0.0,
+        "flex": 0.0042
+       },
+       "Noah Fant": {
+        "cpt": 0.0698,
+        "flex": 0.6785
+       },
+       "Stone Smartt": {
+        "cpt": 0.0,
+        "flex": 0.0296
+       },
+       "Travis Etienne Jr.": {
+        "cpt": 0.0085,
+        "flex": 0.0317
+       },
+       "Trey Palmer": {
+        "cpt": 0.0,
+        "flex": 0.0021
+       },
+       "Trey Sermon": {
+        "cpt": 0.0,
+        "flex": 0.0021
+       },
+       "Vinny Anthony II": {
+        "cpt": 0.0021,
+        "flex": 0.0063
+       },
+       "Zach Wilson": {
+        "cpt": 0.0,
+        "flex": 0.0063
+       },
+       "Zach Wood": {
+        "cpt": 0.0,
+        "flex": 0.0042
+       },
+       "Zamir White": {
+        "cpt": 0.0,
+        "flex": 0.1036
+       }
+      }
+     },
+     "bar": {
+      "verdict": "FAIL",
+      "criteria": {
+       "1_cheap_flex_mae_strictly_lower": true,
+       "2_cheap_flex_abs_bias_not_worse": false,
+       "3_cheap_cpt_mae_within_margin": true,
+       "5_total_ownership_mae_within_margin": true,
+       "4_STAR_cpt_mae_within_margin": true,
+       "4_STAR_flex_mae_within_margin": true,
+       "4_MIDRANGE_cpt_mae_within_margin": true,
+       "4_MIDRANGE_flex_mae_within_margin": false,
+       "4_PUNT_FRINGE_cpt_mae_within_margin": true,
+       "4_PUNT_FRINGE_flex_mae_within_margin": true,
+       "4_K_DST_cpt_mae_within_margin": false,
+       "4_K_DST_flex_mae_within_margin": false
+      },
+      "failed": [
+       "2_cheap_flex_abs_bias_not_worse",
+       "4_K_DST_cpt_mae_within_margin",
+       "4_K_DST_flex_mae_within_margin",
+       "4_MIDRANGE_flex_mae_within_margin"
+      ]
+     }
+    },
+    {
+     "fold": "A",
+     "trained_on": [
+      "PIT_CLE"
+     ],
+     "test_slate": "ATL_NO",
+     "test_contest": "196285160",
+     "baseline": "BLEND",
+     "baseline_state": "FROZEN_PRELOCK_9736516",
+     "role": "PRIMARY",
+     "score": {
+      "buckets": {
+       "STAR": {
+        "n": 5,
+        "baseline_cpt": {
+         "mae": 3.0904,
+         "bias": 0.1755
+        },
+        "baseline_flex": {
+         "mae": 7.6979,
+         "bias": -4.0474
+        },
+        "candidate_cpt": {
+         "mae": 2.2246,
+         "bias": -1.1424
+        },
+        "candidate_flex": {
+         "mae": 6.838,
+         "bias": -2.6096
+        }
+       },
+       "MIDRANGE": {
+        "n": 5,
+        "baseline_cpt": {
+         "mae": 1.392,
+         "bias": 0.1598
+        },
+        "baseline_flex": {
+         "mae": 7.719,
+         "bias": 4.0482
+        },
+        "candidate_cpt": {
+         "mae": 1.47,
+         "bias": 0.1514
+        },
+        "candidate_flex": {
+         "mae": 9.351,
+         "bias": 5.8842
+        }
+       },
+       "CHEAP_ACTIVE_ROTATION": {
+        "n": 7,
+        "baseline_cpt": {
+         "mae": 0.4324,
+         "bias": -0.4306
+        },
+        "baseline_flex": {
+         "mae": 9.4266,
+         "bias": -6.5994
+        },
+        "candidate_cpt": {
+         "mae": 0.3517,
+         "bias": -0.2999
+        },
+        "candidate_flex": {
+         "mae": 10.4367,
+         "bias": -10.4367
+        }
+       },
+       "PUNT_FRINGE": {
+        "n": 9,
+        "baseline_cpt": {
+         "mae": 0.0693,
+         "bias": -0.005
+        },
+        "baseline_flex": {
+         "mae": 5.6311,
+         "bias": 1.9834
+        },
+        "candidate_cpt": {
+         "mae": 0.0814,
+         "bias": 0.0378
+        },
+        "candidate_flex": {
+         "mae": 4.6285,
+         "bias": 1.0941
+        }
+       },
+       "K_DST": {
+        "n": 4,
+        "baseline_cpt": {
+         "mae": 0.7891,
+         "bias": 0.3868
+        },
+        "baseline_flex": {
+         "mae": 7.4955,
+         "bias": 7.4955
+        },
+        "candidate_cpt": {
+         "mae": 1.7196,
+         "bias": 1.7196
+        },
+        "candidate_flex": {
+         "mae": 12.1192,
+         "bias": 12.1192
+        }
+       }
+      },
+      "n_active": 30,
+      "total_ownership_mae": {
+       "baseline": 8.0366,
+       "candidate": 8.7462
+      },
+      "SC_OWN_ROTATION_1_registered_metrics_REPORTED_NOT_IN_BAR": {
+       "flex_rmse": {
+        "baseline": 10.2344,
+        "candidate": 10.7964
+       },
+       "flex_kl_actual_vs_pred": {
+        "baseline": 0.3432,
+        "candidate": 0.4187
+       }
+      },
+      "cheap_rows": [
+       {
+        "name": "Austin Hooper",
+        "team": "ATL",
+        "pos": "TE",
+        "salary": 2800,
+        "depth_rank_active": 3,
+        "injury_opp": 0,
+        "snap_share_mean": 0.2967,
+        "baseline_flex": 0.96,
+        "candidate_flex": 0.4968,
+        "actual_flex": 11.4188,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.1951,
+        "actual_cpt": 0.4693
+       },
+       {
+        "name": "Brian Robinson Jr.",
+        "team": "ATL",
+        "pos": "RB",
+        "salary": 3800,
+        "depth_rank_active": 2,
+        "injury_opp": 0,
+        "snap_share_mean": 0.3333,
+        "baseline_flex": 0.98,
+        "candidate_flex": 0.5004,
+        "actual_flex": 21.4425,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.1881,
+        "actual_cpt": 1.2197
+       },
+       {
+        "name": "Bryce Lance",
+        "team": "NO",
+        "pos": "WR",
+        "salary": 1800,
+        "depth_rank_active": 3,
+        "injury_opp": 0,
+        "snap_share_mean": 0.7333,
+        "baseline_flex": 9.44,
+        "candidate_flex": 3.5335,
+        "actual_flex": 23.7761,
+        "baseline_cpt": 0.04,
+        "candidate_cpt": 0.1386,
+        "actual_cpt": 0.7018
+       },
+       {
+        "name": "CJ Donaldson",
+        "team": "NO",
+        "pos": "RB",
+        "salary": 1400,
+        "depth_rank_active": 3,
+        "injury_opp": 1,
+        "snap_share_mean": 0.2067,
+        "baseline_flex": 0.0,
+        "candidate_flex": 0.1574,
+        "actual_flex": 4.9231,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.1526,
+        "actual_cpt": 0.1141
+       },
+       {
+        "name": "Jahan Dotson",
+        "team": "ATL",
+        "pos": "WR",
+        "salary": 3000,
+        "depth_rank_active": 2,
+        "injury_opp": 0,
+        "snap_share_mean": 0.68,
+        "baseline_flex": 13.4,
+        "candidate_flex": 5.1112,
+        "actual_flex": 15.9825,
+        "baseline_cpt": 0.18,
+        "candidate_cpt": 0.1909,
+        "actual_cpt": 0.6024
+       },
+       {
+        "name": "Olamide Zaccheaus",
+        "team": "ATL",
+        "pos": "WR",
+        "salary": 2000,
+        "depth_rank_active": 3,
+        "injury_opp": 0,
+        "snap_share_mean": 0.3567,
+        "baseline_flex": 19.72,
+        "candidate_flex": 8.1441,
+        "actual_flex": 9.825,
+        "baseline_cpt": 0.22,
+        "candidate_cpt": 0.2807,
+        "actual_cpt": 0.2135
+       },
+       {
+        "name": "Zachariah Branch",
+        "team": "ATL",
+        "pos": "WR",
+        "salary": 2400,
+        "depth_rank_active": 5,
+        "injury_opp": 0,
+        "snap_share_mean": 0.2267,
+        "baseline_flex": 0.72,
+        "candidate_flex": 0.4159,
+        "actual_flex": 4.0479,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.209,
+        "actual_cpt": 0.1332
+       }
+      ],
+      "absent_players_realised_pct_NOT_SCORED": {
+       "Antwane Wells Jr.": {
+        "cpt": 0.0021,
+        "flex": 0.0042
+       },
+       "Beaux Collins": {
+        "cpt": 0.0,
+        "flex": 0.0021
+       },
+       "Cal Adomitis": {
+        "cpt": 0.0021,
+        "flex": 0.0106
+       },
+       "Cash Jones": {
+        "cpt": 0.0021,
+        "flex": 0.0254
+       },
+       "Cedric Tillman": {
+        "cpt": 0.0042,
+        "flex": 0.055
+       },
+       "Charlie Smyth": {
+        "cpt": 0.0042,
+        "flex": 0.3128
+       },
+       "Cooper Rush": {
+        "cpt": 0.0423,
+        "flex": 0.0063
+       },
+       "Dylan Drummond": {
+        "cpt": 0.0021,
+        "flex": 0.0169
+       },
+       "Jack Strand": {
+        "cpt": 0.0,
+        "flex": 0.055
+       },
+       "Jack Velling": {
+        "cpt": 0.0,
+        "flex": 0.0106
+       },
+       "Jalen Moreno-Cropper": {
+        "cpt": 0.0042,
+        "flex": 0.0655
+       },
+       "Khalil Herbert": {
+        "cpt": 0.0106,
+        "flex": 0.2008
+       },
+       "Kyrese Rowan": {
+        "cpt": 0.0042,
+        "flex": 0.0063
+       },
+       "Mason Tipton": {
+        "cpt": 0.0063,
+        "flex": 0.0
+       },
+       "Moliki Matavao": {
+        "cpt": 0.0,
+        "flex": 0.0042
+       },
+       "Noah Fant": {
+        "cpt": 0.0698,
+        "flex": 0.6785
+       },
+       "Stone Smartt": {
+        "cpt": 0.0,
+        "flex": 0.0296
+       },
+       "Travis Etienne Jr.": {
+        "cpt": 0.0085,
+        "flex": 0.0317
+       },
+       "Trey Palmer": {
+        "cpt": 0.0,
+        "flex": 0.0021
+       },
+       "Trey Sermon": {
+        "cpt": 0.0,
+        "flex": 0.0021
+       },
+       "Vinny Anthony II": {
+        "cpt": 0.0021,
+        "flex": 0.0063
+       },
+       "Zach Wilson": {
+        "cpt": 0.0,
+        "flex": 0.0063
+       },
+       "Zach Wood": {
+        "cpt": 0.0,
+        "flex": 0.0042
+       },
+       "Zamir White": {
+        "cpt": 0.0,
+        "flex": 0.1036
+       }
+      }
+     },
+     "bar": {
+      "verdict": "FAIL",
+      "criteria": {
+       "1_cheap_flex_mae_strictly_lower": false,
+       "2_cheap_flex_abs_bias_not_worse": false,
+       "3_cheap_cpt_mae_within_margin": true,
+       "5_total_ownership_mae_within_margin": true,
+       "4_STAR_cpt_mae_within_margin": true,
+       "4_STAR_flex_mae_within_margin": true,
+       "4_MIDRANGE_cpt_mae_within_margin": true,
+       "4_MIDRANGE_flex_mae_within_margin": false,
+       "4_PUNT_FRINGE_cpt_mae_within_margin": true,
+       "4_PUNT_FRINGE_flex_mae_within_margin": true,
+       "4_K_DST_cpt_mae_within_margin": false,
+       "4_K_DST_flex_mae_within_margin": false
+      },
+      "failed": [
+       "1_cheap_flex_mae_strictly_lower",
+       "2_cheap_flex_abs_bias_not_worse",
+       "4_K_DST_cpt_mae_within_margin",
+       "4_K_DST_flex_mae_within_margin",
+       "4_MIDRANGE_flex_mae_within_margin"
+      ]
+     }
+    },
+    {
+     "fold": "A",
+     "trained_on": [
+      "PIT_CLE"
+     ],
+     "test_slate": "ATL_NO",
+     "test_contest": "196285137",
+     "baseline": "FC_ONLY",
+     "baseline_state": "FROZEN_PRELOCK_9736516",
+     "role": "SUPPLEMENTARY",
+     "score": {
+      "buckets": {
+       "STAR": {
+        "n": 5,
+        "baseline_cpt": {
+         "mae": 5.1009,
+         "bias": -0.3574
+        },
+        "baseline_flex": {
+         "mae": 4.5956,
+         "bias": -2.7182
+        },
+        "candidate_cpt": {
+         "mae": 3.7178,
+         "bias": -1.3843
+        },
+        "candidate_flex": {
+         "mae": 3.9242,
+         "bias": -0.8576
+        }
+       },
+       "MIDRANGE": {
+        "n": 5,
+        "baseline_cpt": {
+         "mae": 1.1269,
+         "bias": 0.0835
+        },
+        "baseline_flex": {
+         "mae": 8.6961,
+         "bias": 4.1522
+        },
+        "candidate_cpt": {
+         "mae": 1.225,
+         "bias": 0.0762
+        },
+        "candidate_flex": {
+         "mae": 10.6687,
+         "bias": 6.2789
+        }
+       },
+       "CHEAP_ACTIVE_ROTATION": {
+        "n": 7,
+        "baseline_cpt": {
+         "mae": 0.4172,
+         "bias": -0.2496
+        },
+        "baseline_flex": {
+         "mae": 10.2141,
+         "bias": -6.0777
+        },
+        "candidate_cpt": {
+         "mae": 0.3213,
+         "bias": -0.1599
+        },
+        "candidate_flex": {
+         "mae": 9.7829,
+         "bias": -9.7829
+        }
+       },
+       "PUNT_FRINGE": {
+        "n": 9,
+        "baseline_cpt": {
+         "mae": 0.2172,
+         "bias": 0.1547
+        },
+        "baseline_flex": {
+         "mae": 7.3678,
+         "bias": 3.4706
+        },
+        "candidate_cpt": {
+         "mae": 0.1137,
+         "bias": 0.0815
+        },
+        "candidate_flex": {
+         "mae": 6.1082,
+         "bias": 2.4508
+        }
+       },
+       "K_DST": {
+        "n": 4,
+        "baseline_cpt": {
+         "mae": 0.7844,
+         "bias": 0.4467
+        },
+        "baseline_flex": {
+         "mae": 3.9017,
+         "bias": 1.2738
+        },
+        "candidate_cpt": {
+         "mae": 1.7473,
+         "bias": 1.7473
+        },
+        "candidate_flex": {
+         "mae": 5.9214,
+         "bias": 5.0684
+        }
+       }
+      },
+      "n_active": 30,
+      "total_ownership_mae": {
+       "baseline": 7.9805,
+       "candidate": 7.8655
+      },
+      "SC_OWN_ROTATION_1_registered_metrics_REPORTED_NOT_IN_BAR": {
+       "flex_rmse": {
+        "baseline": 11.7453,
+        "candidate": 11.1205
+       },
+       "flex_kl_actual_vs_pred": {
+        "baseline": 0.5837,
+        "candidate": 0.4928
+       }
+      },
+      "cheap_rows": [
+       {
+        "name": "Austin Hooper",
+        "team": "ATL",
+        "pos": "TE",
+        "salary": 2800,
+        "depth_rank_active": 3,
+        "injury_opp": 0,
+        "snap_share_mean": 0.2967,
+        "baseline_flex": 0.0,
+        "candidate_flex": 0.1594,
+        "actual_flex": 8.5844,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.1991,
+        "actual_cpt": 0.2526
+       },
+       {
+        "name": "Brian Robinson Jr.",
+        "team": "ATL",
+        "pos": "RB",
+        "salary": 3800,
+        "depth_rank_active": 2,
+        "injury_opp": 0,
+        "snap_share_mean": 0.3333,
+        "baseline_flex": 0.0,
+        "candidate_flex": 0.1583,
+        "actual_flex": 17.6614,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.192,
+        "actual_cpt": 0.8287
+       },
+       {
+        "name": "Bryce Lance",
+        "team": "NO",
+        "pos": "WR",
+        "salary": 1800,
+        "depth_rank_active": 3,
+        "injury_opp": 0,
+        "snap_share_mean": 0.7333,
+        "baseline_flex": 6.42,
+        "candidate_flex": 2.4207,
+        "actual_flex": 21.8384,
+        "baseline_cpt": 0.08,
+        "candidate_cpt": 0.1537,
+        "actual_cpt": 0.628
+       },
+       {
+        "name": "CJ Donaldson",
+        "team": "NO",
+        "pos": "RB",
+        "salary": 1400,
+        "depth_rank_active": 3,
+        "injury_opp": 1,
+        "snap_share_mean": 0.2067,
+        "baseline_flex": 0.0,
+        "candidate_flex": 0.1588,
+        "actual_flex": 5.5376,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.1557,
+        "actual_cpt": 0.0696
+       },
+       {
+        "name": "Jahan Dotson",
+        "team": "ATL",
+        "pos": "WR",
+        "salary": 3000,
+        "depth_rank_active": 2,
+        "injury_opp": 0,
+        "snap_share_mean": 0.68,
+        "baseline_flex": 11.18,
+        "candidate_flex": 4.2814,
+        "actual_flex": 17.669,
+        "baseline_cpt": 0.18,
+        "candidate_cpt": 0.1948,
+        "actual_cpt": 0.7145
+       },
+       {
+        "name": "Olamide Zaccheaus",
+        "team": "ATL",
+        "pos": "WR",
+        "salary": 2000,
+        "depth_rank_active": 3,
+        "injury_opp": 0,
+        "snap_share_mean": 0.3567,
+        "baseline_flex": 25.28,
+        "candidate_flex": 10.652,
+        "actual_flex": 10.8024,
+        "baseline_cpt": 0.78,
+        "candidate_cpt": 0.5589,
+        "actual_cpt": 0.1932
+       },
+       {
+        "name": "Zachariah Branch",
+        "team": "ATL",
+        "pos": "WR",
+        "salary": 2400,
+        "depth_rank_active": 5,
+        "injury_opp": 0,
+        "snap_share_mean": 0.2267,
+        "baseline_flex": 1.66,
+        "candidate_flex": 0.7726,
+        "actual_flex": 4.9906,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.2133,
+        "actual_cpt": 0.1004
+       }
+      ],
+      "absent_players_realised_pct_NOT_SCORED": {
+       "Antwane Wells Jr.": {
+        "cpt": 0.0004,
+        "flex": 0.0021
+       },
+       "Cal Adomitis": {
+        "cpt": 0.0004,
+        "flex": 0.0358
+       },
+       "Cash Jones": {
+        "cpt": 0.0004,
+        "flex": 0.0034
+       },
+       "Cedric Tillman": {
+        "cpt": 0.003,
+        "flex": 0.0219
+       },
+       "Charlie Smyth": {
+        "cpt": 0.0046,
+        "flex": 0.0953
+       },
+       "Cooper Rush": {
+        "cpt": 0.0,
+        "flex": 0.0042
+       },
+       "Dylan Drummond": {
+        "cpt": 0.0008,
+        "flex": 0.0072
+       },
+       "Jack Strand": {
+        "cpt": 0.0004,
+        "flex": 0.0034
+       },
+       "Jack Velling": {
+        "cpt": 0.0004,
+        "flex": 0.003
+       },
+       "Jalen Moreno-Cropper": {
+        "cpt": 0.0013,
+        "flex": 0.027
+       },
+       "Jordyn Tyson": {
+        "cpt": 0.0,
+        "flex": 0.0004
+       },
+       "Khalil Herbert": {
+        "cpt": 0.0034,
+        "flex": 0.0654
+       },
+       "Kyrese Rowan": {
+        "cpt": 0.0004,
+        "flex": 0.0021
+       },
+       "Mason Tipton": {
+        "cpt": 0.0008,
+        "flex": 0.0013
+       },
+       "Noah Fant": {
+        "cpt": 0.0384,
+        "flex": 0.6014
+       },
+       "Stone Smartt": {
+        "cpt": 0.0013,
+        "flex": 0.0186
+       },
+       "Travis Etienne Jr.": {
+        "cpt": 0.0017,
+        "flex": 0.0051
+       },
+       "Trey Palmer": {
+        "cpt": 0.0004,
+        "flex": 0.0114
+       },
+       "Trey Sermon": {
+        "cpt": 0.0,
+        "flex": 0.0008
+       },
+       "Vinny Anthony II": {
+        "cpt": 0.0004,
+        "flex": 0.003
+       },
+       "Zach Wilson": {
+        "cpt": 0.0008,
+        "flex": 0.0051
+       },
+       "Zach Wood": {
+        "cpt": 0.0,
+        "flex": 0.0025
+       },
+       "Zamir White": {
+        "cpt": 0.0034,
+        "flex": 0.0367
+       }
+      }
+     },
+     "bar": {
+      "verdict": "FAIL",
+      "criteria": {
+       "1_cheap_flex_mae_strictly_lower": true,
+       "2_cheap_flex_abs_bias_not_worse": false,
+       "3_cheap_cpt_mae_within_margin": true,
+       "5_total_ownership_mae_within_margin": true,
+       "4_STAR_cpt_mae_within_margin": true,
+       "4_STAR_flex_mae_within_margin": true,
+       "4_MIDRANGE_cpt_mae_within_margin": true,
+       "4_MIDRANGE_flex_mae_within_margin": false,
+       "4_PUNT_FRINGE_cpt_mae_within_margin": true,
+       "4_PUNT_FRINGE_flex_mae_within_margin": true,
+       "4_K_DST_cpt_mae_within_margin": false,
+       "4_K_DST_flex_mae_within_margin": false
+      },
+      "failed": [
+       "2_cheap_flex_abs_bias_not_worse",
+       "4_K_DST_cpt_mae_within_margin",
+       "4_K_DST_flex_mae_within_margin",
+       "4_MIDRANGE_flex_mae_within_margin"
+      ]
+     }
+    },
+    {
+     "fold": "A",
+     "trained_on": [
+      "PIT_CLE"
+     ],
+     "test_slate": "ATL_NO",
+     "test_contest": "196285137",
+     "baseline": "BLEND",
+     "baseline_state": "FROZEN_PRELOCK_9736516",
+     "role": "SUPPLEMENTARY",
+     "score": {
+      "buckets": {
+       "STAR": {
+        "n": 5,
+        "baseline_cpt": {
+         "mae": 3.4781,
+         "bias": -0.0374
+        },
+        "baseline_flex": {
+         "mae": 4.9676,
+         "bias": -3.3062
+        },
+        "candidate_cpt": {
+         "mae": 2.1601,
+         "bias": -1.3552
+        },
+        "candidate_flex": {
+         "mae": 4.5071,
+         "bias": -1.8685
+        }
+       },
+       "MIDRANGE": {
+        "n": 5,
+        "baseline_cpt": {
+         "mae": 1.4591,
+         "bias": 0.0315
+        },
+        "baseline_flex": {
+         "mae": 8.1361,
+         "bias": 3.5762
+        },
+        "candidate_cpt": {
+         "mae": 1.537,
+         "bias": 0.0231
+        },
+        "candidate_flex": {
+         "mae": 9.5085,
+         "bias": 5.4122
+        }
+       },
+       "CHEAP_ACTIVE_ROTATION": {
+        "n": 7,
+        "baseline_cpt": {
+         "mae": 0.3429,
+         "bias": -0.3353
+        },
+        "baseline_flex": {
+         "mae": 8.5284,
+         "bias": -5.9805
+        },
+        "candidate_cpt": {
+         "mae": 0.2843,
+         "bias": -0.2046
+        },
+        "candidate_flex": {
+         "mae": 9.8178,
+         "bias": -9.8178
+        }
+       },
+       "PUNT_FRINGE": {
+        "n": 9,
+        "baseline_cpt": {
+         "mae": 0.0638,
+         "bias": 0.0014
+        },
+        "baseline_flex": {
+         "mae": 5.3612,
+         "bias": 2.0462
+        },
+        "candidate_cpt": {
+         "mae": 0.0766,
+         "bias": 0.0441
+        },
+        "candidate_flex": {
+         "mae": 4.3977,
+         "bias": 1.157
+        }
+       },
+       "K_DST": {
+        "n": 4,
+        "baseline_cpt": {
+         "mae": 0.7518,
+         "bias": 0.6067
+        },
+        "baseline_flex": {
+         "mae": 5.7638,
+         "bias": 5.7638
+        },
+        "candidate_cpt": {
+         "mae": 1.9396,
+         "bias": 1.9396
+        },
+        "candidate_flex": {
+         "mae": 10.3875,
+         "bias": 10.3875
+        }
+       }
+      },
+      "n_active": 30,
+      "total_ownership_mae": {
+       "baseline": 6.9844,
+       "candidate": 7.7717
+      },
+      "SC_OWN_ROTATION_1_registered_metrics_REPORTED_NOT_IN_BAR": {
+       "flex_rmse": {
+        "baseline": 9.3995,
+        "candidate": 9.9974
+       },
+       "flex_kl_actual_vs_pred": {
+        "baseline": 0.2966,
+        "candidate": 0.3629
+       }
+      },
+      "cheap_rows": [
+       {
+        "name": "Austin Hooper",
+        "team": "ATL",
+        "pos": "TE",
+        "salary": 2800,
+        "depth_rank_active": 3,
+        "injury_opp": 0,
+        "snap_share_mean": 0.2967,
+        "baseline_flex": 0.96,
+        "candidate_flex": 0.4968,
+        "actual_flex": 8.5844,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.1951,
+        "actual_cpt": 0.2526
+       },
+       {
+        "name": "Brian Robinson Jr.",
+        "team": "ATL",
+        "pos": "RB",
+        "salary": 3800,
+        "depth_rank_active": 2,
+        "injury_opp": 0,
+        "snap_share_mean": 0.3333,
+        "baseline_flex": 0.98,
+        "candidate_flex": 0.5004,
+        "actual_flex": 17.6614,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.1881,
+        "actual_cpt": 0.8287
+       },
+       {
+        "name": "Bryce Lance",
+        "team": "NO",
+        "pos": "WR",
+        "salary": 1800,
+        "depth_rank_active": 3,
+        "injury_opp": 0,
+        "snap_share_mean": 0.7333,
+        "baseline_flex": 9.44,
+        "candidate_flex": 3.5335,
+        "actual_flex": 21.8384,
+        "baseline_cpt": 0.04,
+        "candidate_cpt": 0.1386,
+        "actual_cpt": 0.628
+       },
+       {
+        "name": "CJ Donaldson",
+        "team": "NO",
+        "pos": "RB",
+        "salary": 1400,
+        "depth_rank_active": 3,
+        "injury_opp": 1,
+        "snap_share_mean": 0.2067,
+        "baseline_flex": 0.0,
+        "candidate_flex": 0.1574,
+        "actual_flex": 5.5376,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.1526,
+        "actual_cpt": 0.0696
+       },
+       {
+        "name": "Jahan Dotson",
+        "team": "ATL",
+        "pos": "WR",
+        "salary": 3000,
+        "depth_rank_active": 2,
+        "injury_opp": 0,
+        "snap_share_mean": 0.68,
+        "baseline_flex": 13.4,
+        "candidate_flex": 5.1112,
+        "actual_flex": 17.669,
+        "baseline_cpt": 0.18,
+        "candidate_cpt": 0.1909,
+        "actual_cpt": 0.7145
+       },
+       {
+        "name": "Olamide Zaccheaus",
+        "team": "ATL",
+        "pos": "WR",
+        "salary": 2000,
+        "depth_rank_active": 3,
+        "injury_opp": 0,
+        "snap_share_mean": 0.3567,
+        "baseline_flex": 19.72,
+        "candidate_flex": 8.1441,
+        "actual_flex": 10.8024,
+        "baseline_cpt": 0.22,
+        "candidate_cpt": 0.2807,
+        "actual_cpt": 0.1932
+       },
+       {
+        "name": "Zachariah Branch",
+        "team": "ATL",
+        "pos": "WR",
+        "salary": 2400,
+        "depth_rank_active": 5,
+        "injury_opp": 0,
+        "snap_share_mean": 0.2267,
+        "baseline_flex": 0.72,
+        "candidate_flex": 0.4159,
+        "actual_flex": 4.9906,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.209,
+        "actual_cpt": 0.1004
+       }
+      ],
+      "absent_players_realised_pct_NOT_SCORED": {
+       "Antwane Wells Jr.": {
+        "cpt": 0.0004,
+        "flex": 0.0021
+       },
+       "Cal Adomitis": {
+        "cpt": 0.0004,
+        "flex": 0.0358
+       },
+       "Cash Jones": {
+        "cpt": 0.0004,
+        "flex": 0.0034
+       },
+       "Cedric Tillman": {
+        "cpt": 0.003,
+        "flex": 0.0219
+       },
+       "Charlie Smyth": {
+        "cpt": 0.0046,
+        "flex": 0.0953
+       },
+       "Cooper Rush": {
+        "cpt": 0.0,
+        "flex": 0.0042
+       },
+       "Dylan Drummond": {
+        "cpt": 0.0008,
+        "flex": 0.0072
+       },
+       "Jack Strand": {
+        "cpt": 0.0004,
+        "flex": 0.0034
+       },
+       "Jack Velling": {
+        "cpt": 0.0004,
+        "flex": 0.003
+       },
+       "Jalen Moreno-Cropper": {
+        "cpt": 0.0013,
+        "flex": 0.027
+       },
+       "Jordyn Tyson": {
+        "cpt": 0.0,
+        "flex": 0.0004
+       },
+       "Khalil Herbert": {
+        "cpt": 0.0034,
+        "flex": 0.0654
+       },
+       "Kyrese Rowan": {
+        "cpt": 0.0004,
+        "flex": 0.0021
+       },
+       "Mason Tipton": {
+        "cpt": 0.0008,
+        "flex": 0.0013
+       },
+       "Noah Fant": {
+        "cpt": 0.0384,
+        "flex": 0.6014
+       },
+       "Stone Smartt": {
+        "cpt": 0.0013,
+        "flex": 0.0186
+       },
+       "Travis Etienne Jr.": {
+        "cpt": 0.0017,
+        "flex": 0.0051
+       },
+       "Trey Palmer": {
+        "cpt": 0.0004,
+        "flex": 0.0114
+       },
+       "Trey Sermon": {
+        "cpt": 0.0,
+        "flex": 0.0008
+       },
+       "Vinny Anthony II": {
+        "cpt": 0.0004,
+        "flex": 0.003
+       },
+       "Zach Wilson": {
+        "cpt": 0.0008,
+        "flex": 0.0051
+       },
+       "Zach Wood": {
+        "cpt": 0.0,
+        "flex": 0.0025
+       },
+       "Zamir White": {
+        "cpt": 0.0034,
+        "flex": 0.0367
+       }
+      }
+     },
+     "bar": {
+      "verdict": "FAIL",
+      "criteria": {
+       "1_cheap_flex_mae_strictly_lower": false,
+       "2_cheap_flex_abs_bias_not_worse": false,
+       "3_cheap_cpt_mae_within_margin": true,
+       "5_total_ownership_mae_within_margin": true,
+       "4_STAR_cpt_mae_within_margin": true,
+       "4_STAR_flex_mae_within_margin": true,
+       "4_MIDRANGE_cpt_mae_within_margin": true,
+       "4_MIDRANGE_flex_mae_within_margin": false,
+       "4_PUNT_FRINGE_cpt_mae_within_margin": true,
+       "4_PUNT_FRINGE_flex_mae_within_margin": true,
+       "4_K_DST_cpt_mae_within_margin": false,
+       "4_K_DST_flex_mae_within_margin": false
+      },
+      "failed": [
+       "1_cheap_flex_mae_strictly_lower",
+       "2_cheap_flex_abs_bias_not_worse",
+       "4_K_DST_cpt_mae_within_margin",
+       "4_K_DST_flex_mae_within_margin",
+       "4_MIDRANGE_flex_mae_within_margin"
+      ]
+     }
+    },
+    {
+     "fold": "A",
+     "trained_on": [
+      "PIT_CLE"
+     ],
+     "test_slate": "ATL_NO",
+     "test_contest": "196285161",
+     "baseline": "FC_ONLY",
+     "baseline_state": "FROZEN_PRELOCK_9736516",
+     "role": "SUPPLEMENTARY",
+     "score": {
+      "buckets": {
+       "STAR": {
+        "n": 5,
+        "baseline_cpt": {
+         "mae": 3.1578,
+         "bias": 0.557
+        },
+        "baseline_flex": {
+         "mae": 8.38,
+         "bias": -3.5008
+        },
+        "candidate_cpt": {
+         "mae": 1.7748,
+         "bias": -0.4699
+        },
+        "candidate_flex": {
+         "mae": 7.3516,
+         "bias": -1.6401
+        }
+       },
+       "MIDRANGE": {
+        "n": 5,
+        "baseline_cpt": {
+         "mae": 1.6836,
+         "bias": -0.1818
+        },
+        "baseline_flex": {
+         "mae": 8.1651,
+         "bias": 4.2386
+        },
+        "candidate_cpt": {
+         "mae": 1.6261,
+         "bias": -0.1891
+        },
+        "candidate_flex": {
+         "mae": 10.1377,
+         "bias": 6.3652
+        }
+       },
+       "CHEAP_ACTIVE_ROTATION": {
+        "n": 7,
+        "baseline_cpt": {
+         "mae": 0.5528,
+         "bias": -0.4092
+        },
+        "baseline_flex": {
+         "mae": 11.2991,
+         "bias": -6.8616
+        },
+        "candidate_cpt": {
+         "mae": 0.4324,
+         "bias": -0.3196
+        },
+        "candidate_flex": {
+         "mae": 10.8249,
+         "bias": -10.5669
+        }
+       },
+       "PUNT_FRINGE": {
+        "n": 9,
+        "baseline_cpt": {
+         "mae": 0.2376,
+         "bias": 0.133
+        },
+        "baseline_flex": {
+         "mae": 7.4293,
+         "bias": 3.7103
+        },
+        "candidate_cpt": {
+         "mae": 0.1123,
+         "bias": 0.0598
+        },
+        "candidate_flex": {
+         "mae": 6.065,
+         "bias": 2.6904
+        }
+       },
+       "K_DST": {
+        "n": 4,
+        "baseline_cpt": {
+         "mae": 1.0562,
+         "bias": -0.0132
+        },
+        "baseline_flex": {
+         "mae": 3.9582,
+         "bias": 3.2732
+        },
+        "candidate_cpt": {
+         "mae": 1.5243,
+         "bias": 1.2874
+        },
+        "candidate_flex": {
+         "mae": 7.0679,
+         "bias": 7.0679
+        }
+       }
+      },
+      "n_active": 30,
+      "total_ownership_mae": {
+       "baseline": 8.6658,
+       "candidate": 8.565
+      },
+      "SC_OWN_ROTATION_1_registered_metrics_REPORTED_NOT_IN_BAR": {
+       "flex_rmse": {
+        "baseline": 12.6885,
+        "candidate": 12.025
+       },
+       "flex_kl_actual_vs_pred": {
+        "baseline": 0.6988,
+        "candidate": 0.5821
+       }
+      },
+      "cheap_rows": [
+       {
+        "name": "Austin Hooper",
+        "team": "ATL",
+        "pos": "TE",
+        "salary": 2800,
+        "depth_rank_active": 3,
+        "injury_opp": 0,
+        "snap_share_mean": 0.2967,
+        "baseline_flex": 0.0,
+        "candidate_flex": 0.1594,
+        "actual_flex": 13.0156,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.1991,
+        "actual_cpt": 0.5196
+       },
+       {
+        "name": "Brian Robinson Jr.",
+        "team": "ATL",
+        "pos": "RB",
+        "salary": 3800,
+        "depth_rank_active": 2,
+        "injury_opp": 0,
+        "snap_share_mean": 0.3333,
+        "baseline_flex": 0.0,
+        "candidate_flex": 0.1583,
+        "actual_flex": 23.4179,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.192,
+        "actual_cpt": 1.5351
+       },
+       {
+        "name": "Bryce Lance",
+        "team": "NO",
+        "pos": "WR",
+        "salary": 1800,
+        "depth_rank_active": 3,
+        "injury_opp": 0,
+        "snap_share_mean": 0.7333,
+        "baseline_flex": 6.42,
+        "candidate_flex": 2.4207,
+        "actual_flex": 22.443,
+        "baseline_cpt": 0.08,
+        "candidate_cpt": 0.1537,
+        "actual_cpt": 0.7041
+       },
+       {
+        "name": "CJ Donaldson",
+        "team": "NO",
+        "pos": "RB",
+        "salary": 1400,
+        "depth_rank_active": 3,
+        "injury_opp": 1,
+        "snap_share_mean": 0.2067,
+        "baseline_flex": 0.0,
+        "candidate_flex": 0.1588,
+        "actual_flex": 4.9507,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.1557,
+        "actual_cpt": 0.11
+       },
+       {
+        "name": "Jahan Dotson",
+        "team": "ATL",
+        "pos": "WR",
+        "salary": 3000,
+        "depth_rank_active": 2,
+        "injury_opp": 0,
+        "snap_share_mean": 0.68,
+        "baseline_flex": 11.18,
+        "candidate_flex": 4.2814,
+        "actual_flex": 14.7792,
+        "baseline_cpt": 0.18,
+        "candidate_cpt": 0.1948,
+        "actual_cpt": 0.6127
+       },
+       {
+        "name": "Olamide Zaccheaus",
+        "team": "ATL",
+        "pos": "WR",
+        "salary": 2000,
+        "depth_rank_active": 3,
+        "injury_opp": 0,
+        "snap_share_mean": 0.3567,
+        "baseline_flex": 25.28,
+        "candidate_flex": 10.652,
+        "actual_flex": 9.749,
+        "baseline_cpt": 0.78,
+        "candidate_cpt": 0.5589,
+        "actual_cpt": 0.2776
+       },
+       {
+        "name": "Zachariah Branch",
+        "team": "ATL",
+        "pos": "WR",
+        "salary": 2400,
+        "depth_rank_active": 5,
+        "injury_opp": 0,
+        "snap_share_mean": 0.2267,
+        "baseline_flex": 1.66,
+        "candidate_flex": 0.7726,
+        "actual_flex": 4.2161,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.2133,
+        "actual_cpt": 0.1456
+       }
+      ],
+      "absent_players_realised_pct_NOT_SCORED": {
+       "Antwane Wells Jr.": {
+        "cpt": 0.0017,
+        "flex": 0.0085
+       },
+       "Cal Adomitis": {
+        "cpt": 0.0017,
+        "flex": 0.0186
+       },
+       "Cash Jones": {
+        "cpt": 0.0017,
+        "flex": 0.0372
+       },
+       "Cedric Tillman": {
+        "cpt": 0.0034,
+        "flex": 0.1168
+       },
+       "Charlie Smyth": {
+        "cpt": 0.0085,
+        "flex": 0.33
+       },
+       "Cooper Rush": {
+        "cpt": 0.0406,
+        "flex": 0.0169
+       },
+       "Dylan Drummond": {
+        "cpt": 0.0017,
+        "flex": 0.0237
+       },
+       "Jack Strand": {
+        "cpt": 0.0,
+        "flex": 0.0508
+       },
+       "Jack Velling": {
+        "cpt": 0.0,
+        "flex": 0.0102
+       },
+       "Jalen Moreno-Cropper": {
+        "cpt": 0.0017,
+        "flex": 0.0508
+       },
+       "Jordyn Tyson": {
+        "cpt": 0.0034,
+        "flex": 0.0
+       },
+       "Khalil Herbert": {
+        "cpt": 0.0068,
+        "flex": 0.2708
+       },
+       "Kyrese Rowan": {
+        "cpt": 0.0017,
+        "flex": 0.0051
+       },
+       "Mason Tipton": {
+        "cpt": 0.0034,
+        "flex": 0.0017
+       },
+       "Noah Fant": {
+        "cpt": 0.0609,
+        "flex": 0.9292
+       },
+       "Stone Smartt": {
+        "cpt": 0.0,
+        "flex": 0.0288
+       },
+       "Travis Etienne Jr.": {
+        "cpt": 0.0085,
+        "flex": 0.0474
+       },
+       "Trey Palmer": {
+        "cpt": 0.0,
+        "flex": 0.0135
+       },
+       "Vinny Anthony II": {
+        "cpt": 0.0017,
+        "flex": 0.0118
+       },
+       "Zach Wilson": {
+        "cpt": 0.0,
+        "flex": 0.0118
+       },
+       "Zach Wood": {
+        "cpt": 0.0,
+        "flex": 0.0034
+       },
+       "Zamir White": {
+        "cpt": 0.0085,
+        "flex": 0.1557
+       }
+      }
+     },
+     "bar": {
+      "verdict": "FAIL",
+      "criteria": {
+       "1_cheap_flex_mae_strictly_lower": true,
+       "2_cheap_flex_abs_bias_not_worse": false,
+       "3_cheap_cpt_mae_within_margin": true,
+       "5_total_ownership_mae_within_margin": true,
+       "4_STAR_cpt_mae_within_margin": true,
+       "4_STAR_flex_mae_within_margin": true,
+       "4_MIDRANGE_cpt_mae_within_margin": true,
+       "4_MIDRANGE_flex_mae_within_margin": false,
+       "4_PUNT_FRINGE_cpt_mae_within_margin": true,
+       "4_PUNT_FRINGE_flex_mae_within_margin": true,
+       "4_K_DST_cpt_mae_within_margin": true,
+       "4_K_DST_flex_mae_within_margin": false
+      },
+      "failed": [
+       "2_cheap_flex_abs_bias_not_worse",
+       "4_K_DST_flex_mae_within_margin",
+       "4_MIDRANGE_flex_mae_within_margin"
+      ]
+     }
+    },
+    {
+     "fold": "A",
+     "trained_on": [
+      "PIT_CLE"
+     ],
+     "test_slate": "ATL_NO",
+     "test_contest": "196285161",
+     "baseline": "BLEND",
+     "baseline_state": "FROZEN_PRELOCK_9736516",
+     "role": "SUPPLEMENTARY",
+     "score": {
+      "buckets": {
+       "STAR": {
+        "n": 5,
+        "baseline_cpt": {
+         "mae": 3.0134,
+         "bias": 0.877
+        },
+        "baseline_flex": {
+         "mae": 8.752,
+         "bias": -4.0888
+        },
+        "candidate_cpt": {
+         "mae": 1.9145,
+         "bias": -0.4408
+        },
+        "candidate_flex": {
+         "mae": 7.8921,
+         "bias": -2.651
+        }
+       },
+       "MIDRANGE": {
+        "n": 5,
+        "baseline_cpt": {
+         "mae": 1.3572,
+         "bias": -0.2338
+        },
+        "baseline_flex": {
+         "mae": 7.5228,
+         "bias": 3.6626
+        },
+        "candidate_cpt": {
+         "mae": 1.4131,
+         "bias": -0.2422
+        },
+        "candidate_flex": {
+         "mae": 8.9775,
+         "bias": 5.4986
+        }
+       },
+       "CHEAP_ACTIVE_ROTATION": {
+        "n": 7,
+        "baseline_cpt": {
+         "mae": 0.495,
+         "bias": -0.495
+        },
+        "baseline_flex": {
+         "mae": 9.6134,
+         "bias": -6.7645
+        },
+        "candidate_cpt": {
+         "mae": 0.3954,
+         "bias": -0.3642
+        },
+        "candidate_flex": {
+         "mae": 10.6017,
+         "bias": -10.6017
+        }
+       },
+       "PUNT_FRINGE": {
+        "n": 9,
+        "baseline_cpt": {
+         "mae": 0.0843,
+         "bias": -0.0203
+        },
+        "baseline_flex": {
+         "mae": 5.4227,
+         "bias": 2.2858
+        },
+        "candidate_cpt": {
+         "mae": 0.0753,
+         "bias": 0.0224
+        },
+        "candidate_flex": {
+         "mae": 4.4091,
+         "bias": 1.3966
+        }
+       },
+       "K_DST": {
+        "n": 4,
+        "baseline_cpt": {
+         "mae": 0.8716,
+         "bias": 0.1468
+        },
+        "baseline_flex": {
+         "mae": 7.7632,
+         "bias": 7.7632
+        },
+        "candidate_cpt": {
+         "mae": 1.4796,
+         "bias": 1.4796
+        },
+        "candidate_flex": {
+         "mae": 12.3869,
+         "bias": 12.3869
+        }
+       }
+      },
+      "n_active": 30,
+      "total_ownership_mae": {
+       "baseline": 8.0898,
+       "candidate": 8.7945
+      },
+      "SC_OWN_ROTATION_1_registered_metrics_REPORTED_NOT_IN_BAR": {
+       "flex_rmse": {
+        "baseline": 10.4563,
+        "candidate": 10.9355
+       },
+       "flex_kl_actual_vs_pred": {
+        "baseline": 0.3582,
+        "candidate": 0.4322
+       }
+      },
+      "cheap_rows": [
+       {
+        "name": "Austin Hooper",
+        "team": "ATL",
+        "pos": "TE",
+        "salary": 2800,
+        "depth_rank_active": 3,
+        "injury_opp": 0,
+        "snap_share_mean": 0.2967,
+        "baseline_flex": 0.96,
+        "candidate_flex": 0.4968,
+        "actual_flex": 13.0156,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.1951,
+        "actual_cpt": 0.5196
+       },
+       {
+        "name": "Brian Robinson Jr.",
+        "team": "ATL",
+        "pos": "RB",
+        "salary": 3800,
+        "depth_rank_active": 2,
+        "injury_opp": 0,
+        "snap_share_mean": 0.3333,
+        "baseline_flex": 0.98,
+        "candidate_flex": 0.5004,
+        "actual_flex": 23.4179,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.1881,
+        "actual_cpt": 1.5351
+       },
+       {
+        "name": "Bryce Lance",
+        "team": "NO",
+        "pos": "WR",
+        "salary": 1800,
+        "depth_rank_active": 3,
+        "injury_opp": 0,
+        "snap_share_mean": 0.7333,
+        "baseline_flex": 9.44,
+        "candidate_flex": 3.5335,
+        "actual_flex": 22.443,
+        "baseline_cpt": 0.04,
+        "candidate_cpt": 0.1386,
+        "actual_cpt": 0.7041
+       },
+       {
+        "name": "CJ Donaldson",
+        "team": "NO",
+        "pos": "RB",
+        "salary": 1400,
+        "depth_rank_active": 3,
+        "injury_opp": 1,
+        "snap_share_mean": 0.2067,
+        "baseline_flex": 0.0,
+        "candidate_flex": 0.1574,
+        "actual_flex": 4.9507,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.1526,
+        "actual_cpt": 0.11
+       },
+       {
+        "name": "Jahan Dotson",
+        "team": "ATL",
+        "pos": "WR",
+        "salary": 3000,
+        "depth_rank_active": 2,
+        "injury_opp": 0,
+        "snap_share_mean": 0.68,
+        "baseline_flex": 13.4,
+        "candidate_flex": 5.1112,
+        "actual_flex": 14.7792,
+        "baseline_cpt": 0.18,
+        "candidate_cpt": 0.1909,
+        "actual_cpt": 0.6127
+       },
+       {
+        "name": "Olamide Zaccheaus",
+        "team": "ATL",
+        "pos": "WR",
+        "salary": 2000,
+        "depth_rank_active": 3,
+        "injury_opp": 0,
+        "snap_share_mean": 0.3567,
+        "baseline_flex": 19.72,
+        "candidate_flex": 8.1441,
+        "actual_flex": 9.749,
+        "baseline_cpt": 0.22,
+        "candidate_cpt": 0.2807,
+        "actual_cpt": 0.2776
+       },
+       {
+        "name": "Zachariah Branch",
+        "team": "ATL",
+        "pos": "WR",
+        "salary": 2400,
+        "depth_rank_active": 5,
+        "injury_opp": 0,
+        "snap_share_mean": 0.2267,
+        "baseline_flex": 0.72,
+        "candidate_flex": 0.4159,
+        "actual_flex": 4.2161,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.209,
+        "actual_cpt": 0.1456
+       }
+      ],
+      "absent_players_realised_pct_NOT_SCORED": {
+       "Antwane Wells Jr.": {
+        "cpt": 0.0017,
+        "flex": 0.0085
+       },
+       "Cal Adomitis": {
+        "cpt": 0.0017,
+        "flex": 0.0186
+       },
+       "Cash Jones": {
+        "cpt": 0.0017,
+        "flex": 0.0372
+       },
+       "Cedric Tillman": {
+        "cpt": 0.0034,
+        "flex": 0.1168
+       },
+       "Charlie Smyth": {
+        "cpt": 0.0085,
+        "flex": 0.33
+       },
+       "Cooper Rush": {
+        "cpt": 0.0406,
+        "flex": 0.0169
+       },
+       "Dylan Drummond": {
+        "cpt": 0.0017,
+        "flex": 0.0237
+       },
+       "Jack Strand": {
+        "cpt": 0.0,
+        "flex": 0.0508
+       },
+       "Jack Velling": {
+        "cpt": 0.0,
+        "flex": 0.0102
+       },
+       "Jalen Moreno-Cropper": {
+        "cpt": 0.0017,
+        "flex": 0.0508
+       },
+       "Jordyn Tyson": {
+        "cpt": 0.0034,
+        "flex": 0.0
+       },
+       "Khalil Herbert": {
+        "cpt": 0.0068,
+        "flex": 0.2708
+       },
+       "Kyrese Rowan": {
+        "cpt": 0.0017,
+        "flex": 0.0051
+       },
+       "Mason Tipton": {
+        "cpt": 0.0034,
+        "flex": 0.0017
+       },
+       "Noah Fant": {
+        "cpt": 0.0609,
+        "flex": 0.9292
+       },
+       "Stone Smartt": {
+        "cpt": 0.0,
+        "flex": 0.0288
+       },
+       "Travis Etienne Jr.": {
+        "cpt": 0.0085,
+        "flex": 0.0474
+       },
+       "Trey Palmer": {
+        "cpt": 0.0,
+        "flex": 0.0135
+       },
+       "Vinny Anthony II": {
+        "cpt": 0.0017,
+        "flex": 0.0118
+       },
+       "Zach Wilson": {
+        "cpt": 0.0,
+        "flex": 0.0118
+       },
+       "Zach Wood": {
+        "cpt": 0.0,
+        "flex": 0.0034
+       },
+       "Zamir White": {
+        "cpt": 0.0085,
+        "flex": 0.1557
+       }
+      }
+     },
+     "bar": {
+      "verdict": "FAIL",
+      "criteria": {
+       "1_cheap_flex_mae_strictly_lower": false,
+       "2_cheap_flex_abs_bias_not_worse": false,
+       "3_cheap_cpt_mae_within_margin": true,
+       "5_total_ownership_mae_within_margin": true,
+       "4_STAR_cpt_mae_within_margin": true,
+       "4_STAR_flex_mae_within_margin": true,
+       "4_MIDRANGE_cpt_mae_within_margin": true,
+       "4_MIDRANGE_flex_mae_within_margin": false,
+       "4_PUNT_FRINGE_cpt_mae_within_margin": true,
+       "4_PUNT_FRINGE_flex_mae_within_margin": true,
+       "4_K_DST_cpt_mae_within_margin": false,
+       "4_K_DST_flex_mae_within_margin": false
+      },
+      "failed": [
+       "1_cheap_flex_mae_strictly_lower",
+       "2_cheap_flex_abs_bias_not_worse",
+       "4_K_DST_cpt_mae_within_margin",
+       "4_K_DST_flex_mae_within_margin",
+       "4_MIDRANGE_flex_mae_within_margin"
+      ]
+     }
+    }
+   ],
+   "fold_verdict": "FAIL",
+   "fold_verdict_rule": "PASS only if the bar passes on the primary contest against EVERY listed baseline"
+  },
+  "B": {
+   "trained_on": [
+    "ATL_NO:196285160:FC_ONLY"
+   ],
+   "test_slate": "PIT_CLE",
+   "model": {
+    "cpt": {
+     "features": [
+      "log_baseline_plus_kappa",
+      "is_cheap_active_rotation",
+      "is_punt_fringe",
+      "snap_share_mean",
+      "injury_opp"
+     ],
+     "objective": 2.3533657002568926,
+     "iterations": 6,
+     "converged": true,
+     "n_train_active": 30,
+     "kappa": 0.5,
+     "lambda": 0.01,
+     "max_abs_theta": 1.1359691459867718,
+     "theta": {
+      "log_baseline_plus_kappa": 1.072,
+      "is_cheap_active_rotation": 0.0115,
+      "is_punt_fringe": -1.136,
+      "snap_share_mean": -0.0574,
+      "injury_opp": -0.4218
+     }
+    },
+    "flex": {
+     "features": [
+      "log_baseline_plus_kappa",
+      "is_cheap_active_rotation",
+      "is_punt_fringe",
+      "snap_share_mean",
+      "injury_opp"
+     ],
+     "objective": 3.0955007167497044,
+     "iterations": 6,
+     "converged": true,
+     "n_train_active": 30,
+     "kappa": 0.5,
+     "lambda": 0.01,
+     "max_abs_theta": 1.2301655162813956,
+     "theta": {
+      "log_baseline_plus_kappa": 0.1728,
+      "is_cheap_active_rotation": -0.2182,
+      "is_punt_fringe": -1.2302,
+      "snap_share_mean": 0.8996,
+      "injury_opp": 0.1205
+     }
+    }
+   },
+   "tests": [
+    {
+     "fold": "B",
+     "trained_on": [
+      "ATL_NO"
+     ],
+     "test_slate": "PIT_CLE",
+     "test_contest": "196187080",
+     "baseline": "FC_ONLY",
+     "baseline_state": "RECONSTRUCTED_POSTGAME_FROM_PRELOCK_INPUTS",
+     "role": "PRIMARY",
+     "score": {
+      "buckets": {
+       "STAR": {
+        "n": 6,
+        "baseline_cpt": {
+         "mae": 6.5004,
+         "bias": 0.3816
+        },
+        "baseline_flex": {
+         "mae": 6.6298,
+         "bias": -3.5189
+        },
+        "candidate_cpt": {
+         "mae": 6.2401,
+         "bias": -0.2783
+        },
+        "candidate_flex": {
+         "mae": 13.7111,
+         "bias": -9.6811
+        }
+       },
+       "MIDRANGE": {
+        "n": 6,
+        "baseline_cpt": {
+         "mae": 0.7504,
+         "bias": -0.0055
+        },
+        "baseline_flex": {
+         "mae": 5.1315,
+         "bias": 1.3077
+        },
+        "candidate_cpt": {
+         "mae": 0.8271,
+         "bias": -0.119
+        },
+        "candidate_flex": {
+         "mae": 6.0939,
+         "bias": 1.1826
+        }
+       },
+       "CHEAP_ACTIVE_ROTATION": {
+        "n": 5,
+        "baseline_cpt": {
+         "mae": 0.4378,
+         "bias": 0.3397
+        },
+        "baseline_flex": {
+         "mae": 9.2042,
+         "bias": 8.5323
+        },
+        "candidate_cpt": {
+         "mae": 0.5759,
+         "bias": 0.5759
+        },
+        "candidate_flex": {
+         "mae": 9.2995,
+         "bias": 9.2995
+        }
+       },
+       "PUNT_FRINGE": {
+        "n": 24,
+        "baseline_cpt": {
+         "mae": 0.0101,
+         "bias": -0.0101
+        },
+        "baseline_flex": {
+         "mae": 0.1995,
+         "bias": -0.1995
+        },
+        "candidate_cpt": {
+         "mae": 0.1026,
+         "bias": 0.1026
+        },
+        "candidate_flex": {
+         "mae": 1.879,
+         "bias": 1.879
+        }
+       },
+       "K_DST": {
+        "n": 4,
+        "baseline_cpt": {
+         "mae": 0.9237,
+         "bias": -0.9237
+        },
+        "baseline_flex": {
+         "mae": 7.0264,
+         "bias": -6.095
+        },
+        "candidate_cpt": {
+         "mae": 0.8044,
+         "bias": -0.7355
+        },
+        "candidate_flex": {
+         "mae": 10.0938,
+         "bias": -10.0938
+        }
+       }
+      },
+      "n_active": 45,
+      "total_ownership_mae": {
+       "baseline": 3.6095,
+       "candidate": 5.8164
+      },
+      "SC_OWN_ROTATION_1_registered_metrics_REPORTED_NOT_IN_BAR": {
+       "flex_rmse": {
+        "baseline": 5.9843,
+        "candidate": 8.0307
+       },
+       "flex_kl_actual_vs_pred": {
+        "baseline": 0.1136,
+        "candidate": 0.2182
+       }
+      },
+      "cheap_rows": [
+       {
+        "name": "Blake Whiteheart",
+        "team": "CLE",
+        "pos": "TE",
+        "salary": 1600,
+        "depth_rank_active": 2,
+        "injury_opp": 0,
+        "snap_share_mean": 0.4167,
+        "baseline_flex": 0.0,
+        "candidate_flex": 7.9376,
+        "actual_flex": 1.6797,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.3685,
+        "actual_cpt": 0.0338
+       },
+       {
+        "name": "Darnell Washington",
+        "team": "PIT",
+        "pos": "TE",
+        "salary": 3600,
+        "depth_rank_active": 2,
+        "injury_opp": 0,
+        "snap_share_mean": 0.6433,
+        "baseline_flex": 15.54,
+        "candidate_flex": 17.7238,
+        "actual_flex": 10.0953,
+        "baseline_cpt": 0.68,
+        "candidate_cpt": 0.9131,
+        "actual_cpt": 0.8726
+       },
+       {
+        "name": "Germie Bernard",
+        "team": "PIT",
+        "pos": "WR",
+        "salary": 3200,
+        "depth_rank_active": 4,
+        "injury_opp": 0,
+        "snap_share_mean": 0.3667,
+        "baseline_flex": 17.22,
+        "candidate_flex": 14.0585,
+        "actual_flex": 2.8017,
+        "baseline_cpt": 0.92,
+        "candidate_cpt": 1.1314,
+        "actual_cpt": 0.1247
+       },
+       {
+        "name": "Isaiah Bond",
+        "team": "CLE",
+        "pos": "WR",
+        "salary": 2000,
+        "depth_rank_active": 4,
+        "injury_opp": 1,
+        "snap_share_mean": 0.0933,
+        "baseline_flex": 2.9,
+        "candidate_flex": 9.323,
+        "actual_flex": 0.524,
+        "baseline_cpt": 0.0,
+        "candidate_cpt": 0.2462,
+        "actual_cpt": 0.019
+       },
+       {
+        "name": "Jerry Jeudy",
+        "team": "CLE",
+        "pos": "WR",
+        "salary": 3000,
+        "depth_rank_active": 3,
+        "injury_opp": 0,
+        "snap_share_mean": 0.5767,
+        "baseline_flex": 27.98,
+        "candidate_flex": 18.4331,
+        "actual_flex": 5.878,
+        "baseline_cpt": 1.44,
+        "candidate_cpt": 1.5619,
+        "actual_cpt": 0.2916
+       }
+      ],
+      "absent_players_realised_pct_NOT_SCORED": {
+       "Drew Allar": {
+        "cpt": 0.0,
+        "flex": 0.0528
+       },
+       "Eli Heidenreich": {
+        "cpt": 0.0063,
+        "flex": 0.0676
+       },
+       "Rico Dowdle": {
+        "cpt": 0.0106,
+        "flex": 0.019
+       },
+       "Taylen Green": {
+        "cpt": 0.0,
+        "flex": 0.0423
+       },
+       "Tylan Wallace": {
+        "cpt": 0.0,
+        "flex": 0.0021
+       },
+       "Will Howard": {
+        "cpt": 0.0,
+        "flex": 0.0423
+       }
+      }
+     },
+     "bar": {
+      "verdict": "FAIL",
+      "criteria": {
+       "1_cheap_flex_mae_strictly_lower": false,
+       "2_cheap_flex_abs_bias_not_worse": false,
+       "3_cheap_cpt_mae_within_margin": true,
+       "5_total_ownership_mae_within_margin": false,
+       "4_STAR_cpt_mae_within_margin": true,
+       "4_STAR_flex_mae_within_margin": false,
+       "4_MIDRANGE_cpt_mae_within_margin": true,
+       "4_MIDRANGE_flex_mae_within_margin": true,
+       "4_PUNT_FRINGE_cpt_mae_within_margin": true,
+       "4_PUNT_FRINGE_flex_mae_within_margin": false,
+       "4_K_DST_cpt_mae_within_margin": true,
+       "4_K_DST_flex_mae_within_margin": false
+      },
+      "failed": [
+       "1_cheap_flex_mae_strictly_lower",
+       "2_cheap_flex_abs_bias_not_worse",
+       "4_K_DST_flex_mae_within_margin",
+       "4_PUNT_FRINGE_flex_mae_within_margin",
+       "4_STAR_flex_mae_within_margin",
+       "5_total_ownership_mae_within_margin"
+      ]
+     }
+    }
+   ],
+   "fold_verdict": "FAIL",
+   "fold_verdict_rule": "PASS only if the bar passes on the primary contest against EVERY listed baseline"
+  },
+  "C": {
+   "test_slate": "PHI_CHI",
+   "fold_verdict": "NOT_AVAILABLE",
+   "reason": "PHI@CHI (contest 196036243) has standings but no DK salaries (outbox request 2026-10-07) and no public projection, so there is no baseline forecast and no salary bucket. A salary-dependent model cannot be scored there. NOT a pass."
+  }
+ },
+ "testable_folds": [
+  "A",
+  "B"
+ ],
+ "VERDICT": "FAIL",
+ "VERDICT_RULE": "FAIL if any testable fold fails; PASS_EXPLORATORY_SHADOW_ONLY only if every testable fold passes and >= 2 are testable; else NOT_TESTABLE. Supplementary contests and sensitivity runs do not vote.",
+ "sensitivity_NOT_IN_VERDICT": {
+  "lambda_0": {
+   "lam": 0.0,
+   "kappa": 0.5,
+   "fold_verdicts": {
+    "A": "FAIL",
+    "B": "FAIL"
+   },
+   "cheap_flex_mae_primary": {
+    "A": {
+     "FC_ONLY": {
+      "baseline": 11.1123,
+      "candidate": 10.6643
+     },
+     "BLEND": {
+      "baseline": 9.4266,
+      "candidate": 10.6644
+     }
+    },
+    "B": {
+     "FC_ONLY": {
+      "baseline": 9.2042,
+      "candidate": 8.2374
+     }
+    }
+   },
+   "converged": {
+    "A": {
+     "cpt": true,
+     "flex": true
+    },
+    "B": {
+     "cpt": true,
+     "flex": true
+    }
+   }
+  },
+  "kappa_1.0": {
+   "lam": 0.01,
+   "kappa": 1.0,
+   "fold_verdicts": {
+    "A": "FAIL",
+    "B": "FAIL"
+   },
+   "cheap_flex_mae_primary": {
+    "A": {
+     "FC_ONLY": {
+      "baseline": 11.1123,
+      "candidate": 10.6791
+     },
+     "BLEND": {
+      "baseline": 9.4266,
+      "candidate": 10.4445
+     }
+    },
+    "B": {
+     "FC_ONLY": {
+      "baseline": 9.2042,
+      "candidate": 9.5306
+     }
+    }
+   },
+   "converged": {
+    "A": {
+     "cpt": true,
+     "flex": true
+    },
+    "B": {
+     "cpt": true,
+     "flex": true
+    }
+   }
+  }
+ },
+ "LIMITATIONS": [
+  "two testable folds, one slate each; the unit of evidence is the slate (n = 2), players within a slate are not independent",
+  "each fold fits 10 parameters on ONE training slate",
+  "ATL@NO is development data: the defect, the thresholds and the feature list were chosen after reading its postgame",
+  "PIT@CLE has no frozen prelock ownership forecast; its baseline is reconstructed postgame from prelock-dated inputs with the frozen method (which reproduces the frozen ATL@NO FC_ONLY exactly)",
+  "the PIT@CLE FC sheet capture time relative to lock is not recorded",
+  "snap counts and usage for weeks 1-3 were captured after the PIT@CLE game; later nflverse revisions cannot be ruled out",
+  "no routes data; depth rank is derived from prior-week snap share, not a published depth chart",
+  "fold A trains on FC_ONLY and applies the correction to BLEND as a transfer",
+  "PHI@CHI is NOT_AVAILABLE (no salaries, no baseline)",
+  "bucket thresholds, kappa, lambda, role slots and margins are declared priors, not estimates"
+ ],
+ "written_at": "2026-10-07T04:38:09.702286+00:00"
+}
