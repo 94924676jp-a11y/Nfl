@@ -116,9 +116,14 @@ def discover(cfg_path, mode):
 
 
 def env_for(cfg, cfg_path):
-    e = dict(os.environ)
-    e.update({'SHOWDOWN_TAG': cfg['tag'], 'SHOWDOWN_SLATE_CONFIG': str(pathlib.Path(cfg_path).resolve()),
-              'SHOWDOWN_RAW_DIR': str((_REPO / cfg['export']).parent)})
+    # EXPLICIT CONTEXT ONLY (independent P0 fixture ISO-inherited_environment): an inherited SHOWDOWN_PREFIX /
+    # SHOWDOWN_WEEK / run id from an earlier slate would otherwise override this slate's derived values in
+    # showdown_slate_env. Every SHOWDOWN_* key is dropped and the slate's own are set from its config.
+    e = {k: v for k, v in os.environ.items() if not k.startswith('SHOWDOWN_')}
+    tag = cfg['tag']
+    e.update({'SHOWDOWN_TAG': tag, 'SHOWDOWN_SLATE_CONFIG': str(pathlib.Path(cfg_path).resolve()),
+              'SHOWDOWN_RAW_DIR': str((_REPO / cfg['export']).parent),
+              'SHOWDOWN_PREFIX': 'SHOWDOWN_' + tag.split('_2026')[0], 'SHOWDOWN_WEEK': tag.rsplit('W', 1)[-1]})
     return e
 
 
@@ -274,21 +279,29 @@ def shared_writes(before, after, allowed=()):
     return sorted(k for k in set(before) | set(after) if before.get(k) != after.get(k) and k not in allowed)
 
 
-def scenario_state_matches(cfg, state):
-    """The built state must carry THIS scenario's designations and starters, not another run's."""
-    desig = json.loads((_REPO / cfg['designations']).read_text())
-    starters = json.loads((_REPO / cfg['confirmed_starters']).read_text())
-    got = {p['name']: p for p in state['players'].values()}
-    bad = []
-    for n, v in desig.items():
-        if n in got and (got[n]['current_availability'].get('designation') or '').upper() != v.upper():
-            bad.append(f'{n}: designation {got[n]["current_availability"].get("designation")} != {v}')
-    for n, p in got.items():
-        rel = (p.get('predicted_lineup_context') or {}).get('relayed_name')
-        if rel and rel not in starters:
-            bad.append(f'{n}: state names starter {rel}, scenario starters {sorted(starters)}')
-    return bad
+def scenario_state_matches(cfg, state, expected=None, absent_statuses=None, starters_digest=None):
+    """Reason codes for every way the built state disagrees with THIS scenario; [] only when it all holds.
 
+    Positive and complete (nfl/tools/showdown_run_guards.verify_starter_state): scenario identity, canonical ids
+    against an independent identity source (the captured depth chart), team, starting flag, availability, starter
+    evidence bound to this scenario's starters, designations, and OUT never overwritten. Without the inputs to
+    build an expectation it REFUSES rather than passing.
+    """
+    try:
+        from nfl.tools import showdown_run_guards as G
+        desig = json.loads((_REPO / cfg['designations']).read_text())
+        starters = json.loads((_REPO / cfg['confirmed_starters']).read_text())
+        if expected is None:
+            expected = G.expected_state(cfg['tag'], cfg['scenario'], desig, starters,
+                                        G.identity_from_depth_chart(_REPO / cfg['depth_chart'],
+                                                                    set(starters) | set(desig)))
+        if absent_statuses is None:
+            from nfl.tools import availability as AV
+            absent_statuses = tuple(AV.ABSENT_STATUSES) + ('OUT',)
+        return G.verify_starter_state(state, expected, absent_statuses,
+                                      starters_digest if starters_digest is not None else G.starters_digest(starters))
+    except Exception as e:  # noqa: BLE001
+        return [f'EXPECTATION_UNAVAILABLE {type(e).__name__}: {str(e)[:160]} (refused, not passed)']
 
 def _run_body(cfg, cfg_path, mode, hashes, P, scen, sd, pre, L):
     if _now() >= _ts(cfg['kickoff_utc']):
@@ -301,6 +314,18 @@ def _run_body(cfg, cfg_path, mode, hashes, P, scen, sd, pre, L):
     L.add('VERIFY', 'PASS', derived=der, **ver)
     fp, fb = freeze(cfg, hashes, P['dir'], ver)
     L.add('FREEZE', 'PASS', freeze=str(fp.relative_to(_REPO)), seal=fb['seal_sha256'])
+    # RUN CONTEXT: what the build's receipt must match for this run to finalize
+    import uuid
+    from nfl.tools import showdown_run_guards as G
+    run = {'run_id': 'run:' + uuid.uuid4().hex, 'commit': G.git_head(_REPO), 'repo': _REPO,
+           'code_dirty': G.tracked_code_dirty(_REPO), 'freeze_seal': fb['seal_sha256'],
+           'scenario_identity': G.scenario_identity(cfg['tag'], scen,
+                                                    json.loads((_REPO / cfg['designations']).read_text()),
+                                                    json.loads((_REPO / cfg['confirmed_starters']).read_text()))}
+    env.update({'SHOWDOWN_RUN_ID': run['run_id'], 'SHOWDOWN_RUN_COMMIT': str(run['commit']),
+                'SHOWDOWN_FREEZE_SEAL': run['freeze_seal'], 'SHOWDOWN_SCENARIO_IDENTITY': run['scenario_identity']})
+    run['environment_sha256'] = G.environment_fingerprint(env)['sha256']
+    L.add('RUN_CONTEXT', 'RECORDED', **{k: (str(v) if k == 'repo' else v) for k, v in run.items()})
 
     cmd = [PY, 'nfl/tools/showdown_tonight.py', _REPO / cfg['export'], '--scenario', scen, '--tag', cfg['tag'],
            '--designations', _REPO / cfg['designations'], '--confirmed-starters', _REPO / cfg['confirmed_starters'],
@@ -320,6 +345,9 @@ def _run_body(cfg, cfg_path, mode, hashes, P, scen, sd, pre, L):
     up = sd / f'{pre}_DK_UPLOAD.csv'
     if rc != 0 or not up.is_file() or up.stat().st_size == 0:
         L.add('PROJECT_SIMULATE_BUILD', 'FAIL', rc=rc, tail=tail)
+        g = sd / 'SCENARIO_GUARD.json'
+        if g.is_file() and json.loads(g.read_text()).get('state') == 'REFUSED':
+            raise SlateError(f'SCENARIO_STATE_MISMATCH_BEFORE_PROJECTION {json.loads(g.read_text())["reasons"][:4]}')
         raise SlateError(f'PIPELINE_FAILED rc={rc} upload_present={up.is_file()}')
     stf = sd / f'{pre}_{cfg["tag"].split("_", 2)[2]}_STATE.json'
     if not stf.is_file():
@@ -423,12 +451,16 @@ def _run_body(cfg, cfg_path, mode, hashes, P, scen, sd, pre, L):
                          '--slate', cfg['tag'].split('_2026')[0], '--kickoff', cfg['kickoff_utc']], env, 'seal')
         L.add('SEAL_PROPS', 'PASS' if rc == 0 else 'FAIL', out=str(mk.relative_to(_REPO)), tail=tail[-300:])
 
-    return final_verify(cfg, cfg_path, hashes, ver, L, P, sd, pre, env, prop_seal_ok=(None if mode != 'final' else rc == 0))
+    return final_verify(cfg, cfg_path, hashes, ver, L, P, sd, pre, env, prop_seal_ok=(None if mode != 'final' else rc == 0),
+                        run=run)
 
 
 # ---------------------------------------------------------------- FINAL VERIFY
-def final_verify(cfg, cfg_path, hashes, ver, L, P, sd, pre, env, prop_seal_ok):
+def final_verify(cfg, cfg_path, hashes, ver, L, P, sd, pre, env, prop_seal_ok, run=None):
     blockers = []
+    if run is None:
+        # the legacy calling convention: no current run context, so nothing can bind the build's receipt to this run
+        blockers.append('RUN_CONTEXT_ABSENT (no current run id / commit; a direct or legacy call cannot finalize)')
     changed = [k for k, v in hashes.items() if _sha(_REPO / v['path']) != v['sha256']]
     if changed:
         blockers.append(f'INPUTS_CHANGED_DURING_RUN {changed}')
@@ -443,6 +475,21 @@ def final_verify(cfg, cfg_path, hashes, ver, L, P, sd, pre, env, prop_seal_ok):
     got = _sha(rep / up.name) if (rep / up.name).exists() else None
     if got != want:
         blockers.append(f'UPLOAD_NOT_REPRODUCED {want[:12]} vs {str(got)[:12]} rc={rc}')
+    if rc != 0:
+        # INDEPENDENT of the hash (independent P0 fixture READY-nonzero_matching_upload): a replay that failed
+        # proves nothing, whatever bytes it left behind
+        blockers.append(f'REPLAY_EXIT_NONZERO rc={rc}')
+    if run is not None:
+        from nfl.tools import showdown_run_guards as G
+        blockers += [b for b in G.verify_receipt(sd, run, cfg['tag'], cfg['scenario'], replay_rc=rc, replay_dir=rep)
+                     if not b.startswith('REPLAY_EXIT_NONZERO')]
+        if run.get('code_dirty') is None or run.get('code_dirty'):
+            blockers.append(f'CODE_NOT_COMMITTED {run.get("code_dirty")} (a run from uncommitted code cannot be READY)')
+        stf = G.football_bundle(sd, cfg['tag'])['STATE.json']
+        if stf.is_file():
+            mism = scenario_state_matches(cfg, json.loads(stf.read_text()))
+            if mism:
+                blockers.append(f'SCENARIO_STATE_MISMATCH {mism[:4]}')
     fb = sd / f'{pre}_FINAL_BOARD.json'
     if fb.exists():
         b = json.loads(fb.read_text())

@@ -57,6 +57,35 @@ def run(export, tag, scenario, designations=None, outs=(), official_inactives=No
     print('state', st.state.value, st.code, st.detail, flush=True)
     if st.state.value != 'PASS':
         return st
+    # STARTER-STATE INTEGRITY, BEFORE ANY PROJECTION OR SIMULATION (independent P0 fixtures QB-*): bind this
+    # scenario's identity and starter evidence onto the state, then require the state to say, positively and
+    # completely, what the scenario says. A refusal here means role_state / proj_v1 / the simulator never ran.
+    from nfl.tools import showdown_run_guards as G, availability as _AV
+    from sportsplatform.governance.outcome import Outcome as _O0
+    import os as _os
+    sid = G.scenario_identity(tag, scenario, desig, confirmed_starters or {})
+    told = _os.environ.get('SHOWDOWN_SCENARIO_IDENTITY')
+    guard = {'ARTIFACT': 'SCENARIO_GUARD', 'stage': 'BEFORE_PROJECTION', 'scenario': scenario, 'scenario_identity': sid}
+    if told and told != sid:
+        bad = [f'RUN_CONTEXT_SCENARIO:{told}!={sid}']
+    elif not depth_chart_csv:
+        bad = ['IDENTITY_SOURCE_ABSENT (no captured depth chart to establish canonical ids)']
+    else:
+        exp = G.expected_state(tag, scenario, desig, confirmed_starters or {},
+                               G.identity_from_depth_chart(depth_chart_csv, set(confirmed_starters or {}) | set(desig)))
+        state = json.loads(P['state'].read_text())
+        G.bind_scenario(state, sid, G.starters_digest(confirmed_starters or {}), SSS.STARTER_TIER)
+        P['state'].write_text(json.dumps(state, indent=1, default=str))
+        bad = G.verify_starter_state(state, exp, tuple(_AV.ABSENT_STATUSES) + ('OUT',),
+                                     G.starters_digest(confirmed_starters or {}))
+        guard['expected'] = exp
+    guard.update({'reasons': bad, 'state': 'PASS' if not bad else 'REFUSED',
+                  'projection_ran': False, 'simulation_ran': False})
+    (sd / 'SCENARIO_GUARD.json').write_text(json.dumps(guard, indent=1, default=str))
+    if bad:
+        print('scenario_guard REFUSED', bad, flush=True)
+        return _O0.fail('SCENARIO_STATE_MISMATCH', f'{len(bad)} starter-state mismatch(es) before projection: {bad[:4]}',
+                        reasons=bad)
     dr = SR.run(tag, n_sims=n_sims, work=sd)
     print('draws', dr.state.value, dr.code, dr.detail, flush=True)
     if dr.state.value != 'PASS':
@@ -87,6 +116,15 @@ def run(export, tag, scenario, designations=None, outs=(), official_inactives=No
     audit = (pf.value if pf.state.value == 'PASS' else (pf.evidence or {}).get('audit'))
     if audit:
         final_board(audit, json.loads((sd / 'SCENARIO.json').read_text()), sd / f'{pre}_FINAL_BOARD', pf)
+    if pf.state.value == 'PASS':
+        # THE LAST ACT: a receipt binding this run, commit, scenario, freeze seal, environment and the sha256 of every
+        # football-state and publication artifact. Absent run context (a direct call) it is written with run_id None
+        # and can never finalize.
+        G.write_receipt(sd, run_id=_os.environ.get('SHOWDOWN_RUN_ID'), commit=_os.environ.get('SHOWDOWN_RUN_COMMIT'),
+                        scenario=scenario, scenario_identity=sid, freeze_seal=_os.environ.get('SHOWDOWN_FREEZE_SEAL'),
+                        env=_os.environ, tag=tag,
+                        publication=[sd / f'{pre}_DK_UPLOAD.csv', sd / f'{pre}_FINAL_LINEUPS.csv',
+                                     sd / f'{pre}_PROJECTIONS.csv', sd / f'{pre}_FINAL_BOARD.json'])
     return pf
 
 

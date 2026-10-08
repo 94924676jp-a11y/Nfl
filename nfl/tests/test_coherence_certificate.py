@@ -110,14 +110,17 @@ def test_B_the_clean_path_verifies():
     check('  and reports zero changed, zero absent',
           v.evidence['n_changed'] == 0
           and v.evidence['n_absent_at_publication'] == 0)
-    # A NEW array appearing after certification is recorded but is NOT a
-    # refusal: adding a layer is not overwriting a guarded one.
+    # A NEW array appearing after certification REFUSES (owner directive 2026-10-08, independent P0 fixture
+    # PUB-added_array). The earlier rule here ("adding a layer is not overwriting a guarded one") let an
+    # uncertified array reach publication. run_forecast adds every layer before CCERT.certify
+    # (run_forecast.py:2400-2878 vs 3084) and nothing after, so the classic seal is unaffected.
     more = dict(arrays)
     more['kicking/fga'] = np.ones((1, 40))
     v2 = CC.verify(cert.value, more, rid)
-    check('  an ADDED array is recorded and does not refuse',
-          v2.state is State.PASS and v2.evidence['added'] == ['kicking/fga'],
-          f'{v2.state} added={v2.evidence.get("added")}')
+    check('  an ADDED array REFUSES and is named',
+          v2.state is State.FAIL and v2.code == CC.CODE_BROKEN
+          and v2.evidence['added'] == ['kicking/fga'],
+          f'{v2.state} added={v2.evidence["added"]}')
 
 
 def test_C_false_alarms_that_must_not_fire():

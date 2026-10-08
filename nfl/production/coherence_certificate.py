@@ -132,13 +132,16 @@ def verify(certificate, arrays, row_ids=None) -> Outcome:
           'n_absent_at_publication': len(absent), 'absent': absent,
           'n_added_after_certification': len(added), 'added': added,
           'guards': certificate.get('guards') or []}
-    if changed or absent:
+    # ADDED KEYS REFUSE TOO (independent P0 fixture PUB-added_array, 2026-10-08): an array published but never
+    # certified is exactly as unguarded as a changed one. The key set must be the certified key set.
+    if changed or absent or added:
         return Outcome.fail(
             CODE_BROKEN,
-            f'{len(changed)} certified array(s) changed and {len(absent)} '
-            f'disappeared between the coherence guard and publication. The '
-            f'guard report describes numbers that are not the ones being '
-            f'sealed.', cause=Cause.GOVERNANCE, **ev)
+            f'{len(changed)} certified array(s) changed, {len(absent)} '
+            f'disappeared and {len(added)} uncertified array(s) were added '
+            f'between the coherence guard and publication. The guard report '
+            f'describes numbers that are not the ones being sealed.',
+            cause=Cause.GOVERNANCE, **ev)
     return Outcome.ok(
         CODE_VERIFIED, value=dict(ev),
         detail=f'all {len(entries)} certified array(s) unchanged from guard to '
