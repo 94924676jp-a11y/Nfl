@@ -562,7 +562,8 @@ def final_verify(cfg, cfg_path, hashes, ver, L, P, sd, pre, env, prop_seal_ok, r
     status = {'ARTIFACT': 'SHOWDOWN_RELEASE_STATUS', 'scenario': cfg['scenario'], 'tag': cfg['tag'], 'at': _now().isoformat(),
               'DECISION': state, 'CERTIFIED': rel['CERTIFIED'], 'MEANING': rel['MEANING'], 'statuses': readiness,
               'mandatory_blockers': rel['mandatory_blockers'], 'disclosed_limitations': rel['disclosed_limitations'],
-              'upload': str(up.relative_to(_REPO)), 'upload_sha256': want, 'reproduced_sha256': got,
+              'upload': (str(up.relative_to(_REPO)) if up.is_relative_to(_REPO) else str(up)), 'upload_sha256': want,
+              'reproduced_sha256': got,
               'accounting_report': ((run or {}).get('accounting') or {}).get('report'),
               'NOT_SUBMITTED': 'nothing is uploaded to DraftKings or entered; no wager is recommended'}
     (P['dir'] / f'RELEASE_STATUS_{cfg["scenario"]}.json').write_text(json.dumps(status, indent=1, default=str) + '\n')

@@ -29,7 +29,8 @@ GROUPS
          ordinary_out, designations unchanged). The fixture's starter evidence digest is a synthetic token, not derived
          from its starters file, so the evidence-binding comparison is disabled here (starters_digest='') and is
          tested instead on the real TB@DAL states (nfl/tests/test_showdown_run_guards.py).
-  other  delegated unchanged to the pack's legacy adapter.
+  other  delegated to the pack's legacy adapter; its extracted functions additionally see the real `PIT`
+         (point-in-time) module, which is the identity with no manifest active, exactly as on the live path.
 
 A target whose finalizer has no `run` parameter is the pre-repair shape: reported UNVERIFIED, not PASS.
 """
@@ -156,10 +157,26 @@ def _qb(req, scratch, source):
             'consumer': f'{NS.__file__}:scenario_state_matches'}
 
 
+def _with_point_in_time(adapter, source):
+    """The legacy adapter executes extracted functions in a fixed namespace. Since e1e6d755 the capture readers call
+    `PIT.admit(...)` (nfl/warehouse/point_in_time.py), which is the IDENTITY when no manifest is active -- the live path.
+    Supply that real module (from the target checkout, no manifest set) so the function runs as production runs it."""
+    _import_target(source)
+    PIT = importlib.import_module('nfl.warehouse.point_in_time')
+    if PIT.active() is not None:
+        raise LA.SourceShapeUnavailable('a point-in-time manifest is active in the fixture process')
+    funcs = adapter.funcs
+
+    def funcs_with_pit(path, names, scope=None, **kw):
+        return funcs(path, names, {'PIT': PIT, **(scope or {})}, **kw)
+    adapter.funcs = funcs_with_pit
+    return adapter
+
+
 def evaluate(request, scratch, source):
     g = request['group']
     if g == 'ready':
         return _ready(request, scratch, source)
     if g == 'qb':
         return _qb(request, scratch, source)
-    return LA.Adapter(source, scratch).evaluate(request)
+    return _with_point_in_time(LA.Adapter(source, scratch), source).evaluate(request)
