@@ -249,7 +249,10 @@ def run(export, sd):
     if n_viol != 0:
         blockers.append(f'VERIFIER_VIOLATIONS={n_viol}')
     board = {'ARTIFACT': 'SHOWDOWN_PRELOCK_BOARD', 'scenario': scen['scenario'],
-             'STATUS': 'READY' if not blockers else 'NOT_READY', 'BLOCKERS': blockers,
+             # owner ruling 2026-10-08: this board checks prelock inputs and the portfolio only. It never certifies a
+             # release; the decision (READY / PROVISIONAL / NOT_READY) is the runner's RELEASE_STATUS_<scenario>.json.
+             'STATUS': 'PRELOCK_CHECKS_PASS' if not blockers else 'NOT_READY', 'BLOCKERS': blockers,
+             'RELEASE_DECISION': 'see RELEASE_STATUS_<scenario>.json written by showdown_next_slate final_verify',
              'FOOTBALL': fb, 'PORTFOLIO': pf, 'FIELD': field(sd), 'EXTERNAL': external(sd), 'FILES': fl,
              'NOT_SUBMITTED': 'nothing here enters a contest or uploads to DraftKings; PROJECTION_SYSTEM_STATE '
                               'NOT_VALIDATED; no wager is recommended'}

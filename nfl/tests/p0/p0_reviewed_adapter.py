@@ -88,7 +88,11 @@ def _ready(req, scratch, source):
            # football-model completeness (owner directive 2026-10-08) is not part of the READY fixtures' contract;
            # supplied as complete so these fixtures test only what they define. It is tested in
            # nfl/tests/test_showdown_run_guards.py on the real TB@DAL states.
-           'football_model': {'status': 'COMPLETE_FOR_STARTERS', 'reasons': []}}
+           'football_model': {'status': 'COMPLETE_FOR_STARTERS', 'reasons': []},
+           # simulation accounting (owner ruling 2026-10-08) is likewise outside the READY fixtures' contract (their
+           # worlds are placeholder bytes). Supplied as PASS so these fixtures test only what they define; the
+           # accounting status and the release classification are tested in nfl/tests/test_release_classification.py.
+           'accounting': {'status': 'PASS', 'violated': {}}}
     G.write_receipt(sd, run_id=run['run_id'], commit='STALE_HEAD' if variant == 'stale_certificate' else commit,
                     scenario='SCENARIO', scenario_identity=run['scenario_identity'], freeze_seal=run['freeze_seal'],
                     env={}, tag=TAG, publication=[up, board])

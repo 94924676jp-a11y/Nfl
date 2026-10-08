@@ -315,3 +315,57 @@ def football_model_status(state, panel, prior_games):
     return {'status': 'INCOMPLETE_QB_ENVIRONMENT' if bad else 'COMPLETE_FOR_STARTERS', 'reasons': bad,
             'starters': rows, 'RULE': f'club environment represents a QB only above a {QB_ENV_MAJORITY} blended share '
                                       'of the club pass attempts it is built from'}
+
+
+# ---------------------------------------------------------------- release classification (owner ruling 2026-10-08)
+#: Owner ruling 2026-10-08 (modified Option B): the absent QB-conditioned environment model is a DISCLOSED LIMITATION,
+#: not a blocker of a basic, verified QB substitution. Every other blocker stays mandatory. The simulation-accounting
+#: status is reported and is never relabelled PASS while violations exist. READY (certified) needs every status to pass;
+#: PROVISIONAL means every mandatory gate passed and known limitations remain; NOT_READY means a mandatory gate failed.
+DISCLOSED_LIMITATION_PREFIXES = ('FOOTBALL_MODEL_INCOMPLETE_QB_ENVIRONMENT',)
+DATA_PREFIXES = ('STARTERS_NOT_CONFIRMED', 'INACTIVES_NOT_OFFICIALLY', 'INPUTS_CHANGED', 'REHEARSAL_NOT_LIVE')
+SUBSTITUTION_PREFIXES = ('SCENARIO_STATE_MISMATCH',)     # the starter-state guard on the built state
+ELIGIBILITY_PREFIXES = ('VERIFIER_VIOLATIONS', 'UNCLASSIFIED_PLAYERS', 'BLOCKED_PLAYERS', 'FINAL_BOARD_ABSENT',
+                        'UPLOAD_NOT_REPRODUCED')
+
+
+def release_classification(blockers, football_model, accounting, substitution_checked=True):
+    """Six statuses and one decision from final_verify's blocker list. Pure; no file is read.
+
+    football_model: showdown_run_guards.football_model_status(...) result (or None).
+    accounting: {'status': PASS|FAIL|UNVERIFIED, ...} from nfl/tools/world_accounting_check (or None).
+    substitution_checked: the starter-state guard actually ran on this scenario's built state. When it did not, the
+    substitution is UNVERIFIED, never PASS by default.
+    """
+    fm = (football_model or {}).get('status') or 'UNDETERMINED'
+    ac = (accounting or {}).get('status') or 'UNVERIFIED'
+    mandatory = [b for b in blockers if not b.startswith(DISCLOSED_LIMITATION_PREFIXES)]
+    if not substitution_checked:
+        mandatory.append('PLAYER_SUBSTITUTION_UNVERIFIED (the starter-state guard did not run on the built state)')
+    limitations = [b for b in blockers if b.startswith(DISCLOSED_LIMITATION_PREFIXES)]
+    subst_bad = [b for b in blockers if b.startswith(SUBSTITUTION_PREFIXES)]
+    statuses = {
+        'PLAYER_SUBSTITUTION_VALID': 'FAIL' if subst_bad else ('PASS' if substitution_checked else 'UNVERIFIED'),
+        'DATA_AND_AVAILABILITY_VALID': 'FAIL' if any(b.startswith(DATA_PREFIXES) for b in blockers) else 'PASS',
+        'LINEUP_ELIGIBILITY_VALID': 'FAIL' if any(b.startswith(ELIGIBILITY_PREFIXES) for b in blockers) else 'PASS',
+        'SIMULATION_ACCOUNTING_VALID': ac if ac in ('PASS', 'FAIL') else 'UNVERIFIED',
+        'QB_CONDITIONED_FORECAST_VALIDATED': ('NOT_REQUIRED' if fm == 'COMPLETE_FOR_STARTERS' else
+                                              'NOT_VALIDATED' if fm == 'INCOMPLETE_QB_ENVIRONMENT' else 'UNDETERMINED'),
+    }
+    if mandatory:
+        decision = 'NOT_READY'
+    elif statuses['SIMULATION_ACCOUNTING_VALID'] == 'PASS' and statuses['QB_CONDITIONED_FORECAST_VALIDATED'] == 'NOT_REQUIRED':
+        decision = 'READY'
+    else:
+        decision = 'PROVISIONAL'
+    statuses['DFS_DECISION_READINESS'] = decision
+    disclosed = list(limitations)
+    if statuses['SIMULATION_ACCOUNTING_VALID'] != 'PASS':
+        disclosed.append(f"SIMULATION_ACCOUNTING_{statuses['SIMULATION_ACCOUNTING_VALID']} "
+                         f"{sorted((accounting or {}).get('violated', {}))[:6]}")
+    return {'decision': decision, 'statuses': statuses, 'mandatory_blockers': mandatory,
+            'disclosed_limitations': disclosed if decision != 'NOT_READY' or disclosed else [],
+            'CERTIFIED': decision == 'READY',
+            'MEANING': {'READY': 'every mandatory gate passed AND accounting PASS AND no unmodelled QB change',
+                        'PROVISIONAL': 'every mandatory gate passed; known limitations disclosed; NOT a certified forecast',
+                        'NOT_READY': 'a mandatory gate failed; the upload must not be used'}[decision]}

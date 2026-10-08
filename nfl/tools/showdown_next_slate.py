@@ -371,6 +371,19 @@ def _run_body(cfg, cfg_path, mode, hashes, P, scen, sd, pre, L):
     except Exception as e:  # noqa: BLE001
         run['football_model'] = {'status': 'UNDETERMINED', 'reasons': [f'{type(e).__name__}: {str(e)[:160]}']}
     L.add('FOOTBALL_MODEL', run['football_model']['status'], **run['football_model'])
+    # SIMULATION ACCOUNTING on the PUBLISHED worlds (nfl/tools/world_accounting_check, owner ruling 2026-10-08): reported,
+    # never relabelled PASS while violations exist; a failure to measure is UNVERIFIED, not PASS. Written beside the
+    # scenario (not inside it) so the scenario's bytes are unchanged.
+    try:
+        from nfl.tools import world_accounting_check as WA
+        acc = WA.check(sd)
+        ap = P['dir'] / f'WORLD_ACCOUNTING_{scen}.json'
+        ap.write_text(json.dumps(acc, indent=1) + '\n')
+        run['accounting'] = {'status': 'FAIL' if acc['VIOLATED'] else 'PASS', 'violated': acc['VIOLATED'],
+                             'report': str(ap.relative_to(_REPO))}
+    except Exception as e:  # noqa: BLE001 -- named, and never a PASS
+        run['accounting'] = {'status': 'UNVERIFIED', 'violated': {}, 'reason': f'{type(e).__name__}: {str(e)[:160]}'}
+    L.add('SIMULATION_ACCOUNTING', run['accounting']['status'], **run['accounting'])
     L.add('PROJECT_SIMULATE_BUILD', 'PASS', upload=str(up.relative_to(_REPO)), upload_sha256=_sha(up),
           tail=tail[-600:])
 
@@ -474,6 +487,7 @@ def _run_body(cfg, cfg_path, mode, hashes, P, scen, sd, pre, L):
 # ---------------------------------------------------------------- FINAL VERIFY
 def final_verify(cfg, cfg_path, hashes, ver, L, P, sd, pre, env, prop_seal_ok, run=None):
     blockers = []
+    substitution_checked = False
     if run is None:
         # the legacy calling convention: no current run context, so nothing can bind the build's receipt to this run
         blockers.append('RUN_CONTEXT_ABSENT (no current run id / commit; a direct or legacy call cannot finalize)')
@@ -504,6 +518,7 @@ def final_verify(cfg, cfg_path, hashes, ver, L, P, sd, pre, env, prop_seal_ok, r
         stf = G.football_bundle(sd, cfg['tag'])['STATE.json']
         if stf.is_file():
             mism = scenario_state_matches(cfg, json.loads(stf.read_text()))
+            substitution_checked = True
             if mism:
                 blockers.append(f'SCENARIO_STATE_MISMATCH {mism[:4]}')
     fb = sd / f'{pre}_FINAL_BOARD.json'
@@ -533,12 +548,26 @@ def final_verify(cfg, cfg_path, hashes, ver, L, P, sd, pre, env, prop_seal_ok, r
         blockers.append(f'FOOTBALL_MODEL_{fm["status"]} {fm.get("reasons", [])[:2]}')
     tech = [b for b in blockers if not b.startswith(('STARTERS_NOT_CONFIRMED', 'INACTIVES_NOT_OFFICIALLY', 'INPUTS_CHANGED',
                                                      'FOOTBALL_MODEL_', 'REHEARSAL_NOT_LIVE', 'PROP_SEAL_FAILED'))]
-    data = [b for b in blockers if b.startswith(('STARTERS_NOT_CONFIRMED', 'INACTIVES_NOT_OFFICIALLY', 'INPUTS_CHANGED'))]
-    readiness = {'technical': 'PASS' if not tech else 'FAIL', 'data': 'PASS' if not data else 'FAIL',
-                 'football_model': fm['status'], 'dfs_decision': 'READY' if not blockers else 'NOT_READY'}
-    state = 'READY' if not blockers else 'NOT_READY'
+    # RELEASE CLASSIFICATION (owner ruling 2026-10-08, modified Option B; showdown_run_guards.release_classification).
+    # The absent QB-conditioned environment model is a disclosed limitation, not a blocker of a verified substitution;
+    # every other blocker stays mandatory; accounting is reported and never relabelled PASS. READY = certified;
+    # PROVISIONAL = every mandatory gate passed, limitations disclosed; NOT_READY = a mandatory gate failed.
+    from nfl.tools import showdown_run_guards as G
+    rel = G.release_classification(blockers, fm, (run or {}).get('accounting'), substitution_checked=substitution_checked)
+    st = rel['statuses']
+    readiness = {'technical': 'PASS' if not tech else 'FAIL', 'data': st['DATA_AND_AVAILABILITY_VALID'],
+                 'football_model': fm['status'], 'dfs_decision': rel['decision'], **st}
+    state = rel['decision']
     L.add('READINESS', state, **readiness)
+    status = {'ARTIFACT': 'SHOWDOWN_RELEASE_STATUS', 'scenario': cfg['scenario'], 'tag': cfg['tag'], 'at': _now().isoformat(),
+              'DECISION': state, 'CERTIFIED': rel['CERTIFIED'], 'MEANING': rel['MEANING'], 'statuses': readiness,
+              'mandatory_blockers': rel['mandatory_blockers'], 'disclosed_limitations': rel['disclosed_limitations'],
+              'upload': str(up.relative_to(_REPO)), 'upload_sha256': want, 'reproduced_sha256': got,
+              'accounting_report': ((run or {}).get('accounting') or {}).get('report'),
+              'NOT_SUBMITTED': 'nothing is uploaded to DraftKings or entered; no wager is recommended'}
+    (P['dir'] / f'RELEASE_STATUS_{cfg["scenario"]}.json').write_text(json.dumps(status, indent=1, default=str) + '\n')
     L.add('FINAL_VERIFY', state, upload_sha256=want, reproduced_sha256=got, blockers=blockers, readiness=readiness,
+          mandatory_blockers=rel['mandatory_blockers'], disclosed_limitations=rel['disclosed_limitations'],
           NOT_SUBMITTED='nothing is uploaded to DraftKings or entered; no wager is recommended')
     return state, blockers
 
@@ -654,7 +683,7 @@ if __name__ == '__main__':
         if a.phase == 'run':
             st, bl = run(a.config, a.mode)
             print(st, bl)
-            sys.exit(0 if st == 'READY' else 4)
+            sys.exit({'READY': 0, 'PROVISIONAL': 5}.get(st, 4))
         if a.phase == 'postgame':
             sys.exit(postgame(a.config, a.standings, a.actuals))
         if not a.board:
