@@ -33,8 +33,10 @@ _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
+from nfl.warehouse import point_in_time as PIT  # noqa: E402
+
 MARKET = _REPO / 'nfl/warehouse/MARKET_VOLUME.json'
-TEAM_GAME = _REPO / 'nfl/warehouse/TEAM_GAME.json'
+TEAM_GAME = PIT.resolve(_REPO / 'nfl/warehouse/TEAM_GAME.json')   # as of the cutoff in a sealed run
 
 #: Only coefficients that clear two clustered standard errors are applied. A coefficient that does
 #: not is reported and NOT used -- applying an effect the data cannot distinguish from zero is how a

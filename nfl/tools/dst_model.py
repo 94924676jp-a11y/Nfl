@@ -46,6 +46,7 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
+from nfl.warehouse import point_in_time as PIT  # noqa: E402
 
 SPEC_VERSION = 'dst-model-1'
 PBP_DIR = _REPO / 'nfl/research/postgame'
@@ -81,7 +82,7 @@ CONSTANTS_PROVENANCE = {
 
 
 def _capture(season):
-    hits = sorted(PBP_DIR.glob(f'pbp_{season}.*.csv.gz'))
+    hits = PIT.admit(sorted(PBP_DIR.glob(f'pbp_{season}.*.csv.gz')), 'pbp')
     return max(hits, key=lambda p: p.stat().st_size) if hits else None
 
 

@@ -49,10 +49,11 @@ from nfl.field import opponent as field_mod, ownership as own_mod  # noqa: E402
 from nfl.opt import exact  # noqa: E402
 from nfl.sim import game as sim_game  # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
+from nfl.warehouse import point_in_time as PIT  # noqa: E402
 
 V1 = _REPO / 'nfl/dfs/salaries/DK_WEEK3_PROJ_V1.json'
 POST = _REPO / 'nfl/dfs/salaries/DK_WEEK3_TODAY_STATE_POST_INACTIVES.json'
-TG = _REPO / 'nfl/warehouse/TEAM_GAME.json'
+TG = PIT.resolve(_REPO / 'nfl/warehouse/TEAM_GAME.json')   # as of the cutoff in a sealed run
 OUT = _REPO / 'nfl/dfs/salaries/CONTEST_PORTFOLIO.json'
 
 SLATE_SEASON, SLATE_WEEK = 2026, 3

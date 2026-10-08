@@ -48,6 +48,7 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
+from nfl.warehouse import point_in_time as PIT  # noqa: E402
 
 SPEC_VERSION = 'player-prior-1'
 PANEL = _REPO / 'nfl/derived/USAGE_HISTORY_2021_2026.json'
@@ -198,7 +199,7 @@ def resolve_identity(name_wanted):
     import glob
     import gzip
     hits = {}
-    for f in sorted(glob.glob(str(_REPO / ROSTERS))):
+    for f in PIT.admit(sorted(glob.glob(str(_REPO / ROSTERS))), 'weekly_rosters'):
         with gzip.open(f, 'rt', newline='') as fh:
             for r in csv.DictReader(fh):
                 nm = (r.get('full_name') or r.get('player_name') or '').strip()
@@ -226,7 +227,7 @@ def name_index():
     import glob
     import gzip
     out = {}
-    for f in sorted(glob.glob(str(_REPO / ROSTERS))):
+    for f in PIT.admit(sorted(glob.glob(str(_REPO / ROSTERS))), 'weekly_rosters'):
         with gzip.open(f, 'rt', newline='') as fh:
             for r in csv.DictReader(fh):
                 nm = (r.get('full_name') or r.get('player_name') or '').strip()
@@ -254,7 +255,7 @@ def position_index():
     import glob
     import gzip
     out, seen_season = {}, {}
-    for f in sorted(glob.glob(str(_REPO / ROSTERS))):
+    for f in PIT.admit(sorted(glob.glob(str(_REPO / ROSTERS))), 'weekly_rosters'):
         with gzip.open(f, 'rt', newline='') as fh:
             for r in csv.DictReader(fh):
                 g = (r.get('gsis_id') or '').strip()

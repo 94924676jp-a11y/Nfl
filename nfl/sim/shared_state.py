@@ -28,8 +28,9 @@ if str(_REPO) not in sys.path:
 
 from nfl.warehouse import stats  # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
+from nfl.warehouse import point_in_time as PIT  # noqa: E402
 
-TG = _REPO / 'nfl/warehouse/TEAM_GAME.json'
+TG = PIT.resolve(_REPO / 'nfl/warehouse/TEAM_GAME.json')   # as of the cutoff in a sealed run
 OUT = _REPO / 'nfl/sim/SHARED_STATE.json'
 MIN_ROWS = 400
 

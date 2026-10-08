@@ -258,13 +258,28 @@ def main():
     ap.add_argument('--depth-chart', help='captured nflverse depth_charts CSV for the two clubs')
     ap.add_argument('--portfolio-only', action='store_true', help='rebuild portfolios on the scenario\'s frozen worlds')
     a = ap.parse_args()
+    # Point-in-time contract (nfl/warehouse/point_in_time.py). NFL_PIT_MANIFEST names a sealed manifest: the run then
+    # reads only the captures it admits, and opening any other guarded file is refused. Unset (live): no effect.
+    from nfl.warehouse import point_in_time as PIT
+    pit = PIT.active()
+    if pit is not None:
+        print(f"POINT_IN_TIME {pit.man['label']} cutoff {pit.man['cutoff_utc']} seal {pit.man['seal'][:16]}")
     if a.portfolio_only:
         return 0 if portfolio_only(a.export, a.tag, a.scenario).state.value == 'PASS' else 1
     d = json.loads(pathlib.Path(a.designations).read_text()) if a.designations else None
     oi = json.loads(pathlib.Path(a.official_inactives).read_text()) if a.official_inactives else None
     cs = json.loads(pathlib.Path(a.confirmed_starters).read_text()) if a.confirmed_starters else None
     o = run(a.export, a.tag, a.scenario, d, a.out, oi, a.n_sims, cs, a.starter_tier, a.depth_chart)
+    if pit is not None:
+        sd = _scenario_root(a.tag) / a.scenario
+        if sd.is_dir():
+            (sd / 'PIT_READS.json').write_text(json.dumps(PIT.record(), indent=1, sort_keys=True) + '\n')
     return 0 if o.state.value == 'PASS' else 1
+
+
+def _scenario_root(tag):
+    from nfl.tools import showdown_slate_run as SR
+    return SR.paths(tag)['dir']
 
 
 if __name__ == '__main__':

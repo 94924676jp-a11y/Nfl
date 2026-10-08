@@ -30,9 +30,10 @@ if str(_REPO) not in sys.path:
 
 from nfl.warehouse import era, stats  # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
+from nfl.warehouse import point_in_time as PIT  # noqa: E402
 
 SPEC_VERSION = 'market-volume-1'
-TEAM_GAME = _REPO / 'nfl/warehouse/TEAM_GAME.json'
+TEAM_GAME = PIT.resolve(_REPO / 'nfl/warehouse/TEAM_GAME.json')   # as of the cutoff in a sealed run
 OUT = _REPO / 'nfl/warehouse/MARKET_VOLUME.json'
 
 #: The volume quantities a projection needs a market response for.

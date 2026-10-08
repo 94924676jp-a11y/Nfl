@@ -54,8 +54,9 @@ if str(_REPO) not in sys.path:
 from nfl.tools import availability as AV  # noqa: E402
 from nfl.tools import player_prior, proj_v1, showdown_to_portfolio as S  # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
+from nfl.warehouse import point_in_time as PIT  # noqa: E402
 
-TEAM_GAME = _REPO / 'nfl/warehouse/TEAM_GAME.json'
+TEAM_GAME = PIT.resolve(_REPO / 'nfl/warehouse/TEAM_GAME.json')   # as of the cutoff in a sealed run
 OUT = _REPO / 'nfl/dfs/salaries/SHOWDOWN_TONIGHT_STATE.json'
 
 SPEC_VERSION = 'showdown-slate-state-1'

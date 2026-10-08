@@ -32,6 +32,7 @@ import sys
 _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
+from nfl.warehouse import point_in_time as PIT  # noqa: E402
 
 SPEC_VERSION = 'td-rates-1'
 PANEL = _REPO / 'nfl/derived/USAGE_HISTORY_2021_2026.json'
@@ -53,7 +54,7 @@ def points_to_td():
     """Offensive touchdowns per club point, measured. Returns the estimate and the sample."""
     obs = []
     for season in FIT_SEASONS:
-        hits = sorted(PBP_DIR.glob(f'pbp_{season}.*.csv.gz'))
+        hits = PIT.admit(sorted(PBP_DIR.glob(f'pbp_{season}.*.csv.gz')), 'pbp')
         if not hits:
             continue
         # widest capture, same rule the panel uses

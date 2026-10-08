@@ -34,10 +34,11 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
+from nfl.warehouse import point_in_time as PIT  # noqa: E402
 
 PG = _REPO / 'nfl/warehouse/PLAYER_GAME.json'
 RH = _REPO / 'nfl/warehouse/ROLE_HISTORY.json'
-TG = _REPO / 'nfl/warehouse/TEAM_GAME.json'
+TG = PIT.resolve(_REPO / 'nfl/warehouse/TEAM_GAME.json')   # as of the cutoff in a sealed run
 OUT = _REPO / 'nfl/sim/PAIR_CORRELATIONS.json'
 
 # same-club pairs, then cross-club. (position, rank) on each side.

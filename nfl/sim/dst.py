@@ -47,8 +47,9 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
+from nfl.warehouse import point_in_time as PIT  # noqa: E402
 
-TG = _REPO / 'nfl/warehouse/TEAM_GAME.json'
+TG = PIT.resolve(_REPO / 'nfl/warehouse/TEAM_GAME.json')   # as of the cutoff in a sealed run
 OUT = _REPO / 'nfl/sim/DST_MODEL.json'
 
 POINTS_BANDS = ((0, 1, 10.0), (1, 7, 7.0), (7, 14, 4.0), (14, 21, 1.0), (21, 28, 0.0),

@@ -39,8 +39,9 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from sportsplatform.governance.outcome import Outcome, Cause  # noqa: E402
+from nfl.warehouse import point_in_time as PIT  # noqa: E402
 
-TG = _REPO / 'nfl/warehouse/TEAM_GAME.json'
+TG = PIT.resolve(_REPO / 'nfl/warehouse/TEAM_GAME.json')   # as of the cutoff in a sealed run
 OUT = _REPO / 'nfl/sim/FOOTBALL_POINTS.json'
 PRIOR_GAMES = 4.0          # == proj_v1.TEAM_VOLUME_PRIOR_GAMES, the declared pseudo-game weight
 THROUGH_SEASON = 2025      # == proj_v1.THROUGH_SEASON: nothing after this season is fitted

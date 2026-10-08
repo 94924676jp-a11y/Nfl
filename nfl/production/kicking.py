@@ -69,6 +69,7 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from sportsplatform.governance.outcome import Cause, Outcome      # noqa: E402
+from nfl.warehouse import point_in_time as PIT  # noqa: E402
 
 SPEC_VERSION = 'kicking-opportunity-conversion-1'
 BANDS = ((0, 20, 'FG<20'), (20, 30, 'FG20s'), (30, 40, 'FG30s'),
@@ -102,7 +103,7 @@ def _cut_ok(season, week, cut_ordinal):
 
 def fit(cut_ordinal: int) -> Outcome:
     """Fit both models from play-by-play strictly before `cut_ordinal`."""
-    files = sorted(glob.glob(str(_REPO / 'nfl/research/postgame/pbp_20*.csv.gz')))
+    files = PIT.admit(sorted(glob.glob(str(_REPO / 'nfl/research/postgame/pbp_20*.csv.gz'))), 'pbp')
     if not files:
         return Outcome.blocked(
             'KICKING_PBP_ABSENT',
@@ -322,8 +323,8 @@ def resolve_kicker(doc, team: str, season: int, week: int) -> Outcome:
     inventing a tiebreak here would bury it.
     """
     by_week = {}
-    for f in sorted(glob.glob(str(
-            _REPO / 'nfl/vintage/weekly_rosters.*raw.csv*'))):
+    for f in PIT.admit(sorted(glob.glob(str(
+            _REPO / 'nfl/vintage/weekly_rosters.*raw.csv*'))), 'weekly_rosters'):
         for r in csv.DictReader(gzip.open(f, 'rt')):
             if (r.get('position') or '').upper() != 'K':
                 continue

@@ -37,6 +37,7 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
+from nfl.warehouse import point_in_time as PIT  # noqa: E402
 
 SPEC_VERSION = 'usage-history-1'
 VINTAGE = _REPO / 'nfl/vintage'
@@ -81,7 +82,7 @@ def _blob(season):
     """
     cands = []
     for d in SEARCH_DIRS:
-        for f in sorted((_REPO / d).glob(f'pbp_{season}.*.csv.gz')):
+        for f in PIT.admit(sorted((_REPO / d).glob(f'pbp_{season}.*.csv.gz')), 'pbp'):
             weeks, rows = set(), 0
             with gzip.open(f, 'rt', newline='') as fh:
                 for r in csv.DictReader(fh):
