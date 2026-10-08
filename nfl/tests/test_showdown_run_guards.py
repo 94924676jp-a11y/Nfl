@@ -146,8 +146,33 @@ def test_receipt():
           'no run context refuses')
 
 
+def test_football_model_completeness():
+    panel = {'teams': {'TB': {'2026': {'1': {'pass_attempts': 40}, '2': {'pass_attempts': 40}, '3': {'pass_attempts': 40}},
+                              '2025': {str(w): {'pass_attempts': 35} for w in range(1, 18)}}},
+             'players': {'Q1': {'2026': {'1': {'pass_attempts': 40, 'team': 'TB'}, '2': {'pass_attempts': 40, 'team': 'TB'}},
+                                '2025': {str(w): {'pass_attempts': 35, 'team': 'TB'} for w in range(1, 18)}},
+                         'Q2': {'2026': {'3': {'pass_attempts': 40, 'team': 'TB'}}}}}
+    a = G.qb_environment_share(panel, 'TB', 'Q1', 2026, 4, 4.0)
+    b = G.qb_environment_share(panel, 'TB', 'Q2', 2026, 4, 4.0)
+    check(abs(a['blended_share'] - (3 * (80 / 120) + 4 * 1.0) / 7) < 1e-12, f"incumbent blended share {a['blended_share']:.4f}")
+    check(abs(b['blended_share'] - (3 * (40 / 120)) / 7) < 1e-12, f"backup blended share {b['blended_share']:.4f}")
+    st = lambda qb: {'season': 2026, 'week': 4, 'players': {'x': {'name': qb, 'team': 'TB', 'position': 'QB', 'gsis_id': qb,  # noqa: E731
+                                                                  'predicted_lineup_context': {'in_predicted_starting_group': True}}}}
+    check(G.football_model_status(st('Q1'), panel, 4.0)['status'] == 'COMPLETE_FOR_STARTERS',
+          'a starter whose club environment is predominantly his is COMPLETE')
+    check(G.football_model_status(st('Q2'), panel, 4.0)['status'] == 'INCOMPLETE_QB_ENVIRONMENT',
+          'a starter whose club environment is another QB\'s is INCOMPLETE (QB change not modelled)')
+    from nfl.tools import player_prior as PP, proj_v1 as PV
+    real = PP.load_panel().value
+    for scen, want in (('PRECOMPUTE_TBQB_DANIELS_R7', 'INCOMPLETE_QB_ENVIRONMENT'), ('PRECOMPUTE_TBQB_MAYFIELD_R4', 'COMPLETE_FOR_STARTERS')):
+        p = D / scen / 'SHOWDOWN_TB_DAL_2026W5_STATE.json'
+        if p.is_file():
+            got = G.football_model_status(json.loads(p.read_text()), real, PV.TEAM_VOLUME_PRIOR_GAMES)['status']
+            check(got == want, f'{scen}: {got}')
+
+
 if __name__ == '__main__':
-    for t in (test_real_states, test_contaminated_state_refuses, test_receipt):
+    for t in (test_real_states, test_contaminated_state_refuses, test_receipt, test_football_model_completeness):
         print(t.__name__)
         t()
     print(f'{PASSED} passed, {FAILED} failed')

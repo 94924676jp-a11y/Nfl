@@ -84,7 +84,11 @@ def _ready(req, scratch, source):
     board.write_text(json.dumps({'VERIFIER_VIOLATIONS': 0, 'UNCLASSIFIED': [], 'BLOCKED': []}))
     commit = G.git_head(source)
     run = {'run_id': 'fixture:run', 'commit': commit, 'repo': pathlib.Path(source), 'code_dirty': [],
-           'freeze_seal': 'fixture:seal', 'scenario_identity': 'fixture:scn', 'environment_sha256': None}
+           'freeze_seal': 'fixture:seal', 'scenario_identity': 'fixture:scn', 'environment_sha256': None,
+           # football-model completeness (owner directive 2026-10-08) is not part of the READY fixtures' contract;
+           # supplied as complete so these fixtures test only what they define. It is tested in
+           # nfl/tests/test_showdown_run_guards.py on the real TB@DAL states.
+           'football_model': {'status': 'COMPLETE_FOR_STARTERS', 'reasons': []}}
     G.write_receipt(sd, run_id=run['run_id'], commit='STALE_HEAD' if variant == 'stale_certificate' else commit,
                     scenario='SCENARIO', scenario_identity=run['scenario_identity'], freeze_seal=run['freeze_seal'],
                     env={}, tag=TAG, publication=[up, board])

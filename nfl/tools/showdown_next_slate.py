@@ -356,6 +356,16 @@ def _run_body(cfg, cfg_path, mode, hashes, P, scen, sd, pre, L):
     mism = scenario_state_matches(cfg, json.loads(stf.read_text()))
     if mism:
         raise SlateError(f'SCENARIO_STATE_MISMATCH {mism[:4]}')
+    # FOOTBALL-MODEL COMPLETENESS (owner directive 2026-10-08): the club environment is club history; it represents the
+    # scenario's QB only if he threw a majority of the attempts it is built from. Not a refusal of the build -- a
+    # separate readiness status that READY requires.
+    try:
+        from nfl.tools import showdown_run_guards as G, player_prior as PP, proj_v1 as PV
+        run['football_model'] = G.football_model_status(json.loads(stf.read_text()), PP.load_panel().value,
+                                                        PV.TEAM_VOLUME_PRIOR_GAMES)
+    except Exception as e:  # noqa: BLE001
+        run['football_model'] = {'status': 'UNDETERMINED', 'reasons': [f'{type(e).__name__}: {str(e)[:160]}']}
+    L.add('FOOTBALL_MODEL', run['football_model']['status'], **run['football_model'])
     L.add('PROJECT_SIMULATE_BUILD', 'PASS', upload=str(up.relative_to(_REPO)), upload_sha256=_sha(up),
           tail=tail[-600:])
 
@@ -512,8 +522,18 @@ def final_verify(cfg, cfg_path, hashes, ver, L, P, sd, pre, env, prop_seal_ok, r
         blockers.append('PROP_SEAL_FAILED (market phase unavailable; DFS unaffected)')
     if _now() >= _ts(cfg['kickoff_utc']):
         blockers.append('FINAL_VERIFY_AFTER_KICKOFF')
+    # FOUR STATUSES, NOT ONE (owner directive 2026-10-08). Each is reported; READY needs all four.
+    fm = (run or {}).get('football_model') or {'status': 'UNDETERMINED', 'reasons': ['no football-model status computed']}
+    if fm['status'] != 'COMPLETE_FOR_STARTERS':
+        blockers.append(f'FOOTBALL_MODEL_{fm["status"]} {fm.get("reasons", [])[:2]}')
+    tech = [b for b in blockers if not b.startswith(('STARTERS_NOT_CONFIRMED', 'INACTIVES_NOT_OFFICIALLY', 'INPUTS_CHANGED',
+                                                     'FOOTBALL_MODEL_', 'REHEARSAL_NOT_LIVE', 'PROP_SEAL_FAILED'))]
+    data = [b for b in blockers if b.startswith(('STARTERS_NOT_CONFIRMED', 'INACTIVES_NOT_OFFICIALLY', 'INPUTS_CHANGED'))]
+    readiness = {'technical': 'PASS' if not tech else 'FAIL', 'data': 'PASS' if not data else 'FAIL',
+                 'football_model': fm['status'], 'dfs_decision': 'READY' if not blockers else 'NOT_READY'}
     state = 'READY' if not blockers else 'NOT_READY'
-    L.add('FINAL_VERIFY', state, upload_sha256=want, reproduced_sha256=got, blockers=blockers,
+    L.add('READINESS', state, **readiness)
+    L.add('FINAL_VERIFY', state, upload_sha256=want, reproduced_sha256=got, blockers=blockers, readiness=readiness,
           NOT_SUBMITTED='nothing is uploaded to DraftKings or entered; no wager is recommended')
     return state, blockers
 

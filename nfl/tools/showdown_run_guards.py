@@ -271,3 +271,47 @@ def verify_receipt(sd, run, tag, scenario, *, replay_rc=None, replay_dir=None):
             elif arts.get(k) and sha256_file(q) != arts[k]:
                 blockers.append(f'REPLAY_FOOTBALL_STATE_DIFFERS {k} (matching portfolio bytes cannot stand in)')
     return blockers
+
+
+# ------------------------------------------------------------------ football-model completeness (owner directive 2026-10-08)
+#: The club environment (team volume, scoring centre) is a club-level blend of the club's own history: current-season
+#: games before the slate plus the prior season at proj_v1.TEAM_VOLUME_PRIOR_GAMES pseudo-games. It represents a
+#: quarterback only if he threw a MAJORITY of the club's pass attempts in that blend. Below that, the environment is
+#: another QB's, and no stage of the model conditions on the change (docs/QB_DEPENDENCY_AUDIT_2026-10-08.md).
+#: MAJORITY is a declared definition, not a fitted constant.
+QB_ENV_MAJORITY = 0.5
+
+
+def qb_environment_share(panel, club, qb_gsis, season, week, prior_games):
+    """Blended share of the club's pass attempts thrown by `qb_gsis`, over the window the club environment uses."""
+    def share(yr, wk_max):
+        team = sum(v.get('pass_attempts') or 0 for w, v in (panel['teams'].get(club, {}).get(str(yr)) or {}).items()
+                   if wk_max is None or int(w) < wk_max)
+        mine = sum(v.get('pass_attempts') or 0 for w, v in
+                   ((panel['players'].get(qb_gsis) or {}).get(str(yr)) or {}).items()
+                   if v.get('team') == club and (wk_max is None or int(w) < wk_max))
+        n = len([w for w in (panel['teams'].get(club, {}).get(str(yr)) or {}) if wk_max is None or int(w) < wk_max])
+        return (mine / team if team else None), n
+    cur, n_cur = share(season, week)
+    prv, _ = share(season - 1, None)
+    parts = [(n_cur, cur), (prior_games, prv)]
+    num = sum(w * s for w, s in parts if s is not None)
+    den = sum(w for w, s in parts if s is not None)
+    return {'club': club, 'qb': qb_gsis, 'current_share': cur, 'n_current_games': n_cur, 'prior_season_share': prv,
+            'blended_share': (num / den) if den else None}
+
+
+def football_model_status(state, panel, prior_games):
+    """COMPLETE_FOR_STARTERS when every named starter's club environment is predominantly his; else INCOMPLETE."""
+    rows, bad = [], []
+    for p in (state.get('players') or {}).values():
+        ctx = p.get('predicted_lineup_context') or {}
+        if p.get('position') == 'QB' and ctx.get('in_predicted_starting_group') and p.get('gsis_id'):
+            r = qb_environment_share(panel, p['team'], p['gsis_id'], int(state['season']), int(state['week']), prior_games)
+            r['name'] = p['name']
+            rows.append(r)
+            if r['blended_share'] is None or r['blended_share'] <= QB_ENV_MAJORITY:
+                bad.append(f"QB_CHANGE_NOT_MODELLED {p['team']}:{p['name']} share {r['blended_share']}")
+    return {'status': 'INCOMPLETE_QB_ENVIRONMENT' if bad else 'COMPLETE_FOR_STARTERS', 'reasons': bad,
+            'starters': rows, 'RULE': f'club environment represents a QB only above a {QB_ENV_MAJORITY} blended share '
+                                      'of the club pass attempts it is built from'}
