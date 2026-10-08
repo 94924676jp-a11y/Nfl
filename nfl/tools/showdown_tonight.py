@@ -40,6 +40,9 @@ def run(export, tag, scenario, designations=None, outs=(), official_inactives=No
                                                                   default=str)[:1500], flush=True)
     if gate.state.value != 'PASS':
         return gate
+    sd = P['dir'] / scenario
+    sd.mkdir(exist_ok=True)
+    P = SR.paths(tag, work=sd)          # every intermediate in the scenario's own directory
     SSS.OUT = P['state']
     if starter_tier:
         # the label says WHERE the starter evidence came from; downstream reads only the boolean
@@ -54,7 +57,7 @@ def run(export, tag, scenario, designations=None, outs=(), official_inactives=No
     print('state', st.state.value, st.code, st.detail, flush=True)
     if st.state.value != 'PASS':
         return st
-    dr = SR.run(tag, n_sims=n_sims)
+    dr = SR.run(tag, n_sims=n_sims, work=sd)
     print('draws', dr.state.value, dr.code, dr.detail, flush=True)
     if dr.state.value != 'PASS':
         return dr
@@ -63,10 +66,9 @@ def run(export, tag, scenario, designations=None, outs=(), official_inactives=No
         # a football contradiction (e.g. a starter carrying a backup's appearance discount) is never
         # optimised over: no portfolio is built on a failed sanity gate
         return _O.fail('SHOWDOWN_FOOTBALL_SANITY_FAILED', dr.detail)
-    sd = P['dir'] / scenario
-    sd.mkdir(exist_ok=True)
     for k in ('state', 'proj', 'draws', 'worlds'):
-        shutil.copy2(P[k], sd / P[k].name)
+        if P[k].parent != sd:
+            raise RuntimeError(f'SCENARIO_ISOLATION {k} written outside the scenario: {P[k]}')
     state = json.loads(P['state'].read_text())
     from nfl.tools import availability as AV
     absent = sorted(v['name'] for v in state['players'].values()

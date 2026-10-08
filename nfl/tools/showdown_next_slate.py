@@ -229,12 +229,13 @@ def run(cfg_path, mode='final'):
     # 2026-10-08: the Daniels and Mayfield precomputes produced byte-identical uploads from one state).
     import fcntl
     P['dir'].mkdir(parents=True, exist_ok=True)
-    lock = open(P['dir'] / '.RUN_LOCK', 'w')
+    # GLOBAL, not per tag: the legacy path wrote nfl/derived/ROLE_STATE.json and DST_RATES.json, shared by all slates
+    lock = open(_REPO / 'nfl/dfs/salaries/.SHOWDOWN_RUN_LOCK', 'w')
     try:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
     except BlockingIOError:
-        L.add('REFUSED', 'CONCURRENT_RUN_SAME_TAG', detail=f'another run holds {P["dir"] / ".RUN_LOCK"}')
-        raise SlateError(f'CONCURRENT_RUN_SAME_TAG {cfg["tag"]} (scenarios share per-tag intermediates; run them in sequence)')
+        L.add('REFUSED', 'CONCURRENT_RUN', detail='another Showdown run holds nfl/dfs/salaries/.SHOWDOWN_RUN_LOCK')
+        raise SlateError(f'CONCURRENT_RUN {cfg["tag"]} (another Showdown run is in progress; run in sequence)')
     try:
         return _run_body(cfg, cfg_path, mode, hashes, P, scen, sd, pre, L)
     except SlateError as e:
@@ -243,6 +244,34 @@ def run(cfg_path, mode='final'):
     finally:
         fcntl.flock(lock, fcntl.LOCK_UN)
         lock.close()
+
+
+#: Directories whose top-level files a scenario build must NOT write. Anything changed here during the build is a
+#: shared write another scenario could read.
+_SHARED_WATCH = ('nfl/derived', 'nfl/dfs/salaries', 'nfl/sim', 'nfl/warehouse')
+
+
+#: Shared writes that are scenario-INDEPENDENT by construction, each with the reason. Anything else is a breach.
+SHARED_WRITE_ALLOWED = {
+    'nfl/derived/SOURCE_MEASUREMENT_CACHE.json':
+        'nfl/warehouse/sources.py speed cache of capture-file measurements, keyed on path|size|mtime|datatype; it '
+        'holds no scenario input and a miss measures the bytes exactly as a cold run would (sources.py:100-103)',
+}
+
+
+def _shared_snapshot(tag_dir):
+    snap = {}
+    for d in [_REPO / x for x in _SHARED_WATCH] + [tag_dir]:
+        if d.is_dir():
+            for f in d.iterdir():
+                if f.is_file() and not f.name.startswith('.'):
+                    st = f.stat()
+                    snap[str(f.relative_to(_REPO))] = (st.st_size, st.st_mtime_ns)
+    return snap
+
+
+def shared_writes(before, after, allowed=()):
+    return sorted(k for k in set(before) | set(after) if before.get(k) != after.get(k) and k not in allowed)
 
 
 def scenario_state_matches(cfg, state):
@@ -278,7 +307,16 @@ def _run_body(cfg, cfg_path, mode, hashes, P, scen, sd, pre, L):
            '--starter-tier', cfg['starter_tier'], '--depth-chart', _REPO / cfg['depth_chart']]
     if cfg.get('official_inactives'):
         cmd += ['--official-inactives', _REPO / cfg['official_inactives']]
+    before = _shared_snapshot(P['dir'])
     rc, tail = _run(cmd, env, 'tonight')
+    after = _shared_snapshot(P['dir'])
+    benign = [k for k in shared_writes(before, after) if k in SHARED_WRITE_ALLOWED]
+    breach = shared_writes(before, after, allowed=(str((P['dir'] / f'RUN_LEDGER_{scen}.json').relative_to(_REPO)),
+                                                   *SHARED_WRITE_ALLOWED))
+    if benign:
+        L.add('SHARED_WRITE_ALLOWED', 'RECORDED', paths={k: SHARED_WRITE_ALLOWED[k] for k in benign})
+    if breach:
+        raise SlateError(f'SCENARIO_ISOLATION_BREACH the build wrote shared paths {breach[:8]}')
     up = sd / f'{pre}_DK_UPLOAD.csv'
     if rc != 0 or not up.is_file() or up.stat().st_size == 0:
         L.add('PROJECT_SIMULATE_BUILD', 'FAIL', rc=rc, tail=tail)

@@ -179,6 +179,27 @@ def test_appearance_seal_covers_tb_dal():
           f"the week-5 appearance seal verifies and covers TB@DAL, written {doc['written_at']} before {doc['first_kickoff_utc']}")
 
 
+def test_scenario_isolation_plumbing():
+    from nfl.tools import showdown_slate_run as SR
+    import tempfile as _tf
+    w = pathlib.Path(_tf.mkdtemp())
+    P = SR.paths('TB_DAL_2026W5', work=w)
+    inside = all(P[k].parent == w for k in ('state', 'proj', 'draws', 'worlds', 'role', 'dst_rates'))
+    check(inside, 'with a work directory every intermediate (state, proj, draws, worlds, role, DST rates) is written there')
+    legacy = SR.paths('TB_DAL_2026W5')
+    check(legacy['role'] is None and legacy['state'].parent == legacy['dir'],
+          'without one, the legacy per-tag paths are unchanged')
+    before = {'nfl/derived/ROLE_STATE.json': (1, 1), 'nfl/derived/SOURCE_MEASUREMENT_CACHE.json': (1, 1)}
+    after = {'nfl/derived/ROLE_STATE.json': (1, 2), 'nfl/derived/SOURCE_MEASUREMENT_CACHE.json': (2, 2)}
+    br = NS.shared_writes(before, after, allowed=tuple(NS.SHARED_WRITE_ALLOWED))
+    check(br == ['nfl/derived/ROLE_STATE.json'],
+          f'a shared write is a breach unless declared scenario-independent ({br})')
+    check(NS.shared_writes(before, dict(before)) == [], 'no write, no breach')
+    snap = NS._shared_snapshot(w)
+    check(isinstance(snap, dict) and any(k.startswith('nfl/derived/') for k in snap),
+          'the snapshot covers nfl/derived')
+
+
 def test_slate_env_defaults_are_atl():
     from nfl.tools import showdown_slate_env as E
     check(E.PREFIX == 'SHOWDOWN_ATL_NO' and E.TAG == 'ATL_NO_2026W4' and E.WEEK == '4'
@@ -200,7 +221,7 @@ def test_slate_env_defaults_are_atl():
 
 if __name__ == '__main__':
     for t in (test_discover, test_verify_inputs, test_run_refusals, test_postgame_phase, test_appearance_seal_covers_tb_dal,
-              test_slate_env_defaults_are_atl):
+              test_scenario_isolation_plumbing, test_slate_env_defaults_are_atl):
         print(t.__name__)
         t()
     print(f'{PASSED} passed, {FAILED} failed')

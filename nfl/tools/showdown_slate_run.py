@@ -39,17 +39,27 @@ from nfl.tools import classic_slate_run as CR  # noqa: E402
 SEED = 20261005
 
 
-def paths(tag):
+def paths(tag, work=None):
+    """Where a slate's intermediates live. With `work` (a scenario directory) EVERY intermediate -- state,
+    projection, role state, DST rates, draws, worlds -- is written there and nowhere shared, so two scenarios
+    cannot read each other's files (TB@DAL 2026-10-08). Without it, the legacy per-tag paths."""
     d = _REPO / 'nfl/dfs/salaries' / f'showdown_{tag.split("_2026")[0].lower()}'
-    return {'dir': d, 'state': d / f'SHOWDOWN_{tag}_STATE.json', 'proj': d / f'SHOWDOWN_{tag}_PROJ.json',
-            'draws': d / f'SHOWDOWN_{tag}_DRAWS.json', 'worlds': d / f'SHOWDOWN_{tag}_WORLDS.npz'}
+    w = pathlib.Path(work) if work is not None else d
+    return {'dir': d, 'work': w, 'state': w / f'SHOWDOWN_{tag}_STATE.json', 'proj': w / f'SHOWDOWN_{tag}_PROJ.json',
+            'draws': w / f'SHOWDOWN_{tag}_DRAWS.json', 'worlds': w / f'SHOWDOWN_{tag}_WORLDS.npz',
+            'role': (w / 'ROLE_STATE.json') if work is not None else None,
+            'dst_rates': (w / 'DST_RATES.json') if work is not None else None}
 
 
-def run(tag, *, n_sims=2000, seed=SEED) -> Outcome:
+def run(tag, *, n_sims=2000, seed=SEED, work=None) -> Outcome:
     from nfl.tools import proj_v1 as PV, role_state as RS, showdown_draws as SD, football_sanity as FS
-    from nfl.tools import availability as AV
+    from nfl.tools import availability as AV, dst_model
     from nfl.sim import game as sim_game
-    P = paths(tag)
+    P = paths(tag, work)
+    if work is not None:
+        # the role state and the DST rates are otherwise written to fixed nfl/derived/ paths shared by every run
+        RS.OUT = PV.ROLE = P['role']
+        dst_model.OUT = P['dst_rates']
     if not P['state'].exists():
         return Outcome.blocked('SHOWDOWN_RUN_NO_STATE', f'{P["state"]} not built', cause=Cause.DATA)
     state = json.loads(P['state'].read_text())
