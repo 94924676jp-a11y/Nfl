@@ -1,0 +1,73 @@
+{
+ "ARTIFACT": "QB_SCENARIO_OBSERVED_DANIELS_START",
+ "slate": "TB_DAL_2026W5",
+ "game": "2026_04_GB_TB (Daniels started; Mayfield did not play)",
+ "source": "nfl/tools/player_prior panel (2026 weeks 1-4, captured before the TB@DAL lock) + football_points club table + TEAM_GAME",
+ "n_games_daniels_started": 1,
+ "team": {
+  "weeks_1_3_mayfield": {
+   "points": [
+    27,
+    19,
+    16
+   ],
+   "pass_att_avg": 37.3,
+   "rush_att_avg": 22.0,
+   "market_implied": [
+    23.5,
+    25.0,
+    20.5
+   ]
+  },
+  "week_4_daniels": {
+   "points": 14,
+   "pass_att": 30,
+   "rush_att": 31,
+   "result": "L 14-17 vs GB",
+   "market_implied": 17.75
+  },
+  "our_week5_daniels": {
+   "centre_points": 20.68,
+   "pass_att": 35.28,
+   "note": "QB-blind club blend; week 4 carries ~1/8 weight (1 of 4 current games + 4 prior pseudo-games)"
+  }
+ },
+ "players": {
+  "Jalon Daniels": {
+   "week_4": "30 att, 148 yds (4.93/att), 1 TD, 8 car 55 yds",
+   "our_week5": "34.9 att, 173 yds (4.96/att), 3.39 car 19.8 yds",
+   "reading": "our passing efficiency matches his one start; our QB rushing (3.4 car) is well below his observed 8 (QB rushing style is not a modelled dependency)"
+  },
+  "Emeka Egbuka": {
+   "weeks_1_3": "6.7 tgt, 47 yds",
+   "week_4": "4 tgt, 2 rec, 13 yds",
+   "our_week5": "7.75 tgt, 51.7 yds",
+   "fc_week5": 7.79
+  },
+  "Cade Otton": {
+   "weeks_1_3": "5.7 tgt, 40 yds",
+   "week_4": "6 tgt, 4 rec, 37 yds",
+   "our_week5": "7.0 tgt, 47.7 yds",
+   "fc_week5": 7.37
+  },
+  "Chris Godwin Jr.": {
+   "weeks_1_3": "3.7 tgt, 37 yds",
+   "week_4": "7 tgt, 6 rec, 31 yds",
+   "our_week5": "4.6 tgt, 36.8 yds",
+   "fc_week5": 6.95
+  },
+  "Bucky Irving": {
+   "weeks_1_3": "13.3 car 60 yds, 5 tgt 20 yds",
+   "week_4": "16 car 61 yds, 0 tgt",
+   "our_week5": "16.0 car, 4.1 tgt 20.7 yds",
+   "fc_week5": 10.51
+  }
+ },
+ "READING": [
+  "ONE game, one opponent (GB), one game script: descriptive evidence, not an estimate. Nothing is fitted on it and no projection changes tonight.",
+  "Direction agrees with FC tonight and with the historical in-season-replacement association (fewer points, more runs, fewer passes), which is itself outcome-labelled.",
+  "Our engine already uses this game, but at ~1/8 weight inside a QB-blind club blend: it projects Mayfield-era receiver volume and well under Daniels' observed rushing.",
+  "For SC-QB-ENV-1 this is the first replacement-start observation for this QB-club pair; the design must weigh it by its sample size, not adopt it."
+ ],
+ "MODEL_CHANGE": "NONE (research evidence only)"
+}
