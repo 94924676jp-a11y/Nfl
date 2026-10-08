@@ -1,0 +1,213 @@
+{
+ "ARTIFACT": "SHOWDOWN_REGRESSION_COMPARISON",
+ "baseline": "nfl/dfs/salaries/showdown_tb_dal/PRECOMPUTE_TBQB_MAYFIELD_R3",
+ "candidate": "nfl/dfs/salaries/showdown_tb_dal/PRECOMPUTE_TBQB_MAYFIELD_R4",
+ "excluded_volatile_keys": [
+  "_lineage",
+  "built_at",
+  "built_at_unix",
+  "built_at_utc",
+  "completed_at",
+  "generated_at_utc",
+  "projection_sha256",
+  "state_sha256",
+  "written_at"
+ ],
+ "excluded_binding_keys_in_state": [
+  "evidence",
+  "scenario_identity"
+ ],
+ "checks": {
+  "projection_rows": {
+   "IDENTICAL": true,
+   "n_rows": 52,
+   "moved": []
+  },
+  "projection_points_by_position": {
+   "IDENTICAL": true,
+   "baseline": {
+    "QB": 38.6229,
+    "RB": 44.8067,
+    "WR": 71.5079,
+    "TE": 26.9666,
+    "K": 19.0216,
+    "DST": 8.2161
+   },
+   "candidate": {
+    "QB": 38.6229,
+    "RB": 44.8067,
+    "WR": 71.5079,
+    "TE": 26.9666,
+    "K": 19.0216,
+    "DST": 8.2161
+   }
+  },
+  "projection_header": {
+   "IDENTICAL": true,
+   "differing_keys": []
+  },
+  "player_draws": {
+   "IDENTICAL": true,
+   "n_players": 51,
+   "n_sims": 2000,
+   "seed": [
+    20261005,
+    20261005
+   ],
+   "moved": []
+  },
+  "sim_world_points": {
+   "IDENTICAL": true
+  },
+  "sim_club_worlds": {
+   "IDENTICAL": true
+  },
+  "sim_club_scoring_worlds": {
+   "IDENTICAL": true
+  },
+  "sim_dst_components": {
+   "IDENTICAL": true
+  },
+  "sim_qb_interceptions": {
+   "IDENTICAL": true
+  },
+  "sim_kickers": {
+   "IDENTICAL": true
+  },
+  "world_stat_lines": {
+   "IDENTICAL": true,
+   "shape": [
+    47,
+    2000,
+    11
+   ]
+  },
+  "player_correlations_from_draws": {
+   "IDENTICAL": true,
+   "max_abs_diff": 0.0
+  },
+  "correlation_board": {
+   "IDENTICAL": true,
+   "baseline": "d5e54b73cd8af097",
+   "candidate": "d5e54b73cd8af097"
+  },
+  "projections_csv": {
+   "IDENTICAL": true,
+   "baseline": "729aae0172908e41",
+   "candidate": "729aae0172908e41"
+  },
+  "simulation_summary": {
+   "IDENTICAL": true,
+   "baseline": "958996ace31cb9ac",
+   "candidate": "958996ace31cb9ac"
+  },
+  "final_lineups": {
+   "IDENTICAL": true,
+   "baseline": "40823bf8b20238cc",
+   "candidate": "40823bf8b20238cc"
+  },
+  "exposures": {
+   "IDENTICAL": true,
+   "baseline": "f69279134f804fb2",
+   "candidate": "f69279134f804fb2"
+  },
+  "cpt_exposures": {
+   "IDENTICAL": true,
+   "baseline": "f69279134f804fb2",
+   "candidate": "f69279134f804fb2"
+  },
+  "stack_board": {
+   "IDENTICAL": true,
+   "baseline": "c4efb34da16ed535",
+   "candidate": "c4efb34da16ed535"
+  },
+  "game_script_board": {
+   "IDENTICAL": true,
+   "baseline": "d862c74064c61708",
+   "candidate": "d862c74064c61708"
+  },
+  "cpt_board": {
+   "IDENTICAL": true,
+   "baseline": "8b95407012ce4b68",
+   "candidate": "8b95407012ce4b68"
+  },
+  "candidates": {
+   "IDENTICAL": true,
+   "baseline": "5f7b8a848d09e12d",
+   "candidate": "5f7b8a848d09e12d"
+  },
+  "upload_files": {
+   "IDENTICAL": true,
+   "files": {
+    "SHOWDOWN_TB_DAL_DK_UPLOAD.csv": [
+     "75756698e349737a",
+     "75756698e349737a"
+    ],
+    "SHOWDOWN_TB_DAL_DK_UPLOAD_196438543.csv": [
+     "41ba84a759a5a1ce",
+     "41ba84a759a5a1ce"
+    ],
+    "SHOWDOWN_TB_DAL_DK_UPLOAD_196438555.csv": [
+     "6f337e39ee7f545d",
+     "6f337e39ee7f545d"
+    ],
+    "SHOWDOWN_TB_DAL_DK_UPLOAD_196438556.csv": [
+     "faae6a2146a6069e",
+     "faae6a2146a6069e"
+    ]
+   }
+  },
+  "legality": {
+   "IDENTICAL": true,
+   "violations": [
+    0,
+    0
+   ]
+  },
+  "lineup_uniqueness": {
+   "IDENTICAL": true,
+   "baseline": {
+    "196438543": {
+     "n": 150,
+     "distinct": 150,
+     "max_dup": 1
+    },
+    "196438555": {
+     "n": 20,
+     "distinct": 20,
+     "max_dup": 1
+    },
+    "196438556": {
+     "n": 20,
+     "distinct": 20,
+     "max_dup": 1
+    }
+   },
+   "candidate": {
+    "196438543": {
+     "n": 150,
+     "distinct": 150,
+     "max_dup": 1
+    },
+    "196438555": {
+     "n": 20,
+     "distinct": 20,
+     "max_dup": 1
+    },
+    "196438556": {
+     "n": 20,
+     "distinct": 20,
+     "max_dup": 1
+    }
+   }
+  },
+  "slate_state_without_binding": {
+   "IDENTICAL": true,
+   "players_moved": [],
+   "header_keys_moved": []
+  }
+ },
+ "NUMERIC_OUTPUT_IDENTICAL": true,
+ "ALL_IDENTICAL": true,
+ "DIFFERENT": []
+}

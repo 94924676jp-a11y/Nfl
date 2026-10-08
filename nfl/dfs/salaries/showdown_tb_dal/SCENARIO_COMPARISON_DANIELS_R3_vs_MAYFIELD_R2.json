@@ -1,0 +1,983 @@
+{
+ "ARTIFACT": "SHOWDOWN_SCENARIO_COMPARISON",
+ "A": "PRECOMPUTE_TBQB_DANIELS_R3",
+ "B": "PRECOMPUTE_TBQB_MAYFIELD_R2",
+ "club_focus": "TB",
+ "CHAIN": {
+  "A": {
+   "PASS": true,
+   "checks": {
+    "draws.state_sha256 == own STATE": true,
+    "draws.projection_sha256 == own PROJ": true,
+    "state designations == SCENARIO designations": true,
+    "state starters == SCENARIO starters": true
+   },
+   "designation_mismatches": [],
+   "state_named_starters": [
+    "Dak Prescott",
+    "Jalon Daniels"
+   ],
+   "scenario_starters": [
+    "Dak Prescott",
+    "Jalon Daniels"
+   ]
+  },
+  "B": {
+   "PASS": true,
+   "checks": {
+    "draws.state_sha256 == own STATE": true,
+    "draws.projection_sha256 == own PROJ": true,
+    "state designations == SCENARIO designations": true,
+    "state starters == SCENARIO starters": true
+   },
+   "designation_mismatches": [],
+   "state_named_starters": [
+    "Baker Mayfield",
+    "Dak Prescott"
+   ],
+   "scenario_starters": [
+    "Baker Mayfield",
+    "Dak Prescott"
+   ]
+  }
+ },
+ "STAGES": {
+  "1_designations": {
+   "Baker Mayfield": [
+    "OUT",
+    null
+   ]
+  },
+  "2_slate_state": {
+   "Baker Mayfield": {
+    "A": [
+     "REPORTED_INACTIVE_OFFICIAL_RELEASE_CITED",
+     "OUT",
+     2
+    ],
+    "B": [
+     "UNKNOWN_ACTIVE_STATE",
+     null,
+     1
+    ]
+   },
+   "Brett Rypien": {
+    "A": [
+     "UNKNOWN_ACTIVE_STATE",
+     null,
+     2
+    ],
+    "B": [
+     "UNKNOWN_ACTIVE_STATE",
+     null,
+     3
+    ]
+   },
+   "Easton Stick": {
+    "A": [
+     "UNKNOWN_ACTIVE_STATE",
+     null,
+     2
+    ],
+    "B": [
+     "UNKNOWN_ACTIVE_STATE",
+     null,
+     3
+    ]
+   },
+   "Jalon Daniels": {
+    "A": [
+     "UNKNOWN_ACTIVE_STATE",
+     null,
+     1
+    ],
+    "B": [
+     "UNKNOWN_ACTIVE_STATE",
+     null,
+     2
+    ]
+   }
+  },
+  "3_starter_identification": {
+   "Baker Mayfield": [
+    false,
+    true
+   ],
+   "Jalon Daniels": [
+    true,
+    false
+   ]
+  },
+  "4_qb_opportunity": {
+   "Baker Mayfield": {
+    "projection_state": [
+     "NOT_PLAYING_REPORTED_INACTIVE",
+     "PROJECTED"
+    ],
+    "p_plays": [
+     null,
+     {
+      "carries": 1.0,
+      "pass_attempts": 1.0,
+      "targets": 1.0
+     }
+    ],
+    "pass_attempts": [
+     null,
+     35.17
+    ],
+    "pass_yards": [
+     null,
+     214.49
+    ],
+    "carries": [
+     null,
+     4.03
+    ],
+    "dk_points": [
+     null,
+     17.79
+    ]
+   },
+   "Brett Rypien": {
+    "projection_state": [
+     "PROJECTED",
+     "PROJECTED"
+    ],
+    "p_plays": [
+     {
+      "carries": 0.13838,
+      "pass_attempts": 0.13838,
+      "targets": 0.13838
+     },
+     {
+      "carries": 0.00042,
+      "pass_attempts": 0.00042,
+      "targets": 0.00042
+     }
+    ],
+    "pass_attempts": [
+     0.35,
+     0.0
+    ],
+    "pass_yards": [
+     1.85,
+     0.0
+    ],
+    "carries": [
+     0.0,
+     0.0
+    ],
+    "dk_points": [
+     0.12,
+     0.0
+    ]
+   },
+   "Easton Stick": {
+    "projection_state": [
+     "PROJECTED",
+     "PROJECTED"
+    ],
+    "p_plays": [
+     {
+      "carries": 0.00042,
+      "pass_attempts": 0.00042,
+      "targets": 0.00042
+     },
+     {
+      "carries": 0.00042,
+      "pass_attempts": 0.00042,
+      "targets": 0.00042
+     }
+    ],
+    "pass_attempts": [
+     0.0,
+     0.0
+    ],
+    "pass_yards": [
+     0.0,
+     0.0
+    ],
+    "carries": [
+     0.0,
+     0.0
+    ],
+    "dk_points": [
+     0.0,
+     0.0
+    ]
+   },
+   "Jalon Daniels": {
+    "projection_state": [
+     "PROJECTED",
+     "PROJECTED"
+    ],
+    "p_plays": [
+     {
+      "carries": 1.0,
+      "pass_attempts": 1.0,
+      "targets": 1.0
+     },
+     {
+      "carries": 0.13838,
+      "pass_attempts": 0.13838,
+      "targets": 0.13838
+     }
+    ],
+    "pass_attempts": [
+     34.91,
+     0.1
+    ],
+    "pass_yards": [
+     173.18,
+     0.45
+    ],
+    "carries": [
+     3.39,
+     0.06
+    ],
+    "dk_points": [
+     14.63,
+     0.07
+    ]
+   }
+  },
+  "5_team_passing": {
+   "proj_pass_attempts": [
+    35.279411764705884,
+    35.279411764705884
+   ],
+   "proj_targets": [
+    31.036764705882355,
+    31.036764705882355
+   ],
+   "sim_mean_pass_attempts": [
+    34.722,
+    35.711
+   ],
+   "sim_mean_rush_attempts": [
+    25.909,
+    25.376
+   ],
+   "football_centre": [
+    {
+     "TB@DAL": {
+      "BASIS": "FOOTBALL_ONLY_OWN_OFFENCE_BLEND",
+      "away_expected": 20.676470588235293,
+      "basis": {
+       "away": {
+        "n_cur": 4,
+        "n_prv": 17,
+        "state": "BLENDED",
+        "w_cur": 4.0,
+        "w_prv": 4.0
+       },
+       "home": {
+        "n_cur": 4,
+        "n_prv": 17,
+        "state": "BLENDED",
+        "w_cur": 4.0,
+        "w_prv": 4.0
+       }
+      },
+      "home_expected": 29.102941176470587,
+      "home_margin": 8.426470588235293,
+      "total": 49.779411764705884
+     }
+    },
+    {
+     "TB@DAL": {
+      "BASIS": "FOOTBALL_ONLY_OWN_OFFENCE_BLEND",
+      "away_expected": 20.676470588235293,
+      "basis": {
+       "away": {
+        "n_cur": 4,
+        "n_prv": 17,
+        "state": "BLENDED",
+        "w_cur": 4.0,
+        "w_prv": 4.0
+       },
+       "home": {
+        "n_cur": 4,
+        "n_prv": 17,
+        "state": "BLENDED",
+        "w_cur": 4.0,
+        "w_prv": 4.0
+       }
+      },
+      "home_expected": 29.102941176470587,
+      "home_margin": 8.426470588235293,
+      "total": 49.779411764705884
+     }
+    }
+   ],
+   "WHY_IF_EQUAL": "club volume and the scoring centre are club-level blends of the club's own history (proj_v1.team_volume, nfl/sim/football_points.py); no term in either depends on which quarterback starts"
+  },
+  "6_receiver_targets": {
+   "Bucky Irving": {
+    "targets": [
+     4.06,
+     4.06
+    ],
+    "rec_yards": [
+     20.75,
+     20.74
+    ],
+    "dk_points": [
+     16.54,
+     15.75
+    ]
+   },
+   "Cade Otton": {
+    "targets": [
+     7.01,
+     7.01
+    ],
+    "rec_yards": [
+     47.66,
+     47.65
+    ],
+    "dk_points": [
+     11.16,
+     11.15
+    ]
+   },
+   "Chris Godwin Jr.": {
+    "targets": [
+     4.61,
+     4.61
+    ],
+    "rec_yards": [
+     36.81,
+     36.8
+    ],
+    "dk_points": [
+     8.67,
+     8.65
+    ]
+   },
+   "Emeka Egbuka": {
+    "targets": [
+     7.75,
+     7.75
+    ],
+    "rec_yards": [
+     51.68,
+     51.67
+    ],
+    "dk_points": [
+     12.29,
+     12.28
+    ]
+   },
+   "Kenny Gainwell": {
+    "targets": [
+     2.41,
+     2.41
+    ],
+    "rec_yards": [
+     10.11,
+     10.11
+    ],
+    "dk_points": [
+     4.76,
+     4.59
+    ]
+   },
+   "Payne Durham": {
+    "targets": [
+     1.62,
+     1.62
+    ],
+    "rec_yards": [
+     11.47,
+     11.47
+    ],
+    "dk_points": [
+     2.75,
+     2.75
+    ]
+   },
+   "Ted Hurst III": {
+    "targets": [
+     2.4,
+     2.4
+    ],
+    "rec_yards": [
+     18.43,
+     18.42
+    ],
+    "dk_points": [
+     3.99,
+     3.98
+    ]
+   },
+   "Tez Johnson": {
+    "targets": [
+     0.59,
+     0.59
+    ],
+    "rec_yards": [
+     4.74,
+     4.74
+    ],
+    "dk_points": [
+     1.04,
+     1.04
+    ]
+   }
+  },
+  "7_joint_simulation": {
+   "mean_world_points_home_away": [
+    [
+     30.196,
+     19.695
+    ],
+    [
+     30.268,
+     19.499
+    ]
+   ],
+   "draws_identical": false
+  },
+  "8_player_projections": {
+   "n_moved": 33,
+   "n_players": 52,
+   "moved": {
+    "Baker Mayfield": {
+     "team": "TB",
+     "sim_mean": [
+      "",
+      "17.21"
+     ],
+     "availability": [
+      "REPORTED_INACTIVE_OFFICIAL_RELEASE_CITED",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Bauer Sharp": {
+     "team": "TB",
+     "sim_mean": [
+      "0.01",
+      "0.02"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Brandon Aubrey": {
+     "team": "DAL",
+     "sim_mean": [
+      "9.37",
+      "9.25"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Brett Rypien": {
+     "team": "TB",
+     "sim_mean": [
+      "0.12",
+      "0.0"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Brevyn Spann-Ford": {
+     "team": "DAL",
+     "sim_mean": [
+      "2.55",
+      "2.51"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Bucky Irving": {
+     "team": "TB",
+     "sim_mean": [
+      "15.95",
+      "15.24"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "CJ Dippre": {
+     "team": "TB",
+     "sim_mean": [
+      "0.28",
+      "0.27"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Cade Otton": {
+     "team": "TB",
+     "sim_mean": [
+      "11.41",
+      "11.71"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "CeeDee Lamb": {
+     "team": "DAL",
+     "sim_mean": [
+      "28.07",
+      "28.47"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Chase McLaughlin": {
+     "team": "TB",
+     "sim_mean": [
+      "8.1",
+      "7.99"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Chris Godwin Jr.": {
+     "team": "TB",
+     "sim_mean": [
+      "8.69",
+      "8.76"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Dak Prescott": {
+     "team": "DAL",
+     "sim_mean": [
+      "22.43",
+      "22.49"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "David Sills V": {
+     "team": "TB",
+     "sim_mean": [
+      "0.01",
+      "0.02"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Emari Demercado": {
+     "team": "DAL",
+     "sim_mean": [
+      "1.15",
+      "1.1"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Emeka Egbuka": {
+     "team": "TB",
+     "sim_mean": [
+      "12.13",
+      "12.32"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Garrett Greene": {
+     "team": "TB",
+     "sim_mean": [
+      "0.01",
+      "0.02"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "George Pickens": {
+     "team": "DAL",
+     "sim_mean": [
+      "11.83",
+      "11.7"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Hunter Luepke": {
+     "team": "DAL",
+     "sim_mean": [
+      "0.04",
+      "0.06"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Jake Ferguson": {
+     "team": "DAL",
+     "sim_mean": [
+      "10.43",
+      "10.1"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Jalon Daniels": {
+     "team": "TB",
+     "sim_mean": [
+      "14.06",
+      "0.06"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Javonte Williams": {
+     "team": "DAL",
+     "sim_mean": [
+      "18.77",
+      "18.94"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Jordan Hudson": {
+     "team": "DAL",
+     "sim_mean": [
+      "0.03",
+      "0.01"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Josh Williams": {
+     "team": "TB",
+     "sim_mean": [
+      "0.15",
+      "0.16"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "KaVontae Turpin": {
+     "team": "DAL",
+     "sim_mean": [
+      "1.2",
+      "1.11"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Kenny Gainwell": {
+     "team": "TB",
+     "sim_mean": [
+      "4.52",
+      "4.53"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Ko Kieft": {
+     "team": "TB",
+     "sim_mean": [
+      "0.02",
+      "0.01"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Luke Schoonmaker": {
+     "team": "DAL",
+     "sim_mean": [
+      "0.37",
+      "0.36"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Michael Trigg": {
+     "team": "DAL",
+     "sim_mean": [
+      "0.01",
+      "0.02"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Ryan Flournoy": {
+     "team": "DAL",
+     "sim_mean": [
+      "5.4",
+      "5.35"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Sam Howell": {
+     "team": "DAL",
+     "sim_mean": [
+      "0.07",
+      "0.06"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Sean Tucker": {
+     "team": "TB",
+     "sim_mean": [
+      "1.32",
+      "1.28"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Ted Hurst III": {
+     "team": "TB",
+     "sim_mean": [
+      "3.82",
+      "3.9"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    },
+    "Tyler Goodson": {
+     "team": "DAL",
+     "sim_mean": [
+      "4.26",
+      "4.38"
+     ],
+     "availability": [
+      "UNKNOWN_ACTIVE_STATE",
+      "UNKNOWN_ACTIVE_STATE"
+     ]
+    }
+   }
+  },
+  "9_portfolio": {
+   "upload_sha256": [
+    "bba17b23044292bc6e866d9716c235e0ef38633ae041edc789e2b9b09886c323",
+    "75756698e349737a1c10e8b7f85b3dc57c2d18ce83ca38a69a27ea6c59314d18"
+   ],
+   "distinct_lineups": [
+    162,
+    155
+   ],
+   "shared_lineups": 14,
+   "exposure_changes_total_slots": {
+    "Baker Mayfield": [
+     0,
+     95
+    ],
+    "Brandon Aubrey": [
+     79,
+     84
+    ],
+    "Brevyn Spann-Ford": [
+     8,
+     12
+    ],
+    "Buccaneers": [
+     38,
+     43
+    ],
+    "CJ Dippre": [
+     1,
+     0
+    ],
+    "Cade Otton": [
+     95,
+     89
+    ],
+    "Camden Brown": [
+     1,
+     0
+    ],
+    "Chase McLaughlin": [
+     67,
+     58
+    ],
+    "Chris Godwin Jr.": [
+     41,
+     46
+    ],
+    "Cowboys": [
+     8,
+     10
+    ],
+    "Emari Demercado": [
+     11,
+     8
+    ],
+    "Emeka Egbuka": [
+     81,
+     80
+    ],
+    "Garrett Greene": [
+     0,
+     1
+    ],
+    "George Pickens": [
+     63,
+     52
+    ],
+    "Jake Ferguson": [
+     60,
+     57
+    ],
+    "Jalon Daniels": [
+     93,
+     0
+    ],
+    "KaVontae Turpin": [
+     3,
+     1
+    ],
+    "Kenny Gainwell": [
+     13,
+     12
+    ],
+    "Luke Schoonmaker": [
+     1,
+     0
+    ],
+    "Payne Durham": [
+     23,
+     28
+    ],
+    "Ryan Flournoy": [
+     21,
+     22
+    ],
+    "Sean Tucker": [
+     0,
+     2
+    ],
+    "Ted Hurst III": [
+     20,
+     18
+    ],
+    "Tyler Goodson": [
+     33,
+     42
+    ]
+   },
+   "captain_changes": {
+    "Baker Mayfield": [
+     0,
+     19
+    ],
+    "Brandon Aubrey": [
+     9,
+     11
+    ],
+    "Bucky Irving": [
+     19,
+     18
+    ],
+    "Cade Otton": [
+     10,
+     2
+    ],
+    "CeeDee Lamb": [
+     45,
+     47
+    ],
+    "Chase McLaughlin": [
+     1,
+     3
+    ],
+    "Chris Godwin Jr.": [
+     3,
+     4
+    ],
+    "Emeka Egbuka": [
+     14,
+     8
+    ],
+    "George Pickens": [
+     12,
+     3
+    ],
+    "Jake Ferguson": [
+     3,
+     5
+    ],
+    "Jalon Daniels": [
+     14,
+     0
+    ],
+    "Javonte Williams": [
+     37,
+     46
+    ],
+    "Ted Hurst III": [
+     0,
+     1
+    ]
+   }
+  }
+ },
+ "RESPONSE": {
+  "qb_opportunity_moved": true,
+  "portfolio_differs": true,
+  "team_volume_moved": false,
+  "receivers_moved": true
+ },
+ "VERDICT": "ISOLATION_PASS"
+}

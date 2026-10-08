@@ -1,0 +1,67 @@
+{
+ "ARTIFACT": "MARKET_FIREWALL_CHECK",
+ "scenario_dir": "nfl/dfs/salaries/showdown_tb_dal/PRECOMPUTE_TBQB_DANIELS_R3",
+ "state_sha256": "30b98bac89d97e263493673d02c0e480e913618a72e1f4b02c1967e8f3b11705",
+ "team_game_sha256": "4307db1f49967cbbf2e470a46f4bef4f3547de5f0f403d0cc150b42554e71950",
+ "n_sims": 300,
+ "seed": 20261008,
+ "VERDICT": "PASS_MARKET_BLIND",
+ "errors": {},
+ "positive_controls": {
+  "P1_market_arm_moves_with_the_market": true,
+  "P2_football_arm_moves_with_football_points": true
+ },
+ "hashes": {
+  "CAPTURED": {
+   "rows": "7e3065d0c83857c08e9dcf30422e0e3f39f5c7941e62147d16f527f2c042dee1",
+   "draws": "f7e0be87a418d66150b8bbbc8f44864980c2ec5301243969883b4cdcccc9c231"
+  },
+  "PERTURBED": {
+   "rows": "7e3065d0c83857c08e9dcf30422e0e3f39f5c7941e62147d16f527f2c042dee1",
+   "draws": "f7e0be87a418d66150b8bbbc8f44864980c2ec5301243969883b4cdcccc9c231"
+  },
+  "REMOVED": {
+   "rows": "7e3065d0c83857c08e9dcf30422e0e3f39f5c7941e62147d16f527f2c042dee1",
+   "draws": "f7e0be87a418d66150b8bbbc8f44864980c2ec5301243969883b4cdcccc9c231"
+  },
+  "P1_MARKET_ARM_CAPTURED": {
+   "rows": "661d1b8281d23c46f48378ca3ad603bc9f7d149b7ece0d604b73f5f36bf2a85c",
+   "draws": "fce68c66685d686a856c6b87eea388780dc4415bbcbeea425ee16e6a19e6dde9"
+  },
+  "P1_MARKET_ARM_PERTURBED": {
+   "rows": "8434f5c6addef696690b0fded0d8ccfa089f41dc357e0497666843807685414c",
+   "draws": "f2d420fef43214562a2d3261131b99cb246a2a81bcdc10e9e8333dc49147a582"
+  },
+  "P2_FOOTBALL_POINTS_CHANGED": {
+   "rows": "9cea1a83de9818fc1db2bf483d83f9e6dc4cdf2f858ab702b45a23faabc298ab",
+   "draws": "c6f88dc30e57420435b71f568001bae1fb42e5bc7483cd320360f5882f64fb8f"
+  }
+ },
+ "football_centre_captured": {
+  "TB@DAL": {
+   "BASIS": "FOOTBALL_ONLY_OWN_OFFENCE_BLEND",
+   "away_expected": 20.676470588235293,
+   "basis": {
+    "away": {
+     "n_cur": 4,
+     "n_prv": 17,
+     "state": "BLENDED",
+     "w_cur": 4.0,
+     "w_prv": 4.0
+    },
+    "home": {
+     "n_cur": 4,
+     "n_prv": 17,
+     "state": "BLENDED",
+     "w_cur": 4.0,
+     "w_prv": 4.0
+    }
+   },
+   "home_expected": 29.102941176470587,
+   "home_margin": 8.426470588235293,
+   "total": 49.779411764705884
+  }
+ },
+ "moved_by_market_if_any": {},
+ "RULE": "byte-identical projection rows and draws across captured / perturbed / removed market fields, with both positive controls moving; written only to a scratch directory"
+}

@@ -1,0 +1,4506 @@
+{
+ "ARTIFACT": "SHOWDOWN_PRELOCK_BOARD",
+ "scenario": "PRECOMPUTE_TBQB_MAYFIELD_R3",
+ "STATUS": "NOT_READY",
+ "BLOCKERS": [
+  "OFFICIAL_INACTIVES_NOT_INCORPORATED"
+ ],
+ "FOOTBALL": {
+  "SHOWDOWN_COHERENCE_WARNING": {
+   "ours_by_team": {
+    "DAL": {
+     "corr_team_td_vs_team_off_dk": 0.55,
+     "corr_team_points_vs_team_off_dk": 0.486
+    },
+    "TB": {
+     "corr_team_td_vs_team_off_dk": 0.614,
+     "corr_team_points_vs_team_off_dk": 0.541
+    }
+   },
+   "ours_corr_home_points_vs_away_points": 0.021,
+   "ours_corr_home_off_dk_vs_away_off_dk": 0.139,
+   "history_2021_2025": {
+    "corr_team_td_vs_team_off_dk": 0.811,
+    "corr_team_points_vs_team_off_dk": 0.763,
+    "corr_home_points_vs_away_points": -0.038,
+    "corr_home_off_dk_vs_away_off_dk": 0.181,
+    "team_games": 2718
+   },
+   "FINDING": "DEFECT-COHERENCE (measured 2026-10-05): within a simulated world, a team's offensive DK points track its touchdowns and points far more loosely than in 2021-25 games (see the numbers). The TD identity holds, so this is not broken accounting: yardage/receptions are drawn too independently of scoring. Effect: same-team boom-together is understated, so stacks are undervalued in the top tail. NOT fixed tonight (no validated fix before lock; the sealed football model is preserved); registered as the first post-lock football item."
+  },
+  "CORRELATION_RECOVERY": [
+   {
+    "team": "DAL",
+    "pair": "QB-WR1",
+    "players": [
+     "Dak Prescott",
+     "CeeDee Lamb"
+    ],
+    "ours": 0.441,
+    "spikeweek_COR01": 0.542,
+    "fantasylabs_COR02": 0.54,
+    "ours_minus_spikeweek": -0.101,
+    "ours_minus_fantasylabs": -0.099
+   },
+   {
+    "team": "DAL",
+    "pair": "QB-WR2",
+    "players": [
+     "Dak Prescott",
+     "George Pickens"
+    ],
+    "ours": 0.358,
+    "spikeweek_COR01": 0.514,
+    "fantasylabs_COR02": 0.48,
+    "ours_minus_spikeweek": -0.156,
+    "ours_minus_fantasylabs": -0.122
+   },
+   {
+    "team": "DAL",
+    "pair": "QB-TE1",
+    "players": [
+     "Dak Prescott",
+     "Jake Ferguson"
+    ],
+    "ours": 0.324,
+    "spikeweek_COR01": 0.366,
+    "fantasylabs_COR02": 0.49,
+    "ours_minus_spikeweek": -0.042,
+    "ours_minus_fantasylabs": -0.166
+   },
+   {
+    "team": "DAL",
+    "pair": "QB-RB1",
+    "players": [
+     "Dak Prescott",
+     "Javonte Williams"
+    ],
+    "ours": 0.058,
+    "spikeweek_COR01": 0.09,
+    "fantasylabs_COR02": 0.38,
+    "ours_minus_spikeweek": -0.032,
+    "ours_minus_fantasylabs": -0.322
+   },
+   {
+    "team": "DAL",
+    "pair": "WR1-WR2_same_team",
+    "players": [
+     "CeeDee Lamb",
+     "George Pickens"
+    ],
+    "ours": 0.028,
+    "spikeweek_COR01": 0.345,
+    "fantasylabs_COR02": null,
+    "ours_minus_spikeweek": -0.317,
+    "ours_minus_fantasylabs": null
+   },
+   {
+    "team": "DAL",
+    "pair": "WR1-opposing_WR1",
+    "players": [
+     "CeeDee Lamb",
+     "Emeka Egbuka"
+    ],
+    "ours": 0.014,
+    "spikeweek_COR01": 0.56,
+    "fantasylabs_COR02": null,
+    "ours_minus_spikeweek": -0.546,
+    "ours_minus_fantasylabs": null
+   },
+   {
+    "team": "DAL",
+    "pair": "QB-own_DST",
+    "players": [
+     "Dak Prescott",
+     "Cowboys"
+    ],
+    "ours": -0.026,
+    "spikeweek_COR01": null,
+    "fantasylabs_COR02": 0.07,
+    "ours_minus_spikeweek": null,
+    "ours_minus_fantasylabs": -0.096
+   },
+   {
+    "team": "DAL",
+    "pair": "QB-opposing_DST",
+    "players": [
+     "Dak Prescott",
+     "Buccaneers"
+    ],
+    "ours": -0.282,
+    "spikeweek_COR01": null,
+    "fantasylabs_COR02": -0.16,
+    "ours_minus_spikeweek": null,
+    "ours_minus_fantasylabs": -0.122
+   },
+   {
+    "team": "TB",
+    "pair": "QB-WR1",
+    "players": [
+     "Baker Mayfield",
+     "Emeka Egbuka"
+    ],
+    "ours": 0.393,
+    "spikeweek_COR01": 0.542,
+    "fantasylabs_COR02": 0.54,
+    "ours_minus_spikeweek": -0.149,
+    "ours_minus_fantasylabs": -0.147
+   },
+   {
+    "team": "TB",
+    "pair": "QB-WR2",
+    "players": [
+     "Baker Mayfield",
+     "Chris Godwin Jr."
+    ],
+    "ours": 0.233,
+    "spikeweek_COR01": 0.514,
+    "fantasylabs_COR02": 0.48,
+    "ours_minus_spikeweek": -0.281,
+    "ours_minus_fantasylabs": -0.247
+   },
+   {
+    "team": "TB",
+    "pair": "QB-TE1",
+    "players": [
+     "Baker Mayfield",
+     "Cade Otton"
+    ],
+    "ours": 0.334,
+    "spikeweek_COR01": 0.366,
+    "fantasylabs_COR02": 0.49,
+    "ours_minus_spikeweek": -0.032,
+    "ours_minus_fantasylabs": -0.156
+   },
+   {
+    "team": "TB",
+    "pair": "QB-RB1",
+    "players": [
+     "Baker Mayfield",
+     "Bucky Irving"
+    ],
+    "ours": 0.226,
+    "spikeweek_COR01": 0.09,
+    "fantasylabs_COR02": 0.38,
+    "ours_minus_spikeweek": 0.136,
+    "ours_minus_fantasylabs": -0.154
+   },
+   {
+    "team": "TB",
+    "pair": "WR1-WR2_same_team",
+    "players": [
+     "Emeka Egbuka",
+     "Chris Godwin Jr."
+    ],
+    "ours": 0.021,
+    "spikeweek_COR01": 0.345,
+    "fantasylabs_COR02": null,
+    "ours_minus_spikeweek": -0.324,
+    "ours_minus_fantasylabs": null
+   },
+   {
+    "team": "TB",
+    "pair": "WR1-opposing_WR1",
+    "players": [
+     "Emeka Egbuka",
+     "CeeDee Lamb"
+    ],
+    "ours": 0.014,
+    "spikeweek_COR01": 0.56,
+    "fantasylabs_COR02": null,
+    "ours_minus_spikeweek": -0.546,
+    "ours_minus_fantasylabs": null
+   },
+   {
+    "team": "TB",
+    "pair": "QB-own_DST",
+    "players": [
+     "Baker Mayfield",
+     "Buccaneers"
+    ],
+    "ours": -0.041,
+    "spikeweek_COR01": null,
+    "fantasylabs_COR02": 0.07,
+    "ours_minus_spikeweek": null,
+    "ours_minus_fantasylabs": -0.111
+   },
+   {
+    "team": "TB",
+    "pair": "QB-opposing_DST",
+    "players": [
+     "Baker Mayfield",
+     "Cowboys"
+    ],
+    "ours": -0.425,
+    "spikeweek_COR01": null,
+    "fantasylabs_COR02": -0.16,
+    "ours_minus_spikeweek": null,
+    "ours_minus_fantasylabs": -0.265
+   }
+  ],
+  "scenario": "PRECOMPUTE_TBQB_MAYFIELD_R3",
+  "official_inactives": null,
+  "designations": {
+   "Antoine Winfield Jr.": "OUT",
+   "Benjamin Morrison": "OUT",
+   "Cobie Durant": "OUT",
+   "DeMarvion Overshown": "OUT",
+   "Drew Shelton": "OUT",
+   "Jonathan Mingo": "QUESTIONABLE",
+   "SirVocea Dennis": "OUT",
+   "Tyler Smith": "QUESTIONABLE"
+  },
+  "absent_in_state": [
+   "Evan Deckers"
+  ],
+  "confirmed_starters": {
+   "Baker Mayfield": "TB",
+   "Dak Prescott": "DAL"
+  },
+  "starter_tier": "SCENARIO_HYPOTHESIS_NOT_CONFIRMED",
+  "state_counts": {
+   "PROJECTED": 31,
+   "ZERO_OPPORTUNITY": 20,
+   "PROJECTED_WITH_UNCERTAINTY": 1
+  },
+  "football_sanity": {
+   "state": "PASS",
+   "code": "FOOTBALL_SANITY_PASS",
+   "detail": "52 rows, 2 clubs, no football contradiction",
+   "flags": null
+  },
+  "n_sims": 2000,
+  "seed": 20261005,
+  "projection_sha256": "f2942ea8c09fa7722ed4d0042ec632695a9da7456a09a83349c8317bb397692a",
+  "state_sha256": "7930d2ad5b897c450de1f6e88e33a6f2a30cef3ea70c4ea6369c3049a21d99ce",
+  "players_mean_ge_1pt": [
+   {
+    "player": "CeeDee Lamb",
+    "team": "DAL",
+    "pos": "WR",
+    "salary": "11800",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "1",
+    "pass_att": "0.0",
+    "carries": "0.56",
+    "targets": "12.18",
+    "sim_mean": "28.47",
+    "p90": "43.8",
+    "p_zero": "0.0",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Dak Prescott",
+    "team": "DAL",
+    "pos": "QB",
+    "salary": "10400",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "1",
+    "pass_att": "38.65",
+    "carries": "3.05",
+    "targets": "0.01",
+    "sim_mean": "22.49",
+    "p90": "32.76",
+    "p_zero": "0.0",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Javonte Williams",
+    "team": "DAL",
+    "pos": "RB",
+    "salary": "10800",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "1",
+    "pass_att": "0.0",
+    "carries": "15.39",
+    "targets": "4.65",
+    "sim_mean": "18.94",
+    "p90": "29.8",
+    "p_zero": "0.0",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Baker Mayfield",
+    "team": "TB",
+    "pos": "QB",
+    "salary": "9600",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "1",
+    "pass_att": "34.92",
+    "carries": "4.04",
+    "targets": "0.01",
+    "sim_mean": "17.21",
+    "p90": "27.36",
+    "p_zero": "0.0",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Bucky Irving",
+    "team": "TB",
+    "pos": "RB",
+    "salary": "8400",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "1",
+    "pass_att": "0.0",
+    "carries": "15.48",
+    "targets": "4.06",
+    "sim_mean": "15.24",
+    "p90": "25.24",
+    "p_zero": "0.0",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Emeka Egbuka",
+    "team": "TB",
+    "pos": "WR",
+    "salary": "8200",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "1",
+    "pass_att": "0.0",
+    "carries": "0.24",
+    "targets": "7.75",
+    "sim_mean": "12.32",
+    "p90": "21.61",
+    "p_zero": "0.001",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Cade Otton",
+    "team": "TB",
+    "pos": "TE",
+    "salary": "4400",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "1",
+    "pass_att": "0.0",
+    "carries": "1.36",
+    "targets": "7.01",
+    "sim_mean": "11.71",
+    "p90": "20.58",
+    "p_zero": "0.001",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "George Pickens",
+    "team": "DAL",
+    "pos": "WR",
+    "salary": "9400",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "2",
+    "pass_att": "0.0",
+    "carries": "0.01",
+    "targets": "7.05",
+    "sim_mean": "11.7",
+    "p90": "21.82",
+    "p_zero": "0.003",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Jake Ferguson",
+    "team": "DAL",
+    "pos": "TE",
+    "salary": "6400",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "1",
+    "pass_att": "0.0",
+    "carries": "0.01",
+    "targets": "5.5",
+    "sim_mean": "10.1",
+    "p90": "18.17",
+    "p_zero": "0.004",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Brandon Aubrey",
+    "team": "DAL",
+    "pos": "K",
+    "salary": "5400",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "",
+    "pass_att": "",
+    "carries": "",
+    "targets": "",
+    "sim_mean": "9.25",
+    "p90": "16.0",
+    "p_zero": "0.003",
+    "role_data": ""
+   },
+   {
+    "player": "Chris Godwin Jr.",
+    "team": "TB",
+    "pos": "WR",
+    "salary": "7200",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "2",
+    "pass_att": "0.0",
+    "carries": "0.46",
+    "targets": "5.23",
+    "sim_mean": "8.76",
+    "p90": "16.15",
+    "p_zero": "0.011",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Chase McLaughlin",
+    "team": "TB",
+    "pos": "K",
+    "salary": "5000",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "",
+    "pass_att": "",
+    "carries": "",
+    "targets": "",
+    "sim_mean": "7.99",
+    "p90": "14.0",
+    "p_zero": "0.035",
+    "role_data": ""
+   },
+   {
+    "player": "Ryan Flournoy",
+    "team": "DAL",
+    "pos": "WR",
+    "salary": "3800",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "3",
+    "pass_att": "0.0",
+    "carries": "0.08",
+    "targets": "5.16",
+    "sim_mean": "5.35",
+    "p90": "11.21",
+    "p_zero": "0.043",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Kenny Gainwell",
+    "team": "TB",
+    "pos": "RB",
+    "salary": "4000",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "2",
+    "pass_att": "0.0",
+    "carries": "4.32",
+    "targets": "3.63",
+    "sim_mean": "4.53",
+    "p90": "9.4",
+    "p_zero": "0.016",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Tyler Goodson",
+    "team": "DAL",
+    "pos": "RB",
+    "salary": "2000",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "2",
+    "pass_att": "0.0",
+    "carries": "6.88",
+    "targets": "1.95",
+    "sim_mean": "4.38",
+    "p90": "9.49",
+    "p_zero": "0.014",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Buccaneers",
+    "team": "TB",
+    "pos": "DST",
+    "salary": "3000",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "",
+    "pass_att": "",
+    "carries": "",
+    "targets": "",
+    "sim_mean": "4.31",
+    "p90": "11.68",
+    "p_zero": "0.284",
+    "role_data": ""
+   },
+   {
+    "player": "Cowboys",
+    "team": "DAL",
+    "pos": "DST",
+    "salary": "4800",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "",
+    "pass_att": "",
+    "carries": "",
+    "targets": "",
+    "sim_mean": "3.91",
+    "p90": "8.0",
+    "p_zero": "0.085",
+    "role_data": ""
+   },
+   {
+    "player": "Ted Hurst III",
+    "team": "TB",
+    "pos": "WR",
+    "salary": "2800",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "3",
+    "pass_att": "0.0",
+    "carries": "0.12",
+    "targets": "3.88",
+    "sim_mean": "3.9",
+    "p90": "8.73",
+    "p_zero": "0.089",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Payne Durham",
+    "team": "TB",
+    "pos": "TE",
+    "salary": "200",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "2",
+    "pass_att": "0.0",
+    "carries": "0.02",
+    "targets": "2.69",
+    "sim_mean": "2.69",
+    "p90": "6.65",
+    "p_zero": "0.214",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Brevyn Spann-Ford",
+    "team": "DAL",
+    "pos": "TE",
+    "salary": "1600",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "2",
+    "pass_att": "0.0",
+    "carries": "0.01",
+    "targets": "2.44",
+    "sim_mean": "2.51",
+    "p90": "6.57",
+    "p_zero": "0.259",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Sean Tucker",
+    "team": "TB",
+    "pos": "RB",
+    "salary": "2400",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "3",
+    "pass_att": "0.0",
+    "carries": "4.37",
+    "targets": "0.71",
+    "sim_mean": "1.28",
+    "p90": "6.0",
+    "p_zero": "0.363",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "KaVontae Turpin",
+    "team": "DAL",
+    "pos": "WR",
+    "salary": "1200",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "4",
+    "pass_att": "0.0",
+    "carries": "0.92",
+    "targets": "1.74",
+    "sim_mean": "1.11",
+    "p90": "3.65",
+    "p_zero": "0.533",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Emari Demercado",
+    "team": "DAL",
+    "pos": "RB",
+    "salary": "400",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "3",
+    "pass_att": "0.0",
+    "carries": "3.74",
+    "targets": "1.4",
+    "sim_mean": "1.1",
+    "p90": "3.28",
+    "p_zero": "0.393",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   },
+   {
+    "player": "Tez Johnson",
+    "team": "TB",
+    "pos": "WR",
+    "salary": "2200",
+    "state": "PROJECTED",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "designation": "",
+    "depth_rank": "4",
+    "pass_att": "0.0",
+    "carries": "0.47",
+    "targets": "2.11",
+    "sim_mean": "1.02",
+    "p90": "3.19",
+    "p_zero": "0.525",
+    "role_data": "ROLE_DATA_MISSING: routes, route participation, alignment, personnel (no capture)"
+   }
+  ]
+ },
+ "PORTFOLIO": {
+  "196438543": {
+   "n": 150,
+   "objective": {
+    "m": 1,
+    "value": 0.9995,
+    "MEANING": "E[min(entries at the first-place proxy, m)] per world"
+   },
+   "proxy_coverage": 0.9995,
+   "selection_method": "GREEDY_THEN_1SWAP_POLISH",
+   "polish": {
+    "rounds": 1,
+    "lineups_changed": 0,
+    "objective_greedy": 0.9995,
+    "objective_final": 0.9995,
+    "coverage_greedy": 0.9995,
+    "coverage_final": 0.9995
+   },
+   "distinct_captains": 14,
+   "captain_exposure_pct": {
+    "Javonte Williams": 25.3,
+    "CeeDee Lamb": 23.3,
+    "Baker Mayfield": 11.3,
+    "Dak Prescott": 8.7,
+    "Bucky Irving": 8.0,
+    "Emeka Egbuka": 5.3,
+    "Brandon Aubrey": 4.7,
+    "Chris Godwin Jr.": 2.7,
+    "Buccaneers": 2.7,
+    "George Pickens": 2.0,
+    "Jake Ferguson": 2.0,
+    "Chase McLaughlin": 2.0,
+    "Cade Otton": 1.3,
+    "Ted Hurst III": 0.7
+   },
+   "player_exposure_pct": {
+    "CeeDee Lamb": 50.0,
+    "Dak Prescott": 50.0,
+    "Javonte Williams": 50.0,
+    "Baker Mayfield": 50.0,
+    "Bucky Irving": 50.0,
+    "Cade Otton": 46.0,
+    "Brandon Aubrey": 42.7,
+    "Emeka Egbuka": 41.3,
+    "George Pickens": 32.0,
+    "Chase McLaughlin": 30.7,
+    "Jake Ferguson": 28.7,
+    "Chris Godwin Jr.": 25.3,
+    "Buccaneers": 20.7,
+    "Tyler Goodson": 20.0,
+    "Ryan Flournoy": 13.3
+   },
+   "effective_hypotheses": 90.7,
+   "pairwise_shared_players": {
+    "max": 4,
+    "distribution": {
+     "0": 307,
+     "1": 2026,
+     "2": 4322,
+     "3": 3335,
+     "4": 1185
+    }
+   },
+   "relaxation": {
+    "level_used": 0,
+    "rungs": [
+     {
+      "level": 0,
+      "caps": {
+       "player": 75,
+       "captain": 45,
+       "overlap": 4
+      },
+      "built": 150,
+      "needed": 150,
+      "EFFECTIVE_HYPOTHESIS_COUNT": 90.7
+     }
+    ],
+    "players_above_original_cap": {},
+    "captains_above_original_cap": {},
+    "n_lineups_not_in_level0_build": 0,
+    "clusters": {
+     "by_origin": {},
+     "by_captain": {},
+     "by_split": {},
+     "by_salary_band": {}
+    },
+    "why": "no relaxation needed: level 0 built 150/150",
+    "effective_hypotheses_last_unfilled_rung": null,
+    "effective_hypotheses_final_rung": 90.7
+   },
+   "salary_relief_slots": {
+    "KaVontae Turpin": 1,
+    "Garrett Greene": 1
+   }
+  },
+  "196438555": {
+   "n": 20,
+   "objective": {
+    "m": 2,
+    "value": 1.097,
+    "MEANING": "E[min(entries at the first-place proxy, m)] per world"
+   },
+   "proxy_coverage": 0.693,
+   "selection_method": "GREEDY_THEN_1SWAP_POLISH",
+   "polish": {
+    "rounds": 1,
+    "lineups_changed": 0,
+    "objective_greedy": 1.097,
+    "objective_final": 1.097,
+    "coverage_greedy": 0.693,
+    "coverage_final": 0.693
+   },
+   "distinct_captains": 8,
+   "captain_exposure_pct": {
+    "CeeDee Lamb": 30.0,
+    "Javonte Williams": 20.0,
+    "Bucky Irving": 15.0,
+    "Dak Prescott": 10.0,
+    "Brandon Aubrey": 10.0,
+    "Baker Mayfield": 5.0,
+    "Buccaneers": 5.0,
+    "Jake Ferguson": 5.0
+   },
+   "player_exposure_pct": {
+    "CeeDee Lamb": 50.0,
+    "Cade Otton": 50.0,
+    "Dak Prescott": 50.0,
+    "Javonte Williams": 50.0,
+    "Baker Mayfield": 50.0,
+    "Bucky Irving": 50.0,
+    "Brandon Aubrey": 50.0,
+    "Emeka Egbuka": 45.0,
+    "Jake Ferguson": 35.0,
+    "Chase McLaughlin": 30.0,
+    "Tyler Goodson": 30.0,
+    "Buccaneers": 30.0,
+    "Payne Durham": 25.0,
+    "Chris Godwin Jr.": 20.0,
+    "George Pickens": 10.0
+   },
+   "effective_hypotheses": 17.2,
+   "pairwise_shared_players": {
+    "max": 4,
+    "distribution": {
+     "0": 14,
+     "1": 40,
+     "2": 48,
+     "3": 54,
+     "4": 34
+    }
+   },
+   "relaxation": {
+    "level_used": 0,
+    "rungs": [
+     {
+      "level": 0,
+      "caps": {
+       "player": 10,
+       "captain": 6,
+       "overlap": 4
+      },
+      "built": 20,
+      "needed": 20,
+      "EFFECTIVE_HYPOTHESIS_COUNT": 17.2
+     }
+    ],
+    "players_above_original_cap": {},
+    "captains_above_original_cap": {},
+    "n_lineups_not_in_level0_build": 1,
+    "clusters": {
+     "by_origin": {
+      "RELAXATION": 1
+     },
+     "by_captain": {
+      "Jake Ferguson": 1
+     },
+     "by_split": {
+      "3-3": 1
+     },
+     "by_salary_band": {
+      "<48000": 1
+     }
+    },
+    "why": "no relaxation needed: level 0 built 20/20",
+    "effective_hypotheses_last_unfilled_rung": null,
+    "effective_hypotheses_final_rung": 17.2
+   },
+   "salary_relief_slots": {},
+   "lineups": [
+    {
+     "CPT": "CeeDee Lamb",
+     "FLEX": [
+      "Cade Otton",
+      "Dak Prescott",
+      "Jake Ferguson",
+      "Javonte Williams",
+      "Payne Durham"
+     ],
+     "salary": 49900,
+     "mean_points": 108.64,
+     "first_place_proxy": 0.1945
+    },
+    {
+     "CPT": "CeeDee Lamb",
+     "FLEX": [
+      "Brevyn Spann-Ford",
+      "Cade Otton",
+      "Chase McLaughlin",
+      "Dak Prescott",
+      "Javonte Williams"
+     ],
+     "salary": 49900,
+     "mean_points": 106.35,
+     "first_place_proxy": 0.1715
+    },
+    {
+     "CPT": "Dak Prescott",
+     "FLEX": [
+      "Baker Mayfield",
+      "Bucky Irving",
+      "Cade Otton",
+      "CeeDee Lamb",
+      "Payne Durham"
+     ],
+     "salary": 50000,
+     "mean_points": 109.06,
+     "first_place_proxy": 0.1605
+    },
+    {
+     "CPT": "CeeDee Lamb",
+     "FLEX": [
+      "Baker Mayfield",
+      "Brandon Aubrey",
+      "Cade Otton",
+      "Dak Prescott",
+      "Tyler Goodson"
+     ],
+     "salary": 49500,
+     "mean_points": 107.76,
+     "first_place_proxy": 0.165
+    },
+    {
+     "CPT": "CeeDee Lamb",
+     "FLEX": [
+      "Brandon Aubrey",
+      "Buccaneers",
+      "Bucky Irving",
+      "Cade Otton",
+      "Dak Prescott"
+     ],
+     "salary": 49300,
+     "mean_points": 105.71,
+     "first_place_proxy": 0.1405
+    },
+    {
+     "CPT": "CeeDee Lamb",
+     "FLEX": [
+      "Bucky Irving",
+      "Dak Prescott",
+      "Javonte Williams",
+      "Payne Durham",
+      "Tyler Goodson"
+     ],
+     "salary": 49500,
+     "mean_points": 106.44,
+     "first_place_proxy": 0.1465
+    },
+    {
+     "CPT": "Baker Mayfield",
+     "FLEX": [
+      "Cade Otton",
+      "CeeDee Lamb",
+      "Emeka Egbuka",
+      "Javonte Williams",
+      "Payne Durham"
+     ],
+     "salary": 49800,
+     "mean_points": 99.95,
+     "first_place_proxy": 0.075
+    },
+    {
+     "CPT": "CeeDee Lamb",
+     "FLEX": [
+      "Bucky Irving",
+      "Chase McLaughlin",
+      "Dak Prescott",
+      "Jake Ferguson",
+      "Tyler Goodson"
+     ],
+     "salary": 49900,
+     "mean_points": 102.91,
+     "first_place_proxy": 0.1085
+    },
+    {
+     "CPT": "Dak Prescott",
+     "FLEX": [
+      "Baker Mayfield",
+      "Cade Otton",
+      "CeeDee Lamb",
+      "Emari Demercado",
+      "Emeka Egbuka"
+     ],
+     "salary": 50000,
+     "mean_points": 104.55,
+     "first_place_proxy": 0.0955
+    },
+    {
+     "CPT": "Bucky Irving",
+     "FLEX": [
+      "Baker Mayfield",
+      "Cade Otton",
+      "Dak Prescott",
+      "Javonte Williams",
+      "Tyler Goodson"
+     ],
+     "salary": 49800,
+     "mean_points": 97.58,
+     "first_place_proxy": 0.0565
+    },
+    {
+     "CPT": "Bucky Irving",
+     "FLEX": [
+      "Baker Mayfield",
+      "Buccaneers",
+      "Cade Otton",
+      "CeeDee Lamb",
+      "Emeka Egbuka"
+     ],
+     "salary": 49600,
+     "mean_points": 96.88,
+     "first_place_proxy": 0.055
+    },
+    {
+     "CPT": "Javonte Williams",
+     "FLEX": [
+      "Brandon Aubrey",
+      "Bucky Irving",
+      "Cade Otton",
+      "Chase McLaughlin",
+      "Dak Prescott"
+     ],
+     "salary": 49800,
+     "mean_points": 95.09,
+     "first_place_proxy": 0.046
+    },
+    {
+     "CPT": "Bucky Irving",
+     "FLEX": [
+      "Baker Mayfield",
+      "Brandon Aubrey",
+      "Buccaneers",
+      "Emeka Egbuka",
+      "Javonte Williams"
+     ],
+     "salary": 49600,
+     "mean_points": 84.88,
+     "first_place_proxy": 0.0225
+    },
+    {
+     "CPT": "Javonte Williams",
+     "FLEX": [
+      "Baker Mayfield",
+      "Bucky Irving",
+      "Emeka Egbuka",
+      "Jake Ferguson",
+      "Payne Durham"
+     ],
+     "salary": 49000,
+     "mean_points": 85.96,
+     "first_place_proxy": 0.019
+    },
+    {
+     "CPT": "Javonte Williams",
+     "FLEX": [
+      "Baker Mayfield",
+      "Brandon Aubrey",
+      "Bucky Irving",
+      "Chris Godwin Jr.",
+      "Tyler Goodson"
+     ],
+     "salary": 48800,
+     "mean_points": 83.24,
+     "first_place_proxy": 0.0155
+    },
+    {
+     "CPT": "Javonte Williams",
+     "FLEX": [
+      "Baker Mayfield",
+      "Brandon Aubrey",
+      "Emeka Egbuka",
+      "Jake Ferguson",
+      "Ryan Flournoy"
+     ],
+     "salary": 49600,
+     "mean_points": 82.64,
+     "first_place_proxy": 0.0105
+    },
+    {
+     "CPT": "Buccaneers",
+     "FLEX": [
+      "Brandon Aubrey",
+      "Chris Godwin Jr.",
+      "Emeka Egbuka",
+      "George Pickens",
+      "Jake Ferguson"
+     ],
+     "salary": 41100,
+     "mean_points": 58.59,
+     "first_place_proxy": 0.001
+    },
+    {
+     "CPT": "Brandon Aubrey",
+     "FLEX": [
+      "Buccaneers",
+      "Chase McLaughlin",
+      "Emeka Egbuka",
+      "Jake Ferguson",
+      "Ted Hurst III"
+     ],
+     "salary": 33500,
+     "mean_points": 52.49,
+     "first_place_proxy": 0.0005
+    },
+    {
+     "CPT": "Brandon Aubrey",
+     "FLEX": [
+      "Chase McLaughlin",
+      "Chris Godwin Jr.",
+      "Emeka Egbuka",
+      "George Pickens",
+      "Tyler Goodson"
+     ],
+     "salary": 39900,
+     "mean_points": 59.02,
+     "first_place_proxy": 0.0005
+    },
+    {
+     "CPT": "Jake Ferguson",
+     "FLEX": [
+      "Brandon Aubrey",
+      "Buccaneers",
+      "Chase McLaughlin",
+      "Chris Godwin Jr.",
+      "Cowboys"
+     ],
+     "salary": 35000,
+     "mean_points": 49.37,
+     "first_place_proxy": 0.0005
+    }
+   ]
+  },
+  "196438556": {
+   "n": 20,
+   "objective": {
+    "m": 2,
+    "value": 1.097,
+    "MEANING": "E[min(entries at the first-place proxy, m)] per world"
+   },
+   "proxy_coverage": 0.693,
+   "selection_method": "GREEDY_THEN_1SWAP_POLISH",
+   "polish": {
+    "rounds": 1,
+    "lineups_changed": 0,
+    "objective_greedy": 1.097,
+    "objective_final": 1.097,
+    "coverage_greedy": 0.693,
+    "coverage_final": 0.693
+   },
+   "distinct_captains": 8,
+   "captain_exposure_pct": {
+    "CeeDee Lamb": 30.0,
+    "Javonte Williams": 20.0,
+    "Bucky Irving": 15.0,
+    "Dak Prescott": 10.0,
+    "Brandon Aubrey": 10.0,
+    "Baker Mayfield": 5.0,
+    "Buccaneers": 5.0,
+    "Jake Ferguson": 5.0
+   },
+   "player_exposure_pct": {
+    "CeeDee Lamb": 50.0,
+    "Cade Otton": 50.0,
+    "Dak Prescott": 50.0,
+    "Javonte Williams": 50.0,
+    "Baker Mayfield": 50.0,
+    "Bucky Irving": 50.0,
+    "Brandon Aubrey": 50.0,
+    "Emeka Egbuka": 45.0,
+    "Jake Ferguson": 35.0,
+    "Chase McLaughlin": 30.0,
+    "Tyler Goodson": 30.0,
+    "Buccaneers": 30.0,
+    "Payne Durham": 25.0,
+    "Chris Godwin Jr.": 20.0,
+    "George Pickens": 10.0
+   },
+   "effective_hypotheses": 17.2,
+   "pairwise_shared_players": {
+    "max": 4,
+    "distribution": {
+     "0": 14,
+     "1": 40,
+     "2": 48,
+     "3": 54,
+     "4": 34
+    }
+   },
+   "relaxation": {
+    "level_used": 0,
+    "rungs": [
+     {
+      "level": 0,
+      "caps": {
+       "player": 10,
+       "captain": 6,
+       "overlap": 4
+      },
+      "built": 20,
+      "needed": 20,
+      "EFFECTIVE_HYPOTHESIS_COUNT": 17.2
+     }
+    ],
+    "players_above_original_cap": {},
+    "captains_above_original_cap": {},
+    "n_lineups_not_in_level0_build": 1,
+    "clusters": {
+     "by_origin": {
+      "RELAXATION": 1
+     },
+     "by_captain": {
+      "Jake Ferguson": 1
+     },
+     "by_split": {
+      "3-3": 1
+     },
+     "by_salary_band": {
+      "<48000": 1
+     }
+    },
+    "why": "no relaxation needed: level 0 built 20/20",
+    "effective_hypotheses_last_unfilled_rung": null,
+    "effective_hypotheses_final_rung": 17.2
+   },
+   "salary_relief_slots": {},
+   "lineups": [
+    {
+     "CPT": "CeeDee Lamb",
+     "FLEX": [
+      "Cade Otton",
+      "Dak Prescott",
+      "Jake Ferguson",
+      "Javonte Williams",
+      "Payne Durham"
+     ],
+     "salary": 49900,
+     "mean_points": 108.64,
+     "first_place_proxy": 0.1945
+    },
+    {
+     "CPT": "CeeDee Lamb",
+     "FLEX": [
+      "Brevyn Spann-Ford",
+      "Cade Otton",
+      "Chase McLaughlin",
+      "Dak Prescott",
+      "Javonte Williams"
+     ],
+     "salary": 49900,
+     "mean_points": 106.35,
+     "first_place_proxy": 0.1715
+    },
+    {
+     "CPT": "Dak Prescott",
+     "FLEX": [
+      "Baker Mayfield",
+      "Bucky Irving",
+      "Cade Otton",
+      "CeeDee Lamb",
+      "Payne Durham"
+     ],
+     "salary": 50000,
+     "mean_points": 109.06,
+     "first_place_proxy": 0.1605
+    },
+    {
+     "CPT": "CeeDee Lamb",
+     "FLEX": [
+      "Baker Mayfield",
+      "Brandon Aubrey",
+      "Cade Otton",
+      "Dak Prescott",
+      "Tyler Goodson"
+     ],
+     "salary": 49500,
+     "mean_points": 107.76,
+     "first_place_proxy": 0.165
+    },
+    {
+     "CPT": "CeeDee Lamb",
+     "FLEX": [
+      "Brandon Aubrey",
+      "Buccaneers",
+      "Bucky Irving",
+      "Cade Otton",
+      "Dak Prescott"
+     ],
+     "salary": 49300,
+     "mean_points": 105.71,
+     "first_place_proxy": 0.1405
+    },
+    {
+     "CPT": "CeeDee Lamb",
+     "FLEX": [
+      "Bucky Irving",
+      "Dak Prescott",
+      "Javonte Williams",
+      "Payne Durham",
+      "Tyler Goodson"
+     ],
+     "salary": 49500,
+     "mean_points": 106.44,
+     "first_place_proxy": 0.1465
+    },
+    {
+     "CPT": "Baker Mayfield",
+     "FLEX": [
+      "Cade Otton",
+      "CeeDee Lamb",
+      "Emeka Egbuka",
+      "Javonte Williams",
+      "Payne Durham"
+     ],
+     "salary": 49800,
+     "mean_points": 99.95,
+     "first_place_proxy": 0.075
+    },
+    {
+     "CPT": "CeeDee Lamb",
+     "FLEX": [
+      "Bucky Irving",
+      "Chase McLaughlin",
+      "Dak Prescott",
+      "Jake Ferguson",
+      "Tyler Goodson"
+     ],
+     "salary": 49900,
+     "mean_points": 102.91,
+     "first_place_proxy": 0.1085
+    },
+    {
+     "CPT": "Dak Prescott",
+     "FLEX": [
+      "Baker Mayfield",
+      "Cade Otton",
+      "CeeDee Lamb",
+      "Emari Demercado",
+      "Emeka Egbuka"
+     ],
+     "salary": 50000,
+     "mean_points": 104.55,
+     "first_place_proxy": 0.0955
+    },
+    {
+     "CPT": "Bucky Irving",
+     "FLEX": [
+      "Baker Mayfield",
+      "Cade Otton",
+      "Dak Prescott",
+      "Javonte Williams",
+      "Tyler Goodson"
+     ],
+     "salary": 49800,
+     "mean_points": 97.58,
+     "first_place_proxy": 0.0565
+    },
+    {
+     "CPT": "Bucky Irving",
+     "FLEX": [
+      "Baker Mayfield",
+      "Buccaneers",
+      "Cade Otton",
+      "CeeDee Lamb",
+      "Emeka Egbuka"
+     ],
+     "salary": 49600,
+     "mean_points": 96.88,
+     "first_place_proxy": 0.055
+    },
+    {
+     "CPT": "Javonte Williams",
+     "FLEX": [
+      "Brandon Aubrey",
+      "Bucky Irving",
+      "Cade Otton",
+      "Chase McLaughlin",
+      "Dak Prescott"
+     ],
+     "salary": 49800,
+     "mean_points": 95.09,
+     "first_place_proxy": 0.046
+    },
+    {
+     "CPT": "Bucky Irving",
+     "FLEX": [
+      "Baker Mayfield",
+      "Brandon Aubrey",
+      "Buccaneers",
+      "Emeka Egbuka",
+      "Javonte Williams"
+     ],
+     "salary": 49600,
+     "mean_points": 84.88,
+     "first_place_proxy": 0.0225
+    },
+    {
+     "CPT": "Javonte Williams",
+     "FLEX": [
+      "Baker Mayfield",
+      "Bucky Irving",
+      "Emeka Egbuka",
+      "Jake Ferguson",
+      "Payne Durham"
+     ],
+     "salary": 49000,
+     "mean_points": 85.96,
+     "first_place_proxy": 0.019
+    },
+    {
+     "CPT": "Javonte Williams",
+     "FLEX": [
+      "Baker Mayfield",
+      "Brandon Aubrey",
+      "Bucky Irving",
+      "Chris Godwin Jr.",
+      "Tyler Goodson"
+     ],
+     "salary": 48800,
+     "mean_points": 83.24,
+     "first_place_proxy": 0.0155
+    },
+    {
+     "CPT": "Javonte Williams",
+     "FLEX": [
+      "Baker Mayfield",
+      "Brandon Aubrey",
+      "Emeka Egbuka",
+      "Jake Ferguson",
+      "Ryan Flournoy"
+     ],
+     "salary": 49600,
+     "mean_points": 82.64,
+     "first_place_proxy": 0.0105
+    },
+    {
+     "CPT": "Buccaneers",
+     "FLEX": [
+      "Brandon Aubrey",
+      "Chris Godwin Jr.",
+      "Emeka Egbuka",
+      "George Pickens",
+      "Jake Ferguson"
+     ],
+     "salary": 41100,
+     "mean_points": 58.59,
+     "first_place_proxy": 0.001
+    },
+    {
+     "CPT": "Brandon Aubrey",
+     "FLEX": [
+      "Buccaneers",
+      "Chase McLaughlin",
+      "Emeka Egbuka",
+      "Jake Ferguson",
+      "Ted Hurst III"
+     ],
+     "salary": 33500,
+     "mean_points": 52.49,
+     "first_place_proxy": 0.0005
+    },
+    {
+     "CPT": "Brandon Aubrey",
+     "FLEX": [
+      "Chase McLaughlin",
+      "Chris Godwin Jr.",
+      "Emeka Egbuka",
+      "George Pickens",
+      "Tyler Goodson"
+     ],
+     "salary": 39900,
+     "mean_points": 59.02,
+     "first_place_proxy": 0.0005
+    },
+    {
+     "CPT": "Jake Ferguson",
+     "FLEX": [
+      "Brandon Aubrey",
+      "Buccaneers",
+      "Chase McLaughlin",
+      "Chris Godwin Jr.",
+      "Cowboys"
+     ],
+     "salary": 35000,
+     "mean_points": 49.37,
+     "first_place_proxy": 0.0005
+    }
+   ]
+  }
+ },
+ "FIELD": {
+  "FC_ONLY": {
+   "label": "EXTERNAL_RESEARCH_SHADOW",
+   "VALIDATED": false,
+   "sigma": 0.25,
+   "field_projection": "FC_ONLY",
+   "anchor_rmse": 21.48,
+   "field_size_estimates": {
+    "196438543": 235294,
+    "196438555": 47059,
+    "196438556": 47059
+   },
+   "contests": {
+    "196438543": {
+     "pred_dupes_exact": {
+      "mean": 23.5,
+      "max": 1647.1,
+      "n_over_guardrail": 6,
+      "guardrail": 20
+     },
+     "pred_dupes_product": {
+      "mean": 7.26,
+      "max": 484.12
+     },
+     "geomean_ownership_median": 1.0,
+     "lineups_with_player_absent_from_shadow_field": 107,
+     "salary_left": {
+      "ours": {
+       "0": 98,
+       "500": 24,
+       "1500": 9,
+       "1000": 6,
+       "2000": 1,
+       "2500": 1,
+       "3000": 11
+      },
+      "ours_mean": 1191.0,
+      "shadow_field_mean": 522.0
+     },
+     "team_split_away_home": {
+      "ours_pct": {
+       "1-5": 4.7,
+       "2-4": 27.3,
+       "3-3": 40.0,
+       "4-2": 22.7,
+       "5-1": 5.3
+      },
+      "shadow_field_pct": {
+       "1-5": 53.1,
+       "2-4": 39.4,
+       "3-3": 7.0,
+       "4-2": 0.5
+      }
+     },
+     "shadow_portfolio_comparison": {
+      "built": 150,
+      "relaxation_level": 1,
+      "proxy_coverage": 1.0,
+      "production_proxy_coverage": 0.9995,
+      "lineups_shared_with_production": 53,
+      "STATUS": "COMPARISON ONLY -- production is not replaced without an owner ruling"
+     },
+     "leverage_top12": [
+      {
+       "player": "Dak Prescott",
+       "shadow_cpt": 40.2,
+       "our_cpt": 8.7,
+       "cpt_leverage": -31.5,
+       "shadow_flex": 45.9,
+       "our_flex": 41.3,
+       "flex_leverage": -4.5
+      },
+      {
+       "player": "CeeDee Lamb",
+       "shadow_cpt": 21.1,
+       "our_cpt": 23.3,
+       "cpt_leverage": 2.2,
+       "shadow_flex": 51.6,
+       "our_flex": 26.7,
+       "flex_leverage": -24.9
+      },
+      {
+       "player": "George Pickens",
+       "shadow_cpt": 14.9,
+       "our_cpt": 2.0,
+       "cpt_leverage": -12.9,
+       "shadow_flex": 53.4,
+       "our_flex": 30.0,
+       "flex_leverage": -23.4
+      },
+      {
+       "player": "Ryan Flournoy",
+       "shadow_cpt": 2.2,
+       "our_cpt": 0.0,
+       "cpt_leverage": -2.2,
+       "shadow_flex": 63.4,
+       "our_flex": 13.3,
+       "flex_leverage": -50.0
+      },
+      {
+       "player": "Kenny Gainwell",
+       "shadow_cpt": 2.6,
+       "our_cpt": 0.0,
+       "cpt_leverage": -2.6,
+       "shadow_flex": 61.0,
+       "our_flex": 8.0,
+       "flex_leverage": -53.0
+      },
+      {
+       "player": "Brandon Aubrey",
+       "shadow_cpt": 3.4,
+       "our_cpt": 4.7,
+       "cpt_leverage": 1.3,
+       "shadow_flex": 56.1,
+       "our_flex": 38.0,
+       "flex_leverage": -18.1
+      },
+      {
+       "player": "Javonte Williams",
+       "shadow_cpt": 12.4,
+       "our_cpt": 25.3,
+       "cpt_leverage": 12.9,
+       "shadow_flex": 41.4,
+       "our_flex": 24.7,
+       "flex_leverage": -16.8
+      },
+      {
+       "player": "Jalon Daniels",
+       "shadow_cpt": 1.5,
+       "our_cpt": 0.0,
+       "cpt_leverage": -1.5,
+       "shadow_flex": 21.6,
+       "our_flex": 0.0,
+       "flex_leverage": -21.6
+      },
+      {
+       "player": "KaVontae Turpin",
+       "shadow_cpt": 0.1,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.1,
+       "shadow_flex": 22.2,
+       "our_flex": 0.7,
+       "flex_leverage": -21.5
+      },
+      {
+       "player": "Ted Hurst III",
+       "shadow_cpt": 0.1,
+       "our_cpt": 0.7,
+       "cpt_leverage": 0.5,
+       "shadow_flex": 20.5,
+       "our_flex": 10.0,
+       "flex_leverage": -10.5
+      },
+      {
+       "player": "Cade Otton",
+       "shadow_cpt": 0.3,
+       "our_cpt": 1.3,
+       "cpt_leverage": 1.1,
+       "shadow_flex": 19.8,
+       "our_flex": 44.7,
+       "flex_leverage": 24.9
+      },
+      {
+       "player": "Jake Ferguson",
+       "shadow_cpt": 0.7,
+       "our_cpt": 2.0,
+       "cpt_leverage": 1.3,
+       "shadow_flex": 16.3,
+       "our_flex": 26.7,
+       "flex_leverage": 10.4
+      }
+     ],
+     "two_entry_lineups": null
+    },
+    "196438555": {
+     "pred_dupes_exact": {
+      "mean": 0.0,
+      "max": 0.0,
+      "n_over_guardrail": 0,
+      "guardrail": 20
+     },
+     "pred_dupes_product": {
+      "mean": 0.13,
+      "max": 2.39
+     },
+     "geomean_ownership_median": 1.0,
+     "lineups_with_player_absent_from_shadow_field": 15,
+     "salary_left": {
+      "ours": {
+       "0": 11,
+       "500": 3,
+       "1000": 2,
+       "3000": 4
+      },
+      "ours_mean": 2825.0,
+      "shadow_field_mean": 522.0
+     },
+     "team_split_away_home": {
+      "ours_pct": {
+       "2-4": 30.0,
+       "3-3": 40.0,
+       "4-2": 25.0,
+       "5-1": 5.0
+      },
+      "shadow_field_pct": {
+       "1-5": 53.1,
+       "2-4": 39.4,
+       "3-3": 7.0,
+       "4-2": 0.5
+      }
+     },
+     "shadow_portfolio_comparison": {
+      "built": 20,
+      "relaxation_level": 0,
+      "proxy_coverage": 0.693,
+      "production_proxy_coverage": 0.693,
+      "lineups_shared_with_production": 19,
+      "STATUS": "COMPARISON ONLY -- production is not replaced without an owner ruling"
+     },
+     "leverage_top12": [
+      {
+       "player": "Dak Prescott",
+       "shadow_cpt": 40.2,
+       "our_cpt": 10.0,
+       "cpt_leverage": -30.2,
+       "shadow_flex": 45.9,
+       "our_flex": 40.0,
+       "flex_leverage": -5.9
+      },
+      {
+       "player": "CeeDee Lamb",
+       "shadow_cpt": 21.1,
+       "our_cpt": 30.0,
+       "cpt_leverage": 8.9,
+       "shadow_flex": 51.6,
+       "our_flex": 20.0,
+       "flex_leverage": -31.6
+      },
+      {
+       "player": "George Pickens",
+       "shadow_cpt": 14.9,
+       "our_cpt": 0.0,
+       "cpt_leverage": -14.9,
+       "shadow_flex": 53.4,
+       "our_flex": 10.0,
+       "flex_leverage": -43.4
+      },
+      {
+       "player": "Ryan Flournoy",
+       "shadow_cpt": 2.2,
+       "our_cpt": 0.0,
+       "cpt_leverage": -2.2,
+       "shadow_flex": 63.4,
+       "our_flex": 5.0,
+       "flex_leverage": -58.4
+      },
+      {
+       "player": "Kenny Gainwell",
+       "shadow_cpt": 2.6,
+       "our_cpt": 0.0,
+       "cpt_leverage": -2.6,
+       "shadow_flex": 61.0,
+       "our_flex": 0.0,
+       "flex_leverage": -61.0
+      },
+      {
+       "player": "Brandon Aubrey",
+       "shadow_cpt": 3.4,
+       "our_cpt": 10.0,
+       "cpt_leverage": 6.6,
+       "shadow_flex": 56.1,
+       "our_flex": 40.0,
+       "flex_leverage": -16.1
+      },
+      {
+       "player": "Javonte Williams",
+       "shadow_cpt": 12.4,
+       "our_cpt": 20.0,
+       "cpt_leverage": 7.6,
+       "shadow_flex": 41.4,
+       "our_flex": 30.0,
+       "flex_leverage": -11.4
+      },
+      {
+       "player": "Jalon Daniels",
+       "shadow_cpt": 1.5,
+       "our_cpt": 0.0,
+       "cpt_leverage": -1.5,
+       "shadow_flex": 21.6,
+       "our_flex": 0.0,
+       "flex_leverage": -21.6
+      },
+      {
+       "player": "KaVontae Turpin",
+       "shadow_cpt": 0.1,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.1,
+       "shadow_flex": 22.2,
+       "our_flex": 0.0,
+       "flex_leverage": -22.2
+      },
+      {
+       "player": "Ted Hurst III",
+       "shadow_cpt": 0.1,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.1,
+       "shadow_flex": 20.5,
+       "our_flex": 5.0,
+       "flex_leverage": -15.5
+      },
+      {
+       "player": "Cade Otton",
+       "shadow_cpt": 0.3,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.3,
+       "shadow_flex": 19.8,
+       "our_flex": 50.0,
+       "flex_leverage": 30.2
+      },
+      {
+       "player": "Jake Ferguson",
+       "shadow_cpt": 0.7,
+       "our_cpt": 5.0,
+       "cpt_leverage": 4.3,
+       "shadow_flex": 16.3,
+       "our_flex": 30.0,
+       "flex_leverage": 13.7
+      }
+     ],
+     "two_entry_lineups": null
+    },
+    "196438556": {
+     "pred_dupes_exact": {
+      "mean": 0.0,
+      "max": 0.0,
+      "n_over_guardrail": 0,
+      "guardrail": 20
+     },
+     "pred_dupes_product": {
+      "mean": 0.13,
+      "max": 2.39
+     },
+     "geomean_ownership_median": 1.0,
+     "lineups_with_player_absent_from_shadow_field": 15,
+     "salary_left": {
+      "ours": {
+       "0": 11,
+       "500": 3,
+       "1000": 2,
+       "3000": 4
+      },
+      "ours_mean": 2825.0,
+      "shadow_field_mean": 522.0
+     },
+     "team_split_away_home": {
+      "ours_pct": {
+       "2-4": 30.0,
+       "3-3": 40.0,
+       "4-2": 25.0,
+       "5-1": 5.0
+      },
+      "shadow_field_pct": {
+       "1-5": 53.1,
+       "2-4": 39.4,
+       "3-3": 7.0,
+       "4-2": 0.5
+      }
+     },
+     "shadow_portfolio_comparison": {
+      "built": 20,
+      "relaxation_level": 0,
+      "proxy_coverage": 0.693,
+      "production_proxy_coverage": 0.693,
+      "lineups_shared_with_production": 19,
+      "STATUS": "COMPARISON ONLY -- production is not replaced without an owner ruling"
+     },
+     "leverage_top12": [
+      {
+       "player": "Dak Prescott",
+       "shadow_cpt": 40.2,
+       "our_cpt": 10.0,
+       "cpt_leverage": -30.2,
+       "shadow_flex": 45.9,
+       "our_flex": 40.0,
+       "flex_leverage": -5.9
+      },
+      {
+       "player": "CeeDee Lamb",
+       "shadow_cpt": 21.1,
+       "our_cpt": 30.0,
+       "cpt_leverage": 8.9,
+       "shadow_flex": 51.6,
+       "our_flex": 20.0,
+       "flex_leverage": -31.6
+      },
+      {
+       "player": "George Pickens",
+       "shadow_cpt": 14.9,
+       "our_cpt": 0.0,
+       "cpt_leverage": -14.9,
+       "shadow_flex": 53.4,
+       "our_flex": 10.0,
+       "flex_leverage": -43.4
+      },
+      {
+       "player": "Ryan Flournoy",
+       "shadow_cpt": 2.2,
+       "our_cpt": 0.0,
+       "cpt_leverage": -2.2,
+       "shadow_flex": 63.4,
+       "our_flex": 5.0,
+       "flex_leverage": -58.4
+      },
+      {
+       "player": "Kenny Gainwell",
+       "shadow_cpt": 2.6,
+       "our_cpt": 0.0,
+       "cpt_leverage": -2.6,
+       "shadow_flex": 61.0,
+       "our_flex": 0.0,
+       "flex_leverage": -61.0
+      },
+      {
+       "player": "Brandon Aubrey",
+       "shadow_cpt": 3.4,
+       "our_cpt": 10.0,
+       "cpt_leverage": 6.6,
+       "shadow_flex": 56.1,
+       "our_flex": 40.0,
+       "flex_leverage": -16.1
+      },
+      {
+       "player": "Javonte Williams",
+       "shadow_cpt": 12.4,
+       "our_cpt": 20.0,
+       "cpt_leverage": 7.6,
+       "shadow_flex": 41.4,
+       "our_flex": 30.0,
+       "flex_leverage": -11.4
+      },
+      {
+       "player": "Jalon Daniels",
+       "shadow_cpt": 1.5,
+       "our_cpt": 0.0,
+       "cpt_leverage": -1.5,
+       "shadow_flex": 21.6,
+       "our_flex": 0.0,
+       "flex_leverage": -21.6
+      },
+      {
+       "player": "KaVontae Turpin",
+       "shadow_cpt": 0.1,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.1,
+       "shadow_flex": 22.2,
+       "our_flex": 0.0,
+       "flex_leverage": -22.2
+      },
+      {
+       "player": "Ted Hurst III",
+       "shadow_cpt": 0.1,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.1,
+       "shadow_flex": 20.5,
+       "our_flex": 5.0,
+       "flex_leverage": -15.5
+      },
+      {
+       "player": "Cade Otton",
+       "shadow_cpt": 0.3,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.3,
+       "shadow_flex": 19.8,
+       "our_flex": 50.0,
+       "flex_leverage": 30.2
+      },
+      {
+       "player": "Jake Ferguson",
+       "shadow_cpt": 0.7,
+       "our_cpt": 5.0,
+       "cpt_leverage": 4.3,
+       "shadow_flex": 16.3,
+       "our_flex": 30.0,
+       "flex_leverage": 13.7
+      }
+     ],
+     "two_entry_lineups": null
+    }
+   }
+  },
+  "BLEND": {
+   "label": "EXTERNAL_RESEARCH_SHADOW",
+   "VALIDATED": false,
+   "sigma": 0.25,
+   "field_projection": "MEAN_OF_FC_AND_OURS",
+   "anchor_rmse": 21.48,
+   "field_size_estimates": {
+    "196438543": 235294,
+    "196438555": 47059,
+    "196438556": 47059
+   },
+   "contests": {
+    "196438543": {
+     "pred_dupes_exact": {
+      "mean": 178.8,
+      "max": 8282.3,
+      "n_over_guardrail": 30,
+      "guardrail": 20
+     },
+     "pred_dupes_product": {
+      "mean": 43.2,
+      "max": 1152.33
+     },
+     "geomean_ownership_median": 11.3,
+     "lineups_with_player_absent_from_shadow_field": 3,
+     "salary_left": {
+      "ours": {
+       "0": 98,
+       "500": 24,
+       "1500": 9,
+       "1000": 6,
+       "2000": 1,
+       "2500": 1,
+       "3000": 11
+      },
+      "ours_mean": 1191.0,
+      "shadow_field_mean": 426.0
+     },
+     "team_split_away_home": {
+      "ours_pct": {
+       "1-5": 4.7,
+       "2-4": 27.3,
+       "3-3": 40.0,
+       "4-2": 22.7,
+       "5-1": 5.3
+      },
+      "shadow_field_pct": {
+       "1-5": 29.4,
+       "2-4": 47.0,
+       "3-3": 21.2,
+       "4-2": 2.4,
+       "5-1": 0.0
+      }
+     },
+     "shadow_portfolio_comparison": {
+      "built": 150,
+      "relaxation_level": 0,
+      "proxy_coverage": 0.9995,
+      "production_proxy_coverage": 0.9995,
+      "lineups_shared_with_production": 36,
+      "STATUS": "COMPARISON ONLY -- production is not replaced without an owner ruling"
+     },
+     "leverage_top12": [
+      {
+       "player": "CeeDee Lamb",
+       "shadow_cpt": 38.8,
+       "our_cpt": 23.3,
+       "cpt_leverage": -15.5,
+       "shadow_flex": 48.0,
+       "our_flex": 26.7,
+       "flex_leverage": -21.3
+      },
+      {
+       "player": "Dak Prescott",
+       "shadow_cpt": 32.9,
+       "our_cpt": 8.7,
+       "cpt_leverage": -24.3,
+       "shadow_flex": 53.1,
+       "our_flex": 41.3,
+       "flex_leverage": -11.7
+      },
+      {
+       "player": "Cade Otton",
+       "shadow_cpt": 4.1,
+       "our_cpt": 1.3,
+       "cpt_leverage": -2.8,
+       "shadow_flex": 62.7,
+       "our_flex": 44.7,
+       "flex_leverage": -18.0
+      },
+      {
+       "player": "Javonte Williams",
+       "shadow_cpt": 11.0,
+       "our_cpt": 25.3,
+       "cpt_leverage": 14.3,
+       "shadow_flex": 46.2,
+       "our_flex": 24.7,
+       "flex_leverage": -21.5
+      },
+      {
+       "player": "Brandon Aubrey",
+       "shadow_cpt": 2.9,
+       "our_cpt": 4.7,
+       "cpt_leverage": 1.7,
+       "shadow_flex": 47.1,
+       "our_flex": 38.0,
+       "flex_leverage": -9.1
+      },
+      {
+       "player": "Ryan Flournoy",
+       "shadow_cpt": 0.5,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.5,
+       "shadow_flex": 39.4,
+       "our_flex": 13.3,
+       "flex_leverage": -26.0
+      },
+      {
+       "player": "George Pickens",
+       "shadow_cpt": 3.8,
+       "our_cpt": 2.0,
+       "cpt_leverage": -1.8,
+       "shadow_flex": 33.3,
+       "our_flex": 30.0,
+       "flex_leverage": -3.3
+      },
+      {
+       "player": "Bucky Irving",
+       "shadow_cpt": 2.8,
+       "our_cpt": 8.0,
+       "cpt_leverage": 5.2,
+       "shadow_flex": 28.7,
+       "our_flex": 42.0,
+       "flex_leverage": 13.3
+      },
+      {
+       "player": "Kenny Gainwell",
+       "shadow_cpt": 0.3,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.3,
+       "shadow_flex": 25.9,
+       "our_flex": 8.0,
+       "flex_leverage": -17.9
+      },
+      {
+       "player": "Jake Ferguson",
+       "shadow_cpt": 1.8,
+       "our_cpt": 2.0,
+       "cpt_leverage": 0.2,
+       "shadow_flex": 22.5,
+       "our_flex": 26.7,
+       "flex_leverage": 4.2
+      },
+      {
+       "player": "Ted Hurst III",
+       "shadow_cpt": 0.1,
+       "our_cpt": 0.7,
+       "cpt_leverage": 0.6,
+       "shadow_flex": 20.9,
+       "our_flex": 10.0,
+       "flex_leverage": -10.9
+      },
+      {
+       "player": "Chase McLaughlin",
+       "shadow_cpt": 0.3,
+       "our_cpt": 2.0,
+       "cpt_leverage": 1.7,
+       "shadow_flex": 18.7,
+       "our_flex": 28.7,
+       "flex_leverage": 10.0
+      }
+     ],
+     "two_entry_lineups": null
+    },
+    "196438555": {
+     "pred_dupes_exact": {
+      "mean": 54.6,
+      "max": 856.5,
+      "n_over_guardrail": 4,
+      "guardrail": 20
+     },
+     "pred_dupes_product": {
+      "mean": 8.37,
+      "max": 83.01
+     },
+     "geomean_ownership_median": 10.565000000000001,
+     "lineups_with_player_absent_from_shadow_field": 0,
+     "salary_left": {
+      "ours": {
+       "0": 11,
+       "500": 3,
+       "1000": 2,
+       "3000": 4
+      },
+      "ours_mean": 2825.0,
+      "shadow_field_mean": 426.0
+     },
+     "team_split_away_home": {
+      "ours_pct": {
+       "2-4": 30.0,
+       "3-3": 40.0,
+       "4-2": 25.0,
+       "5-1": 5.0
+      },
+      "shadow_field_pct": {
+       "1-5": 29.4,
+       "2-4": 47.0,
+       "3-3": 21.2,
+       "4-2": 2.4,
+       "5-1": 0.0
+      }
+     },
+     "shadow_portfolio_comparison": {
+      "built": 20,
+      "relaxation_level": 0,
+      "proxy_coverage": 0.6605,
+      "production_proxy_coverage": 0.693,
+      "lineups_shared_with_production": 11,
+      "STATUS": "COMPARISON ONLY -- production is not replaced without an owner ruling"
+     },
+     "leverage_top12": [
+      {
+       "player": "CeeDee Lamb",
+       "shadow_cpt": 38.8,
+       "our_cpt": 30.0,
+       "cpt_leverage": -8.8,
+       "shadow_flex": 48.0,
+       "our_flex": 20.0,
+       "flex_leverage": -28.0
+      },
+      {
+       "player": "Dak Prescott",
+       "shadow_cpt": 32.9,
+       "our_cpt": 10.0,
+       "cpt_leverage": -22.9,
+       "shadow_flex": 53.1,
+       "our_flex": 40.0,
+       "flex_leverage": -13.1
+      },
+      {
+       "player": "Cade Otton",
+       "shadow_cpt": 4.1,
+       "our_cpt": 0.0,
+       "cpt_leverage": -4.1,
+       "shadow_flex": 62.7,
+       "our_flex": 50.0,
+       "flex_leverage": -12.7
+      },
+      {
+       "player": "Javonte Williams",
+       "shadow_cpt": 11.0,
+       "our_cpt": 20.0,
+       "cpt_leverage": 9.0,
+       "shadow_flex": 46.2,
+       "our_flex": 30.0,
+       "flex_leverage": -16.2
+      },
+      {
+       "player": "Brandon Aubrey",
+       "shadow_cpt": 2.9,
+       "our_cpt": 10.0,
+       "cpt_leverage": 7.1,
+       "shadow_flex": 47.1,
+       "our_flex": 40.0,
+       "flex_leverage": -7.1
+      },
+      {
+       "player": "Ryan Flournoy",
+       "shadow_cpt": 0.5,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.5,
+       "shadow_flex": 39.4,
+       "our_flex": 5.0,
+       "flex_leverage": -34.4
+      },
+      {
+       "player": "George Pickens",
+       "shadow_cpt": 3.8,
+       "our_cpt": 0.0,
+       "cpt_leverage": -3.8,
+       "shadow_flex": 33.3,
+       "our_flex": 10.0,
+       "flex_leverage": -23.3
+      },
+      {
+       "player": "Bucky Irving",
+       "shadow_cpt": 2.8,
+       "our_cpt": 15.0,
+       "cpt_leverage": 12.2,
+       "shadow_flex": 28.7,
+       "our_flex": 35.0,
+       "flex_leverage": 6.3
+      },
+      {
+       "player": "Kenny Gainwell",
+       "shadow_cpt": 0.3,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.3,
+       "shadow_flex": 25.9,
+       "our_flex": 0.0,
+       "flex_leverage": -25.9
+      },
+      {
+       "player": "Jake Ferguson",
+       "shadow_cpt": 1.8,
+       "our_cpt": 5.0,
+       "cpt_leverage": 3.2,
+       "shadow_flex": 22.5,
+       "our_flex": 30.0,
+       "flex_leverage": 7.5
+      },
+      {
+       "player": "Ted Hurst III",
+       "shadow_cpt": 0.1,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.1,
+       "shadow_flex": 20.9,
+       "our_flex": 5.0,
+       "flex_leverage": -15.9
+      },
+      {
+       "player": "Chase McLaughlin",
+       "shadow_cpt": 0.3,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.3,
+       "shadow_flex": 18.7,
+       "our_flex": 30.0,
+       "flex_leverage": 11.3
+      }
+     ],
+     "two_entry_lineups": null
+    },
+    "196438556": {
+     "pred_dupes_exact": {
+      "mean": 54.6,
+      "max": 856.5,
+      "n_over_guardrail": 4,
+      "guardrail": 20
+     },
+     "pred_dupes_product": {
+      "mean": 8.37,
+      "max": 83.01
+     },
+     "geomean_ownership_median": 10.565000000000001,
+     "lineups_with_player_absent_from_shadow_field": 0,
+     "salary_left": {
+      "ours": {
+       "0": 11,
+       "500": 3,
+       "1000": 2,
+       "3000": 4
+      },
+      "ours_mean": 2825.0,
+      "shadow_field_mean": 426.0
+     },
+     "team_split_away_home": {
+      "ours_pct": {
+       "2-4": 30.0,
+       "3-3": 40.0,
+       "4-2": 25.0,
+       "5-1": 5.0
+      },
+      "shadow_field_pct": {
+       "1-5": 29.4,
+       "2-4": 47.0,
+       "3-3": 21.2,
+       "4-2": 2.4,
+       "5-1": 0.0
+      }
+     },
+     "shadow_portfolio_comparison": {
+      "built": 20,
+      "relaxation_level": 0,
+      "proxy_coverage": 0.6605,
+      "production_proxy_coverage": 0.693,
+      "lineups_shared_with_production": 11,
+      "STATUS": "COMPARISON ONLY -- production is not replaced without an owner ruling"
+     },
+     "leverage_top12": [
+      {
+       "player": "CeeDee Lamb",
+       "shadow_cpt": 38.8,
+       "our_cpt": 30.0,
+       "cpt_leverage": -8.8,
+       "shadow_flex": 48.0,
+       "our_flex": 20.0,
+       "flex_leverage": -28.0
+      },
+      {
+       "player": "Dak Prescott",
+       "shadow_cpt": 32.9,
+       "our_cpt": 10.0,
+       "cpt_leverage": -22.9,
+       "shadow_flex": 53.1,
+       "our_flex": 40.0,
+       "flex_leverage": -13.1
+      },
+      {
+       "player": "Cade Otton",
+       "shadow_cpt": 4.1,
+       "our_cpt": 0.0,
+       "cpt_leverage": -4.1,
+       "shadow_flex": 62.7,
+       "our_flex": 50.0,
+       "flex_leverage": -12.7
+      },
+      {
+       "player": "Javonte Williams",
+       "shadow_cpt": 11.0,
+       "our_cpt": 20.0,
+       "cpt_leverage": 9.0,
+       "shadow_flex": 46.2,
+       "our_flex": 30.0,
+       "flex_leverage": -16.2
+      },
+      {
+       "player": "Brandon Aubrey",
+       "shadow_cpt": 2.9,
+       "our_cpt": 10.0,
+       "cpt_leverage": 7.1,
+       "shadow_flex": 47.1,
+       "our_flex": 40.0,
+       "flex_leverage": -7.1
+      },
+      {
+       "player": "Ryan Flournoy",
+       "shadow_cpt": 0.5,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.5,
+       "shadow_flex": 39.4,
+       "our_flex": 5.0,
+       "flex_leverage": -34.4
+      },
+      {
+       "player": "George Pickens",
+       "shadow_cpt": 3.8,
+       "our_cpt": 0.0,
+       "cpt_leverage": -3.8,
+       "shadow_flex": 33.3,
+       "our_flex": 10.0,
+       "flex_leverage": -23.3
+      },
+      {
+       "player": "Bucky Irving",
+       "shadow_cpt": 2.8,
+       "our_cpt": 15.0,
+       "cpt_leverage": 12.2,
+       "shadow_flex": 28.7,
+       "our_flex": 35.0,
+       "flex_leverage": 6.3
+      },
+      {
+       "player": "Kenny Gainwell",
+       "shadow_cpt": 0.3,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.3,
+       "shadow_flex": 25.9,
+       "our_flex": 0.0,
+       "flex_leverage": -25.9
+      },
+      {
+       "player": "Jake Ferguson",
+       "shadow_cpt": 1.8,
+       "our_cpt": 5.0,
+       "cpt_leverage": 3.2,
+       "shadow_flex": 22.5,
+       "our_flex": 30.0,
+       "flex_leverage": 7.5
+      },
+      {
+       "player": "Ted Hurst III",
+       "shadow_cpt": 0.1,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.1,
+       "shadow_flex": 20.9,
+       "our_flex": 5.0,
+       "flex_leverage": -15.9
+      },
+      {
+       "player": "Chase McLaughlin",
+       "shadow_cpt": 0.3,
+       "our_cpt": 0.0,
+       "cpt_leverage": -0.3,
+       "shadow_flex": 18.7,
+       "our_flex": 30.0,
+       "flex_leverage": 11.3
+      }
+     ],
+     "two_entry_lineups": null
+    }
+   }
+  },
+  "DUPE_STACK": {
+   "FC_ONLY": {
+    "STATUS": "PRODUCTION_CANDIDATE -- NOT PROMOTED, NOT VALIDATED",
+    "NOT_FITTED": {
+     "targets": "optimizer-exposure shadow field ownership, not a fitted ownership model",
+     "archetype_prior": "DERIVED_FROM_OPTIMIZER_FIELD (joint away-count x QB-count x K/DST-count)",
+     "phi": "ASSUMED, swept [50.0, 200.0, 1000.0]; 200.0 carried to the board",
+     "contest_bucket": "one bucket for all three contests",
+     "E2": "ETR-seeded correlation factors only; salary-left and construction factors 1.0"
+    },
+    "phi_sweep": [
+     "50.0",
+     "200.0",
+     "1000.0"
+    ],
+    "calibration_residual_rmse_pts": {
+     "50.0": {
+      "cpt": 0.465,
+      "flex": 3.995
+     },
+     "200.0": {
+      "cpt": 0.29,
+      "flex": 4.014
+     },
+     "1000.0": {
+      "cpt": 0.162,
+      "flex": 3.711
+     }
+    },
+    "salary_left_archetype_field": {
+     "mean": 1670,
+     "p50": 1200.0,
+     "share_0": 0.076,
+     "share_le_900": 0.392,
+     "share_1000_1900": 0.286
+    },
+    "contests": {
+     "196438543": {
+      "mean": {
+       "E1": 7.26,
+       "E2": 9.27,
+       "E3_lower_bound_mean": 4.61,
+       "E4": 23.53
+      },
+      "flags": {
+       "PLAYER_ABSENT_FROM_FIELD_TARGETS": 107,
+       "None": 34,
+       "E1_E3_DISAGREE_GT_2X": 7,
+       "E3_BELOW_RESOLUTION_E1_NOT": 2
+      },
+      "by_phi_E3_mean": {
+       "50.0": 5.27,
+       "200.0": 4.61,
+       "1000.0": 6.02
+      },
+      "lineups": null
+     },
+     "196438555": {
+      "mean": {
+       "E1": 0.13,
+       "E2": 0.13,
+       "E3_lower_bound_mean": 0.0,
+       "E4": 0.0
+      },
+      "flags": {
+       "PLAYER_ABSENT_FROM_FIELD_TARGETS": 15,
+       "None": 4,
+       "E3_BELOW_RESOLUTION_E1_NOT": 1
+      },
+      "by_phi_E3_mean": {
+       "50.0": 0.0,
+       "200.0": 0.0,
+       "1000.0": 0.0
+      },
+      "lineups": [
+       {
+        "captain": "CeeDee Lamb",
+        "flex": [
+         "Cade Otton",
+         "Dak Prescott",
+         "Jake Ferguson",
+         "Javonte Williams",
+         "Payne Durham"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Payne Durham"
+        ]
+       },
+       {
+        "captain": "CeeDee Lamb",
+        "flex": [
+         "Brevyn Spann-Ford",
+         "Cade Otton",
+         "Chase McLaughlin",
+         "Dak Prescott",
+         "Javonte Williams"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Brevyn Spann-Ford"
+        ]
+       },
+       {
+        "captain": "Dak Prescott",
+        "flex": [
+         "Baker Mayfield",
+         "Bucky Irving",
+         "Cade Otton",
+         "CeeDee Lamb",
+         "Payne Durham"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Baker Mayfield",
+         "Payne Durham"
+        ]
+       },
+       {
+        "captain": "CeeDee Lamb",
+        "flex": [
+         "Baker Mayfield",
+         "Brandon Aubrey",
+         "Cade Otton",
+         "Dak Prescott",
+         "Tyler Goodson"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Baker Mayfield",
+         "Tyler Goodson"
+        ]
+       },
+       {
+        "captain": "CeeDee Lamb",
+        "flex": [
+         "Brandon Aubrey",
+         "Buccaneers",
+         "Bucky Irving",
+         "Cade Otton",
+         "Dak Prescott"
+        ],
+        "E1_independent_product": 0.14,
+        "E2_adjusted_product": 0.28,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "CeeDee Lamb",
+        "flex": [
+         "Bucky Irving",
+         "Dak Prescott",
+         "Javonte Williams",
+         "Payne Durham",
+         "Tyler Goodson"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Payne Durham",
+         "Tyler Goodson"
+        ]
+       },
+       {
+        "captain": "Baker Mayfield",
+        "flex": [
+         "Cade Otton",
+         "CeeDee Lamb",
+         "Emeka Egbuka",
+         "Javonte Williams",
+         "Payne Durham"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Baker Mayfield",
+         "Payne Durham"
+        ]
+       },
+       {
+        "captain": "CeeDee Lamb",
+        "flex": [
+         "Bucky Irving",
+         "Chase McLaughlin",
+         "Dak Prescott",
+         "Jake Ferguson",
+         "Tyler Goodson"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Tyler Goodson"
+        ]
+       },
+       {
+        "captain": "Dak Prescott",
+        "flex": [
+         "Baker Mayfield",
+         "Cade Otton",
+         "CeeDee Lamb",
+         "Emari Demercado",
+         "Emeka Egbuka"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Baker Mayfield",
+         "Emari Demercado"
+        ]
+       },
+       {
+        "captain": "Bucky Irving",
+        "flex": [
+         "Baker Mayfield",
+         "Cade Otton",
+         "Dak Prescott",
+         "Javonte Williams",
+         "Tyler Goodson"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Baker Mayfield",
+         "Tyler Goodson"
+        ]
+       },
+       {
+        "captain": "Bucky Irving",
+        "flex": [
+         "Baker Mayfield",
+         "Buccaneers",
+         "Cade Otton",
+         "CeeDee Lamb",
+         "Emeka Egbuka"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Baker Mayfield"
+        ]
+       },
+       {
+        "captain": "Javonte Williams",
+        "flex": [
+         "Brandon Aubrey",
+         "Bucky Irving",
+         "Cade Otton",
+         "Chase McLaughlin",
+         "Dak Prescott"
+        ],
+        "E1_independent_product": 2.39,
+        "E2_adjusted_product": 2.39,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "E3_BELOW_RESOLUTION_E1_NOT",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Bucky Irving",
+        "flex": [
+         "Baker Mayfield",
+         "Brandon Aubrey",
+         "Buccaneers",
+         "Emeka Egbuka",
+         "Javonte Williams"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Baker Mayfield"
+        ]
+       },
+       {
+        "captain": "Javonte Williams",
+        "flex": [
+         "Baker Mayfield",
+         "Bucky Irving",
+         "Emeka Egbuka",
+         "Jake Ferguson",
+         "Payne Durham"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Baker Mayfield",
+         "Payne Durham"
+        ]
+       },
+       {
+        "captain": "Javonte Williams",
+        "flex": [
+         "Baker Mayfield",
+         "Brandon Aubrey",
+         "Bucky Irving",
+         "Chris Godwin Jr.",
+         "Tyler Goodson"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Baker Mayfield",
+         "Tyler Goodson"
+        ]
+       },
+       {
+        "captain": "Javonte Williams",
+        "flex": [
+         "Baker Mayfield",
+         "Brandon Aubrey",
+         "Emeka Egbuka",
+         "Jake Ferguson",
+         "Ryan Flournoy"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Baker Mayfield"
+        ]
+       },
+       {
+        "captain": "Buccaneers",
+        "flex": [
+         "Brandon Aubrey",
+         "Chris Godwin Jr.",
+         "Emeka Egbuka",
+         "George Pickens",
+         "Jake Ferguson"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Brandon Aubrey",
+        "flex": [
+         "Buccaneers",
+         "Chase McLaughlin",
+         "Emeka Egbuka",
+         "Jake Ferguson",
+         "Ted Hurst III"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Brandon Aubrey",
+        "flex": [
+         "Chase McLaughlin",
+         "Chris Godwin Jr.",
+         "Emeka Egbuka",
+         "George Pickens",
+         "Tyler Goodson"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Tyler Goodson"
+        ]
+       },
+       {
+        "captain": "Jake Ferguson",
+        "flex": [
+         "Brandon Aubrey",
+         "Buccaneers",
+         "Chase McLaughlin",
+         "Chris Godwin Jr.",
+         "Cowboys"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       }
+      ]
+     },
+     "196438556": {
+      "mean": {
+       "E1": 0.13,
+       "E2": 0.13,
+       "E3_lower_bound_mean": 0.0,
+       "E4": 0.0
+      },
+      "flags": {
+       "PLAYER_ABSENT_FROM_FIELD_TARGETS": 15,
+       "None": 4,
+       "E3_BELOW_RESOLUTION_E1_NOT": 1
+      },
+      "by_phi_E3_mean": {
+       "50.0": 0.0,
+       "200.0": 0.0,
+       "1000.0": 0.0
+      },
+      "lineups": [
+       {
+        "captain": "CeeDee Lamb",
+        "flex": [
+         "Cade Otton",
+         "Dak Prescott",
+         "Jake Ferguson",
+         "Javonte Williams",
+         "Payne Durham"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Payne Durham"
+        ]
+       },
+       {
+        "captain": "CeeDee Lamb",
+        "flex": [
+         "Brevyn Spann-Ford",
+         "Cade Otton",
+         "Chase McLaughlin",
+         "Dak Prescott",
+         "Javonte Williams"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Brevyn Spann-Ford"
+        ]
+       },
+       {
+        "captain": "Dak Prescott",
+        "flex": [
+         "Baker Mayfield",
+         "Bucky Irving",
+         "Cade Otton",
+         "CeeDee Lamb",
+         "Payne Durham"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Baker Mayfield",
+         "Payne Durham"
+        ]
+       },
+       {
+        "captain": "CeeDee Lamb",
+        "flex": [
+         "Baker Mayfield",
+         "Brandon Aubrey",
+         "Cade Otton",
+         "Dak Prescott",
+         "Tyler Goodson"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Baker Mayfield",
+         "Tyler Goodson"
+        ]
+       },
+       {
+        "captain": "CeeDee Lamb",
+        "flex": [
+         "Brandon Aubrey",
+         "Buccaneers",
+         "Bucky Irving",
+         "Cade Otton",
+         "Dak Prescott"
+        ],
+        "E1_independent_product": 0.14,
+        "E2_adjusted_product": 0.28,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "CeeDee Lamb",
+        "flex": [
+         "Bucky Irving",
+         "Dak Prescott",
+         "Javonte Williams",
+         "Payne Durham",
+         "Tyler Goodson"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Payne Durham",
+         "Tyler Goodson"
+        ]
+       },
+       {
+        "captain": "Baker Mayfield",
+        "flex": [
+         "Cade Otton",
+         "CeeDee Lamb",
+         "Emeka Egbuka",
+         "Javonte Williams",
+         "Payne Durham"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Baker Mayfield",
+         "Payne Durham"
+        ]
+       },
+       {
+        "captain": "CeeDee Lamb",
+        "flex": [
+         "Bucky Irving",
+         "Chase McLaughlin",
+         "Dak Prescott",
+         "Jake Ferguson",
+         "Tyler Goodson"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Tyler Goodson"
+        ]
+       },
+       {
+        "captain": "Dak Prescott",
+        "flex": [
+         "Baker Mayfield",
+         "Cade Otton",
+         "CeeDee Lamb",
+         "Emari Demercado",
+         "Emeka Egbuka"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Baker Mayfield",
+         "Emari Demercado"
+        ]
+       },
+       {
+        "captain": "Bucky Irving",
+        "flex": [
+         "Baker Mayfield",
+         "Cade Otton",
+         "Dak Prescott",
+         "Javonte Williams",
+         "Tyler Goodson"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Baker Mayfield",
+         "Tyler Goodson"
+        ]
+       },
+       {
+        "captain": "Bucky Irving",
+        "flex": [
+         "Baker Mayfield",
+         "Buccaneers",
+         "Cade Otton",
+         "CeeDee Lamb",
+         "Emeka Egbuka"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Baker Mayfield"
+        ]
+       },
+       {
+        "captain": "Javonte Williams",
+        "flex": [
+         "Brandon Aubrey",
+         "Bucky Irving",
+         "Cade Otton",
+         "Chase McLaughlin",
+         "Dak Prescott"
+        ],
+        "E1_independent_product": 2.39,
+        "E2_adjusted_product": 2.39,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "E3_BELOW_RESOLUTION_E1_NOT",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Bucky Irving",
+        "flex": [
+         "Baker Mayfield",
+         "Brandon Aubrey",
+         "Buccaneers",
+         "Emeka Egbuka",
+         "Javonte Williams"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Baker Mayfield"
+        ]
+       },
+       {
+        "captain": "Javonte Williams",
+        "flex": [
+         "Baker Mayfield",
+         "Bucky Irving",
+         "Emeka Egbuka",
+         "Jake Ferguson",
+         "Payne Durham"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Baker Mayfield",
+         "Payne Durham"
+        ]
+       },
+       {
+        "captain": "Javonte Williams",
+        "flex": [
+         "Baker Mayfield",
+         "Brandon Aubrey",
+         "Bucky Irving",
+         "Chris Godwin Jr.",
+         "Tyler Goodson"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Baker Mayfield",
+         "Tyler Goodson"
+        ]
+       },
+       {
+        "captain": "Javonte Williams",
+        "flex": [
+         "Baker Mayfield",
+         "Brandon Aubrey",
+         "Emeka Egbuka",
+         "Jake Ferguson",
+         "Ryan Flournoy"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Baker Mayfield"
+        ]
+       },
+       {
+        "captain": "Buccaneers",
+        "flex": [
+         "Brandon Aubrey",
+         "Chris Godwin Jr.",
+         "Emeka Egbuka",
+         "George Pickens",
+         "Jake Ferguson"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Brandon Aubrey",
+        "flex": [
+         "Buccaneers",
+         "Chase McLaughlin",
+         "Emeka Egbuka",
+         "Jake Ferguson",
+         "Ted Hurst III"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Brandon Aubrey",
+        "flex": [
+         "Chase McLaughlin",
+         "Chris Godwin Jr.",
+         "Emeka Egbuka",
+         "George Pickens",
+         "Tyler Goodson"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "PLAYER_ABSENT_FROM_FIELD_TARGETS",
+        "players_absent_from_field_targets": [
+         "Tyler Goodson"
+        ]
+       },
+       {
+        "captain": "Jake Ferguson",
+        "flex": [
+         "Brandon Aubrey",
+         "Buccaneers",
+         "Chase McLaughlin",
+         "Chris Godwin Jr.",
+         "Cowboys"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       }
+      ]
+     }
+    }
+   },
+   "BLEND": {
+    "STATUS": "PRODUCTION_CANDIDATE -- NOT PROMOTED, NOT VALIDATED",
+    "NOT_FITTED": {
+     "targets": "optimizer-exposure shadow field ownership, not a fitted ownership model",
+     "archetype_prior": "DERIVED_FROM_OPTIMIZER_FIELD (joint away-count x QB-count x K/DST-count)",
+     "phi": "ASSUMED, swept [50.0, 200.0, 1000.0]; 200.0 carried to the board",
+     "contest_bucket": "one bucket for all three contests",
+     "E2": "ETR-seeded correlation factors only; salary-left and construction factors 1.0"
+    },
+    "phi_sweep": [
+     "50.0",
+     "200.0",
+     "1000.0"
+    ],
+    "calibration_residual_rmse_pts": {
+     "50.0": {
+      "cpt": 0.235,
+      "flex": 3.103
+     },
+     "200.0": {
+      "cpt": 0.291,
+      "flex": 2.579
+     },
+     "1000.0": {
+      "cpt": 0.137,
+      "flex": 2.332
+     }
+    },
+    "salary_left_archetype_field": {
+     "mean": 1579,
+     "p50": 1100.0,
+     "share_0": 0.059,
+     "share_le_900": 0.451,
+     "share_1000_1900": 0.259
+    },
+    "contests": {
+     "196438543": {
+      "mean": {
+       "E1": 43.2,
+       "E2": 66.28,
+       "E3_lower_bound_mean": 53.3,
+       "E4": 178.83
+      },
+      "flags": {
+       "E1_E3_DISAGREE_GT_2X": 28,
+       "E3_BELOW_RESOLUTION_E1_NOT": 13,
+       "None": 106,
+       "PLAYER_ABSENT_FROM_FIELD_TARGETS": 3
+      },
+      "by_phi_E3_mean": {
+       "50.0": 58.63,
+       "200.0": 53.3,
+       "1000.0": 59.73
+      },
+      "lineups": null
+     },
+     "196438555": {
+      "mean": {
+       "E1": 8.37,
+       "E2": 14.45,
+       "E3_lower_bound_mean": 20.18,
+       "E4": 54.59
+      },
+      "flags": {
+       "E1_E3_DISAGREE_GT_2X": 5,
+       "E3_BELOW_RESOLUTION_E1_NOT": 2,
+       "None": 13
+      },
+      "by_phi_E3_mean": {
+       "50.0": 23.43,
+       "200.0": 20.18,
+       "1000.0": 23.9
+      },
+      "lineups": [
+       {
+        "captain": "CeeDee Lamb",
+        "flex": [
+         "Cade Otton",
+         "Dak Prescott",
+         "Jake Ferguson",
+         "Javonte Williams",
+         "Payne Durham"
+        ],
+        "E1_independent_product": 83.01,
+        "E2_adjusted_product": 166.03,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": 276.7,
+        "E3_count_in_field": 294,
+        "E4_optimizer_field": 856.5,
+        "FLAG": "E1_E3_DISAGREE_GT_2X",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "CeeDee Lamb",
+        "flex": [
+         "Brevyn Spann-Ford",
+         "Cade Otton",
+         "Chase McLaughlin",
+         "Dak Prescott",
+         "Javonte Williams"
+        ],
+        "E1_independent_product": 0.52,
+        "E2_adjusted_product": 1.05,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": 2.8,
+        "E3_count_in_field": 3,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "E1_E3_DISAGREE_GT_2X",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Dak Prescott",
+        "flex": [
+         "Baker Mayfield",
+         "Bucky Irving",
+         "Cade Otton",
+         "CeeDee Lamb",
+         "Payne Durham"
+        ],
+        "E1_independent_product": 1.87,
+        "E2_adjusted_product": 1.87,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 9.4,
+        "FLAG": "E3_BELOW_RESOLUTION_E1_NOT",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "CeeDee Lamb",
+        "flex": [
+         "Baker Mayfield",
+         "Brandon Aubrey",
+         "Cade Otton",
+         "Dak Prescott",
+         "Tyler Goodson"
+        ],
+        "E1_independent_product": 1.36,
+        "E2_adjusted_product": 2.73,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "E3_BELOW_RESOLUTION_E1_NOT",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "CeeDee Lamb",
+        "flex": [
+         "Brandon Aubrey",
+         "Buccaneers",
+         "Bucky Irving",
+         "Cade Otton",
+         "Dak Prescott"
+        ],
+        "E1_independent_product": 23.8,
+        "E2_adjusted_product": 47.6,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": 52.7,
+        "E3_count_in_field": 56,
+        "E4_optimizer_field": 65.9,
+        "FLAG": "E1_E3_DISAGREE_GT_2X",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "CeeDee Lamb",
+        "flex": [
+         "Bucky Irving",
+         "Dak Prescott",
+         "Javonte Williams",
+         "Payne Durham",
+         "Tyler Goodson"
+        ],
+        "E1_independent_product": 7.62,
+        "E2_adjusted_product": 15.24,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": 53.6,
+        "E3_count_in_field": 57,
+        "E4_optimizer_field": 75.3,
+        "FLAG": "E1_E3_DISAGREE_GT_2X",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Baker Mayfield",
+        "flex": [
+         "Cade Otton",
+         "CeeDee Lamb",
+         "Emeka Egbuka",
+         "Javonte Williams",
+         "Payne Durham"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "CeeDee Lamb",
+        "flex": [
+         "Bucky Irving",
+         "Chase McLaughlin",
+         "Dak Prescott",
+         "Jake Ferguson",
+         "Tyler Goodson"
+        ],
+        "E1_independent_product": 5.25,
+        "E2_adjusted_product": 10.5,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": 4.7,
+        "E3_count_in_field": 5,
+        "E4_optimizer_field": 18.8,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Dak Prescott",
+        "flex": [
+         "Baker Mayfield",
+         "Cade Otton",
+         "CeeDee Lamb",
+         "Emari Demercado",
+         "Emeka Egbuka"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Bucky Irving",
+        "flex": [
+         "Baker Mayfield",
+         "Cade Otton",
+         "Dak Prescott",
+         "Javonte Williams",
+         "Tyler Goodson"
+        ],
+        "E1_independent_product": 0.1,
+        "E2_adjusted_product": 0.1,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Bucky Irving",
+        "flex": [
+         "Baker Mayfield",
+         "Buccaneers",
+         "Cade Otton",
+         "CeeDee Lamb",
+         "Emeka Egbuka"
+        ],
+        "E1_independent_product": 0.01,
+        "E2_adjusted_product": 0.01,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Javonte Williams",
+        "flex": [
+         "Brandon Aubrey",
+         "Bucky Irving",
+         "Cade Otton",
+         "Chase McLaughlin",
+         "Dak Prescott"
+        ],
+        "E1_independent_product": 43.5,
+        "E2_adjusted_product": 43.5,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": 13.2,
+        "E3_count_in_field": 14,
+        "E4_optimizer_field": 65.9,
+        "FLAG": "E1_E3_DISAGREE_GT_2X",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Bucky Irving",
+        "flex": [
+         "Baker Mayfield",
+         "Brandon Aubrey",
+         "Buccaneers",
+         "Emeka Egbuka",
+         "Javonte Williams"
+        ],
+        "E1_independent_product": 0.01,
+        "E2_adjusted_product": 0.01,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Javonte Williams",
+        "flex": [
+         "Baker Mayfield",
+         "Bucky Irving",
+         "Emeka Egbuka",
+         "Jake Ferguson",
+         "Payne Durham"
+        ],
+        "E1_independent_product": 0.04,
+        "E2_adjusted_product": 0.04,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Javonte Williams",
+        "flex": [
+         "Baker Mayfield",
+         "Brandon Aubrey",
+         "Bucky Irving",
+         "Chris Godwin Jr.",
+         "Tyler Goodson"
+        ],
+        "E1_independent_product": 0.01,
+        "E2_adjusted_product": 0.01,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Javonte Williams",
+        "flex": [
+         "Baker Mayfield",
+         "Brandon Aubrey",
+         "Emeka Egbuka",
+         "Jake Ferguson",
+         "Ryan Flournoy"
+        ],
+        "E1_independent_product": 0.21,
+        "E2_adjusted_product": 0.21,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Buccaneers",
+        "flex": [
+         "Brandon Aubrey",
+         "Chris Godwin Jr.",
+         "Emeka Egbuka",
+         "George Pickens",
+         "Jake Ferguson"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Brandon Aubrey",
+        "flex": [
+         "Buccaneers",
+         "Chase McLaughlin",
+         "Emeka Egbuka",
+         "Jake Ferguson",
+         "Ted Hurst III"
+        ],
+        "E1_independent_product": 0.03,
+        "E2_adjusted_product": 0.03,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Brandon Aubrey",
+        "flex": [
+         "Chase McLaughlin",
+         "Chris Godwin Jr.",
+         "Emeka Egbuka",
+         "George Pickens",
+         "Tyler Goodson"
+        ],
+        "E1_independent_product": 0.01,
+        "E2_adjusted_product": 0.01,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Jake Ferguson",
+        "flex": [
+         "Brandon Aubrey",
+         "Buccaneers",
+         "Chase McLaughlin",
+         "Chris Godwin Jr.",
+         "Cowboys"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       }
+      ]
+     },
+     "196438556": {
+      "mean": {
+       "E1": 8.37,
+       "E2": 14.45,
+       "E3_lower_bound_mean": 20.18,
+       "E4": 54.59
+      },
+      "flags": {
+       "E1_E3_DISAGREE_GT_2X": 5,
+       "E3_BELOW_RESOLUTION_E1_NOT": 2,
+       "None": 13
+      },
+      "by_phi_E3_mean": {
+       "50.0": 23.43,
+       "200.0": 20.18,
+       "1000.0": 23.9
+      },
+      "lineups": [
+       {
+        "captain": "CeeDee Lamb",
+        "flex": [
+         "Cade Otton",
+         "Dak Prescott",
+         "Jake Ferguson",
+         "Javonte Williams",
+         "Payne Durham"
+        ],
+        "E1_independent_product": 83.01,
+        "E2_adjusted_product": 166.03,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": 276.7,
+        "E3_count_in_field": 294,
+        "E4_optimizer_field": 856.5,
+        "FLAG": "E1_E3_DISAGREE_GT_2X",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "CeeDee Lamb",
+        "flex": [
+         "Brevyn Spann-Ford",
+         "Cade Otton",
+         "Chase McLaughlin",
+         "Dak Prescott",
+         "Javonte Williams"
+        ],
+        "E1_independent_product": 0.52,
+        "E2_adjusted_product": 1.05,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": 2.8,
+        "E3_count_in_field": 3,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "E1_E3_DISAGREE_GT_2X",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Dak Prescott",
+        "flex": [
+         "Baker Mayfield",
+         "Bucky Irving",
+         "Cade Otton",
+         "CeeDee Lamb",
+         "Payne Durham"
+        ],
+        "E1_independent_product": 1.87,
+        "E2_adjusted_product": 1.87,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 9.4,
+        "FLAG": "E3_BELOW_RESOLUTION_E1_NOT",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "CeeDee Lamb",
+        "flex": [
+         "Baker Mayfield",
+         "Brandon Aubrey",
+         "Cade Otton",
+         "Dak Prescott",
+         "Tyler Goodson"
+        ],
+        "E1_independent_product": 1.36,
+        "E2_adjusted_product": 2.73,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": "E3_BELOW_RESOLUTION_E1_NOT",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "CeeDee Lamb",
+        "flex": [
+         "Brandon Aubrey",
+         "Buccaneers",
+         "Bucky Irving",
+         "Cade Otton",
+         "Dak Prescott"
+        ],
+        "E1_independent_product": 23.8,
+        "E2_adjusted_product": 47.6,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": 52.7,
+        "E3_count_in_field": 56,
+        "E4_optimizer_field": 65.9,
+        "FLAG": "E1_E3_DISAGREE_GT_2X",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "CeeDee Lamb",
+        "flex": [
+         "Bucky Irving",
+         "Dak Prescott",
+         "Javonte Williams",
+         "Payne Durham",
+         "Tyler Goodson"
+        ],
+        "E1_independent_product": 7.62,
+        "E2_adjusted_product": 15.24,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": 53.6,
+        "E3_count_in_field": 57,
+        "E4_optimizer_field": 75.3,
+        "FLAG": "E1_E3_DISAGREE_GT_2X",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Baker Mayfield",
+        "flex": [
+         "Cade Otton",
+         "CeeDee Lamb",
+         "Emeka Egbuka",
+         "Javonte Williams",
+         "Payne Durham"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "CeeDee Lamb",
+        "flex": [
+         "Bucky Irving",
+         "Chase McLaughlin",
+         "Dak Prescott",
+         "Jake Ferguson",
+         "Tyler Goodson"
+        ],
+        "E1_independent_product": 5.25,
+        "E2_adjusted_product": 10.5,
+        "E2_factors": [
+         "CPT_WR_WITH_OWN_QB x2.0"
+        ],
+        "E3_archetype_field": 4.7,
+        "E3_count_in_field": 5,
+        "E4_optimizer_field": 18.8,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Dak Prescott",
+        "flex": [
+         "Baker Mayfield",
+         "Cade Otton",
+         "CeeDee Lamb",
+         "Emari Demercado",
+         "Emeka Egbuka"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Bucky Irving",
+        "flex": [
+         "Baker Mayfield",
+         "Cade Otton",
+         "Dak Prescott",
+         "Javonte Williams",
+         "Tyler Goodson"
+        ],
+        "E1_independent_product": 0.1,
+        "E2_adjusted_product": 0.1,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Bucky Irving",
+        "flex": [
+         "Baker Mayfield",
+         "Buccaneers",
+         "Cade Otton",
+         "CeeDee Lamb",
+         "Emeka Egbuka"
+        ],
+        "E1_independent_product": 0.01,
+        "E2_adjusted_product": 0.01,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Javonte Williams",
+        "flex": [
+         "Brandon Aubrey",
+         "Bucky Irving",
+         "Cade Otton",
+         "Chase McLaughlin",
+         "Dak Prescott"
+        ],
+        "E1_independent_product": 43.5,
+        "E2_adjusted_product": 43.5,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": 13.2,
+        "E3_count_in_field": 14,
+        "E4_optimizer_field": 65.9,
+        "FLAG": "E1_E3_DISAGREE_GT_2X",
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Bucky Irving",
+        "flex": [
+         "Baker Mayfield",
+         "Brandon Aubrey",
+         "Buccaneers",
+         "Emeka Egbuka",
+         "Javonte Williams"
+        ],
+        "E1_independent_product": 0.01,
+        "E2_adjusted_product": 0.01,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Javonte Williams",
+        "flex": [
+         "Baker Mayfield",
+         "Bucky Irving",
+         "Emeka Egbuka",
+         "Jake Ferguson",
+         "Payne Durham"
+        ],
+        "E1_independent_product": 0.04,
+        "E2_adjusted_product": 0.04,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Javonte Williams",
+        "flex": [
+         "Baker Mayfield",
+         "Brandon Aubrey",
+         "Bucky Irving",
+         "Chris Godwin Jr.",
+         "Tyler Goodson"
+        ],
+        "E1_independent_product": 0.01,
+        "E2_adjusted_product": 0.01,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Javonte Williams",
+        "flex": [
+         "Baker Mayfield",
+         "Brandon Aubrey",
+         "Emeka Egbuka",
+         "Jake Ferguson",
+         "Ryan Flournoy"
+        ],
+        "E1_independent_product": 0.21,
+        "E2_adjusted_product": 0.21,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Buccaneers",
+        "flex": [
+         "Brandon Aubrey",
+         "Chris Godwin Jr.",
+         "Emeka Egbuka",
+         "George Pickens",
+         "Jake Ferguson"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Brandon Aubrey",
+        "flex": [
+         "Buccaneers",
+         "Chase McLaughlin",
+         "Emeka Egbuka",
+         "Jake Ferguson",
+         "Ted Hurst III"
+        ],
+        "E1_independent_product": 0.03,
+        "E2_adjusted_product": 0.03,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Brandon Aubrey",
+        "flex": [
+         "Chase McLaughlin",
+         "Chris Godwin Jr.",
+         "Emeka Egbuka",
+         "George Pickens",
+         "Tyler Goodson"
+        ],
+        "E1_independent_product": 0.01,
+        "E2_adjusted_product": 0.01,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       },
+       {
+        "captain": "Jake Ferguson",
+        "flex": [
+         "Brandon Aubrey",
+         "Buccaneers",
+         "Chase McLaughlin",
+         "Chris Godwin Jr.",
+         "Cowboys"
+        ],
+        "E1_independent_product": 0.0,
+        "E2_adjusted_product": 0.0,
+        "E2_factors": [
+         "none"
+        ],
+        "E3_archetype_field": "<0.9",
+        "E3_count_in_field": 0,
+        "E4_optimizer_field": 0.0,
+        "FLAG": null,
+        "players_absent_from_field_targets": []
+       }
+      ]
+     }
+    }
+   }
+  },
+  "DUPE_SALARY_SENSITIVITY": "NOT_RUN",
+  "PROMOTION_STATUS": "NOT_PROMOTED. Both field projections are EXTERNAL_RESEARCH_SHADOW and UNVALIDATED; the blend fits five unverified anchors better, which is not validation. Neither feeds the football or the production portfolio."
+ },
+ "EXTERNAL": {
+  "fc_comparison_largest_gaps": [
+   {
+    "player": "Baker Mayfield",
+    "team": "TB",
+    "pos": "QB",
+    "our_mean": "17.21",
+    "fc_flex": "0.0",
+    "diff_ours_minus_fc": "17.21",
+    "triage": "DEPTH_OR_DATA (FC zero is not an inactive signal)",
+    "our_role": "ALPHA"
+   },
+   {
+    "player": "Jalon Daniels",
+    "team": "TB",
+    "pos": "QB",
+    "our_mean": "0.06",
+    "fc_flex": "12.25",
+    "diff_ours_minus_fc": "-12.19",
+    "triage": "ROLE_OR_VOLUME",
+    "our_role": "FRINGE"
+   },
+   {
+    "player": "CeeDee Lamb",
+    "team": "DAL",
+    "pos": "WR",
+    "our_mean": "28.47",
+    "fc_flex": "21.74",
+    "diff_ours_minus_fc": "6.73",
+    "triage": "ROLE_OR_VOLUME",
+    "our_role": "ALPHA"
+   },
+   {
+    "player": "George Pickens",
+    "team": "DAL",
+    "pos": "WR",
+    "our_mean": "11.7",
+    "fc_flex": "17.64",
+    "diff_ours_minus_fc": "-5.94",
+    "triage": "ROLE_OR_VOLUME",
+    "our_role": "SECONDARY"
+   },
+   {
+    "player": "Bucky Irving",
+    "team": "TB",
+    "pos": "RB",
+    "our_mean": "15.24",
+    "fc_flex": "10.51",
+    "diff_ours_minus_fc": "4.73",
+    "triage": "ROLE_OR_VOLUME",
+    "our_role": "ALPHA"
+   },
+   {
+    "player": "Kenny Gainwell",
+    "team": "TB",
+    "pos": "RB",
+    "our_mean": "4.53",
+    "fc_flex": "9.09",
+    "diff_ours_minus_fc": "-4.56",
+    "triage": "ROLE_OR_VOLUME",
+    "our_role": "SECONDARY"
+   },
+   {
+    "player": "Emeka Egbuka",
+    "team": "TB",
+    "pos": "WR",
+    "our_mean": "12.32",
+    "fc_flex": "7.79",
+    "diff_ours_minus_fc": "4.53",
+    "triage": "ROLE_OR_VOLUME",
+    "our_role": "ALPHA"
+   },
+   {
+    "player": "Cade Otton",
+    "team": "TB",
+    "pos": "TE",
+    "our_mean": "11.71",
+    "fc_flex": "7.37",
+    "diff_ours_minus_fc": "4.34",
+    "triage": "ROLE_OR_VOLUME",
+    "our_role": "ALPHA"
+   },
+   {
+    "player": "Ryan Flournoy",
+    "team": "DAL",
+    "pos": "WR",
+    "our_mean": "5.35",
+    "fc_flex": "9.19",
+    "diff_ours_minus_fc": "-3.84",
+    "triage": "ROLE_OR_VOLUME",
+    "our_role": "ROTATIONAL"
+   },
+   {
+    "player": "KaVontae Turpin",
+    "team": "DAL",
+    "pos": "WR",
+    "our_mean": "1.11",
+    "fc_flex": "4.41",
+    "diff_ours_minus_fc": "-3.3",
+    "triage": "ROLE_OR_VOLUME",
+    "our_role": "FRINGE"
+   },
+   {
+    "player": "Tyler Goodson",
+    "team": "DAL",
+    "pos": "RB",
+    "our_mean": "4.38",
+    "fc_flex": "1.11",
+    "diff_ours_minus_fc": "3.27",
+    "triage": "ROLE_OR_VOLUME",
+    "our_role": "SECONDARY"
+   },
+   {
+    "player": "Tez Johnson",
+    "team": "TB",
+    "pos": "WR",
+    "our_mean": "1.02",
+    "fc_flex": "3.77",
+    "diff_ours_minus_fc": "-2.75",
+    "triage": "",
+    "our_role": "FRINGE"
+   }
+  ],
+  "FC_IS_NOT_AN_INPUT": true,
+  "video_claims": "NOT_PROVIDED_FOR_THIS_SLATE",
+  "HARD_ROCK": "NOT CAPTURED HERE -- only after the football freeze, by the networked agent (docs/AGENT_OUTBOX.md); never fed back into the projection; no wager is recommended"
+ },
+ "FILES": {
+  "uploads": {
+   "SHOWDOWN_TB_DAL_DK_UPLOAD_196438543.csv": {
+    "path": "nfl/dfs/salaries/showdown_tb_dal/PRECOMPUTE_TBQB_MAYFIELD_R3/SHOWDOWN_TB_DAL_DK_UPLOAD_196438543.csv",
+    "sha256": "41ba84a759a5a1ce4944ae4dfacc048bdd911232d48ab203635678e749361b2f",
+    "lineup_rows": 150
+   },
+   "SHOWDOWN_TB_DAL_DK_UPLOAD_196438555.csv": {
+    "path": "nfl/dfs/salaries/showdown_tb_dal/PRECOMPUTE_TBQB_MAYFIELD_R3/SHOWDOWN_TB_DAL_DK_UPLOAD_196438555.csv",
+    "sha256": "6f337e39ee7f545d7db39984cfdaf3a5f1ab232d9c777415f56d05e78fa45800",
+    "lineup_rows": 20
+   },
+   "SHOWDOWN_TB_DAL_DK_UPLOAD_196438556.csv": {
+    "path": "nfl/dfs/salaries/showdown_tb_dal/PRECOMPUTE_TBQB_MAYFIELD_R3/SHOWDOWN_TB_DAL_DK_UPLOAD_196438556.csv",
+    "sha256": "faae6a2146a6069e286d4e7d6f0c1b0d5c0a568795f8866b2886d780ab151339",
+    "lineup_rows": 20
+   }
+  },
+  "verifier": {
+   "n_rows": 190,
+   "violations": []
+  }
+ },
+ "NOT_SUBMITTED": "nothing here enters a contest or uploads to DraftKings; PROJECTION_SYSTEM_STATE NOT_VALIDATED; no wager is recommended"
+}
