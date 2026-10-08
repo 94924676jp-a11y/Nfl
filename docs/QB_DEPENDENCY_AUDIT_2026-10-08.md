@@ -61,6 +61,10 @@ Source: `nfl/research/qb_env/qb_change_effect.py` → `QB_CHANGE_EFFECT.json`.
 - That is real and modest **on average**. Backups vary, so an average is not a forecast for a particular QB.
 - These are averages over non-random events (injury, benching), so they are **not** causal estimates.
 - This is why a universal backup downgrade is ruled out: the candidate has to be specific to the QB.
+- **CORRECTION (2026-10-08, after the independent Perplexity review).** The starter here is labelled from the
+  outcome: the QB with the most attempts in that game. Excluding mid-game changes also conditions on in-game events.
+  - These figures are therefore **descriptive associations on outcome-labelled cases**, not pregame forecast effects.
+  - A pregame cohort needs point-in-time starter evidence; see `FOOTBALL_INTELLIGENCE_AUDIT_2026-10-08.md` §6, item 7.
 
 ## 3. SC-QB-ENV-1: candidate design (declared now; nothing fitted until this is frozen)
 

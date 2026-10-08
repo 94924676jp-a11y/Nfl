@@ -1,0 +1,432 @@
+{
+ "ARTIFACT": "FOOTBALL_DEPENDENCY_GRAPH",
+ "version": "v0",
+ "scope": "Showdown production path, HEAD of 2026-10-08",
+ "NOT_IN_SCOPE_YET": [
+  "Classic run_forecast path",
+  "FanDuel scoring",
+  "ownership/field models",
+  "late swap",
+  "Classic optimizer",
+  "non-QB vintage_selector pipeline",
+  "prospective/q9 shadow paths"
+ ],
+ "status_vocabulary": [
+  "IMPLEMENTED_AND_CONSUMED",
+  "IMPLEMENTED_NOT_CONSUMED",
+  "INVARIANT_BY_DESIGN",
+  "MISSING",
+  "INCORRECT",
+  "UNVERIFIED",
+  "SHADOW_ONLY",
+  "NOT_MODELLED_BY_OWNER_INSTRUCTION"
+ ],
+ "n_edges": 29,
+ "counts": {
+  "IMPLEMENTED_AND_CONSUMED": 10,
+  "IMPLEMENTED_NOT_CONSUMED": 3,
+  "INVARIANT_BY_DESIGN": 0,
+  "MISSING": 9,
+  "INCORRECT": 5,
+  "UNVERIFIED": 0,
+  "SHADOW_ONLY": 1,
+  "NOT_MODELLED_BY_OWNER_INSTRUCTION": 1
+ },
+ "edges": [
+  {
+   "id": "ID1",
+   "from": "starter evidence + designations",
+   "to": "slate state starter flag, availability",
+   "football_mechanism": "who may take the snaps",
+   "status": "IMPLEMENTED_AND_CONSUMED",
+   "code": "showdown_slate_state._starter_context; showdown_run_guards.verify_starter_state",
+   "evidence": "nfl/tests/test_showdown_run_guards.py (33/33); P0 pack 45/4/6",
+   "relationship_kind": "GOVERNANCE",
+   "downstream_consumers": [
+    "role_state",
+    "proj_v1"
+   ],
+   "note": ""
+  },
+  {
+   "id": "ID2",
+   "from": "availability OUT",
+   "to": "player opportunity = 0",
+   "football_mechanism": "an inactive player records no events",
+   "status": "IMPLEMENTED_AND_CONSUMED",
+   "code": "proj_v1.allocate_opportunity (active set); world_accounting_check INACTIVE_NO_EVENTS",
+   "evidence": "nfl/research/accounting/WORLD_ACCOUNTING_*.json: 0 violations",
+   "relationship_kind": "ACCOUNTING_RULE",
+   "downstream_consumers": [
+    "showdown_draws"
+   ],
+   "note": ""
+  },
+  {
+   "id": "ID3",
+   "from": "QB depth/starter",
+   "to": "QB share of club attempts",
+   "football_mechanism": "the starter takes the attempts",
+   "status": "IMPLEMENTED_AND_CONSUMED",
+   "code": "proj_v1.depth_shares; showdown_draws._shares",
+   "evidence": "R7 vs Mayfield R4 projections",
+   "relationship_kind": "STATISTICAL_ASSOCIATION",
+   "downstream_consumers": [
+    "sim.game"
+   ],
+   "note": ""
+  },
+  {
+   "id": "QB1",
+   "from": "starting QB identity",
+   "to": "club pass/rush attempts, targets, plays",
+   "football_mechanism": "QB skill and style move team volume",
+   "status": "MISSING",
+   "code": "proj_v1.team_volume (proj_v1.py:167) takes (panel, env); no QB argument",
+   "evidence": "TB 35.2794 attempts under both scenarios (Perplexity audit; TB_DAL_ISOLATION audit)",
+   "relationship_kind": "CAUSAL_HYPOTHESIS",
+   "downstream_consumers": [
+    "allocate_opportunity",
+    "sim.game"
+   ],
+   "note": "QB_CHANGE_EFFECT: in-season replacements +0.92 rush att, outcome-labelled"
+  },
+  {
+   "id": "QB2",
+   "from": "starting QB identity",
+   "to": "club scoring centre",
+   "football_mechanism": "QB quality moves points",
+   "status": "MISSING",
+   "code": "sim/football_points.expected_points (:68), centre_for_game (:158): club history only",
+   "evidence": "TB centre 20.6765 both scenarios; QB_CHANGE_EFFECT -1.06 [-2.06,-0.02] (outcome-labelled, descriptive)",
+   "relationship_kind": "CAUSAL_HYPOTHESIS",
+   "downstream_consumers": [
+    "allocate_club_td",
+    "sim.game",
+    "DST points allowed",
+    "kicker"
+   ],
+   "note": ""
+  },
+  {
+   "id": "QB3",
+   "from": "QB completion / depth profile",
+   "to": "receiver catch probability",
+   "football_mechanism": "who throws changes catchability",
+   "status": "IMPLEMENTED_NOT_CONSUMED",
+   "code": "QB completion_rate in projection; showdown_draws._shares supplies receiver catch_rate; sim/game.py _binom(tgt, catch_rate) (~:515); no \"completion\" token in showdown_draws or sim/game",
+   "evidence": "grep at HEAD; Perplexity audit",
+   "relationship_kind": "CAUSAL_HYPOTHESIS",
+   "downstream_consumers": [
+    "sim.game catches"
+   ],
+   "note": ""
+  },
+  {
+   "id": "QB4",
+   "from": "QB identity",
+   "to": "receiver target allocation/depth",
+   "football_mechanism": "QBs distribute differently",
+   "status": "MISSING",
+   "code": "proj_v1.allocate_opportunity / group_shares: receiver own history and role only",
+   "evidence": "Egbuka 7.7480 vs 7.7469 targets",
+   "relationship_kind": "CAUSAL_HYPOTHESIS",
+   "downstream_consumers": [
+    "sim.game"
+   ],
+   "note": ""
+  },
+  {
+   "id": "QB5",
+   "from": "QB sack/scramble style",
+   "to": "opponent DST sacks/takeaways; drive survival",
+   "football_mechanism": "pressure-prone QBs feed the DST",
+   "status": "MISSING",
+   "code": "sim/game DST components conditioned on opponent points, not opponent QB events",
+   "evidence": "code read",
+   "relationship_kind": "CAUSAL_HYPOTHESIS",
+   "downstream_consumers": [
+    "DST",
+    "portfolio"
+   ],
+   "note": ""
+  },
+  {
+   "id": "QB6",
+   "from": "QB own efficiency",
+   "to": "QB passing yards",
+   "football_mechanism": "own YPA prior",
+   "status": "IMPLEMENTED_AND_CONSUMED",
+   "code": "player_prior.hierarchical -> proj_v1.project_player -> classic_slate_run.efficiency_worlds pass factor",
+   "evidence": "Daniels factor 0.736 vs Mayfield 0.911",
+   "relationship_kind": "STATISTICAL_ASSOCIATION",
+   "downstream_consumers": [
+    "worlds"
+   ],
+   "note": "Daniels prior is ARCHETYPE (cohort), not personal evidence"
+  },
+  {
+   "id": "AC1",
+   "from": "pass event",
+   "to": "passer yards == receiver yards",
+   "football_mechanism": "one completion credits both",
+   "status": "INCORRECT",
+   "code": "classic_slate_run.efficiency_worlds (:85, scaling :106-124): independent per-player yard factors",
+   "evidence": "WORLD_ACCOUNTING: TB mean gap -29.98 yd (Daniels), +10.06 (Mayfield); transform share -29.87 / +10.14; audit 100/50 probe reproduced through the real function",
+   "relationship_kind": "ACCOUNTING_RULE",
+   "downstream_consumers": [
+    "DK points",
+    "portfolio"
+   ],
+   "note": ""
+  },
+  {
+   "id": "AC2",
+   "from": "reception",
+   "to": "receiving yards / receiving TD",
+   "football_mechanism": "yards and a receiving TD require a catch (absent laterals)",
+   "status": "INCORRECT",
+   "code": "sim/game: rec yards split by targets, catches _binom independent, pass TDs allocated by share",
+   "evidence": "WORLD_ACCOUNTING: ~1,500/2,000 worlds have catchless receiving yards; ~500 catchless receiving TDs; no lateral event exists in the simulator",
+   "relationship_kind": "ACCOUNTING_RULE",
+   "downstream_consumers": [
+    "DK points"
+   ],
+   "note": ""
+  },
+  {
+   "id": "AC3",
+   "from": "interception",
+   "to": "opposing DST takeaway",
+   "football_mechanism": "an INT is the defence's takeaway",
+   "status": "INCORRECT",
+   "code": "showdown_slate_run: efficiency_worlds draws INTs from projection int_rate (:109) after raw DST components",
+   "evidence": "WORLD_ACCOUNTING: ~400-540 worlds per club with more INTs than opposing takeaways",
+   "relationship_kind": "ACCOUNTING_RULE",
+   "downstream_consumers": [
+    "QB DK",
+    "DST DK",
+    "captain correlation"
+   ],
+   "note": ""
+  },
+  {
+   "id": "AC4",
+   "from": "offensive TDs",
+   "to": "team points",
+   "football_mechanism": "points are the sum of scoring events",
+   "status": "INCORRECT",
+   "code": "sim/game score-first centred continuous points; TDs drawn from the centre",
+   "evidence": "WORLD_ACCOUNTING: 44-83 worlds per club with points < 6 x offensive TDs",
+   "relationship_kind": "ACCOUNTING_RULE",
+   "downstream_consumers": [
+    "DST points allowed",
+    "kicker",
+    "game-script"
+   ],
+   "note": ""
+  },
+  {
+   "id": "AC5",
+   "from": "raw identities",
+   "to": "published worlds",
+   "football_mechanism": "certification must cover the published arrays",
+   "status": "INCORRECT",
+   "code": "identities_verified_by_the_simulator certifies RAW worlds; transforms follow",
+   "evidence": "DRAWS.json metadata",
+   "relationship_kind": "GOVERNANCE",
+   "downstream_consumers": [
+    "READY gate"
+   ],
+   "note": "world_accounting_check now measures the published stage (validation-only)"
+  },
+  {
+   "id": "AC6",
+   "from": "event-linked world repair",
+   "to": "production",
+   "football_mechanism": "shared event ledger",
+   "status": "SHADOW_ONLY",
+   "code": "nfl/research/coherence EL_S1",
+   "evidence": "EVENT_LINKED_WORLD.json: failed conjunctive confirmation",
+   "relationship_kind": "ACCOUNTING_RULE",
+   "downstream_consumers": [],
+   "note": ""
+  },
+  {
+   "id": "GS1",
+   "from": "score / margin",
+   "to": "pass/rush mix",
+   "football_mechanism": "trailing teams pass",
+   "status": "IMPLEMENTED_AND_CONSUMED",
+   "code": "sim/game ~:301-359 (score sampled first, then volume)",
+   "evidence": "code read",
+   "relationship_kind": "STATISTICAL_ASSOCIATION",
+   "downstream_consumers": [
+    "sim.game"
+   ],
+   "note": "not sequential: no drive/possession state"
+  },
+  {
+   "id": "GS2",
+   "from": "drives / possessions / clock",
+   "to": "scoring and volume",
+   "football_mechanism": "scoring emerges from drives",
+   "status": "MISSING",
+   "code": "no possession model on the Showdown path",
+   "evidence": "code read",
+   "relationship_kind": "CAUSAL_HYPOTHESIS",
+   "downstream_consumers": [],
+   "note": ""
+  },
+  {
+   "id": "EN1",
+   "from": "weather (wind, precipitation, temperature)",
+   "to": "passing, kicking, scoring",
+   "football_mechanism": "environment",
+   "status": "IMPLEMENTED_NOT_CONSUMED",
+   "code": "TEAM_GAME carries roof/surface/temp/wind (warehouse/team_game.py:336-347); football_points declares WEATHER NOT_MODELLED; kicker_world declares weather not modelled",
+   "evidence": "grep: no forecasting consumer",
+   "relationship_kind": "CAUSAL_HYPOTHESIS",
+   "downstream_consumers": [],
+   "note": ""
+  },
+  {
+   "id": "EN2",
+   "from": "rest days / short week",
+   "to": "efficiency, availability",
+   "football_mechanism": "fatigue",
+   "status": "IMPLEMENTED_NOT_CONSUMED",
+   "code": "TEAM_GAME rest_days -> showdown_slate_state environment (:110); no consumer",
+   "evidence": "grep",
+   "relationship_kind": "CAUSAL_HYPOTHESIS",
+   "downstream_consumers": [],
+   "note": ""
+  },
+  {
+   "id": "EN3",
+   "from": "opponent defence",
+   "to": "club scoring, volume",
+   "football_mechanism": "matchup",
+   "status": "NOT_MODELLED_BY_OWNER_INSTRUCTION",
+   "code": "football_points: OPPONENT_ADJUSTMENT NOT_MODELLED (owner item 9)",
+   "evidence": "code",
+   "relationship_kind": "CAUSAL_HYPOTHESIS",
+   "downstream_consumers": [],
+   "note": "an owner decision; re-opening it is an owner question"
+  },
+  {
+   "id": "PE1",
+   "from": "offensive line availability",
+   "to": "pressure, sacks, rushing efficiency",
+   "football_mechanism": "protection",
+   "status": "MISSING",
+   "code": "no OL token on the Showdown path",
+   "evidence": "grep",
+   "relationship_kind": "CAUSAL_HYPOTHESIS",
+   "downstream_consumers": [],
+   "note": "data availability not established"
+  },
+  {
+   "id": "PE2",
+   "from": "defensive personnel (CB, edge)",
+   "to": "opponent completion, sacks",
+   "football_mechanism": "coverage/pressure",
+   "status": "MISSING",
+   "code": "none",
+   "evidence": "grep",
+   "relationship_kind": "CAUSAL_HYPOTHESIS",
+   "downstream_consumers": [],
+   "note": "data availability not established"
+  },
+  {
+   "id": "PE3",
+   "from": "coach / play caller",
+   "to": "pace, pass rate, 4th-down policy",
+   "football_mechanism": "scheme",
+   "status": "MISSING",
+   "code": "none",
+   "evidence": "grep",
+   "relationship_kind": "CAUSAL_HYPOTHESIS",
+   "downstream_consumers": [],
+   "note": ""
+  },
+  {
+   "id": "PE4",
+   "from": "in-game injury / relief",
+   "to": "remaining opportunities",
+   "football_mechanism": "replacement owns the rest of the game",
+   "status": "MISSING",
+   "code": "appearance successor is SHADOW_ONLY; no in-game hazard in sim/game",
+   "evidence": "code",
+   "relationship_kind": "CAUSAL_HYPOTHESIS",
+   "downstream_consumers": [],
+   "note": ""
+  },
+  {
+   "id": "PE5",
+   "from": "RB1 / WR1 / TE1 out",
+   "to": "teammate shares",
+   "football_mechanism": "redistribution among the active set",
+   "status": "IMPLEMENTED_AND_CONSUMED",
+   "code": "proj_v1.allocate_opportunity renormalises shares over active players",
+   "evidence": "code read",
+   "relationship_kind": "STATISTICAL_ASSOCIATION",
+   "downstream_consumers": [
+    "sim.game"
+   ],
+   "note": "redistribution is proportional to history; no scheme/personnel response"
+  },
+  {
+   "id": "RL1",
+   "from": "role bands",
+   "to": "one ALPHA per club/position",
+   "football_mechanism": "modelling convention",
+   "status": "IMPLEMENTED_AND_CONSUMED",
+   "code": "role_state.ALPHA_LIMIT (:75), demotion (:257-276) with \"not a football state\" text",
+   "evidence": "code read",
+   "relationship_kind": "STATISTICAL_ASSOCIATION",
+   "downstream_consumers": [
+    "proj_v1"
+   ],
+   "note": "a prior, not an NFL law; harm unmeasured; needs its own ablation"
+  },
+  {
+   "id": "DL1",
+   "from": "raw captures",
+   "to": "historical forecast inputs",
+   "football_mechanism": "information available at the cutoff",
+   "status": "IMPLEMENTED_AND_CONSUMED",
+   "code": "nfl/warehouse/point_in_time.py (opt-in manifests)",
+   "evidence": "test_point_in_time 32/32; ATL sealed replay 26/26; injection 26/26",
+   "relationship_kind": "DATA_LINEAGE",
+   "downstream_consumers": [
+    "every wired reader"
+   ],
+   "note": "live mode is identity; ordering-by-capture-time (F2b) not done"
+  },
+  {
+   "id": "DL2",
+   "from": "market (TEAM_GAME lines)",
+   "to": "production football projection",
+   "football_mechanism": "firewall",
+   "status": "IMPLEMENTED_AND_CONSUMED",
+   "code": "showdown runner FOOTBALL_ONLY arm; proj_v1 default arm is MARKET",
+   "evidence": "MARKET_FIREWALL_*.json PASS_MARKET_BLIND",
+   "relationship_kind": "GOVERNANCE",
+   "downstream_consumers": [],
+   "note": "other entrypoints must declare their arm"
+  },
+  {
+   "id": "DF1",
+   "from": "published worlds",
+   "to": "portfolio scoring",
+   "football_mechanism": "CPT 1.5x same world",
+   "status": "IMPLEMENTED_AND_CONSUMED",
+   "code": "showdown_portfolio.score_matrix",
+   "evidence": "R-series uploads; ATL replay",
+   "relationship_kind": "DATA_LINEAGE",
+   "downstream_consumers": [],
+   "note": ""
+  }
+ ]
+}

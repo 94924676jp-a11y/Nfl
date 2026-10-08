@@ -123,14 +123,29 @@ Each case runs against synthetic stores in a throwaway git repository, so every 
 |---|---|
 | Rebuild all six `nfl/derived` caches **under the manifest** | **6/6 byte-identical to the generation-1 pins.** Before the backstop fix: 5/6, with `KICKER_RATES` leaking week 4 |
 | Sealed Showdown replay (`PIT_SEALED`) | uploads **`8f4d9a77`** (all), `4047a189`, `17e397b4` and `a30f529f` (per contest) are **exactly production's**. 474 s |
-| Matched regression vs the historical baseline (`HIST_BASELINE_B0A2`) | see `nfl/postgame/showdown_atl_no_2026W4/ab/REPRO_PIT_SEALED_vs_b0a2b57b.json` |
-| Injection (`PIT_SEALED_INJECTED`) | see section 5 |
+| Matched regression vs the historical baseline (`HIST_BASELINE_B0A2`) | **26/26 identical**, the slate state included (`REPRO_PIT_SEALED_vs_b0a2b57b.json`) |
+| Injection (`PIT_SEALED_INJECTED`) | **26/26 identical** to the clean sealed replay; see section 5 |
 
 ## 5. Injection, negative control, live regression
 
-Recorded in `nfl/postgame/showdown_atl_no_2026W4/ab/PIT_INJECTION_EVIDENCE.json` and
-`nfl/dfs/salaries/showdown_tb_dal/REGRESSION_DANIELS_R7_vs_R8_PIT.json`. The numbers are filled in from those
-artifacts below.
+**Injection** (`nfl/postgame/showdown_atl_no_2026W4/ab/PIT_INJECTION_EVIDENCE.json`).
+- **Planted after sealing, in the replay worktree only:**
+  - the post-lock 2026 play-by-play (which contains ATL@NO), copied under a new id with a sidecar **forging** a
+    pre-lock `retrieved_at`;
+  - the post-lock roster capture under a new id;
+  - a `vintage_manifest.jsonl` PASS row forging a pre-lock clock for it;
+  - today's `TEAM_GAME` left in place.
+- **Sealed replay with the same manifest:** uploads equal to production (`8f4d9a77`, plus all three per contest).
+  26/26 checks identical to the clean sealed replay (`REPRO_PIT_SEALED_INJECTED_vs_PIT_SEALED.json`).
+- **Negative control** (the same planted tree, no manifest): the export resolves to the wrong game and the run refuses
+  (`SLATE_STATE_NO_IMPLIED_TOTAL`). The environment the manifest excludes **does** change the outcome.
+
+**Live TB@DAL matched regression** (`nfl/dfs/salaries/showdown_tb_dal/REGRESSION_DANIELS_R7_vs_R9_PIT.json`).
+- **Comparison:** R7 (`c6cd6261`) against R9 (`eafc5b01`, which carries the point-in-time code, the readiness split and
+  the runner ledger fix).
+- **Result:** 26/26 checks identical. The upload is `bba17b23` in both, and R9's replay reproduced it.
+- **R8 is invalid.** I edited and restored `point_in_time.py` in the working tree during that build, and the tree-diff
+  guard refused the run (`SCENARIO_ISOLATION_BREACH`). It is recorded in `INVALIDATED_RUNS_TB_DAL_2026W5.json`.
 
 ## 6. What this does not do, stated so it is not assumed
 

@@ -114,7 +114,10 @@ quiet window.
   - the replay reproduces upload `8f4d9a77` and all three per-contest uploads;
   - 26/26 matched checks are identical to the historical baseline.
 - **Defect found and fixed on the way:** `kicker_model` leaked week 4 through an unarmed process.
-- **TB@DAL live:** matched regression R7 vs R8 (pending at time of writing; filled in below).
+- **Injection:** post-lock data with forged clocks leaves the sealed replay 26/26 identical. The no-manifest
+  negative control refuses.
+- **TB@DAL live:** matched regression R7 vs R9 is **26/26 identical**. R8 was refused by the tree-diff guard (my edit
+  during the build) and is recorded as invalid.
 
 **Not included:** ordering by capture time (F2's second half) and the game-date check (F1). Both are separate
 changes, each needing its own regression.
@@ -148,6 +151,21 @@ scratch-output root that the pipeline does not yet have. The point-in-time scrat
 resolved inputs only, not outputs.
 
 **Not claimed:** none of these is claimed closed by documentation alone.
+
+### C1 published-world accounting checker (`world_accounting_check`)
+
+**Label:** SAFE VALIDATION TOOL, report-only. **Not a gate.**
+
+**Evidence** (`docs/FOOTBALL_INTELLIGENCE_AUDIT_2026-10-08.md` §2):
+- Tests 9/9.
+- **Every published world measured violates ordinary-event laws:**
+  - passer vs receiver yards;
+  - catchless receiving yards and TDs;
+  - INTs not taken away by the opposing DST;
+  - points below 6 × TDs.
+- **This covers ATL@NO's live portfolio worlds too.**
+
+**Owner decision:** a gate now would refuse every slate.
 
 ### SC-OWN-ROTATION-2, B4/B3S, appearance successor
 
