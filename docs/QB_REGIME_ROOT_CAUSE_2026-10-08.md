@@ -50,6 +50,10 @@ Several causes, together:
 6. **My own process.** Today I computed Daniels' 0.116 share and gated READY on it, and I measured the historical
    QB-change association. I never opened the game behind the 0.116. A gate that reports a share without showing the
    games behind it hides exactly this.
+   **Worse than not looking:** at 2026-10-07 17:20Z this project's own `docs/AGENT_OUTBOX.md` recorded *"Baker Mayfield
+   was INACTIVE in week 4 (thumb); Jalon Daniels started (30 att)"*. The fact was known and written down, and it was
+   never turned into an evaluation of the offence. Writing a fact into a request log is not consuming it. This is the
+   failure the regime audit exists to make impossible.
 
 ## 3. What now runs without being asked
 
@@ -73,12 +77,34 @@ behind a matched regression.
   are not consumed.
 - It also fails if the audit stops finding TB's regime change, Daniels' start and relief split, or his pooled inputs.
 
-## 4. Correction plan
+## 4. Correction plan (strengthened by the owner, 2026-10-08)
+
+**Owner rulings that bind every step:**
+- **No single-game overfitting.** Separate starts from relief, then use **hierarchical partial pooling**. The pooling
+  covers the QB's own profile, his starts, comparable QBs (mobility, experience), the club and coaching context, the
+  opponent, and historical reliability. Shrinkage is set by sample size. One start informs; it does not dominate.
+  Godwin's 26.9% in Daniels' start against 11.6% is evidence, not a forecast.
+- **Detection is not a solution.** Starter identity must reach, through executable consumers with validation
+  evidence:
+  - team volume and scoring;
+  - QB passing and rushing;
+  - receiver targets and catchability;
+  - RB opportunities;
+  - touchdowns and efficiency;
+  - the joint worlds;
+  - the opponent's DST and the kicker.
+- **Accounting correctness comes first** (event-based passing and scoring arms) before more DFS-optimizer work.
+- **An evidence-response report for every slate, unprompted:**
+  - what new football information existed;
+  - whether it entered the model, and its estimated influence and uncertainty;
+  - which material dependencies remain missing.
+
+**Steps:**
 
 Each step is a separate change, shadow first, and evaluated against the incumbent. No one-game adjustment is made.
 
-1. **Role-aware evidence windows.** Each starter's shares come from his starts, with relief kept separate. Arm
-   `QBCTX_2026_10_ROLE`; it changes outputs.
+1. **Role-aware evidence windows inside a partially pooled model.** Starts and relief enter as separately weighted
+   evidence, never as a starts-only replacement. Arm `QBCTX_2026_10_ROLE`; it changes outputs, so shadow only.
 2. **QB rushing by identity.** Designed runs and scrambles per dropback, partially pooled toward a mobility-aware
    prior rather than a generic cohort, weighted by sample size. Daniels' NFL evidence is 9 carries.
 3. **QB-split team history as a prior.** Team volume and centre by QB regime, shrunk to the club (SC-QB-ENV-1).
