@@ -103,6 +103,52 @@ quiet window.
 - **Historical replay:** required for any replay to be cutoff-correct.
 - **Before release:** needs its own matched regression.
 
+### F2 / F3 (eligibility half): point-in-time data-selection contract (`e1e6d755`, `da99c5de`)
+
+**Label:** SAFE VALIDATION / EXECUTION FIX, opt-in — **ELIGIBLE FOR OWNER REVIEW**. Live mode is the identity.
+
+**Evidence** (`docs/POINT_IN_TIME_CONTRACT_2026-10-08.md`):
+- **Tests:** `test_point_in_time` 32/32, including the injection, the negative control and the backstop.
+- **ATL@NO, from today's full tree under a sealed manifest, nothing deleted:**
+  - the derived caches rebuilt 6/6 identical to the generation-1 pins;
+  - the replay reproduces upload `8f4d9a77` and all three per-contest uploads;
+  - 26/26 matched checks are identical to the historical baseline.
+- **Defect found and fixed on the way:** `kicker_model` leaked week 4 through an unarmed process.
+- **TB@DAL live:** matched regression R7 vs R8 (pending at time of writing; filled in below).
+
+**Not included:** ordering by capture time (F2's second half) and the game-date check (F1). Both are separate
+changes, each needing its own regression.
+
+### F4: a refused re-run overwrote the original scenario's run ledger (`73008ae0`)
+
+**Label:** SAFE EXECUTION FIX — ELIGIBLE FOR OWNER REVIEW.
+
+**Evidence:**
+- **Found:** a `SCENARIO_EXISTS` refusal rewrote `RUN_LEDGER_PRECOMPUTE_TBQB_DANIELS_R7.json`. It was restored
+  byte-identical in `0684bdfd`.
+- **Fix:** the refusal now writes its own `.REFUSED_<UTC>` ledger.
+- **Test:** added to `test_showdown_next_slate` (35/35).
+
+### QB-replacement pathway (SC-QB-ENV-1)
+
+**Label:** DESIGNED, NOT IMPLEMENTED. SHADOW ONLY when built.
+
+**Evidence** (`docs/QB_DEPENDENCY_AUDIT_2026-10-08.md`):
+- **Dependency graph:** stages 4/5 (club volume, scoring centre) and 8/11 (team passing efficiency) ignore QB identity.
+- **Measured effect, 2021–2025:** in-season replacements score −1.06 [−2.06, −0.02] points against the QB-blind
+  centre, and rush +0.92 [+0.12, +1.67].
+- **Readiness:** TB@DAL Daniels is `FOOTBALL_MODEL_INCOMPLETE_QB_ENVIRONMENT`, not READY.
+
+### Six unverified P0 integration obligations
+
+**Label:** STILL UNVERIFIED.
+
+**Blocker:** the production entrypoints write to fixed repository paths. The pack's sandboxed bridge needs a
+scratch-output root that the pipeline does not yet have. The point-in-time scratch root is run-scoped but covers
+resolved inputs only, not outputs.
+
+**Not claimed:** none of these is claimed closed by documentation alone.
+
 ### SC-OWN-ROTATION-2, B4/B3S, appearance successor
 
 **Label:** SHADOW ONLY (unchanged). Prospective evaluation continues from TB@DAL; N ≥ 4 slates before any verdict.

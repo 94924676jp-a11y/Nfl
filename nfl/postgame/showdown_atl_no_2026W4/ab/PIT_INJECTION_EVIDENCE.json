@@ -1,0 +1,49 @@
+{
+ "ARTIFACT": "PIT_INJECTION_EVIDENCE",
+ "slate": "ATL_NO_2026W4",
+ "code_commit": "da99c5de",
+ "manifest": "nfl/warehouse/pit_manifests/PIT_MANIFEST.ATL_NO_2026W4.1294f0dc638d95c9.json",
+ "production_upload": "8f4d9a77f37957ab44b116ebc35a950a601fb2a2d39f1d8823f7fd847c6931d5",
+ "injected_after_sealing": {
+  "files": {
+   "nfl/research/postgame/pbp_2026.eeeeeeeeeeeeeeee.csv.gz": "2b3e9f2c6f92123f3dd41d94009e1978e8635beb775cd4dab32e79c60c46e080",
+   "nfl/research/postgame/pbp_2026.eeeeeeeeeeeeeeee.csv.provenance.json": "e8b366cedfa1756d0b4c78ad59fc30549e1758ed4fbe6b2fdf912438ab5be501",
+   "nfl/vintage/weekly_rosters.ffffffffffffffff.raw.csv.gz": "69a592377c1e0ab08b60592850fc4351fdb84abdf028af1323313f67857f2d9d"
+  },
+  "what": [
+   "the post-lock 2026 PBP (2b3e9f2c, contains ATL@NO) copied under a new id, with a sidecar FORGING a pre-lock retrieved_at",
+   "the post-lock roster capture (dba8eeff) copied under a new id",
+   "a vintage_manifest.jsonl PASS row FORGING a pre-lock retrieved_at for that roster id",
+   "today's TEAM_GAME.json left in place (post-lock)"
+  ]
+ },
+ "runs": {
+  "PIT_SEALED (clean tree, manifest)": {
+   "SHOWDOWN_ATL_NO_DK_UPLOAD.csv": "8f4d9a77f37957ab44b116ebc35a950a601fb2a2d39f1d8823f7fd847c6931d5",
+   "SHOWDOWN_ATL_NO_DK_UPLOAD_196285137.csv": "4047a1895c3dec8dbe22da5bb2386c06558e39ddc1c2d5a78f5e9c236ab7e002",
+   "SHOWDOWN_ATL_NO_DK_UPLOAD_196285160.csv": "17e397b48d5944aa3ce6113eab64818285ac42355f49c0963e53f7fd40501f1f",
+   "SHOWDOWN_ATL_NO_DK_UPLOAD_196285161.csv": "a30f529fbca23633b5bc4b73a8bfd2b39c7995cbf051e8856fbe1321d7ac1612"
+  },
+  "PIT_SEALED_INJECTED (injected tree, same manifest)": {
+   "SHOWDOWN_ATL_NO_DK_UPLOAD.csv": "8f4d9a77f37957ab44b116ebc35a950a601fb2a2d39f1d8823f7fd847c6931d5",
+   "SHOWDOWN_ATL_NO_DK_UPLOAD_196285137.csv": "4047a1895c3dec8dbe22da5bb2386c06558e39ddc1c2d5a78f5e9c236ab7e002",
+   "SHOWDOWN_ATL_NO_DK_UPLOAD_196285160.csv": "17e397b48d5944aa3ce6113eab64818285ac42355f49c0963e53f7fd40501f1f",
+   "SHOWDOWN_ATL_NO_DK_UPLOAD_196285161.csv": "a30f529fbca23633b5bc4b73a8bfd2b39c7995cbf051e8856fbe1321d7ac1612"
+  },
+  "NOPIT_INJECTED (injected tree, NO manifest) -- negative control": {
+   "refused": [
+    "SLATE_STATE_NO_IMPLIED_TOTAL"
+   ],
+   "rc": "1"
+  }
+ },
+ "injected_vs_clean_matched_regression": {
+  "ALL_IDENTICAL": true,
+  "DIFFERENT": [],
+  "report": "nfl/postgame/showdown_atl_no_2026W4/ab/REPRO_PIT_SEALED_INJECTED_vs_PIT_SEALED.json"
+ },
+ "VERDICT": {
+  "sealed_replay_unaffected_by_injection": true,
+  "negative_control_detects": true
+ }
+}

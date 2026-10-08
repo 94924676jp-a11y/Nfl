@@ -45,6 +45,8 @@ ENFORCEMENT, IN TWO LAYERS
     admitted (they are not in the sealed manifest), so they cannot reach a sealed replay.
 
 ACTIVATION. `NFL_PIT_MANIFEST=<path>` in the environment. Child processes inherit it. Nothing else turns it on.
+`NFL_PIT_TRACE=<prefix>` additionally writes `<prefix>.<pid>.json`: every repository data file the process opened for
+reading, classified (admitted / resolved / pinned derived / UNGUARDED). It is the read inventory of a sealed run.
 """
 from __future__ import annotations
 
@@ -397,6 +399,30 @@ def record() -> dict | None:
 
 
 # ------------------------------------------------------------------ backstop
+TRACE_ENV = 'NFL_PIT_TRACE'
+_TRACE: dict[str, str] = {}
+
+
+def _classify(a, rel):
+    if rel in a.admitted or rel in a.man['explicit_inputs']:
+        return 'ADMITTED'
+    if rel in RESOLVED:
+        return 'RESOLVED_ONLY'
+    if a.scratch in (a.root / rel).parents:
+        return 'RESOLVED_VINTAGE'
+    d, name = os.path.split(rel)
+    if d == DERIVED_DIR:
+        return 'DERIVED_RUN_CACHE' if name in DERIVED_RUN_CACHES else 'DERIVED_PINNED'
+    return 'UNGUARDED'
+
+
+def _write_trace():
+    if _TRACE and os.environ.get(TRACE_ENV):
+        out = pathlib.Path(f'{os.environ[TRACE_ENV]}.{os.getpid()}.json')
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps({'argv': sys.argv[:3], 'reads': dict(sorted(_TRACE.items()))}, indent=1) + '\n')
+
+
 def _hook(event, args):
     if event != 'open' or _ACTIVE is None or getattr(_GUARD, 'busy', False):
         return
@@ -413,6 +439,9 @@ def _hook(event, args):
     writing = any(c in str(mode) for c in 'wax+')
     _GUARD.busy = True
     try:
+        if (not writing and os.environ.get(TRACE_ENV) and not rel.endswith(('.py', '.pyc'))
+                and '__pycache__' not in rel and not rel.startswith('.git')):
+            _TRACE.setdefault(rel, _classify(a, rel))
         if rel in RESOLVED:
             if not writing:
                 raise PITUnauthorizedRead(f'PIT_UNRESOLVED_READ: {rel} opened directly; it must pass through resolve()')
@@ -448,6 +477,9 @@ def _install_hook():
     global _HOOKED
     if not _HOOKED:
         sys.addaudithook(_hook)
+        if os.environ.get(TRACE_ENV):
+            import atexit
+            atexit.register(_write_trace)
         _HOOKED = True
 
 

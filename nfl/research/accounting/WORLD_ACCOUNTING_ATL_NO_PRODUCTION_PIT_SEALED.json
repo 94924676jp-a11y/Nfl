@@ -1,0 +1,200 @@
+{
+ "ARTIFACT": "WORLD_ACCOUNTING_CHECK",
+ "spec_version": "world-accounting-1",
+ "scenario_dir": "/home/user/p0work/atl-pit-e1e6d755/nfl/dfs/salaries/showdown_atl_no/PIT_SEALED",
+ "files": {
+  "worlds": "SHOWDOWN_ATL_NO_2026W4_WORLDS.npz",
+  "draws": "SHOWDOWN_ATL_NO_2026W4_DRAWS.json"
+ },
+ "n_worlds": 2000,
+ "stage": "PUBLISHED (after efficiency_worlds and the DST anchor step)",
+ "lateral_or_non_qb_pass_events_represented": false,
+ "VIOLATED": {
+  "NO:PASS_YDS_EQ_REC_YDS": 1970,
+  "NO:PASS_TD_EQ_REC_TD": 1,
+  "NO:INT_LE_OPP_TAKEAWAYS": 491,
+  "NO:POINTS_GE_6_PER_TD": 70,
+  "ATL:PASS_YDS_EQ_REC_YDS": 1988,
+  "ATL:INT_LE_OPP_TAKEAWAYS": 303,
+  "ATL:POINTS_GE_6_PER_TD": 83,
+  "YDS_WITHOUT_CATCH": 1527,
+  "REC_TD_WITHOUT_CATCH": 422
+ },
+ "checks": {
+  "NO:PASS_YDS_EQ_REC_YDS": {
+   "violations": 1970,
+   "of": 2000,
+   "first": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "detail": "gross passing minus receiving yards",
+   "legitimate_exception_available": "NONE_REPRESENTED",
+   "mean_diff": -2.899,
+   "max_abs_diff": 139.7,
+   "tolerance": 0.65
+  },
+  "NO:PASS_TD_EQ_REC_TD": {
+   "violations": 1,
+   "of": 2000,
+   "first": [
+    1232
+   ],
+   "detail": "passing TDs vs receiving TDs",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "NO:TARGETS_LE_ATTEMPTS": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "club targets vs club pass attempts",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "NO:INT_LE_OPP_TAKEAWAYS": {
+   "violations": 491,
+   "of": 2000,
+   "first": [
+    0,
+    4,
+    6,
+    9,
+    10
+   ],
+   "detail": "interceptions thrown vs Falcons|ATL takeaways (raw DST components, before the anchor step)",
+   "legitimate_exception_available": "NONE_REPRESENTED",
+   "worlds_with_ints": 1131
+  },
+  "NO:POINTS_GE_6_PER_TD": {
+   "violations": 70,
+   "of": 2000,
+   "first": [
+    5,
+    9,
+    13,
+    53,
+    66
+   ],
+   "detail": "published club points vs 6 x offensive TDs in the same world",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "ATL:PASS_YDS_EQ_REC_YDS": {
+   "violations": 1988,
+   "of": 2000,
+   "first": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "detail": "gross passing minus receiving yards",
+   "legitimate_exception_available": "NONE_REPRESENTED",
+   "mean_diff": 40.73,
+   "max_abs_diff": 200.6,
+   "tolerance": 0.65
+  },
+  "ATL:PASS_TD_EQ_REC_TD": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "passing TDs vs receiving TDs",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "ATL:TARGETS_LE_ATTEMPTS": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "club targets vs club pass attempts",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "ATL:INT_LE_OPP_TAKEAWAYS": {
+   "violations": 303,
+   "of": 2000,
+   "first": [
+    14,
+    17,
+    19,
+    22,
+    26
+   ],
+   "detail": "interceptions thrown vs Saints|NO takeaways (raw DST components, before the anchor step)",
+   "legitimate_exception_available": "NONE_REPRESENTED",
+   "worlds_with_ints": 942
+  },
+  "ATL:POINTS_GE_6_PER_TD": {
+   "violations": 83,
+   "of": 2000,
+   "first": [
+    7,
+    29,
+    57,
+    67,
+    147
+   ],
+   "detail": "published club points vs 6 x offensive TDs in the same world",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "REC_LE_TARGETS": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "any player with receptions > targets (per world)",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "YDS_WITHOUT_CATCH": {
+   "violations": 1527,
+   "of": 2000,
+   "first": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "detail": "any player with receiving yards and no reception (per world)",
+   "legitimate_exception_available": "NONE_REPRESENTED",
+   "player_world_cells": 2756
+  },
+  "REC_TD_WITHOUT_CATCH": {
+   "violations": 422,
+   "of": 2000,
+   "first": [
+    6,
+    13,
+    16,
+    25,
+    28
+   ],
+   "detail": "any player with a receiving TD and no reception (per world)",
+   "legitimate_exception_available": "NONE_REPRESENTED",
+   "player_world_cells": 477
+  },
+  "INT_LE_ATTEMPTS": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "any passer with more interceptions than attempts (per world)",
+   "legitimate_exception_available": "NOT_APPLICABLE"
+  },
+  "INACTIVE_NO_EVENTS": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "0 ordinary-OUT players carried in the worlds",
+   "legitimate_exception_available": "NOT_APPLICABLE",
+   "out_players_in_worlds": []
+  },
+  "DK_FROM_PUBLISHED": {
+   "players": 26,
+   "violations": 0,
+   "of": 52000,
+   "bonus_line_storage_rounding_cells": 1,
+   "first": [],
+   "detail": "player-world cells whose scored DK is not reproduced by the published stat line within 0.06 points and half a yard-storage unit"
+  }
+ },
+ "READING": "a violation is a published world that breaks an ordinary-event law with no represented exception. It is a correctness finding about the incumbent, not a gate (no gate is changed)."
+}

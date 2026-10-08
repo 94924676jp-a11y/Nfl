@@ -11,6 +11,13 @@
    "scenario": "PRECOMPUTE_TBQB_MAYFIELD",
    "upload_sha256": "75756698e349737a1c10e8b7f85b3dc57c2d18ce83ca38a69a27ea6c59314d18",
    "status": "INVALID_DO_NOT_USE"
+  },
+  {
+   "scenario": "PRECOMPUTE_TBQB_DANIELS_R8",
+   "upload_sha256": null,
+   "status": "INVALID_REFUSED_BY_GUARD",
+   "refused": "SCENARIO_ISOLATION_BREACH: the build wrote shared paths [nfl/warehouse/point_in_time.py]",
+   "cause": "operator error 2026-10-08 ~19:36Z: point_in_time.py was edited and then restored in the working tree while R8 was building. The tree-diff guard detected the change and refused the run before any portfolio was published. No upload exists. Superseded by R9."
   }
  ],
  "cause": "the two precomputes were run concurrently; showdown_tonight writes state/proj/draws/worlds to per-TAG paths and copies them into the scenario afterwards, so the runs read each other's intermediates. Both produced the byte-identical upload; the Daniels state carries Mayfield as starter with no OUT designation.",
