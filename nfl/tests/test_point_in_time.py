@@ -224,6 +224,19 @@ def test_real_atl_cutoff():
     check(m['resolved']['nfl/warehouse/TEAM_GAME.json']['commit'].startswith('8feac0f3'),
           'ATL@NO cutoff resolves TEAM_GAME to 8feac0f3 (the version committed at lock)')
     check(m['counts']['refused_unclocked'] == 0, f"every capture on disk carries a clock ({m['counts']})")
+    # The backstop must not depend on the reader importing anything wired: `import nfl` alone arms it. (Found
+    # 2026-10-08: kicker_model read play-by-play through warehouse.sources and its process never armed the guard.)
+    env = dict(os.environ, **{PIT.ENV: str(_p)})
+    code = (f"import sys; sys.path.insert(0, {str(_REPO)!r}); import nfl; "
+            f"open({str(_REPO / want[0])!r}, 'rb').read(1)")
+    r = subprocess.run([sys.executable, '-c', code], capture_output=True, text=True, env=env)
+    check(r.returncode != 0 and 'PIT_UNAUTHORIZED_READ' in r.stderr and 'REFUSED_AFTER_CUTOFF' in r.stderr,
+          'a process that only imports `nfl` cannot open the post-lock ATL@NO capture')
+    code = (f"import sys; sys.path.insert(0, {str(_REPO)!r}); from nfl.warehouse import sources as S; "
+            f"o = S.select(S.registry()['play_by_play'], season=2026); print('SEL', o.value['selected'])")
+    r = subprocess.run([sys.executable, '-c', code], capture_output=True, text=True, env=env)
+    check(r.returncode == 0 and '2b3e9f2c' not in r.stdout and 'SEL ' in r.stdout,
+          f"warehouse.sources selects a pre-lock 2026 capture under the ATL manifest ({r.stdout.strip()[-60:] or r.stderr[-200:]})")
 
 
 if __name__ == '__main__':
