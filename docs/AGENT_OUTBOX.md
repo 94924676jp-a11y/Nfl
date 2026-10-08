@@ -4091,3 +4091,25 @@ scenario, Mayfield is kept as a recorded counterfactual. Nothing below can be fe
 5. **After I post SEAL_PROPS** (final mode), before kickoff: Hard Rock board `nfl/market/raw/HR_TB_DAL_BOARD_<UTC>.csv`
    + `CAPTURE.json` sidecar.
 6. **Postgame**: full-field standings zip per contest id.
+
+## 2026-10-08 ~22:00Z: TB@DAL Fantasy Cruncher export under the MAYFIELD scenario (owner)
+
+**Needed for:** `nfl/tools/fc_qb_scenario_compare.py`, the FC-vs-FC QB-scenario delta.
+
+**What is on disk.** Both TB@DAL FC uploads are **Daniels-based**, so no before-and-after exists:
+- `429871c0…`, 13:29Z: Daniels QB1 at 12.25 FLEX; Mayfield flagged "!" at 0.
+- `338ecc5e…`: a filtered copy of the same.
+
+**Requested.** The same FC Showdown export, re-exported with **Mayfield as the active QB1** (Daniels as the backup),
+and **no other edits**:
+- no other injury toggles;
+- no projection overrides ("My Proj" left equal to "FC Proj");
+- the same slate.
+
+**Needed with the file:** the capture time and whether FC was told anything else.
+
+**If FC can no longer produce a Mayfield view**, say so. The board then stays a level comparison only, and that is
+recorded, not worked around.
+
+**Rules.** Context only: it is never a model input. The file is saved content-addressed next to the others; nothing
+is overwritten.

@@ -1,0 +1,2991 @@
+{
+ "ARTIFACT": "QB_SCENARIO_SENSITIVITY_BOARD",
+ "scenarios": [
+  "MAYFIELD",
+  "DANIELS"
+ ],
+ "qb_club": "TB",
+ "ROLE": "DIAGNOSTIC ONLY. FC is never a model input; nothing here changes a projection, a world or a lineup.",
+ "ours": {
+  "MAYFIELD": {
+   "scenario_dir": "nfl/dfs/salaries/showdown_tb_dal/PRECOMPUTE_TBQB_MAYFIELD_R4",
+   "state_sha256": "f0b2f9822dc5f9f6fa2dad8f3d8264add0a46d1e38e237009039dc1ac16a6184",
+   "proj_sha256": "f2942ea8c09fa7722ed4d0042ec632695a9da7456a09a83349c8317bb397692a",
+   "upload_sha256": "75756698e349737a1c10e8b7f85b3dc57c2d18ce83ca38a69a27ea6c59314d18",
+   "scenario_identity": null,
+   "lineups": 190
+  },
+  "DANIELS": {
+   "scenario_dir": "nfl/dfs/salaries/showdown_tb_dal/PRECOMPUTE_TBQB_DANIELS_R10",
+   "state_sha256": "ddefe98aa0e15cc4412c5d8d2701f235ff493c17b5fef7974c25b5a585f256c9",
+   "proj_sha256": "4dfd35580e14b5c6483087e2ea0fac020506080eaba6f10eb78bda0437ecf443",
+   "upload_sha256": "bba17b23044292bc6e866d9716c235e0ef38633ae041edc789e2b9b09886c323",
+   "scenario_identity": null,
+   "lineups": 190
+  }
+ },
+ "fc_versions": {
+  "MAYFIELD": null,
+  "DANIELS": {
+   "file": "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/THIRDPARTY_FC_showdown_TB_DAL_2026W5_CONTEXT_ONLY.IDMAPPED.e21acd0fa49a8f30.csv",
+   "sha256": "e21acd0fa49a8f30a572b8867d3c47184bdbd92f8f8e31fba8d5ec59b9439b92",
+   "name_hash_matches_content": true,
+   "provenance": {
+    "file": "THIRDPARTY_FC_showdown_TB_DAL_2026W5_CONTEXT_ONLY.IDMAPPED.e21acd0fa49a8f30.csv",
+    "sha256": "e21acd0fa49a8f30a572b8867d3c47184bdbd92f8f8e31fba8d5ec59b9439b92",
+    "role": "IDENTITY-MAPPED COPY of 429871c0... for the field shadows (see its PROVENANCE.json)",
+    "built_at": "2026-10-08T13:30:34.214649+00:00"
+   },
+   "received_at": "2026-10-08T13:30:34.214649+00:00",
+   "n_flex": 52,
+   "n_cpt": 52
+  }
+ },
+ "fc_version_comparison": "FC_BEFORE_VERSION_NOT_AVAILABLE (only the after-scenario FC export exists)",
+ "controls": {},
+ "material_threshold_dk": 1.0,
+ "ours_largest_gainers": [
+  [
+   "Jalon Daniels",
+   14.56
+  ],
+  [
+   "Bucky Irving",
+   0.783
+  ],
+  [
+   "Sean Tucker",
+   0.182
+  ],
+  [
+   "Kenny Gainwell",
+   0.163
+  ],
+  [
+   "Brett Rypien",
+   0.12
+  ],
+  [
+   "Chris Godwin Jr.",
+   0.028
+  ]
+ ],
+ "ours_largest_losers": [
+  [
+   "Baker Mayfield",
+   -17.791
+  ],
+  [
+   "Anthony Smith",
+   0.0
+  ],
+  [
+   "Bauer Sharp",
+   -0.0
+  ],
+  [
+   "Brandon Aubrey",
+   0.0
+  ],
+  [
+   "Brevyn Spann-Ford",
+   0.0
+  ],
+  [
+   "Buccaneers",
+   0.0
+  ]
+ ],
+ "fc_largest_gainers": "PENDING_FC_BEFORE_VERSION",
+ "fc_largest_losers": "PENDING_FC_BEFORE_VERSION",
+ "triaged": [],
+ "rows": [
+  {
+   "player": "Anthony Smith",
+   "team": "DAL",
+   "pos": "WR",
+   "ours": {
+    "a": 0.0304,
+    "b": 0.0304,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     4.7831,
+     4.7831
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": 0.0,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     0,
+     0
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     null
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 0.03,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "EN3 NOT_MODELLED_BY_OWNER_INSTRUCTION (no opponent-QB effect on this club by design)"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Baker Mayfield",
+   "team": "TB",
+   "pos": "QB",
+   "ours": {
+    "a": 17.7909,
+    "b": 0.0,
+    "delta": -17.791,
+    "pct": -100.0,
+    "if_plays": [
+     17.7581,
+     null
+    ],
+    "stats_delta": {
+     "pass_attempts": null,
+     "pass_yards": null,
+     "carries": null,
+     "rush_yards": null,
+     "targets": null,
+     "receptions": null,
+     "rec_yards": null,
+     "pass_td": null,
+     "rush_td": null,
+     "rec_td": null
+    },
+    "flex_lineups": [
+     95,
+     0
+    ],
+    "cpt_lineups": [
+     19,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     0.0
+    ],
+    "inj_b": "!"
+   },
+   "level_gap_b_ours_minus_fc": 0.0,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "ID3 IMPLEMENTED_AND_CONSUMED",
+    "QB6 IMPLEMENTED_AND_CONSUMED"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Bauer Sharp",
+   "team": "TB",
+   "pos": "TE",
+   "ours": {
+    "a": 0.0187,
+    "b": 0.0186,
+    "delta": -0.0,
+    "pct": -0.5,
+    "if_plays": [
+     2.2323,
+     2.2364
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.003,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": null,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     0,
+     0
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     0.0
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 0.019,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "QB1 MISSING",
+    "QB3 IMPLEMENTED_NOT_CONSUMED",
+    "QB4 MISSING",
+    "AC1 INCORRECT"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Brandon Aubrey",
+   "team": "DAL",
+   "pos": "K",
+   "ours": {
+    "a": 10.6565,
+    "b": 10.6565,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     10.6565,
+     10.6565
+    ],
+    "stats_delta": {
+     "pass_attempts": null,
+     "pass_yards": null,
+     "carries": null,
+     "rush_yards": null,
+     "targets": null,
+     "receptions": null,
+     "rec_yards": null,
+     "pass_td": null,
+     "rush_td": null,
+     "rec_td": null
+    },
+    "flex_lineups": [
+     84,
+     79
+    ],
+    "cpt_lineups": [
+     11,
+     9
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 10.92,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 16.38,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     3.27,
+     21.12
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": -0.264,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "EN3 NOT_MODELLED_BY_OWNER_INSTRUCTION (no opponent-QB effect on this club by design)"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Brett Rypien",
+   "team": "TB",
+   "pos": "QB",
+   "ours": {
+    "a": 3.042443535992729e-08,
+    "b": 0.1205,
+    "delta": 0.12,
+    "pct": 396063125.4,
+    "if_plays": [
+     5.4474,
+     5.4475
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.352,
+     "pass_yards": 1.851,
+     "carries": 0.0,
+     "rush_yards": 0.0,
+     "targets": 0.001,
+     "receptions": null,
+     "rec_yards": null,
+     "pass_td": 0.013,
+     "rush_td": 0.0,
+     "rec_td": null
+    },
+    "flex_lineups": [
+     0,
+     0
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     0.0
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 0.12,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "ID3 IMPLEMENTED_AND_CONSUMED",
+    "QB6 IMPLEMENTED_AND_CONSUMED"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Brevyn Spann-Ford",
+   "team": "DAL",
+   "pos": "TE",
+   "ours": {
+    "a": 2.5179,
+    "b": 2.5179,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     4.2154,
+     4.2154
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": null,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     12,
+     8
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     0.0
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 2.518,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "EN3 NOT_MODELLED_BY_OWNER_INSTRUCTION (no opponent-QB effect on this club by design)"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Buccaneers",
+   "team": "TB",
+   "pos": "DST",
+   "ours": {
+    "a": 4.309,
+    "b": 4.309,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     4.309,
+     4.309
+    ],
+    "stats_delta": {
+     "pass_attempts": null,
+     "pass_yards": null,
+     "carries": null,
+     "rush_yards": null,
+     "targets": null,
+     "receptions": null,
+     "rec_yards": null,
+     "pass_td": null,
+     "rush_td": null,
+     "rec_td": null
+    },
+    "flex_lineups": [
+     43,
+     38
+    ],
+    "cpt_lineups": [
+     6,
+     6
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 3.1,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 4.65,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     14.9
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 1.209,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "QB2 MISSING",
+    "opponent offence vs this defence: not a QB edge"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Bucky Irving",
+   "team": "TB",
+   "pos": "RB",
+   "ours": {
+    "a": 15.7538,
+    "b": 16.537,
+    "delta": 0.783,
+    "pct": 5.0,
+    "if_plays": [
+     15.7722,
+     16.5344
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.533,
+     "rush_yards": 2.3,
+     "targets": 0.001,
+     "receptions": 0.001,
+     "rec_yards": 0.003,
+     "pass_td": null,
+     "rush_td": 0.092,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     95,
+     95
+    ],
+    "cpt_lineups": [
+     18,
+     19
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 10.51,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 15.77,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     24.91
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 6.027,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "QB1 MISSING",
+    "QB3 IMPLEMENTED_NOT_CONSUMED",
+    "QB4 MISSING"
+   ],
+   "triage": null
+  },
+  {
+   "player": "CJ Dippre",
+   "team": "TB",
+   "pos": "TE",
+   "ours": {
+    "a": 0.2793,
+    "b": 0.2797,
+    "delta": 0.0,
+    "pct": 0.1,
+    "if_plays": [
+     2.2429,
+     2.247
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.003,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": null,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     0,
+     1
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     null
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 0.28,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "QB1 MISSING",
+    "QB3 IMPLEMENTED_NOT_CONSUMED",
+    "QB4 MISSING",
+    "AC1 INCORRECT"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Cade Otton",
+   "team": "TB",
+   "pos": "TE",
+   "ours": {
+    "a": 11.1482,
+    "b": 11.1597,
+    "delta": 0.012,
+    "pct": 0.1,
+    "if_plays": [
+     11.1481,
+     11.1597
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": null,
+     "targets": 0.001,
+     "receptions": 0.001,
+     "rec_yards": 0.007,
+     "pass_td": null,
+     "rush_td": 0.002,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     89,
+     95
+    ],
+    "cpt_lineups": [
+     2,
+     10
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 7.37,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 11.06,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     19.37
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 3.79,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "QB1 MISSING",
+    "QB3 IMPLEMENTED_NOT_CONSUMED",
+    "QB4 MISSING",
+    "AC1 INCORRECT"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Camden Brown",
+   "team": "DAL",
+   "pos": "WR",
+   "ours": {
+    "a": 0.0304,
+    "b": 0.0304,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     4.7413,
+     4.7413
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": 0.0,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     0,
+     1
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     null
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 0.03,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "EN3 NOT_MODELLED_BY_OWNER_INSTRUCTION (no opponent-QB effect on this club by design)"
+   ],
+   "triage": null
+  },
+  {
+   "player": "CeeDee Lamb",
+   "team": "DAL",
+   "pos": "WR",
+   "ours": {
+    "a": 27.2864,
+    "b": 27.2864,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     27.2352,
+     27.2352
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": 0.0,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     95,
+     95
+    ],
+    "cpt_lineups": [
+     47,
+     45
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 21.74,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 32.61,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     6.44,
+     42.14
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 5.546,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "EN3 NOT_MODELLED_BY_OWNER_INSTRUCTION (no opponent-QB effect on this club by design)"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Chase McLaughlin",
+   "team": "TB",
+   "pos": "K",
+   "ours": {
+    "a": 8.3651,
+    "b": 8.3651,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     8.3651,
+     8.3651
+    ],
+    "stats_delta": {
+     "pass_attempts": null,
+     "pass_yards": null,
+     "carries": null,
+     "rush_yards": null,
+     "targets": null,
+     "receptions": null,
+     "rec_yards": null,
+     "pass_td": null,
+     "rush_td": null,
+     "rec_td": null
+    },
+    "flex_lineups": [
+     58,
+     67
+    ],
+    "cpt_lineups": [
+     3,
+     1
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 6.69,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 10.04,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     16.29
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 1.675,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "QB2 MISSING"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Chris Godwin Jr.",
+   "team": "TB",
+   "pos": "WR",
+   "ours": {
+    "a": 8.6453,
+    "b": 8.6738,
+    "delta": 0.028,
+    "pct": 0.3,
+    "if_plays": [
+     9.8906,
+     9.9235
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.014,
+     "rush_yards": null,
+     "targets": 0.001,
+     "receptions": 0.001,
+     "rec_yards": 0.006,
+     "pass_td": null,
+     "rush_td": 0.005,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     46,
+     41
+    ],
+    "cpt_lineups": [
+     4,
+     3
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 6.95,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 10.43,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     null
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 1.724,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "QB1 MISSING",
+    "QB3 IMPLEMENTED_NOT_CONSUMED",
+    "QB4 MISSING",
+    "AC1 INCORRECT"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Cowboys",
+   "team": "DAL",
+   "pos": "DST",
+   "ours": {
+    "a": 3.9071,
+    "b": 3.9071,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     3.9071,
+     3.9071
+    ],
+    "stats_delta": {
+     "pass_attempts": null,
+     "pass_yards": null,
+     "carries": null,
+     "rush_yards": null,
+     "targets": null,
+     "receptions": null,
+     "rec_yards": null,
+     "pass_td": null,
+     "rush_td": null,
+     "rec_td": null
+    },
+    "flex_lineups": [
+     10,
+     8
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 3.47,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 5.21,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     16.87
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 0.437,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "QB5 MISSING",
+    "AC3 INCORRECT",
+    "QB2 MISSING (points allowed)"
+   ],
+   "triage": null
+  },
+  {
+   "player": "DJ Rogers",
+   "team": "DAL",
+   "pos": "TE",
+   "ours": {
+    "a": 0.0217,
+    "b": 0.0217,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     2.5922,
+     2.5922
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": null,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     0,
+     0
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     null
+    ],
+    "inj_b": "!"
+   },
+   "level_gap_b_ours_minus_fc": 0.022,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "EN3 NOT_MODELLED_BY_OWNER_INSTRUCTION (no opponent-QB effect on this club by design)"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Dak Prescott",
+   "team": "DAL",
+   "pos": "QB",
+   "ours": {
+    "a": 20.7011,
+    "b": 20.7011,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     20.7061,
+     20.7061
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": 0.0,
+     "carries": 0.0,
+     "rush_yards": 0.0,
+     "targets": 0.0,
+     "receptions": null,
+     "rec_yards": null,
+     "pass_td": 0.0,
+     "rush_td": 0.0,
+     "rec_td": null
+    },
+    "flex_lineups": [
+     95,
+     95
+    ],
+    "cpt_lineups": [
+     17,
+     17
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 22.16,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 33.24,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     8.81,
+     39.96
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": -1.459,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "EN3 NOT_MODELLED_BY_OWNER_INSTRUCTION (no opponent-QB effect on this club by design)"
+   ],
+   "triage": null
+  },
+  {
+   "player": "David Sills V",
+   "team": "TB",
+   "pos": "WR",
+   "ours": {
+    "a": 0.0163,
+    "b": 0.0164,
+    "delta": 0.0,
+    "pct": 0.6,
+    "if_plays": [
+     2.5531,
+     2.5739
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": null,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     0,
+     0
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     0.0
+    ],
+    "inj_b": "!"
+   },
+   "level_gap_b_ours_minus_fc": 0.016,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "QB1 MISSING",
+    "QB3 IMPLEMENTED_NOT_CONSUMED",
+    "QB4 MISSING",
+    "AC1 INCORRECT"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Dean Patterson IV",
+   "team": "TB",
+   "pos": "WR",
+   "ours": {
+    "a": 0.0163,
+    "b": 0.0164,
+    "delta": 0.0,
+    "pct": 0.6,
+    "if_plays": [
+     2.5531,
+     2.5739
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": null,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     0,
+     0
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     null
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 0.016,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "QB1 MISSING",
+    "QB3 IMPLEMENTED_NOT_CONSUMED",
+    "QB4 MISSING",
+    "AC1 INCORRECT"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Easton Stick",
+   "team": "TB",
+   "pos": "QB",
+   "ours": {
+    "a": 0.0001,
+    "b": 0.0001,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     5.465,
+     5.5544
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": 0.001,
+     "carries": 0.0,
+     "rush_yards": 0.0,
+     "targets": 0.0,
+     "receptions": null,
+     "rec_yards": null,
+     "pass_td": 0.0,
+     "rush_td": 0.0,
+     "rec_td": null
+    },
+    "flex_lineups": [
+     0,
+     0
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     0.0
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 0.0,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "ID3 IMPLEMENTED_AND_CONSUMED",
+    "QB6 IMPLEMENTED_AND_CONSUMED"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Emari Demercado",
+   "team": "DAL",
+   "pos": "RB",
+   "ours": {
+    "a": 1.1064,
+    "b": 1.1064,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     4.423,
+     4.423
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": 0.0,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     8,
+     11
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     0.0
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 1.106,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "EN3 NOT_MODELLED_BY_OWNER_INSTRUCTION (no opponent-QB effect on this club by design)"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Emeka Egbuka",
+   "team": "TB",
+   "pos": "WR",
+   "ours": {
+    "a": 12.2838,
+    "b": 12.2922,
+    "delta": 0.008,
+    "pct": 0.1,
+    "if_plays": [
+     12.2838,
+     12.2922
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.008,
+     "rush_yards": null,
+     "targets": 0.001,
+     "receptions": 0.001,
+     "rec_yards": 0.008,
+     "pass_td": null,
+     "rush_td": 0.001,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     80,
+     81
+    ],
+    "cpt_lineups": [
+     8,
+     14
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 7.79,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 11.69,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     24.59
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 4.502,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "QB1 MISSING",
+    "QB3 IMPLEMENTED_NOT_CONSUMED",
+    "QB4 MISSING",
+    "AC1 INCORRECT"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Eric Rivers Jr.",
+   "team": "TB",
+   "pos": "WR",
+   "ours": {
+    "a": 0.0163,
+    "b": 0.0164,
+    "delta": 0.0,
+    "pct": 0.6,
+    "if_plays": [
+     2.5531,
+     2.5739
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": null,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     0,
+     0
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     null
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 0.016,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "QB1 MISSING",
+    "QB3 IMPLEMENTED_NOT_CONSUMED",
+    "QB4 MISSING",
+    "AC1 INCORRECT"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Garrett Greene",
+   "team": "TB",
+   "pos": "WR",
+   "ours": {
+    "a": 0.0163,
+    "b": 0.0164,
+    "delta": 0.0,
+    "pct": 0.6,
+    "if_plays": [
+     2.5531,
+     2.574
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": null,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     1,
+     0
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     null
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 0.016,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "QB1 MISSING",
+    "QB3 IMPLEMENTED_NOT_CONSUMED",
+    "QB4 MISSING",
+    "AC1 INCORRECT"
+   ],
+   "triage": null
+  },
+  {
+   "player": "George Pickens",
+   "team": "DAL",
+   "pos": "WR",
+   "ours": {
+    "a": 11.2794,
+    "b": 11.2794,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     12.6855,
+     12.6855
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": null,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     52,
+     63
+    ],
+    "cpt_lineups": [
+     3,
+     12
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 17.64,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 26.46,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     4.14,
+     35.64
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": -6.361,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "EN3 NOT_MODELLED_BY_OWNER_INSTRUCTION (no opponent-QB effect on this club by design)"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Hunter Luepke",
+   "team": "DAL",
+   "pos": "RB",
+   "ours": {
+    "a": 0.0574,
+    "b": 0.0574,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     0.9494,
+     0.9494
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": 0.0,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     0,
+     0
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     0.0
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 0.057,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "EN3 NOT_MODELLED_BY_OWNER_INSTRUCTION (no opponent-QB effect on this club by design)"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Israel Abanikanda",
+   "team": "DAL",
+   "pos": "RB",
+   "ours": {
+    "a": 0.0009,
+    "b": 0.0009,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     3.053,
+     3.053
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": 0.0,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     0,
+     0
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     0.0
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 0.001,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "EN3 NOT_MODELLED_BY_OWNER_INSTRUCTION (no opponent-QB effect on this club by design)"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Jake Ferguson",
+   "team": "DAL",
+   "pos": "TE",
+   "ours": {
+    "a": 9.7656,
+    "b": 9.7656,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     9.7471,
+     9.7471
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": null,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     57,
+     60
+    ],
+    "cpt_lineups": [
+     5,
+     3
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 9.25,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 13.88,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.25,
+     21.25
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 0.516,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "EN3 NOT_MODELLED_BY_OWNER_INSTRUCTION (no opponent-QB effect on this club by design)"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Jalen McMillan",
+   "team": "TB",
+   "pos": "WR",
+   "ours": {
+    "a": 0.0139,
+    "b": 0.014,
+    "delta": 0.0,
+    "pct": 0.7,
+    "if_plays": [
+     2.1955,
+     2.2096
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": null,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     0,
+     0
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     0.0
+    ],
+    "inj_b": "!"
+   },
+   "level_gap_b_ours_minus_fc": 0.014,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "QB1 MISSING",
+    "QB3 IMPLEMENTED_NOT_CONSUMED",
+    "QB4 MISSING",
+    "AC1 INCORRECT"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Jalon Daniels",
+   "team": "TB",
+   "pos": "QB",
+   "ours": {
+    "a": 0.0674,
+    "b": 14.6277,
+    "delta": 14.56,
+    "pct": 21602.8,
+    "if_plays": [
+     5.5684,
+     14.6807
+    ],
+    "stats_delta": {
+     "pass_attempts": 34.809,
+     "pass_yards": 172.737,
+     "carries": 3.326,
+     "rush_yards": 19.526,
+     "targets": 0.001,
+     "receptions": null,
+     "rec_yards": null,
+     "pass_td": 1.328,
+     "rush_td": 0.151,
+     "rec_td": null
+    },
+    "flex_lineups": [
+     0,
+     93
+    ],
+    "cpt_lineups": [
+     0,
+     14
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 12.25,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 18.38,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     2.05,
+     25.85
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 2.378,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "ID3 IMPLEMENTED_AND_CONSUMED",
+    "QB6 IMPLEMENTED_AND_CONSUMED"
+   ],
+   "triage": null
+  },
+  {
+   "player": "James Mitchell",
+   "team": "DAL",
+   "pos": "TE",
+   "ours": {
+    "a": 0.0217,
+    "b": 0.0217,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     2.5922,
+     2.5922
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": null,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     0,
+     0
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     0.0
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 0.022,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "EN3 NOT_MODELLED_BY_OWNER_INSTRUCTION (no opponent-QB effect on this club by design)"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Javonte Williams",
+   "team": "DAL",
+   "pos": "RB",
+   "ours": {
+    "a": 17.8363,
+    "b": 17.8363,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     17.7606,
+     17.7606
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": 0.0,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     95,
+     95
+    ],
+    "cpt_lineups": [
+     46,
+     37
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 18.41,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 27.62,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     7.91,
+     32.41
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": -0.574,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "EN3 NOT_MODELLED_BY_OWNER_INSTRUCTION (no opponent-QB effect on this club by design)"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Joe Milton III",
+   "team": "DAL",
+   "pos": "QB",
+   "ours": {
+    "a": 7.542972221301723e-09,
+    "b": 7.542972221301723e-09,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     7.3404,
+     7.3404
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": 0.0,
+     "carries": 0.0,
+     "rush_yards": 0.0,
+     "targets": 0.0,
+     "receptions": null,
+     "rec_yards": null,
+     "pass_td": 0.0,
+     "rush_td": 0.0,
+     "rec_td": null
+    },
+    "flex_lineups": [
+     0,
+     0
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     null
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 0.0,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "EN3 NOT_MODELLED_BY_OWNER_INSTRUCTION (no opponent-QB effect on this club by design)"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Jonathan Mingo",
+   "team": "DAL",
+   "pos": "WR",
+   "ours": {
+    "a": 0.2315,
+    "b": 0.2315,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     2.8712,
+     2.8712
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": 0.0,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     0,
+     0
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     0.0
+    ],
+    "inj_b": "!"
+   },
+   "level_gap_b_ours_minus_fc": 0.232,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "EN3 NOT_MODELLED_BY_OWNER_INSTRUCTION (no opponent-QB effect on this club by design)"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Jordan Hudson",
+   "team": "DAL",
+   "pos": "WR",
+   "ours": {
+    "a": 0.0304,
+    "b": 0.0304,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     4.7262,
+     4.7262
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": 0.0,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     0,
+     0
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     null
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 0.03,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "EN3 NOT_MODELLED_BY_OWNER_INSTRUCTION (no opponent-QB effect on this club by design)"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Josh Williams",
+   "team": "TB",
+   "pos": "RB",
+   "ours": {
+    "a": 0.1631,
+    "b": 0.1732,
+    "delta": 0.01,
+    "pct": 6.2,
+    "if_plays": [
+     4.8791,
+     5.1394
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.005,
+     "rush_yards": 0.021,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.001,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     0,
+     0
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     0.0
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 0.173,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "QB1 MISSING",
+    "QB3 IMPLEMENTED_NOT_CONSUMED",
+    "QB4 MISSING"
+   ],
+   "triage": null
+  },
+  {
+   "player": "KaVontae Turpin",
+   "team": "DAL",
+   "pos": "WR",
+   "ours": {
+    "a": 1.3161,
+    "b": 1.3161,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     4.7337,
+     4.7337
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": 0.0,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     1,
+     3
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 4.41,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 6.62,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     13.21
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": -3.094,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "EN3 NOT_MODELLED_BY_OWNER_INSTRUCTION (no opponent-QB effect on this club by design)"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Kameron Johnson",
+   "team": "TB",
+   "pos": "WR",
+   "ours": {
+    "a": 0.2038,
+    "b": 0.2049,
+    "delta": 0.001,
+    "pct": 0.5,
+    "if_plays": [
+     2.5088,
+     2.5229
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.001,
+     "rush_yards": null,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     0,
+     0
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     0.0
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 0.205,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "QB1 MISSING",
+    "QB3 IMPLEMENTED_NOT_CONSUMED",
+    "QB4 MISSING",
+    "AC1 INCORRECT"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Kenny Gainwell",
+   "team": "TB",
+   "pos": "RB",
+   "ours": {
+    "a": 4.5939,
+    "b": 4.7566,
+    "delta": 0.163,
+    "pct": 3.5,
+    "if_plays": [
+     6.8898,
+     7.1209
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.004,
+     "pass_yards": null,
+     "carries": 0.101,
+     "rush_yards": 0.278,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.002,
+     "pass_td": null,
+     "rush_td": 0.022,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     12,
+     13
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 9.09,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 13.64,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     22.09
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": -4.333,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "QB1 MISSING",
+    "QB3 IMPLEMENTED_NOT_CONSUMED",
+    "QB4 MISSING"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Ko Kieft",
+   "team": "TB",
+   "pos": "TE",
+   "ours": {
+    "a": 0.0187,
+    "b": 0.0186,
+    "delta": -0.0,
+    "pct": -0.5,
+    "if_plays": [
+     2.2323,
+     2.2364
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.003,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": null,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     0,
+     0
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     0.0
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 0.019,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "QB1 MISSING",
+    "QB3 IMPLEMENTED_NOT_CONSUMED",
+    "QB4 MISSING",
+    "AC1 INCORRECT"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Luke Schoonmaker",
+   "team": "DAL",
+   "pos": "TE",
+   "ours": {
+    "a": 0.3794,
+    "b": 0.3794,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     3.0203,
+     3.0203
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": null,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     0,
+     1
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     0.0
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 0.379,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "EN3 NOT_MODELLED_BY_OWNER_INSTRUCTION (no opponent-QB effect on this club by design)"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Malik Davis",
+   "team": "DAL",
+   "pos": "RB",
+   "ours": {
+    "a": 0.0011,
+    "b": 0.0011,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     3.871,
+     3.871
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": 0.0,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     0,
+     0
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     0.0
+    ],
+    "inj_b": "!"
+   },
+   "level_gap_b_ours_minus_fc": 0.001,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "EN3 NOT_MODELLED_BY_OWNER_INSTRUCTION (no opponent-QB effect on this club by design)"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Michael Trigg",
+   "team": "DAL",
+   "pos": "TE",
+   "ours": {
+    "a": 0.0217,
+    "b": 0.0217,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     2.5922,
+     2.5922
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": null,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     0,
+     0
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     null
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 0.022,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "EN3 NOT_MODELLED_BY_OWNER_INSTRUCTION (no opponent-QB effect on this club by design)"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Payne Durham",
+   "team": "TB",
+   "pos": "TE",
+   "ours": {
+    "a": 2.752,
+    "b": 2.7524,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     4.5792,
+     4.58
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": null,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.002,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     28,
+     23
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     0.0
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 2.752,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "QB1 MISSING",
+    "QB3 IMPLEMENTED_NOT_CONSUMED",
+    "QB4 MISSING",
+    "AC1 INCORRECT"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Princeton Fant",
+   "team": "DAL",
+   "pos": "TE",
+   "ours": {
+    "a": 0.0217,
+    "b": 0.0217,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     2.5922,
+     2.5922
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": null,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     0,
+     0
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     0.0
+    ],
+    "inj_b": "!"
+   },
+   "level_gap_b_ours_minus_fc": 0.022,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "EN3 NOT_MODELLED_BY_OWNER_INSTRUCTION (no opponent-QB effect on this club by design)"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Ryan Flournoy",
+   "team": "DAL",
+   "pos": "WR",
+   "ours": {
+    "a": 5.0786,
+    "b": 5.0786,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     8.1486,
+     8.1486
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": null,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     22,
+     21
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 9.19,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 13.79,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     22.19
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": -4.111,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "EN3 NOT_MODELLED_BY_OWNER_INSTRUCTION (no opponent-QB effect on this club by design)"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Sam Howell",
+   "team": "DAL",
+   "pos": "QB",
+   "ours": {
+    "a": 0.0634,
+    "b": 0.0634,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     7.6488,
+     7.6488
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": 0.0,
+     "carries": 0.0,
+     "rush_yards": 0.0,
+     "targets": 0.0,
+     "receptions": null,
+     "rec_yards": null,
+     "pass_td": 0.0,
+     "rush_td": 0.0,
+     "rec_td": null
+    },
+    "flex_lineups": [
+     0,
+     0
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     0.0
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 0.063,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "EN3 NOT_MODELLED_BY_OWNER_INSTRUCTION (no opponent-QB effect on this club by design)"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Sean Tucker",
+   "team": "TB",
+   "pos": "RB",
+   "ours": {
+    "a": 1.2338,
+    "b": 1.4156,
+    "delta": 0.182,
+    "pct": 14.7,
+    "if_plays": [
+     4.7647,
+     5.4196
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.04,
+     "rush_yards": 0.152,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.028,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     2,
+     0
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 0.0,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 0.0,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     0.0
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 1.416,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "QB1 MISSING",
+    "QB3 IMPLEMENTED_NOT_CONSUMED",
+    "QB4 MISSING"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Ted Hurst III",
+   "team": "TB",
+   "pos": "WR",
+   "ours": {
+    "a": 3.9767,
+    "b": 3.9917,
+    "delta": 0.015,
+    "pct": 0.4,
+    "if_plays": [
+     6.4566,
+     6.4819
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.003,
+     "rush_yards": 0.009,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.003,
+     "pass_td": null,
+     "rush_td": 0.002,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     18,
+     20
+    ],
+    "cpt_lineups": [
+     1,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 5.65,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 8.48,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     null
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": -1.658,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "QB1 MISSING",
+    "QB3 IMPLEMENTED_NOT_CONSUMED",
+    "QB4 MISSING",
+    "AC1 INCORRECT"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Tez Johnson",
+   "team": "TB",
+   "pos": "WR",
+   "ours": {
+    "a": 1.036,
+    "b": 1.0409,
+    "delta": 0.005,
+    "pct": 0.5,
+    "if_plays": [
+     3.7087,
+     3.7266
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.004,
+     "rush_yards": null,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.001,
+     "pass_td": null,
+     "rush_td": 0.001,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     0,
+     0
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 3.77,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 5.66,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     15.37
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": -2.729,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "QB1 MISSING",
+    "QB3 IMPLEMENTED_NOT_CONSUMED",
+    "QB4 MISSING",
+    "AC1 INCORRECT"
+   ],
+   "triage": null
+  },
+  {
+   "player": "Tyler Goodson",
+   "team": "DAL",
+   "pos": "RB",
+   "ours": {
+    "a": 4.06,
+    "b": 4.06,
+    "delta": 0.0,
+    "pct": 0.0,
+    "if_plays": [
+     5.8858,
+     5.8858
+    ],
+    "stats_delta": {
+     "pass_attempts": 0.0,
+     "pass_yards": null,
+     "carries": 0.0,
+     "rush_yards": 0.0,
+     "targets": 0.0,
+     "receptions": 0.0,
+     "rec_yards": 0.0,
+     "pass_td": null,
+     "rush_td": 0.0,
+     "rec_td": 0.0
+    },
+    "flex_lineups": [
+     42,
+     33
+    ],
+    "cpt_lineups": [
+     0,
+     0
+    ]
+   },
+   "fc": {
+    "a": null,
+    "b": 1.11,
+    "delta": null,
+    "pct": null,
+    "cpt_b": 1.67,
+    "cpt_delta": null,
+    "floor_ceiling_b": [
+     0.0,
+     8.11
+    ],
+    "inj_b": null
+   },
+   "level_gap_b_ours_minus_fc": 2.95,
+   "delta_gap_fc_minus_ours": null,
+   "our_dependency_path": [
+    "EN3 NOT_MODELLED_BY_OWNER_INSTRUCTION (no opponent-QB effect on this club by design)"
+   ],
+   "triage": null
+  }
+ ],
+ "level_gap_by_club_group_DANIELS": {
+  "DAL:DST": {
+   "n": 1,
+   "ours_b": 3.91,
+   "fc_b": 3.47,
+   "ours_minus_fc": 0.44,
+   "ratio_ours_over_fc": 1.126
+  },
+  "DAL:K": {
+   "n": 1,
+   "ours_b": 10.66,
+   "fc_b": 10.92,
+   "ours_minus_fc": -0.26,
+   "ratio_ours_over_fc": 0.976
+  },
+  "DAL:PASS_CATCHERS": {
+   "n": 5,
+   "ours_b": 54.73,
+   "fc_b": 62.23,
+   "ours_minus_fc": -7.5,
+   "ratio_ours_over_fc": 0.879
+  },
+  "DAL:QB": {
+   "n": 1,
+   "ours_b": 20.7,
+   "fc_b": 22.16,
+   "ours_minus_fc": -1.46,
+   "ratio_ours_over_fc": 0.934
+  },
+  "DAL:RB": {
+   "n": 2,
+   "ours_b": 21.9,
+   "fc_b": 19.52,
+   "ours_minus_fc": 2.38,
+   "ratio_ours_over_fc": 1.122
+  },
+  "TB:DST": {
+   "n": 1,
+   "ours_b": 4.31,
+   "fc_b": 3.1,
+   "ours_minus_fc": 1.21,
+   "ratio_ours_over_fc": 1.39
+  },
+  "TB:K": {
+   "n": 1,
+   "ours_b": 8.37,
+   "fc_b": 6.69,
+   "ours_minus_fc": 1.68,
+   "ratio_ours_over_fc": 1.25
+  },
+  "TB:PASS_CATCHERS": {
+   "n": 5,
+   "ours_b": 37.16,
+   "fc_b": 31.53,
+   "ours_minus_fc": 5.63,
+   "ratio_ours_over_fc": 1.179
+  },
+  "TB:QB": {
+   "n": 1,
+   "ours_b": 14.63,
+   "fc_b": 12.25,
+   "ours_minus_fc": 2.38,
+   "ratio_ours_over_fc": 1.194
+  },
+  "TB:RB": {
+   "n": 2,
+   "ours_b": 21.29,
+   "fc_b": 19.6,
+   "ours_minus_fc": 1.69,
+   "ratio_ours_over_fc": 1.086
+  }
+ },
+ "READING": "Without an FC export under the other QB, FC deltas cannot be measured: the level gaps above compare two different models under one scenario and are a weak signal only. A Mayfield-scenario FC export is needed for an FC-vs-FC delta."
+}
