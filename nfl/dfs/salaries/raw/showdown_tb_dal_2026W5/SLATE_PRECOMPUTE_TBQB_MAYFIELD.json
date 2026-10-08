@@ -1,7 +1,7 @@
 {
  "tag": "TB_DAL_2026W5",
  "kickoff_utc": "2026-10-09T00:15:00Z",
- "scenario": "PRECOMPUTE_TBQB_MAYFIELD",
+ "scenario": "PRECOMPUTE_TBQB_MAYFIELD_R2",
  "export": "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/DKEntries_TB_DAL_SHOWDOWN_2026W5.5d559e413e680cae.csv",
  "fc": "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/THIRDPARTY_FC_showdown_TB_DAL_2026W5_CONTEXT_ONLY.IDMAPPED.e21acd0fa49a8f30.csv",
  "designations": "nfl/dfs/salaries/showdown_tb_dal/DESIGNATIONS_TB_DAL_2026W5_TBQB_MAYFIELD.json",
@@ -42,5 +42,12 @@
   "max_entries": "196438543: \"[150 Entry Max]\" in its DK name. 196438555 / 196438556: NOT STATED in the export; null, lower bound = entries held (20). Not carried over from ATL@NO (whose Dime Package was 2-max).",
   "field_size": "NOT IN THE EXPORT. Not declared; B4 shadow uses its labelled estimate prize/(fee x 0.85).",
   "payout_ladder": "NOT IN THE EXPORT. Not declared; production selection does not read it."
- }
+ },
+ "prior_attempts": [
+  {
+   "scenario": "PRECOMPUTE_TBQB_MAYFIELD",
+   "result": "INVALID_DO_NOT_USE: concurrent-run contamination",
+   "record": "nfl/dfs/salaries/showdown_tb_dal/INVALIDATED_RUNS_TB_DAL_2026W5.json"
+  }
+ ]
 }

@@ -224,11 +224,41 @@ def run(cfg_path, mode='final'):
     L = Ledger(P['dir'] / f'RUN_LEDGER_{scen}.json')
     L.add('DISCOVER', 'PASS', tag=cfg['tag'], scenario=scen, mode=mode, inputs=hashes,
           REHEARSAL=bool(cfg.get('rehearsal')))
+    # ONE RUN PER SLATE AT A TIME. showdown_tonight writes state / proj / draws / worlds to per-TAG paths and copies
+    # them into the scenario afterwards, so two scenarios run concurrently read each other's state (TB@DAL
+    # 2026-10-08: the Daniels and Mayfield precomputes produced byte-identical uploads from one state).
+    import fcntl
+    P['dir'].mkdir(parents=True, exist_ok=True)
+    lock = open(P['dir'] / '.RUN_LOCK', 'w')
+    try:
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except BlockingIOError:
+        L.add('REFUSED', 'CONCURRENT_RUN_SAME_TAG', detail=f'another run holds {P["dir"] / ".RUN_LOCK"}')
+        raise SlateError(f'CONCURRENT_RUN_SAME_TAG {cfg["tag"]} (scenarios share per-tag intermediates; run them in sequence)')
     try:
         return _run_body(cfg, cfg_path, mode, hashes, P, scen, sd, pre, L)
     except SlateError as e:
         L.add('REFUSED', str(e).split()[0], detail=str(e))
         raise
+    finally:
+        fcntl.flock(lock, fcntl.LOCK_UN)
+        lock.close()
+
+
+def scenario_state_matches(cfg, state):
+    """The built state must carry THIS scenario's designations and starters, not another run's."""
+    desig = json.loads((_REPO / cfg['designations']).read_text())
+    starters = json.loads((_REPO / cfg['confirmed_starters']).read_text())
+    got = {p['name']: p for p in state['players'].values()}
+    bad = []
+    for n, v in desig.items():
+        if n in got and (got[n]['current_availability'].get('designation') or '').upper() != v.upper():
+            bad.append(f'{n}: designation {got[n]["current_availability"].get("designation")} != {v}')
+    for n, p in got.items():
+        rel = (p.get('predicted_lineup_context') or {}).get('relayed_name')
+        if rel and rel not in starters:
+            bad.append(f'{n}: state names starter {rel}, scenario starters {sorted(starters)}')
+    return bad
 
 
 def _run_body(cfg, cfg_path, mode, hashes, P, scen, sd, pre, L):
@@ -253,6 +283,12 @@ def _run_body(cfg, cfg_path, mode, hashes, P, scen, sd, pre, L):
     if rc != 0 or not up.is_file() or up.stat().st_size == 0:
         L.add('PROJECT_SIMULATE_BUILD', 'FAIL', rc=rc, tail=tail)
         raise SlateError(f'PIPELINE_FAILED rc={rc} upload_present={up.is_file()}')
+    stf = sd / f'{pre}_{cfg["tag"].split("_", 2)[2]}_STATE.json'
+    if not stf.is_file():
+        raise SlateError(f'SCENARIO_STATE_ABSENT {stf}')
+    mism = scenario_state_matches(cfg, json.loads(stf.read_text()))
+    if mism:
+        raise SlateError(f'SCENARIO_STATE_MISMATCH {mism[:4]}')
     L.add('PROJECT_SIMULATE_BUILD', 'PASS', upload=str(up.relative_to(_REPO)), upload_sha256=_sha(up),
           tail=tail[-600:])
 

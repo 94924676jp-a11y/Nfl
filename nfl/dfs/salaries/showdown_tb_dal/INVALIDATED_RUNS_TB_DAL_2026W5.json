@@ -1,0 +1,19 @@
+{
+ "ARTIFACT": "INVALIDATED_RUNS",
+ "written_at": "2026-10-08T14:05:52.557476+00:00",
+ "runs": [
+  {
+   "scenario": "PRECOMPUTE_TBQB_DANIELS_R2",
+   "upload_sha256": "75756698e349737a1c10e8b7f85b3dc57c2d18ce83ca38a69a27ea6c59314d18",
+   "status": "INVALID_DO_NOT_USE"
+  },
+  {
+   "scenario": "PRECOMPUTE_TBQB_MAYFIELD",
+   "upload_sha256": "75756698e349737a1c10e8b7f85b3dc57c2d18ce83ca38a69a27ea6c59314d18",
+   "status": "INVALID_DO_NOT_USE"
+  }
+ ],
+ "cause": "the two precomputes were run concurrently; showdown_tonight writes state/proj/draws/worlds to per-TAG paths and copies them into the scenario afterwards, so the runs read each other's intermediates. Both produced the byte-identical upload; the Daniels state carries Mayfield as starter with no OUT designation.",
+ "fix": "showdown_next_slate.run now takes an exclusive per-tag lock (CONCURRENT_RUN_SAME_TAG) and refuses SCENARIO_STATE_MISMATCH when the built state does not carry the scenario's own designations and starters. Reruns in sequence as PRECOMPUTE_TBQB_DANIELS_R3 and PRECOMPUTE_TBQB_MAYFIELD_R2.",
+ "kept_as_evidence": "directories, ledgers and write-once freezes are left in place unchanged"
+}

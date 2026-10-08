@@ -1,7 +1,7 @@
 {
  "tag": "TB_DAL_2026W5",
  "kickoff_utc": "2026-10-09T00:15:00Z",
- "scenario": "PRECOMPUTE_TBQB_DANIELS_R2",
+ "scenario": "PRECOMPUTE_TBQB_DANIELS_R3",
  "export": "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/DKEntries_TB_DAL_SHOWDOWN_2026W5.5d559e413e680cae.csv",
  "fc": "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/THIRDPARTY_FC_showdown_TB_DAL_2026W5_CONTEXT_ONLY.IDMAPPED.e21acd0fa49a8f30.csv",
  "designations": "nfl/dfs/salaries/showdown_tb_dal/DESIGNATIONS_TB_DAL_2026W5_TBQB_DANIELS.json",
@@ -49,6 +49,11 @@
    "result": "REFUSED PIPELINE_FAILED: SLATE_STATE_NO_IMPLIED_TOTAL (nfl/warehouse/TEAM_GAME.json predated the week-5 schedule lines)",
    "fix": "TEAM_GAME rebuilt by nfl/warehouse/team_game.py from the 2026-10-08 schedules capture; freeze is write-once so the rerun takes a new name",
    "ledger": "nfl/dfs/salaries/showdown_tb_dal/RUN_LEDGER_PRECOMPUTE_TBQB_DANIELS.json"
+  },
+  {
+   "scenario": "PRECOMPUTE_TBQB_DANIELS_R2",
+   "result": "INVALID_DO_NOT_USE: concurrent-run contamination",
+   "record": "nfl/dfs/salaries/showdown_tb_dal/INVALIDATED_RUNS_TB_DAL_2026W5.json"
   }
  ]
 }
