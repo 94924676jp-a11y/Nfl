@@ -4,7 +4,7 @@
   {
    "step": "DISCOVER",
    "state": "PASS",
-   "at": "2026-10-08T19:33:32.966431+00:00",
+   "at": "2026-10-08T16:46:57.688759+00:00",
    "tag": "TB_DAL_2026W5",
    "scenario": "PRECOMPUTE_TBQB_DANIELS_R7",
    "mode": "precompute",
@@ -37,10 +37,105 @@
    "REHEARSAL": false
   },
   {
-   "step": "REFUSED",
-   "state": "SCENARIO_EXISTS",
-   "at": "2026-10-08T19:33:32.967365+00:00",
-   "detail": "SCENARIO_EXISTS /home/user/nfl/nfl/dfs/salaries/showdown_tb_dal/PRECOMPUTE_TBQB_DANIELS_R7 (write-once; choose a new scenario name)"
+   "step": "VERIFY",
+   "state": "PASS",
+   "at": "2026-10-08T16:46:57.847842+00:00",
+   "derived": {
+    "verified": [
+     "DST_RATES.json",
+     "FORWARD_CHAIN.json",
+     "KICKER_RATES.json",
+     "KICKER_WORLD.json",
+     "TD_RATES.json",
+     "USAGE_HISTORY_2021_2026.json"
+    ]
+   },
+   "dk_input_gate": "DK_INPUT_GATE_PASS",
+   "dk_sha256": "5d559e413e680cae3a41db9a8fe9a8042e8b7456c91516a8760e290f4683820e",
+   "teams": [
+    "DAL",
+    "TB"
+   ],
+   "contests_in_export": [
+    "196438543",
+    "196438555",
+    "196438556"
+   ],
+   "starters_confirmed": false,
+   "ready_eligible": false
+  },
+  {
+   "step": "FREEZE",
+   "state": "PASS",
+   "at": "2026-10-08T16:46:57.848743+00:00",
+   "freeze": "nfl/dfs/salaries/showdown_tb_dal/FOOTBALL_REALITY_FREEZE_PRECOMPUTE_TBQB_DANIELS_R7.json",
+   "seal": "961ccffcabdf1f472b0ac9d93efe276422b91bb254cc3bd5590eb30cf607651d"
+  },
+  {
+   "step": "RUN_CONTEXT",
+   "state": "RECORDED",
+   "at": "2026-10-08T16:46:57.865293+00:00",
+   "run_id": "run:5f29293bd97c43ddb2f189cbfd203c2e",
+   "commit": "c6cd6261d1c89650193de5aa7786928c50fafeb4",
+   "repo": "/home/user/nfl",
+   "code_dirty": [],
+   "freeze_seal": "961ccffcabdf1f472b0ac9d93efe276422b91bb254cc3bd5590eb30cf607651d",
+   "scenario_identity": "scn:7d5486e7a658303813a4bd17a4235c46",
+   "environment_sha256": "db3bf47661170070f74bbdae73a8c1e3268ca0387d55398e529e620b19ee3b86"
+  },
+  {
+   "step": "SHARED_WRITE_ALLOWED",
+   "state": "RECORDED",
+   "at": "2026-10-08T16:55:06.741653+00:00",
+   "paths": {
+    "nfl/derived/SOURCE_MEASUREMENT_CACHE.json": "nfl/warehouse/sources.py speed cache of capture-file measurements, keyed on path|full-content sha256|datatype since 2026-10-08 (it was path|size|mtime, which a same-second rewrite defeated -- independent P0 fixture DATA-measurement_cache); it holds no scenario input"
+   }
+  },
+  {
+   "step": "PROJECT_SIMULATE_BUILD",
+   "state": "PASS",
+   "at": "2026-10-08T16:55:06.877537+00:00",
+   "upload": "nfl/dfs/salaries/showdown_tb_dal/PRECOMPUTE_TBQB_DANIELS_R7/SHOWDOWN_TB_DAL_DK_UPLOAD.csv",
+   "upload_sha256": "bba17b23044292bc6e866d9716c235e0ef38633ae041edc789e2b9b09886c323",
+   "tail": "919\n    RB  n= 10 mean 4.594\n    WR  n= 18 mean 3.976\n    TE  n= 12 mean 2.248\n    PROJECTED: 46\n    NOT_PLAYING_REPORTED_INACTIVE: 2\n    PROJECTED_KICKER: 2\n    PROJECTED_DST: 2\n  -> nfl/dfs/salaries/showdown_tb_dal/PRECOMPUTE_TBQB_DANIELS_R7/SHOWDOWN_TB_DAL_2026W5_PROJ.json\ndraws PASS SHOWDOWN_SLATE_DRAWN 50 players x 2000 worlds; sanity PASS[FOOTBALL_SANITY_PASS]\nportfolio PASS SHOWDOWN_PORTFOLIO_BUILT 7754 candidates; NFL Showdown $100K mini-MAX [150 Entry M 150/150 cov 1.000; NFL Showdown $10K Quarter Jukebox [Just  20/20 cov 0.685; NFL Showdown $4K Dime Package [Just $0.1 20/20 cov 0.685"
+  },
+  {
+   "step": "SHADOWS_NON_BLOCKING",
+   "state": "RECORDED",
+   "at": "2026-10-08T17:08:23.706094+00:00",
+   "shadow_fc": "PASS",
+   "shadow_blend": "PASS",
+   "audit": "PASS",
+   "board_blend": "PASS",
+   "board_fc": "PASS",
+   "arch_blend": "PASS",
+   "arch_fc": "PASS",
+   "fc_compare": "PASS",
+   "cycle1": "PASS",
+   "prelock_board": "PASS",
+   "B4_MAX_ENTRIES_196438555": "LOWER_BOUND 20 (entries held; DK name states no limit)",
+   "B4_MAX_ENTRIES_196438556": "LOWER_BOUND 20 (entries held; DK name states no limit)",
+   "B4_SHADOW": "PASS nfl/dfs/salaries/showdown_tb_dal/DUPE_SHADOW_B4_PRECOMPUTE_TBQB_DANIELS_R7.json",
+   "B4_SHADOW_FIELD_SIZE": "ESTIMATE prize / (fee x 0.85); declare field_size when DK shows it",
+   "OWNERSHIP_SC_OWN_ROTATION_2": "PASS nfl/research/ownership/predictions/SC_OWN_ROTATION_2_TB_DAL_2026W5_PRECOMPUTE_TBQB_DANIELS_R7.json",
+   "APPEARANCE_SUCCESSOR": "SEALED nfl/prospective/appearance/APPEARANCE_SUCCESSOR_W5_SEAL.json seal 03f18d4abbaa written 2026-10-07T15:22:07.495604+00:00"
+  },
+  {
+   "step": "SEAL_PROPS",
+   "state": "SKIPPED_PRECOMPUTE",
+   "at": "2026-10-08T17:08:23.707112+00:00",
+   "why": "the prop seal is taken once, by the final run"
+  },
+  {
+   "step": "FINAL_VERIFY",
+   "state": "NOT_READY",
+   "at": "2026-10-08T17:15:11.450963+00:00",
+   "upload_sha256": "bba17b23044292bc6e866d9716c235e0ef38633ae041edc789e2b9b09886c323",
+   "reproduced_sha256": "bba17b23044292bc6e866d9716c235e0ef38633ae041edc789e2b9b09886c323",
+   "blockers": [
+    "STARTERS_NOT_CONFIRMED (no confirmed_starters_provenance with CONFIRMED true and a source)"
+   ],
+   "NOT_SUBMITTED": "nothing is uploaded to DraftKings or entered; no wager is recommended"
   }
  ]
 }
