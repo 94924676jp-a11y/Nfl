@@ -2,16 +2,48 @@
  "tag": "TB_DAL_2026W5",
  "kickoff_utc": "2026-10-09T00:15:00Z",
  "scenario": "OFFICIAL",
- "export": "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/DKEntries_TB_DAL_SHOWDOWN_2026W5.<sha16>.csv",
- "fc": "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/THIRDPARTY_FC_showdown_TB_DAL_2026W5_CONTEXT_ONLY.<sha16>.csv",
+ "export": "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/DKEntries_TB_DAL_SHOWDOWN_2026W5.5d559e413e680cae.csv",
+ "fc": "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/THIRDPARTY_FC_showdown_TB_DAL_2026W5_CONTEXT_ONLY.IDMAPPED.e21acd0fa49a8f30.csv",
  "designations": "nfl/dfs/salaries/showdown_tb_dal/DESIGNATIONS_TB_DAL_2026W5.json",
  "official_inactives": "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/OFFICIAL_INACTIVES_TB_DAL_2026W5.json",
  "official_inactives_provenance": "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/OFFICIAL_INACTIVES_TB_DAL_2026W5.PROVENANCE.json",
  "confirmed_starters": "nfl/dfs/salaries/showdown_tb_dal/STARTERS_TB_DAL_2026W5.json",
  "starter_tier": "PUBLIC_DEPTH_CHART_AND_SNAPS_CITED",
  "depth_chart": "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/depth_charts_2026_TB_DAL.8fe0082896a8cb24.csv",
- "contests": {},
+ "contests": {
+  "196438543": {
+   "name": "NFL Showdown $100K mini-MAX [150 Entry Max] (TB @ DAL)",
+   "prize_pool": 100000,
+   "entry_fee": 0.5,
+   "max_entries": 150,
+   "entries_held": 150
+  },
+  "196438555": {
+   "name": "NFL Showdown $10K Quarter Jukebox [Just $0.25!] (TB @ DAL)",
+   "prize_pool": 10000,
+   "entry_fee": 0.25,
+   "max_entries": null,
+   "max_entries_lower_bound": 20,
+   "entries_held": 20
+  },
+  "196438556": {
+   "name": "NFL Showdown $4K Dime Package [Just $0.10!] (TB @ DAL)",
+   "prize_pool": 4000,
+   "entry_fee": 0.1,
+   "max_entries": null,
+   "max_entries_lower_bound": 20,
+   "entries_held": 20
+  }
+ },
  "snaps": "nfl/dfs/salaries/raw/showdown_atl_no_2026W4/snap_counts_2026.53720f396f9c2bfa.csv",
  "confirmed_starters_provenance": "nfl/dfs/salaries/showdown_tb_dal/STARTERS_TB_DAL_2026W5.PROVENANCE.json",
- "_README": "FINAL (OFFICIAL) run config. Filled at the inactive deadline: official inactives + provenance, final designations (designations_from_injuries.py on the latest injuries capture), STARTERS with a CONFIRMED provenance (sha256 of the starters file, CONFIRMED true, source). Not READY without each."
+ "_README": "FINAL (OFFICIAL) run config. Filled at the inactive deadline: official inactives + provenance, final designations (designations_from_injuries.py on the latest injuries capture), STARTERS with a CONFIRMED provenance (sha256 of the starters file, CONFIRMED true, source). Not READY without each.",
+ "fc_original": "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/THIRDPARTY_FC_showdown_TB_DAL_2026W5_CONTEXT_ONLY.429871c05b76b485.csv",
+ "contests_evidence": {
+  "prize_pool": "DK contest name in the DKEntries export (rounded label, e.g. $100K)",
+  "entry_fee": "DKEntries Entry Fee column",
+  "max_entries": "196438543: \"[150 Entry Max]\" in its DK name. 196438555 / 196438556: NOT STATED in the export; null, lower bound = entries held (20). Not carried over from ATL@NO (whose Dime Package was 2-max).",
+  "field_size": "NOT IN THE EXPORT. Not declared; B4 shadow uses its labelled estimate prize/(fee x 0.85).",
+  "payout_ladder": "NOT IN THE EXPORT. Not declared; production selection does not read it."
+ }
 }

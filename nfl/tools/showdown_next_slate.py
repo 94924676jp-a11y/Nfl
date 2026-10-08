@@ -104,7 +104,11 @@ def discover(cfg_path, mode):
     if absent:
         raise SlateError(f'INPUT_FILE_MISSING_OR_EMPTY {absent}')
     for cid, c in cfg['contests'].items():
-        bad = [k for k in ('prize_pool', 'entry_fee', 'max_entries') if not isinstance(c.get(k), (int, float))]
+        bad = [k for k in ('prize_pool', 'entry_fee') if not isinstance(c.get(k), (int, float))]
+        # a per-user limit DK does not state is not invented: null max_entries needs a declared lower bound
+        if not isinstance(c.get('max_entries'), (int, float)) and not (
+                c.get('max_entries') is None and isinstance(c.get('max_entries_lower_bound'), int)):
+            bad.append('max_entries')
         if bad:
             raise SlateError(f'CONTEST_FIELDS_MISSING {cid} {bad}')
     cfg['scenario'] = cfg.get('scenario') or ('OFFICIAL' if mode == 'final' else 'PRECOMPUTE')
@@ -154,6 +158,13 @@ def verify_football_inputs(cfg, mode):
     unknown = sorted(set(g.value['contests']) - set(cfg['contests']))
     if unknown:
         raise SlateError(f'EXPORT_CONTEST_NOT_DECLARED {unknown}')
+    for cid, c in cfg['contests'].items():
+        held = g.value['contests'].get(cid, {}).get('entries', 0)
+        cap = c.get('max_entries') if c.get('max_entries') is not None else None
+        if cap is not None and held > cap:
+            raise SlateError(f'ENTRIES_EXCEED_MAX {cid} held {held} max {cap}')
+        if cap is None and c.get('max_entries_lower_bound') != held:
+            raise SlateError(f'MAX_ENTRIES_LOWER_BOUND_NOT_HELD_COUNT {cid} bound {c.get("max_entries_lower_bound")} held {held}')
     official = False
     if cfg.get('official_inactives'):
         lst = json.loads((_REPO / cfg['official_inactives']).read_text())
@@ -277,7 +288,10 @@ def _run_body(cfg, cfg_path, mode, hashes, P, scen, sd, pre, L):
         sizes = []
         for cid, c in cfg['contests'].items():
             n = c.get('field_size') or round(c['prize_pool'] / (c['entry_fee'] * 0.85))
-            sizes += ['--contest', f'{cid}={int(n)}:{int(c["max_entries"])}']
+            me = c['max_entries'] if c.get('max_entries') is not None else c['max_entries_lower_bound']
+            sizes += ['--contest', f'{cid}={int(n)}:{int(me)}']
+            if c.get('max_entries') is None:
+                shadows[f'B4_MAX_ENTRIES_{cid}'] = f'LOWER_BOUND {me} (entries held; DK name states no limit)'
         c = [PY, 'nfl/field/showdown_dupe_shadow.py', '--export', _REPO / cfg['export'], '--ownership', own,
              '--lineups', sd / f'{pre}_FINAL_LINEUPS.csv', *sizes, '--kickoff', cfg['kickoff_utc'], '--out', b4,
              '--model', 'B4', '--model', 'B3S']

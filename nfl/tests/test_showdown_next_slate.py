@@ -83,6 +83,13 @@ def test_discover():
         c = copy.deepcopy(BASE)
         del c['contests']['196285137']['entry_fee']
         _refused(lambda: NS.discover(_write(td, c), 'final'), 'CONTEST_FIELDS_MISSING', 'contest without a fee')
+        c = copy.deepcopy(BASE)
+        c['contests']['196285137']['max_entries'] = None
+        _refused(lambda: NS.discover(_write(td, c), 'final'), 'CONTEST_FIELDS_MISSING',
+                 'an unstated entry limit without a declared lower bound')
+        c['contests']['196285137']['max_entries_lower_bound'] = 150
+        NS.discover(_write(td, c), 'final')
+        check(True, 'an unstated entry limit with a declared lower bound (entries held) is accepted, not invented')
 
 
 def test_verify_inputs():

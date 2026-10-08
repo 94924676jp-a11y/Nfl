@@ -1,0 +1,50 @@
+{
+ "ARTIFACT": "FOOTBALL_REALITY_FREEZE",
+ "tag": "TB_DAL_2026W5",
+ "scenario": "PRECOMPUTE_TBQB_DANIELS",
+ "kickoff_utc": "2026-10-09T00:15:00Z",
+ "inputs": {
+  "export": {
+   "path": "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/DKEntries_TB_DAL_SHOWDOWN_2026W5.5d559e413e680cae.csv",
+   "sha256": "5d559e413e680cae3a41db9a8fe9a8042e8b7456c91516a8760e290f4683820e"
+  },
+  "fc": {
+   "path": "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/THIRDPARTY_FC_showdown_TB_DAL_2026W5_CONTEXT_ONLY.IDMAPPED.e21acd0fa49a8f30.csv",
+   "sha256": "e21acd0fa49a8f30a572b8867d3c47184bdbd92f8f8e31fba8d5ec59b9439b92"
+  },
+  "designations": {
+   "path": "nfl/dfs/salaries/showdown_tb_dal/DESIGNATIONS_TB_DAL_2026W5_TBQB_DANIELS.json",
+   "sha256": "0e8ce344711648342d4b3d92bd1301c6fd78b474f2b82c7125084ae5824ca48d"
+  },
+  "confirmed_starters": {
+   "path": "nfl/dfs/salaries/showdown_tb_dal/STARTERS_TB_DAL_2026W5_TBQB_DANIELS.json",
+   "sha256": "b8a7aa2b940586adfaf53ddce6ee9b53a552eb667cee3ce7c0561fcc571059be"
+  },
+  "depth_chart": {
+   "path": "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/depth_charts_2026_TB_DAL.8fe0082896a8cb24.csv",
+   "sha256": "8fe0082896a8cb24ec5580e53ecfe96ca351f17278551bd18ac3cd542598a8d7"
+  },
+  "snaps": {
+   "path": "nfl/dfs/salaries/raw/showdown_atl_no_2026W4/snap_counts_2026.53720f396f9c2bfa.csv",
+   "sha256": "53720f396f9c2bfaf869c8a7af644f043caae278c6a3c1d6b4ed52ec597c8061"
+  }
+ },
+ "verify": {
+  "dk_input_gate": "DK_INPUT_GATE_PASS",
+  "dk_sha256": "5d559e413e680cae3a41db9a8fe9a8042e8b7456c91516a8760e290f4683820e",
+  "teams": [
+   "DAL",
+   "TB"
+  ],
+  "contests_in_export": [
+   "196438543",
+   "196438555",
+   "196438556"
+  ],
+  "starters_confirmed": false,
+  "ready_eligible": false
+ },
+ "frozen_at": "2026-10-08T13:31:20.429186+00:00",
+ "RULE": "every football input is hashed here BEFORE projection; FINAL VERIFY re-hashes them",
+ "seal_sha256": "cace00eacaf8db2c2ea7d785ef27ba5727826a7ca2d0e92a8967c0bc3eb1f9d3"
+}

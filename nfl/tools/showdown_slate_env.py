@@ -28,5 +28,12 @@ if os.environ.get('SHOWDOWN_SLATE_CONFIG'):
 else:
     CONTESTS = _ATL_CONTESTS
 #: the single contest with the most entries per user (the boards' "main" multi-entry view), and the 2-entry contest
-MAIN_CONTEST = max(CONTESTS, key=lambda c: (CONTESTS[c]['max_entries'], c))
-TWO_ENTRY = next((c for c in sorted(CONTESTS) if CONTESTS[c]['max_entries'] == 2), None)
+
+
+def max_entries(c):
+    """The declared per-user entry limit, else the declared lower bound (entries held) when DK does not state it."""
+    return c['max_entries'] if c.get('max_entries') is not None else c.get('max_entries_lower_bound')
+
+
+MAIN_CONTEST = max(CONTESTS, key=lambda c: (max_entries(CONTESTS[c]) or 0, c))
+TWO_ENTRY = next((c for c in sorted(CONTESTS) if CONTESTS[c].get('max_entries') == 2), None)
