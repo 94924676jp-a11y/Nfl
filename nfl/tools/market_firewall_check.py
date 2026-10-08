@@ -118,7 +118,7 @@ def arm(state, tg, work, *, market_arm, n_sims):
 
 def check(scenario_dir, n_sims=300):
     sd = pathlib.Path(scenario_dir).resolve()
-    stf = next(sd.glob('*_STATE.json'))
+    stf = next(sd.glob('SHOWDOWN_*_STATE.json'))
     state = json.loads(stf.read_text())
     tgp = _REPO / 'nfl/warehouse/TEAM_GAME.json'
     tg = json.loads(tgp.read_text())

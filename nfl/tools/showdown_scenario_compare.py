@@ -37,7 +37,7 @@ def _load(sd):
     sd = pathlib.Path(sd)
     g = lambda pat: next(sd.glob(pat))  # noqa: E731
     out = {'dir': sd, 'scenario': json.loads((sd / 'SCENARIO.json').read_text()),
-           'state_path': g('*_STATE.json'), 'proj_path': g('*_PROJ.json'), 'draws_path': g('*_DRAWS.json')}
+           'state_path': g('SHOWDOWN_*_STATE.json'), 'proj_path': g('SHOWDOWN_*_PROJ.json'), 'draws_path': g('SHOWDOWN_*_DRAWS.json')}
     out['state'] = json.loads(out['state_path'].read_text())
     out['proj'] = json.loads(out['proj_path'].read_text())
     out['draws'] = json.loads(out['draws_path'].read_text())

@@ -68,6 +68,15 @@ def run(tag, *, n_sims=2000, seed=SEED, work=None) -> Outcome:
     rs = RS.run()
     if rs.state.value != 'PASS':
         return rs
+    # ROLE STATE BOUND TO THIS STATE (independent P0 fixture ISO-foreign_role_artifact): proj_v1 reads ROLE without
+    # asking where it came from. Its lineage names the state it was built from; it must be this run's.
+    _role_path = P['role'] if P.get('role') else RS.OUT
+    _role_in = [i.get('sha256') for i in ((json.loads(pathlib.Path(_role_path).read_text()).get('_lineage') or {})
+                                          .get('inputs') or [])]
+    _state_sha = hashlib.sha256(P['state'].read_bytes()).hexdigest()
+    if _state_sha not in _role_in:
+        return Outcome.fail('SHOWDOWN_RUN_ROLE_STATE_FOREIGN',
+                            f'{_role_path} was built from {[str(x)[:12] for x in _role_in]}, not this state {_state_sha[:12]}')
     PV.POST, PV.OUT, PV.SLATE_WEEK = P['state'], P['proj'], int(state['week'])
     PV.MARKET_ARM = 'FOOTBALL_ONLY'
     rc = PV.main()

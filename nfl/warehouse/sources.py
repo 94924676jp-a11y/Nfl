@@ -98,8 +98,8 @@ def _digest(path):
 
 
 #: Measurement cache. Selecting among 393 daily schedule snapshots means opening 393 files; the
-#: measurement of a given file cannot change unless the file does, so it is keyed on path, size and
-#: mtime. This is a speed cache only -- it never substitutes for opening a file that has changed,
+#: measurement of a given file cannot change unless the file does, so it is keyed on path and the file's
+#: full content digest (it was path, size and mtime until 2026-10-08, which a same-second rewrite defeats). This is a speed cache only -- it never substitutes for opening a file that has changed,
 #: and a cache miss measures the bytes exactly as a cold run would.
 _CACHE_PATH = _REPO / 'nfl/derived/SOURCE_MEASUREMENT_CACHE.json'
 _CACHE = None
@@ -127,7 +127,9 @@ def measure(path, dt: DataType):
     """Open a candidate and measure it. Never infers anything from the filename."""
     p = pathlib.Path(path)
     st = p.stat()
-    ck = f'{p}|{st.st_size}|{int(st.st_mtime)}|{dt.name}|{MEASURE_ROW_CAP}'
+    # CONTENT-BOUND KEY (independent P0 fixture DATA-measurement_cache): path|size|mtime returned a stale measurement
+    # after a same-size, same-second replacement. The full-file digest is cheaper than the parse it saves.
+    ck = f'{p}|{_digest(p)}|{dt.name}|{MEASURE_ROW_CAP}'
     hit = _cache().get(ck)
     if hit is not None:
         return dict(hit)

@@ -259,8 +259,9 @@ _SHARED_WATCH = ('nfl/derived', 'nfl/dfs/salaries', 'nfl/sim', 'nfl/warehouse')
 #: Shared writes that are scenario-INDEPENDENT by construction, each with the reason. Anything else is a breach.
 SHARED_WRITE_ALLOWED = {
     'nfl/derived/SOURCE_MEASUREMENT_CACHE.json':
-        'nfl/warehouse/sources.py speed cache of capture-file measurements, keyed on path|size|mtime|datatype; it '
-        'holds no scenario input and a miss measures the bytes exactly as a cold run would (sources.py:100-103)',
+        'nfl/warehouse/sources.py speed cache of capture-file measurements, keyed on path|full-content sha256|'
+        'datatype since 2026-10-08 (it was path|size|mtime, which a same-second rewrite defeated -- independent P0 '
+        'fixture DATA-measurement_cache); it holds no scenario input',
 }
 
 

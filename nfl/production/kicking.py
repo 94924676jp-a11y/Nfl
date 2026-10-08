@@ -102,9 +102,6 @@ def _cut_ok(season, week, cut_ordinal):
 
 def fit(cut_ordinal: int) -> Outcome:
     """Fit both models from play-by-play strictly before `cut_ordinal`."""
-    key = ('fit', cut_ordinal)
-    if key in _CACHE:
-        return _CACHE[key]
     files = sorted(glob.glob(str(_REPO / 'nfl/research/postgame/pbp_20*.csv.gz')))
     if not files:
         return Outcome.blocked(
@@ -112,6 +109,11 @@ def fit(cut_ordinal: int) -> Outcome:
             'no play-by-play under nfl/research/postgame, so neither the '
             'distance bands nor the opportunity table can be fitted.',
             cause=Cause.DATA)
+    # THE KEY BINDS SOURCE CONTENT (independent P0 fixture DATA-kicking_cache): keyed on the cutoff alone, a
+    # changed or added capture at the same cutoff returned the old fit until the process restarted.
+    key = ('fit', cut_ordinal, tuple((f, hashlib.sha256(pathlib.Path(f).read_bytes()).hexdigest()) for f in files))
+    if key in _CACHE:
+        return _CACHE[key]
 
     lg = collections.Counter()
     per = collections.defaultdict(collections.Counter)
