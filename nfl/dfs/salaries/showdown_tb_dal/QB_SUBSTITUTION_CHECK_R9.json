@@ -1,0 +1,40 @@
+{
+ "ARTIFACT": "QB_SUBSTITUTION_CHECK",
+ "scenario": "PRECOMPUTE_TBQB_DANIELS_R9",
+ "commit": "eafc5b01",
+ "PLAYER_SUBSTITUTION_VALID": "PASS (on the scenario hypothesis; starter not yet confirmed)",
+ "state": {
+  "Baker Mayfield": "REPORTED_INACTIVE_OFFICIAL_RELEASE_CITED, not in starting group, NO projection row values, absent from worlds",
+  "Jalon Daniels": "starting group, depth 1",
+  "Brett Rypien / Easton Stick": "active backups, relief probability 0.138 / 0.0004"
+ },
+ "daniels_projection": {
+  "pass_attempts": 34.906,
+  "pass_yards": 173.185,
+  "carries": 3.386,
+  "rush_yards": 19.767,
+  "dk_points": 14.6277,
+  "prior_tier": "ARCHETYPE (cohort), thin personal history"
+ },
+ "team_attempt_accounting": {
+  "TB_team_attempts": 35.2794,
+  "Daniels+Rypien+Stick": 35.2582,
+  "Mayfield": 0
+ },
+ "lineups": {
+  "entries": 190,
+  "distinct": 162,
+  "violations": "NONE (ids in pool, CPT/FLEX ids, no duplicates, cap, both teams, no inactive player, no Mayfield)",
+  "with_Daniels": 93,
+  "with_a_backup_TB_QB": 0,
+  "verifier_violations": 0
+ },
+ "readiness": {
+  "technical": "PASS",
+  "data": "FAIL: STARTERS_NOT_CONFIRMED (precompute; needs the confirmed-starter source at the deadline)",
+  "football_model": "INCOMPLETE_QB_ENVIRONMENT (owner completeness requirement, not a substitution failure)",
+  "dfs_decision": "NOT_READY"
+ },
+ "SIMULATION_ACCOUNTING_VALID": "FAIL, as on every slate including ATL@NO production: nfl/research/accounting/WORLD_ACCOUNTING_TB_DAL_DANIELS_R9.json",
+ "QB_CONDITIONED_FORECAST_VALIDATED": "FAIL: not built"
+}
