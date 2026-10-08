@@ -149,6 +149,21 @@ def test_run_refusals():
         ledger = _REPO / D / 'RUN_LEDGER_TEST_NEVER_RUN.json'
         if ledger.exists():
             ledger.unlink()
+        # write-once: a refused re-run of an existing scenario leaves that scenario's ledger untouched
+        sd, orig = _REPO / D / 'TEST_EXISTING_SCENARIO', _REPO / D / 'RUN_LEDGER_TEST_EXISTING_SCENARIO.json'
+        sd.mkdir(exist_ok=True)
+        orig.write_text('{"ORIGINAL": true}')
+        try:
+            _refused(lambda: st(_write(td, {**BASE, 'scenario': 'TEST_EXISTING_SCENARIO'}), 'final'),
+                     'SCENARIO_EXISTS', 'a re-run of an existing scenario is refused')
+            refused = sorted((_REPO / D).glob('RUN_LEDGER_TEST_EXISTING_SCENARIO.REFUSED_*.json'))
+            check(orig.read_text() == '{"ORIGINAL": true}' and len(refused) == 1
+                  and 'SCENARIO_EXISTS' in refused[0].read_text(),
+                  'the refusal is written to its own ledger; the original run ledger is unchanged')
+        finally:
+            for f in (_REPO / D).glob('RUN_LEDGER_TEST_EXISTING_SCENARIO*.json'):
+                f.unlink()
+            sd.rmdir()
 
 
 def test_postgame_phase():

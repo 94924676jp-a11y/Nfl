@@ -226,7 +226,12 @@ def run(cfg_path, mode='final'):
     scen = cfg['scenario']
     sd = P['dir'] / scen
     pre = f'SHOWDOWN_{cfg["tag"].split("_2026")[0]}'
-    L = Ledger(P['dir'] / f'RUN_LEDGER_{scen}.json')
+    lp = P['dir'] / f'RUN_LEDGER_{scen}.json'
+    if sd.exists() or lp.exists():
+        # write-once: a re-run that will be refused must not overwrite the original run's ledger (TB@DAL 2026-10-08:
+        # a SCENARIO_EXISTS refusal rewrote RUN_LEDGER_PRECOMPUTE_TBQB_DANIELS_R7.json with the refusal)
+        lp = P['dir'] / f'RUN_LEDGER_{scen}.REFUSED_{_now().strftime("%Y%m%dT%H%M%S%fZ")}.json'
+    L = Ledger(lp)
     L.add('DISCOVER', 'PASS', tag=cfg['tag'], scenario=scen, mode=mode, inputs=hashes,
           REHEARSAL=bool(cfg.get('rehearsal')))
     # ONE RUN PER SLATE AT A TIME. showdown_tonight writes state / proj / draws / worlds to per-TAG paths and copies
@@ -337,7 +342,7 @@ def _run_body(cfg, cfg_path, mode, hashes, P, scen, sd, pre, L):
     rc, tail = _run(cmd, env, 'tonight')
     after = _shared_snapshot(P['dir'])
     benign = [k for k in shared_writes(before, after) if k in SHARED_WRITE_ALLOWED]
-    breach = shared_writes(before, after, allowed=(str((P['dir'] / f'RUN_LEDGER_{scen}.json').relative_to(_REPO)),
+    breach = shared_writes(before, after, allowed=(str(L.path.relative_to(_REPO)),
                                                    *SHARED_WRITE_ALLOWED))
     if benign:
         L.add('SHARED_WRITE_ALLOWED', 'RECORDED', paths={k: SHARED_WRITE_ALLOWED[k] for k in benign})
