@@ -1,17 +1,29 @@
 {
  "ARTIFACT": "DESIGNATIONS_PROVENANCE",
- "source": "nfl/vintage/injuries.e5b9e6f6b790481d.csv.gz",
- "source_sha256": "2563cc8438b8254eec3e5dcaa3c2864fe665e5710ad0b7a88eefeeeea4738366",
+ "source": "nfl/vintage/injuries.eef1227bbb7448e0.csv.gz",
+ "source_sha256": "7cca4672e1193dbb761ba12f304c9e6cbb21aa16ac0a5296dadc3f766c7e1886",
  "season": 2026,
  "week": 5,
  "teams": [
   "DAL",
   "TB"
  ],
- "n_report_rows": 19,
- "formal_designations": {},
+ "n_report_rows": 20,
+ "formal_designations": {
+  "Tyler Smith": "QUESTIONABLE",
+  "Cobie Durant": "OUT",
+  "DeMarvion Overshown": "OUT",
+  "Jonathan Mingo": "QUESTIONABLE",
+  "Drew Shelton": "OUT",
+  "Antoine Winfield Jr.": "OUT",
+  "SirVocea Dennis": "OUT",
+  "Benjamin Morrison": "OUT"
+ },
  "SCENARIO_HYPOTHESIS": {},
- "scenario_note": "precompute: Mayfield starts (TB QB unresolved)",
+ "scenario_note": "precompute CONTINGENCY: Mayfield starts. CONTRADICTED by relayed formal status Out (thumb); kept isolated per owner directive until authoritative starter evidence",
+ "COUNTERFACTUAL_REMOVED_FORMAL_STATUS": {
+  "Baker Mayfield": "OUT"
+ },
  "practice_only_no_formal_status": [
   {
    "player": "Malik Hooker",
@@ -29,24 +41,9 @@
    "practice_status": "Full Participation in Practice"
   },
   {
-   "player": "Tyler Smith",
-   "team": "DAL",
-   "practice_status": "Limited Participation in Practice"
-  },
-  {
    "player": "James Houston",
    "team": "DAL",
    "practice_status": "Full Participation in Practice"
-  },
-  {
-   "player": "Cobie Durant",
-   "team": "DAL",
-   "practice_status": "Did Not Participate In Practice"
-  },
-  {
-   "player": "DeMarvion Overshown",
-   "team": "DAL",
-   "practice_status": "Did Not Participate In Practice"
   },
   {
    "player": "Joey Porter Jr.",
@@ -59,16 +56,6 @@
    "practice_status": "Full Participation in Practice"
   },
   {
-   "player": "Drew Shelton",
-   "team": "DAL",
-   "practice_status": "Did Not Participate In Practice"
-  },
-  {
-   "player": "Baker Mayfield",
-   "team": "TB",
-   "practice_status": "Did Not Participate In Practice"
-  },
-  {
    "player": "Anthony Nelson",
    "team": "TB",
    "practice_status": "Limited Participation in Practice"
@@ -76,27 +63,12 @@
   {
    "player": "Chase McLaughlin",
    "team": "TB",
-   "practice_status": "Did Not Participate In Practice"
-  },
-  {
-   "player": "Antoine Winfield Jr.",
-   "team": "TB",
-   "practice_status": "Did Not Participate In Practice"
+   "practice_status": "Full Participation in Practice"
   },
   {
    "player": "Ko Kieft",
    "team": "TB",
-   "practice_status": "Limited Participation in Practice"
-  },
-  {
-   "player": "SirVocea Dennis",
-   "team": "TB",
-   "practice_status": "Did Not Participate In Practice"
-  },
-  {
-   "player": "Benjamin Morrison",
-   "team": "TB",
-   "practice_status": "Did Not Participate In Practice"
+   "practice_status": "Full Participation in Practice"
   },
   {
    "player": "Rueben Bain Jr.",
@@ -110,6 +82,6 @@
   }
  ],
  "RULE": "formal report_status only; practice participation is never converted into a designation",
- "built_at": "2026-10-07T20:44:47.007476+00:00",
- "sha256": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356"
+ "built_at": "2026-10-08T12:39:01.366358+00:00",
+ "sha256": "f20371e4ef7fb5d1dd9e8deb221e0e5a0106cdac1b30757754fa60e81fce7f6d"
 }

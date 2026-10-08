@@ -4071,3 +4071,23 @@ source URLs, and any official team statement on the starter. Also watch: TB K Ch
 **Still needed (unchanged):** the owner's DKEntries export + contest metadata (prize, fee, max entries, field size)
 — DK is unreachable from here; the FC context file; the official inactive list + provenance at the deadline; the
 Hard Rock board + capture sidecar after SEAL_PROPS; full-field standings after the game.
+
+## UPDATE 2026-10-08 12:50Z — TB@DAL (kickoff 2026-10-09T00:15Z): still needed from you, in order
+
+Captured here at 12:34Z (nflverse relay): week-5 formal statuses. **Baker Mayfield Out (thumb)**; TB also Out
+Winfield, Morrison, Dennis; DAL Out Durant, Overshown, Shelton; Questionable Mingo, T. Smith. McLaughlin no status
+(Full). Designations rebuilt from formal report_status only. Both TB QB precomputes are staged; Daniels is the leading
+scenario, Mayfield is kept as a recorded counterfactual. Nothing below can be fetched from this container (NO_EGRESS).
+
+1. **DKEntries export** `DKEntries_TB_DAL_SHOWDOWN_2026W5.csv` (any name; I rename to the sha16 form) **plus per
+   contest: contest id, prize pool, entry fee, max entries per user, field size**. Blocks both precomputes.
+2. **FC file** `THIRDPARTY_FC_showdown_TB_DAL_2026W5_CONTEXT_ONLY.csv` (ownership context only). Blocks both precomputes.
+3. **Authoritative TB starter**: team announcement or reporter-of-record line naming the starting QB, with URL and
+   capture time UTC -> `nfl/dfs/salaries/showdown_tb_dal/STARTERS_TB_DAL_2026W5.json` + `.PROVENANCE.json`
+   (`CONFIRMED: true`, `source`, `sha256` of the starters file). The official inactive list also suffices.
+4. **Official inactives** at ~22:45Z: `OFFICIAL_INACTIVES_TB_DAL_2026W5.json` + `.PROVENANCE.json`, with
+   `OFFICIALLY_VERIFIED: true` only for an nfl.com/club official list (sha256 of the list). A relayed list is
+   recorded as relayed and does not open the READY gate.
+5. **After I post SEAL_PROPS** (final mode), before kickoff: Hard Rock board `nfl/market/raw/HR_TB_DAL_BOARD_<UTC>.csv`
+   + `CAPTURE.json` sidecar.
+6. **Postgame**: full-field standings zip per contest id.

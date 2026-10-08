@@ -25,7 +25,7 @@ import sys
 MAP = {'out': 'OUT', 'doubtful': 'DOUBTFUL', 'questionable': 'QUESTIONABLE'}
 
 
-def build(injuries, season, week, teams, adds=(), note=None):
+def build(injuries, season, week, teams, adds=(), note=None, counterfactual_remove=()):
     raw = pathlib.Path(injuries).read_bytes()
     text = gzip.decompress(raw).decode('utf-8') if str(injuries).endswith('.gz') else raw.decode('utf-8')
     rows = [r for r in csv.DictReader(io.StringIO(text))
@@ -43,6 +43,11 @@ def build(injuries, season, week, teams, adds=(), note=None):
             practice_only.append({'player': r['full_name'], 'team': r['team'], 'practice_status': r.get('practice_status')})
     if unknown:
         raise SystemExit(f'UNRECOGNISED_REPORT_STATUS {unknown[:5]}')
+    cf = {}
+    for n in counterfactual_remove:
+        if n not in des:
+            raise SystemExit(f'COUNTERFACTUAL_TARGET_HAS_NO_FORMAL_STATUS {n}')
+        cf[n] = des.pop(n)
     hyp = {}
     for a in adds:
         n, _, s = a.partition('=')
@@ -54,6 +59,7 @@ def build(injuries, season, week, teams, adds=(), note=None):
             'season': season, 'week': week, 'teams': sorted(teams), 'n_report_rows': len(rows),
             'formal_designations': {k: v for k, v in des.items() if k not in hyp},
             'SCENARIO_HYPOTHESIS': hyp, 'scenario_note': note,
+            'COUNTERFACTUAL_REMOVED_FORMAL_STATUS': cf,
             'practice_only_no_formal_status': practice_only,
             'RULE': 'formal report_status only; practice participation is never converted into a designation',
             'built_at': dt.datetime.now(dt.timezone.utc).isoformat()}
@@ -69,8 +75,10 @@ if __name__ == '__main__':
     ap.add_argument('--out', required=True)
     ap.add_argument('--add', action='append', default=[])
     ap.add_argument('--scenario-note')
+    ap.add_argument('--counterfactual-remove', action='append', default=[],
+                    help='drop a FORMAL status for a counterfactual scenario; recorded, never silent')
     a = ap.parse_args()
-    des, prov = build(a.injuries, a.season, a.week, set(a.teams.split(',')), a.add, a.scenario_note)
+    des, prov = build(a.injuries, a.season, a.week, set(a.teams.split(',')), a.add, a.scenario_note, a.counterfactual_remove)
     out = pathlib.Path(a.out)
     out.write_text(json.dumps(des, indent=1, sort_keys=True) + '\n')
     prov['sha256'] = hashlib.sha256(out.read_bytes()).hexdigest()

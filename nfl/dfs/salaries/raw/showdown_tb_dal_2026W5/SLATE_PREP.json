@@ -55,5 +55,42 @@
     "Tyler Smith G limited"
    ]
   }
+ },
+ "CAPTURED_2026-10-08T12:34Z": {
+  "vintage_capture_id": "20261008T123409Z",
+  "injuries": "nfl/vintage/injuries.eef1227bbb7448e0.csv.gz",
+  "weekly_rosters": "nfl/vintage/weekly_rosters.dba8eeff1f9c0878.raw.csv.gz",
+  "depth_charts": "nfl/vintage/depth_charts.c96ae6673e2eb8f9.raw.csv.gz -> slate extract depth_charts_2026_TB_DAL.8fe0082896a8cb24.csv (supersedes 9e86fc58e24e74ee; no QB/RB/WR/TE/K rank change)",
+  "source_tier": "nflverse RELAY of the NFL injury report. Not official captured evidence; must not be relabelled as such.",
+  "formal_game_statuses_wk5": {
+   "TB": {
+    "Baker Mayfield": "Out (thumb)",
+    "Antoine Winfield Jr.": "Out",
+    "Benjamin Morrison": "Out",
+    "SirVocea Dennis": "Out"
+   },
+   "DAL": {
+    "Cobie Durant": "Out",
+    "DeMarvion Overshown": "Out",
+    "Drew Shelton": "Out",
+    "Jonathan Mingo": "Questionable",
+    "Tyler Smith": "Questionable"
+   }
+  },
+  "changed_since_2026-10-07": "formal statuses posted (previously practice-only). Chase McLaughlin now Full participation, no status. Ko Kieft Full. Mingo newly listed.",
+  "TB_QB": {
+   "status": "UNRESOLVED_FOR_THE_GATE (leading scenario DANIELS)",
+   "evidence": [
+    "relayed formal status: Mayfield Out (thumb)",
+    "Mayfield INA week 4; Daniels started week 4",
+    "depth chart dt 2026-10-08T06:01Z still lists Mayfield QB1, Daniels QB2 (depth charts lag designations)"
+   ],
+   "why_not_confirmed": "the confirmed-starter gate needs an authoritative starter source (official inactive list or team announcement captured with provenance). A relayed Out says who does not play, not who starts.",
+   "scenarios": {
+    "DANIELS": "consistent with every formal status",
+    "MAYFIELD": "CONTINGENCY, contradicts relayed formal Out; formal status removed counterfactually and recorded (COUNTERFACTUAL_REMOVED_FORMAL_STATUS)"
+   }
+  },
+  "DAL_QB": "Dak Prescott (QB1, no designation)"
  }
 }
