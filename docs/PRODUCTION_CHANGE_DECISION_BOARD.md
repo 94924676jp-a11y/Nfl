@@ -152,6 +152,21 @@ resolved inputs only, not outputs.
 
 **Not claimed:** none of these is claimed closed by documentation alone.
 
+### R1: release classification, modified Option B (owner ruling 2026-10-08; `3967106d`, `de70faff`)
+
+**Label:** OWNER-APPROVED RELEASE-POLICY CHANGE, classification only.
+
+**What changed:** the absent QB-conditioned model is a disclosed limitation. Every other gate stays mandatory. A run
+that passes them all with limitations remaining is PROVISIONAL, never READY.
+
+**Evidence** (`docs/SHOWDOWN_RELEASE_POLICY_2026-10-08.md`):
+- **Tests:** 30/30, including every non-waivable gate.
+- **P0 pack:** all 55 fixtures classify identically to `7390def0`.
+- **R9 vs R10:** 26/26 matched checks, and every forecast, world and upload byte-identical.
+
+**Owner priority recorded:** the simulation accounting defects are the top correctness project, ahead of further DFS
+optimization work.
+
 ### C1 published-world accounting checker (`world_accounting_check`)
 
 **Label:** SAFE VALIDATION TOOL, report-only. **Not a gate.**

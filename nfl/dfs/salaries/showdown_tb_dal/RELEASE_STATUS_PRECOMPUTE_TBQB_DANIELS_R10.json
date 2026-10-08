@@ -1,0 +1,33 @@
+{
+ "ARTIFACT": "SHOWDOWN_RELEASE_STATUS",
+ "scenario": "PRECOMPUTE_TBQB_DANIELS_R10",
+ "tag": "TB_DAL_2026W5",
+ "at": "2026-10-08T21:52:14.324655+00:00",
+ "DECISION": "NOT_READY",
+ "CERTIFIED": false,
+ "MEANING": "a mandatory gate failed; the upload must not be used",
+ "statuses": {
+  "technical": "PASS",
+  "data": "FAIL",
+  "football_model": "INCOMPLETE_QB_ENVIRONMENT",
+  "dfs_decision": "NOT_READY",
+  "PLAYER_SUBSTITUTION_VALID": "PASS",
+  "DATA_AND_AVAILABILITY_VALID": "FAIL",
+  "LINEUP_ELIGIBILITY_VALID": "PASS",
+  "SIMULATION_ACCOUNTING_VALID": "FAIL",
+  "QB_CONDITIONED_FORECAST_VALIDATED": "NOT_VALIDATED",
+  "DFS_DECISION_READINESS": "NOT_READY"
+ },
+ "mandatory_blockers": [
+  "STARTERS_NOT_CONFIRMED (no confirmed_starters_provenance with CONFIRMED true and a source)"
+ ],
+ "disclosed_limitations": [
+  "FOOTBALL_MODEL_INCOMPLETE_QB_ENVIRONMENT ['QB_CHANGE_NOT_MODELLED TB:Jalon Daniels share 0.11619718309859155']",
+  "SIMULATION_ACCOUNTING_FAIL ['DAL:INT_LE_OPP_TAKEAWAYS', 'DAL:PASS_TD_EQ_REC_TD', 'DAL:PASS_YDS_EQ_REC_YDS', 'DAL:POINTS_GE_6_PER_TD', 'REC_TD_WITHOUT_CATCH', 'TB:INT_LE_OPP_TAKEAWAYS']"
+ ],
+ "upload": "nfl/dfs/salaries/showdown_tb_dal/PRECOMPUTE_TBQB_DANIELS_R10/SHOWDOWN_TB_DAL_DK_UPLOAD.csv",
+ "upload_sha256": "bba17b23044292bc6e866d9716c235e0ef38633ae041edc789e2b9b09886c323",
+ "reproduced_sha256": "bba17b23044292bc6e866d9716c235e0ef38633ae041edc789e2b9b09886c323",
+ "accounting_report": "nfl/dfs/salaries/showdown_tb_dal/WORLD_ACCOUNTING_PRECOMPUTE_TBQB_DANIELS_R10.json",
+ "NOT_SUBMITTED": "nothing is uploaded to DraftKings or entered; no wager is recommended"
+}
