@@ -1,0 +1,112 @@
+{
+ "ARTIFACT": "QB_CHANGE_EFFECT",
+ "LAYER": "RESEARCH_ONLY -- changes no projection",
+ "seasons": [
+  2021,
+  2025
+ ],
+ "n_club_games": {
+  "INCUMBENT": 1847,
+  "CHANGE": 719
+ },
+ "excluded": {
+  "NO_BLEND": 32,
+  "MIDGAME_QB_CHANGE": 118,
+  "STARTER_UNDER_10_ATTEMPTS": 2
+ },
+ "rule": "CHANGE = starter pre-game blended share <= 0.5",
+ "effects_CHANGE_minus_INCUMBENT": {
+  "d_points": {
+   "CHANGE_mean": -0.427,
+   "INCUMBENT_mean": 0.387,
+   "difference": -0.814,
+   "ci95_date_clustered": [
+    -1.684,
+    0.063
+   ]
+  },
+  "d_pass_att": {
+   "CHANGE_mean": -0.84,
+   "INCUMBENT_mean": -0.444,
+   "difference": -0.396,
+   "ci95_date_clustered": [
+    -1.099,
+    0.379
+   ]
+  },
+  "d_rush_att": {
+   "CHANGE_mean": 0.704,
+   "INCUMBENT_mean": 0.195,
+   "difference": 0.51,
+   "ci95_date_clustered": [
+    -0.135,
+    1.135
+   ]
+  },
+  "d_ypa": {
+   "CHANGE_mean": -0.062,
+   "INCUMBENT_mean": 0.092,
+   "difference": -0.154,
+   "ci95_date_clustered": [
+    -0.301,
+    -0.01
+   ]
+  }
+ },
+ "seed": 20261008,
+ "bootstrap": 2000,
+ "CAVEATS": [
+  "starter identified from most attempts in the game (mid-game changes excluded)",
+  "no opponent adjustment; centres are own-offence, as in production",
+  "a CHANGE start is not random: it follows injury, benching or rest, which can also move the offence"
+ ],
+ "SPLIT_vs_INCUMBENT_[diff, ci_lo, ci_hi]": {
+  "IN_SEASON_REPLACEMENT (CHANGE, >=2 current games, current share <0.5)": {
+   "n": 462,
+   "d_points": [
+    -1.064,
+    -2.057,
+    -0.023
+   ],
+   "d_ypa": [
+    -0.168,
+    -0.363,
+    0.022
+   ],
+   "d_pass_att": [
+    -0.522,
+    -1.352,
+    0.349
+   ],
+   "d_rush_att": [
+    0.918,
+    0.122,
+    1.67
+   ]
+  },
+  "NEW_SEASON_STARTER (CHANGE, prior-season share 0 with club, current share >=0.5 or <2 games)": {
+   "n": 257,
+   "d_points": [
+    -0.364,
+    -1.556,
+    0.846
+   ],
+   "d_ypa": [
+    -0.13,
+    -0.294,
+    0.05
+   ],
+   "d_pass_att": [
+    -0.171,
+    -1.269,
+    1.016
+   ],
+   "d_rush_att": [
+    -0.224,
+    -1.095,
+    0.657
+   ]
+  }
+ },
+ "SPLIT_NOTE": "descriptive split, not a fitted model; thresholds are the runner majority rule and a 2-game minimum"
+}
