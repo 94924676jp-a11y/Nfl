@@ -90,8 +90,8 @@ the play-by-play).
 
 | Item | Priority | Status | Evidence |
 |---|---|---|---|
-| Roster-eligibility gate in release (D-08) | P0 | **DONE (release gate)**; selection not yet consuming it | `upload_roster_eligibility`, `test_release_roster_eligibility` 12/12 |
-| Eligibility feeding selection | P0 | NEXT; needs a matched regression equal to R1 | — |
+| Roster-eligibility gate in release (D-08) | P0 | **DONE** | `upload_roster_eligibility`; `test_release_roster_eligibility` 16/16 |
+| Eligibility feeding selection | P0 | **DONE** | `showdown_tonight.roster_blocked`, wired through `--roster-capture`; the matched regression reproduces R1 `9d05d9bb` **byte for byte** |
 | Unavailable players get zero participation | P0 | PARTIAL: the release gate blocks them, but the projection still carries their volume (DAL 1.26 / TB 0.65 DK) | eligibility analysis 2026-10-08 |
 | Pregame freeze manifest before grading | P0 | **DONE** | `PREGAME_FREEZE_MANIFEST.json` (97 hashes, re-verified by the grader) |
 | Accepted-entry reconciliation | P0 | **BUILT**; waits on the DK export | `contest_financials` (172/172 on ATL@NO) |

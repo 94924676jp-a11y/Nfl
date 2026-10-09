@@ -68,8 +68,31 @@ def test_final_verify_calls_the_gate():
           'final_verify feeds the roster-eligibility blockers into the release decision')
 
 
+def test_selection_consumes_the_gate():
+    """The runner's absent list = state absences + gate-blocked names. On TB@DAL that equals, inside the DK pool, the
+    blocklist the corrected R1 portfolio was built with; the optimizer is deterministic, so the runner reproduces R1."""
+    from nfl.tools import showdown_tonight as T, roster_eligibility as E
+    blocked = T.roster_blocked(EXPORT, 'TB_DAL_2026W5', ROSTERS, INACT, TX, EL)
+    check(len(blocked) == 20 and 'David Sills V' in blocked and 'Emari Demercado' in blocked,
+          f'gate blocks 20 DK-pool players including Sills and Demercado ({len(blocked)})')
+    scen = json.loads((SD / 'OFFICIAL/SCENARIO.json').read_text())
+    pool = {n for (n, _c) in E.dk_pool(EXPORT)}
+    r1 = set(json.loads((SD / 'OFFICIAL_ELIGIBILITY_FIX_R1/BLOCKLIST.json').read_text()))
+    union = set(scen['absent_in_state']) | set(blocked)
+    check((union & pool) == (r1 & pool), f'runner absent list equals the R1 build list inside the DK pool ({sorted((union ^ r1) & pool)})')
+    try:
+        T.roster_blocked(EXPORT, 'TB_DAL_2026W19', ROSTERS)
+        check(False, 'an empty roster week must raise, never block nobody')
+    except RuntimeError as e:
+        check(str(e).startswith('ROSTER_CAPTURE_EMPTY_WEEK'), f'empty roster week refused ({e})')
+    src = (_REPO / 'nfl/tools/showdown_next_slate.py').read_text()
+    check("'--roster-capture'" in src and "'--transactions'" in src and "'--elevations'" in src,
+          'the slate runner passes roster capture, transactions and elevations to the build')
+
+
 if __name__ == '__main__':
     for f in (test_official_upload_is_refused, test_corrected_upload_passes_the_gate,
-              test_fails_closed_without_roster_evidence, test_final_verify_calls_the_gate):
+              test_fails_closed_without_roster_evidence, test_final_verify_calls_the_gate,
+              test_selection_consumes_the_gate):
         f()
     print(PASSED, FAILED)

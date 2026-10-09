@@ -26,8 +26,21 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 
+def roster_blocked(export, tag, roster_capture, official_inactives=None, transactions=None, elevations=None):
+    """Names the roster-eligibility gate blocks (nfl.tools.roster_eligibility): no positive roster evidence -> blocked.
+    The optimizer must never select them; the release gate (showdown_run_guards.upload_roster_eligibility) refuses an
+    upload that carries one anyway. Empty capture week is an error, never 'nobody blocked'."""
+    from nfl.tools import roster_eligibility as E
+    season, week = int(tag.rsplit('_', 1)[-1][:4]), int(tag.rsplit('W', 1)[-1])
+    rows = E.roster_rows(roster_capture, season, week)
+    if not rows:
+        raise RuntimeError(f'ROSTER_CAPTURE_EMPTY_WEEK {roster_capture} {season} week {week}')
+    res = E.classify(E.dk_pool(export), rows, official_inactives or (), transactions or {}, elevations or ())
+    return sorted({n for (n, _c), v in res.items() if not v['eligible']})
+
+
 def run(export, tag, scenario, designations=None, outs=(), official_inactives=None, n_sims=2000,
-        confirmed_starters=None, starter_tier=None, depth_chart_csv=None):
+        confirmed_starters=None, starter_tier=None, depth_chart_csv=None, roster_gate=None):
     from nfl.tools import showdown_slate_state as SSS, showdown_slate_run as SR, showdown_portfolio as SPF
     P = SR.paths(tag)
     P['dir'].mkdir(parents=True, exist_ok=True)
@@ -102,7 +115,11 @@ def run(export, tag, scenario, designations=None, outs=(), official_inactives=No
     from nfl.tools import availability as AV
     absent = sorted(v['name'] for v in state['players'].values()
                     if v['current_availability']['status'] in AV.ABSENT_STATUSES)
+    blocked = roster_blocked(export, tag, **roster_gate) if roster_gate else None
+    if blocked:
+        absent = sorted(set(absent) | set(blocked))
     (sd / 'SCENARIO.json').write_text(json.dumps({
+        'roster_blocked': blocked, 'roster_gate': {k: str(v)[:200] for k, v in (roster_gate or {}).items()} or None,
         'scenario': scenario, 'export': str(export), 'designations': desig,
         'forced_out': list(outs), 'official_inactives': official_inactives,
         'confirmed_starters': confirmed_starters, 'starter_tier': starter_tier,
@@ -257,6 +274,9 @@ def main():
     ap.add_argument('--starter-tier', help='source label for the starter evidence')
     ap.add_argument('--depth-chart', help='captured nflverse depth_charts CSV for the two clubs')
     ap.add_argument('--portfolio-only', action='store_true', help='rebuild portfolios on the scenario\'s frozen worlds')
+    ap.add_argument('--roster-capture', help='weekly roster capture (nflverse weekly_rosters); enables the eligibility gate')
+    ap.add_argument('--transactions', help='JSON {name: evidence} of releases after the capture')
+    ap.add_argument('--elevations', help='JSON [name] of game-day practice-squad elevations')
     a = ap.parse_args()
     # Point-in-time contract (nfl/warehouse/point_in_time.py). NFL_PIT_MANIFEST names a sealed manifest: the run then
     # reads only the captures it admits, and opening any other guarded file is refused. Unset (live): no effect.
@@ -269,7 +289,12 @@ def main():
     d = json.loads(pathlib.Path(a.designations).read_text()) if a.designations else None
     oi = json.loads(pathlib.Path(a.official_inactives).read_text()) if a.official_inactives else None
     cs = json.loads(pathlib.Path(a.confirmed_starters).read_text()) if a.confirmed_starters else None
-    o = run(a.export, a.tag, a.scenario, d, a.out, oi, a.n_sims, cs, a.starter_tier, a.depth_chart)
+    rg = None
+    if a.roster_capture:
+        rg = {'roster_capture': a.roster_capture, 'official_inactives': oi,
+              'transactions': json.loads(pathlib.Path(a.transactions).read_text()) if a.transactions else None,
+              'elevations': json.loads(pathlib.Path(a.elevations).read_text()) if a.elevations else None}
+    o = run(a.export, a.tag, a.scenario, d, a.out, oi, a.n_sims, cs, a.starter_tier, a.depth_chart, roster_gate=rg)
     if pit is not None:
         sd = _scenario_root(a.tag) / a.scenario
         if sd.is_dir():

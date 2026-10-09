@@ -130,15 +130,16 @@
    "id": "D-08",
    "class": "OPERATIONAL_DEFECT",
    "severity": "CRITICAL",
-   "status": "RELEASE_GATE_WIRED (final_verify) -- SELECTION NOT YET CONSUMING IT",
+   "status": "FIXED IN SELECTION AND RELEASE (projection still carries their volume -- separate model change)",
    "title": "Ineligible players selectable (silence read as eligibility)",
    "evidence": {
     "root_cause": "showdown_slate_state.py:33 maps unnamed -> UNKNOWN_ACTIVE_STATE; roster status column never read",
     "gate": "nfl/tools/roster_eligibility.py",
     "test": "nfl/tests/test_roster_eligibility.py 16/16",
-    "release_gate": "showdown_run_guards.upload_roster_eligibility; test_release_roster_eligibility 12/12"
+    "release_gate": "showdown_run_guards.upload_roster_eligibility; test_release_roster_eligibility 12/12",
+    "selection": "showdown_tonight.roster_blocked unioned into absent_in_state; matched regression on TB@DAL OFFICIAL inputs reproduces R1 upload 9d05d9bb BYTE_IDENTICAL (regression/ELIGIBILITY_INTO_SELECTION_MATCHED_REGRESSION.log)"
    },
-   "next": "P0 remaining: feed the gate's blocked list into the build so the optimizer cannot select them (matched regression: runner output must equal OFFICIAL_ELIGIBILITY_FIX_R1 byte for byte); every slate config must carry roster_capture (and transactions / elevations when relayed) or the release fails closed as UNVERIFIED"
+   "next": "every slate config must carry roster_capture (+ transactions / elevations when relayed); zero-participation redistribution of blocked players' projected volume is a separate shadow-first projection change"
   },
   {
    "id": "D-09",

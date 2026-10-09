@@ -338,6 +338,11 @@ def _run_body(cfg, cfg_path, mode, hashes, P, scen, sd, pre, L):
            '--starter-tier', cfg['starter_tier'], '--depth-chart', _REPO / cfg['depth_chart']]
     if cfg.get('official_inactives'):
         cmd += ['--official-inactives', _REPO / cfg['official_inactives']]
+    # ROSTER ELIGIBILITY INTO SELECTION (TB@DAL 2026-10-08): the optimizer never sees a player without positive roster
+    # evidence. Without roster_capture the build runs as before and final_verify fails closed (UNVERIFIED).
+    for k, flag in (('roster_capture', '--roster-capture'), ('transactions', '--transactions'), ('elevations', '--elevations')):
+        if cfg.get(k):
+            cmd += [flag, _REPO / cfg[k]]
     before = _shared_snapshot(P['dir'])
     rc, tail = _run(cmd, env, 'tonight')
     after = _shared_snapshot(P['dir'])
