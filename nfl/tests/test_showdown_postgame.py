@@ -109,6 +109,19 @@ def test_every_scored_player_proves_its_join():
           f"identity matches and governed absences both present {a['join_audit']}")
 
 
+def test_failed_two_point_try_is_not_an_ordinary_play():
+    """TB@DAL Q4 5:26: Prescott's failed two-point pass to Flournoy. nflverse stats_player_week counts it as no target
+    and no attempt; the scorer once counted both (found by the 2026-10-09 cross-check, 1 of 480 cells)."""
+    pbp = _REPO / 'nfl/postgame/raw/showdown_tb_dal_2026W5/NFLVERSE_PBP_2026.42ef5132fd211775.csv.gz'
+    st = json.loads((_REPO / 'nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SHOWDOWN_TB_DAL_2026W5_STATE.json').read_text())
+    a = SP.actuals(pbp, st, '2026_05_TB_DAL')
+    fl = a['players']['Ryan Flournoy|DAL']['stats']
+    dp = a['players']['Dak Prescott|DAL']['stats']
+    check(fl.get('targets') == 4 and fl.get('rec') == 3, f"Flournoy 4 targets, 3 catches ({fl.get('targets')}, {fl.get('rec')})")
+    check(dp.get('pass_att') == 42 and dp.get('pass_yds') == 316, f"Prescott 42 attempts, 316 yards ({dp.get('pass_att')}, {dp.get('pass_yds')})")
+    check(a['final'] == {'DAL': 16, 'TB': 24}, f"final {a['final']}")
+
+
 def _brute(pts, players):
     best = -1e9
     for c in players:

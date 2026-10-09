@@ -34,7 +34,7 @@ from nfl.postgame import showdown_postgame as SP  # noqa: E402
 PBP_URL = 'https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_{season}.csv.gz'
 STATS_URL = 'https://github.com/nflverse/nflverse-data/releases/download/stats_player/stats_player_week_{season}.csv'
 #: pbp-derived line field -> nflverse weekly stats column, for the cross-check
-CROSS = {'pass_yds': 'passing_yards', 'pass_td': 'passing_tds', 'int': 'passing_interceptions', 'carries': 'carries',
+CROSS = {'pass_att': 'attempts', 'pass_yds': 'passing_yards', 'pass_td': 'passing_tds', 'int': 'passing_interceptions', 'carries': 'carries',
          'rush_yds': 'rushing_yards', 'rush_td': 'rushing_tds', 'targets': 'targets', 'rec': 'receptions',
          'rec_yds': 'receiving_yards', 'rec_td': 'receiving_tds'}
 

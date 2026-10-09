@@ -29,15 +29,15 @@ measurable beyond this game, the measurement is cited.
 
 | | DAL | TB |
 |---|---|---|
-| Offensive plays (pass + run) | 56 | 63 |
-| Pass attempts / sacks taken | 43 / 0 | 25 / 1 |
-| Pass rate | 0.77 | 0.41 |
+| Offensive plays (pass + run) | 55 | 63 |
+| Pass attempts / sacks taken | 42 / 0 | 25 / 1 |
+| Pass rate | 0.76 | 0.41 |
 | QB scrambles | 0 | 6 (Daniels: 7 carries, 5 scrambles, 23 yds) |
 | Drives | 10 | 11 |
-| Red-zone plays | 6 | 14 |
+| Red-zone plays | 5 | 14 |
 | Plays of 20+ yards | 6 | 4 |
 | Turnovers | 3 (2 INT, 1 fumble lost) | 0 |
-| EPA per play | −0.05 | +0.16 |
+| EPA per play | −0.03 | +0.16 |
 
 **Quarterbacks:**
 - Prescott: 316 yards, 1 TD, 2 INT.
@@ -56,8 +56,12 @@ measurable beyond this game, the measurement is cited.
 - Defense: points-allowed bands.
 - Prescott's 17.64 reproduces his line exactly: 316 × 0.04 + 4 − 2 + 3.
 
-**Cross-check against nflverse weekly player stats:** not yet possible, because the `stats_player_week` release has no
-week-5 rows at 04:36Z. `auto_postgame.py` runs this check when it grades. A re-check is scheduled.
+**Cross-check against nflverse weekly player stats** (08:48Z), recorded in `NFLVERSE_STATS_CROSS_CHECK.json`:
+- **First run: 1 disagreement in 480 cells.** Flournoy had 5 targets in our count and 4 in nflverse's.
+- **The cause was ours.** A failed two-point try (Q4 5:26, Prescott's incomplete pass to Flournoy) had been counted as
+  a target and as a pass attempt. That's also why the DAL counts read 43 attempts, 56 plays and 6 red-zone plays.
+- **Fixed in the scorer**, with a regression test (`test_failed_two_point_try_is_not_an_ordinary_play`).
+- **Now AGREE on all 528 cells**, pass attempts included. No player's DK points changed.
 
 ## B. Player projection errors (frozen forecasts against the result)
 
@@ -119,7 +123,7 @@ score: 0.97 means it beat 97% of our simulations, and 0.001 means it beat almost
 - **Irving:** we projected 16.4 carries for 71 yards. He had **21 carries for 165 yards**, including a 72-yard run.
 - **Daniels:** we projected **34.6 pass attempts; he threw 25** (beat only 11% of our simulations). We projected
   **3.3 carries; he had 7**.
-- **Prescott:** 43 attempts (we projected 38.7), 316 yards (we projected 268), 2 interceptions (we projected 0.77).
+- **Prescott:** 42 attempts (we projected 38.7), 316 yards (we projected 268), 2 interceptions (we projected 0.77).
   He had no carries; we projected 3.1.
 
 **Thin low tails, measured beyond this game.** `nfl/research/tail_calibration/STAR_DUD_RATE_2021_2025.json`:

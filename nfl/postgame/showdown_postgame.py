@@ -93,6 +93,11 @@ def actuals(pbp_gz, state, game):
     st = collections.defaultdict(lambda: collections.Counter())
     for _, r in g.iterrows():
         two = r.get('two_point_conv_result') == 'success'
+        # A FAILED two-point try is not an ordinary play: it is no pass attempt, no target and no carry (nflverse
+        # stats_player_week agrees). Counting it inflated targets/attempts and -- had a failed try been caught short of
+        # the goal line -- would have added a reception and its DK point. Found by the 2026-10-09 TB@DAL cross-check.
+        if r.get('two_point_attempt') == 1 and not two:
+            continue
         if r.get('play_type') in ('pass',) or r.get('pass_attempt') == 1:
             if pd.notna(r.get('passer_player_id')) and r.get('sack') != 1:
                 p = st[r['passer_player_id']]
@@ -213,7 +218,7 @@ def game_flow(pbp_gz, game):
                 'home': int(r.total_home_score), 'away': int(r.total_away_score)} for r in sc.itertuples()]
     teams = {}
     for t in (home, away):
-        o = g[g.posteam == t]
+        o = g[(g.posteam == t) & (g.two_point_attempt.fillna(0) != 1)]      # tries are not offensive plays
         plays = o[o.play_type.isin(['pass', 'run'])]
         drives = o.drive.dropna().nunique() if 'drive' in o else None
         teams[t] = {'offensive_plays': int(len(plays)), 'dropbacks': int(o.qb_dropback.fillna(0).sum()),
