@@ -69,111 +69,13 @@ def preserve(pbp_gz, history_csv):
 
 
 def actuals(pbp_gz, state):
-    d = pd.read_csv(pbp_gz, low_memory=False)
-    g = d[d.game_id == GAME].copy()
-    if len(g) < 100:
-        raise PostgameError(f'PBP_GAME_TOO_THIN {len(g)} plays')
-    f = lambda c: g[c].fillna(0)
-    home, away = g.home_team.iloc[0], g.away_team.iloc[0]
-    final = {home: int(g.total_home_score.max()), away: int(g.total_away_score.max())}
-    st = collections.defaultdict(lambda: collections.Counter())
-    for _, r in g.iterrows():
-        two = r.get('two_point_conv_result') == 'success'
-        if r.get('play_type') in ('pass',) or r.get('pass_attempt') == 1:
-            if pd.notna(r.get('passer_player_id')) and r.get('sack') != 1:
-                p = st[r['passer_player_id']]
-                if two:
-                    p['two_pt'] += 1
-                else:
-                    p['pass_att'] += 1 if r.get('pass_attempt') == 1 and r.get('sack') != 1 else 0
-                    p['pass_yds'] += r['passing_yards'] if pd.notna(r.get('passing_yards')) else 0
-                    p['pass_td'] += 1 if r.get('pass_touchdown') == 1 else 0
-                    p['int'] += 1 if r.get('interception') == 1 else 0
-            if pd.notna(r.get('receiver_player_id')):
-                q = st[r['receiver_player_id']]
-                if two:
-                    q['two_pt'] += 1
-                else:
-                    q['targets'] += 1
-                    q['rec'] += 1 if r.get('complete_pass') == 1 else 0
-                    q['rec_yds'] += r['receiving_yards'] if pd.notna(r.get('receiving_yards')) else 0
-                    q['rec_td'] += 1 if r.get('pass_touchdown') == 1 else 0
-        if pd.notna(r.get('rusher_player_id')) and (r.get('rush_attempt') == 1 or (two and r.get('play_type') == 'run')):
-            q = st[r['rusher_player_id']]
-            if two:
-                q['two_pt'] += 1
-            else:
-                q['carries'] += 1
-                q['rush_yds'] += r['rushing_yards'] if pd.notna(r.get('rushing_yards')) else 0
-                q['rush_td'] += 1 if r.get('rush_touchdown') == 1 else 0
-        if r.get('fumble_lost') == 1 and pd.notna(r.get('fumbled_1_player_id')):
-            st[r['fumbled_1_player_id']]['fum_lost'] += 1
-        if r.get('return_touchdown') == 1 and pd.notna(r.get('td_player_id')) and r.get('td_team') == r.get('posteam') \
-                and r.get('play_type') in ('kickoff', 'punt'):
-            pass   # kick/punt return TDs are by the RECEIVING team; credited below by td_team on special teams
-        if r.get('play_type') in ('kickoff', 'punt') and r.get('return_touchdown') == 1 and pd.notna(r.get('td_player_id')):
-            st[r['td_player_id']]['return_td'] += 1
-        if r.get('field_goal_attempt') == 1 and pd.notna(r.get('kicker_player_id')):
-            k = st[r['kicker_player_id']]
-            k['fg_att'] += 1
-            if r.get('field_goal_result') == 'made':
-                dist = float(r['kick_distance'])
-                k['fg_made'] += 1
-                k['fg_lt40'] += dist < 40
-                k['fg_40s'] += 40 <= dist < 50
-                k['fg_50p'] += dist >= 50
-            else:
-                k['fg_missed'] += 1
-        if r.get('extra_point_attempt') == 1 and pd.notna(r.get('kicker_player_id')):
-            k = st[r['kicker_player_id']]
-            k['xp_att'] += 1
-            k['xp_made'] += r.get('extra_point_result') == 'good'
-            k['xp_missed'] += r.get('extra_point_result') != 'good'
-    # DST per defending team
-    dst = {}
-    for team in (home, away):
-        opp = away if team == home else home
-        dfn = g[g.defteam == team]
-        sacks = float(f('sack')[g.defteam == team].sum())
-        ints = float(f('interception')[g.defteam == team].sum())
-        fr = float(((g.fumble_lost == 1) & (g.defteam == team)).sum())
-        # defensive / return TDs scored BY this team when it was not the offence
-        dtd = float(((g.return_touchdown == 1) & (g.td_team == team)).sum())
-        saf = float(((g.safety == 1) & (g.defteam == team)).sum())
-        blk = float((((g.punt_blocked == 1) | (g.field_goal_result == 'blocked') | (g.extra_point_result == 'blocked'))
-                     & (g.defteam == team)).sum())
-        # points allowed: the opponent's points minus those it scored on non-offensive (return / defensive) TDs
-        opp_ret_td = int(((g.return_touchdown == 1) & (g.td_team == opp)).sum())
-        pa = final[opp] - 6 * opp_ret_td   # the try after such a TD is still counted by DK as allowed? recorded both ways
-        dst[team] = {'sacks': sacks, 'ints': ints, 'fumble_recoveries': fr, 'tds': dtd, 'safeties': saf,
-                     'blocked_kicks': blk, 'points_allowed_final': final[opp], 'opp_return_tds': opp_ret_td,
-                     'points_allowed_excl_return_td6': pa}
-    # map to DK players
-    players = {}
-    for k, v in state['players'].items():
-        nm, tm, pos = v['name'], v['team'], v['position']
-        key = f'{nm}|{tm}'
-        if pos == 'DST':
-            x = dst[tm]
-            players[key] = {'pos': 'DST', 'stats': x, 'dk_A': DKS.dst_points(points_allowed=x['points_allowed_final'],
-                            sacks=x['sacks'], ints=x['ints'], fumble_recoveries=x['fumble_recoveries'], tds=x['tds'],
-                            safeties=x['safeties'], blocked_kicks=x['blocked_kicks']),
-                            'dk_B': DKS.dst_points(points_allowed=x['points_allowed_excl_return_td6'], sacks=x['sacks'],
-                            ints=x['ints'], fumble_recoveries=x['fumble_recoveries'], tds=x['tds'],
-                            safeties=x['safeties'], blocked_kicks=x['blocked_kicks'])}
-            continue
-        s = st.get(v.get('gsis_id'), collections.Counter())
-        if pos == 'K':
-            a = (s['fg_lt40'] * DKS.FG_UNDER_40 + s['fg_40s'] * DKS.FG_40_49 + s['fg_50p'] * DKS.FG_50_PLUS
-                 + s['xp_made'] * DKS.EXTRA_POINT)
-            players[key] = {'pos': 'K', 'stats': dict(s), 'dk_A': float(a), 'dk_B': float(a - s['fg_missed'])}
-            continue
-        p = float(DKS.skill_points(1, pass_yds=[s['pass_yds']], pass_td=[s['pass_td']], ints=[s['int']],
-                                   rush_yds=[s['rush_yds']], rush_td=[s['rush_td']], rec=[s['rec']],
-                                   rec_yds=[s['rec_yds']], rec_td=[s['rec_td']], fumbles_lost=[s['fum_lost']])[0])
-        p += DKS.realised_extra_points(two_pt=s['two_pt'], return_td=s['return_td'])
-        players[key] = {'pos': pos, 'stats': dict(s), 'dk_A': round(p, 2), 'dk_B': round(p, 2)}
-    return {'final': final, 'home': home, 'away': away, 'n_plays': int(len(g)), 'dst': dst, 'players': players}
+    """Delegates to the slate-generic scorer (nfl.postgame.showdown_postgame.actuals), which is this module's former
+    body parametrised by game. Byte parity on this game is a test (test_showdown_postgame)."""
+    from nfl.postgame import showdown_postgame as SP
+    try:
+        return SP.actuals(pbp_gz, state, GAME)
+    except SP.PostgameError as e:
+        raise PostgameError(str(e)) from e
 
 
 def reconcile(act, state, history_csv):
