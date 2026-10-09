@@ -230,3 +230,51 @@ and Tez Johnson's 64-yard catch. These count against the luck of the night, not 
 losses like it more likely, and each can be measured.
 
 See `TB_DAL_REPAIR_PROGRAM.md` for sections F to I.
+
+## C (updated 2026-10-09, from the owner's DK standings exports): real contest results
+
+The standings are preserved content-addressed in `raw/showdown_tb_dal_2026W5/DK_STANDINGS_*.csv.gz`. The analysis is
+`TB_DAL_2026W5_STANDINGS.json`, produced by `nfl/postgame/showdown_standings.py`.
+
+**Accepted lineups:**
+- All 190 of our entries are in the standings, and **every one holds the corrected R1 lineup** (`9d05d9bb`).
+- No entry holds the sealed OFFICIAL file, the DK placeholder or a research build. 36 entries also coincide with
+  other portfolios, because those lineups were identical.
+- **Scorer parity:** DK's points equal ours for all 190 entries (0 mismatches).
+
+| Contest | Field | Winner | Field top 1% / 10% / 20% | Our best (rank) | Ours in top 1% / 10% / 20% | Our median | Fees |
+|---|---|---|---|---|---|---|---|
+| 150-max (196438543) | 237,812 | 136.59 | 126.6 / 105.7 / 96.0 | 130.00 (1,003) | 1 / 15 / 26 | 80.1 | $75.00 |
+| 20-max (196438555) | 47,562 | 136.59 | 126.6 / 104.2 / 94.6 | 108.91 (3,581) | 0 / 2 / 3 | 81.1 | $5.00 |
+| 20-max (196438556) | 47,562 | 135.09 | 125.2 / 103.2 / 93.9 | 108.91 (3,349) | 0 / 2 / 3 | 81.1 | $2.00 |
+
+**Winnings and net: UNKNOWN.** The standings export carries no payout table. Entry fees total $82.00.
+
+**The other frozen portfolios, scored against the same fields.** These are counterfactual, not results: rank is what
+the best lineup would have placed among the real field excluding our own entries.
+
+| Portfolio | 150-max best (rank) | 150-max top 1% / 10% / 20% | 20-max best (rank) |
+|---|---|---|---|
+| **CORRECTED_R1 (entered)** | 130.00 (~1,003) | 1 / 15 / 26 | 108.91 (~3,581 / ~3,349) |
+| OFFICIAL_SEALED (11 ineligible lineups) | 133.15 (~411) | 3 / 21 / 32 | 108.91 |
+| Research: halfway on TB | 130.00 (~1,003) | 1 / 21 / 35 | 107.51 |
+| Research: FC reference | 124.90 (~3,029) | 0 / 19 / 32 | 112.66 (~2,624 / ~2,427) |
+| Research: re-projected | 121.09 (~6,257) | 0 / 16 / 34 | **122.81 (~906 / ~767)** |
+| DK placeholder | 77.59 (~114,423) | 0 / 0 / 0 | 77.59 |
+
+**Field against us (150-max, DK %Drafted):**
+
+| Player | Field captain % | Our captain % | Field FLEX % | Our rostered % |
+|---|---|---|---|---|
+| Lamb | 17.1 | **22.0** | 42.5 | 50.0 |
+| J. Williams | 15.1 | **21.3** | 37.0 | 50.0 |
+| Prescott | 16.4 | 12.0 | 61.4 | 50.0 |
+| Pickens | 12.0 | **4.0** | 28.3 | 30.0 |
+| Irving | 5.5 | 7.3 | 24.0 | **50.0** |
+| Otton | 2.3 | 3.3 | 27.5 | **46.7** |
+
+**Duplication:**
+- 150-max: only 28 of our 150 lineups were unique in the field. A lineup of ours shared its exact build with 40 field
+  entries on average, and one with 455.
+- Each 20-max: 5–6 of 20 were unique, averaging about 15 copies.
+- The optimizer has no ownership or duplication model (D-06). This is that defect, measured.
