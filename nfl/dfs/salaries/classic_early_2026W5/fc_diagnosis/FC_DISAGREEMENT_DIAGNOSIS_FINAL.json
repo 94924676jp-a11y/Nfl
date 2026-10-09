@@ -1,0 +1,2190 @@
+{
+ "meta": {
+  "ARTIFACT": "FC_DISAGREEMENT_DIAGNOSIS_FINAL",
+  "as_of": "2026-10-09",
+  "production_run": "/home/user/nfl/nfl/dfs/salaries/runs/w5_final/RESEARCH_STATE_2026W5",
+  "scenarios": [
+   "CHI_BAGENT_STARTS",
+   "CIN_CHASE_OUT",
+   "WAS_DANIELS_OUT",
+   "WAS_DIGGS_OUT",
+   "WAS_KALIAKMANIS_STARTS",
+   "WAS_MCLAURIN_OUT"
+  ],
+  "evidence_board": "/home/user/nfl/nfl/dfs/salaries/classic_early_2026W5/WEEK5_EVIDENCE_BOARD.json",
+  "usage_source": "pbp_2026.2b3e9f2c6f92123f (W1-4 REG, no 2-pt) + NFLVERSE_SNAP_COUNTS_2026.fd2656dbe119dfe4",
+  "FC_IS": "benchmark only; agreement is not a target and nothing was taken from it",
+  "PRIMARY_RULE": "largest measured or bounded share of ours-minus-FC",
+  "research_arms_in_board": "RESEARCH_A2_FORMATION_CEILING = RC-1, RESEARCH_A3_APPEARANCE = AP-1 (both preregistered, not production)",
+  "n_rows": 20,
+  "counts_by_primary_cause": {
+   "AVAILABILITY_ASSUMPTION": 6,
+   "FC_SPECIFIC": 9,
+   "ROLE_JUDGEMENT": 1,
+   "ROLE_EVIDENCE_DEFECT": 1,
+   "VOLUME_OR_EFFICIENCY_MODEL": 3
+  },
+  "counts_by_verdict": {
+   "OUR_NUMBER_UNRELIABLE": 6,
+   "OUR_NUMBER_PROVISIONAL": 8,
+   "OUR_NUMBER_SUPPORTED": 6
+  }
+ },
+ "rows": [
+  {
+   "player": "Tyson Bagent",
+   "team": "CHI",
+   "pos": "QB",
+   "ours": 0.07,
+   "ours_if_plays": 7.22,
+   "fc": 13.14,
+   "gap": -13.07,
+   "ours_previous_diagnosis": 0.07,
+   "p_plays": 0.13838,
+   "p_plays_source": "club-slot appearance table by allocation rank (proj_v1.allocate_opportunity)",
+   "projected_volume_if_plays": {
+    "targets": 0.0,
+    "carries": 0.29,
+    "pass_attempts": 0.72
+   },
+   "role": {
+    "band": "SECONDARY",
+    "ceiling": "SECONDARY",
+    "evidence": "DEPTH_RANK_2",
+    "position_rank": 2,
+    "supplied_rank": 2,
+    "usage_rank": 1,
+    "chart": [
+     "QB2"
+    ],
+    "historical_band": "ALPHA",
+    "cap_reason": "observed usage suggested ALPHA but evidence DEPTH_RANK_2 ceilings at SECONDARY. observed usage is capped at SECONDARY when it is the ONLY evidence, because a large observed share held while the starter was injured is not a claim on the role once he returns. This is the rule that expires an injury-replacement workload."
+   },
+   "football_evidence": {
+    "summary": "W4: 34 att, 4 carries, 100% snaps, 9.82 DK (his only start); W2 relief 9 att; QB verification: Bagent expected starter, REPORTED_SECONDARY_CONSISTENT, 0 of 16 clubs officially confirmed",
+    "usage_by_week_2026": {
+     "1": {
+      "targets": 0,
+      "carries": 0,
+      "snap_pct": null,
+      "tgt_share": 0.0,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "2": {
+      "targets": 0,
+      "carries": 0,
+      "snap_pct": 14,
+      "tgt_share": 0.0,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0,
+      "pass_att": 9
+     },
+     "3": {
+      "targets": 0,
+      "carries": 0,
+      "snap_pct": null,
+      "tgt_share": 0.0,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "4": {
+      "targets": 0,
+      "carries": 4,
+      "snap_pct": 100,
+      "tgt_share": 0.0,
+      "car_share": 0.074,
+      "rz_opps": 4,
+      "tds": 0,
+      "pass_att": 34
+     }
+    },
+    "dk_avg_2026": 5.99,
+    "games_played_2026": 2,
+    "official_practice": {
+     "practice_status": "NOT ON WEEK-5 REPORT",
+     "injury": null,
+     "source": "NFLVERSE_INJURIES_2026.21e35d2a84353248 (capture 2026-10-09T13:30Z of the club report)",
+     "board_practice_status": null,
+     "engine_practice_status": null
+    },
+    "qb_situation": {
+     "engine_starter": "Caleb Williams",
+     "expected_starter": "Tyson Bagent",
+     "verification_status": "REPORTED_SECONDARY_CONSISTENT",
+     "scenario_needed": false
+    }
+   },
+   "primary_cause": "AVAILABILITY_ASSUMPTION",
+   "secondary_causes": [
+    "VOLUME_OR_EFFICIENCY_MODEL"
+   ],
+   "known_engine_defects": {
+    "W5-G18 QB identity not consumed": "material: production starts Caleb Williams (captured chart QB1) and gives Bagent the QB2 slot P(plays) 0.138; also team volume is QB-blind in the scenario",
+    "W5-G15": "open; schedule capture lists Bagent and is not consumed"
+   },
+   "rests_on_known_defect": true,
+   "scenario_applies": "CHI_BAGENT_STARTS = 19.01",
+   "scenario_dk_points": {
+    "CHI_BAGENT_STARTS": 19.01,
+    "WAS_MARIOTA_STARTS": 0.07,
+    "WAS_KALIAKMANIS_STARTS": 0.07,
+    "RESEARCH_A2_FORMATION_CEILING": 0.07,
+    "RESEARCH_A3_APPEARANCE": 0.07,
+    "CIN_CHASE_OUT": 0.07,
+    "WAS_MCLAURIN_OUT": 0.07,
+    "WAS_DIGGS_OUT": 0.07
+   },
+   "verdict": "OUR_NUMBER_UNRELIABLE (production assumes Williams starts; every source, including the schedule capture, has Bagent; use CHI_BAGENT_STARTS 19.01, itself provisional under W5-G18)",
+   "note": "The scenario number (19.01) is 5.9 above FC and 3x his only-start output (9.82); with team volume QB-blind it should not be read as supported either."
+  },
+  {
+   "player": "Braelon Allen",
+   "team": "NYJ",
+   "pos": "RB",
+   "ours": 4.72,
+   "ours_if_plays": 6.93,
+   "fc": 13.13,
+   "gap": -8.41,
+   "ours_previous_diagnosis": 4.72,
+   "p_plays": 0.63492,
+   "p_plays_source": "club-slot appearance table by allocation rank (proj_v1.allocate_opportunity)",
+   "projected_volume_if_plays": {
+    "targets": 1.74,
+    "carries": 7.24,
+    "pass_attempts": 0
+   },
+   "role": {
+    "band": "SECONDARY",
+    "ceiling": "SECONDARY",
+    "evidence": "DEPTH_RANK_2",
+    "position_rank": 2,
+    "supplied_rank": 2,
+    "usage_rank": 2,
+    "chart": [
+     "RB2"
+    ],
+    "historical_band": "SECONDARY",
+    "cap_reason": null
+   },
+   "football_evidence": {
+    "summary": "carries 10/5/4/14, car share 0.26/0.19/0.21/1.00 (W4 Hall absent), snaps 40/31/52/94%; 6.47 DK avg",
+    "usage_by_week_2026": {
+     "1": {
+      "targets": 1,
+      "carries": 10,
+      "snap_pct": 40,
+      "tgt_share": 0.043,
+      "car_share": 0.256,
+      "rz_opps": 1,
+      "tds": 0
+     },
+     "2": {
+      "targets": 1,
+      "carries": 5,
+      "snap_pct": 31,
+      "tgt_share": 0.028,
+      "car_share": 0.185,
+      "rz_opps": 2,
+      "tds": 1
+     },
+     "3": {
+      "targets": 3,
+      "carries": 4,
+      "snap_pct": 52,
+      "tgt_share": 0.083,
+      "car_share": 0.211,
+      "rz_opps": 3,
+      "tds": 0
+     },
+     "4": {
+      "targets": 2,
+      "carries": 14,
+      "snap_pct": 94,
+      "tgt_share": 0.133,
+      "car_share": 1.0,
+      "rz_opps": 2,
+      "tds": 0
+     }
+    },
+    "dk_avg_2026": 6.47,
+    "games_played_2026": 4,
+    "official_practice": {
+     "practice_status": "NOT ON WEEK-5 REPORT",
+     "injury": null,
+     "source": "NFLVERSE_INJURIES_2026.21e35d2a84353248 (capture 2026-10-09T13:30Z of the club report)",
+     "board_practice_status": null,
+     "engine_practice_status": null
+    },
+    "qb_situation": {
+     "engine_starter": "Geno Smith",
+     "expected_starter": "Geno Smith",
+     "verification_status": "REPORTED_SECONDARY_CONSISTENT",
+     "scenario_needed": false
+    }
+   },
+   "primary_cause": "AVAILABILITY_ASSUMPTION",
+   "secondary_causes": [
+    "ROLE_JUDGEMENT"
+   ],
+   "known_engine_defects": {
+    "W5-G16 slot P(plays)": "applies: RB2 slot P(plays) 0.635 although he had carries in 4/4 weeks; AP-1 arm 5.65 (+0.93)"
+   },
+   "rests_on_known_defect": false,
+   "scenario_applies": "none in the final set (no NYJ Hall-out scenario); pre-repair research scenario with Hall out gave 10.56",
+   "scenario_dk_points": {
+    "CHI_BAGENT_STARTS": 4.72,
+    "WAS_MARIOTA_STARTS": 4.72,
+    "WAS_KALIAKMANIS_STARTS": 4.72,
+    "RESEARCH_A2_FORMATION_CEILING": 4.68,
+    "RESEARCH_A3_APPEARANCE": 5.65,
+    "CIN_CHASE_OUT": 4.72,
+    "WAS_MCLAURIN_OUT": 4.72,
+    "WAS_DIGGS_OUT": 4.72
+   },
+   "verdict": "OUR_NUMBER_PROVISIONAL (depends on Breece Hall, DNP Wed+Thu and reported 'essentially out'; if Hall sits our 4.72 is too low and no final-run scenario quantifies it)",
+   "note": "FC tags him RB1, i.e. FC's number is a Hall-out number."
+  },
+  {
+   "player": "Mason Taylor",
+   "team": "NYJ",
+   "pos": "TE",
+   "ours": 0.38,
+   "ours_if_plays": 2.9,
+   "fc": 8.19,
+   "gap": -7.81,
+   "ours_previous_diagnosis": 0.38,
+   "p_plays": 0.11989,
+   "p_plays_source": "club-slot appearance table by allocation rank (proj_v1.allocate_opportunity)",
+   "projected_volume_if_plays": {
+    "targets": 2.46,
+    "carries": 0.03,
+    "pass_attempts": 0
+   },
+   "role": {
+    "band": "ROTATIONAL",
+    "ceiling": "ROTATIONAL",
+    "evidence": "DEPTH_RANK_3",
+    "position_rank": 3,
+    "supplied_rank": 2,
+    "usage_rank": null,
+    "chart": [
+     "TE2"
+    ],
+    "historical_band": "ALPHA",
+    "cap_reason": "observed usage suggested ALPHA but evidence DEPTH_RANK_3 ceilings at ROTATIONAL. observed usage is capped at SECONDARY when it is the ONLY evidence, because a large observed share held while the starter was injured is not a claim on the role once he returns. This is the rule that expires an injury-replacement workload."
+   },
+   "football_evidence": {
+    "summary": "targets 3/0/-/-, snaps 66/46/-/- (thumb, missed W3-W4); Ruckert 34-44% snaps every week, 4.7 DK avg; official practice Full (thumb)",
+    "usage_by_week_2026": {
+     "1": {
+      "targets": 3,
+      "carries": 0,
+      "snap_pct": 66,
+      "tgt_share": 0.13,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "2": {
+      "targets": 0,
+      "carries": 0,
+      "snap_pct": 46,
+      "tgt_share": 0.0,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "3": {
+      "targets": 0,
+      "carries": 0,
+      "snap_pct": null,
+      "tgt_share": 0.0,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "4": {
+      "targets": 0,
+      "carries": 0,
+      "snap_pct": null,
+      "tgt_share": 0.0,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     }
+    },
+    "dk_avg_2026": 0.9,
+    "games_played_2026": 2,
+    "official_practice": {
+     "practice_status": "Full Participation in Practice",
+     "injury": "Thumb",
+     "secondary_injury": null,
+     "game_designation": null,
+     "source": "NFLVERSE_INJURIES_2026.21e35d2a84353248 (capture 2026-10-09T13:30Z of the club report)",
+     "board_practice_status": "Full Participation in Practice",
+     "engine_practice_status": "Full Participation in Practice"
+    },
+    "qb_situation": {
+     "engine_starter": "Geno Smith",
+     "expected_starter": "Geno Smith",
+     "verification_status": "REPORTED_SECONDARY_CONSISTENT",
+     "scenario_needed": false
+    }
+   },
+   "primary_cause": "FC_SPECIFIC",
+   "secondary_causes": [
+    "ROLE_JUDGEMENT"
+   ],
+   "known_engine_defects": {
+    "W5-G16 slot P(plays)": "applies at TE3 slot (0.12) but AP-1 does not (he missed W3-4): A3 0.36",
+    "RC-1 WR2/formation ceiling": "A2 arm 2.37 (+1.99)"
+   },
+   "rests_on_known_defect": false,
+   "scenario_applies": "none",
+   "scenario_dk_points": {
+    "CHI_BAGENT_STARTS": 0.38,
+    "WAS_MARIOTA_STARTS": 0.38,
+    "WAS_KALIAKMANIS_STARTS": 0.38,
+    "RESEARCH_A2_FORMATION_CEILING": 2.37,
+    "RESEARCH_A3_APPEARANCE": 0.36,
+    "CIN_CHASE_OUT": 0.38,
+    "WAS_MCLAURIN_OUT": 0.38,
+    "WAS_DIGGS_OUT": 0.38
+   },
+   "verdict": "OUR_NUMBER_PROVISIONAL (repair now orders NYJ TEs usage-first, so Ruckert, who played every week, is TE2 although the captured chart lists Taylor TE2; Taylor practised Full after missing W3-4)",
+   "note": "FC 8.19 is ~9x his 2026 average; even the most generous research arm (2.37) is far from it. The disputable part is TE2 vs TE3, worth ~2 DK."
+  },
+  {
+   "player": "Malik McClain",
+   "team": "NYJ",
+   "pos": "WR",
+   "ours": 0.62,
+   "ours_if_plays": 2.24,
+   "fc": 8.17,
+   "gap": -7.55,
+   "ours_previous_diagnosis": 0.62,
+   "p_plays": 0.26562,
+   "p_plays_source": "club-slot appearance table by allocation rank (proj_v1.allocate_opportunity)",
+   "projected_volume_if_plays": {
+    "targets": 1.11,
+    "carries": 0.47,
+    "pass_attempts": 0.0
+   },
+   "role": {
+    "band": "FRINGE",
+    "ceiling": "FRINGE",
+    "evidence": "DEPTH_RANK_4_PLUS",
+    "position_rank": 4,
+    "supplied_rank": 4,
+    "usage_rank": null,
+    "chart": [
+     "WR4"
+    ],
+    "historical_band": null,
+    "cap_reason": null
+   },
+   "football_evidence": {
+    "summary": "W3-4 only: 0 targets, 0 carries, snaps 27/3%",
+    "usage_by_week_2026": {
+     "1": {
+      "targets": 0,
+      "carries": 0,
+      "snap_pct": null,
+      "tgt_share": 0.0,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "2": {
+      "targets": 0,
+      "carries": 0,
+      "snap_pct": null,
+      "tgt_share": 0.0,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "3": {
+      "targets": 0,
+      "carries": 0,
+      "snap_pct": 27,
+      "tgt_share": 0.0,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "4": {
+      "targets": 0,
+      "carries": 0,
+      "snap_pct": 3,
+      "tgt_share": 0.0,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     }
+    },
+    "dk_avg_2026": 0.0,
+    "games_played_2026": 2,
+    "official_practice": {
+     "practice_status": "NOT ON WEEK-5 REPORT",
+     "injury": null,
+     "source": "NFLVERSE_INJURIES_2026.21e35d2a84353248 (capture 2026-10-09T13:30Z of the club report)",
+     "board_practice_status": null,
+     "engine_practice_status": null
+    },
+    "qb_situation": {
+     "engine_starter": "Geno Smith",
+     "expected_starter": "Geno Smith",
+     "verification_status": "REPORTED_SECONDARY_CONSISTENT",
+     "scenario_needed": false
+    }
+   },
+   "primary_cause": "FC_SPECIFIC",
+   "secondary_causes": [
+    "AVAILABILITY_ASSUMPTION"
+   ],
+   "known_engine_defects": {
+    "W5-G16 slot P(plays)": "formally (WR4 slot 0.266) but AP-1 does not apply (no measure in W1-2)"
+   },
+   "rests_on_known_defect": false,
+   "scenario_applies": "none (Mitchell-out would lift him; pre-repair research scenario 1.66)",
+   "scenario_dk_points": {
+    "CHI_BAGENT_STARTS": 0.62,
+    "WAS_MARIOTA_STARTS": 0.62,
+    "WAS_KALIAKMANIS_STARTS": 0.62,
+    "RESEARCH_A2_FORMATION_CEILING": 0.6,
+    "RESEARCH_A3_APPEARANCE": 0.59,
+    "CIN_CHASE_OUT": 0.62,
+    "WAS_MCLAURIN_OUT": 0.62,
+    "WAS_DIGGS_OUT": 0.62
+   },
+   "verdict": "OUR_NUMBER_SUPPORTED (0 targets in 2026, snaps 27% and 3%)",
+   "note": "FC's row is internally inconsistent: proj 8.17 with floor 0 and ceiling 0."
+  },
+  {
+   "player": "TreVeyon Henderson",
+   "team": "NE",
+   "pos": "RB",
+   "ours": 5.33,
+   "ours_if_plays": 7.49,
+   "fc": 12.79,
+   "gap": -7.46,
+   "ours_previous_diagnosis": 5.33,
+   "p_plays": 0.63492,
+   "p_plays_source": "club-slot appearance table by allocation rank (proj_v1.allocate_opportunity)",
+   "projected_volume_if_plays": {
+    "targets": 1.96,
+    "carries": 9.79,
+    "pass_attempts": 0
+   },
+   "role": {
+    "band": "SECONDARY",
+    "ceiling": "SECONDARY",
+    "evidence": "DEPTH_RANK_2",
+    "position_rank": 2,
+    "supplied_rank": 1,
+    "usage_rank": 1,
+    "chart": [
+     "RB2"
+    ],
+    "historical_band": "SECONDARY",
+    "cap_reason": null
+   },
+   "football_evidence": {
+    "summary": "carries -/16/8/14, car share -/0.57/0.31/0.40, snaps -/60/37/37%, 3 targets total; Stevenson chart RB1 (limited, knee)",
+    "usage_by_week_2026": {
+     "1": {
+      "targets": 0,
+      "carries": 0,
+      "snap_pct": null,
+      "tgt_share": 0.0,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "2": {
+      "targets": 0,
+      "carries": 16,
+      "snap_pct": 60,
+      "tgt_share": 0.0,
+      "car_share": 0.571,
+      "rz_opps": 0,
+      "tds": 1
+     },
+     "3": {
+      "targets": 1,
+      "carries": 8,
+      "snap_pct": 37,
+      "tgt_share": 0.033,
+      "car_share": 0.308,
+      "rz_opps": 1,
+      "tds": 0
+     },
+     "4": {
+      "targets": 2,
+      "carries": 14,
+      "snap_pct": 37,
+      "tgt_share": 0.056,
+      "car_share": 0.4,
+      "rz_opps": 1,
+      "tds": 0
+     }
+    },
+    "dk_avg_2026": 7.23,
+    "games_played_2026": 3,
+    "official_practice": {
+     "practice_status": "NOT ON WEEK-5 REPORT",
+     "injury": null,
+     "source": "NFLVERSE_INJURIES_2026.21e35d2a84353248 (capture 2026-10-09T13:30Z of the club report)",
+     "board_practice_status": null,
+     "engine_practice_status": null
+    },
+    "qb_situation": {
+     "engine_starter": "Drake Maye",
+     "expected_starter": "Drake Maye",
+     "verification_status": "REPORTED_SECONDARY_CONSISTENT",
+     "scenario_needed": false
+    }
+   },
+   "primary_cause": "FC_SPECIFIC",
+   "secondary_causes": [
+    "ROLE_JUDGEMENT"
+   ],
+   "known_engine_defects": {
+    "W5-G16 slot P(plays)": "applies: RB2 slot 0.635 though active W2-W4; AP-1 arm 5.63 (+0.30)"
+   },
+   "rests_on_known_defect": false,
+   "scenario_applies": "none",
+   "scenario_dk_points": {
+    "CHI_BAGENT_STARTS": 5.33,
+    "WAS_MARIOTA_STARTS": 5.33,
+    "WAS_KALIAKMANIS_STARTS": 5.33,
+    "RESEARCH_A2_FORMATION_CEILING": 5.28,
+    "RESEARCH_A3_APPEARANCE": 5.63,
+    "CIN_CHASE_OUT": 5.33,
+    "WAS_MCLAURIN_OUT": 5.33,
+    "WAS_DIGGS_OUT": 5.33
+   },
+   "verdict": "OUR_NUMBER_SUPPORTED (conditional 7.48 matches his 7.23 average; slot P(plays) costs at most ~0.3 per AP-1)",
+   "note": "Tie with Stevenson now resolved by chart (Stevenson RB1), same outcome as before."
+  },
+  {
+   "player": "Rico Dowdle",
+   "team": "PIT",
+   "pos": "RB",
+   "ours": 6.38,
+   "ours_if_plays": 9.13,
+   "fc": 12.79,
+   "gap": -6.41,
+   "ours_previous_diagnosis": 6.38,
+   "p_plays": 0.63492,
+   "p_plays_source": "club-slot appearance table by allocation rank (proj_v1.allocate_opportunity)",
+   "projected_volume_if_plays": {
+    "targets": 3.19,
+    "carries": 8.06,
+    "pass_attempts": 0
+   },
+   "role": {
+    "band": "SECONDARY",
+    "ceiling": "SECONDARY",
+    "evidence": "DEPTH_RANK_2",
+    "position_rank": 2,
+    "supplied_rank": 2,
+    "usage_rank": 2,
+    "chart": [
+     "RB2"
+    ],
+    "historical_band": "PRIMARY",
+    "cap_reason": "observed usage suggested PRIMARY but evidence DEPTH_RANK_2 ceilings at SECONDARY. observed usage is capped at SECONDARY when it is the ONLY evidence, because a large observed share held while the starter was injured is not a claim on the role once he returns. This is the rule that expires an injury-replacement workload."
+   },
+   "football_evidence": {
+    "summary": "carries 8/7/-/-, car share 0.38/0.30, snaps 58/26%, 5.25 DK avg; official practice Limited (toe)",
+    "usage_by_week_2026": {
+     "1": {
+      "targets": 5,
+      "carries": 8,
+      "snap_pct": 58,
+      "tgt_share": 0.135,
+      "car_share": 0.381,
+      "rz_opps": 1,
+      "tds": 0
+     },
+     "2": {
+      "targets": 2,
+      "carries": 7,
+      "snap_pct": 26,
+      "tgt_share": 0.054,
+      "car_share": 0.304,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "3": {
+      "targets": 0,
+      "carries": 0,
+      "snap_pct": null,
+      "tgt_share": 0.0,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "4": {
+      "targets": 0,
+      "carries": 0,
+      "snap_pct": null,
+      "tgt_share": 0.0,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     }
+    },
+    "dk_avg_2026": 5.25,
+    "games_played_2026": 2,
+    "official_practice": {
+     "practice_status": "Limited Participation in Practice",
+     "injury": "Toe",
+     "secondary_injury": null,
+     "game_designation": null,
+     "source": "NFLVERSE_INJURIES_2026.21e35d2a84353248 (capture 2026-10-09T13:30Z of the club report)",
+     "board_practice_status": "Limited Participation in Practice",
+     "engine_practice_status": "Limited Participation in Practice"
+    },
+    "qb_situation": {
+     "engine_starter": "Aaron Rodgers",
+     "expected_starter": "Aaron Rodgers",
+     "verification_status": "REPORTED_SECONDARY_CONSISTENT",
+     "scenario_needed": false
+    }
+   },
+   "primary_cause": "FC_SPECIFIC",
+   "secondary_causes": [
+    "ROLE_JUDGEMENT",
+    "AVAILABILITY_ASSUMPTION"
+   ],
+   "known_engine_defects": {
+    "W5-G16 slot P(plays)": "applies (RB2 slot 0.635); AP-1 does not (no game W3-W4): A3 5.54"
+   },
+   "rests_on_known_defect": false,
+   "scenario_applies": "none",
+   "scenario_dk_points": {
+    "CHI_BAGENT_STARTS": 6.38,
+    "WAS_MARIOTA_STARTS": 6.38,
+    "WAS_KALIAKMANIS_STARTS": 6.38,
+    "RESEARCH_A2_FORMATION_CEILING": 6.3,
+    "RESEARCH_A3_APPEARANCE": 5.54,
+    "CIN_CHASE_OUT": 6.38,
+    "WAS_MCLAURIN_OUT": 6.38,
+    "WAS_DIGGS_OUT": 6.38
+   },
+   "verdict": "OUR_NUMBER_PROVISIONAL (returning from a dislocated toe, official Limited; his share against Warren is unknown)",
+   "note": "FC splits PIT almost evenly (Warren 13.28 / Dowdle 12.79); we follow the W1-4 pooled share."
+  },
+  {
+   "player": "Jauan Jennings",
+   "team": "MIN",
+   "pos": "WR",
+   "ours": 1.89,
+   "ours_if_plays": 3.06,
+   "fc": 8.26,
+   "gap": -6.37,
+   "ours_previous_diagnosis": 1.89,
+   "p_plays": 0.58651,
+   "p_plays_source": "club-slot appearance table by allocation rank (proj_v1.allocate_opportunity)",
+   "projected_volume_if_plays": {
+    "targets": 2.46,
+    "carries": 0.45,
+    "pass_attempts": 0
+   },
+   "role": {
+    "band": "ROTATIONAL",
+    "ceiling": "ROTATIONAL",
+    "evidence": "DEPTH_RANK_3",
+    "position_rank": 3,
+    "supplied_rank": 3,
+    "usage_rank": 3,
+    "chart": [
+     "WR3"
+    ],
+    "historical_band": "ALPHA",
+    "cap_reason": "observed usage suggested ALPHA but evidence DEPTH_RANK_3 ceilings at ROTATIONAL. observed usage is capped at SECONDARY when it is the ONLY evidence, because a large observed share held while the starter was injured is not a claim on the role once he returns. This is the rule that expires an injury-replacement workload."
+   },
+   "football_evidence": {
+    "summary": "targets 1/0/2/1, tgt share 0.04/0/0.08/0.03, snaps 48/-/80/95%",
+    "usage_by_week_2026": {
+     "1": {
+      "targets": 1,
+      "carries": 0,
+      "snap_pct": 48,
+      "tgt_share": 0.043,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "2": {
+      "targets": 0,
+      "carries": 0,
+      "snap_pct": null,
+      "tgt_share": 0.0,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "3": {
+      "targets": 2,
+      "carries": 0,
+      "snap_pct": 80,
+      "tgt_share": 0.08,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "4": {
+      "targets": 1,
+      "carries": 0,
+      "snap_pct": 95,
+      "tgt_share": 0.03,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     }
+    },
+    "dk_avg_2026": 0.97,
+    "games_played_2026": 3,
+    "official_practice": {
+     "practice_status": "NOT ON WEEK-5 REPORT",
+     "injury": null,
+     "source": "NFLVERSE_INJURIES_2026.21e35d2a84353248 (capture 2026-10-09T13:30Z of the club report)",
+     "board_practice_status": null,
+     "engine_practice_status": null
+    },
+    "qb_situation": {
+     "engine_starter": "Kyler Murray",
+     "expected_starter": "Kyler Murray",
+     "verification_status": "REPORTED_SECONDARY_CONSISTENT",
+     "scenario_needed": false
+    }
+   },
+   "primary_cause": "FC_SPECIFIC",
+   "secondary_causes": [
+    "ROLE_JUDGEMENT"
+   ],
+   "known_engine_defects": {
+    "RC-1 WR2/formation ceiling": "applies (WR3 capped ROTATIONAL): A2 2.29 (+0.40)",
+    "W5-G16 slot P(plays)": "formally (WR3 slot 0.587); AP-1 does not (no target W2)"
+   },
+   "rests_on_known_defect": false,
+   "scenario_applies": "none",
+   "scenario_dk_points": {
+    "CHI_BAGENT_STARTS": 1.89,
+    "WAS_MARIOTA_STARTS": 1.89,
+    "WAS_KALIAKMANIS_STARTS": 1.89,
+    "RESEARCH_A2_FORMATION_CEILING": 2.29,
+    "RESEARCH_A3_APPEARANCE": 2.36,
+    "CIN_CHASE_OUT": 1.89,
+    "WAS_MCLAURIN_OUT": 1.89,
+    "WAS_DIGGS_OUT": 1.89
+   },
+   "verdict": "OUR_NUMBER_SUPPORTED (1/0/2/1 targets on 48/-/80/95% snaps; 0.97 DK avg)",
+   "note": "FC prices his history. The rising snap share is the one signal for more; it has not produced targets."
+  },
+  {
+   "player": "Kyle Monangai",
+   "team": "CHI",
+   "pos": "RB",
+   "ours": 7.61,
+   "ours_if_plays": 10.92,
+   "fc": 13.94,
+   "gap": -6.33,
+   "ours_previous_diagnosis": 7.63,
+   "p_plays": 0.63492,
+   "p_plays_source": "club-slot appearance table by allocation rank (proj_v1.allocate_opportunity)",
+   "projected_volume_if_plays": {
+    "targets": 1.72,
+    "carries": 11.75,
+    "pass_attempts": 0
+   },
+   "role": {
+    "band": "SECONDARY",
+    "ceiling": "SECONDARY",
+    "evidence": "DEPTH_RANK_2",
+    "position_rank": 2,
+    "supplied_rank": 2,
+    "usage_rank": 2,
+    "chart": [
+     "RB2"
+    ],
+    "historical_band": "SECONDARY",
+    "cap_reason": "observed usage suggested PRIMARY but evidence DEPTH_RANK_2 ceilings at SECONDARY. observed usage is capped at SECONDARY when it is the ONLY evidence, because a large observed share held while the starter was injured is not a claim on the role once he returns. This is the rule that expires an injury-replacement workload."
+   },
+   "football_evidence": {
+    "summary": "carries 10/10/10/30, car share 0.26/0.32/0.29/0.56, snaps 43/34/31/54%, 8 RZ opps W4; 16.32 DK avg; official DNP (thumb, toe)",
+    "usage_by_week_2026": {
+     "1": {
+      "targets": 2,
+      "carries": 10,
+      "snap_pct": 43,
+      "tgt_share": 0.077,
+      "car_share": 0.256,
+      "rz_opps": 1,
+      "tds": 1
+     },
+     "2": {
+      "targets": 2,
+      "carries": 10,
+      "snap_pct": 34,
+      "tgt_share": 0.067,
+      "car_share": 0.323,
+      "rz_opps": 3,
+      "tds": 0
+     },
+     "3": {
+      "targets": 0,
+      "carries": 10,
+      "snap_pct": 31,
+      "tgt_share": 0.0,
+      "car_share": 0.286,
+      "rz_opps": 3,
+      "tds": 0
+     },
+     "4": {
+      "targets": 1,
+      "carries": 30,
+      "snap_pct": 54,
+      "tgt_share": 0.032,
+      "car_share": 0.556,
+      "rz_opps": 8,
+      "tds": 2
+     }
+    },
+    "dk_avg_2026": 16.32,
+    "games_played_2026": 4,
+    "official_practice": {
+     "practice_status": "Did Not Participate In Practice",
+     "injury": "Thumb",
+     "secondary_injury": "Toe",
+     "game_designation": null,
+     "source": "NFLVERSE_INJURIES_2026.21e35d2a84353248 (capture 2026-10-09T13:30Z of the club report)",
+     "board_practice_status": "Did Not Participate In Practice",
+     "engine_practice_status": "Did Not Participate In Practice"
+    },
+    "qb_situation": {
+     "engine_starter": "Caleb Williams",
+     "expected_starter": "Tyson Bagent",
+     "verification_status": "REPORTED_SECONDARY_CONSISTENT",
+     "scenario_needed": false
+    }
+   },
+   "primary_cause": "ROLE_JUDGEMENT",
+   "secondary_causes": [
+    "AVAILABILITY_ASSUMPTION"
+   ],
+   "known_engine_defects": {
+    "W5-G16 slot P(plays)": "material: RB2 slot 0.635 though 10+ carries every week; AP-1 arm 9.08 (+1.47)",
+    "W5-G18 QB identity not consumed": "CHI_BAGENT_STARTS 7.92 (+0.31)"
+   },
+   "rests_on_known_defect": true,
+   "scenario_applies": "CHI_BAGENT_STARTS = 7.92",
+   "scenario_dk_points": {
+    "CHI_BAGENT_STARTS": 7.92,
+    "WAS_MARIOTA_STARTS": 7.61,
+    "WAS_KALIAKMANIS_STARTS": 7.61,
+    "RESEARCH_A2_FORMATION_CEILING": 7.6,
+    "RESEARCH_A3_APPEARANCE": 9.08,
+    "CIN_CHASE_OUT": 7.61,
+    "WAS_MCLAURIN_OUT": 7.61,
+    "WAS_DIGGS_OUT": 7.61
+   },
+   "verdict": "OUR_NUMBER_PROVISIONAL (turf toe, official DNP Wed+Thu, 'in doubt'; if he plays, W4 usage and Swift's fumble benching argue above our capped RB2 share)",
+   "note": "Two opposite errors partly cancel: slot P(plays) cuts him as if a backup, which accidentally resembles his real injury risk."
+  },
+  {
+   "player": "Kevin Austin Jr.",
+   "team": "NO",
+   "pos": "WR",
+   "ours": 0.77,
+   "ours_if_plays": 2.82,
+   "fc": 7.02,
+   "gap": -6.25,
+   "ours_previous_diagnosis": 0.77,
+   "p_plays": 0.26562,
+   "p_plays_source": "club-slot appearance table by allocation rank (proj_v1.allocate_opportunity)",
+   "projected_volume_if_plays": {
+    "targets": 1.68,
+    "carries": 0.22,
+    "pass_attempts": 0.0
+   },
+   "role": {
+    "band": "FRINGE",
+    "ceiling": "FRINGE",
+    "evidence": "DEPTH_RANK_4_PLUS",
+    "position_rank": 4,
+    "supplied_rank": 4,
+    "usage_rank": 4,
+    "chart": [
+     "WR4"
+    ],
+    "historical_band": "PRIMARY",
+    "cap_reason": "observed usage suggested PRIMARY but evidence DEPTH_RANK_4_PLUS ceilings at FRINGE. observed usage is capped at SECONDARY when it is the ONLY evidence, because a large observed share held while the starter was injured is not a claim on the role once he returns. This is the rule that expires an injury-replacement workload."
+   },
+   "football_evidence": {
+    "summary": "targets 0/1/0/0, snaps 6/7/14/12%, 0.42 DK avg",
+    "usage_by_week_2026": {
+     "1": {
+      "targets": 0,
+      "carries": 0,
+      "snap_pct": 6,
+      "tgt_share": 0.0,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "2": {
+      "targets": 1,
+      "carries": 0,
+      "snap_pct": 7,
+      "tgt_share": 0.031,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "3": {
+      "targets": 0,
+      "carries": 0,
+      "snap_pct": 14,
+      "tgt_share": 0.0,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "4": {
+      "targets": 0,
+      "carries": 0,
+      "snap_pct": 12,
+      "tgt_share": 0.0,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     }
+    },
+    "dk_avg_2026": 0.42,
+    "games_played_2026": 4,
+    "official_practice": {
+     "practice_status": "NOT ON WEEK-5 REPORT",
+     "injury": null,
+     "source": "NFLVERSE_INJURIES_2026.21e35d2a84353248 (capture 2026-10-09T13:30Z of the club report)",
+     "board_practice_status": null,
+     "engine_practice_status": null
+    },
+    "qb_situation": {
+     "engine_starter": "Tyler Shough",
+     "expected_starter": "Tyler Shough",
+     "verification_status": "REPORTED_SECONDARY_CONSISTENT",
+     "scenario_needed": false
+    }
+   },
+   "primary_cause": "FC_SPECIFIC",
+   "secondary_causes": [],
+   "known_engine_defects": {
+    "W5-G16 slot P(plays)": "formally (WR4 slot 0.266); AP-1 arm 0.73",
+    "RC-1 WR2/formation ceiling": "A2 1.80 (+1.03)"
+   },
+   "rests_on_known_defect": false,
+   "scenario_applies": "none",
+   "scenario_dk_points": {
+    "CHI_BAGENT_STARTS": 0.77,
+    "WAS_MARIOTA_STARTS": 0.77,
+    "WAS_KALIAKMANIS_STARTS": 0.77,
+    "RESEARCH_A2_FORMATION_CEILING": 1.8,
+    "RESEARCH_A3_APPEARANCE": 0.73,
+    "CIN_CHASE_OUT": 0.77,
+    "WAS_MCLAURIN_OUT": 0.77,
+    "WAS_DIGGS_OUT": 0.77
+   },
+   "verdict": "OUR_NUMBER_SUPPORTED (1 target all season on 6-14% snaps)",
+   "note": ""
+  },
+  {
+   "player": "Theo Johnson",
+   "team": "NYG",
+   "pos": "TE",
+   "ours": 2.36,
+   "ours_if_plays": 3.89,
+   "fc": 8.23,
+   "gap": -5.87,
+   "ours_previous_diagnosis": 2.33,
+   "p_plays": 0.57899,
+   "p_plays_source": "club-slot appearance table by allocation rank (proj_v1.allocate_opportunity)",
+   "projected_volume_if_plays": {
+    "targets": 2.94,
+    "carries": 0.36,
+    "pass_attempts": 0
+   },
+   "role": {
+    "band": "SECONDARY",
+    "ceiling": "SECONDARY",
+    "evidence": "DEPTH_RANK_2",
+    "position_rank": 2,
+    "supplied_rank": 2,
+    "usage_rank": 2,
+    "chart": [
+     "TE2"
+    ],
+    "historical_band": "ALPHA",
+    "cap_reason": "observed usage suggested ALPHA but evidence DEPTH_RANK_2 ceilings at SECONDARY. observed usage is capped at SECONDARY when it is the ONLY evidence, because a large observed share held while the starter was injured is not a claim on the role once he returns. This is the rule that expires an injury-replacement workload."
+   },
+   "football_evidence": {
+    "summary": "targets 1/4/0/1, snaps 46/28/17/33%; Likely target share 0.315",
+    "usage_by_week_2026": {
+     "1": {
+      "targets": 1,
+      "carries": 0,
+      "snap_pct": 46,
+      "tgt_share": 0.034,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "2": {
+      "targets": 4,
+      "carries": 0,
+      "snap_pct": 28,
+      "tgt_share": 0.125,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "3": {
+      "targets": 0,
+      "carries": 0,
+      "snap_pct": 17,
+      "tgt_share": 0.0,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "4": {
+      "targets": 1,
+      "carries": 0,
+      "snap_pct": 33,
+      "tgt_share": 0.034,
+      "car_share": 0.0,
+      "rz_opps": 1,
+      "tds": 1
+     }
+    },
+    "dk_avg_2026": 2.5,
+    "games_played_2026": 4,
+    "official_practice": {
+     "practice_status": "NOT ON WEEK-5 REPORT",
+     "injury": null,
+     "source": "NFLVERSE_INJURIES_2026.21e35d2a84353248 (capture 2026-10-09T13:30Z of the club report)",
+     "board_practice_status": null,
+     "engine_practice_status": null
+    },
+    "qb_situation": {
+     "engine_starter": "Jameis Winston",
+     "expected_starter": "Jameis Winston",
+     "verification_status": "REPORTED_SECONDARY_CONSISTENT",
+     "scenario_needed": false
+    }
+   },
+   "primary_cause": "FC_SPECIFIC",
+   "secondary_causes": [
+    "ROLE_JUDGEMENT"
+   ],
+   "known_engine_defects": {
+    "W5-G16 slot P(plays)": "applies (TE2 slot 0.579, played 4/4); AP-1 arm 2.69 (+0.33)"
+   },
+   "rests_on_known_defect": false,
+   "scenario_applies": "none",
+   "scenario_dk_points": {
+    "CHI_BAGENT_STARTS": 2.36,
+    "WAS_MARIOTA_STARTS": 2.36,
+    "WAS_KALIAKMANIS_STARTS": 2.36,
+    "RESEARCH_A2_FORMATION_CEILING": 2.29,
+    "RESEARCH_A3_APPEARANCE": 2.69,
+    "CIN_CHASE_OUT": 2.36,
+    "WAS_MCLAURIN_OUT": 2.36,
+    "WAS_DIGGS_OUT": 2.36
+   },
+   "verdict": "OUR_NUMBER_SUPPORTED (6 targets in 4 games behind Likely's 0.32 share; 2.5 DK avg)",
+   "note": "FC may be redistributing for Nabers / Najee Harris practice absences, which we do not consume."
+  },
+  {
+   "player": "Jaylin Noel",
+   "team": "HOU",
+   "pos": "WR",
+   "ours": 0.48,
+   "ours_if_plays": 5.83,
+   "fc": 5.91,
+   "gap": -5.43,
+   "ours_previous_diagnosis": 0.48,
+   "p_plays": 0.07698,
+   "p_plays_source": "club-slot appearance table by allocation rank (proj_v1.allocate_opportunity)",
+   "projected_volume_if_plays": {
+    "targets": 2.61,
+    "carries": 0.62,
+    "pass_attempts": 0.0
+   },
+   "role": {
+    "band": "FRINGE",
+    "ceiling": "FRINGE",
+    "evidence": "DEPTH_RANK_4_PLUS",
+    "position_rank": 5,
+    "supplied_rank": 4,
+    "usage_rank": 4,
+    "chart": [
+     "WR4"
+    ],
+    "historical_band": "PRIMARY",
+    "cap_reason": "observed usage suggested PRIMARY but evidence DEPTH_RANK_4_PLUS ceilings at FRINGE. observed usage is capped at SECONDARY when it is the ONLY evidence, because a large observed share held while the starter was injured is not a claim on the role once he returns. This is the rule that expires an injury-replacement workload."
+   },
+   "football_evidence": {
+    "summary": "targets 2/5/2/3, carries 0/1/1/1, snaps 30/60/26/62%, 7.28 DK avg",
+    "usage_by_week_2026": {
+     "1": {
+      "targets": 2,
+      "carries": 0,
+      "snap_pct": 30,
+      "tgt_share": 0.054,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "2": {
+      "targets": 5,
+      "carries": 1,
+      "snap_pct": 60,
+      "tgt_share": 0.1,
+      "car_share": 0.056,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "3": {
+      "targets": 2,
+      "carries": 1,
+      "snap_pct": 26,
+      "tgt_share": 0.08,
+      "car_share": 0.048,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "4": {
+      "targets": 3,
+      "carries": 1,
+      "snap_pct": 62,
+      "tgt_share": 0.115,
+      "car_share": 0.053,
+      "rz_opps": 0,
+      "tds": 0
+     }
+    },
+    "dk_avg_2026": 7.28,
+    "games_played_2026": 4,
+    "official_practice": {
+     "practice_status": "NOT ON WEEK-5 REPORT",
+     "injury": null,
+     "source": "NFLVERSE_INJURIES_2026.21e35d2a84353248 (capture 2026-10-09T13:30Z of the club report)",
+     "board_practice_status": null,
+     "engine_practice_status": null
+    },
+    "qb_situation": {
+     "engine_starter": "C.J. Stroud",
+     "expected_starter": "C.J. Stroud",
+     "verification_status": "REPORTED_SECONDARY_CONSISTENT",
+     "scenario_needed": false
+    }
+   },
+   "primary_cause": "ROLE_EVIDENCE_DEFECT",
+   "secondary_causes": [
+    "ROLE_JUDGEMENT"
+   ],
+   "known_engine_defects": {
+    "W5-G16 slot P(plays)": "material: WR5 slot P(plays) 0.077 for a player who recorded targets in 4/4 weeks; AP-1 arm 3.71 (+3.23)",
+    "RC-1 WR2/formation ceiling": "A2 0.56",
+    "ordinal re-index": "still present after the repair: supplied rank 4 (chart WR4) becomes position rank 5 behind Jared Wayne (chart WR5) because the Collins/Hutchinson tie consumes a slot"
+   },
+   "rests_on_known_defect": true,
+   "scenario_applies": "none",
+   "scenario_dk_points": {
+    "CHI_BAGENT_STARTS": 0.48,
+    "WAS_MARIOTA_STARTS": 0.48,
+    "WAS_KALIAKMANIS_STARTS": 0.48,
+    "RESEARCH_A2_FORMATION_CEILING": 0.56,
+    "RESEARCH_A3_APPEARANCE": 3.71,
+    "CIN_CHASE_OUT": 0.48,
+    "WAS_MCLAURIN_OUT": 0.48,
+    "WAS_DIGGS_OUT": 0.48
+   },
+   "verdict": "OUR_NUMBER_UNRELIABLE (rests on W5-G16: P(plays) 0.077 against targets in every game at 26-62% snaps)",
+   "note": "Our conditional number (5.83) is essentially FC's (5.91); the gap is P(plays) alone."
+  },
+  {
+   "player": "Jaylen Warren",
+   "team": "PIT",
+   "pos": "RB",
+   "ours": 18.38,
+   "ours_if_plays": 18.36,
+   "fc": 13.28,
+   "gap": 5.1,
+   "ours_previous_diagnosis": 18.38,
+   "p_plays": 1.0,
+   "p_plays_source": "club-slot appearance table by allocation rank (proj_v1.allocate_opportunity)",
+   "projected_volume_if_plays": {
+    "targets": 4.89,
+    "carries": 13.3,
+    "pass_attempts": 0
+   },
+   "role": {
+    "band": "ALPHA",
+    "ceiling": "ALPHA",
+    "evidence": "DEPTH_RANK_1",
+    "position_rank": 1,
+    "supplied_rank": 1,
+    "usage_rank": 1,
+    "chart": [
+     "RB1"
+    ],
+    "historical_band": "SECONDARY",
+    "cap_reason": null
+   },
+   "football_evidence": {
+    "summary": "carries 10/11/17/17, car share 0.48/0.48/0.74/0.90 (Dowdle out W3-4), targets 6/4/4/6, snaps 37/71/90/97%, 0 TDs",
+    "usage_by_week_2026": {
+     "1": {
+      "targets": 6,
+      "carries": 10,
+      "snap_pct": 37,
+      "tgt_share": 0.162,
+      "car_share": 0.476,
+      "rz_opps": 2,
+      "tds": 0
+     },
+     "2": {
+      "targets": 4,
+      "carries": 11,
+      "snap_pct": 71,
+      "tgt_share": 0.108,
+      "car_share": 0.478,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "3": {
+      "targets": 4,
+      "carries": 17,
+      "snap_pct": 90,
+      "tgt_share": 0.129,
+      "car_share": 0.739,
+      "rz_opps": 3,
+      "tds": 0
+     },
+     "4": {
+      "targets": 6,
+      "carries": 17,
+      "snap_pct": 97,
+      "tgt_share": 0.154,
+      "car_share": 0.895,
+      "rz_opps": 2,
+      "tds": 0
+     }
+    },
+    "dk_avg_2026": 15.05,
+    "games_played_2026": 4,
+    "official_practice": {
+     "practice_status": "NOT ON WEEK-5 REPORT",
+     "injury": null,
+     "source": "NFLVERSE_INJURIES_2026.21e35d2a84353248 (capture 2026-10-09T13:30Z of the club report)",
+     "board_practice_status": null,
+     "engine_practice_status": null
+    },
+    "qb_situation": {
+     "engine_starter": "Aaron Rodgers",
+     "expected_starter": "Aaron Rodgers",
+     "verification_status": "REPORTED_SECONDARY_CONSISTENT",
+     "scenario_needed": false
+    }
+   },
+   "primary_cause": "VOLUME_OR_EFFICIENCY_MODEL",
+   "secondary_causes": [
+    "ROLE_JUDGEMENT"
+   ],
+   "known_engine_defects": {
+    "W5-G16 slot P(plays)": "concentration: AP-1 arm 16.20 (-2.18) when backups keep their own appearance rate"
+   },
+   "rests_on_known_defect": false,
+   "scenario_applies": "none",
+   "scenario_dk_points": {
+    "CHI_BAGENT_STARTS": 18.38,
+    "WAS_MARIOTA_STARTS": 18.38,
+    "WAS_KALIAKMANIS_STARTS": 18.38,
+    "RESEARCH_A2_FORMATION_CEILING": 18.05,
+    "RESEARCH_A3_APPEARANCE": 16.2,
+    "CIN_CHASE_OUT": 18.38,
+    "WAS_MCLAURIN_OUT": 18.38,
+    "WAS_DIGGS_OUT": 18.38
+   },
+   "verdict": "OUR_NUMBER_PROVISIONAL (TD expectation 0.63/game against 0 TDs in 2026, PIT rush TD pool scale 1.69; carry share pooled over Dowdle-absent W3-4)",
+   "note": "Volume matches his average; the excess is touchdowns plus the slot concentration."
+  },
+  {
+   "player": "Chris Olave",
+   "team": "NO",
+   "pos": "WR",
+   "ours": 23.49,
+   "ours_if_plays": 23.48,
+   "fc": 18.17,
+   "gap": 5.32,
+   "ours_previous_diagnosis": 23.49,
+   "p_plays": 1.0,
+   "p_plays_source": "club-slot appearance table by allocation rank (proj_v1.allocate_opportunity)",
+   "projected_volume_if_plays": {
+    "targets": 11.74,
+    "carries": 0.03,
+    "pass_attempts": 0.01
+   },
+   "role": {
+    "band": "ALPHA",
+    "ceiling": "ALPHA",
+    "evidence": "DEPTH_RANK_1",
+    "position_rank": 1,
+    "supplied_rank": 1,
+    "usage_rank": 1,
+    "chart": [
+     "WR1"
+    ],
+    "historical_band": "ALPHA",
+    "cap_reason": null
+   },
+   "football_evidence": {
+    "summary": "targets 13/10/13/12, tgt share 0.25/0.31/0.33/0.26, snaps 86/84/84/86%",
+    "usage_by_week_2026": {
+     "1": {
+      "targets": 13,
+      "carries": 0,
+      "snap_pct": 86,
+      "tgt_share": 0.25,
+      "car_share": 0.0,
+      "rz_opps": 1,
+      "tds": 0
+     },
+     "2": {
+      "targets": 10,
+      "carries": 0,
+      "snap_pct": 84,
+      "tgt_share": 0.312,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 1
+     },
+     "3": {
+      "targets": 13,
+      "carries": 0,
+      "snap_pct": 84,
+      "tgt_share": 0.325,
+      "car_share": 0.0,
+      "rz_opps": 3,
+      "tds": 0
+     },
+     "4": {
+      "targets": 12,
+      "carries": 0,
+      "snap_pct": 86,
+      "tgt_share": 0.255,
+      "car_share": 0.0,
+      "rz_opps": 1,
+      "tds": 0
+     }
+    },
+    "dk_avg_2026": 24.77,
+    "games_played_2026": 4,
+    "official_practice": {
+     "practice_status": "Limited Participation in Practice",
+     "injury": "Not injury related - resting player",
+     "secondary_injury": "Foot",
+     "game_designation": null,
+     "source": "NFLVERSE_INJURIES_2026.21e35d2a84353248 (capture 2026-10-09T13:30Z of the club report)",
+     "board_practice_status": "Limited Participation in Practice",
+     "engine_practice_status": "Did Not Participate In Practice"
+    },
+    "qb_situation": {
+     "engine_starter": "Tyler Shough",
+     "expected_starter": "Tyler Shough",
+     "verification_status": "REPORTED_SECONDARY_CONSISTENT",
+     "scenario_needed": false
+    }
+   },
+   "primary_cause": "FC_SPECIFIC",
+   "secondary_causes": [
+    "AVAILABILITY_ASSUMPTION"
+   ],
+   "known_engine_defects": {},
+   "rests_on_known_defect": false,
+   "scenario_applies": "none",
+   "scenario_dk_points": {
+    "CHI_BAGENT_STARTS": 23.49,
+    "WAS_MARIOTA_STARTS": 23.49,
+    "WAS_KALIAKMANIS_STARTS": 23.49,
+    "RESEARCH_A2_FORMATION_CEILING": 22.96,
+    "RESEARCH_A3_APPEARANCE": 22.5,
+    "CIN_CHASE_OUT": 23.49,
+    "WAS_MCLAURIN_OUT": 23.49,
+    "WAS_DIGGS_OUT": 23.49
+   },
+   "verdict": "OUR_NUMBER_PROVISIONAL (volume and production support it, 12 targets/game, 24.77 avg; but a new foot injury, official Limited Thursday, is not represented)",
+   "note": "Engine state still carries the Wednesday DNP line (W5-G14); neither moves P(plays)."
+  },
+  {
+   "player": "T.J. Hockenson",
+   "team": "MIN",
+   "pos": "TE",
+   "ours": 13.17,
+   "ours_if_plays": 13.13,
+   "fc": 7.66,
+   "gap": 5.51,
+   "ours_previous_diagnosis": 13.17,
+   "p_plays": 1.0,
+   "p_plays_source": "club-slot appearance table by allocation rank (proj_v1.allocate_opportunity)",
+   "projected_volume_if_plays": {
+    "targets": 6.71,
+    "carries": 0.01,
+    "pass_attempts": 0
+   },
+   "role": {
+    "band": "ALPHA",
+    "ceiling": "ALPHA",
+    "evidence": "DEPTH_RANK_1",
+    "position_rank": 1,
+    "supplied_rank": 1,
+    "usage_rank": 1,
+    "chart": [
+     "TE1"
+    ],
+    "historical_band": "ALPHA",
+    "cap_reason": null
+   },
+   "football_evidence": {
+    "summary": "targets 5/4/4/13, tgt share 0.22/0.21/0.16/0.39, snaps 66/69/85/83%",
+    "usage_by_week_2026": {
+     "1": {
+      "targets": 5,
+      "carries": 0,
+      "snap_pct": 66,
+      "tgt_share": 0.217,
+      "car_share": 0.0,
+      "rz_opps": 2,
+      "tds": 1
+     },
+     "2": {
+      "targets": 4,
+      "carries": 0,
+      "snap_pct": 69,
+      "tgt_share": 0.211,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "3": {
+      "targets": 4,
+      "carries": 0,
+      "snap_pct": 85,
+      "tgt_share": 0.16,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "4": {
+      "targets": 13,
+      "carries": 0,
+      "snap_pct": 83,
+      "tgt_share": 0.394,
+      "car_share": 0.0,
+      "rz_opps": 3,
+      "tds": 0
+     }
+    },
+    "dk_avg_2026": 12.62,
+    "games_played_2026": 4,
+    "official_practice": {
+     "practice_status": "NOT ON WEEK-5 REPORT",
+     "injury": null,
+     "source": "NFLVERSE_INJURIES_2026.21e35d2a84353248 (capture 2026-10-09T13:30Z of the club report)",
+     "board_practice_status": null,
+     "engine_practice_status": null
+    },
+    "qb_situation": {
+     "engine_starter": "Kyler Murray",
+     "expected_starter": "Kyler Murray",
+     "verification_status": "REPORTED_SECONDARY_CONSISTENT",
+     "scenario_needed": false
+    }
+   },
+   "primary_cause": "FC_SPECIFIC",
+   "secondary_causes": [
+    "VOLUME_OR_EFFICIENCY_MODEL"
+   ],
+   "known_engine_defects": {
+    "W5-G18 QB identity not consumed": "not material (Murray is the verified starter and started W3-4)",
+    "W5-G16 slot P(plays)": "concentration: AP-1 arm 12.46 (-0.71)"
+   },
+   "rests_on_known_defect": true,
+   "scenario_applies": "none",
+   "scenario_dk_points": {
+    "CHI_BAGENT_STARTS": 13.17,
+    "WAS_MARIOTA_STARTS": 13.17,
+    "WAS_KALIAKMANIS_STARTS": 13.17,
+    "RESEARCH_A2_FORMATION_CEILING": 12.7,
+    "RESEARCH_A3_APPEARANCE": 12.46,
+    "CIN_CHASE_OUT": 13.17,
+    "WAS_MCLAURIN_OUT": 13.17,
+    "WAS_DIGGS_OUT": 13.17
+   },
+   "verdict": "OUR_NUMBER_SUPPORTED (6.5 targets/game, 0.26 share, 12.62 avg)",
+   "note": "FC is 5 below his own average."
+  },
+  {
+   "player": "Romeo Doubs",
+   "team": "NE",
+   "pos": "WR",
+   "ours": 14.79,
+   "ours_if_plays": 14.79,
+   "fc": 9.05,
+   "gap": 5.74,
+   "ours_previous_diagnosis": 14.7,
+   "p_plays": 1.0,
+   "p_plays_source": "club-slot appearance table by allocation rank (proj_v1.allocate_opportunity)",
+   "projected_volume_if_plays": {
+    "targets": 7.05,
+    "carries": 2.29,
+    "pass_attempts": 0
+   },
+   "role": {
+    "band": "ALPHA",
+    "ceiling": "ALPHA",
+    "evidence": "DEPTH_RANK_1",
+    "position_rank": 1,
+    "supplied_rank": 1,
+    "usage_rank": 1,
+    "chart": [
+     "WR1"
+    ],
+    "historical_band": "ALPHA",
+    "cap_reason": null
+   },
+   "football_evidence": {
+    "summary": "targets 3/4/4/9, tgt share 0.10/0.19/0.13/0.25, snaps 56/67/73/64%; Hollins (same share) DNP",
+    "usage_by_week_2026": {
+     "1": {
+      "targets": 3,
+      "carries": 0,
+      "snap_pct": 56,
+      "tgt_share": 0.097,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "2": {
+      "targets": 4,
+      "carries": 0,
+      "snap_pct": 67,
+      "tgt_share": 0.19,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "3": {
+      "targets": 4,
+      "carries": 0,
+      "snap_pct": 73,
+      "tgt_share": 0.133,
+      "car_share": 0.0,
+      "rz_opps": 1,
+      "tds": 0
+     },
+     "4": {
+      "targets": 9,
+      "carries": 0,
+      "snap_pct": 64,
+      "tgt_share": 0.25,
+      "car_share": 0.0,
+      "rz_opps": 3,
+      "tds": 2
+     }
+    },
+    "dk_avg_2026": 11.07,
+    "games_played_2026": 4,
+    "official_practice": {
+     "practice_status": "NOT ON WEEK-5 REPORT",
+     "injury": null,
+     "source": "NFLVERSE_INJURIES_2026.21e35d2a84353248 (capture 2026-10-09T13:30Z of the club report)",
+     "board_practice_status": null,
+     "engine_practice_status": null
+    },
+    "qb_situation": {
+     "engine_starter": "Drake Maye",
+     "expected_starter": "Drake Maye",
+     "verification_status": "REPORTED_SECONDARY_CONSISTENT",
+     "scenario_needed": false
+    }
+   },
+   "primary_cause": "VOLUME_OR_EFFICIENCY_MODEL",
+   "secondary_causes": [
+    "FC_SPECIFIC"
+   ],
+   "known_engine_defects": {
+    "W5-G16 slot P(plays)": "concentration: AP-1 arm 12.58 (-2.21)",
+    "RC-1 WR2/formation ceiling": "A2 14.23"
+   },
+   "rests_on_known_defect": false,
+   "scenario_applies": "none",
+   "scenario_dk_points": {
+    "CHI_BAGENT_STARTS": 14.79,
+    "WAS_MARIOTA_STARTS": 14.79,
+    "WAS_KALIAKMANIS_STARTS": 14.79,
+    "RESEARCH_A2_FORMATION_CEILING": 14.23,
+    "RESEARCH_A3_APPEARANCE": 12.58,
+    "CIN_CHASE_OUT": 14.79,
+    "WAS_MCLAURIN_OUT": 14.79,
+    "WAS_DIGGS_OUT": 14.79
+   },
+   "verdict": "OUR_NUMBER_PROVISIONAL (we project 7.0 targets against 5.0/game: ALPHA prior plus NE renormalisation and slot concentration)",
+   "note": "FC is also 2 below his average."
+  },
+  {
+   "player": "Malik Washington",
+   "team": "MIA",
+   "pos": "WR",
+   "ours": 14.34,
+   "ours_if_plays": 14.31,
+   "fc": 8.16,
+   "gap": 6.18,
+   "ours_previous_diagnosis": 14.34,
+   "p_plays": 1.0,
+   "p_plays_source": "club-slot appearance table by allocation rank (proj_v1.allocate_opportunity)",
+   "projected_volume_if_plays": {
+    "targets": 8.28,
+    "carries": 1.56,
+    "pass_attempts": 0
+   },
+   "role": {
+    "band": "ALPHA",
+    "ceiling": "ALPHA",
+    "evidence": "DEPTH_RANK_1",
+    "position_rank": 1,
+    "supplied_rank": 1,
+    "usage_rank": 1,
+    "chart": [
+     "WR1"
+    ],
+    "historical_band": "PRIMARY",
+    "cap_reason": null
+   },
+   "football_evidence": {
+    "summary": "targets 8/5/10/5, tgt share 0.30/0.22/0.29/0.29, snaps 98/73/86/87%, 0 TDs, QB Malik Willis",
+    "usage_by_week_2026": {
+     "1": {
+      "targets": 8,
+      "carries": 0,
+      "snap_pct": 98,
+      "tgt_share": 0.296,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "2": {
+      "targets": 5,
+      "carries": 1,
+      "snap_pct": 73,
+      "tgt_share": 0.217,
+      "car_share": 0.034,
+      "rz_opps": 1,
+      "tds": 0
+     },
+     "3": {
+      "targets": 10,
+      "carries": 2,
+      "snap_pct": 86,
+      "tgt_share": 0.286,
+      "car_share": 0.065,
+      "rz_opps": 1,
+      "tds": 0
+     },
+     "4": {
+      "targets": 5,
+      "carries": 2,
+      "snap_pct": 87,
+      "tgt_share": 0.294,
+      "car_share": 0.111,
+      "rz_opps": 1,
+      "tds": 0
+     }
+    },
+    "dk_avg_2026": 9.78,
+    "games_played_2026": 4,
+    "official_practice": {
+     "practice_status": "NOT ON WEEK-5 REPORT",
+     "injury": null,
+     "source": "NFLVERSE_INJURIES_2026.21e35d2a84353248 (capture 2026-10-09T13:30Z of the club report)",
+     "board_practice_status": null,
+     "engine_practice_status": null
+    },
+    "qb_situation": {
+     "engine_starter": "Malik Willis",
+     "expected_starter": "Malik Willis",
+     "verification_status": "REPORTED_SECONDARY_CONSISTENT",
+     "scenario_needed": false
+    }
+   },
+   "primary_cause": "VOLUME_OR_EFFICIENCY_MODEL",
+   "secondary_causes": [
+    "FC_SPECIFIC"
+   ],
+   "known_engine_defects": {
+    "W5-G16 slot P(plays)": "concentration: AP-1 arm 13.17 (-1.17)"
+   },
+   "rests_on_known_defect": false,
+   "scenario_applies": "none",
+   "scenario_dk_points": {
+    "CHI_BAGENT_STARTS": 14.34,
+    "WAS_MARIOTA_STARTS": 14.34,
+    "WAS_KALIAKMANIS_STARTS": 14.34,
+    "RESEARCH_A2_FORMATION_CEILING": 14.04,
+    "RESEARCH_A3_APPEARANCE": 13.17,
+    "CIN_CHASE_OUT": 14.34,
+    "WAS_MCLAURIN_OUT": 14.34,
+    "WAS_DIGGS_OUT": 14.34
+   },
+   "verdict": "OUR_NUMBER_PROVISIONAL (share 0.315 vs 0.27 observed after MIA claims are scaled x1.31; 0.41 TD/game vs 0 in 2026)",
+   "note": "Our number is 4.6 above his production, FC 1.6 below it."
+  },
+  {
+   "player": "Michael Pittman",
+   "team": "PIT",
+   "pos": "WR",
+   "ours": 7.97,
+   "ours_if_plays": 9.12,
+   "fc": null,
+   "gap": null,
+   "ours_previous_diagnosis": 7.97,
+   "p_plays": 0.86052,
+   "p_plays_source": "club-slot appearance table by allocation rank (proj_v1.allocate_opportunity)",
+   "projected_volume_if_plays": {
+    "targets": 5.81,
+    "carries": 0.02,
+    "pass_attempts": 0
+   },
+   "role": {
+    "band": "SECONDARY",
+    "ceiling": "SECONDARY",
+    "evidence": "DEPTH_RANK_2",
+    "position_rank": 2,
+    "supplied_rank": 2,
+    "usage_rank": 4,
+    "chart": null,
+    "historical_band": "ALPHA",
+    "cap_reason": "observed usage suggested ALPHA but evidence DEPTH_RANK_2 ceilings at SECONDARY. observed usage is capped at SECONDARY when it is the ONLY evidence, because a large observed share held while the starter was injured is not a claim on the role once he returns. This is the rule that expires an injury-replacement workload."
+   },
+   "football_evidence": {
+    "summary": "targets 3/-/5/4, snaps from W1/W3/W4 only, 5.3 DK avg; latest official practice line DNP (foot) -- the evidence board and engine state still show Limited",
+    "usage_by_week_2026": {
+     "1": {
+      "targets": 3,
+      "carries": 0,
+      "snap_pct": 88,
+      "tgt_share": 0.081,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "2": {
+      "targets": 0,
+      "carries": 0,
+      "snap_pct": null,
+      "tgt_share": 0.0,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "3": {
+      "targets": 5,
+      "carries": 0,
+      "snap_pct": 73,
+      "tgt_share": 0.161,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "4": {
+      "targets": 4,
+      "carries": 0,
+      "snap_pct": 72,
+      "tgt_share": 0.103,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     }
+    },
+    "dk_avg_2026": 5.3,
+    "games_played_2026": 3,
+    "official_practice": {
+     "practice_status": "Did Not Participate In Practice",
+     "injury": "Foot",
+     "secondary_injury": null,
+     "game_designation": null,
+     "source": "NFLVERSE_INJURIES_2026.21e35d2a84353248 (capture 2026-10-09T13:30Z of the club report)",
+     "board_practice_status": "Limited Participation in Practice",
+     "engine_practice_status": "Limited Participation in Practice"
+    },
+    "qb_situation": {
+     "engine_starter": "Aaron Rodgers",
+     "expected_starter": "Aaron Rodgers",
+     "verification_status": "REPORTED_SECONDARY_CONSISTENT",
+     "scenario_needed": false
+    }
+   },
+   "primary_cause": "AVAILABILITY_ASSUMPTION",
+   "secondary_causes": [
+    "ROLE_JUDGEMENT"
+   ],
+   "known_engine_defects": {
+    "W5-G16 slot P(plays)": "WR2 slot 0.861 (not the issue)",
+    "RC-1 WR2/formation ceiling": "applies (WR2 capped SECONDARY): A2 8.47"
+   },
+   "rests_on_known_defect": false,
+   "scenario_applies": "none in the final set (pre-repair research scenario set him out)",
+   "scenario_dk_points": {
+    "CHI_BAGENT_STARTS": 7.97,
+    "WAS_MARIOTA_STARTS": 7.97,
+    "WAS_KALIAKMANIS_STARTS": 7.97,
+    "RESEARCH_A2_FORMATION_CEILING": 8.47,
+    "RESEARCH_A3_APPEARANCE": 7.04,
+    "CIN_CHASE_OUT": 7.97,
+    "WAS_MCLAURIN_OUT": 7.97,
+    "WAS_DIGGS_OUT": 7.97
+   },
+   "verdict": "OUR_NUMBER_UNRELIABLE (latest official capture DNP Thursday, foot; reported aggravated and 'expected to miss multiple weeks'; projection assumes he plays at 0.861)",
+   "note": "Even if he plays, 7.97 sits above his 2026 output."
+  },
+  {
+   "player": "Breece Hall",
+   "team": "NYJ",
+   "pos": "RB",
+   "ours": 15.0,
+   "ours_if_plays": 15.0,
+   "fc": null,
+   "gap": null,
+   "ours_previous_diagnosis": 15.0,
+   "p_plays": 1.0,
+   "p_plays_source": "club-slot appearance table by allocation rank (proj_v1.allocate_opportunity)",
+   "projected_volume_if_plays": {
+    "targets": 3.49,
+    "carries": 15.19,
+    "pass_attempts": 0.0
+   },
+   "role": {
+    "band": "PRIMARY",
+    "ceiling": "ALPHA",
+    "evidence": "DEPTH_RANK_1",
+    "position_rank": 1,
+    "supplied_rank": 1,
+    "usage_rank": 1,
+    "chart": null,
+    "historical_band": "PRIMARY",
+    "cap_reason": null
+   },
+   "football_evidence": {
+    "summary": "carries 22/16/13/-, car share ~0.5-0.6, missed W4; 15.17 DK avg; official DNP (quadricep)",
+    "usage_by_week_2026": {
+     "1": {
+      "targets": 2,
+      "carries": 22,
+      "snap_pct": 58,
+      "tgt_share": 0.087,
+      "car_share": 0.564,
+      "rz_opps": 4,
+      "tds": 1
+     },
+     "2": {
+      "targets": 5,
+      "carries": 16,
+      "snap_pct": 65,
+      "tgt_share": 0.139,
+      "car_share": 0.593,
+      "rz_opps": 1,
+      "tds": 0
+     },
+     "3": {
+      "targets": 3,
+      "carries": 13,
+      "snap_pct": 48,
+      "tgt_share": 0.083,
+      "car_share": 0.684,
+      "rz_opps": 3,
+      "tds": 0
+     },
+     "4": {
+      "targets": 0,
+      "carries": 0,
+      "snap_pct": null,
+      "tgt_share": 0.0,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     }
+    },
+    "dk_avg_2026": 15.17,
+    "games_played_2026": 3,
+    "official_practice": {
+     "practice_status": "Did Not Participate In Practice",
+     "injury": "Quadricep",
+     "secondary_injury": null,
+     "game_designation": null,
+     "source": "NFLVERSE_INJURIES_2026.21e35d2a84353248 (capture 2026-10-09T13:30Z of the club report)",
+     "board_practice_status": "Did Not Participate In Practice",
+     "engine_practice_status": "Did Not Participate In Practice"
+    },
+    "qb_situation": {
+     "engine_starter": "Geno Smith",
+     "expected_starter": "Geno Smith",
+     "verification_status": "REPORTED_SECONDARY_CONSISTENT",
+     "scenario_needed": false
+    }
+   },
+   "primary_cause": "AVAILABILITY_ASSUMPTION",
+   "secondary_causes": [],
+   "known_engine_defects": {},
+   "rests_on_known_defect": false,
+   "scenario_applies": "none in the final set (pre-repair research scenario set him out)",
+   "scenario_dk_points": {
+    "CHI_BAGENT_STARTS": 15.0,
+    "WAS_MARIOTA_STARTS": 15.0,
+    "WAS_KALIAKMANIS_STARTS": 15.0,
+    "RESEARCH_A2_FORMATION_CEILING": 14.7,
+    "RESEARCH_A3_APPEARANCE": 14.28,
+    "CIN_CHASE_OUT": 15.0,
+    "WAS_MCLAURIN_OUT": 15.0,
+    "WAS_DIGGS_OUT": 15.0
+   },
+   "verdict": "OUR_NUMBER_UNRELIABLE as an expectation (official DNP Wed+Thu, quad, reported 'essentially out', yet P(plays) 1.0); conditional on playing it is supported",
+   "note": ""
+  },
+  {
+   "player": "Adonai Mitchell",
+   "team": "NYJ",
+   "pos": "WR",
+   "ours": 8.09,
+   "ours_if_plays": 9.2,
+   "fc": null,
+   "gap": null,
+   "ours_previous_diagnosis": 8.09,
+   "p_plays": 0.86052,
+   "p_plays_source": "club-slot appearance table by allocation rank (proj_v1.allocate_opportunity)",
+   "projected_volume_if_plays": {
+    "targets": 5.9,
+    "carries": 0.09,
+    "pass_attempts": 0.01
+   },
+   "role": {
+    "band": "SECONDARY",
+    "ceiling": "SECONDARY",
+    "evidence": "DEPTH_RANK_2",
+    "position_rank": 2,
+    "supplied_rank": 2,
+    "usage_rank": 2,
+    "chart": null,
+    "historical_band": "ALPHA",
+    "cap_reason": "observed usage suggested ALPHA but evidence DEPTH_RANK_2 ceilings at SECONDARY. observed usage is capped at SECONDARY when it is the ONLY evidence, because a large observed share held while the starter was injured is not a claim on the role once he returns. This is the rule that expires an injury-replacement workload."
+   },
+   "football_evidence": {
+    "summary": "targets 3/12/-/-, missed W3-4; 10.65 DK avg; official DNP (finger)",
+    "usage_by_week_2026": {
+     "1": {
+      "targets": 3,
+      "carries": 0,
+      "snap_pct": 69,
+      "tgt_share": 0.13,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "2": {
+      "targets": 12,
+      "carries": 0,
+      "snap_pct": 82,
+      "tgt_share": 0.333,
+      "car_share": 0.0,
+      "rz_opps": 1,
+      "tds": 0
+     },
+     "3": {
+      "targets": 0,
+      "carries": 0,
+      "snap_pct": null,
+      "tgt_share": 0.0,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "4": {
+      "targets": 0,
+      "carries": 0,
+      "snap_pct": null,
+      "tgt_share": 0.0,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     }
+    },
+    "dk_avg_2026": 10.65,
+    "games_played_2026": 2,
+    "official_practice": {
+     "practice_status": "Did Not Participate In Practice",
+     "injury": "Finger",
+     "secondary_injury": null,
+     "game_designation": null,
+     "source": "NFLVERSE_INJURIES_2026.21e35d2a84353248 (capture 2026-10-09T13:30Z of the club report)",
+     "board_practice_status": "Did Not Participate In Practice",
+     "engine_practice_status": "Did Not Participate In Practice"
+    },
+    "qb_situation": {
+     "engine_starter": "Geno Smith",
+     "expected_starter": "Geno Smith",
+     "verification_status": "REPORTED_SECONDARY_CONSISTENT",
+     "scenario_needed": false
+    }
+   },
+   "primary_cause": "AVAILABILITY_ASSUMPTION",
+   "secondary_causes": [
+    "ROLE_JUDGEMENT"
+   ],
+   "known_engine_defects": {
+    "RC-1 WR2/formation ceiling": "applies (WR2 capped SECONDARY): A2 8.53 (+0.44)",
+    "W5-G16 slot P(plays)": "WR2 slot 0.861"
+   },
+   "rests_on_known_defect": false,
+   "scenario_applies": "none in the final set (pre-repair research scenario set him out)",
+   "scenario_dk_points": {
+    "CHI_BAGENT_STARTS": 8.09,
+    "WAS_MARIOTA_STARTS": 8.09,
+    "WAS_KALIAKMANIS_STARTS": 8.09,
+    "RESEARCH_A2_FORMATION_CEILING": 8.53,
+    "RESEARCH_A3_APPEARANCE": 7.72,
+    "CIN_CHASE_OUT": 8.09,
+    "WAS_MCLAURIN_OUT": 8.09,
+    "WAS_DIGGS_OUT": 8.09
+   },
+   "verdict": "OUR_NUMBER_UNRELIABLE as an expectation (official DNP Wed+Thu, finger, reported 'essentially out')",
+   "note": ""
+  },
+  {
+   "player": "Caleb Williams",
+   "team": "CHI",
+   "pos": "QB",
+   "ours": 21.92,
+   "ours_if_plays": 21.98,
+   "fc": null,
+   "gap": null,
+   "ours_previous_diagnosis": 21.96,
+   "p_plays": 1.0,
+   "p_plays_source": "club-slot appearance table by allocation rank (proj_v1.allocate_opportunity)",
+   "projected_volume_if_plays": {
+    "targets": 0.04,
+    "carries": 7.0,
+    "pass_attempts": 34.83
+   },
+   "role": {
+    "band": "ALPHA",
+    "ceiling": "ALPHA",
+    "evidence": "DEPTH_RANK_1",
+    "position_rank": 1,
+    "supplied_rank": 1,
+    "usage_rank": 3,
+    "chart": null,
+    "historical_band": "ALPHA",
+    "cap_reason": null
+   },
+   "football_evidence": {
+    "summary": "2026: W1-2 only (29, 26 att), 22.99 DK avg; official practice DNP (hamstring); FC omits him",
+    "usage_by_week_2026": {
+     "1": {
+      "targets": 0,
+      "carries": 10,
+      "snap_pct": 100,
+      "tgt_share": 0.0,
+      "car_share": 0.256,
+      "rz_opps": 3,
+      "tds": 2,
+      "pass_att": 29
+     },
+     "2": {
+      "targets": 0,
+      "carries": 5,
+      "snap_pct": 86,
+      "tgt_share": 0.0,
+      "car_share": 0.161,
+      "rz_opps": 1,
+      "tds": 0,
+      "pass_att": 26
+     },
+     "3": {
+      "targets": 0,
+      "carries": 0,
+      "snap_pct": null,
+      "tgt_share": 0.0,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     },
+     "4": {
+      "targets": 0,
+      "carries": 0,
+      "snap_pct": null,
+      "tgt_share": 0.0,
+      "car_share": 0.0,
+      "rz_opps": 0,
+      "tds": 0
+     }
+    },
+    "dk_avg_2026": 22.99,
+    "games_played_2026": 2,
+    "official_practice": {
+     "practice_status": "Did Not Participate In Practice",
+     "injury": "Hamstring",
+     "secondary_injury": null,
+     "game_designation": null,
+     "source": "NFLVERSE_INJURIES_2026.21e35d2a84353248 (capture 2026-10-09T13:30Z of the club report)",
+     "board_practice_status": "Did Not Participate In Practice",
+     "engine_practice_status": "Did Not Participate In Practice"
+    },
+    "qb_situation": {
+     "engine_starter": "Caleb Williams",
+     "expected_starter": "Tyson Bagent",
+     "verification_status": "REPORTED_SECONDARY_CONSISTENT",
+     "scenario_needed": false
+    }
+   },
+   "primary_cause": "AVAILABILITY_ASSUMPTION",
+   "secondary_causes": [],
+   "known_engine_defects": {
+    "W5-G18 QB identity not consumed": "material: engine has him starting from captured chart QB1",
+    "W5-G15": "open"
+   },
+   "rests_on_known_defect": true,
+   "scenario_applies": "CHI_BAGENT_STARTS = 0",
+   "scenario_dk_points": {
+    "CHI_BAGENT_STARTS": 0,
+    "WAS_MARIOTA_STARTS": 21.92,
+    "WAS_KALIAKMANIS_STARTS": 21.92,
+    "RESEARCH_A2_FORMATION_CEILING": 21.96,
+    "RESEARCH_A3_APPEARANCE": 21.6,
+    "CIN_CHASE_OUT": 21.92,
+    "WAS_MCLAURIN_OUT": 21.92,
+    "WAS_DIGGS_OUT": 21.92
+   },
+   "verdict": "OUR_NUMBER_UNRELIABLE (Grade 2 hamstring, DNP all week, coach-relayed ruling that Bagent starts; production still projects him at p_plays 1.0)",
+   "note": "Conditional on playing the number tracks his W1-2 output; the problem is entirely who starts."
+  }
+ ]
+}
