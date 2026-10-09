@@ -1,0 +1,6534 @@
+{
+ "ARTIFACT": "ACCOUNTING_REPAIR_INTEGRATION_MEASUREMENTS",
+ "slates": {
+  "TB_DAL_2026W5": {
+   "inputs": {
+    "inc": {
+     "path": "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SHOWDOWN_TB_DAL_2026W5_DRAWS.json",
+     "sha256": "a14075e64d471c633b9b55c52397e9e74c427df2fc61487b8860d3758dd8dfad"
+    },
+    "rep_qb": {
+     "path": "nfl/research/accounting_repair/TB_DAL_2026W5/EVENT_CONSISTENT/SHOWDOWN_TB_DAL_2026W5_DRAWS.json",
+     "sha256": "4931cb39d55eed817f9985f35a560b7e3036d7bc839598a6b4ee04dd6c6e7bfc"
+    },
+    "rep_rec": {
+     "path": "nfl/research/accounting_repair/TB_DAL_2026W5/EVENT_CONSISTENT_RECEIVER_ANCHOR/SHOWDOWN_TB_DAL_2026W5_DRAWS.json",
+     "sha256": "dc93cd5d83d800a30d9f8049a3aa87bd44015fddfddd90d9b10ebc76f2d68314"
+    },
+    "actuals": {
+     "path": "git show be87cb0d:nfl/postgame/showdown_tb_dal_2026W5/TB_DAL_2026W5_POSTGAME.json",
+     "sha256": "d6c5ed56fa9ebdacc1a09936c941852965aaf20316eeff21ef32dff4b7593297"
+    },
+    "projection": {
+     "path": "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SHOWDOWN_TB_DAL_2026W5_PROJ.json",
+     "sha256": "d16a86965c5f7646984d07f35cb6500898fc826c917f6fc52517a37d836e47f2"
+    }
+   },
+   "n_worlds": 2000,
+   "home": "DAL",
+   "away": "TB",
+   "calibration": {
+    "n_players_with_actuals": 49,
+    "n_players_inc_mean_ge_1": 24,
+    "populations": {
+     "ALL_DRAWN": {
+      "inc": {
+       "n": 49,
+       "mean_crps": 2.0302,
+       "mean_error": 0.0528,
+       "mae_of_mean": 2.8083,
+       "coverage_50": 0.6531,
+       "coverage_80": 0.7959,
+       "coverage_90": 0.8571,
+       "pit_mean": 0.5038,
+       "pit_deciles": [
+        3,
+        4,
+        3,
+        2,
+        24,
+        1,
+        1,
+        2,
+        2,
+        7
+       ]
+      },
+      "rep_qb": {
+       "n": 49,
+       "mean_crps": 2.0625,
+       "mean_error": 0.0674,
+       "mae_of_mean": 2.8991,
+       "coverage_50": 0.6939,
+       "coverage_80": 0.8367,
+       "coverage_90": 0.8571,
+       "pit_mean": 0.5157,
+       "pit_deciles": [
+        2,
+        3,
+        4,
+        3,
+        21,
+        4,
+        0,
+        3,
+        3,
+        6
+       ]
+      },
+      "rep_rec": {
+       "n": 49,
+       "mean_crps": 2.0579,
+       "mean_error": 0.1569,
+       "mae_of_mean": 2.9336,
+       "coverage_50": 0.6939,
+       "coverage_80": 0.8367,
+       "coverage_90": 0.8571,
+       "pit_mean": 0.512,
+       "pit_deciles": [
+        2,
+        4,
+        3,
+        3,
+        22,
+        3,
+        0,
+        4,
+        2,
+        6
+       ]
+      },
+      "paired_crps_rep_qb_minus_inc": {
+       "mean_paired_crps_diff": 0.0323,
+       "player_bootstrap_95": [
+        -0.0541,
+        0.1445
+       ],
+       "n_players_better": 29,
+       "n_players_worse": 19,
+       "n_equal": 1,
+       "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+      },
+      "paired_crps_rep_rec_minus_inc": {
+       "mean_paired_crps_diff": 0.0277,
+       "player_bootstrap_95": [
+        -0.0537,
+        0.1388
+       ],
+       "n_players_better": 27,
+       "n_players_worse": 21,
+       "n_equal": 1,
+       "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+      }
+     },
+     "INC_MEAN_GE_1": {
+      "inc": {
+       "n": 24,
+       "mean_crps": 3.9135,
+       "mean_error": 0.3003,
+       "mae_of_mean": 5.4503,
+       "coverage_50": 0.4167,
+       "coverage_80": 0.7083,
+       "coverage_90": 0.7917,
+       "pit_mean": 0.4705,
+       "pit_deciles": [
+        3,
+        4,
+        3,
+        1,
+        3,
+        1,
+        1,
+        2,
+        2,
+        4
+       ]
+      },
+      "rep_qb": {
+       "n": 24,
+       "mean_crps": 3.9753,
+       "mean_error": 0.3296,
+       "mae_of_mean": 5.6362,
+       "coverage_50": 0.5,
+       "coverage_80": 0.7917,
+       "coverage_90": 0.7917,
+       "pit_mean": 0.4911,
+       "pit_deciles": [
+        2,
+        3,
+        4,
+        2,
+        2,
+        2,
+        0,
+        3,
+        3,
+        3
+       ]
+      },
+      "rep_rec": {
+       "n": 24,
+       "mean_crps": 3.9656,
+       "mean_error": 0.5101,
+       "mae_of_mean": 5.7041,
+       "coverage_50": 0.5,
+       "coverage_80": 0.7917,
+       "coverage_90": 0.7917,
+       "pit_mean": 0.4834,
+       "pit_deciles": [
+        2,
+        4,
+        3,
+        2,
+        3,
+        1,
+        0,
+        4,
+        2,
+        3
+       ]
+      },
+      "paired_crps_rep_qb_minus_inc": {
+       "mean_paired_crps_diff": 0.0618,
+       "player_bootstrap_95": [
+        -0.1138,
+        0.3094
+       ],
+       "n_players_better": 12,
+       "n_players_worse": 12,
+       "n_equal": 0,
+       "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+      },
+      "paired_crps_rep_rec_minus_inc": {
+       "mean_paired_crps_diff": 0.0521,
+       "player_bootstrap_95": [
+        -0.1064,
+        0.2867
+       ],
+       "n_players_better": 11,
+       "n_players_worse": 13,
+       "n_equal": 0,
+       "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+      }
+     },
+     "SKILL_INC_MEAN_GE_1": {
+      "inc": {
+       "n": 20,
+       "mean_crps": 4.3491,
+       "mean_error": 0.0881,
+       "mae_of_mean": 5.999,
+       "coverage_50": 0.35,
+       "coverage_80": 0.65,
+       "coverage_90": 0.75,
+       "pit_mean": 0.4899,
+       "pit_deciles": [
+        3,
+        3,
+        2,
+        1,
+        2,
+        1,
+        1,
+        1,
+        2,
+        4
+       ]
+      },
+      "rep_qb": {
+       "n": 20,
+       "mean_crps": 4.2935,
+       "mean_error": -0.0205,
+       "mae_of_mean": 5.9949,
+       "coverage_50": 0.5,
+       "coverage_80": 0.75,
+       "coverage_90": 0.75,
+       "pit_mean": 0.5097,
+       "pit_deciles": [
+        2,
+        2,
+        3,
+        2,
+        1,
+        2,
+        0,
+        2,
+        3,
+        3
+       ]
+      },
+      "rep_rec": {
+       "n": 20,
+       "mean_crps": 4.2819,
+       "mean_error": 0.1962,
+       "mae_of_mean": 6.0764,
+       "coverage_50": 0.5,
+       "coverage_80": 0.75,
+       "coverage_90": 0.75,
+       "pit_mean": 0.5006,
+       "pit_deciles": [
+        2,
+        3,
+        2,
+        2,
+        2,
+        1,
+        0,
+        3,
+        2,
+        3
+       ]
+      },
+      "paired_crps_rep_qb_minus_inc": {
+       "mean_paired_crps_diff": -0.0556,
+       "player_bootstrap_95": [
+        -0.1762,
+        0.071
+       ],
+       "n_players_better": 11,
+       "n_players_worse": 9,
+       "n_equal": 0,
+       "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+      },
+      "paired_crps_rep_rec_minus_inc": {
+       "mean_paired_crps_diff": -0.0672,
+       "player_bootstrap_95": [
+        -0.1708,
+        0.0245
+       ],
+       "n_players_better": 10,
+       "n_players_worse": 10,
+       "n_equal": 0,
+       "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+      }
+     },
+     "DST_AND_K": {
+      "inc": {
+       "n": 4,
+       "mean_crps": 1.7353,
+       "mean_error": 1.3613,
+       "mae_of_mean": 2.7068,
+       "coverage_50": 0.75,
+       "coverage_80": 1.0,
+       "coverage_90": 1.0,
+       "pit_mean": 0.3737,
+       "pit_deciles": [
+        0,
+        1,
+        1,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+       ]
+      },
+      "rep_qb": {
+       "n": 4,
+       "mean_crps": 2.3841,
+       "mean_error": 2.0799,
+       "mae_of_mean": 3.8426,
+       "coverage_50": 0.5,
+       "coverage_80": 1.0,
+       "coverage_90": 1.0,
+       "pit_mean": 0.3977,
+       "pit_deciles": [
+        0,
+        1,
+        1,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+       ]
+      },
+      "rep_rec": {
+       "n": 4,
+       "mean_crps": 2.3841,
+       "mean_error": 2.0799,
+       "mae_of_mean": 3.8426,
+       "coverage_50": 0.5,
+       "coverage_80": 1.0,
+       "coverage_90": 1.0,
+       "pit_mean": 0.3977,
+       "pit_deciles": [
+        0,
+        1,
+        1,
+        0,
+        1,
+        0,
+        0,
+        1,
+        0,
+        0
+       ]
+      },
+      "paired_crps_rep_qb_minus_inc": {
+       "mean_paired_crps_diff": 0.6488,
+       "player_bootstrap_95": [
+        0.0087,
+        1.655
+       ],
+       "n_players_better": 1,
+       "n_players_worse": 3,
+       "n_equal": 0,
+       "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+      },
+      "paired_crps_rep_rec_minus_inc": {
+       "mean_paired_crps_diff": 0.6488,
+       "player_bootstrap_95": [
+        0.0087,
+        1.655
+       ],
+       "n_players_better": 1,
+       "n_players_worse": 3,
+       "n_equal": 0,
+       "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+      }
+     }
+    },
+    "by_position": {
+     "DST": {
+      "n": 2,
+      "inc": {
+       "mean_error": 0.108,
+       "mean_crps": 1.7953
+      },
+      "rep_qb": {
+       "mean_error": 1.559,
+       "mean_crps": 3.0843
+      },
+      "rep_rec": {
+       "mean_error": 1.559,
+       "mean_crps": 3.0843
+      }
+     },
+     "K": {
+      "n": 2,
+      "inc": {
+       "mean_error": 2.6145,
+       "mean_crps": 1.6752
+      },
+      "rep_qb": {
+       "mean_error": 2.6008,
+       "mean_crps": 1.684
+      },
+      "rep_rec": {
+       "mean_error": 2.6008,
+       "mean_crps": 1.684
+      }
+     },
+     "QB": {
+      "n": 6,
+      "inc": {
+       "mean_error": 0.8552,
+       "mean_crps": 0.7387
+      },
+      "rep_qb": {
+       "mean_error": 0.8595,
+       "mean_crps": 0.7572
+      },
+      "rep_rec": {
+       "mean_error": 1.0712,
+       "mean_crps": 0.7632
+      }
+     },
+     "RB": {
+      "n": 10,
+      "inc": {
+       "mean_error": -0.9838,
+       "mean_crps": 2.1822
+      },
+      "rep_qb": {
+       "mean_error": -1.0106,
+       "mean_crps": 2.2217
+      },
+      "rep_rec": {
+       "mean_error": -0.9653,
+       "mean_crps": 2.1823
+      }
+     },
+     "TE": {
+      "n": 12,
+      "inc": {
+       "mean_error": 1.1565,
+       "mean_crps": 0.7525
+      },
+      "rep_qb": {
+       "mean_error": 1.0896,
+       "mean_crps": 0.6874
+      },
+      "rep_rec": {
+       "mean_error": 1.1693,
+       "mean_crps": 0.725
+      }
+     },
+     "WR": {
+      "n": 17,
+      "inc": {
+       "mean_error": -0.7078,
+       "mean_crps": 3.368
+      },
+      "rep_qb": {
+       "mean_error": -0.7733,
+       "mean_crps": 3.3247
+      },
+      "rep_rec": {
+       "mean_error": -0.6729,
+       "mean_crps": 3.3057
+      }
+     }
+    },
+    "per_player": [
+     {
+      "player": "Anthony Smith|DAL",
+      "pos": "WR",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.0233,
+       "sd": 0.2895,
+       "err": 0.0233,
+       "crps": 0.0002,
+       "pit": 0.493,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.0246,
+       "sd": 0.3778,
+       "err": 0.0246,
+       "crps": 0.0001,
+       "pit": 0.496,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.0245,
+       "sd": 0.3763,
+       "err": 0.0245,
+       "crps": 0.0001,
+       "pit": 0.496,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Bauer Sharp|TB",
+      "pos": "TE",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.0241,
+       "sd": 0.2572,
+       "err": 0.0241,
+       "crps": 0.0002,
+       "pit": 0.4915,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.0169,
+       "sd": 0.195,
+       "err": 0.0169,
+       "crps": 0.0001,
+       "pit": 0.4953,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.0181,
+       "sd": 0.2117,
+       "err": 0.0181,
+       "crps": 0.0001,
+       "pit": 0.4953,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Brandon Aubrey|DAL",
+      "pos": "K",
+      "actual": 5.0,
+      "inc": {
+       "mean": 9.2525,
+       "sd": 4.8777,
+       "err": 4.2525,
+       "crps": 2.1605,
+       "pit": 0.2223,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 9.2385,
+       "sd": 4.7747,
+       "err": 4.2385,
+       "crps": 2.1782,
+       "pit": 0.217,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 9.2385,
+       "sd": 4.7747,
+       "err": 4.2385,
+       "crps": 2.1782,
+       "pit": 0.217,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Brett Rypien|TB",
+      "pos": "QB",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.1062,
+       "sd": 0.4682,
+       "err": 0.1062,
+       "crps": 0.0092,
+       "pit": 0.3593,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.1326,
+       "sd": 0.6018,
+       "err": 0.1326,
+       "crps": 0.0166,
+       "pit": 0.3595,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.1454,
+       "sd": 0.6114,
+       "err": 0.1454,
+       "crps": 0.0193,
+       "pit": 0.3595,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Brevyn Spann-Ford|DAL",
+      "pos": "TE",
+      "actual": 0.0,
+      "inc": {
+       "mean": 2.5417,
+       "sd": 2.991,
+       "err": 2.5417,
+       "crps": 1.0522,
+       "pit": 0.1217,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 2.4949,
+       "sd": 3.5563,
+       "err": 2.4949,
+       "crps": 0.8592,
+       "pit": 0.1913,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 2.4868,
+       "sd": 3.5442,
+       "err": 2.4868,
+       "crps": 0.8567,
+       "pit": 0.1913,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Buccaneers|TB",
+      "pos": "DST",
+      "actual": 7.0,
+      "inc": {
+       "mean": 4.309,
+       "sd": 5.5501,
+       "err": -2.691,
+       "crps": 2.0347,
+       "pit": 0.7025,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 3.4745,
+       "sd": 4.7442,
+       "err": -3.5255,
+       "crps": 2.4118,
+       "pit": 0.7983,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 3.4745,
+       "sd": 4.7442,
+       "err": -3.5255,
+       "crps": 2.4118,
+       "pit": 0.7983,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Bucky Irving|TB",
+      "pos": "RB",
+      "actual": 34.5,
+      "inc": {
+       "mean": 16.4951,
+       "sd": 7.5681,
+       "err": -18.0049,
+       "crps": 13.9994,
+       "pit": 0.9735,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      },
+      "rep_qb": {
+       "mean": 16.1607,
+       "sd": 8.0424,
+       "err": -18.3393,
+       "crps": 14.1652,
+       "pit": 0.9735,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      },
+      "rep_rec": {
+       "mean": 16.4657,
+       "sd": 8.1658,
+       "err": -18.0343,
+       "crps": 13.823,
+       "pit": 0.971,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      }
+     },
+     {
+      "player": "CJ Dippre|TB",
+      "pos": "TE",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.2468,
+       "sd": 0.829,
+       "err": 0.2468,
+       "crps": 0.0198,
+       "pit": 0.4285,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.2388,
+       "sd": 0.96,
+       "err": 0.2388,
+       "crps": 0.0144,
+       "pit": 0.4507,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.2559,
+       "sd": 1.0424,
+       "err": 0.2559,
+       "crps": 0.0152,
+       "pit": 0.4507,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Cade Otton|TB",
+      "pos": "TE",
+      "actual": 5.5,
+      "inc": {
+       "mean": 11.5686,
+       "sd": 6.2798,
+       "err": 6.0686,
+       "crps": 3.1927,
+       "pit": 0.158,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 11.0223,
+       "sd": 6.669,
+       "err": 5.5223,
+       "crps": 2.7551,
+       "pit": 0.2075,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 11.8286,
+       "sd": 7.241,
+       "err": 6.3286,
+       "crps": 3.1718,
+       "pit": 0.1855,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "CeeDee Lamb|DAL",
+      "pos": "WR",
+      "actual": 2.9,
+      "inc": {
+       "mean": 28.2764,
+       "sd": 11.4323,
+       "err": 25.3764,
+       "crps": 18.9313,
+       "pit": 0.001,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      },
+      "rep_qb": {
+       "mean": 28.5185,
+       "sd": 12.7762,
+       "err": 25.6185,
+       "crps": 18.4268,
+       "pit": 0.0035,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      },
+      "rep_rec": {
+       "mean": 28.4077,
+       "sd": 12.7314,
+       "err": 25.5077,
+       "crps": 18.3416,
+       "pit": 0.0035,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      }
+     },
+     {
+      "player": "Chase McLaughlin|TB",
+      "pos": "K",
+      "actual": 7.0,
+      "inc": {
+       "mean": 7.9765,
+       "sd": 4.6463,
+       "err": 0.9765,
+       "crps": 1.1899,
+       "pit": 0.4532,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 7.963,
+       "sd": 4.7164,
+       "err": 0.963,
+       "crps": 1.1898,
+       "pit": 0.465,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 7.963,
+       "sd": 4.7164,
+       "err": 0.963,
+       "crps": 1.1898,
+       "pit": 0.465,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Chris Godwin Jr.|TB",
+      "pos": "WR",
+      "actual": 7.0,
+      "inc": {
+       "mean": 8.5407,
+       "sd": 5.6388,
+       "err": 1.5407,
+       "crps": 1.2667,
+       "pit": 0.4525,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 8.1691,
+       "sd": 5.827,
+       "err": 1.1691,
+       "crps": 1.2505,
+       "pit": 0.4985,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 8.7941,
+       "sd": 6.4039,
+       "err": 1.7941,
+       "crps": 1.3675,
+       "pit": 0.4675,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Cowboys|DAL",
+      "pos": "DST",
+      "actual": 1.0,
+      "inc": {
+       "mean": 3.9071,
+       "sd": 3.0027,
+       "err": 2.9071,
+       "crps": 1.5558,
+       "pit": 0.117,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 7.6435,
+       "sd": 6.0181,
+       "err": 6.6435,
+       "crps": 3.7567,
+       "pit": 0.1105,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 7.6435,
+       "sd": 6.0181,
+       "err": 6.6435,
+       "crps": 3.7567,
+       "pit": 0.1105,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "DJ Rogers|DAL",
+      "pos": "TE",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.016,
+       "sd": 0.2391,
+       "err": 0.016,
+       "crps": 0.0001,
+       "pit": 0.4948,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.0188,
+       "sd": 0.3946,
+       "err": 0.0188,
+       "crps": 0.0001,
+       "pit": 0.4973,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.0188,
+       "sd": 0.3935,
+       "err": 0.0188,
+       "crps": 0.0001,
+       "pit": 0.4973,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Dak Prescott|DAL",
+      "pos": "QB",
+      "actual": 17.64,
+      "inc": {
+       "mean": 22.4543,
+       "sd": 7.9282,
+       "err": 4.8143,
+       "crps": 2.8331,
+       "pit": 0.284,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 22.4029,
+       "sd": 8.4804,
+       "err": 4.7629,
+       "crps": 2.8169,
+       "pit": 0.3075,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 22.2837,
+       "sd": 8.4561,
+       "err": 4.6437,
+       "crps": 2.7657,
+       "pit": 0.313,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "David Sills V|TB",
+      "pos": "WR",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.0206,
+       "sd": 0.2967,
+       "err": 0.0206,
+       "crps": 0.0001,
+       "pit": 0.4943,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.0226,
+       "sd": 0.3559,
+       "err": 0.0226,
+       "crps": 0.0001,
+       "pit": 0.4963,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.0235,
+       "sd": 0.3698,
+       "err": 0.0235,
+       "crps": 0.0001,
+       "pit": 0.4963,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Dean Patterson IV|TB",
+      "pos": "WR",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.0142,
+       "sd": 0.1714,
+       "err": 0.0142,
+       "crps": 0.0001,
+       "pit": 0.4938,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.0149,
+       "sd": 0.2019,
+       "err": 0.0149,
+       "crps": 0.0001,
+       "pit": 0.4955,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.0161,
+       "sd": 0.2245,
+       "err": 0.0161,
+       "crps": 0.0001,
+       "pit": 0.4955,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Easton Stick|TB",
+      "pos": "QB",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.0,
+       "sd": 0.0,
+       "err": 0.0,
+       "crps": 0.0,
+       "pit": 0.4995,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.0,
+       "sd": 0.0,
+       "err": 0.0,
+       "crps": 0.0,
+       "pit": 0.5,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.0,
+       "sd": 0.0,
+       "err": 0.0,
+       "crps": 0.0,
+       "pit": 0.5,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Emari Demercado|DAL",
+      "pos": "RB",
+      "actual": 0.0,
+      "inc": {
+       "mean": 1.0847,
+       "sd": 1.737,
+       "err": 1.0847,
+       "crps": 0.3013,
+       "pit": 0.2008,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 1.1642,
+       "sd": 2.1429,
+       "err": 1.1642,
+       "crps": 0.2764,
+       "pit": 0.2255,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 1.163,
+       "sd": 2.141,
+       "err": 1.163,
+       "crps": 0.2762,
+       "pit": 0.2255,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Emeka Egbuka|TB",
+      "pos": "WR",
+      "actual": 17.2,
+      "inc": {
+       "mean": 11.9939,
+       "sd": 6.6056,
+       "err": -5.2061,
+       "crps": 3.6828,
+       "pit": 0.8095,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 11.1664,
+       "sd": 7.0951,
+       "err": -6.0336,
+       "crps": 4.241,
+       "pit": 0.817,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 12.0414,
+       "sd": 7.7064,
+       "err": -5.1586,
+       "crps": 3.7938,
+       "pit": 0.785,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Eric Rivers Jr.|TB",
+      "pos": "WR",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.0209,
+       "sd": 0.2339,
+       "err": 0.0209,
+       "crps": 0.0002,
+       "pit": 0.4923,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.0297,
+       "sd": 0.3827,
+       "err": 0.0297,
+       "crps": 0.0002,
+       "pit": 0.495,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.0314,
+       "sd": 0.4023,
+       "err": 0.0314,
+       "crps": 0.0002,
+       "pit": 0.495,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Garrett Greene|TB",
+      "pos": "WR",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.0229,
+       "sd": 0.2507,
+       "err": 0.0229,
+       "crps": 0.0002,
+       "pit": 0.4928,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.0227,
+       "sd": 0.3395,
+       "err": 0.0227,
+       "crps": 0.0001,
+       "pit": 0.4958,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.024,
+       "sd": 0.3567,
+       "err": 0.024,
+       "crps": 0.0001,
+       "pit": 0.4958,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "George Pickens|DAL",
+      "pos": "WR",
+      "actual": 31.0,
+      "inc": {
+       "mean": 11.6981,
+       "sd": 7.0499,
+       "err": -19.3019,
+       "crps": 15.5708,
+       "pit": 0.9835,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      },
+      "rep_qb": {
+       "mean": 11.7387,
+       "sd": 8.2578,
+       "err": -19.2613,
+       "crps": 15.0328,
+       "pit": 0.969,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      },
+      "rep_rec": {
+       "mean": 11.693,
+       "sd": 8.2257,
+       "err": -19.307,
+       "crps": 15.0879,
+       "pit": 0.969,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      }
+     },
+     {
+      "player": "Hunter Luepke|DAL",
+      "pos": "RB",
+      "actual": 0.5,
+      "inc": {
+       "mean": 0.06,
+       "sd": 0.4313,
+       "err": -0.44,
+       "crps": 0.4684,
+       "pit": 0.9725,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      },
+      "rep_qb": {
+       "mean": 0.0455,
+       "sd": 0.3421,
+       "err": -0.4545,
+       "crps": 0.4739,
+       "pit": 0.9765,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      },
+      "rep_rec": {
+       "mean": 0.0454,
+       "sd": 0.3411,
+       "err": -0.4546,
+       "crps": 0.4739,
+       "pit": 0.9765,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      }
+     },
+     {
+      "player": "Israel Abanikanda|DAL",
+      "pos": "RB",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.0006,
+       "sd": 0.0272,
+       "err": 0.0006,
+       "crps": 0.0,
+       "pit": 0.4988,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.0006,
+       "sd": 0.0272,
+       "err": 0.0006,
+       "crps": 0.0,
+       "pit": 0.4998,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.0006,
+       "sd": 0.0272,
+       "err": 0.0006,
+       "crps": 0.0,
+       "pit": 0.4998,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Jake Ferguson|DAL",
+      "pos": "TE",
+      "actual": 4.9,
+      "inc": {
+       "mean": 10.0758,
+       "sd": 5.7721,
+       "err": 5.1758,
+       "crps": 2.6927,
+       "pit": 0.193,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 10.1107,
+       "sd": 6.9028,
+       "err": 5.2107,
+       "crps": 2.538,
+       "pit": 0.2525,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 10.0834,
+       "sd": 6.8797,
+       "err": 5.1834,
+       "crps": 2.5255,
+       "pit": 0.253,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Jalen McMillan|TB",
+      "pos": "WR",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.0045,
+       "sd": 0.0808,
+       "err": 0.0045,
+       "crps": 0.0,
+       "pit": 0.497,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.0058,
+       "sd": 0.1277,
+       "err": 0.0058,
+       "crps": 0.0,
+       "pit": 0.4983,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.0063,
+       "sd": 0.1419,
+       "err": 0.0063,
+       "crps": 0.0,
+       "pit": 0.4983,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Jalon Daniels|TB",
+      "pos": "QB",
+      "actual": 13.86,
+      "inc": {
+       "mean": 13.9915,
+       "sd": 6.5116,
+       "err": 0.1315,
+       "crps": 1.5872,
+       "pit": 0.5385,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 14.0431,
+       "sd": 6.9847,
+       "err": 0.1831,
+       "crps": 1.706,
+       "pit": 0.533,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 15.4197,
+       "sd": 7.3297,
+       "err": 1.5597,
+       "crps": 1.7907,
+       "pit": 0.4635,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "James Mitchell|DAL",
+      "pos": "TE",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.0269,
+       "sd": 0.3151,
+       "err": 0.0269,
+       "crps": 0.0002,
+       "pit": 0.492,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.0199,
+       "sd": 0.276,
+       "err": 0.0199,
+       "crps": 0.0001,
+       "pit": 0.496,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.0198,
+       "sd": 0.275,
+       "err": 0.0198,
+       "crps": 0.0001,
+       "pit": 0.496,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Javonte Williams|DAL",
+      "pos": "RB",
+      "actual": 14.2,
+      "inc": {
+       "mean": 18.7278,
+       "sd": 8.1699,
+       "err": 4.5278,
+       "crps": 2.5156,
+       "pit": 0.3175,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 18.9511,
+       "sd": 8.7849,
+       "err": 4.7511,
+       "crps": 2.6909,
+       "pit": 0.3345,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 18.9354,
+       "sd": 8.7792,
+       "err": 4.7354,
+       "crps": 2.685,
+       "pit": 0.3345,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Joe Milton III|DAL",
+      "pos": "QB",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.0,
+       "sd": 0.0,
+       "err": 0.0,
+       "crps": 0.0,
+       "pit": 0.4993,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.0,
+       "sd": 0.0,
+       "err": 0.0,
+       "crps": 0.0,
+       "pit": 0.5,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.0,
+       "sd": 0.0,
+       "err": 0.0,
+       "crps": 0.0,
+       "pit": 0.5,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Jonathan Mingo|DAL",
+      "pos": "WR",
+      "actual": 4.0,
+      "inc": {
+       "mean": 0.2369,
+       "sd": 0.8781,
+       "err": -3.7631,
+       "crps": 3.5957,
+       "pit": 0.983,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      },
+      "rep_qb": {
+       "mean": 0.2453,
+       "sd": 1.2009,
+       "err": -3.7547,
+       "crps": 3.6585,
+       "pit": 0.9795,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      },
+      "rep_rec": {
+       "mean": 0.2446,
+       "sd": 1.1971,
+       "err": -3.7554,
+       "crps": 3.6589,
+       "pit": 0.9795,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      }
+     },
+     {
+      "player": "Jordan Hudson|DAL",
+      "pos": "WR",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.0291,
+       "sd": 0.31,
+       "err": 0.0291,
+       "crps": 0.0002,
+       "pit": 0.4915,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.0247,
+       "sd": 0.2906,
+       "err": 0.0247,
+       "crps": 0.0002,
+       "pit": 0.4943,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.0246,
+       "sd": 0.2893,
+       "err": 0.0246,
+       "crps": 0.0002,
+       "pit": 0.4943,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Josh Williams|TB",
+      "pos": "RB",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.1795,
+       "sd": 0.7159,
+       "err": 0.1795,
+       "crps": 0.0113,
+       "pit": 0.4283,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.1649,
+       "sd": 0.7553,
+       "err": 0.1649,
+       "crps": 0.0089,
+       "pit": 0.436,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.1688,
+       "sd": 0.7695,
+       "err": 0.1688,
+       "crps": 0.0091,
+       "pit": 0.436,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "KaVontae Turpin|DAL",
+      "pos": "WR",
+      "actual": 3.2,
+      "inc": {
+       "mean": 1.1198,
+       "sd": 2.0805,
+       "err": -2.0802,
+       "crps": 1.8426,
+       "pit": 0.8845,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 1.3552,
+       "sd": 2.8844,
+       "err": -1.8448,
+       "crps": 1.9139,
+       "pit": 0.859,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 1.3525,
+       "sd": 2.8786,
+       "err": -1.8475,
+       "crps": 1.9147,
+       "pit": 0.8595,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Kameron Johnson|TB",
+      "pos": "WR",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.2126,
+       "sd": 0.8273,
+       "err": 0.2126,
+       "crps": 0.013,
+       "pit": 0.436,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.2053,
+       "sd": 0.9307,
+       "err": 0.2053,
+       "crps": 0.0095,
+       "pit": 0.4592,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.2197,
+       "sd": 1.0078,
+       "err": 0.2197,
+       "crps": 0.01,
+       "pit": 0.4592,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Kenny Gainwell|TB",
+      "pos": "RB",
+      "actual": 5.8,
+      "inc": {
+       "mean": 4.5658,
+       "sd": 3.5084,
+       "err": -1.2342,
+       "crps": 1.2281,
+       "pit": 0.699,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 4.48,
+       "sd": 3.9867,
+       "err": -1.32,
+       "crps": 1.4224,
+       "pit": 0.717,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 4.6311,
+       "sd": 4.103,
+       "err": -1.1689,
+       "crps": 1.377,
+       "pit": 0.7005,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Ko Kieft|TB",
+      "pos": "TE",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.0181,
+       "sd": 0.2509,
+       "err": 0.0181,
+       "crps": 0.0001,
+       "pit": 0.4955,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.0223,
+       "sd": 0.3433,
+       "err": 0.0223,
+       "crps": 0.0001,
+       "pit": 0.4968,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.0234,
+       "sd": 0.3563,
+       "err": 0.0234,
+       "crps": 0.0001,
+       "pit": 0.4968,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Luke Schoonmaker|DAL",
+      "pos": "TE",
+      "actual": 1.9,
+      "inc": {
+       "mean": 0.392,
+       "sd": 1.1401,
+       "err": -1.508,
+       "crps": 1.4356,
+       "pit": 0.933,
+       "cov50": false,
+       "cov80": false,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.4096,
+       "sd": 1.3428,
+       "err": -1.4904,
+       "crps": 1.4696,
+       "pit": 0.9325,
+       "cov50": false,
+       "cov80": false,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.4083,
+       "sd": 1.3379,
+       "err": -1.4917,
+       "crps": 1.4699,
+       "pit": 0.933,
+       "cov50": false,
+       "cov80": false,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Malik Davis|DAL",
+      "pos": "RB",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.0009,
+       "sd": 0.0403,
+       "err": 0.0009,
+       "crps": 0.0,
+       "pit": 0.4983,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.0009,
+       "sd": 0.0403,
+       "err": 0.0009,
+       "crps": 0.0,
+       "pit": 0.4995,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.0009,
+       "sd": 0.0403,
+       "err": 0.0009,
+       "crps": 0.0,
+       "pit": 0.4995,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Michael Trigg|DAL",
+      "pos": "TE",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.0248,
+       "sd": 0.2809,
+       "err": 0.0248,
+       "crps": 0.0002,
+       "pit": 0.4925,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.0345,
+       "sd": 0.4469,
+       "err": 0.0345,
+       "crps": 0.0002,
+       "pit": 0.4948,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.0345,
+       "sd": 0.4458,
+       "err": 0.0345,
+       "crps": 0.0002,
+       "pit": 0.4948,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Payne Durham|TB",
+      "pos": "TE",
+      "actual": 1.5,
+      "inc": {
+       "mean": 2.7259,
+       "sd": 3.0246,
+       "err": 1.2259,
+       "crps": 0.6357,
+       "pit": 0.449,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 2.4756,
+       "sd": 3.2654,
+       "err": 0.9756,
+       "crps": 0.6114,
+       "pit": 0.519,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 2.6426,
+       "sd": 3.482,
+       "err": 1.1426,
+       "crps": 0.6608,
+       "pit": 0.5095,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Princeton Fant|DAL",
+      "pos": "TE",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.0173,
+       "sd": 0.2413,
+       "err": 0.0173,
+       "crps": 0.0001,
+       "pit": 0.4955,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.0112,
+       "sd": 0.1699,
+       "err": 0.0112,
+       "crps": 0.0,
+       "pit": 0.4973,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.0112,
+       "sd": 0.1692,
+       "err": 0.0112,
+       "crps": 0.0,
+       "pit": 0.4973,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Ryan Flournoy|DAL",
+      "pos": "WR",
+      "actual": 12.0,
+      "inc": {
+       "mean": 5.4328,
+       "sd": 4.1352,
+       "err": -6.5672,
+       "crps": 4.7476,
+       "pit": 0.9225,
+       "cov50": false,
+       "cov80": false,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 5.455,
+       "sd": 5.2103,
+       "err": -6.545,
+       "crps": 4.7957,
+       "pit": 0.887,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 5.4397,
+       "sd": 5.1952,
+       "err": -6.5603,
+       "crps": 4.8071,
+       "pit": 0.888,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Sam Howell|DAL",
+      "pos": "QB",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.0791,
+       "sd": 0.4776,
+       "err": 0.0791,
+       "crps": 0.0026,
+       "pit": 0.4427,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.0785,
+       "sd": 0.4479,
+       "err": 0.0785,
+       "crps": 0.0038,
+       "pit": 0.442,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.0783,
+       "sd": 0.4477,
+       "err": 0.0783,
+       "crps": 0.0038,
+       "pit": 0.442,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Sean Tucker|TB",
+      "pos": "RB",
+      "actual": 1.8,
+      "inc": {
+       "mean": 1.4169,
+       "sd": 2.4219,
+       "err": -0.3831,
+       "crps": 0.8457,
+       "pit": 0.7675,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 1.3743,
+       "sd": 2.6394,
+       "err": -0.4257,
+       "crps": 0.929,
+       "pit": 0.7925,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 1.3855,
+       "sd": 2.6528,
+       "err": -0.4145,
+       "crps": 0.9295,
+       "pit": 0.79,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Ted Hurst III|TB",
+      "pos": "WR",
+      "actual": 0.0,
+      "inc": {
+       "mean": 3.9532,
+       "sd": 3.6958,
+       "err": 3.9532,
+       "crps": 2.0238,
+       "pit": 0.05,
+       "cov50": false,
+       "cov80": false,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 3.5396,
+       "sd": 4.1227,
+       "err": 3.5396,
+       "crps": 1.4782,
+       "pit": 0.1345,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 3.8301,
+       "sd": 4.5209,
+       "err": 3.8301,
+       "crps": 1.5863,
+       "pit": 0.1345,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Tez Johnson|TB",
+      "pos": "WR",
+      "actual": 7.4,
+      "inc": {
+       "mean": 1.0683,
+       "sd": 1.8852,
+       "err": -6.3317,
+       "crps": 5.5809,
+       "pit": 0.986,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      },
+      "rep_qb": {
+       "mean": 1.016,
+       "sd": 2.2963,
+       "err": -6.384,
+       "crps": 5.7116,
+       "pit": 0.962,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      },
+      "rep_rec": {
+       "mean": 1.0883,
+       "sd": 2.4736,
+       "err": -6.3117,
+       "crps": 5.6281,
+       "pit": 0.957,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      }
+     },
+     {
+      "player": "Tyler Goodson|DAL",
+      "pos": "RB",
+      "actual": 0.0,
+      "inc": {
+       "mean": 4.4311,
+       "sd": 3.701,
+       "err": 4.4311,
+       "crps": 2.4522,
+       "pit": 0.0053,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      },
+      "rep_qb": {
+       "mean": 4.3519,
+       "sd": 4.0763,
+       "err": 4.3519,
+       "crps": 2.2501,
+       "pit": 0.0107,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      },
+      "rep_rec": {
+       "mean": 4.3507,
+       "sd": 4.0756,
+       "err": 4.3507,
+       "crps": 2.2494,
+       "pit": 0.0107,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      }
+     }
+    ]
+   },
+   "mean_drift": {
+    "rep_qb": {
+     "players": [
+      {
+       "player": "Cowboys|DAL",
+       "pos": "DST",
+       "proj_dk": 3.9071,
+       "inc_mean": 3.9071,
+       "rep_mean": 7.6435,
+       "drift": 3.7364,
+       "paired_se": 0.0703
+      },
+      {
+       "player": "Buccaneers|TB",
+       "pos": "DST",
+       "proj_dk": 4.309,
+       "inc_mean": 4.309,
+       "rep_mean": 3.4745,
+       "drift": -0.8345,
+       "paired_se": 0.0318
+      },
+      {
+       "player": "Emeka Egbuka|TB",
+       "pos": "WR",
+       "proj_dk": 12.2922,
+       "inc_mean": 11.9939,
+       "rep_mean": 11.1664,
+       "drift": -0.8275,
+       "paired_se": 0.1111
+      },
+      {
+       "player": "Cade Otton|TB",
+       "pos": "TE",
+       "proj_dk": 11.1597,
+       "inc_mean": 11.5686,
+       "rep_mean": 11.0223,
+       "drift": -0.5463,
+       "paired_se": 0.0933
+      },
+      {
+       "player": "Ted Hurst III|TB",
+       "pos": "WR",
+       "proj_dk": 3.9917,
+       "inc_mean": 3.9532,
+       "rep_mean": 3.5396,
+       "drift": -0.4136,
+       "paired_se": 0.0725
+      },
+      {
+       "player": "Chris Godwin Jr.|TB",
+       "pos": "WR",
+       "proj_dk": 8.6738,
+       "inc_mean": 8.5407,
+       "rep_mean": 8.1691,
+       "drift": -0.3716,
+       "paired_se": 0.0744
+      },
+      {
+       "player": "Bucky Irving|TB",
+       "pos": "RB",
+       "proj_dk": 16.537,
+       "inc_mean": 16.4951,
+       "rep_mean": 16.1607,
+       "drift": -0.3344,
+       "paired_se": 0.1116
+      },
+      {
+       "player": "Payne Durham|TB",
+       "pos": "TE",
+       "proj_dk": 2.7524,
+       "inc_mean": 2.7259,
+       "rep_mean": 2.4756,
+       "drift": -0.2503,
+       "paired_se": 0.0581
+      },
+      {
+       "player": "CeeDee Lamb|DAL",
+       "pos": "WR",
+       "proj_dk": 27.2956,
+       "inc_mean": 28.2764,
+       "rep_mean": 28.5185,
+       "drift": 0.2421,
+       "paired_se": 0.153
+      },
+      {
+       "player": "KaVontae Turpin|DAL",
+       "pos": "WR",
+       "proj_dk": 1.3165,
+       "inc_mean": 1.1198,
+       "rep_mean": 1.3552,
+       "drift": 0.2354,
+       "paired_se": 0.0509
+      },
+      {
+       "player": "Javonte Williams|DAL",
+       "pos": "RB",
+       "proj_dk": 17.8404,
+       "inc_mean": 18.7278,
+       "rep_mean": 18.9511,
+       "drift": 0.2233,
+       "paired_se": 0.1376
+      },
+      {
+       "player": "Kenny Gainwell|TB",
+       "pos": "RB",
+       "proj_dk": 4.7566,
+       "inc_mean": 4.5658,
+       "rep_mean": 4.48,
+       "drift": -0.0859,
+       "paired_se": 0.0764
+      },
+      {
+       "player": "Emari Demercado|DAL",
+       "pos": "RB",
+       "proj_dk": 1.1066,
+       "inc_mean": 1.0847,
+       "rep_mean": 1.1642,
+       "drift": 0.0796,
+       "paired_se": 0.0388
+      },
+      {
+       "player": "Tyler Goodson|DAL",
+       "pos": "RB",
+       "proj_dk": 4.0609,
+       "inc_mean": 4.4311,
+       "rep_mean": 4.3519,
+       "drift": -0.0793,
+       "paired_se": 0.0886
+      },
+      {
+       "player": "Tez Johnson|TB",
+       "pos": "WR",
+       "proj_dk": 1.0409,
+       "inc_mean": 1.0683,
+       "rep_mean": 1.016,
+       "drift": -0.0523,
+       "paired_se": 0.0408
+      },
+      {
+       "player": "Jalon Daniels|TB",
+       "pos": "QB",
+       "proj_dk": 14.6277,
+       "inc_mean": 13.9915,
+       "rep_mean": 14.0431,
+       "drift": 0.0516,
+       "paired_se": 0.0794
+      },
+      {
+       "player": "Dak Prescott|DAL",
+       "pos": "QB",
+       "proj_dk": 20.7015,
+       "inc_mean": 22.4543,
+       "rep_mean": 22.4029,
+       "drift": -0.0514,
+       "paired_se": 0.0998
+      },
+      {
+       "player": "Brevyn Spann-Ford|DAL",
+       "pos": "TE",
+       "proj_dk": 2.5188,
+       "inc_mean": 2.5417,
+       "rep_mean": 2.4949,
+       "drift": -0.0469,
+       "paired_se": 0.0554
+      },
+      {
+       "player": "Sean Tucker|TB",
+       "pos": "RB",
+       "proj_dk": 1.4156,
+       "inc_mean": 1.4169,
+       "rep_mean": 1.3743,
+       "drift": -0.0426,
+       "paired_se": 0.0629
+      },
+      {
+       "player": "George Pickens|DAL",
+       "pos": "WR",
+       "proj_dk": 11.2833,
+       "inc_mean": 11.6981,
+       "rep_mean": 11.7387,
+       "drift": 0.0405,
+       "paired_se": 0.1232
+      },
+      {
+       "player": "Jake Ferguson|DAL",
+       "pos": "TE",
+       "proj_dk": 9.7693,
+       "inc_mean": 10.0758,
+       "rep_mean": 10.1107,
+       "drift": 0.0348,
+       "paired_se": 0.1164
+      },
+      {
+       "player": "Brett Rypien|TB",
+       "pos": "QB",
+       "proj_dk": 0.1205,
+       "inc_mean": 0.1062,
+       "rep_mean": 0.1326,
+       "drift": 0.0264,
+       "paired_se": 0.0155
+      },
+      {
+       "player": "Ryan Flournoy|DAL",
+       "pos": "WR",
+       "proj_dk": 5.0805,
+       "inc_mean": 5.4328,
+       "rep_mean": 5.455,
+       "drift": 0.0223,
+       "paired_se": 0.0961
+      },
+      {
+       "player": "Luke Schoonmaker|DAL",
+       "pos": "TE",
+       "proj_dk": 0.3795,
+       "inc_mean": 0.392,
+       "rep_mean": 0.4096,
+       "drift": 0.0176,
+       "paired_se": 0.0187
+      },
+      {
+       "player": "Josh Williams|TB",
+       "pos": "RB",
+       "proj_dk": 0.1732,
+       "inc_mean": 0.1795,
+       "rep_mean": 0.1649,
+       "drift": -0.0146,
+       "paired_se": 0.0158
+      },
+      {
+       "player": "Hunter Luepke|DAL",
+       "pos": "RB",
+       "proj_dk": 0.0574,
+       "inc_mean": 0.06,
+       "rep_mean": 0.0455,
+       "drift": -0.0144,
+       "paired_se": 0.0059
+      },
+      {
+       "player": "Brandon Aubrey|DAL",
+       "pos": "K",
+       "proj_dk": 10.6565,
+       "inc_mean": 9.2525,
+       "rep_mean": 9.2385,
+       "drift": -0.014,
+       "paired_se": 0.0503
+      },
+      {
+       "player": "Chase McLaughlin|TB",
+       "pos": "K",
+       "proj_dk": 8.3651,
+       "inc_mean": 7.9765,
+       "rep_mean": 7.963,
+       "drift": -0.0135,
+       "paired_se": 0.0455
+      },
+      {
+       "player": "Michael Trigg|DAL",
+       "pos": "TE",
+       "proj_dk": 0.0217,
+       "inc_mean": 0.0248,
+       "rep_mean": 0.0345,
+       "drift": 0.0097,
+       "paired_se": 0.0072
+      },
+      {
+       "player": "Eric Rivers Jr.|TB",
+       "pos": "WR",
+       "proj_dk": 0.0164,
+       "inc_mean": 0.0209,
+       "rep_mean": 0.0297,
+       "drift": 0.0089,
+       "paired_se": 0.0066
+      },
+      {
+       "player": "Jonathan Mingo|DAL",
+       "pos": "WR",
+       "proj_dk": 0.2316,
+       "inc_mean": 0.2369,
+       "rep_mean": 0.2453,
+       "drift": 0.0084,
+       "paired_se": 0.0213
+      },
+      {
+       "player": "CJ Dippre|TB",
+       "pos": "TE",
+       "proj_dk": 0.2797,
+       "inc_mean": 0.2468,
+       "rep_mean": 0.2388,
+       "drift": -0.008,
+       "paired_se": 0.0157
+      },
+      {
+       "player": "Kameron Johnson|TB",
+       "pos": "WR",
+       "proj_dk": 0.2049,
+       "inc_mean": 0.2126,
+       "rep_mean": 0.2053,
+       "drift": -0.0073,
+       "paired_se": 0.0168
+      },
+      {
+       "player": "Bauer Sharp|TB",
+       "pos": "TE",
+       "proj_dk": 0.0186,
+       "inc_mean": 0.0241,
+       "rep_mean": 0.0169,
+       "drift": -0.0072,
+       "paired_se": 0.0039
+      },
+      {
+       "player": "James Mitchell|DAL",
+       "pos": "TE",
+       "proj_dk": 0.0217,
+       "inc_mean": 0.0269,
+       "rep_mean": 0.0199,
+       "drift": -0.007,
+       "paired_se": 0.0064
+      },
+      {
+       "player": "Princeton Fant|DAL",
+       "pos": "TE",
+       "proj_dk": 0.0217,
+       "inc_mean": 0.0173,
+       "rep_mean": 0.0112,
+       "drift": -0.0061,
+       "paired_se": 0.0045
+      },
+      {
+       "player": "Jordan Hudson|DAL",
+       "pos": "WR",
+       "proj_dk": 0.0304,
+       "inc_mean": 0.0291,
+       "rep_mean": 0.0247,
+       "drift": -0.0044,
+       "paired_se": 0.0059
+      },
+      {
+       "player": "Ko Kieft|TB",
+       "pos": "TE",
+       "proj_dk": 0.0186,
+       "inc_mean": 0.0181,
+       "rep_mean": 0.0223,
+       "drift": 0.0042,
+       "paired_se": 0.0068
+      },
+      {
+       "player": "DJ Rogers|DAL",
+       "pos": "TE",
+       "proj_dk": 0.0217,
+       "inc_mean": 0.016,
+       "rep_mean": 0.0188,
+       "drift": 0.0028,
+       "paired_se": 0.0066
+      },
+      {
+       "player": "David Sills V|TB",
+       "pos": "WR",
+       "proj_dk": 0.0164,
+       "inc_mean": 0.0206,
+       "rep_mean": 0.0226,
+       "drift": 0.002,
+       "paired_se": 0.0064
+      },
+      {
+       "player": "Anthony Smith|DAL",
+       "pos": "WR",
+       "proj_dk": 0.0304,
+       "inc_mean": 0.0233,
+       "rep_mean": 0.0246,
+       "drift": 0.0013,
+       "paired_se": 0.0075
+      },
+      {
+       "player": "Jalen McMillan|TB",
+       "pos": "WR",
+       "proj_dk": 0.014,
+       "inc_mean": 0.0045,
+       "rep_mean": 0.0058,
+       "drift": 0.0013,
+       "paired_se": 0.0013
+      },
+      {
+       "player": "Dean Patterson IV|TB",
+       "pos": "WR",
+       "proj_dk": 0.0164,
+       "inc_mean": 0.0142,
+       "rep_mean": 0.0149,
+       "drift": 0.0006,
+       "paired_se": 0.0012
+      },
+      {
+       "player": "Sam Howell|DAL",
+       "pos": "QB",
+       "proj_dk": 0.0634,
+       "inc_mean": 0.0791,
+       "rep_mean": 0.0785,
+       "drift": -0.0006,
+       "paired_se": 0.0117
+      },
+      {
+       "player": "Garrett Greene|TB",
+       "pos": "WR",
+       "proj_dk": 0.0164,
+       "inc_mean": 0.0229,
+       "rep_mean": 0.0227,
+       "drift": -0.0002,
+       "paired_se": 0.0058
+      },
+      {
+       "player": "Easton Stick|TB",
+       "pos": "QB",
+       "proj_dk": 0.0001,
+       "inc_mean": 0.0,
+       "rep_mean": 0.0,
+       "drift": -0.0,
+       "paired_se": 0.0
+      },
+      {
+       "player": "Israel Abanikanda|DAL",
+       "pos": "RB",
+       "proj_dk": 0.0009,
+       "inc_mean": 0.0006,
+       "rep_mean": 0.0006,
+       "drift": -0.0,
+       "paired_se": 0.0
+      },
+      {
+       "player": "Joe Milton III|DAL",
+       "pos": "QB",
+       "proj_dk": 7.544100254170502e-09,
+       "inc_mean": 0.0,
+       "rep_mean": 0.0,
+       "drift": -0.0,
+       "paired_se": 0.0
+      },
+      {
+       "player": "Malik Davis|DAL",
+       "pos": "RB",
+       "proj_dk": 0.0011,
+       "inc_mean": 0.0009,
+       "rep_mean": 0.0009,
+       "drift": -0.0,
+       "paired_se": 0.0
+      }
+     ],
+     "by_position": {
+      "DST": {
+       "n_players": 2,
+       "sum_drift": 2.9019,
+       "paired_se_of_sum": 0.0745,
+       "mean_abs_player_drift": 2.2854
+      },
+      "K": {
+       "n_players": 2,
+       "sum_drift": -0.0275,
+       "paired_se_of_sum": 0.0685,
+       "mean_abs_player_drift": 0.0138
+      },
+      "QB": {
+       "n_players": 6,
+       "sum_drift": 0.026,
+       "paired_se_of_sum": 0.1257,
+       "mean_abs_player_drift": 0.0217
+      },
+      "RB": {
+       "n_players": 10,
+       "sum_drift": -0.2683,
+       "paired_se_of_sum": 0.1695,
+       "mean_abs_player_drift": 0.0874
+      },
+      "TE": {
+       "n_players": 12,
+       "sum_drift": -0.8025,
+       "paired_se_of_sum": 0.1663,
+       "mean_abs_player_drift": 0.0784
+      },
+      "WR": {
+       "n_players": 17,
+       "sum_drift": -1.1141,
+       "paired_se_of_sum": 0.2105,
+       "mean_abs_player_drift": 0.1317
+      }
+     },
+     "n_players": 49,
+     "n_abs_drift_gt_2se": 11,
+     "n_abs_drift_gt_0p5_dk": 4
+    },
+    "rep_rec": {
+     "players": [
+      {
+       "player": "Cowboys|DAL",
+       "pos": "DST",
+       "proj_dk": 3.9071,
+       "inc_mean": 3.9071,
+       "rep_mean": 7.6435,
+       "drift": 3.7364,
+       "paired_se": 0.0703
+      },
+      {
+       "player": "Jalon Daniels|TB",
+       "pos": "QB",
+       "proj_dk": 14.6277,
+       "inc_mean": 13.9915,
+       "rep_mean": 15.4197,
+       "drift": 1.4282,
+       "paired_se": 0.085
+      },
+      {
+       "player": "Buccaneers|TB",
+       "pos": "DST",
+       "proj_dk": 4.309,
+       "inc_mean": 4.309,
+       "rep_mean": 3.4745,
+       "drift": -0.8345,
+       "paired_se": 0.0318
+      },
+      {
+       "player": "Cade Otton|TB",
+       "pos": "TE",
+       "proj_dk": 11.1597,
+       "inc_mean": 11.5686,
+       "rep_mean": 11.8286,
+       "drift": 0.26,
+       "paired_se": 0.0957
+      },
+      {
+       "player": "Chris Godwin Jr.|TB",
+       "pos": "WR",
+       "proj_dk": 8.6738,
+       "inc_mean": 8.5407,
+       "rep_mean": 8.7941,
+       "drift": 0.2534,
+       "paired_se": 0.0766
+      },
+      {
+       "player": "KaVontae Turpin|DAL",
+       "pos": "WR",
+       "proj_dk": 1.3165,
+       "inc_mean": 1.1198,
+       "rep_mean": 1.3525,
+       "drift": 0.2327,
+       "paired_se": 0.0508
+      },
+      {
+       "player": "Javonte Williams|DAL",
+       "pos": "RB",
+       "proj_dk": 17.8404,
+       "inc_mean": 18.7278,
+       "rep_mean": 18.9354,
+       "drift": 0.2076,
+       "paired_se": 0.1376
+      },
+      {
+       "player": "Dak Prescott|DAL",
+       "pos": "QB",
+       "proj_dk": 20.7015,
+       "inc_mean": 22.4543,
+       "rep_mean": 22.2837,
+       "drift": -0.1706,
+       "paired_se": 0.0995
+      },
+      {
+       "player": "CeeDee Lamb|DAL",
+       "pos": "WR",
+       "proj_dk": 27.2956,
+       "inc_mean": 28.2764,
+       "rep_mean": 28.4077,
+       "drift": 0.1313,
+       "paired_se": 0.1528
+      },
+      {
+       "player": "Ted Hurst III|TB",
+       "pos": "WR",
+       "proj_dk": 3.9917,
+       "inc_mean": 3.9532,
+       "rep_mean": 3.8301,
+       "drift": -0.1231,
+       "paired_se": 0.0758
+      },
+      {
+       "player": "Payne Durham|TB",
+       "pos": "TE",
+       "proj_dk": 2.7524,
+       "inc_mean": 2.7259,
+       "rep_mean": 2.6426,
+       "drift": -0.0833,
+       "paired_se": 0.0594
+      },
+      {
+       "player": "Tyler Goodson|DAL",
+       "pos": "RB",
+       "proj_dk": 4.0609,
+       "inc_mean": 4.4311,
+       "rep_mean": 4.3507,
+       "drift": -0.0804,
+       "paired_se": 0.0886
+      },
+      {
+       "player": "Emari Demercado|DAL",
+       "pos": "RB",
+       "proj_dk": 1.1066,
+       "inc_mean": 1.0847,
+       "rep_mean": 1.163,
+       "drift": 0.0784,
+       "paired_se": 0.0388
+      },
+      {
+       "player": "Kenny Gainwell|TB",
+       "pos": "RB",
+       "proj_dk": 4.7566,
+       "inc_mean": 4.5658,
+       "rep_mean": 4.6311,
+       "drift": 0.0652,
+       "paired_se": 0.077
+      },
+      {
+       "player": "Brevyn Spann-Ford|DAL",
+       "pos": "TE",
+       "proj_dk": 2.5188,
+       "inc_mean": 2.5417,
+       "rep_mean": 2.4868,
+       "drift": -0.0549,
+       "paired_se": 0.0553
+      },
+      {
+       "player": "Emeka Egbuka|TB",
+       "pos": "WR",
+       "proj_dk": 12.2922,
+       "inc_mean": 11.9939,
+       "rep_mean": 12.0414,
+       "drift": 0.0475,
+       "paired_se": 0.1139
+      },
+      {
+       "player": "Brett Rypien|TB",
+       "pos": "QB",
+       "proj_dk": 0.1205,
+       "inc_mean": 0.1062,
+       "rep_mean": 0.1454,
+       "drift": 0.0392,
+       "paired_se": 0.0155
+      },
+      {
+       "player": "Sean Tucker|TB",
+       "pos": "RB",
+       "proj_dk": 1.4156,
+       "inc_mean": 1.4169,
+       "rep_mean": 1.3855,
+       "drift": -0.0314,
+       "paired_se": 0.063
+      },
+      {
+       "player": "Bucky Irving|TB",
+       "pos": "RB",
+       "proj_dk": 16.537,
+       "inc_mean": 16.4951,
+       "rep_mean": 16.4657,
+       "drift": -0.0294,
+       "paired_se": 0.1121
+      },
+      {
+       "player": "Tez Johnson|TB",
+       "pos": "WR",
+       "proj_dk": 1.0409,
+       "inc_mean": 1.0683,
+       "rep_mean": 1.0883,
+       "drift": 0.02,
+       "paired_se": 0.0427
+      },
+      {
+       "player": "Luke Schoonmaker|DAL",
+       "pos": "TE",
+       "proj_dk": 0.3795,
+       "inc_mean": 0.392,
+       "rep_mean": 0.4083,
+       "drift": 0.0163,
+       "paired_se": 0.0186
+      },
+      {
+       "player": "Hunter Luepke|DAL",
+       "pos": "RB",
+       "proj_dk": 0.0574,
+       "inc_mean": 0.06,
+       "rep_mean": 0.0454,
+       "drift": -0.0145,
+       "paired_se": 0.0059
+      },
+      {
+       "player": "Brandon Aubrey|DAL",
+       "pos": "K",
+       "proj_dk": 10.6565,
+       "inc_mean": 9.2525,
+       "rep_mean": 9.2385,
+       "drift": -0.014,
+       "paired_se": 0.0503
+      },
+      {
+       "player": "Chase McLaughlin|TB",
+       "pos": "K",
+       "proj_dk": 8.3651,
+       "inc_mean": 7.9765,
+       "rep_mean": 7.963,
+       "drift": -0.0135,
+       "paired_se": 0.0455
+      },
+      {
+       "player": "Josh Williams|TB",
+       "pos": "RB",
+       "proj_dk": 0.1732,
+       "inc_mean": 0.1795,
+       "rep_mean": 0.1688,
+       "drift": -0.0107,
+       "paired_se": 0.0159
+      },
+      {
+       "player": "Eric Rivers Jr.|TB",
+       "pos": "WR",
+       "proj_dk": 0.0164,
+       "inc_mean": 0.0209,
+       "rep_mean": 0.0314,
+       "drift": 0.0105,
+       "paired_se": 0.0068
+      },
+      {
+       "player": "Michael Trigg|DAL",
+       "pos": "TE",
+       "proj_dk": 0.0217,
+       "inc_mean": 0.0248,
+       "rep_mean": 0.0345,
+       "drift": 0.0096,
+       "paired_se": 0.0072
+      },
+      {
+       "player": "CJ Dippre|TB",
+       "pos": "TE",
+       "proj_dk": 0.2797,
+       "inc_mean": 0.2468,
+       "rep_mean": 0.2559,
+       "drift": 0.0091,
+       "paired_se": 0.0163
+      },
+      {
+       "player": "Jonathan Mingo|DAL",
+       "pos": "WR",
+       "proj_dk": 0.2316,
+       "inc_mean": 0.2369,
+       "rep_mean": 0.2446,
+       "drift": 0.0077,
+       "paired_se": 0.0213
+      },
+      {
+       "player": "Jake Ferguson|DAL",
+       "pos": "TE",
+       "proj_dk": 9.7693,
+       "inc_mean": 10.0758,
+       "rep_mean": 10.0834,
+       "drift": 0.0076,
+       "paired_se": 0.1164
+      },
+      {
+       "player": "Kameron Johnson|TB",
+       "pos": "WR",
+       "proj_dk": 0.2049,
+       "inc_mean": 0.2126,
+       "rep_mean": 0.2197,
+       "drift": 0.0071,
+       "paired_se": 0.0175
+      },
+      {
+       "player": "James Mitchell|DAL",
+       "pos": "TE",
+       "proj_dk": 0.0217,
+       "inc_mean": 0.0269,
+       "rep_mean": 0.0198,
+       "drift": -0.007,
+       "paired_se": 0.0063
+      },
+      {
+       "player": "Ryan Flournoy|DAL",
+       "pos": "WR",
+       "proj_dk": 5.0805,
+       "inc_mean": 5.4328,
+       "rep_mean": 5.4397,
+       "drift": 0.0069,
+       "paired_se": 0.0959
+      },
+      {
+       "player": "Princeton Fant|DAL",
+       "pos": "TE",
+       "proj_dk": 0.0217,
+       "inc_mean": 0.0173,
+       "rep_mean": 0.0112,
+       "drift": -0.0061,
+       "paired_se": 0.0045
+      },
+      {
+       "player": "Bauer Sharp|TB",
+       "pos": "TE",
+       "proj_dk": 0.0186,
+       "inc_mean": 0.0241,
+       "rep_mean": 0.0181,
+       "drift": -0.006,
+       "paired_se": 0.0039
+      },
+      {
+       "player": "Ko Kieft|TB",
+       "pos": "TE",
+       "proj_dk": 0.0186,
+       "inc_mean": 0.0181,
+       "rep_mean": 0.0234,
+       "drift": 0.0053,
+       "paired_se": 0.0069
+      },
+      {
+       "player": "George Pickens|DAL",
+       "pos": "WR",
+       "proj_dk": 11.2833,
+       "inc_mean": 11.6981,
+       "rep_mean": 11.693,
+       "drift": -0.0051,
+       "paired_se": 0.123
+      },
+      {
+       "player": "Jordan Hudson|DAL",
+       "pos": "WR",
+       "proj_dk": 0.0304,
+       "inc_mean": 0.0291,
+       "rep_mean": 0.0246,
+       "drift": -0.0045,
+       "paired_se": 0.0059
+      },
+      {
+       "player": "David Sills V|TB",
+       "pos": "WR",
+       "proj_dk": 0.0164,
+       "inc_mean": 0.0206,
+       "rep_mean": 0.0235,
+       "drift": 0.0029,
+       "paired_se": 0.0064
+      },
+      {
+       "player": "DJ Rogers|DAL",
+       "pos": "TE",
+       "proj_dk": 0.0217,
+       "inc_mean": 0.016,
+       "rep_mean": 0.0188,
+       "drift": 0.0028,
+       "paired_se": 0.0066
+      },
+      {
+       "player": "Dean Patterson IV|TB",
+       "pos": "WR",
+       "proj_dk": 0.0164,
+       "inc_mean": 0.0142,
+       "rep_mean": 0.0161,
+       "drift": 0.0019,
+       "paired_se": 0.0016
+      },
+      {
+       "player": "Jalen McMillan|TB",
+       "pos": "WR",
+       "proj_dk": 0.014,
+       "inc_mean": 0.0045,
+       "rep_mean": 0.0063,
+       "drift": 0.0018,
+       "paired_se": 0.0016
+      },
+      {
+       "player": "Anthony Smith|DAL",
+       "pos": "WR",
+       "proj_dk": 0.0304,
+       "inc_mean": 0.0233,
+       "rep_mean": 0.0245,
+       "drift": 0.0012,
+       "paired_se": 0.0075
+      },
+      {
+       "player": "Garrett Greene|TB",
+       "pos": "WR",
+       "proj_dk": 0.0164,
+       "inc_mean": 0.0229,
+       "rep_mean": 0.024,
+       "drift": 0.0011,
+       "paired_se": 0.006
+      },
+      {
+       "player": "Sam Howell|DAL",
+       "pos": "QB",
+       "proj_dk": 0.0634,
+       "inc_mean": 0.0791,
+       "rep_mean": 0.0783,
+       "drift": -0.0008,
+       "paired_se": 0.0117
+      },
+      {
+       "player": "Easton Stick|TB",
+       "pos": "QB",
+       "proj_dk": 0.0001,
+       "inc_mean": 0.0,
+       "rep_mean": 0.0,
+       "drift": -0.0,
+       "paired_se": 0.0
+      },
+      {
+       "player": "Israel Abanikanda|DAL",
+       "pos": "RB",
+       "proj_dk": 0.0009,
+       "inc_mean": 0.0006,
+       "rep_mean": 0.0006,
+       "drift": -0.0,
+       "paired_se": 0.0
+      },
+      {
+       "player": "Joe Milton III|DAL",
+       "pos": "QB",
+       "proj_dk": 7.544100254170502e-09,
+       "inc_mean": 0.0,
+       "rep_mean": 0.0,
+       "drift": -0.0,
+       "paired_se": 0.0
+      },
+      {
+       "player": "Malik Davis|DAL",
+       "pos": "RB",
+       "proj_dk": 0.0011,
+       "inc_mean": 0.0009,
+       "rep_mean": 0.0009,
+       "drift": -0.0,
+       "paired_se": 0.0
+      }
+     ],
+     "by_position": {
+      "DST": {
+       "n_players": 2,
+       "sum_drift": 2.9019,
+       "paired_se_of_sum": 0.0745,
+       "mean_abs_player_drift": 2.2854
+      },
+      "K": {
+       "n_players": 2,
+       "sum_drift": -0.0275,
+       "paired_se_of_sum": 0.0685,
+       "mean_abs_player_drift": 0.0138
+      },
+      "QB": {
+       "n_players": 6,
+       "sum_drift": 1.296,
+       "paired_se_of_sum": 0.1292,
+       "mean_abs_player_drift": 0.2731
+      },
+      "RB": {
+       "n_players": 10,
+       "sum_drift": 0.1847,
+       "paired_se_of_sum": 0.1703,
+       "mean_abs_player_drift": 0.0518
+      },
+      "TE": {
+       "n_players": 12,
+       "sum_drift": 0.1534,
+       "paired_se_of_sum": 0.1686,
+       "mean_abs_player_drift": 0.039
+      },
+      "WR": {
+       "n_players": 17,
+       "sum_drift": 0.5933,
+       "paired_se_of_sum": 0.2139,
+       "mean_abs_player_drift": 0.0505
+      }
+     },
+     "n_players": 49,
+     "n_abs_drift_gt_2se": 9,
+     "n_abs_drift_gt_0p5_dk": 3
+    }
+   },
+   "dst": {
+    "Buccaneers|TB": {
+     "projection_dk": 4.309,
+     "projection_event_items": {
+      "blocked_kick": 0.0,
+      "fumble_recovery": 0.8382,
+      "interception": 1.5147,
+      "points_allowed": -1.0438,
+      "return_td": 1.1029,
+      "sack": 1.8382,
+      "safety": 0.0588
+     },
+     "actual_dk": 7.0,
+     "inc": {
+      "mean": 4.309,
+      "sd": 5.5501,
+      "p5": -3.56,
+      "p25": 0.0,
+      "p50": 3.56,
+      "p75": 7.12,
+      "p95": 14.241,
+      "share_non_integer": 0.921,
+      "share_dk_ne_own_components_and_points_allowed": 0.921,
+      "points_allowed_mean": 30.118,
+      "history_conditional_mean_given_this_arms_points_allowed": 4.0465,
+      "history_resampled": {
+       "mean": 4.098,
+       "sd": 5.0084,
+       "p5": -3.0,
+       "p25": 1.0,
+       "p50": 3.0,
+       "p75": 7.0,
+       "p95": 13.0
+      },
+      "ks_vs_history_resampled": 0.091,
+      "ks_vs_history_unconditional": 0.218,
+      "component_means": {
+       "sacks": 2.008,
+       "takeaways": 1.06,
+       "def_td": 0.1,
+       "safety": 0.023
+      }
+     },
+     "rep_qb": {
+      "mean": 3.4745,
+      "sd": 4.7442,
+      "p5": -3.0,
+      "p25": 0.0,
+      "p50": 3.0,
+      "p75": 6.0,
+      "p95": 12.0,
+      "share_non_integer": 0.0,
+      "share_dk_ne_own_components_and_points_allowed": 0.0,
+      "points_allowed_mean": 30.703,
+      "history_conditional_mean_given_this_arms_points_allowed": 3.9184,
+      "history_resampled": {
+       "mean": 3.9765,
+       "sd": 5.0606,
+       "p5": -3.0,
+       "p25": 0.0,
+       "p50": 3.0,
+       "p75": 7.0,
+       "p95": 13.0
+      },
+      "ks_vs_history_resampled": 0.0475,
+      "ks_vs_history_unconditional": 0.2325,
+      "component_means": {
+       "sacks": 2.008,
+       "takeaways": 1.06,
+       "def_td": 0.1,
+       "safety": 0.023
+      }
+     },
+     "rep_rec": {
+      "mean": 3.4745,
+      "sd": 4.7442,
+      "p5": -3.0,
+      "p25": 0.0,
+      "p50": 3.0,
+      "p75": 6.0,
+      "p95": 12.0,
+      "share_non_integer": 0.0,
+      "share_dk_ne_own_components_and_points_allowed": 0.0,
+      "points_allowed_mean": 30.703,
+      "history_conditional_mean_given_this_arms_points_allowed": 3.9184,
+      "history_resampled": {
+       "mean": 3.9765,
+       "sd": 5.0606,
+       "p5": -3.0,
+       "p25": 0.0,
+       "p50": 3.0,
+       "p75": 7.0,
+       "p95": 13.0
+      },
+      "ks_vs_history_resampled": 0.0475,
+      "ks_vs_history_unconditional": 0.2325,
+      "component_means": {
+       "sacks": 2.008,
+       "takeaways": 1.06,
+       "def_td": 0.1,
+       "safety": 0.023
+      }
+     }
+    },
+    "Cowboys|DAL": {
+     "projection_dk": 3.9071,
+     "projection_event_items": {
+      "blocked_kick": 0.0588,
+      "fumble_recovery": 0.8529,
+      "interception": 0.3529,
+      "points_allowed": 0.8778,
+      "return_td": 0.1765,
+      "sack": 1.5294,
+      "safety": 0.0588
+     },
+     "actual_dk": 1.0,
+     "inc": {
+      "mean": 3.9071,
+      "sd": 3.0027,
+      "p5": -0.025,
+      "p25": 2.034,
+      "p50": 3.56,
+      "p75": 5.594,
+      "p95": 9.662,
+      "share_non_integer": 0.973,
+      "share_dk_ne_own_components_and_points_allowed": 0.973,
+      "points_allowed_mean": 19.744,
+      "history_conditional_mean_given_this_arms_points_allowed": 7.7035,
+      "history_resampled": {
+       "mean": 7.7945,
+       "sd": 5.9859,
+       "p5": 0.0,
+       "p25": 3.0,
+       "p50": 7.0,
+       "p75": 12.0,
+       "p95": 19.0
+      },
+      "ks_vs_history_resampled": 0.3715,
+      "ks_vs_history_unconditional": 0.2708,
+      "component_means": {
+       "sacks": 2.6675,
+       "takeaways": 1.375,
+       "def_td": 0.1345,
+       "safety": 0.0245
+      }
+     },
+     "rep_qb": {
+      "mean": 7.6435,
+      "sd": 6.0181,
+      "p5": -1.0,
+      "p25": 3.0,
+      "p50": 7.0,
+      "p75": 11.0,
+      "p95": 19.0,
+      "share_non_integer": 0.0,
+      "share_dk_ne_own_components_and_points_allowed": 0.0,
+      "points_allowed_mean": 19.84,
+      "history_conditional_mean_given_this_arms_points_allowed": 7.6476,
+      "history_resampled": {
+       "mean": 7.684,
+       "sd": 6.1098,
+       "p5": -1.0,
+       "p25": 3.0,
+       "p50": 7.0,
+       "p75": 11.0,
+       "p95": 19.0
+      },
+      "ks_vs_history_resampled": 0.019,
+      "ks_vs_history_unconditional": 0.1027,
+      "component_means": {
+       "sacks": 2.6675,
+       "takeaways": 1.375,
+       "def_td": 0.1345,
+       "safety": 0.0245
+      }
+     },
+     "rep_rec": {
+      "mean": 7.6435,
+      "sd": 6.0181,
+      "p5": -1.0,
+      "p25": 3.0,
+      "p50": 7.0,
+      "p75": 11.0,
+      "p95": 19.0,
+      "share_non_integer": 0.0,
+      "share_dk_ne_own_components_and_points_allowed": 0.0,
+      "points_allowed_mean": 19.84,
+      "history_conditional_mean_given_this_arms_points_allowed": 7.6476,
+      "history_resampled": {
+       "mean": 7.684,
+       "sd": 6.1098,
+       "p5": -1.0,
+       "p25": 3.0,
+       "p50": 7.0,
+       "p75": 11.0,
+       "p95": 19.0
+      },
+      "ks_vs_history_resampled": 0.019,
+      "ks_vs_history_unconditional": 0.1027,
+      "component_means": {
+       "sacks": 2.6675,
+       "takeaways": 1.375,
+       "def_td": 0.1345,
+       "safety": 0.0245
+      }
+     }
+    }
+   },
+   "dst_club_form_history": {
+    "Buccaneers|TB": {
+     "n_games_2025_plus_2026_prelock": 21,
+     "mean_dk": 5.619,
+     "se": 1.281,
+     "mean_sacks": 2.048,
+     "mean_takeaways": 1.286,
+     "mean_points_allowed": 24.143,
+     "history_conditional_mean_given_own_pa": 5.466,
+     "pbp_2026_file": "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz",
+     "CLUB_ADJUSTED_BENCHMARK": {
+      "DEFINITION": "league E[DST DK | opponent-points band] over the repaired arm's own points-allowed draws, plus the club's unshrunk residual (own 2025+2026-prelock mean DK minus league-conditional mean at its own points allowed). Declared for this evaluation; no coefficient fitted; SE is roughly the residual SE",
+      "club_residual": 0.153,
+      "benchmark_mean": 4.071,
+      "approx_se": 1.281,
+      "abs_gap_incumbent": 0.238,
+      "abs_gap_repaired": 0.597
+     }
+    },
+    "Cowboys|DAL": {
+     "n_games_2025_plus_2026_prelock": 21,
+     "mean_dk": 3.048,
+     "se": 0.967,
+     "mean_sacks": 1.857,
+     "mean_takeaways": 0.667,
+     "mean_points_allowed": 29.667,
+     "history_conditional_mean_given_own_pa": 4.002,
+     "pbp_2026_file": "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz",
+     "CLUB_ADJUSTED_BENCHMARK": {
+      "DEFINITION": "league E[DST DK | opponent-points band] over the repaired arm's own points-allowed draws, plus the club's unshrunk residual (own 2025+2026-prelock mean DK minus league-conditional mean at its own points allowed). Declared for this evaluation; no coefficient fitted; SE is roughly the residual SE",
+      "club_residual": -0.954,
+      "benchmark_mean": 6.694,
+      "approx_se": 0.967,
+      "abs_gap_incumbent": 2.787,
+      "abs_gap_repaired": 0.95
+     }
+    }
+   },
+   "game_outcomes": {
+    "inc": {
+     "n_worlds": 2000,
+     "share_club_score_eq_1": 0.0,
+     "share_club_score_in_open_interval_0_2_excl_0": 0.00625,
+     "share_non_integer_club_score": 0.9865,
+     "share_club_score_zero": 0.0135,
+     "share_ties": 0.0,
+     "share_margin_3_or_7": 0.0,
+     "home_mean": 30.118,
+     "away_mean": 19.744,
+     "total_mean": 49.861,
+     "total_sd": 13.908,
+     "total_p5": 28.393,
+     "total_p95": 73.681,
+     "club_sd": 10.933,
+     "abs_margin_mean": 13.699,
+     "corr_with_drawn": 1.0
+    },
+    "rep_qb": {
+     "n_worlds": 2000,
+     "share_club_score_eq_1": 0.0,
+     "share_club_score_in_open_interval_0_2_excl_0": 0.0,
+     "share_non_integer_club_score": 0.0,
+     "share_club_score_zero": 0.01575,
+     "share_ties": 0.018,
+     "share_margin_3_or_7": 0.083,
+     "home_mean": 30.703,
+     "away_mean": 19.84,
+     "total_mean": 50.543,
+     "total_sd": 14.714,
+     "total_p5": 28.0,
+     "total_p95": 76.05,
+     "club_sd": 11.601,
+     "abs_margin_mean": 14.527,
+     "points_eq_event_sum_max_abs_gap": 0.0,
+     "corr_total_with_incumbent_drawn_total": 0.9626,
+     "corr_margin_with_incumbent_drawn_margin": 0.9598,
+     "mean_shift_total_vs_incumbent": 0.682
+    },
+    "rep_rec": {
+     "n_worlds": 2000,
+     "share_club_score_eq_1": 0.0,
+     "share_club_score_in_open_interval_0_2_excl_0": 0.0,
+     "share_non_integer_club_score": 0.0,
+     "share_club_score_zero": 0.01575,
+     "share_ties": 0.018,
+     "share_margin_3_or_7": 0.083,
+     "home_mean": 30.703,
+     "away_mean": 19.84,
+     "total_mean": 50.543,
+     "total_sd": 14.714,
+     "total_p5": 28.0,
+     "total_p95": 76.05,
+     "club_sd": 11.601,
+     "abs_margin_mean": 14.527,
+     "points_eq_event_sum_max_abs_gap": 0.0,
+     "corr_total_with_incumbent_drawn_total": 0.9626,
+     "corr_margin_with_incumbent_drawn_margin": 0.9598,
+     "mean_shift_total_vs_incumbent": 0.682
+    },
+    "actual": {
+     "DAL": 16,
+     "TB": 24
+    }
+   }
+  },
+  "ATL_NO_2026W4": {
+   "inputs": {
+    "inc": {
+     "path": "nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX/SHOWDOWN_ATL_NO_2026W4_DRAWS.json",
+     "sha256": "43d6938e0b65c8a18ddca3613ce16223751e621412074f5408ae82332bcbf7a0"
+    },
+    "rep_qb": {
+     "path": "nfl/research/accounting_repair/ATL_NO_2026W4/EVENT_CONSISTENT/SHOWDOWN_ATL_NO_2026W4_DRAWS.json",
+     "sha256": "bd9b39f593e0e592e14c3462fcb004eef382fa25352f197fc1d98499c284cf6d"
+    },
+    "rep_rec": {
+     "path": "nfl/research/accounting_repair/ATL_NO_2026W4/EVENT_CONSISTENT_RECEIVER_ANCHOR/SHOWDOWN_ATL_NO_2026W4_DRAWS.json",
+     "sha256": "13f984329b4accef634b564b45e4f891adfcf9bf0307fa365f92c34a7b95c014"
+    },
+    "actuals": {
+     "path": "nfl/postgame/showdown_atl_no_2026W4/ATL_NO_POSTGAME_ACTUAL.json",
+     "sha256": "a87da0a94491e6fc5cfe6640a42f8612a7908d969cb30f122f782059548d5ad9"
+    },
+    "projection": {
+     "path": "nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX/SHOWDOWN_ATL_NO_2026W4_PROJ.json",
+     "sha256": "3e6898124439a2e9ba33bd98da552c6d0795eb904051ecfec92ddfca46126cb9"
+    }
+   },
+   "n_worlds": 2000,
+   "home": "NO",
+   "away": "ATL",
+   "calibration": {
+    "n_players_with_actuals": 30,
+    "n_players_inc_mean_ge_1": 20,
+    "populations": {
+     "ALL_DRAWN": {
+      "inc": {
+       "n": 30,
+       "mean_crps": 2.5797,
+       "mean_error": -0.4898,
+       "mae_of_mean": 3.5298,
+       "coverage_50": 0.6333,
+       "coverage_80": 0.7667,
+       "coverage_90": 0.8333,
+       "pit_mean": 0.4955,
+       "pit_deciles": [
+        3,
+        0,
+        2,
+        6,
+        10,
+        0,
+        1,
+        2,
+        1,
+        5
+       ]
+      },
+      "rep_qb": {
+       "n": 30,
+       "mean_crps": 2.6252,
+       "mean_error": -0.2407,
+       "mae_of_mean": 3.5968,
+       "coverage_50": 0.7333,
+       "coverage_80": 0.8,
+       "coverage_90": 0.8667,
+       "pit_mean": 0.5038,
+       "pit_deciles": [
+        2,
+        1,
+        2,
+        6,
+        8,
+        2,
+        2,
+        1,
+        2,
+        4
+       ]
+      },
+      "rep_rec": {
+       "n": 30,
+       "mean_crps": 2.6135,
+       "mean_error": -0.4453,
+       "mae_of_mean": 3.5189,
+       "coverage_50": 0.7,
+       "coverage_80": 0.8,
+       "coverage_90": 0.8333,
+       "pit_mean": 0.5125,
+       "pit_deciles": [
+        2,
+        1,
+        2,
+        5,
+        8,
+        3,
+        2,
+        1,
+        2,
+        4
+       ]
+      },
+      "paired_crps_rep_qb_minus_inc": {
+       "mean_paired_crps_diff": 0.0455,
+       "player_bootstrap_95": [
+        -0.0599,
+        0.1737
+       ],
+       "n_players_better": 14,
+       "n_players_worse": 16,
+       "n_equal": 0,
+       "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+      },
+      "paired_crps_rep_rec_minus_inc": {
+       "mean_paired_crps_diff": 0.0339,
+       "player_bootstrap_95": [
+        -0.0426,
+        0.1319
+       ],
+       "n_players_better": 14,
+       "n_players_worse": 16,
+       "n_equal": 0,
+       "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+      }
+     },
+     "INC_MEAN_GE_1": {
+      "inc": {
+       "n": 20,
+       "mean_crps": 3.5626,
+       "mean_error": -0.5574,
+       "mae_of_mean": 4.8687,
+       "coverage_50": 0.6,
+       "coverage_80": 0.8,
+       "coverage_90": 0.85,
+       "pit_mean": 0.5009,
+       "pit_deciles": [
+        2,
+        0,
+        2,
+        5,
+        4,
+        0,
+        1,
+        2,
+        1,
+        3
+       ]
+      },
+      "rep_qb": {
+       "n": 20,
+       "mean_crps": 3.6296,
+       "mean_error": -0.1952,
+       "mae_of_mean": 4.9693,
+       "coverage_50": 0.75,
+       "coverage_80": 0.85,
+       "coverage_90": 0.9,
+       "pit_mean": 0.5072,
+       "pit_deciles": [
+        1,
+        1,
+        2,
+        5,
+        2,
+        2,
+        2,
+        1,
+        2,
+        2
+       ]
+      },
+      "rep_rec": {
+       "n": 20,
+       "mean_crps": 3.6109,
+       "mean_error": -0.4968,
+       "mae_of_mean": 4.8509,
+       "coverage_50": 0.7,
+       "coverage_80": 0.85,
+       "coverage_90": 0.85,
+       "pit_mean": 0.5197,
+       "pit_deciles": [
+        1,
+        1,
+        2,
+        4,
+        2,
+        3,
+        2,
+        1,
+        2,
+        2
+       ]
+      },
+      "paired_crps_rep_qb_minus_inc": {
+       "mean_paired_crps_diff": 0.0671,
+       "player_bootstrap_95": [
+        -0.0909,
+        0.252
+       ],
+       "n_players_better": 7,
+       "n_players_worse": 13,
+       "n_equal": 0,
+       "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+      },
+      "paired_crps_rep_rec_minus_inc": {
+       "mean_paired_crps_diff": 0.0483,
+       "player_bootstrap_95": [
+        -0.0606,
+        0.1925
+       ],
+       "n_players_better": 7,
+       "n_players_worse": 13,
+       "n_equal": 0,
+       "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+      }
+     },
+     "SKILL_INC_MEAN_GE_1": {
+      "inc": {
+       "n": 16,
+       "mean_crps": 3.7584,
+       "mean_error": -1.4866,
+       "mae_of_mean": 5.1553,
+       "coverage_50": 0.5625,
+       "coverage_80": 0.8125,
+       "coverage_90": 0.875,
+       "pit_mean": 0.5405,
+       "pit_deciles": [
+        1,
+        0,
+        2,
+        4,
+        3,
+        0,
+        0,
+        2,
+        1,
+        3
+       ]
+      },
+      "rep_qb": {
+       "n": 16,
+       "mean_crps": 3.7504,
+       "mean_error": -1.2098,
+       "mae_of_mean": 5.107,
+       "coverage_50": 0.75,
+       "coverage_80": 0.875,
+       "coverage_90": 0.9375,
+       "pit_mean": 0.5504,
+       "pit_deciles": [
+        0,
+        1,
+        2,
+        3,
+        2,
+        2,
+        1,
+        1,
+        2,
+        2
+       ]
+      },
+      "rep_rec": {
+       "n": 16,
+       "mean_crps": 3.7269,
+       "mean_error": -1.5868,
+       "mae_of_mean": 4.959,
+       "coverage_50": 0.6875,
+       "coverage_80": 0.875,
+       "coverage_90": 0.875,
+       "pit_mean": 0.5661,
+       "pit_deciles": [
+        0,
+        1,
+        2,
+        2,
+        2,
+        3,
+        1,
+        1,
+        2,
+        2
+       ]
+      },
+      "paired_crps_rep_qb_minus_inc": {
+       "mean_paired_crps_diff": -0.0081,
+       "player_bootstrap_95": [
+        -0.1608,
+        0.1748
+       ],
+       "n_players_better": 7,
+       "n_players_worse": 9,
+       "n_equal": 0,
+       "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+      },
+      "paired_crps_rep_rec_minus_inc": {
+       "mean_paired_crps_diff": -0.0315,
+       "player_bootstrap_95": [
+        -0.118,
+        0.0499
+       ],
+       "n_players_better": 7,
+       "n_players_worse": 9,
+       "n_equal": 0,
+       "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+      }
+     },
+     "DST_AND_K": {
+      "inc": {
+       "n": 4,
+       "mean_crps": 2.7792,
+       "mean_error": 3.1595,
+       "mae_of_mean": 3.7227,
+       "coverage_50": 0.75,
+       "coverage_80": 0.75,
+       "coverage_90": 0.75,
+       "pit_mean": 0.3426,
+       "pit_deciles": [
+        1,
+        0,
+        0,
+        1,
+        1,
+        0,
+        1,
+        0,
+        0,
+        0
+       ]
+      },
+      "rep_qb": {
+       "n": 4,
+       "mean_crps": 3.1467,
+       "mean_error": 3.8631,
+       "mae_of_mean": 4.4184,
+       "coverage_50": 0.75,
+       "coverage_80": 0.75,
+       "coverage_90": 0.75,
+       "pit_mean": 0.3341,
+       "pit_deciles": [
+        1,
+        0,
+        0,
+        2,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+       ]
+      },
+      "rep_rec": {
+       "n": 4,
+       "mean_crps": 3.1467,
+       "mean_error": 3.8631,
+       "mae_of_mean": 4.4184,
+       "coverage_50": 0.75,
+       "coverage_80": 0.75,
+       "coverage_90": 0.75,
+       "pit_mean": 0.3341,
+       "pit_deciles": [
+        1,
+        0,
+        0,
+        2,
+        0,
+        0,
+        1,
+        0,
+        0,
+        0
+       ]
+      },
+      "paired_crps_rep_qb_minus_inc": {
+       "mean_paired_crps_diff": 0.3675,
+       "player_bootstrap_95": [
+        0.0242,
+        0.8657
+       ],
+       "n_players_better": 0,
+       "n_players_worse": 4,
+       "n_equal": 0,
+       "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+      },
+      "paired_crps_rep_rec_minus_inc": {
+       "mean_paired_crps_diff": 0.3675,
+       "player_bootstrap_95": [
+        0.0242,
+        0.8657
+       ],
+       "n_players_better": 0,
+       "n_players_worse": 4,
+       "n_equal": 0,
+       "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+      }
+     }
+    },
+    "by_position": {
+     "DST": {
+      "n": 2,
+      "inc": {
+       "mean_error": 5.5792,
+       "mean_crps": 4.1108
+      },
+      "rep_qb": {
+       "mean_error": 6.9455,
+       "mean_crps": 4.8216
+      },
+      "rep_rec": {
+       "mean_error": 6.9455,
+       "mean_crps": 4.8216
+      }
+     },
+     "K": {
+      "n": 2,
+      "inc": {
+       "mean_error": 0.7397,
+       "mean_crps": 1.4476
+      },
+      "rep_qb": {
+       "mean_error": 0.7808,
+       "mean_crps": 1.4718
+      },
+      "rep_rec": {
+       "mean_error": 0.7808,
+       "mean_crps": 1.4718
+      }
+     },
+     "QB": {
+      "n": 4,
+      "inc": {
+       "mean_error": 2.3208,
+       "mean_crps": 1.3458
+      },
+      "rep_qb": {
+       "mean_error": 2.2371,
+       "mean_crps": 1.3268
+      },
+      "rep_rec": {
+       "mean_error": 1.7777,
+       "mean_crps": 1.2555
+      }
+     },
+     "RB": {
+      "n": 5,
+      "inc": {
+       "mean_error": -7.5605,
+       "mean_crps": 6.6176
+      },
+      "rep_qb": {
+       "mean_error": -7.2083,
+       "mean_crps": 6.456
+      },
+      "rep_rec": {
+       "mean_error": -7.4211,
+       "mean_crps": 6.5398
+      }
+     },
+     "TE": {
+      "n": 7,
+      "inc": {
+       "mean_error": 0.8045,
+       "mean_crps": 0.8022
+      },
+      "rep_qb": {
+       "mean_error": 0.8991,
+       "mean_crps": 0.8054
+      },
+      "rep_rec": {
+       "mean_error": 0.805,
+       "mean_crps": 0.8199
+      }
+     },
+     "WR": {
+      "n": 10,
+      "inc": {
+       "mean_error": -0.4445,
+       "mean_crps": 2.2187
+      },
+      "rep_qb": {
+       "mean_error": -0.1875,
+       "mean_crps": 2.2944
+      },
+      "rep_rec": {
+       "mean_error": -0.4451,
+       "mean_crps": 2.2358
+      }
+     }
+    },
+    "per_player": [
+     {
+      "player": "Alvin Kamara|NO",
+      "pos": "RB",
+      "actual": 22.8,
+      "inc": {
+       "mean": 13.6617,
+       "sd": 6.0783,
+       "err": -9.1383,
+       "crps": 6.4045,
+       "pit": 0.9165,
+       "cov50": false,
+       "cov80": false,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 13.9985,
+       "sd": 6.7326,
+       "err": -8.8015,
+       "crps": 6.0932,
+       "pit": 0.893,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 14.0204,
+       "sd": 6.7412,
+       "err": -8.7796,
+       "crps": 6.0738,
+       "pit": 0.893,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Austin Hooper|ATL",
+      "pos": "TE",
+      "actual": 1.9,
+      "inc": {
+       "mean": 3.6439,
+       "sd": 3.5908,
+       "err": 1.7439,
+       "crps": 0.8363,
+       "pit": 0.3975,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 3.8924,
+       "sd": 4.4933,
+       "err": 1.9924,
+       "crps": 0.9226,
+       "pit": 0.4385,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 3.6428,
+       "sd": 4.1904,
+       "err": 1.7428,
+       "crps": 0.8405,
+       "pit": 0.4565,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Barion Brown|NO",
+      "pos": "WR",
+      "actual": -0.5,
+      "inc": {
+       "mean": 0.202,
+       "sd": 0.7979,
+       "err": 0.702,
+       "crps": 0.5125,
+       "pit": 0.0,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      },
+      "rep_qb": {
+       "mean": 0.2042,
+       "sd": 1.0054,
+       "err": 0.7042,
+       "crps": 0.5089,
+       "pit": 0.0,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      },
+      "rep_rec": {
+       "mean": 0.205,
+       "sd": 1.0099,
+       "err": 0.705,
+       "crps": 0.5089,
+       "pit": 0.0,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      }
+     },
+     {
+      "player": "Bijan Robinson|ATL",
+      "pos": "RB",
+      "actual": 30.7,
+      "inc": {
+       "mean": 26.0113,
+       "sd": 9.706,
+       "err": -4.6887,
+       "crps": 3.4506,
+       "pit": 0.703,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 27.2006,
+       "sd": 10.64,
+       "err": -3.4994,
+       "crps": 3.228,
+       "pit": 0.6635,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 26.212,
+       "sd": 10.1964,
+       "err": -4.488,
+       "crps": 3.5097,
+       "pit": 0.6995,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Brian Robinson Jr.|ATL",
+      "pos": "RB",
+      "actual": 25.7,
+      "inc": {
+       "mean": 4.6527,
+       "sd": 3.6523,
+       "err": -21.0473,
+       "crps": 19.1312,
+       "pit": 0.999,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      },
+      "rep_qb": {
+       "mean": 4.802,
+       "sd": 4.0063,
+       "err": -20.898,
+       "crps": 18.8435,
+       "pit": 0.9985,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      },
+      "rep_rec": {
+       "mean": 4.7005,
+       "sd": 3.8872,
+       "err": -20.9995,
+       "crps": 18.9999,
+       "pit": 0.9985,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      }
+     },
+     {
+      "player": "Bryce Lance|NO",
+      "pos": "WR",
+      "actual": 1.7,
+      "inc": {
+       "mean": 2.6994,
+       "sd": 3.0727,
+       "err": 0.9994,
+       "crps": 0.6118,
+       "pit": 0.4895,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 2.6567,
+       "sd": 3.849,
+       "err": 0.9567,
+       "crps": 0.6823,
+       "pit": 0.5555,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 2.6698,
+       "sd": 3.8703,
+       "err": 0.9698,
+       "crps": 0.6854,
+       "pit": 0.5555,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "CJ Donaldson|NO",
+      "pos": "RB",
+      "actual": 4.3,
+      "inc": {
+       "mean": 0.5199,
+       "sd": 1.1744,
+       "err": -3.7801,
+       "crps": 3.4649,
+       "pit": 0.9765,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      },
+      "rep_qb": {
+       "mean": 0.5399,
+       "sd": 1.2929,
+       "err": -3.7601,
+       "crps": 3.4526,
+       "pit": 0.972,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      },
+      "rep_rec": {
+       "mean": 0.5402,
+       "sd": 1.2935,
+       "err": -3.7598,
+       "crps": 3.452,
+       "pit": 0.972,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      }
+     },
+     {
+      "player": "Charlie Woerner|ATL",
+      "pos": "TE",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.3858,
+       "sd": 1.2204,
+       "err": 0.3858,
+       "crps": 0.0366,
+       "pit": 0.4088,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.4006,
+       "sd": 1.5541,
+       "err": 0.4006,
+       "crps": 0.0258,
+       "pit": 0.4412,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.3757,
+       "sd": 1.455,
+       "err": 0.3757,
+       "crps": 0.0244,
+       "pit": 0.4412,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Chris Blair|ATL",
+      "pos": "WR",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.154,
+       "sd": 0.6678,
+       "err": 0.154,
+       "crps": 0.0078,
+       "pit": 0.4447,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.1798,
+       "sd": 0.9798,
+       "err": 0.1798,
+       "crps": 0.006,
+       "pit": 0.4708,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.1664,
+       "sd": 0.9058,
+       "err": 0.1664,
+       "crps": 0.0056,
+       "pit": 0.4708,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Chris Olave|NO",
+      "pos": "WR",
+      "actual": 22.6,
+      "inc": {
+       "mean": 25.6656,
+       "sd": 10.9495,
+       "err": 3.0656,
+       "crps": 2.8062,
+       "pit": 0.4215,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 25.624,
+       "sd": 12.1461,
+       "err": 3.024,
+       "crps": 2.9814,
+       "pit": 0.4365,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 25.7705,
+       "sd": 12.2068,
+       "err": 3.1705,
+       "crps": 3.0108,
+       "pit": 0.4295,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Daniel Carlson|NO",
+      "pos": "K",
+      "actual": 6.0,
+      "inc": {
+       "mean": 8.606,
+       "sd": 4.6766,
+       "err": 2.606,
+       "crps": 1.5108,
+       "pit": 0.338,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 8.672,
+       "sd": 4.6817,
+       "err": 2.672,
+       "crps": 1.5524,
+       "pit": 0.328,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 8.672,
+       "sd": 4.6817,
+       "err": 2.672,
+       "crps": 1.5524,
+       "pit": 0.328,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Devaughn Vele|NO",
+      "pos": "WR",
+      "actual": 17.4,
+      "inc": {
+       "mean": 11.0204,
+       "sd": 6.5021,
+       "err": -6.3796,
+       "crps": 4.4353,
+       "pit": 0.849,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 10.9986,
+       "sd": 7.5309,
+       "err": -6.4014,
+       "crps": 4.6134,
+       "pit": 0.8245,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 11.0537,
+       "sd": 7.5751,
+       "err": -6.3463,
+       "crps": 4.5825,
+       "pit": 0.8225,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Drake London|ATL",
+      "pos": "WR",
+      "actual": 14.6,
+      "inc": {
+       "mean": 20.0037,
+       "sd": 9.9196,
+       "err": 5.4037,
+       "crps": 3.0384,
+       "pit": 0.3375,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 22.0964,
+       "sd": 12.2889,
+       "err": 7.4964,
+       "crps": 4.1305,
+       "pit": 0.3305,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 19.8749,
+       "sd": 11.141,
+       "err": 5.2749,
+       "crps": 3.1719,
+       "pit": 0.3815,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Falcons|ATL",
+      "pos": "DST",
+      "actual": 4.0,
+      "inc": {
+       "mean": 5.6116,
+       "sd": 5.0231,
+       "err": 1.6116,
+       "crps": 1.1688,
+       "pit": 0.4165,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 6.366,
+       "sd": 5.918,
+       "err": 2.366,
+       "crps": 1.4501,
+       "pit": 0.3897,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 6.366,
+       "sd": 5.918,
+       "err": 2.366,
+       "crps": 1.4501,
+       "pit": 0.3897,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Jahan Dotson|ATL",
+      "pos": "WR",
+      "actual": 13.4,
+      "inc": {
+       "mean": 4.0889,
+       "sd": 3.3506,
+       "err": -9.3111,
+       "crps": 7.6014,
+       "pit": 0.987,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      },
+      "rep_qb": {
+       "mean": 4.4952,
+       "sd": 4.7557,
+       "err": -8.9048,
+       "crps": 6.9686,
+       "pit": 0.946,
+       "cov50": false,
+       "cov80": false,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 4.1434,
+       "sd": 4.363,
+       "err": -9.2566,
+       "crps": 7.3635,
+       "pit": 0.9595,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      }
+     },
+     {
+      "player": "Juwan Johnson|NO",
+      "pos": "TE",
+      "actual": 11.9,
+      "inc": {
+       "mean": 16.1659,
+       "sd": 8.5048,
+       "err": 4.2659,
+       "crps": 2.3229,
+       "pit": 0.343,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 16.0379,
+       "sd": 9.0315,
+       "err": 4.1379,
+       "crps": 2.3576,
+       "pit": 0.373,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 16.1136,
+       "sd": 9.0789,
+       "err": 4.2136,
+       "crps": 2.3844,
+       "pit": 0.369,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Kendre Miller|NO",
+      "pos": "RB",
+      "actual": 2.9,
+      "inc": {
+       "mean": 3.7518,
+       "sd": 3.1381,
+       "err": 0.8518,
+       "crps": 0.6367,
+       "pit": 0.492,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 3.8178,
+       "sd": 3.3392,
+       "err": 0.9178,
+       "crps": 0.6627,
+       "pit": 0.504,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 3.8214,
+       "sd": 3.3419,
+       "err": 0.9214,
+       "crps": 0.6637,
+       "pit": 0.504,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Kevin Austin Jr.|NO",
+      "pos": "WR",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.751,
+       "sd": 1.5501,
+       "err": 0.751,
+       "crps": 0.1466,
+       "pit": 0.3078,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.8016,
+       "sd": 1.9281,
+       "err": 0.8016,
+       "crps": 0.1175,
+       "pit": 0.3668,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.8053,
+       "sd": 1.9373,
+       "err": 0.8053,
+       "crps": 0.1179,
+       "pit": 0.3668,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Kyle Pitts Sr.|ATL",
+      "pos": "TE",
+      "actual": 7.7,
+      "inc": {
+       "mean": 5.1303,
+       "sd": 3.741,
+       "err": -2.5697,
+       "crps": 1.9169,
+       "pit": 0.7785,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 5.6711,
+       "sd": 5.1035,
+       "err": -2.0289,
+       "crps": 1.9231,
+       "pit": 0.725,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 5.2032,
+       "sd": 4.643,
+       "err": -2.4968,
+       "crps": 2.08,
+       "pit": 0.759,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Michael Penix Jr.|ATL",
+      "pos": "QB",
+      "actual": 12.72,
+      "inc": {
+       "mean": 15.3284,
+       "sd": 6.5394,
+       "err": 2.6084,
+       "crps": 1.8372,
+       "pit": 0.39,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 15.2792,
+       "sd": 7.0252,
+       "err": 2.5592,
+       "crps": 1.8883,
+       "pit": 0.3995,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 13.3115,
+       "sd": 6.3878,
+       "err": 0.5915,
+       "crps": 1.5336,
+       "pit": 0.517,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Nick Folk|ATL",
+      "pos": "K",
+      "actual": 9.0,
+      "inc": {
+       "mean": 7.8735,
+       "sd": 4.9637,
+       "err": -1.1265,
+       "crps": 1.3843,
+       "pit": 0.61,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 7.8895,
+       "sd": 4.989,
+       "err": -1.1105,
+       "crps": 1.3912,
+       "pit": 0.6097,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 7.8895,
+       "sd": 4.989,
+       "err": -1.1105,
+       "crps": 1.3912,
+       "pit": 0.6097,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Nick Muse|ATL",
+      "pos": "TE",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.0207,
+       "sd": 0.2471,
+       "err": 0.0207,
+       "crps": 0.0001,
+       "pit": 0.4925,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.0187,
+       "sd": 0.2546,
+       "err": 0.0187,
+       "crps": 0.0001,
+       "pit": 0.4958,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.0171,
+       "sd": 0.2258,
+       "err": 0.0171,
+       "crps": 0.0001,
+       "pit": 0.4958,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Olamide Zaccheaus|ATL",
+      "pos": "WR",
+      "actual": 0.0,
+      "inc": {
+       "mean": 2.4222,
+       "sd": 2.5738,
+       "err": 2.4222,
+       "crps": 1.0919,
+       "pit": 0.0943,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 2.4272,
+       "sd": 3.1321,
+       "err": 2.4272,
+       "crps": 0.9168,
+       "pit": 0.1782,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 2.2857,
+       "sd": 2.9467,
+       "err": 2.2857,
+       "crps": 0.8656,
+       "pit": 0.1782,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Oscar Delp|NO",
+      "pos": "TE",
+      "actual": 0.0,
+      "inc": {
+       "mean": 1.4707,
+       "sd": 2.1584,
+       "err": 1.4707,
+       "crps": 0.4734,
+       "pit": 0.2067,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 1.4372,
+       "sd": 2.4827,
+       "err": 1.4372,
+       "crps": 0.384,
+       "pit": 0.2712,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 1.4436,
+       "sd": 2.4953,
+       "err": 1.4436,
+       "crps": 0.3853,
+       "pit": 0.2712,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Saints|NO",
+      "pos": "DST",
+      "actual": -3.0,
+      "inc": {
+       "mean": 6.5468,
+       "sd": 4.4704,
+       "err": 9.5468,
+       "crps": 7.0528,
+       "pit": 0.006,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      },
+      "rep_qb": {
+       "mean": 8.525,
+       "sd": 5.9889,
+       "err": 11.525,
+       "crps": 8.1932,
+       "pit": 0.0088,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      },
+      "rep_rec": {
+       "mean": 8.525,
+       "sd": 5.9889,
+       "err": 11.525,
+       "crps": 8.1932,
+       "pit": 0.0088,
+       "cov50": false,
+       "cov80": false,
+       "cov90": false
+      }
+     },
+     {
+      "player": "Spencer Rattler|NO",
+      "pos": "QB",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.0988,
+       "sd": 0.5407,
+       "err": 0.0988,
+       "crps": 0.004,
+       "pit": 0.4243,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.1085,
+       "sd": 0.5501,
+       "err": 0.1085,
+       "crps": 0.0064,
+       "pit": 0.4245,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.1089,
+       "sd": 0.5504,
+       "err": 0.1089,
+       "crps": 0.0064,
+       "pit": 0.4245,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Treyton Welch|NO",
+      "pos": "TE",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.3145,
+       "sd": 1.0368,
+       "err": 0.3145,
+       "crps": 0.0289,
+       "pit": 0.4138,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.336,
+       "sd": 1.2281,
+       "err": 0.336,
+       "crps": 0.0245,
+       "pit": 0.4373,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.339,
+       "sd": 1.2484,
+       "err": 0.339,
+       "crps": 0.0246,
+       "pit": 0.4373,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Tua Tagovailoa|ATL",
+      "pos": "QB",
+      "actual": 0.0,
+      "inc": {
+       "mean": 0.0584,
+       "sd": 0.3563,
+       "err": 0.0584,
+       "crps": 0.0019,
+       "pit": 0.4492,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.0516,
+       "sd": 0.2732,
+       "err": 0.0516,
+       "crps": 0.0026,
+       "pit": 0.4505,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.0467,
+       "sd": 0.2601,
+       "err": 0.0467,
+       "crps": 0.0023,
+       "pit": 0.4505,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Tyler Shough|NO",
+      "pos": "QB",
+      "actual": 15.94,
+      "inc": {
+       "mean": 22.4578,
+       "sd": 8.7842,
+       "err": 6.5178,
+       "crps": 3.5403,
+       "pit": 0.2435,
+       "cov50": false,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 22.169,
+       "sd": 9.2971,
+       "err": 6.229,
+       "crps": 3.41,
+       "pit": 0.2695,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 22.304,
+       "sd": 9.3155,
+       "err": 6.364,
+       "crps": 3.4799,
+       "pit": 0.2625,
+       "cov50": true,
+       "cov80": true,
+       "cov90": true
+      }
+     },
+     {
+      "player": "Zachariah Branch|ATL",
+      "pos": "WR",
+      "actual": 3.0,
+      "inc": {
+       "mean": 0.7474,
+       "sd": 1.4219,
+       "err": -2.2526,
+       "crps": 1.9349,
+       "pit": 0.929,
+       "cov50": false,
+       "cov80": false,
+       "cov90": true
+      },
+      "rep_qb": {
+       "mean": 0.8415,
+       "sd": 2.0512,
+       "err": -2.1585,
+       "crps": 2.0182,
+       "pit": 0.9125,
+       "cov50": false,
+       "cov80": false,
+       "cov90": true
+      },
+      "rep_rec": {
+       "mean": 0.7745,
+       "sd": 1.851,
+       "err": -2.2255,
+       "crps": 2.0458,
+       "pit": 0.9235,
+       "cov50": false,
+       "cov80": false,
+       "cov90": true
+      }
+     }
+    ]
+   },
+   "mean_drift": {
+    "rep_qb": {
+     "players": [
+      {
+       "player": "Drake London|ATL",
+       "pos": "WR",
+       "proj_dk": 20.502,
+       "inc_mean": 20.0037,
+       "rep_mean": 22.0964,
+       "drift": 2.0927,
+       "paired_se": 0.1326
+      },
+      {
+       "player": "Saints|NO",
+       "pos": "DST",
+       "proj_dk": 6.5468,
+       "inc_mean": 6.5468,
+       "rep_mean": 8.525,
+       "drift": 1.9782,
+       "paired_se": 0.0431
+      },
+      {
+       "player": "Bijan Robinson|ATL",
+       "pos": "RB",
+       "proj_dk": 27.1438,
+       "inc_mean": 26.0113,
+       "rep_mean": 27.2006,
+       "drift": 1.1893,
+       "paired_se": 0.0937
+      },
+      {
+       "player": "Falcons|ATL",
+       "pos": "DST",
+       "proj_dk": 5.6116,
+       "inc_mean": 5.6116,
+       "rep_mean": 6.366,
+       "drift": 0.7544,
+       "paired_se": 0.0324
+      },
+      {
+       "player": "Kyle Pitts Sr.|ATL",
+       "pos": "TE",
+       "proj_dk": 5.2682,
+       "inc_mean": 5.1303,
+       "rep_mean": 5.6711,
+       "drift": 0.5408,
+       "paired_se": 0.0833
+      },
+      {
+       "player": "Jahan Dotson|ATL",
+       "pos": "WR",
+       "proj_dk": 4.171,
+       "inc_mean": 4.0889,
+       "rep_mean": 4.4952,
+       "drift": 0.4063,
+       "paired_se": 0.0823
+      },
+      {
+       "player": "Alvin Kamara|NO",
+       "pos": "RB",
+       "proj_dk": 13.679,
+       "inc_mean": 13.6617,
+       "rep_mean": 13.9985,
+       "drift": 0.3368,
+       "paired_se": 0.1097
+      },
+      {
+       "player": "Tyler Shough|NO",
+       "pos": "QB",
+       "proj_dk": 21.5792,
+       "inc_mean": 22.4578,
+       "rep_mean": 22.169,
+       "drift": -0.2888,
+       "paired_se": 0.1106
+      },
+      {
+       "player": "Austin Hooper|ATL",
+       "pos": "TE",
+       "proj_dk": 3.6281,
+       "inc_mean": 3.6439,
+       "rep_mean": 3.8924,
+       "drift": 0.2485,
+       "paired_se": 0.075
+      },
+      {
+       "player": "Brian Robinson Jr.|ATL",
+       "pos": "RB",
+       "proj_dk": 4.9405,
+       "inc_mean": 4.6527,
+       "rep_mean": 4.802,
+       "drift": 0.1492,
+       "paired_se": 0.0543
+      },
+      {
+       "player": "Juwan Johnson|NO",
+       "pos": "TE",
+       "proj_dk": 15.4202,
+       "inc_mean": 16.1659,
+       "rep_mean": 16.0379,
+       "drift": -0.1281,
+       "paired_se": 0.1197
+      },
+      {
+       "player": "Zachariah Branch|ATL",
+       "pos": "WR",
+       "proj_dk": 0.7799,
+       "inc_mean": 0.7474,
+       "rep_mean": 0.8415,
+       "drift": 0.0941,
+       "paired_se": 0.0296
+      },
+      {
+       "player": "Daniel Carlson|NO",
+       "pos": "K",
+       "proj_dk": 8.2596,
+       "inc_mean": 8.606,
+       "rep_mean": 8.672,
+       "drift": 0.066,
+       "paired_se": 0.048
+      },
+      {
+       "player": "Kendre Miller|NO",
+       "pos": "RB",
+       "proj_dk": 3.6771,
+       "inc_mean": 3.7518,
+       "rep_mean": 3.8178,
+       "drift": 0.066,
+       "paired_se": 0.0629
+      },
+      {
+       "player": "Kevin Austin Jr.|NO",
+       "pos": "WR",
+       "proj_dk": 0.7908,
+       "inc_mean": 0.751,
+       "rep_mean": 0.8016,
+       "drift": 0.0507,
+       "paired_se": 0.0315
+      },
+      {
+       "player": "Michael Penix Jr.|ATL",
+       "pos": "QB",
+       "proj_dk": 15.8572,
+       "inc_mean": 15.3284,
+       "rep_mean": 15.2792,
+       "drift": -0.0492,
+       "paired_se": 0.0746
+      },
+      {
+       "player": "Bryce Lance|NO",
+       "pos": "WR",
+       "proj_dk": 2.663,
+       "inc_mean": 2.6994,
+       "rep_mean": 2.6567,
+       "drift": -0.0427,
+       "paired_se": 0.0584
+      },
+      {
+       "player": "Chris Olave|NO",
+       "pos": "WR",
+       "proj_dk": 25.318,
+       "inc_mean": 25.6656,
+       "rep_mean": 25.624,
+       "drift": -0.0417,
+       "paired_se": 0.1323
+      },
+      {
+       "player": "Oscar Delp|NO",
+       "pos": "TE",
+       "proj_dk": 1.443,
+       "inc_mean": 1.4707,
+       "rep_mean": 1.4372,
+       "drift": -0.0334,
+       "paired_se": 0.0366
+      },
+      {
+       "player": "Chris Blair|ATL",
+       "pos": "WR",
+       "proj_dk": 0.151,
+       "inc_mean": 0.154,
+       "rep_mean": 0.1798,
+       "drift": 0.0258,
+       "paired_se": 0.0159
+      },
+      {
+       "player": "Devaughn Vele|NO",
+       "pos": "WR",
+       "proj_dk": 10.5903,
+       "inc_mean": 11.0204,
+       "rep_mean": 10.9986,
+       "drift": -0.0218,
+       "paired_se": 0.1049
+      },
+      {
+       "player": "Treyton Welch|NO",
+       "pos": "TE",
+       "proj_dk": 0.3216,
+       "inc_mean": 0.3145,
+       "rep_mean": 0.336,
+       "drift": 0.0215,
+       "paired_se": 0.0184
+      },
+      {
+       "player": "CJ Donaldson|NO",
+       "pos": "RB",
+       "proj_dk": 0.5173,
+       "inc_mean": 0.5199,
+       "rep_mean": 0.5399,
+       "drift": 0.02,
+       "paired_se": 0.029
+      },
+      {
+       "player": "Nick Folk|ATL",
+       "pos": "K",
+       "proj_dk": 8.9192,
+       "inc_mean": 7.8735,
+       "rep_mean": 7.8895,
+       "drift": 0.016,
+       "paired_se": 0.041
+      },
+      {
+       "player": "Charlie Woerner|ATL",
+       "pos": "TE",
+       "proj_dk": 0.4008,
+       "inc_mean": 0.3858,
+       "rep_mean": 0.4006,
+       "drift": 0.0147,
+       "paired_se": 0.0277
+      },
+      {
+       "player": "Spencer Rattler|NO",
+       "pos": "QB",
+       "proj_dk": 0.0948,
+       "inc_mean": 0.0988,
+       "rep_mean": 0.1085,
+       "drift": 0.0098,
+       "paired_se": 0.0107
+      },
+      {
+       "player": "Tua Tagovailoa|ATL",
+       "pos": "QB",
+       "proj_dk": 0.0529,
+       "inc_mean": 0.0584,
+       "rep_mean": 0.0516,
+       "drift": -0.0068,
+       "paired_se": 0.0082
+      },
+      {
+       "player": "Olamide Zaccheaus|ATL",
+       "pos": "WR",
+       "proj_dk": 2.4856,
+       "inc_mean": 2.4222,
+       "rep_mean": 2.4272,
+       "drift": 0.005,
+       "paired_se": 0.0587
+      },
+      {
+       "player": "Barion Brown|NO",
+       "pos": "WR",
+       "proj_dk": 0.2015,
+       "inc_mean": 0.202,
+       "rep_mean": 0.2042,
+       "drift": 0.0022,
+       "paired_se": 0.0152
+      },
+      {
+       "player": "Nick Muse|ATL",
+       "pos": "TE",
+       "proj_dk": 0.0179,
+       "inc_mean": 0.0207,
+       "rep_mean": 0.0187,
+       "drift": -0.002,
+       "paired_se": 0.0038
+      }
+     ],
+     "by_position": {
+      "DST": {
+       "n_players": 2,
+       "sum_drift": 2.7326,
+       "paired_se_of_sum": 0.0466,
+       "mean_abs_player_drift": 1.3663
+      },
+      "K": {
+       "n_players": 2,
+       "sum_drift": 0.082,
+       "paired_se_of_sum": 0.0631,
+       "mean_abs_player_drift": 0.041
+      },
+      "QB": {
+       "n_players": 4,
+       "sum_drift": -0.335,
+       "paired_se_of_sum": 0.1358,
+       "mean_abs_player_drift": 0.0886
+      },
+      "RB": {
+       "n_players": 5,
+       "sum_drift": 1.7613,
+       "paired_se_of_sum": 0.1385,
+       "mean_abs_player_drift": 0.3523
+      },
+      "TE": {
+       "n_players": 7,
+       "sum_drift": 0.662,
+       "paired_se_of_sum": 0.1628,
+       "mean_abs_player_drift": 0.1413
+      },
+      "WR": {
+       "n_players": 10,
+       "sum_drift": 2.5704,
+       "paired_se_of_sum": 0.207,
+       "mean_abs_player_drift": 0.2783
+      }
+     },
+     "n_players": 30,
+     "n_abs_drift_gt_2se": 11,
+     "n_abs_drift_gt_0p5_dk": 5
+    },
+    "rep_rec": {
+     "players": [
+      {
+       "player": "Michael Penix Jr.|ATL",
+       "pos": "QB",
+       "proj_dk": 15.8572,
+       "inc_mean": 15.3284,
+       "rep_mean": 13.3115,
+       "drift": -2.0169,
+       "paired_se": 0.07
+      },
+      {
+       "player": "Saints|NO",
+       "pos": "DST",
+       "proj_dk": 6.5468,
+       "inc_mean": 6.5468,
+       "rep_mean": 8.525,
+       "drift": 1.9782,
+       "paired_se": 0.0431
+      },
+      {
+       "player": "Falcons|ATL",
+       "pos": "DST",
+       "proj_dk": 5.6116,
+       "inc_mean": 5.6116,
+       "rep_mean": 6.366,
+       "drift": 0.7544,
+       "paired_se": 0.0324
+      },
+      {
+       "player": "Alvin Kamara|NO",
+       "pos": "RB",
+       "proj_dk": 13.679,
+       "inc_mean": 13.6617,
+       "rep_mean": 14.0204,
+       "drift": 0.3587,
+       "paired_se": 0.1097
+      },
+      {
+       "player": "Bijan Robinson|ATL",
+       "pos": "RB",
+       "proj_dk": 27.1438,
+       "inc_mean": 26.0113,
+       "rep_mean": 26.212,
+       "drift": 0.2007,
+       "paired_se": 0.0884
+      },
+      {
+       "player": "Tyler Shough|NO",
+       "pos": "QB",
+       "proj_dk": 21.5792,
+       "inc_mean": 22.4578,
+       "rep_mean": 22.304,
+       "drift": -0.1538,
+       "paired_se": 0.111
+      },
+      {
+       "player": "Olamide Zaccheaus|ATL",
+       "pos": "WR",
+       "proj_dk": 2.4856,
+       "inc_mean": 2.4222,
+       "rep_mean": 2.2857,
+       "drift": -0.1365,
+       "paired_se": 0.0569
+      },
+      {
+       "player": "Drake London|ATL",
+       "pos": "WR",
+       "proj_dk": 20.502,
+       "inc_mean": 20.0037,
+       "rep_mean": 19.8749,
+       "drift": -0.1289,
+       "paired_se": 0.1221
+      },
+      {
+       "player": "Chris Olave|NO",
+       "pos": "WR",
+       "proj_dk": 25.318,
+       "inc_mean": 25.6656,
+       "rep_mean": 25.7705,
+       "drift": 0.1049,
+       "paired_se": 0.1326
+      },
+      {
+       "player": "Kyle Pitts Sr.|ATL",
+       "pos": "TE",
+       "proj_dk": 5.2682,
+       "inc_mean": 5.1303,
+       "rep_mean": 5.2032,
+       "drift": 0.073,
+       "paired_se": 0.0782
+      },
+      {
+       "player": "Kendre Miller|NO",
+       "pos": "RB",
+       "proj_dk": 3.6771,
+       "inc_mean": 3.7518,
+       "rep_mean": 3.8214,
+       "drift": 0.0696,
+       "paired_se": 0.0629
+      },
+      {
+       "player": "Daniel Carlson|NO",
+       "pos": "K",
+       "proj_dk": 8.2596,
+       "inc_mean": 8.606,
+       "rep_mean": 8.672,
+       "drift": 0.066,
+       "paired_se": 0.048
+      },
+      {
+       "player": "Jahan Dotson|ATL",
+       "pos": "WR",
+       "proj_dk": 4.171,
+       "inc_mean": 4.0889,
+       "rep_mean": 4.1434,
+       "drift": 0.0544,
+       "paired_se": 0.0773
+      },
+      {
+       "player": "Kevin Austin Jr.|NO",
+       "pos": "WR",
+       "proj_dk": 0.7908,
+       "inc_mean": 0.751,
+       "rep_mean": 0.8053,
+       "drift": 0.0543,
+       "paired_se": 0.0316
+      },
+      {
+       "player": "Juwan Johnson|NO",
+       "pos": "TE",
+       "proj_dk": 15.4202,
+       "inc_mean": 16.1659,
+       "rep_mean": 16.1136,
+       "drift": -0.0523,
+       "paired_se": 0.1198
+      },
+      {
+       "player": "Brian Robinson Jr.|ATL",
+       "pos": "RB",
+       "proj_dk": 4.9405,
+       "inc_mean": 4.6527,
+       "rep_mean": 4.7005,
+       "drift": 0.0478,
+       "paired_se": 0.0535
+      },
+      {
+       "player": "Devaughn Vele|NO",
+       "pos": "WR",
+       "proj_dk": 10.5903,
+       "inc_mean": 11.0204,
+       "rep_mean": 11.0537,
+       "drift": 0.0333,
+       "paired_se": 0.1052
+      },
+      {
+       "player": "Bryce Lance|NO",
+       "pos": "WR",
+       "proj_dk": 2.663,
+       "inc_mean": 2.6994,
+       "rep_mean": 2.6698,
+       "drift": -0.0296,
+       "paired_se": 0.0586
+      },
+      {
+       "player": "Oscar Delp|NO",
+       "pos": "TE",
+       "proj_dk": 1.443,
+       "inc_mean": 1.4707,
+       "rep_mean": 1.4436,
+       "drift": -0.0271,
+       "paired_se": 0.0367
+      },
+      {
+       "player": "Zachariah Branch|ATL",
+       "pos": "WR",
+       "proj_dk": 0.7799,
+       "inc_mean": 0.7474,
+       "rep_mean": 0.7745,
+       "drift": 0.0271,
+       "paired_se": 0.0271
+      },
+      {
+       "player": "Treyton Welch|NO",
+       "pos": "TE",
+       "proj_dk": 0.3216,
+       "inc_mean": 0.3145,
+       "rep_mean": 0.339,
+       "drift": 0.0245,
+       "paired_se": 0.0182
+      },
+      {
+       "player": "CJ Donaldson|NO",
+       "pos": "RB",
+       "proj_dk": 0.5173,
+       "inc_mean": 0.5199,
+       "rep_mean": 0.5402,
+       "drift": 0.0204,
+       "paired_se": 0.029
+      },
+      {
+       "player": "Nick Folk|ATL",
+       "pos": "K",
+       "proj_dk": 8.9192,
+       "inc_mean": 7.8735,
+       "rep_mean": 7.8895,
+       "drift": 0.016,
+       "paired_se": 0.041
+      },
+      {
+       "player": "Chris Blair|ATL",
+       "pos": "WR",
+       "proj_dk": 0.151,
+       "inc_mean": 0.154,
+       "rep_mean": 0.1664,
+       "drift": 0.0123,
+       "paired_se": 0.0148
+      },
+      {
+       "player": "Tua Tagovailoa|ATL",
+       "pos": "QB",
+       "proj_dk": 0.0529,
+       "inc_mean": 0.0584,
+       "rep_mean": 0.0467,
+       "drift": -0.0117,
+       "paired_se": 0.0082
+      },
+      {
+       "player": "Charlie Woerner|ATL",
+       "pos": "TE",
+       "proj_dk": 0.4008,
+       "inc_mean": 0.3858,
+       "rep_mean": 0.3757,
+       "drift": -0.0101,
+       "paired_se": 0.0269
+      },
+      {
+       "player": "Spencer Rattler|NO",
+       "pos": "QB",
+       "proj_dk": 0.0948,
+       "inc_mean": 0.0988,
+       "rep_mean": 0.1089,
+       "drift": 0.0101,
+       "paired_se": 0.0107
+      },
+      {
+       "player": "Nick Muse|ATL",
+       "pos": "TE",
+       "proj_dk": 0.0179,
+       "inc_mean": 0.0207,
+       "rep_mean": 0.0171,
+       "drift": -0.0037,
+       "paired_se": 0.0036
+      },
+      {
+       "player": "Barion Brown|NO",
+       "pos": "WR",
+       "proj_dk": 0.2015,
+       "inc_mean": 0.202,
+       "rep_mean": 0.205,
+       "drift": 0.003,
+       "paired_se": 0.0153
+      },
+      {
+       "player": "Austin Hooper|ATL",
+       "pos": "TE",
+       "proj_dk": 3.6281,
+       "inc_mean": 3.6439,
+       "rep_mean": 3.6428,
+       "drift": -0.0011,
+       "paired_se": 0.0724
+      }
+     ],
+     "by_position": {
+      "DST": {
+       "n_players": 2,
+       "sum_drift": 2.7326,
+       "paired_se_of_sum": 0.0466,
+       "mean_abs_player_drift": 1.3663
+      },
+      "K": {
+       "n_players": 2,
+       "sum_drift": 0.082,
+       "paired_se_of_sum": 0.0631,
+       "mean_abs_player_drift": 0.041
+      },
+      "QB": {
+       "n_players": 4,
+       "sum_drift": -2.1723,
+       "paired_se_of_sum": 0.1334,
+       "mean_abs_player_drift": 0.5481
+      },
+      "RB": {
+       "n_players": 5,
+       "sum_drift": 0.6971,
+       "paired_se_of_sum": 0.1349,
+       "mean_abs_player_drift": 0.1394
+      },
+      "TE": {
+       "n_players": 7,
+       "sum_drift": 0.0031,
+       "paired_se_of_sum": 0.1589,
+       "mean_abs_player_drift": 0.0274
+      },
+      "WR": {
+       "n_players": 10,
+       "sum_drift": -0.0056,
+       "paired_se_of_sum": 0.199,
+       "mean_abs_player_drift": 0.0584
+      }
+     },
+     "n_players": 30,
+     "n_abs_drift_gt_2se": 6,
+     "n_abs_drift_gt_0p5_dk": 3
+    }
+   },
+   "dst": {
+    "Falcons|ATL": {
+     "projection_dk": 5.6116,
+     "projection_event_items": {
+      "blocked_kick": 0.0672,
+      "fumble_recovery": 0.7563,
+      "interception": 1.3613,
+      "points_allowed": 0.5948,
+      "return_td": 0.2017,
+      "sack": 2.6303,
+      "safety": 0.0
+     },
+     "actual_dk": 4.0,
+     "inc": {
+      "mean": 5.6116,
+      "sd": 5.0231,
+      "p5": -1.735,
+      "p25": 1.735,
+      "p50": 5.204,
+      "p75": 8.023,
+      "p95": 15.613,
+      "share_non_integer": 0.9545,
+      "share_dk_ne_own_components_and_points_allowed": 0.9545,
+      "points_allowed_mean": 23.028,
+      "history_conditional_mean_given_this_arms_points_allowed": 6.4766,
+      "history_resampled": {
+       "mean": 6.398,
+       "sd": 5.8217,
+       "p5": -2.0,
+       "p25": 2.0,
+       "p50": 5.0,
+       "p75": 10.0,
+       "p95": 18.0
+      },
+      "ks_vs_history_resampled": 0.121,
+      "ks_vs_history_unconditional": 0.1218,
+      "component_means": {
+       "sacks": 2.4435,
+       "takeaways": 1.321,
+       "def_td": 0.1375,
+       "safety": 0.0255
+      }
+     },
+     "rep_qb": {
+      "mean": 6.366,
+      "sd": 5.918,
+      "p5": -2.0,
+      "p25": 2.0,
+      "p50": 5.0,
+      "p75": 10.0,
+      "p95": 18.0,
+      "share_non_integer": 0.0,
+      "share_dk_ne_own_components_and_points_allowed": 0.0,
+      "points_allowed_mean": 23.398,
+      "history_conditional_mean_given_this_arms_points_allowed": 6.3026,
+      "history_resampled": {
+       "mean": 6.2315,
+       "sd": 5.8455,
+       "p5": -2.0,
+       "p25": 2.0,
+       "p50": 5.0,
+       "p75": 9.0,
+       "p95": 17.0
+      },
+      "ks_vs_history_resampled": 0.0145,
+      "ks_vs_history_unconditional": 0.0194,
+      "component_means": {
+       "sacks": 2.4435,
+       "takeaways": 1.321,
+       "def_td": 0.1375,
+       "safety": 0.0255
+      }
+     },
+     "rep_rec": {
+      "mean": 6.366,
+      "sd": 5.918,
+      "p5": -2.0,
+      "p25": 2.0,
+      "p50": 5.0,
+      "p75": 10.0,
+      "p95": 18.0,
+      "share_non_integer": 0.0,
+      "share_dk_ne_own_components_and_points_allowed": 0.0,
+      "points_allowed_mean": 23.398,
+      "history_conditional_mean_given_this_arms_points_allowed": 6.3026,
+      "history_resampled": {
+       "mean": 6.2315,
+       "sd": 5.8455,
+       "p5": -2.0,
+       "p25": 2.0,
+       "p50": 5.0,
+       "p75": 9.0,
+       "p95": 17.0
+      },
+      "ks_vs_history_resampled": 0.0145,
+      "ks_vs_history_unconditional": 0.0194,
+      "component_means": {
+       "sacks": 2.4435,
+       "takeaways": 1.321,
+       "def_td": 0.1375,
+       "safety": 0.0255
+      }
+     }
+    },
+    "Saints|NO": {
+     "projection_dk": 6.5468,
+     "projection_event_items": {
+      "blocked_kick": 0.0,
+      "fumble_recovery": 1.2437,
+      "interception": 0.958,
+      "points_allowed": 1.2275,
+      "return_td": 0.605,
+      "sack": 2.5126,
+      "safety": 0.0
+     },
+     "actual_dk": -3.0,
+     "inc": {
+      "mean": 6.5468,
+      "sd": 4.4704,
+      "p5": 0.76,
+      "p25": 3.04,
+      "p50": 6.079,
+      "p75": 9.119,
+      "p95": 14.439,
+      "share_non_integer": 0.982,
+      "share_dk_ne_own_components_and_points_allowed": 0.982,
+      "points_allowed_mean": 17.555,
+      "history_conditional_mean_given_this_arms_points_allowed": 8.5391,
+      "history_resampled": {
+       "mean": 8.4835,
+       "sd": 6.0931,
+       "p5": 0.0,
+       "p25": 4.0,
+       "p50": 7.0,
+       "p75": 12.0,
+       "p95": 20.0
+      },
+      "ks_vs_history_resampled": 0.186,
+      "ks_vs_history_unconditional": 0.1355,
+      "component_means": {
+       "sacks": 2.7715,
+       "takeaways": 1.4605,
+       "def_td": 0.1395,
+       "safety": 0.0255
+      }
+     },
+     "rep_qb": {
+      "mean": 8.525,
+      "sd": 5.9889,
+      "p5": 0.0,
+      "p25": 4.0,
+      "p50": 8.0,
+      "p75": 12.0,
+      "p95": 19.0,
+      "share_non_integer": 0.0,
+      "share_dk_ne_own_components_and_points_allowed": 0.0,
+      "points_allowed_mean": 17.839,
+      "history_conditional_mean_given_this_arms_points_allowed": 8.4067,
+      "history_resampled": {
+       "mean": 8.349,
+       "sd": 6.2023,
+       "p5": 0.0,
+       "p25": 4.0,
+       "p50": 7.0,
+       "p75": 12.0,
+       "p95": 20.0
+      },
+      "ks_vs_history_resampled": 0.034,
+      "ks_vs_history_unconditional": 0.1599,
+      "component_means": {
+       "sacks": 2.7715,
+       "takeaways": 1.4605,
+       "def_td": 0.1395,
+       "safety": 0.0255
+      }
+     },
+     "rep_rec": {
+      "mean": 8.525,
+      "sd": 5.9889,
+      "p5": 0.0,
+      "p25": 4.0,
+      "p50": 8.0,
+      "p75": 12.0,
+      "p95": 19.0,
+      "share_non_integer": 0.0,
+      "share_dk_ne_own_components_and_points_allowed": 0.0,
+      "points_allowed_mean": 17.839,
+      "history_conditional_mean_given_this_arms_points_allowed": 8.4067,
+      "history_resampled": {
+       "mean": 8.349,
+       "sd": 6.2023,
+       "p5": 0.0,
+       "p25": 4.0,
+       "p50": 7.0,
+       "p75": 12.0,
+       "p95": 20.0
+      },
+      "ks_vs_history_resampled": 0.034,
+      "ks_vs_history_unconditional": 0.1599,
+      "component_means": {
+       "sacks": 2.7715,
+       "takeaways": 1.4605,
+       "def_td": 0.1395,
+       "safety": 0.0255
+      }
+     }
+    }
+   },
+   "dst_club_form_history": {
+    "Falcons|ATL": {
+     "n_games_2025_plus_2026_prelock": 20,
+     "mean_dk": 6.45,
+     "se": 1.241,
+     "mean_sacks": 3.1,
+     "mean_takeaways": 1.25,
+     "mean_points_allowed": 23.45,
+     "history_conditional_mean_given_own_pa": 5.797,
+     "pbp_2026_file": "nfl/research/postgame/pbp_2026.79b02496d26004ee.csv.gz",
+     "CLUB_ADJUSTED_BENCHMARK": {
+      "DEFINITION": "league E[DST DK | opponent-points band] over the repaired arm's own points-allowed draws, plus the club's unshrunk residual (own 2025+2026-prelock mean DK minus league-conditional mean at its own points allowed). Declared for this evaluation; no coefficient fitted; SE is roughly the residual SE",
+      "club_residual": 0.653,
+      "benchmark_mean": 6.956,
+      "approx_se": 1.241,
+      "abs_gap_incumbent": 1.344,
+      "abs_gap_repaired": 0.59
+     }
+    },
+    "Saints|NO": {
+     "n_games_2025_plus_2026_prelock": 20,
+     "mean_dk": 6.4,
+     "se": 1.255,
+     "mean_sacks": 2.6,
+     "mean_takeaways": 1.15,
+     "mean_points_allowed": 23.3,
+     "history_conditional_mean_given_own_pa": 5.819,
+     "pbp_2026_file": "nfl/research/postgame/pbp_2026.79b02496d26004ee.csv.gz",
+     "CLUB_ADJUSTED_BENCHMARK": {
+      "DEFINITION": "league E[DST DK | opponent-points band] over the repaired arm's own points-allowed draws, plus the club's unshrunk residual (own 2025+2026-prelock mean DK minus league-conditional mean at its own points allowed). Declared for this evaluation; no coefficient fitted; SE is roughly the residual SE",
+      "club_residual": 0.581,
+      "benchmark_mean": 8.988,
+      "approx_se": 1.255,
+      "abs_gap_incumbent": 2.441,
+      "abs_gap_repaired": 0.463
+     }
+    }
+   },
+   "game_outcomes": {
+    "inc": {
+     "n_worlds": 2000,
+     "share_club_score_eq_1": 0.0,
+     "share_club_score_in_open_interval_0_2_excl_0": 0.0155,
+     "share_non_integer_club_score": 0.97975,
+     "share_club_score_zero": 0.02025,
+     "share_ties": 0.0,
+     "share_margin_3_or_7": 0.0,
+     "home_mean": 23.028,
+     "away_mean": 17.555,
+     "total_mean": 40.583,
+     "total_sd": 13.85,
+     "total_p5": 18.957,
+     "total_p95": 64.03,
+     "club_sd": 10.043,
+     "abs_margin_mean": 11.43,
+     "corr_with_drawn": 1.0
+    },
+    "rep_qb": {
+     "n_worlds": 2000,
+     "share_club_score_eq_1": 0.0,
+     "share_club_score_in_open_interval_0_2_excl_0": 0.0,
+     "share_non_integer_club_score": 0.0,
+     "share_club_score_zero": 0.02875,
+     "share_ties": 0.037,
+     "share_margin_3_or_7": 0.11,
+     "home_mean": 23.398,
+     "away_mean": 17.839,
+     "total_mean": 41.237,
+     "total_sd": 14.34,
+     "total_p5": 19.0,
+     "total_p95": 65.05,
+     "club_sd": 10.564,
+     "abs_margin_mean": 12.261,
+     "points_eq_event_sum_max_abs_gap": 0.0,
+     "corr_total_with_incumbent_drawn_total": 0.9586,
+     "corr_margin_with_incumbent_drawn_margin": 0.9589,
+     "mean_shift_total_vs_incumbent": 0.655
+    },
+    "rep_rec": {
+     "n_worlds": 2000,
+     "share_club_score_eq_1": 0.0,
+     "share_club_score_in_open_interval_0_2_excl_0": 0.0,
+     "share_non_integer_club_score": 0.0,
+     "share_club_score_zero": 0.02875,
+     "share_ties": 0.037,
+     "share_margin_3_or_7": 0.11,
+     "home_mean": 23.398,
+     "away_mean": 17.839,
+     "total_mean": 41.237,
+     "total_sd": 14.34,
+     "total_p5": 19.0,
+     "total_p95": 65.05,
+     "club_sd": 10.564,
+     "abs_margin_mean": 12.261,
+     "points_eq_event_sum_max_abs_gap": 0.0,
+     "corr_total_with_incumbent_drawn_total": 0.9586,
+     "corr_margin_with_incumbent_drawn_margin": 0.9589,
+     "mean_shift_total_vs_incumbent": 0.655
+    },
+    "actual": {
+     "NO": 24,
+     "ATL": 45
+    }
+   }
+  }
+ },
+ "history": {
+  "games": {
+   "n_worlds": 1359,
+   "share_club_score_eq_1": 0.0,
+   "share_club_score_in_open_interval_0_2_excl_0": 0.0,
+   "share_non_integer_club_score": 0.0,
+   "share_club_score_zero": 0.01067,
+   "share_ties": 0.00294,
+   "share_margin_3_or_7": 0.22369,
+   "home_mean": 23.543,
+   "away_mean": 21.481,
+   "total_mean": 45.024,
+   "total_sd": 13.654,
+   "total_p5": 24.0,
+   "total_p95": 69.0,
+   "club_sd": 9.897,
+   "abs_margin_mean": 11.1,
+   "n_games": 1359
+  },
+  "dst": {
+   "n_club_games": 2718,
+   "seasons": [
+    "2021",
+    "2022",
+    "2023",
+    "2024",
+    "2025"
+   ],
+   "mean_dk_pa_all": 6.5199,
+   "sd": 5.7788,
+   "mean_dk_pa_excl_def_td_vs_offence": 6.6269,
+   "mean_dk_without_blocked_kicks": 6.3764,
+   "share_integer": 1.0,
+   "p5": -2.0,
+   "p25": 3.0,
+   "p50": 6.0,
+   "p75": 10.0,
+   "p95": 17.15,
+   "component_means": {
+    "sack": 2.4106,
+    "int": 0.7561,
+    "fr": 0.5018,
+    "safety": 0.0239,
+    "dst_td": 0.138,
+    "blk": 0.0717,
+    "pa": 22.5118
+   },
+   "by_dk_band": {
+    "0-1": {
+     "n": 29,
+     "mean_dk": 20.2759,
+     "mean_dk_no_blk": 20.2069
+    },
+    "1-7": {
+     "n": 100,
+     "mean_dk": 16.03,
+     "mean_dk_no_blk": 15.93
+    },
+    "7-14": {
+     "n": 383,
+     "mean_dk": 11.9426,
+     "mean_dk_no_blk": 11.765
+    },
+    "14-21": {
+     "n": 715,
+     "mean_dk": 7.4713,
+     "mean_dk_no_blk": 7.2979
+    },
+    "21-28": {
+     "n": 700,
+     "mean_dk": 5.46,
+     "mean_dk_no_blk": 5.3343
+    },
+    "28-35": {
+     "n": 496,
+     "mean_dk": 3.9052,
+     "mean_dk_no_blk": 3.8044
+    },
+    "35-999": {
+     "n": 295,
+     "mean_dk": -0.4915,
+     "mean_dk_no_blk": -0.6542
+    }
+   },
+   "by_sim_band": {
+    "0-10": {
+     "n": 226,
+     "mean_dk": 15.0,
+     "mean_dk_no_blk": 14.8319
+    },
+    "10-17": {
+     "n": 506,
+     "mean_dk": 10.1423,
+     "mean_dk_no_blk": 9.996
+    },
+    "17-24": {
+     "n": 763,
+     "mean_dk": 6.7575,
+     "mean_dk_no_blk": 6.6212
+    },
+    "24-31": {
+     "n": 662,
+     "mean_dk": 4.7341,
+     "mean_dk_no_blk": 4.574
+    },
+    "31-1000000": {
+     "n": 561,
+     "mean_dk": 1.6203,
+     "mean_dk_no_blk": 1.4991
+    }
+   }
+  },
+  "pbp_files": {
+   "2021": "nfl/research/postgame/pbp_2021.e8743a568f99667a.csv.gz",
+   "2022": "nfl/research/postgame/pbp_2022.0c69a71eb3949895.csv.gz",
+   "2023": "nfl/research/postgame/pbp_2023.4649804ee0f0a40b.csv.gz",
+   "2024": "nfl/research/postgame/pbp_2024.23370d5d10f8104d.csv.gz",
+   "2025": "nfl/research/postgame/pbp_2025.2f135887790a013f.csv.gz",
+   "2026_W1_3": "nfl/research/postgame/pbp_2026.79b02496d26004ee.csv.gz",
+   "2026_W1_4": "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz"
+  }
+ },
+ "pooled": {
+  "ALL_DRAWN": {
+   "inc": {
+    "n": 79,
+    "mean_crps": 2.2389,
+    "mean_error": -0.1533,
+    "mae_of_mean": 3.0823,
+    "coverage_50": 0.6456,
+    "coverage_80": 0.7848,
+    "coverage_90": 0.8481,
+    "pit_mean": 0.5007,
+    "pit_deciles": [
+     6,
+     4,
+     5,
+     8,
+     34,
+     1,
+     2,
+     4,
+     3,
+     12
+    ]
+   },
+   "rep_qb": {
+    "n": 79,
+    "mean_crps": 2.2762,
+    "mean_error": -0.0496,
+    "mae_of_mean": 3.1641,
+    "coverage_50": 0.7089,
+    "coverage_80": 0.8228,
+    "coverage_90": 0.8608,
+    "pit_mean": 0.5112,
+    "pit_deciles": [
+     4,
+     4,
+     6,
+     9,
+     29,
+     6,
+     2,
+     4,
+     5,
+     10
+    ]
+   },
+   "rep_rec": {
+    "n": 79,
+    "mean_crps": 2.2689,
+    "mean_error": -0.0718,
+    "mae_of_mean": 3.1559,
+    "coverage_50": 0.6962,
+    "coverage_80": 0.8228,
+    "coverage_90": 0.8481,
+    "pit_mean": 0.5122,
+    "pit_deciles": [
+     4,
+     5,
+     5,
+     8,
+     30,
+     6,
+     2,
+     5,
+     4,
+     10
+    ]
+   },
+   "paired_crps_rep_qb_minus_inc": {
+    "per_game_mean_diff": {
+     "TB_DAL_2026W5": 0.0323,
+     "ATL_NO_2026W4": 0.0455
+    },
+    "pooled_mean_diff": 0.0373,
+    "n_games": 2,
+    "CLUSTER_NOTE": "two game clusters: a cluster bootstrap over 2 games has 3 distinct resamples and is not reported; per-game values are the evidence"
+   },
+   "paired_crps_rep_rec_minus_inc": {
+    "per_game_mean_diff": {
+     "TB_DAL_2026W5": 0.0277,
+     "ATL_NO_2026W4": 0.0339
+    },
+    "pooled_mean_diff": 0.03,
+    "n_games": 2,
+    "CLUSTER_NOTE": "two game clusters: a cluster bootstrap over 2 games has 3 distinct resamples and is not reported; per-game values are the evidence"
+   }
+  },
+  "INC_MEAN_GE_1": {
+   "inc": {
+    "n": 44,
+    "mean_crps": 3.754,
+    "mean_error": -0.0895,
+    "mae_of_mean": 5.186,
+    "coverage_50": 0.5,
+    "coverage_80": 0.75,
+    "coverage_90": 0.8182,
+    "pit_mean": 0.4843,
+    "pit_deciles": [
+     5,
+     4,
+     5,
+     6,
+     7,
+     1,
+     2,
+     4,
+     3,
+     7
+    ]
+   },
+   "rep_qb": {
+    "n": 44,
+    "mean_crps": 3.8182,
+    "mean_error": 0.091,
+    "mae_of_mean": 5.333,
+    "coverage_50": 0.6136,
+    "coverage_80": 0.8182,
+    "coverage_90": 0.8409,
+    "pit_mean": 0.4984,
+    "pit_deciles": [
+     3,
+     4,
+     6,
+     7,
+     4,
+     4,
+     2,
+     4,
+     5,
+     5
+    ]
+   },
+   "rep_rec": {
+    "n": 44,
+    "mean_crps": 3.8044,
+    "mean_error": 0.0524,
+    "mae_of_mean": 5.3163,
+    "coverage_50": 0.5909,
+    "coverage_80": 0.8182,
+    "coverage_90": 0.8182,
+    "pit_mean": 0.4999,
+    "pit_deciles": [
+     3,
+     5,
+     5,
+     6,
+     5,
+     4,
+     2,
+     5,
+     4,
+     5
+    ]
+   },
+   "paired_crps_rep_qb_minus_inc": {
+    "per_game_mean_diff": {
+     "TB_DAL_2026W5": 0.0618,
+     "ATL_NO_2026W4": 0.0671
+    },
+    "pooled_mean_diff": 0.0642,
+    "n_games": 2,
+    "CLUSTER_NOTE": "two game clusters: a cluster bootstrap over 2 games has 3 distinct resamples and is not reported; per-game values are the evidence"
+   },
+   "paired_crps_rep_rec_minus_inc": {
+    "per_game_mean_diff": {
+     "TB_DAL_2026W5": 0.0521,
+     "ATL_NO_2026W4": 0.0483
+    },
+    "pooled_mean_diff": 0.0504,
+    "n_games": 2,
+    "CLUSTER_NOTE": "two game clusters: a cluster bootstrap over 2 games has 3 distinct resamples and is not reported; per-game values are the evidence"
+   }
+  },
+  "SKILL_INC_MEAN_GE_1": {
+   "inc": {
+    "n": 36,
+    "mean_crps": 4.0866,
+    "mean_error": -0.6117,
+    "mae_of_mean": 5.624,
+    "coverage_50": 0.4444,
+    "coverage_80": 0.7222,
+    "coverage_90": 0.8056,
+    "pit_mean": 0.5124,
+    "pit_deciles": [
+     4,
+     3,
+     4,
+     5,
+     5,
+     1,
+     1,
+     3,
+     3,
+     7
+    ]
+   },
+   "rep_qb": {
+    "n": 36,
+    "mean_crps": 4.0521,
+    "mean_error": -0.5491,
+    "mae_of_mean": 5.6003,
+    "coverage_50": 0.6111,
+    "coverage_80": 0.8056,
+    "coverage_90": 0.8333,
+    "pit_mean": 0.5278,
+    "pit_deciles": [
+     2,
+     3,
+     5,
+     5,
+     3,
+     4,
+     1,
+     3,
+     5,
+     5
+    ]
+   },
+   "rep_rec": {
+    "n": 36,
+    "mean_crps": 4.0352,
+    "mean_error": -0.5963,
+    "mae_of_mean": 5.5798,
+    "coverage_50": 0.5833,
+    "coverage_80": 0.8056,
+    "coverage_90": 0.8056,
+    "pit_mean": 0.5297,
+    "pit_deciles": [
+     2,
+     4,
+     4,
+     4,
+     4,
+     4,
+     1,
+     4,
+     4,
+     5
+    ]
+   },
+   "paired_crps_rep_qb_minus_inc": {
+    "per_game_mean_diff": {
+     "TB_DAL_2026W5": -0.0556,
+     "ATL_NO_2026W4": -0.0081
+    },
+    "pooled_mean_diff": -0.0345,
+    "n_games": 2,
+    "CLUSTER_NOTE": "two game clusters: a cluster bootstrap over 2 games has 3 distinct resamples and is not reported; per-game values are the evidence"
+   },
+   "paired_crps_rep_rec_minus_inc": {
+    "per_game_mean_diff": {
+     "TB_DAL_2026W5": -0.0672,
+     "ATL_NO_2026W4": -0.0315
+    },
+    "pooled_mean_diff": -0.0514,
+    "n_games": 2,
+    "CLUSTER_NOTE": "two game clusters: a cluster bootstrap over 2 games has 3 distinct resamples and is not reported; per-game values are the evidence"
+   }
+  },
+  "DST_AND_K": {
+   "inc": {
+    "n": 8,
+    "mean_crps": 2.2572,
+    "mean_error": 2.2604,
+    "mae_of_mean": 3.2147,
+    "coverage_50": 0.75,
+    "coverage_80": 0.875,
+    "coverage_90": 0.875,
+    "pit_mean": 0.3582,
+    "pit_deciles": [
+     1,
+     1,
+     1,
+     1,
+     2,
+     0,
+     1,
+     1,
+     0,
+     0
+    ]
+   },
+   "rep_qb": {
+    "n": 8,
+    "mean_crps": 2.7654,
+    "mean_error": 2.9715,
+    "mae_of_mean": 4.1305,
+    "coverage_50": 0.625,
+    "coverage_80": 0.875,
+    "coverage_90": 0.875,
+    "pit_mean": 0.3659,
+    "pit_deciles": [
+     1,
+     1,
+     1,
+     2,
+     1,
+     0,
+     1,
+     1,
+     0,
+     0
+    ]
+   },
+   "rep_rec": {
+    "n": 8,
+    "mean_crps": 2.7654,
+    "mean_error": 2.9715,
+    "mae_of_mean": 4.1305,
+    "coverage_50": 0.625,
+    "coverage_80": 0.875,
+    "coverage_90": 0.875,
+    "pit_mean": 0.3659,
+    "pit_deciles": [
+     1,
+     1,
+     1,
+     2,
+     1,
+     0,
+     1,
+     1,
+     0,
+     0
+    ]
+   },
+   "paired_crps_rep_qb_minus_inc": {
+    "per_game_mean_diff": {
+     "TB_DAL_2026W5": 0.6488,
+     "ATL_NO_2026W4": 0.3675
+    },
+    "pooled_mean_diff": 0.5082,
+    "n_games": 2,
+    "CLUSTER_NOTE": "two game clusters: a cluster bootstrap over 2 games has 3 distinct resamples and is not reported; per-game values are the evidence"
+   },
+   "paired_crps_rep_rec_minus_inc": {
+    "per_game_mean_diff": {
+     "TB_DAL_2026W5": 0.6488,
+     "ATL_NO_2026W4": 0.3675
+    },
+    "pooled_mean_diff": 0.5082,
+    "n_games": 2,
+    "CLUSTER_NOTE": "two game clusters: a cluster bootstrap over 2 games has 3 distinct resamples and is not reported; per-game values are the evidence"
+   }
+  },
+  "by_position": {
+   "DST": {
+    "n": 4,
+    "inc": {
+     "mean_error": 2.8436,
+     "mean_crps": 2.953
+    },
+    "rep_qb": {
+     "mean_error": 4.2523,
+     "mean_crps": 3.9529
+    },
+    "rep_rec": {
+     "mean_error": 4.2523,
+     "mean_crps": 3.9529
+    }
+   },
+   "K": {
+    "n": 4,
+    "inc": {
+     "mean_error": 1.6771,
+     "mean_crps": 1.5614
+    },
+    "rep_qb": {
+     "mean_error": 1.6908,
+     "mean_crps": 1.5779
+    },
+    "rep_rec": {
+     "mean_error": 1.6908,
+     "mean_crps": 1.5779
+    }
+   },
+   "QB": {
+    "n": 10,
+    "inc": {
+     "mean_error": 1.4414,
+     "mean_crps": 0.9815
+    },
+    "rep_qb": {
+     "mean_error": 1.4105,
+     "mean_crps": 0.9851
+    },
+    "rep_rec": {
+     "mean_error": 1.3538,
+     "mean_crps": 0.9602
+    }
+   },
+   "RB": {
+    "n": 15,
+    "inc": {
+     "mean_error": -3.176,
+     "mean_crps": 3.6607
+    },
+    "rep_qb": {
+     "mean_error": -3.0765,
+     "mean_crps": 3.6331
+    },
+    "rep_rec": {
+     "mean_error": -3.1172,
+     "mean_crps": 3.6348
+    }
+   },
+   "TE": {
+    "n": 19,
+    "inc": {
+     "mean_error": 1.0268,
+     "mean_crps": 0.7708
+    },
+    "rep_qb": {
+     "mean_error": 1.0194,
+     "mean_crps": 0.7308
+    },
+    "rep_rec": {
+     "mean_error": 1.0351,
+     "mean_crps": 0.76
+    }
+   },
+   "WR": {
+    "n": 27,
+    "inc": {
+     "mean_error": -0.6103,
+     "mean_crps": 2.9423
+    },
+    "rep_qb": {
+     "mean_error": -0.5563,
+     "mean_crps": 2.9431
+    },
+    "rep_rec": {
+     "mean_error": -0.5885,
+     "mean_crps": 2.9094
+    }
+   }
+  }
+ }
+}

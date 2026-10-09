@@ -1,0 +1,3738 @@
+{
+ "ARTIFACT": "ACCOUNTING_REPAIR_INTEGRATION_EVALUATION",
+ "date": "2026-10-09",
+ "SHADOW_ONLY": "nothing promoted or wired into production",
+ "branch": "claude/showdown-accounting-repair",
+ "evaluated_at_commit": "9e207a4d7727db50489da99fb4ba0fe7bcfaf4ec",
+ "interpreter": "python3.12.3",
+ "n_worlds_per_slate": 2000,
+ "POWER": "two games, 79 player-games (44 with incumbent mean >= 1 DK), 4 DST-games. Development data, exploratory only; per-game values are the evidence, and no word like calibrated, unbiased or correct applies",
+ "slates": {
+  "evaluated": {
+   "TB_DAL_2026W5": {
+    "scenario": "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL",
+    "reproduced": "max |DK diff| 0.0 over 49 players, live data",
+    "repaired_outputs": "nfl/research/accounting_repair/TB_DAL_2026W5 (re-run in scratch: byte-identical)",
+    "actuals": "git show be87cb0d:nfl/postgame/showdown_tb_dal_2026W5/TB_DAL_2026W5_POSTGAME.json (player_actuals dk_A)"
+   },
+   "ATL_NO_2026W4": {
+    "scenario": "nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX (the production upload 8f4d9a77)",
+    "reproduced": "max |DK diff| 0.0 over 30 players ONLY with NFL_PIT_MANIFEST=nfl/warehouse/pit_manifests/PIT_MANIFEST.ATL_NO_2026W4.1294f0dc638d95c9.json (cutoff 2026-10-05T23:47:26Z). Without it the runner refuses INCUMBENT_NOT_REPRODUCED (max |DK diff| 8.0): both kickers differ, because the live pbp capture 2b3e9f2c holds week 4, the game itself (docs/SHOWDOWN_BASELINE_REPRODUCTION.md F3)",
+    "repaired_outputs": "nfl/research/accounting_repair/ATL_NO_2026W4 (two builds byte-identical)",
+    "actuals": "nfl/postgame/showdown_atl_no_2026W4/ATL_NO_POSTGAME_ACTUAL.json (player_actuals dk_A; dk_B differs only for Daniel Carlson, 6 vs 5)"
+   }
+  },
+  "skipped": {
+   "PIT_CLE_2026W4": "nfl/dfs/salaries/SHOWDOWN_TONIGHT_{PROJ,STATE,DRAWS}.json is an earlier pipeline: the DRAWS carry no tag, projection_sha256 or state_sha256 (the runner refuses at its first check), the PROJ has no int_rate (the incumbent efficiency step cannot run), and showdown_draws.build on those inputs with the published seed 20261001 reproduces 0 of 45 players (worst |DK diff| 50.5). No PIT manifest exists for it, and the live pbp holds the game. The nfl/research/showdown_live/2026_04_PIT_CLE artifacts are post-kickoff rebuilds (\"sealed after kickoff: DESCRIPTIVE ONLY\") with no PROJ/STATE.",
+   "PHI_CHI": "only DK contest standings exist (nfl/postgame/raw/showdown_history/196036243_PHI_CHI); no frozen pregame projection, state or draws anywhere in the repository."
+  }
+ },
+ "verdicts": {
+  "a_distributional_calibration": {
+   "verdict": "DAMAGE_DETECTED",
+   "basis": "historical dispersion benchmark (receivers); the outcome-based comparison has no power and detects nothing either way",
+   "measured": {
+    "outcome_based_pooled_inc_mean_ge_1": {
+     "inc": {
+      "n": 44,
+      "mean_crps": 3.754,
+      "mean_error": -0.0895,
+      "coverage_50": 0.5,
+      "coverage_80": 0.75,
+      "coverage_90": 0.8182,
+      "pit_mean": 0.4843,
+      "pit_deciles": [
+       5,
+       4,
+       5,
+       6,
+       7,
+       1,
+       2,
+       4,
+       3,
+       7
+      ]
+     },
+     "rep_qb": {
+      "n": 44,
+      "mean_crps": 3.8182,
+      "mean_error": 0.091,
+      "coverage_50": 0.6136,
+      "coverage_80": 0.8182,
+      "coverage_90": 0.8409,
+      "pit_mean": 0.4984,
+      "pit_deciles": [
+       3,
+       4,
+       6,
+       7,
+       4,
+       4,
+       2,
+       4,
+       5,
+       5
+      ]
+     },
+     "rep_rec": {
+      "n": 44,
+      "mean_crps": 3.8044,
+      "mean_error": 0.0524,
+      "coverage_50": 0.5909,
+      "coverage_80": 0.8182,
+      "coverage_90": 0.8182,
+      "pit_mean": 0.4999,
+      "pit_deciles": [
+       3,
+       5,
+       5,
+       6,
+       5,
+       4,
+       2,
+       5,
+       4,
+       5
+      ]
+     },
+     "paired_crps_rep_qb_minus_inc": {
+      "per_game_mean_diff": {
+       "TB_DAL_2026W5": 0.0618,
+       "ATL_NO_2026W4": 0.0671
+      },
+      "pooled_mean_diff": 0.0642,
+      "n_games": 2,
+      "CLUSTER_NOTE": "two game clusters: a cluster bootstrap over 2 games has 3 distinct resamples and is not reported; per-game values are the evidence"
+     },
+     "paired_crps_rep_rec_minus_inc": {
+      "per_game_mean_diff": {
+       "TB_DAL_2026W5": 0.0521,
+       "ATL_NO_2026W4": 0.0483
+      },
+      "pooled_mean_diff": 0.0504,
+      "n_games": 2,
+      "CLUSTER_NOTE": "two game clusters: a cluster bootstrap over 2 games has 3 distinct resamples and is not reported; per-game values are the evidence"
+     }
+    },
+    "outcome_based_pooled_skill": {
+     "inc": {
+      "n": 36,
+      "mean_crps": 4.0866,
+      "mean_error": -0.6117,
+      "coverage_50": 0.4444,
+      "coverage_80": 0.7222,
+      "coverage_90": 0.8056,
+      "pit_mean": 0.5124,
+      "pit_deciles": [
+       4,
+       3,
+       4,
+       5,
+       5,
+       1,
+       1,
+       3,
+       3,
+       7
+      ]
+     },
+     "rep_qb": {
+      "n": 36,
+      "mean_crps": 4.0521,
+      "mean_error": -0.5491,
+      "coverage_50": 0.6111,
+      "coverage_80": 0.8056,
+      "coverage_90": 0.8333,
+      "pit_mean": 0.5278,
+      "pit_deciles": [
+       2,
+       3,
+       5,
+       5,
+       3,
+       4,
+       1,
+       3,
+       5,
+       5
+      ]
+     },
+     "rep_rec": {
+      "n": 36,
+      "mean_crps": 4.0352,
+      "mean_error": -0.5963,
+      "coverage_50": 0.5833,
+      "coverage_80": 0.8056,
+      "coverage_90": 0.8056,
+      "pit_mean": 0.5297,
+      "pit_deciles": [
+       2,
+       4,
+       4,
+       4,
+       4,
+       4,
+       1,
+       4,
+       4,
+       5
+      ]
+     },
+     "paired_crps_rep_qb_minus_inc": {
+      "per_game_mean_diff": {
+       "TB_DAL_2026W5": -0.0556,
+       "ATL_NO_2026W4": -0.0081
+      },
+      "pooled_mean_diff": -0.0345,
+      "n_games": 2,
+      "CLUSTER_NOTE": "two game clusters: a cluster bootstrap over 2 games has 3 distinct resamples and is not reported; per-game values are the evidence"
+     },
+     "paired_crps_rep_rec_minus_inc": {
+      "per_game_mean_diff": {
+       "TB_DAL_2026W5": -0.0672,
+       "ATL_NO_2026W4": -0.0315
+      },
+      "pooled_mean_diff": -0.0514,
+      "n_games": 2,
+      "CLUSTER_NOTE": "two game clusters: a cluster bootstrap over 2 games has 3 distinct resamples and is not reported; per-game values are the evidence"
+     }
+    },
+    "outcome_based_pooled_dst_and_k": {
+     "inc": {
+      "n": 8,
+      "mean_crps": 2.2572,
+      "mean_error": 2.2604,
+      "coverage_50": 0.75,
+      "coverage_80": 0.875,
+      "coverage_90": 0.875,
+      "pit_mean": 0.3582,
+      "pit_deciles": [
+       1,
+       1,
+       1,
+       1,
+       2,
+       0,
+       1,
+       1,
+       0,
+       0
+      ]
+     },
+     "rep_qb": {
+      "n": 8,
+      "mean_crps": 2.7654,
+      "mean_error": 2.9715,
+      "coverage_50": 0.625,
+      "coverage_80": 0.875,
+      "coverage_90": 0.875,
+      "pit_mean": 0.3659,
+      "pit_deciles": [
+       1,
+       1,
+       1,
+       2,
+       1,
+       0,
+       1,
+       1,
+       0,
+       0
+      ]
+     },
+     "rep_rec": {
+      "n": 8,
+      "mean_crps": 2.7654,
+      "mean_error": 2.9715,
+      "coverage_50": 0.625,
+      "coverage_80": 0.875,
+      "coverage_90": 0.875,
+      "pit_mean": 0.3659,
+      "pit_deciles": [
+       1,
+       1,
+       1,
+       2,
+       1,
+       0,
+       1,
+       1,
+       0,
+       0
+      ]
+     },
+     "paired_crps_rep_qb_minus_inc": {
+      "per_game_mean_diff": {
+       "TB_DAL_2026W5": 0.6488,
+       "ATL_NO_2026W4": 0.3675
+      },
+      "pooled_mean_diff": 0.5082,
+      "n_games": 2,
+      "CLUSTER_NOTE": "two game clusters: a cluster bootstrap over 2 games has 3 distinct resamples and is not reported; per-game values are the evidence"
+     },
+     "paired_crps_rep_rec_minus_inc": {
+      "per_game_mean_diff": {
+       "TB_DAL_2026W5": 0.6488,
+       "ATL_NO_2026W4": 0.3675
+      },
+      "pooled_mean_diff": 0.5082,
+      "n_games": 2,
+      "CLUSTER_NOTE": "two game clusters: a cluster bootstrap over 2 games has 3 distinct resamples and is not reported; per-game values are the evidence"
+     }
+    },
+    "receiver_dk_sd_over_history_within_player_season_sd_matched_mean": {
+     "inc": {
+      "n_players": 20,
+      "median": 0.916,
+      "mean": 0.953,
+      "share_above_1": 0.25
+     },
+     "rep_qb": {
+      "n_players": 20,
+      "median": 1.093,
+      "mean": 1.1341,
+      "share_above_1": 0.65
+     },
+     "rep_rec": {
+      "n_players": 20,
+      "median": 1.0663,
+      "mean": 1.1383,
+      "share_above_1": 0.75
+     }
+    },
+    "rb_dk_sd_over_history": {
+     "inc": {
+      "n_players": 9,
+      "median": 0.7654,
+      "mean": 0.8042,
+      "share_above_1": 0.111
+     },
+     "rep_qb": {
+      "n_players": 9,
+      "median": 0.8477,
+      "mean": 0.8859,
+      "share_above_1": 0.111
+     },
+     "rep_rec": {
+      "n_players": 9,
+      "median": 0.8488,
+      "mean": 0.8879,
+      "share_above_1": 0.111
+     }
+    },
+    "qb_dk_sd_over_history": {
+     "inc": {
+      "n_players": 4,
+      "median": 0.9085,
+      "mean": 0.9169,
+      "share_above_1": 0.0
+     },
+     "rep_qb": {
+      "n_players": 4,
+      "median": 0.9752,
+      "mean": 0.9797,
+      "share_above_1": 0.25
+     },
+     "rep_rec": {
+      "n_players": 4,
+      "median": 0.9784,
+      "mean": 0.9694,
+      "share_above_1": 0.5
+     }
+    },
+    "receiver_corr_receptions_rec_yards_minus_history": {
+     "inc": {
+      "n_players": 20,
+      "median": -0.3131,
+      "mean": -0.3087,
+      "share_above_0": 0.0
+     },
+     "rep_qb": {
+      "n_players": 20,
+      "median": -0.1557,
+      "mean": -0.1646,
+      "share_above_0": 0.0
+     },
+     "rep_rec": {
+      "n_players": 20,
+      "median": -0.1557,
+      "mean": -0.1646,
+      "share_above_0": 0.0
+     }
+    },
+    "receiver_corr_receptions_rec_td_minus_history": {
+     "inc": {
+      "n_players": 20,
+      "median": -0.3028,
+      "mean": -0.306,
+      "share_above_0": 0.0
+     },
+     "rep_qb": {
+      "n_players": 20,
+      "median": -0.0511,
+      "mean": -0.0539,
+      "share_above_0": 0.3
+     },
+     "rep_rec": {
+      "n_players": 20,
+      "median": -0.0511,
+      "mean": -0.0539,
+      "share_above_0": 0.3
+     }
+    },
+    "history_bins": {
+     "REC:1-4": {
+      "n_player_seasons": 244,
+      "median_sd": 2.6961522035398846,
+      "median_cv": 0.9583030943521975,
+      "median_corr_rec_yds": 0.8104672558777992,
+      "median_corr_rec_td": 0.2683711001116926
+     },
+     "REC:4-7": {
+      "n_player_seasons": 315,
+      "median_sd": 4.4144721204878055,
+      "median_cv": 0.8492474678289534,
+      "median_corr_rec_yds": 0.8006591336726224,
+      "median_corr_rec_td": 0.288873332444866
+     },
+     "REC:7-10": {
+      "n_player_seasons": 216,
+      "median_sd": 6.013079450232974,
+      "median_cv": 0.734573661751627,
+      "median_corr_rec_yds": 0.8014236346674355,
+      "median_corr_rec_td": 0.3046005798656691
+     },
+     "REC:10-13": {
+      "n_player_seasons": 138,
+      "median_sd": 7.154445976554704,
+      "median_cv": 0.6387437745038892,
+      "median_corr_rec_yds": 0.8169235118590501,
+      "median_corr_rec_td": 0.3132703567907677
+     },
+     "REC:13-16": {
+      "n_player_seasons": 98,
+      "median_sd": 8.299211161329815,
+      "median_cv": 0.5864339153400733,
+      "median_corr_rec_yds": 0.7843540654560601,
+      "median_corr_rec_td": 0.27471082760344545
+     },
+     "REC:16-20": {
+      "n_player_seasons": 53,
+      "median_sd": 9.62643037499913,
+      "median_cv": 0.55529291838587,
+      "median_corr_rec_yds": 0.7757696364760126,
+      "median_corr_rec_td": 0.3790789132851424
+     },
+     "REC:20-25": {
+      "n_player_seasons": 18,
+      "median_sd": 11.083070854403907,
+      "median_cv": 0.521197122314887,
+      "median_corr_rec_yds": 0.8259712879954291,
+      "median_corr_rec_td": 0.2831424472870327
+     },
+     "QB:10-13": {
+      "n_player_seasons": 25,
+      "median_sd": 6.978513963793233,
+      "median_cv": 0.6183035800260819,
+      "median_corr_rec_yds": null,
+      "median_corr_rec_td": null
+     },
+     "QB:13-16": {
+      "n_player_seasons": 43,
+      "median_sd": 7.182729745257481,
+      "median_cv": 0.4873190298810141,
+      "median_corr_rec_yds": null,
+      "median_corr_rec_td": null
+     },
+     "QB:16-20": {
+      "n_player_seasons": 64,
+      "median_sd": 7.765624913035402,
+      "median_cv": 0.4220579428517182,
+      "median_corr_rec_yds": null,
+      "median_corr_rec_td": null
+     },
+     "QB:20-25": {
+      "n_player_seasons": 33,
+      "median_sd": 9.031650230293074,
+      "median_cv": 0.395025501414987,
+      "median_corr_rec_yds": null,
+      "median_corr_rec_td": null
+     },
+     "RB:1-4": {
+      "n_player_seasons": 76,
+      "median_sd": 2.830409247073595,
+      "median_cv": 0.9796088631207569,
+      "median_corr_rec_yds": 0.8561251283432445,
+      "median_corr_rec_td": 0.325164654904768
+     },
+     "RB:4-7": {
+      "n_player_seasons": 87,
+      "median_sd": 4.948160432591759,
+      "median_cv": 0.9090553858364546,
+      "median_corr_rec_yds": 0.8451874764617204,
+      "median_corr_rec_td": 0.30733356128006617
+     },
+     "RB:7-10": {
+      "n_player_seasons": 70,
+      "median_sd": 6.125806647867363,
+      "median_cv": 0.7391627731941548,
+      "median_corr_rec_yds": 0.7661137896521114,
+      "median_corr_rec_td": 0.2098570918886828
+     },
+     "RB:10-13": {
+      "n_player_seasons": 61,
+      "median_sd": 7.196226915417678,
+      "median_cv": 0.6261431671345702,
+      "median_corr_rec_yds": 0.7843720890562755,
+      "median_corr_rec_td": 0.4328616583756875
+     },
+     "RB:13-16": {
+      "n_player_seasons": 59,
+      "median_sd": 7.941736363704618,
+      "median_cv": 0.5432412254600689,
+      "median_corr_rec_yds": 0.7406111032623506,
+      "median_corr_rec_td": 0.18353258709644946
+     },
+     "RB:16-20": {
+      "n_player_seasons": 38,
+      "median_sd": 9.262056886412871,
+      "median_cv": 0.5245591483722065,
+      "median_corr_rec_yds": 0.7029625120850895,
+      "median_corr_rec_td": 0.20451170602764995
+     },
+     "RB:20-25": {
+      "n_player_seasons": 15,
+      "median_sd": 9.769618956001024,
+      "median_cv": 0.456820002801093,
+      "median_corr_rec_yds": 0.729169054738317,
+      "median_corr_rec_td": 0.33457480255910277
+     }
+    },
+    "benchmark_note": "within-player-season SD across games includes week-to-week role and context changes that a single-game forecast conditions away, so it is an UPPER benchmark for a well-calibrated conditional SD, not a target"
+   },
+   "reading": "Outcome-based: n = 79 player-games from 2 games (44 with incumbent mean >= 1 DK). Central-interval coverage rises under the repair and CRPS is worse in both games overall, better in both games for skill players and worse in both for DST (4 DST-games). With two game clusters none of this separates from noise; nothing here may be read as \"calibrated\". Against history: every skill player's DK distribution is wider in the repaired arm, and for receivers the repaired SD exceeds the historical within-player-season SD at matched mean -- itself an UPPER benchmark for a conditional single-game SD -- in most cases, where the incumbent sat below it. The repair also moves the receptions-yards and receptions-TD correlations most of the way to their historical values. Coherence improved; receiver dispersion now looks too wide."
+  },
+  "b_projection_means": {
+   "verdict": "DAMAGE_DETECTED",
+   "basis": "paired mean drift on identical raw worlds; skill-player means are not preserved",
+   "measured": {
+    "TB_DAL_2026W5": {
+     "rep_qb": {
+      "by_position": {
+       "DST": {
+        "n_players": 2,
+        "sum_drift": 2.9019,
+        "paired_se_of_sum": 0.0745,
+        "mean_abs_player_drift": 2.2854
+       },
+       "K": {
+        "n_players": 2,
+        "sum_drift": -0.0275,
+        "paired_se_of_sum": 0.0685,
+        "mean_abs_player_drift": 0.0138
+       },
+       "QB": {
+        "n_players": 6,
+        "sum_drift": 0.026,
+        "paired_se_of_sum": 0.1257,
+        "mean_abs_player_drift": 0.0217
+       },
+       "RB": {
+        "n_players": 10,
+        "sum_drift": -0.2683,
+        "paired_se_of_sum": 0.1695,
+        "mean_abs_player_drift": 0.0874
+       },
+       "TE": {
+        "n_players": 12,
+        "sum_drift": -0.8025,
+        "paired_se_of_sum": 0.1663,
+        "mean_abs_player_drift": 0.0784
+       },
+       "WR": {
+        "n_players": 17,
+        "sum_drift": -1.1141,
+        "paired_se_of_sum": 0.2105,
+        "mean_abs_player_drift": 0.1317
+       }
+      },
+      "n_players": 49,
+      "n_abs_drift_gt_2_paired_se": 11,
+      "n_abs_drift_gt_0p5_dk": 4,
+      "top8": [
+       {
+        "player": "Cowboys|DAL",
+        "pos": "DST",
+        "proj_dk": 3.9071,
+        "inc_mean": 3.9071,
+        "rep_mean": 7.6435,
+        "drift": 3.7364,
+        "paired_se": 0.0703
+       },
+       {
+        "player": "Buccaneers|TB",
+        "pos": "DST",
+        "proj_dk": 4.309,
+        "inc_mean": 4.309,
+        "rep_mean": 3.4745,
+        "drift": -0.8345,
+        "paired_se": 0.0318
+       },
+       {
+        "player": "Emeka Egbuka|TB",
+        "pos": "WR",
+        "proj_dk": 12.2922,
+        "inc_mean": 11.9939,
+        "rep_mean": 11.1664,
+        "drift": -0.8275,
+        "paired_se": 0.1111
+       },
+       {
+        "player": "Cade Otton|TB",
+        "pos": "TE",
+        "proj_dk": 11.1597,
+        "inc_mean": 11.5686,
+        "rep_mean": 11.0223,
+        "drift": -0.5463,
+        "paired_se": 0.0933
+       },
+       {
+        "player": "Ted Hurst III|TB",
+        "pos": "WR",
+        "proj_dk": 3.9917,
+        "inc_mean": 3.9532,
+        "rep_mean": 3.5396,
+        "drift": -0.4136,
+        "paired_se": 0.0725
+       },
+       {
+        "player": "Chris Godwin Jr.|TB",
+        "pos": "WR",
+        "proj_dk": 8.6738,
+        "inc_mean": 8.5407,
+        "rep_mean": 8.1691,
+        "drift": -0.3716,
+        "paired_se": 0.0744
+       },
+       {
+        "player": "Bucky Irving|TB",
+        "pos": "RB",
+        "proj_dk": 16.537,
+        "inc_mean": 16.4951,
+        "rep_mean": 16.1607,
+        "drift": -0.3344,
+        "paired_se": 0.1116
+       },
+       {
+        "player": "Payne Durham|TB",
+        "pos": "TE",
+        "proj_dk": 2.7524,
+        "inc_mean": 2.7259,
+        "rep_mean": 2.4756,
+        "drift": -0.2503,
+        "paired_se": 0.0581
+       }
+      ]
+     },
+     "rep_rec": {
+      "by_position": {
+       "DST": {
+        "n_players": 2,
+        "sum_drift": 2.9019,
+        "paired_se_of_sum": 0.0745,
+        "mean_abs_player_drift": 2.2854
+       },
+       "K": {
+        "n_players": 2,
+        "sum_drift": -0.0275,
+        "paired_se_of_sum": 0.0685,
+        "mean_abs_player_drift": 0.0138
+       },
+       "QB": {
+        "n_players": 6,
+        "sum_drift": 1.296,
+        "paired_se_of_sum": 0.1292,
+        "mean_abs_player_drift": 0.2731
+       },
+       "RB": {
+        "n_players": 10,
+        "sum_drift": 0.1847,
+        "paired_se_of_sum": 0.1703,
+        "mean_abs_player_drift": 0.0518
+       },
+       "TE": {
+        "n_players": 12,
+        "sum_drift": 0.1534,
+        "paired_se_of_sum": 0.1686,
+        "mean_abs_player_drift": 0.039
+       },
+       "WR": {
+        "n_players": 17,
+        "sum_drift": 0.5933,
+        "paired_se_of_sum": 0.2139,
+        "mean_abs_player_drift": 0.0505
+       }
+      },
+      "n_players": 49,
+      "n_abs_drift_gt_2_paired_se": 9,
+      "n_abs_drift_gt_0p5_dk": 3,
+      "top8": [
+       {
+        "player": "Cowboys|DAL",
+        "pos": "DST",
+        "proj_dk": 3.9071,
+        "inc_mean": 3.9071,
+        "rep_mean": 7.6435,
+        "drift": 3.7364,
+        "paired_se": 0.0703
+       },
+       {
+        "player": "Jalon Daniels|TB",
+        "pos": "QB",
+        "proj_dk": 14.6277,
+        "inc_mean": 13.9915,
+        "rep_mean": 15.4197,
+        "drift": 1.4282,
+        "paired_se": 0.085
+       },
+       {
+        "player": "Buccaneers|TB",
+        "pos": "DST",
+        "proj_dk": 4.309,
+        "inc_mean": 4.309,
+        "rep_mean": 3.4745,
+        "drift": -0.8345,
+        "paired_se": 0.0318
+       },
+       {
+        "player": "Cade Otton|TB",
+        "pos": "TE",
+        "proj_dk": 11.1597,
+        "inc_mean": 11.5686,
+        "rep_mean": 11.8286,
+        "drift": 0.26,
+        "paired_se": 0.0957
+       },
+       {
+        "player": "Chris Godwin Jr.|TB",
+        "pos": "WR",
+        "proj_dk": 8.6738,
+        "inc_mean": 8.5407,
+        "rep_mean": 8.7941,
+        "drift": 0.2534,
+        "paired_se": 0.0766
+       },
+       {
+        "player": "KaVontae Turpin|DAL",
+        "pos": "WR",
+        "proj_dk": 1.3165,
+        "inc_mean": 1.1198,
+        "rep_mean": 1.3525,
+        "drift": 0.2327,
+        "paired_se": 0.0508
+       },
+       {
+        "player": "Javonte Williams|DAL",
+        "pos": "RB",
+        "proj_dk": 17.8404,
+        "inc_mean": 18.7278,
+        "rep_mean": 18.9354,
+        "drift": 0.2076,
+        "paired_se": 0.1376
+       },
+       {
+        "player": "Dak Prescott|DAL",
+        "pos": "QB",
+        "proj_dk": 20.7015,
+        "inc_mean": 22.4543,
+        "rep_mean": 22.2837,
+        "drift": -0.1706,
+        "paired_se": 0.0995
+       }
+      ]
+     }
+    },
+    "ATL_NO_2026W4": {
+     "rep_qb": {
+      "by_position": {
+       "DST": {
+        "n_players": 2,
+        "sum_drift": 2.7326,
+        "paired_se_of_sum": 0.0466,
+        "mean_abs_player_drift": 1.3663
+       },
+       "K": {
+        "n_players": 2,
+        "sum_drift": 0.082,
+        "paired_se_of_sum": 0.0631,
+        "mean_abs_player_drift": 0.041
+       },
+       "QB": {
+        "n_players": 4,
+        "sum_drift": -0.335,
+        "paired_se_of_sum": 0.1358,
+        "mean_abs_player_drift": 0.0886
+       },
+       "RB": {
+        "n_players": 5,
+        "sum_drift": 1.7613,
+        "paired_se_of_sum": 0.1385,
+        "mean_abs_player_drift": 0.3523
+       },
+       "TE": {
+        "n_players": 7,
+        "sum_drift": 0.662,
+        "paired_se_of_sum": 0.1628,
+        "mean_abs_player_drift": 0.1413
+       },
+       "WR": {
+        "n_players": 10,
+        "sum_drift": 2.5704,
+        "paired_se_of_sum": 0.207,
+        "mean_abs_player_drift": 0.2783
+       }
+      },
+      "n_players": 30,
+      "n_abs_drift_gt_2_paired_se": 11,
+      "n_abs_drift_gt_0p5_dk": 5,
+      "top8": [
+       {
+        "player": "Drake London|ATL",
+        "pos": "WR",
+        "proj_dk": 20.502,
+        "inc_mean": 20.0037,
+        "rep_mean": 22.0964,
+        "drift": 2.0927,
+        "paired_se": 0.1326
+       },
+       {
+        "player": "Saints|NO",
+        "pos": "DST",
+        "proj_dk": 6.5468,
+        "inc_mean": 6.5468,
+        "rep_mean": 8.525,
+        "drift": 1.9782,
+        "paired_se": 0.0431
+       },
+       {
+        "player": "Bijan Robinson|ATL",
+        "pos": "RB",
+        "proj_dk": 27.1438,
+        "inc_mean": 26.0113,
+        "rep_mean": 27.2006,
+        "drift": 1.1893,
+        "paired_se": 0.0937
+       },
+       {
+        "player": "Falcons|ATL",
+        "pos": "DST",
+        "proj_dk": 5.6116,
+        "inc_mean": 5.6116,
+        "rep_mean": 6.366,
+        "drift": 0.7544,
+        "paired_se": 0.0324
+       },
+       {
+        "player": "Kyle Pitts Sr.|ATL",
+        "pos": "TE",
+        "proj_dk": 5.2682,
+        "inc_mean": 5.1303,
+        "rep_mean": 5.6711,
+        "drift": 0.5408,
+        "paired_se": 0.0833
+       },
+       {
+        "player": "Jahan Dotson|ATL",
+        "pos": "WR",
+        "proj_dk": 4.171,
+        "inc_mean": 4.0889,
+        "rep_mean": 4.4952,
+        "drift": 0.4063,
+        "paired_se": 0.0823
+       },
+       {
+        "player": "Alvin Kamara|NO",
+        "pos": "RB",
+        "proj_dk": 13.679,
+        "inc_mean": 13.6617,
+        "rep_mean": 13.9985,
+        "drift": 0.3368,
+        "paired_se": 0.1097
+       },
+       {
+        "player": "Tyler Shough|NO",
+        "pos": "QB",
+        "proj_dk": 21.5792,
+        "inc_mean": 22.4578,
+        "rep_mean": 22.169,
+        "drift": -0.2888,
+        "paired_se": 0.1106
+       }
+      ]
+     },
+     "rep_rec": {
+      "by_position": {
+       "DST": {
+        "n_players": 2,
+        "sum_drift": 2.7326,
+        "paired_se_of_sum": 0.0466,
+        "mean_abs_player_drift": 1.3663
+       },
+       "K": {
+        "n_players": 2,
+        "sum_drift": 0.082,
+        "paired_se_of_sum": 0.0631,
+        "mean_abs_player_drift": 0.041
+       },
+       "QB": {
+        "n_players": 4,
+        "sum_drift": -2.1723,
+        "paired_se_of_sum": 0.1334,
+        "mean_abs_player_drift": 0.5481
+       },
+       "RB": {
+        "n_players": 5,
+        "sum_drift": 0.6971,
+        "paired_se_of_sum": 0.1349,
+        "mean_abs_player_drift": 0.1394
+       },
+       "TE": {
+        "n_players": 7,
+        "sum_drift": 0.0031,
+        "paired_se_of_sum": 0.1589,
+        "mean_abs_player_drift": 0.0274
+       },
+       "WR": {
+        "n_players": 10,
+        "sum_drift": -0.0056,
+        "paired_se_of_sum": 0.199,
+        "mean_abs_player_drift": 0.0584
+       }
+      },
+      "n_players": 30,
+      "n_abs_drift_gt_2_paired_se": 6,
+      "n_abs_drift_gt_0p5_dk": 3,
+      "top8": [
+       {
+        "player": "Michael Penix Jr.|ATL",
+        "pos": "QB",
+        "proj_dk": 15.8572,
+        "inc_mean": 15.3284,
+        "rep_mean": 13.3115,
+        "drift": -2.0169,
+        "paired_se": 0.07
+       },
+       {
+        "player": "Saints|NO",
+        "pos": "DST",
+        "proj_dk": 6.5468,
+        "inc_mean": 6.5468,
+        "rep_mean": 8.525,
+        "drift": 1.9782,
+        "paired_se": 0.0431
+       },
+       {
+        "player": "Falcons|ATL",
+        "pos": "DST",
+        "proj_dk": 5.6116,
+        "inc_mean": 5.6116,
+        "rep_mean": 6.366,
+        "drift": 0.7544,
+        "paired_se": 0.0324
+       },
+       {
+        "player": "Alvin Kamara|NO",
+        "pos": "RB",
+        "proj_dk": 13.679,
+        "inc_mean": 13.6617,
+        "rep_mean": 14.0204,
+        "drift": 0.3587,
+        "paired_se": 0.1097
+       },
+       {
+        "player": "Bijan Robinson|ATL",
+        "pos": "RB",
+        "proj_dk": 27.1438,
+        "inc_mean": 26.0113,
+        "rep_mean": 26.212,
+        "drift": 0.2007,
+        "paired_se": 0.0884
+       },
+       {
+        "player": "Tyler Shough|NO",
+        "pos": "QB",
+        "proj_dk": 21.5792,
+        "inc_mean": 22.4578,
+        "rep_mean": 22.304,
+        "drift": -0.1538,
+        "paired_se": 0.111
+       },
+       {
+        "player": "Olamide Zaccheaus|ATL",
+        "pos": "WR",
+        "proj_dk": 2.4856,
+        "inc_mean": 2.4222,
+        "rep_mean": 2.2857,
+        "drift": -0.1365,
+        "paired_se": 0.0569
+       },
+       {
+        "player": "Drake London|ATL",
+        "pos": "WR",
+        "proj_dk": 20.502,
+        "inc_mean": 20.0037,
+        "rep_mean": 19.8749,
+        "drift": -0.1289,
+        "paired_se": 0.1221
+       }
+      ]
+     }
+    }
+   },
+   "reading": "Skill-player means move by up to about 2 DK per player, and which players move depends on the declared passing anchor: the projection does not close its own club passing game (QB yards vs the receivers' sum), so one side must move under either anchor. Rushing TDs the raw simulator had dropped into its unallocated bucket are now on player lines, raising RB/WR means. These are real changes to downstream projections that no outcome data here can adjudicate. The DST drift is the exception: see the DST section, where the incumbent is the defect."
+  },
+  "c_lineup_selection": {
+   "verdict": "NOT_MEASURABLE",
+   "basis": "one game; lineup quality cannot be measured. The CHANGE is measured and is large",
+   "measured": {
+    "control_rebuild_on_incumbent_draws_byte_identical_to_R1": {
+     "SHOWDOWN_TB_DAL_DK_UPLOAD.csv": true,
+     "SHOWDOWN_TB_DAL_DK_UPLOAD_196438543.csv": true,
+     "SHOWDOWN_TB_DAL_DK_UPLOAD_196438555.csv": true,
+     "SHOWDOWN_TB_DAL_DK_UPLOAD_196438556.csv": true,
+     "SHOWDOWN_TB_DAL_FINAL_LINEUPS.csv": true,
+     "SHOWDOWN_TB_DAL_EXPOSURES.csv": true,
+     "SHOWDOWN_TB_DAL_CPT_EXPOSURES.csv": true
+    },
+    "contests": {
+     "196438543": {
+      "name": "NFL Showdown $100K mini-MAX [150 Entry Max] (TB @ DAL)",
+      "n_R1": 150,
+      "n_rebuilt": 150,
+      "identical_lineups_shared": 10,
+      "attribution_hybrid": {
+       "hybrid_vs_R1": 11,
+       "hybrid_vs_rebuilt": 22,
+       "dst_exposure_hybrid": {
+        "Cowboys|DAL": 0.04,
+        "Buccaneers|TB": 0.22
+       }
+      },
+      "share_of_R1_kept": 0.067,
+      "sum_abs_exposure_change_over_players": 0.989,
+      "max_abs_player_exposure_change": {
+       "player": "Cowboys|DAL",
+       "R1": 0.047,
+       "rebuilt": 0.347,
+       "change": 0.3
+      },
+      "player_exposure_changes_top10": [
+       {
+        "player": "Cowboys|DAL",
+        "R1": 0.047,
+        "rebuilt": 0.347,
+        "change": 0.3
+       },
+       {
+        "player": "Emeka Egbuka|TB",
+        "R1": 0.44,
+        "rebuilt": 0.327,
+        "change": -0.113
+       },
+       {
+        "player": "Chris Godwin Jr.|TB",
+        "R1": 0.32,
+        "rebuilt": 0.213,
+        "change": -0.107
+       },
+       {
+        "player": "Buccaneers|TB",
+        "R1": 0.227,
+        "rebuilt": 0.16,
+        "change": -0.067
+       },
+       {
+        "player": "Brandon Aubrey|DAL",
+        "R1": 0.427,
+        "rebuilt": 0.367,
+        "change": -0.06
+       },
+       {
+        "player": "Payne Durham|TB",
+        "R1": 0.14,
+        "rebuilt": 0.093,
+        "change": -0.047
+       },
+       {
+        "player": "George Pickens|DAL",
+        "R1": 0.3,
+        "rebuilt": 0.34,
+        "change": 0.04
+       },
+       {
+        "player": "KaVontae Turpin|DAL",
+        "R1": 0.013,
+        "rebuilt": 0.047,
+        "change": 0.033
+       },
+       {
+        "player": "Cade Otton|TB",
+        "R1": 0.467,
+        "rebuilt": 0.44,
+        "change": -0.027
+       },
+       {
+        "player": "Chase McLaughlin|TB",
+        "R1": 0.253,
+        "rebuilt": 0.28,
+        "change": 0.027
+       }
+      ],
+      "captain_exposure_changes_top8": [
+       {
+        "captain": "Bucky Irving|TB",
+        "R1": 0.073,
+        "rebuilt": 0.127,
+        "change": 0.053
+       },
+       {
+        "captain": "Buccaneers|TB",
+        "R1": 0.053,
+        "rebuilt": 0.007,
+        "change": -0.047
+       },
+       {
+        "captain": "Cowboys|DAL",
+        "R1": 0,
+        "rebuilt": 0.033,
+        "change": 0.033
+       },
+       {
+        "captain": "Dak Prescott|DAL",
+        "R1": 0.12,
+        "rebuilt": 0.087,
+        "change": -0.033
+       },
+       {
+        "captain": "Emeka Egbuka|TB",
+        "R1": 0.053,
+        "rebuilt": 0.02,
+        "change": -0.033
+       },
+       {
+        "captain": "CeeDee Lamb|DAL",
+        "R1": 0.22,
+        "rebuilt": 0.247,
+        "change": 0.027
+       },
+       {
+        "captain": "George Pickens|DAL",
+        "R1": 0.04,
+        "rebuilt": 0.067,
+        "change": 0.027
+       },
+       {
+        "captain": "Jalon Daniels|TB",
+        "R1": 0.073,
+        "rebuilt": 0.047,
+        "change": -0.027
+       }
+      ],
+      "cross_evaluation": {
+       "R1_incumbent": {
+        "incumbent": {
+         "n_lineups": 150,
+         "mean_lineup_mean": 88.843,
+         "mean_lineup_p95": 125.728,
+         "mean_lineup_p99": 143.964,
+         "expected_best_lineup_per_world": 128.151,
+         "p90_best_lineup_per_world": 158.563
+        },
+        "repaired_qb_anchor": {
+         "n_lineups": 150,
+         "mean_lineup_mean": 88.053,
+         "mean_lineup_p95": 127.946,
+         "mean_lineup_p99": 147.28,
+         "expected_best_lineup_per_world": 130.142,
+         "p90_best_lineup_per_world": 163.347
+        },
+        "repaired_receiver_anchor": {
+         "n_lineups": 150,
+         "mean_lineup_mean": 89.842,
+         "mean_lineup_p95": 130.721,
+         "mean_lineup_p99": 150.463,
+         "expected_best_lineup_per_world": 132.249,
+         "p90_best_lineup_per_world": 165.885
+        }
+       },
+       "REBUILT_on_repaired_qb_anchor": {
+        "incumbent": {
+         "n_lineups": 150,
+         "mean_lineup_mean": 87.024,
+         "mean_lineup_p95": 123.309,
+         "mean_lineup_p99": 140.954,
+         "expected_best_lineup_per_world": 126.958,
+         "p90_best_lineup_per_world": 157.905
+        },
+        "repaired_qb_anchor": {
+         "n_lineups": 150,
+         "mean_lineup_mean": 87.671,
+         "mean_lineup_p95": 127.081,
+         "mean_lineup_p99": 146.245,
+         "expected_best_lineup_per_world": 131.091,
+         "p90_best_lineup_per_world": 163.81
+        },
+        "repaired_receiver_anchor": {
+         "n_lineups": 150,
+         "mean_lineup_mean": 89.255,
+         "mean_lineup_p95": 129.464,
+         "mean_lineup_p99": 149.045,
+         "expected_best_lineup_per_world": 133.169,
+         "p90_best_lineup_per_world": 166.985
+        }
+       },
+       "DIAGNOSTIC_rebuilt_on_repaired_with_incumbent_DST": {
+        "incumbent": {
+         "n_lineups": 150,
+         "mean_lineup_mean": 88.033,
+         "mean_lineup_p95": 124.639,
+         "mean_lineup_p99": 142.551,
+         "expected_best_lineup_per_world": 127.481,
+         "p90_best_lineup_per_world": 158.88
+        },
+        "repaired_qb_anchor": {
+         "n_lineups": 150,
+         "mean_lineup_mean": 87.32,
+         "mean_lineup_p95": 126.946,
+         "mean_lineup_p99": 146.139,
+         "expected_best_lineup_per_world": 130.348,
+         "p90_best_lineup_per_world": 163.708
+        },
+        "repaired_receiver_anchor": {
+         "n_lineups": 150,
+         "mean_lineup_mean": 89.001,
+         "mean_lineup_p95": 129.475,
+         "mean_lineup_p99": 149.11,
+         "expected_best_lineup_per_world": 132.44,
+         "p90_best_lineup_per_world": 166.76
+        }
+       }
+      },
+      "realised_actuals_HINDSIGHT_ONE_GAME": {
+       "R1_incumbent": {
+        "best": 130.0,
+        "mean": 78.98,
+        "median": 80.06
+       },
+       "REBUILT_on_repaired_qb_anchor": {
+        "best": 131.2,
+        "mean": 77.5,
+        "median": 77.44
+       },
+       "DIAGNOSTIC_rebuilt_on_repaired_with_incumbent_DST": {
+        "best": 133.59,
+        "mean": 80.06,
+        "median": 78.85
+       }
+      }
+     },
+     "196438555": {
+      "name": "NFL Showdown $10K Quarter Jukebox [Just $0.25!] (TB @ DAL)",
+      "n_R1": 20,
+      "n_rebuilt": 20,
+      "identical_lineups_shared": 4,
+      "attribution_hybrid": {
+       "hybrid_vs_R1": 9,
+       "hybrid_vs_rebuilt": 6,
+       "dst_exposure_hybrid": {
+        "Cowboys|DAL": 0.0,
+        "Buccaneers|TB": 0.3
+       }
+      },
+      "share_of_R1_kept": 0.2,
+      "sum_abs_exposure_change_over_players": 1.1,
+      "max_abs_player_exposure_change": {
+       "player": "Cowboys|DAL",
+       "R1": 0.05,
+       "rebuilt": 0.35,
+       "change": 0.3
+      },
+      "player_exposure_changes_top10": [
+       {
+        "player": "Cowboys|DAL",
+        "R1": 0.05,
+        "rebuilt": 0.35,
+        "change": 0.3
+       },
+       {
+        "player": "Emeka Egbuka|TB",
+        "R1": 0.45,
+        "rebuilt": 0.25,
+        "change": -0.2
+       },
+       {
+        "player": "Buccaneers|TB",
+        "R1": 0.2,
+        "rebuilt": 0.1,
+        "change": -0.1
+       },
+       {
+        "player": "George Pickens|DAL",
+        "R1": 0.2,
+        "rebuilt": 0.3,
+        "change": 0.1
+       },
+       {
+        "player": "Jalon Daniels|TB",
+        "R1": 0.5,
+        "rebuilt": 0.4,
+        "change": -0.1
+       },
+       {
+        "player": "Payne Durham|TB",
+        "R1": 0.15,
+        "rebuilt": 0.25,
+        "change": 0.1
+       },
+       {
+        "player": "Brevyn Spann-Ford|DAL",
+        "R1": 0.05,
+        "rebuilt": 0.1,
+        "change": 0.05
+       },
+       {
+        "player": "Chris Godwin Jr.|TB",
+        "R1": 0.2,
+        "rebuilt": 0.15,
+        "change": -0.05
+       },
+       {
+        "player": "Ryan Flournoy|DAL",
+        "R1": 0.15,
+        "rebuilt": 0.1,
+        "change": -0.05
+       },
+       {
+        "player": "Tyler Goodson|DAL",
+        "R1": 0.2,
+        "rebuilt": 0.15,
+        "change": -0.05
+       }
+      ],
+      "captain_exposure_changes_top8": [
+       {
+        "captain": "Jalon Daniels|TB",
+        "R1": 0.2,
+        "rebuilt": 0,
+        "change": -0.2
+       },
+       {
+        "captain": "Javonte Williams|DAL",
+        "R1": 0.1,
+        "rebuilt": 0.25,
+        "change": 0.15
+       },
+       {
+        "captain": "Dak Prescott|DAL",
+        "R1": 0.1,
+        "rebuilt": 0,
+        "change": -0.1
+       },
+       {
+        "captain": "George Pickens|DAL",
+        "R1": 0,
+        "rebuilt": 0.1,
+        "change": 0.1
+       },
+       {
+        "captain": "Jake Ferguson|DAL",
+        "R1": 0,
+        "rebuilt": 0.1,
+        "change": 0.1
+       },
+       {
+        "captain": "Bucky Irving|TB",
+        "R1": 0.2,
+        "rebuilt": 0.15,
+        "change": -0.05
+       },
+       {
+        "captain": "Buccaneers|TB",
+        "R1": 0.05,
+        "rebuilt": 0.05,
+        "change": 0.0
+       },
+       {
+        "captain": "Cade Otton|TB",
+        "R1": 0.05,
+        "rebuilt": 0.05,
+        "change": 0.0
+       }
+      ],
+      "cross_evaluation": {
+       "R1_incumbent": {
+        "incumbent": {
+         "n_lineups": 20,
+         "mean_lineup_mean": 90.012,
+         "mean_lineup_p95": 127.569,
+         "mean_lineup_p99": 146.339,
+         "expected_best_lineup_per_world": 122.978,
+         "p90_best_lineup_per_world": 153.947
+        },
+        "repaired_qb_anchor": {
+         "n_lineups": 20,
+         "mean_lineup_mean": 89.29,
+         "mean_lineup_p95": 129.954,
+         "mean_lineup_p99": 150.109,
+         "expected_best_lineup_per_world": 124.093,
+         "p90_best_lineup_per_world": 158.668
+        },
+        "repaired_receiver_anchor": {
+         "n_lineups": 20,
+         "mean_lineup_mean": 91.12,
+         "mean_lineup_p95": 132.939,
+         "mean_lineup_p99": 153.313,
+         "expected_best_lineup_per_world": 125.837,
+         "p90_best_lineup_per_world": 160.235
+        }
+       },
+       "REBUILT_on_repaired_qb_anchor": {
+        "incumbent": {
+         "n_lineups": 20,
+         "mean_lineup_mean": 87.163,
+         "mean_lineup_p95": 123.402,
+         "mean_lineup_p99": 141.132,
+         "expected_best_lineup_per_world": 121.788,
+         "p90_best_lineup_per_world": 153.052
+        },
+        "repaired_qb_anchor": {
+         "n_lineups": 20,
+         "mean_lineup_mean": 87.831,
+         "mean_lineup_p95": 127.179,
+         "mean_lineup_p99": 146.312,
+         "expected_best_lineup_per_world": 124.631,
+         "p90_best_lineup_per_world": 159.032
+        },
+        "repaired_receiver_anchor": {
+         "n_lineups": 20,
+         "mean_lineup_mean": 89.186,
+         "mean_lineup_p95": 129.273,
+         "mean_lineup_p99": 148.677,
+         "expected_best_lineup_per_world": 126.37,
+         "p90_best_lineup_per_world": 161.046
+        }
+       },
+       "DIAGNOSTIC_rebuilt_on_repaired_with_incumbent_DST": {
+        "incumbent": {
+         "n_lineups": 20,
+         "mean_lineup_mean": 89.974,
+         "mean_lineup_p95": 127.44,
+         "mean_lineup_p99": 146.217,
+         "expected_best_lineup_per_world": 122.774,
+         "p90_best_lineup_per_world": 154.091
+        },
+        "repaired_qb_anchor": {
+         "n_lineups": 20,
+         "mean_lineup_mean": 89.053,
+         "mean_lineup_p95": 129.228,
+         "mean_lineup_p99": 149.383,
+         "expected_best_lineup_per_world": 124.009,
+         "p90_best_lineup_per_world": 158.307
+        },
+        "repaired_receiver_anchor": {
+         "n_lineups": 20,
+         "mean_lineup_mean": 90.712,
+         "mean_lineup_p95": 131.844,
+         "mean_lineup_p99": 152.614,
+         "expected_best_lineup_per_world": 125.755,
+         "p90_best_lineup_per_world": 160.109
+        }
+       }
+      },
+      "realised_actuals_HINDSIGHT_ONE_GAME": {
+       "R1_incumbent": {
+        "best": 108.91,
+        "mean": 77.6,
+        "median": 81.1
+       },
+       "REBUILT_on_repaired_qb_anchor": {
+        "best": 112.94,
+        "mean": 74.4,
+        "median": 78.88
+       },
+       "DIAGNOSTIC_rebuilt_on_repaired_with_incumbent_DST": {
+        "best": 125.81,
+        "mean": 79.58,
+        "median": 76.88
+       }
+      }
+     },
+     "196438556": {
+      "name": "NFL Showdown $4K Dime Package [Just $0.10!] (TB @ DAL)",
+      "n_R1": 20,
+      "n_rebuilt": 20,
+      "identical_lineups_shared": 4,
+      "attribution_hybrid": {
+       "hybrid_vs_R1": 9,
+       "hybrid_vs_rebuilt": 6,
+       "dst_exposure_hybrid": {
+        "Cowboys|DAL": 0.0,
+        "Buccaneers|TB": 0.3
+       }
+      },
+      "share_of_R1_kept": 0.2,
+      "sum_abs_exposure_change_over_players": 1.1,
+      "max_abs_player_exposure_change": {
+       "player": "Cowboys|DAL",
+       "R1": 0.05,
+       "rebuilt": 0.35,
+       "change": 0.3
+      },
+      "player_exposure_changes_top10": [
+       {
+        "player": "Cowboys|DAL",
+        "R1": 0.05,
+        "rebuilt": 0.35,
+        "change": 0.3
+       },
+       {
+        "player": "Emeka Egbuka|TB",
+        "R1": 0.45,
+        "rebuilt": 0.25,
+        "change": -0.2
+       },
+       {
+        "player": "Buccaneers|TB",
+        "R1": 0.2,
+        "rebuilt": 0.1,
+        "change": -0.1
+       },
+       {
+        "player": "George Pickens|DAL",
+        "R1": 0.2,
+        "rebuilt": 0.3,
+        "change": 0.1
+       },
+       {
+        "player": "Jalon Daniels|TB",
+        "R1": 0.5,
+        "rebuilt": 0.4,
+        "change": -0.1
+       },
+       {
+        "player": "Payne Durham|TB",
+        "R1": 0.15,
+        "rebuilt": 0.25,
+        "change": 0.1
+       },
+       {
+        "player": "Brevyn Spann-Ford|DAL",
+        "R1": 0.05,
+        "rebuilt": 0.1,
+        "change": 0.05
+       },
+       {
+        "player": "Chris Godwin Jr.|TB",
+        "R1": 0.2,
+        "rebuilt": 0.15,
+        "change": -0.05
+       },
+       {
+        "player": "Ryan Flournoy|DAL",
+        "R1": 0.15,
+        "rebuilt": 0.1,
+        "change": -0.05
+       },
+       {
+        "player": "Tyler Goodson|DAL",
+        "R1": 0.2,
+        "rebuilt": 0.15,
+        "change": -0.05
+       }
+      ],
+      "captain_exposure_changes_top8": [
+       {
+        "captain": "Jalon Daniels|TB",
+        "R1": 0.2,
+        "rebuilt": 0,
+        "change": -0.2
+       },
+       {
+        "captain": "Javonte Williams|DAL",
+        "R1": 0.1,
+        "rebuilt": 0.25,
+        "change": 0.15
+       },
+       {
+        "captain": "Dak Prescott|DAL",
+        "R1": 0.1,
+        "rebuilt": 0,
+        "change": -0.1
+       },
+       {
+        "captain": "George Pickens|DAL",
+        "R1": 0,
+        "rebuilt": 0.1,
+        "change": 0.1
+       },
+       {
+        "captain": "Jake Ferguson|DAL",
+        "R1": 0,
+        "rebuilt": 0.1,
+        "change": 0.1
+       },
+       {
+        "captain": "Bucky Irving|TB",
+        "R1": 0.2,
+        "rebuilt": 0.15,
+        "change": -0.05
+       },
+       {
+        "captain": "Buccaneers|TB",
+        "R1": 0.05,
+        "rebuilt": 0.05,
+        "change": 0.0
+       },
+       {
+        "captain": "Cade Otton|TB",
+        "R1": 0.05,
+        "rebuilt": 0.05,
+        "change": 0.0
+       }
+      ],
+      "cross_evaluation": {
+       "R1_incumbent": {
+        "incumbent": {
+         "n_lineups": 20,
+         "mean_lineup_mean": 90.012,
+         "mean_lineup_p95": 127.569,
+         "mean_lineup_p99": 146.339,
+         "expected_best_lineup_per_world": 122.978,
+         "p90_best_lineup_per_world": 153.947
+        },
+        "repaired_qb_anchor": {
+         "n_lineups": 20,
+         "mean_lineup_mean": 89.29,
+         "mean_lineup_p95": 129.954,
+         "mean_lineup_p99": 150.109,
+         "expected_best_lineup_per_world": 124.093,
+         "p90_best_lineup_per_world": 158.668
+        },
+        "repaired_receiver_anchor": {
+         "n_lineups": 20,
+         "mean_lineup_mean": 91.12,
+         "mean_lineup_p95": 132.939,
+         "mean_lineup_p99": 153.313,
+         "expected_best_lineup_per_world": 125.837,
+         "p90_best_lineup_per_world": 160.235
+        }
+       },
+       "REBUILT_on_repaired_qb_anchor": {
+        "incumbent": {
+         "n_lineups": 20,
+         "mean_lineup_mean": 87.163,
+         "mean_lineup_p95": 123.402,
+         "mean_lineup_p99": 141.132,
+         "expected_best_lineup_per_world": 121.788,
+         "p90_best_lineup_per_world": 153.052
+        },
+        "repaired_qb_anchor": {
+         "n_lineups": 20,
+         "mean_lineup_mean": 87.831,
+         "mean_lineup_p95": 127.179,
+         "mean_lineup_p99": 146.312,
+         "expected_best_lineup_per_world": 124.631,
+         "p90_best_lineup_per_world": 159.032
+        },
+        "repaired_receiver_anchor": {
+         "n_lineups": 20,
+         "mean_lineup_mean": 89.186,
+         "mean_lineup_p95": 129.273,
+         "mean_lineup_p99": 148.677,
+         "expected_best_lineup_per_world": 126.37,
+         "p90_best_lineup_per_world": 161.046
+        }
+       },
+       "DIAGNOSTIC_rebuilt_on_repaired_with_incumbent_DST": {
+        "incumbent": {
+         "n_lineups": 20,
+         "mean_lineup_mean": 89.974,
+         "mean_lineup_p95": 127.44,
+         "mean_lineup_p99": 146.217,
+         "expected_best_lineup_per_world": 122.774,
+         "p90_best_lineup_per_world": 154.091
+        },
+        "repaired_qb_anchor": {
+         "n_lineups": 20,
+         "mean_lineup_mean": 89.053,
+         "mean_lineup_p95": 129.228,
+         "mean_lineup_p99": 149.383,
+         "expected_best_lineup_per_world": 124.009,
+         "p90_best_lineup_per_world": 158.307
+        },
+        "repaired_receiver_anchor": {
+         "n_lineups": 20,
+         "mean_lineup_mean": 90.712,
+         "mean_lineup_p95": 131.844,
+         "mean_lineup_p99": 152.614,
+         "expected_best_lineup_per_world": 125.755,
+         "p90_best_lineup_per_world": 160.109
+        }
+       }
+      },
+      "realised_actuals_HINDSIGHT_ONE_GAME": {
+       "R1_incumbent": {
+        "best": 108.91,
+        "mean": 77.6,
+        "median": 81.1
+       },
+       "REBUILT_on_repaired_qb_anchor": {
+        "best": 112.94,
+        "mean": 74.4,
+        "median": 78.88
+       },
+       "DIAGNOSTIC_rebuilt_on_repaired_with_incumbent_DST": {
+        "best": 125.81,
+        "mean": 79.58,
+        "median": 76.88
+       }
+      }
+     },
+     "ALL": {
+      "name": "ALL CONTESTS",
+      "n_R1": 190,
+      "n_rebuilt": 190,
+      "identical_lineups_shared": 21,
+      "attribution_hybrid": {
+       "hybrid_vs_R1": 31,
+       "hybrid_vs_rebuilt": 36,
+       "dst_exposure_hybrid": {
+        "Cowboys|DAL": 0.032,
+        "Buccaneers|TB": 0.237
+       }
+      },
+      "share_of_R1_kept": 0.111,
+      "sum_abs_exposure_change_over_players": 0.926,
+      "max_abs_player_exposure_change": {
+       "player": "Cowboys|DAL",
+       "R1": 0.047,
+       "rebuilt": 0.347,
+       "change": 0.3
+      },
+      "player_exposure_changes_top10": [
+       {
+        "player": "Cowboys|DAL",
+        "R1": 0.047,
+        "rebuilt": 0.347,
+        "change": 0.3
+       },
+       {
+        "player": "Emeka Egbuka|TB",
+        "R1": 0.442,
+        "rebuilt": 0.311,
+        "change": -0.132
+       },
+       {
+        "player": "Chris Godwin Jr.|TB",
+        "R1": 0.295,
+        "rebuilt": 0.2,
+        "change": -0.095
+       },
+       {
+        "player": "Buccaneers|TB",
+        "R1": 0.221,
+        "rebuilt": 0.147,
+        "change": -0.074
+       },
+       {
+        "player": "George Pickens|DAL",
+        "R1": 0.279,
+        "rebuilt": 0.332,
+        "change": 0.053
+       },
+       {
+        "player": "Brandon Aubrey|DAL",
+        "R1": 0.442,
+        "rebuilt": 0.395,
+        "change": -0.047
+       },
+       {
+        "player": "Brevyn Spann-Ford|DAL",
+        "R1": 0.068,
+        "rebuilt": 0.095,
+        "change": 0.026
+       },
+       {
+        "player": "KaVontae Turpin|DAL",
+        "R1": 0.011,
+        "rebuilt": 0.037,
+        "change": 0.026
+       },
+       {
+        "player": "Cade Otton|TB",
+        "R1": 0.474,
+        "rebuilt": 0.453,
+        "change": -0.021
+       },
+       {
+        "player": "Chase McLaughlin|TB",
+        "R1": 0.284,
+        "rebuilt": 0.305,
+        "change": 0.021
+       }
+      ],
+      "captain_exposure_changes_top8": [
+       {
+        "captain": "Jalon Daniels|TB",
+        "R1": 0.1,
+        "rebuilt": 0.037,
+        "change": -0.063
+       },
+       {
+        "captain": "Dak Prescott|DAL",
+        "R1": 0.116,
+        "rebuilt": 0.068,
+        "change": -0.047
+       },
+       {
+        "captain": "George Pickens|DAL",
+        "R1": 0.032,
+        "rebuilt": 0.074,
+        "change": 0.042
+       },
+       {
+        "captain": "Buccaneers|TB",
+        "R1": 0.053,
+        "rebuilt": 0.016,
+        "change": -0.037
+       },
+       {
+        "captain": "Bucky Irving|TB",
+        "R1": 0.1,
+        "rebuilt": 0.132,
+        "change": 0.032
+       },
+       {
+        "captain": "Javonte Williams|DAL",
+        "R1": 0.189,
+        "rebuilt": 0.221,
+        "change": 0.032
+       },
+       {
+        "captain": "Cowboys|DAL",
+        "R1": 0,
+        "rebuilt": 0.026,
+        "change": 0.026
+       },
+       {
+        "captain": "Emeka Egbuka|TB",
+        "R1": 0.042,
+        "rebuilt": 0.016,
+        "change": -0.026
+       }
+      ],
+      "cross_evaluation": {
+       "R1_incumbent": {
+        "incumbent": {
+         "n_lineups": 190,
+         "mean_lineup_mean": 89.089,
+         "mean_lineup_p95": 126.116,
+         "mean_lineup_p99": 144.464,
+         "expected_best_lineup_per_world": 128.327,
+         "p90_best_lineup_per_world": 159.039
+        },
+        "repaired_qb_anchor": {
+         "n_lineups": 190,
+         "mean_lineup_mean": 88.314,
+         "mean_lineup_p95": 128.368,
+         "mean_lineup_p99": 147.875,
+         "expected_best_lineup_per_world": 130.358,
+         "p90_best_lineup_per_world": 163.797
+        },
+        "repaired_receiver_anchor": {
+         "n_lineups": 190,
+         "mean_lineup_mean": 90.111,
+         "mean_lineup_p95": 131.188,
+         "mean_lineup_p99": 151.063,
+         "expected_best_lineup_per_world": 132.472,
+         "p90_best_lineup_per_world": 166.979
+        }
+       },
+       "REBUILT_on_repaired_qb_anchor": {
+        "incumbent": {
+         "n_lineups": 190,
+         "mean_lineup_mean": 87.053,
+         "mean_lineup_p95": 123.329,
+         "mean_lineup_p99": 140.991,
+         "expected_best_lineup_per_world": 127.287,
+         "p90_best_lineup_per_world": 158.31
+        },
+        "repaired_qb_anchor": {
+         "n_lineups": 190,
+         "mean_lineup_mean": 87.705,
+         "mean_lineup_p95": 127.102,
+         "mean_lineup_p99": 146.259,
+         "expected_best_lineup_per_world": 131.412,
+         "p90_best_lineup_per_world": 164.877
+        },
+        "repaired_receiver_anchor": {
+         "n_lineups": 190,
+         "mean_lineup_mean": 89.241,
+         "mean_lineup_p95": 129.424,
+         "mean_lineup_p99": 148.967,
+         "expected_best_lineup_per_world": 133.479,
+         "p90_best_lineup_per_world": 168.175
+        }
+       },
+       "DIAGNOSTIC_rebuilt_on_repaired_with_incumbent_DST": {
+        "incumbent": {
+         "n_lineups": 190,
+         "mean_lineup_mean": 88.442,
+         "mean_lineup_p95": 125.229,
+         "mean_lineup_p99": 143.323,
+         "expected_best_lineup_per_world": 127.872,
+         "p90_best_lineup_per_world": 159.461
+        },
+        "repaired_qb_anchor": {
+         "n_lineups": 190,
+         "mean_lineup_mean": 87.685,
+         "mean_lineup_p95": 127.427,
+         "mean_lineup_p99": 146.822,
+         "expected_best_lineup_per_world": 130.713,
+         "p90_best_lineup_per_world": 164.058
+        },
+        "repaired_receiver_anchor": {
+         "n_lineups": 190,
+         "mean_lineup_mean": 89.361,
+         "mean_lineup_p95": 129.974,
+         "mean_lineup_p99": 149.848,
+         "expected_best_lineup_per_world": 132.8,
+         "p90_best_lineup_per_world": 167.054
+        }
+       }
+      },
+      "realised_actuals_HINDSIGHT_ONE_GAME": {
+       "R1_incumbent": {
+        "best": 130.0,
+        "mean": 78.69,
+        "median": 80.06
+       },
+       "REBUILT_on_repaired_qb_anchor": {
+        "best": 131.2,
+        "mean": 76.85,
+        "median": 77.47
+       },
+       "DIAGNOSTIC_rebuilt_on_repaired_with_incumbent_DST": {
+        "best": 133.59,
+        "mean": 79.96,
+        "median": 77.88
+       }
+      }
+     }
+    },
+    "build_log_last_lines": {
+     "control": "DONE PASS SHOWDOWN_PORTFOLIO_BUILT 5387 candidates; NFL Showdown $100K mini-MAX [150 Entry M 150/150 cov 0.998; NFL Showdown $10K Quarter Jukebox [Just  20/20 cov 0.718; NFL Showdown $4K Dime Package [Just $0.1 20/20 cov 0.718 603s",
+     "repaired": "DONE PASS SHOWDOWN_PORTFOLIO_BUILT 5648 candidates; NFL Showdown $100K mini-MAX [150 Entry M 150/150 cov 0.993; NFL Showdown $10K Quarter Jukebox [Just  20/20 cov 0.594; NFL Showdown $4K Dime Package [Just $0.1 20/20 cov 0.594 255s",
+     "hybrid": "DONE PASS SHOWDOWN_PORTFOLIO_BUILT 5543 candidates; NFL Showdown $100K mini-MAX [150 Entry M 150/150 cov 0.993; NFL Showdown $10K Quarter Jukebox [Just  20/20 cov 0.607; NFL Showdown $4K Dime Package [Just $0.1 20/20 cov 0.607 226s"
+    }
+   },
+   "reading": "Harness validated: the incumbent draws rebuild R1 byte for byte. On repaired worlds only a small share of R1 lineups survive; DAL DST exposure is the largest single change. A diagnostic build with the incumbent DST draws restored still replaces most R1 lineups, so the skill-world changes alone move the portfolio; no seed-only overlap baseline was measured, so the replacement share cannot be judged against selection noise. Each portfolio scores better on its own worlds, as an optimiser must. Realised totals are one game, hindsight only."
+  },
+  "d_valid_game_outcomes": {
+   "verdict": "DAMAGE_DETECTED",
+   "basis": "world-level club scores vs 2021-2025 regular-season final scores (pbp)",
+   "measured": {
+    "slates": {
+     "TB_DAL_2026W5": {
+      "inc": {
+       "n_worlds": 2000,
+       "share_club_score_eq_1": 0.0,
+       "share_club_score_in_open_interval_0_2_excl_0": 0.00625,
+       "share_non_integer_club_score": 0.9865,
+       "share_club_score_zero": 0.0135,
+       "share_ties": 0.0,
+       "share_margin_3_or_7": 0.0,
+       "home_mean": 30.118,
+       "away_mean": 19.744,
+       "total_mean": 49.861,
+       "total_sd": 13.908,
+       "total_p5": 28.393,
+       "total_p95": 73.681,
+       "club_sd": 10.933,
+       "abs_margin_mean": 13.699,
+       "corr_with_drawn": 1.0
+      },
+      "rep_qb": {
+       "n_worlds": 2000,
+       "share_club_score_eq_1": 0.0,
+       "share_club_score_in_open_interval_0_2_excl_0": 0.0,
+       "share_non_integer_club_score": 0.0,
+       "share_club_score_zero": 0.01575,
+       "share_ties": 0.018,
+       "share_margin_3_or_7": 0.083,
+       "home_mean": 30.703,
+       "away_mean": 19.84,
+       "total_mean": 50.543,
+       "total_sd": 14.714,
+       "total_p5": 28.0,
+       "total_p95": 76.05,
+       "club_sd": 11.601,
+       "abs_margin_mean": 14.527,
+       "points_eq_event_sum_max_abs_gap": 0.0,
+       "corr_total_with_incumbent_drawn_total": 0.9626,
+       "corr_margin_with_incumbent_drawn_margin": 0.9598,
+       "mean_shift_total_vs_incumbent": 0.682
+      },
+      "rep_rec": {
+       "n_worlds": 2000,
+       "share_club_score_eq_1": 0.0,
+       "share_club_score_in_open_interval_0_2_excl_0": 0.0,
+       "share_non_integer_club_score": 0.0,
+       "share_club_score_zero": 0.01575,
+       "share_ties": 0.018,
+       "share_margin_3_or_7": 0.083,
+       "home_mean": 30.703,
+       "away_mean": 19.84,
+       "total_mean": 50.543,
+       "total_sd": 14.714,
+       "total_p5": 28.0,
+       "total_p95": 76.05,
+       "club_sd": 11.601,
+       "abs_margin_mean": 14.527,
+       "points_eq_event_sum_max_abs_gap": 0.0,
+       "corr_total_with_incumbent_drawn_total": 0.9626,
+       "corr_margin_with_incumbent_drawn_margin": 0.9598,
+       "mean_shift_total_vs_incumbent": 0.682
+      },
+      "actual": {
+       "DAL": 16,
+       "TB": 24
+      }
+     },
+     "ATL_NO_2026W4": {
+      "inc": {
+       "n_worlds": 2000,
+       "share_club_score_eq_1": 0.0,
+       "share_club_score_in_open_interval_0_2_excl_0": 0.0155,
+       "share_non_integer_club_score": 0.97975,
+       "share_club_score_zero": 0.02025,
+       "share_ties": 0.0,
+       "share_margin_3_or_7": 0.0,
+       "home_mean": 23.028,
+       "away_mean": 17.555,
+       "total_mean": 40.583,
+       "total_sd": 13.85,
+       "total_p5": 18.957,
+       "total_p95": 64.03,
+       "club_sd": 10.043,
+       "abs_margin_mean": 11.43,
+       "corr_with_drawn": 1.0
+      },
+      "rep_qb": {
+       "n_worlds": 2000,
+       "share_club_score_eq_1": 0.0,
+       "share_club_score_in_open_interval_0_2_excl_0": 0.0,
+       "share_non_integer_club_score": 0.0,
+       "share_club_score_zero": 0.02875,
+       "share_ties": 0.037,
+       "share_margin_3_or_7": 0.11,
+       "home_mean": 23.398,
+       "away_mean": 17.839,
+       "total_mean": 41.237,
+       "total_sd": 14.34,
+       "total_p5": 19.0,
+       "total_p95": 65.05,
+       "club_sd": 10.564,
+       "abs_margin_mean": 12.261,
+       "points_eq_event_sum_max_abs_gap": 0.0,
+       "corr_total_with_incumbent_drawn_total": 0.9586,
+       "corr_margin_with_incumbent_drawn_margin": 0.9589,
+       "mean_shift_total_vs_incumbent": 0.655
+      },
+      "rep_rec": {
+       "n_worlds": 2000,
+       "share_club_score_eq_1": 0.0,
+       "share_club_score_in_open_interval_0_2_excl_0": 0.0,
+       "share_non_integer_club_score": 0.0,
+       "share_club_score_zero": 0.02875,
+       "share_ties": 0.037,
+       "share_margin_3_or_7": 0.11,
+       "home_mean": 23.398,
+       "away_mean": 17.839,
+       "total_mean": 41.237,
+       "total_sd": 14.34,
+       "total_p5": 19.0,
+       "total_p95": 65.05,
+       "club_sd": 10.564,
+       "abs_margin_mean": 12.261,
+       "points_eq_event_sum_max_abs_gap": 0.0,
+       "corr_total_with_incumbent_drawn_total": 0.9586,
+       "corr_margin_with_incumbent_drawn_margin": 0.9589,
+       "mean_shift_total_vs_incumbent": 0.655
+      },
+      "actual": {
+       "NO": 24,
+       "ATL": 45
+      }
+     }
+    },
+    "history_2021_2025_REG": {
+     "n_worlds": 1359,
+     "share_club_score_eq_1": 0.0,
+     "share_club_score_in_open_interval_0_2_excl_0": 0.0,
+     "share_non_integer_club_score": 0.0,
+     "share_club_score_zero": 0.01067,
+     "share_ties": 0.00294,
+     "share_margin_3_or_7": 0.22369,
+     "home_mean": 23.543,
+     "away_mean": 21.481,
+     "total_mean": 45.024,
+     "total_sd": 13.654,
+     "total_p5": 24.0,
+     "total_p95": 69.0,
+     "club_sd": 9.897,
+     "abs_margin_mean": 11.1,
+     "n_games": 1359
+    }
+   },
+   "reading": "Impossible scores are eliminated: the incumbent's club scores are non-integers in ~98% of club-worlds and fall strictly between 0 and 2 in 0.6-1.6%; the repaired arm has none, and its points equal the event sums exactly (max gap 0.0) on both slates. But the repair introduces ties at 1.8% and 3.7% of worlds against 0.29% of historical final scores (overtime is not represented), still under-produces 3- and 7-point margins (8-11% vs 22.4%), and raises total-points dispersion relative to the drawn total. Ties do not score in DK, so the DFS cost is small; as a game-outcome model it is a defect."
+  }
+ },
+ "dst_which_arm_is_closer_to_history": {
+  "question": "which arm's DST distribution is closer to history",
+  "answer": "REPAIRED (both anchors share DST draws)",
+  "measured": {
+   "TB_DAL_2026W5": {
+    "Buccaneers|TB": {
+     "projection_dk": 4.309,
+     "actual_dk_HINDSIGHT": 7.0,
+     "projection_event_items": {
+      "blocked_kick": 0.0,
+      "fumble_recovery": 0.8382,
+      "interception": 1.5147,
+      "points_allowed": -1.0438,
+      "return_td": 1.1029,
+      "sack": 1.8382,
+      "safety": 0.0588
+     },
+     "inc": {
+      "mean": 4.309,
+      "sd": 5.5501,
+      "p5": -3.56,
+      "p50": 3.56,
+      "p95": 14.241,
+      "share_non_integer": 0.921,
+      "share_dk_ne_own_components_and_points_allowed": 0.921,
+      "points_allowed_mean": 30.118,
+      "history_conditional_mean_given_this_arms_points_allowed": 4.0465,
+      "history_resampled": {
+       "mean": 4.098,
+       "sd": 5.0084,
+       "p5": -3.0,
+       "p25": 1.0,
+       "p50": 3.0,
+       "p75": 7.0,
+       "p95": 13.0
+      },
+      "ks_vs_history_resampled": 0.091,
+      "component_means": {
+       "sacks": 2.008,
+       "takeaways": 1.06,
+       "def_td": 0.1,
+       "safety": 0.023
+      }
+     },
+     "rep_qb": {
+      "mean": 3.4745,
+      "sd": 4.7442,
+      "p5": -3.0,
+      "p50": 3.0,
+      "p95": 12.0,
+      "share_non_integer": 0.0,
+      "share_dk_ne_own_components_and_points_allowed": 0.0,
+      "points_allowed_mean": 30.703,
+      "history_conditional_mean_given_this_arms_points_allowed": 3.9184,
+      "history_resampled": {
+       "mean": 3.9765,
+       "sd": 5.0606,
+       "p5": -3.0,
+       "p25": 0.0,
+       "p50": 3.0,
+       "p75": 7.0,
+       "p95": 13.0
+      },
+      "ks_vs_history_resampled": 0.0475,
+      "component_means": {
+       "sacks": 2.008,
+       "takeaways": 1.06,
+       "def_td": 0.1,
+       "safety": 0.023
+      }
+     },
+     "club_form_history": {
+      "n_games_2025_plus_2026_prelock": 21,
+      "mean_dk": 5.619,
+      "se": 1.281,
+      "mean_sacks": 2.048,
+      "mean_takeaways": 1.286,
+      "mean_points_allowed": 24.143,
+      "history_conditional_mean_given_own_pa": 5.466,
+      "pbp_2026_file": "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz",
+      "CLUB_ADJUSTED_BENCHMARK": {
+       "DEFINITION": "league E[DST DK | opponent-points band] over the repaired arm's own points-allowed draws, plus the club's unshrunk residual (own 2025+2026-prelock mean DK minus league-conditional mean at its own points allowed). Declared for this evaluation; no coefficient fitted; SE is roughly the residual SE",
+       "club_residual": 0.153,
+       "benchmark_mean": 4.071,
+       "approx_se": 1.281,
+       "abs_gap_incumbent": 0.238,
+       "abs_gap_repaired": 0.597
+      }
+     }
+    },
+    "Cowboys|DAL": {
+     "projection_dk": 3.9071,
+     "actual_dk_HINDSIGHT": 1.0,
+     "projection_event_items": {
+      "blocked_kick": 0.0588,
+      "fumble_recovery": 0.8529,
+      "interception": 0.3529,
+      "points_allowed": 0.8778,
+      "return_td": 0.1765,
+      "sack": 1.5294,
+      "safety": 0.0588
+     },
+     "inc": {
+      "mean": 3.9071,
+      "sd": 3.0027,
+      "p5": -0.025,
+      "p50": 3.56,
+      "p95": 9.662,
+      "share_non_integer": 0.973,
+      "share_dk_ne_own_components_and_points_allowed": 0.973,
+      "points_allowed_mean": 19.744,
+      "history_conditional_mean_given_this_arms_points_allowed": 7.7035,
+      "history_resampled": {
+       "mean": 7.7945,
+       "sd": 5.9859,
+       "p5": 0.0,
+       "p25": 3.0,
+       "p50": 7.0,
+       "p75": 12.0,
+       "p95": 19.0
+      },
+      "ks_vs_history_resampled": 0.3715,
+      "component_means": {
+       "sacks": 2.6675,
+       "takeaways": 1.375,
+       "def_td": 0.1345,
+       "safety": 0.0245
+      }
+     },
+     "rep_qb": {
+      "mean": 7.6435,
+      "sd": 6.0181,
+      "p5": -1.0,
+      "p50": 7.0,
+      "p95": 19.0,
+      "share_non_integer": 0.0,
+      "share_dk_ne_own_components_and_points_allowed": 0.0,
+      "points_allowed_mean": 19.84,
+      "history_conditional_mean_given_this_arms_points_allowed": 7.6476,
+      "history_resampled": {
+       "mean": 7.684,
+       "sd": 6.1098,
+       "p5": -1.0,
+       "p25": 3.0,
+       "p50": 7.0,
+       "p75": 11.0,
+       "p95": 19.0
+      },
+      "ks_vs_history_resampled": 0.019,
+      "component_means": {
+       "sacks": 2.6675,
+       "takeaways": 1.375,
+       "def_td": 0.1345,
+       "safety": 0.0245
+      }
+     },
+     "club_form_history": {
+      "n_games_2025_plus_2026_prelock": 21,
+      "mean_dk": 3.048,
+      "se": 0.967,
+      "mean_sacks": 1.857,
+      "mean_takeaways": 0.667,
+      "mean_points_allowed": 29.667,
+      "history_conditional_mean_given_own_pa": 4.002,
+      "pbp_2026_file": "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz",
+      "CLUB_ADJUSTED_BENCHMARK": {
+       "DEFINITION": "league E[DST DK | opponent-points band] over the repaired arm's own points-allowed draws, plus the club's unshrunk residual (own 2025+2026-prelock mean DK minus league-conditional mean at its own points allowed). Declared for this evaluation; no coefficient fitted; SE is roughly the residual SE",
+       "club_residual": -0.954,
+       "benchmark_mean": 6.694,
+       "approx_se": 0.967,
+       "abs_gap_incumbent": 2.787,
+       "abs_gap_repaired": 0.95
+      }
+     }
+    }
+   },
+   "ATL_NO_2026W4": {
+    "Falcons|ATL": {
+     "projection_dk": 5.6116,
+     "actual_dk_HINDSIGHT": 4.0,
+     "projection_event_items": {
+      "blocked_kick": 0.0672,
+      "fumble_recovery": 0.7563,
+      "interception": 1.3613,
+      "points_allowed": 0.5948,
+      "return_td": 0.2017,
+      "sack": 2.6303,
+      "safety": 0.0
+     },
+     "inc": {
+      "mean": 5.6116,
+      "sd": 5.0231,
+      "p5": -1.735,
+      "p50": 5.204,
+      "p95": 15.613,
+      "share_non_integer": 0.9545,
+      "share_dk_ne_own_components_and_points_allowed": 0.9545,
+      "points_allowed_mean": 23.028,
+      "history_conditional_mean_given_this_arms_points_allowed": 6.4766,
+      "history_resampled": {
+       "mean": 6.398,
+       "sd": 5.8217,
+       "p5": -2.0,
+       "p25": 2.0,
+       "p50": 5.0,
+       "p75": 10.0,
+       "p95": 18.0
+      },
+      "ks_vs_history_resampled": 0.121,
+      "component_means": {
+       "sacks": 2.4435,
+       "takeaways": 1.321,
+       "def_td": 0.1375,
+       "safety": 0.0255
+      }
+     },
+     "rep_qb": {
+      "mean": 6.366,
+      "sd": 5.918,
+      "p5": -2.0,
+      "p50": 5.0,
+      "p95": 18.0,
+      "share_non_integer": 0.0,
+      "share_dk_ne_own_components_and_points_allowed": 0.0,
+      "points_allowed_mean": 23.398,
+      "history_conditional_mean_given_this_arms_points_allowed": 6.3026,
+      "history_resampled": {
+       "mean": 6.2315,
+       "sd": 5.8455,
+       "p5": -2.0,
+       "p25": 2.0,
+       "p50": 5.0,
+       "p75": 9.0,
+       "p95": 17.0
+      },
+      "ks_vs_history_resampled": 0.0145,
+      "component_means": {
+       "sacks": 2.4435,
+       "takeaways": 1.321,
+       "def_td": 0.1375,
+       "safety": 0.0255
+      }
+     },
+     "club_form_history": {
+      "n_games_2025_plus_2026_prelock": 20,
+      "mean_dk": 6.45,
+      "se": 1.241,
+      "mean_sacks": 3.1,
+      "mean_takeaways": 1.25,
+      "mean_points_allowed": 23.45,
+      "history_conditional_mean_given_own_pa": 5.797,
+      "pbp_2026_file": "nfl/research/postgame/pbp_2026.79b02496d26004ee.csv.gz",
+      "CLUB_ADJUSTED_BENCHMARK": {
+       "DEFINITION": "league E[DST DK | opponent-points band] over the repaired arm's own points-allowed draws, plus the club's unshrunk residual (own 2025+2026-prelock mean DK minus league-conditional mean at its own points allowed). Declared for this evaluation; no coefficient fitted; SE is roughly the residual SE",
+       "club_residual": 0.653,
+       "benchmark_mean": 6.956,
+       "approx_se": 1.241,
+       "abs_gap_incumbent": 1.344,
+       "abs_gap_repaired": 0.59
+      }
+     }
+    },
+    "Saints|NO": {
+     "projection_dk": 6.5468,
+     "actual_dk_HINDSIGHT": -3.0,
+     "projection_event_items": {
+      "blocked_kick": 0.0,
+      "fumble_recovery": 1.2437,
+      "interception": 0.958,
+      "points_allowed": 1.2275,
+      "return_td": 0.605,
+      "sack": 2.5126,
+      "safety": 0.0
+     },
+     "inc": {
+      "mean": 6.5468,
+      "sd": 4.4704,
+      "p5": 0.76,
+      "p50": 6.079,
+      "p95": 14.439,
+      "share_non_integer": 0.982,
+      "share_dk_ne_own_components_and_points_allowed": 0.982,
+      "points_allowed_mean": 17.555,
+      "history_conditional_mean_given_this_arms_points_allowed": 8.5391,
+      "history_resampled": {
+       "mean": 8.4835,
+       "sd": 6.0931,
+       "p5": 0.0,
+       "p25": 4.0,
+       "p50": 7.0,
+       "p75": 12.0,
+       "p95": 20.0
+      },
+      "ks_vs_history_resampled": 0.186,
+      "component_means": {
+       "sacks": 2.7715,
+       "takeaways": 1.4605,
+       "def_td": 0.1395,
+       "safety": 0.0255
+      }
+     },
+     "rep_qb": {
+      "mean": 8.525,
+      "sd": 5.9889,
+      "p5": 0.0,
+      "p50": 8.0,
+      "p95": 19.0,
+      "share_non_integer": 0.0,
+      "share_dk_ne_own_components_and_points_allowed": 0.0,
+      "points_allowed_mean": 17.839,
+      "history_conditional_mean_given_this_arms_points_allowed": 8.4067,
+      "history_resampled": {
+       "mean": 8.349,
+       "sd": 6.2023,
+       "p5": 0.0,
+       "p25": 4.0,
+       "p50": 7.0,
+       "p75": 12.0,
+       "p95": 20.0
+      },
+      "ks_vs_history_resampled": 0.034,
+      "component_means": {
+       "sacks": 2.7715,
+       "takeaways": 1.4605,
+       "def_td": 0.1395,
+       "safety": 0.0255
+      }
+     },
+     "club_form_history": {
+      "n_games_2025_plus_2026_prelock": 20,
+      "mean_dk": 6.4,
+      "se": 1.255,
+      "mean_sacks": 2.6,
+      "mean_takeaways": 1.15,
+      "mean_points_allowed": 23.3,
+      "history_conditional_mean_given_own_pa": 5.819,
+      "pbp_2026_file": "nfl/research/postgame/pbp_2026.79b02496d26004ee.csv.gz",
+      "CLUB_ADJUSTED_BENCHMARK": {
+       "DEFINITION": "league E[DST DK | opponent-points band] over the repaired arm's own points-allowed draws, plus the club's unshrunk residual (own 2025+2026-prelock mean DK minus league-conditional mean at its own points allowed). Declared for this evaluation; no coefficient fitted; SE is roughly the residual SE",
+       "club_residual": 0.581,
+       "benchmark_mean": 8.988,
+       "approx_se": 1.255,
+       "abs_gap_incumbent": 2.441,
+       "abs_gap_repaired": 0.463
+      }
+     }
+    }
+   }
+  },
+  "history_dst_2021_2025": {
+   "n_club_games": 2718,
+   "seasons": [
+    "2021",
+    "2022",
+    "2023",
+    "2024",
+    "2025"
+   ],
+   "mean_dk_pa_all": 6.5199,
+   "sd": 5.7788,
+   "mean_dk_pa_excl_def_td_vs_offence": 6.6269,
+   "mean_dk_without_blocked_kicks": 6.3764,
+   "share_integer": 1.0,
+   "p5": -2.0,
+   "p25": 3.0,
+   "p50": 6.0,
+   "p75": 10.0,
+   "p95": 17.15,
+   "component_means": {
+    "sack": 2.4106,
+    "int": 0.7561,
+    "fr": 0.5018,
+    "safety": 0.0239,
+    "dst_td": 0.138,
+    "blk": 0.0717,
+    "pa": 22.5118
+   },
+   "by_dk_band": {
+    "0-1": {
+     "n": 29,
+     "mean_dk": 20.2759,
+     "mean_dk_no_blk": 20.2069
+    },
+    "1-7": {
+     "n": 100,
+     "mean_dk": 16.03,
+     "mean_dk_no_blk": 15.93
+    },
+    "7-14": {
+     "n": 383,
+     "mean_dk": 11.9426,
+     "mean_dk_no_blk": 11.765
+    },
+    "14-21": {
+     "n": 715,
+     "mean_dk": 7.4713,
+     "mean_dk_no_blk": 7.2979
+    },
+    "21-28": {
+     "n": 700,
+     "mean_dk": 5.46,
+     "mean_dk_no_blk": 5.3343
+    },
+    "28-35": {
+     "n": 496,
+     "mean_dk": 3.9052,
+     "mean_dk_no_blk": 3.8044
+    },
+    "35-999": {
+     "n": 295,
+     "mean_dk": -0.4915,
+     "mean_dk_no_blk": -0.6542
+    }
+   },
+   "by_sim_band": {
+    "0-10": {
+     "n": 226,
+     "mean_dk": 15.0,
+     "mean_dk_no_blk": 14.8319
+    },
+    "10-17": {
+     "n": 506,
+     "mean_dk": 10.1423,
+     "mean_dk_no_blk": 9.996
+    },
+    "17-24": {
+     "n": 763,
+     "mean_dk": 6.7575,
+     "mean_dk_no_blk": 6.6212
+    },
+    "24-31": {
+     "n": 662,
+     "mean_dk": 4.7341,
+     "mean_dk_no_blk": 4.574
+    },
+    "31-1000000": {
+     "n": 561,
+     "mean_dk": 1.6203,
+     "mean_dk_no_blk": 1.4991
+    }
+   }
+  },
+  "reading": "Historical DK DST scores are integers in 100% of 2,718 club-games; the incumbent's DST draws are non-integers in 92-98% of worlds because a multiplicative anchor (TB@DAL: DAL x0.5085, TB x1.1867, from the original report) rescales DK points after scoring. Conditioned on each arm's own points-allowed draws, the repaired DST distribution matches the history-resampled one (KS 0.015-0.048) where the incumbent does not (0.09-0.37); that part is close to true by construction, since the simulator's DST tuples are resampled history, and the club-adjusted benchmark below is league-conditional plus a club residual, so the repaired arm's gap to it is just that residual. The non-circular content is the size of the club residual: measured on each club's own 2025 + 2026 pre-lock games it is TB +0.15, DAL -0.95, ATL +0.65, NO +0.58 DK (SE about 1), while the incumbent (= the DST projection) departs from the league-conditional expectation by TB +0.39, DAL -3.74, ATL -0.69, NO -1.86 DK. The clubs' own history does not support departures that large (DAL, NO) or of that sign (ATL, NO). So the incumbent DST step is the defect. The repaired arm still uses league-average tuples and drops the club-specific rates the DST projection carries; the right fix is club-adjusted COMPONENT draws, scored once, not a rescale of DK. The four realised DST scores (1, 7, 4, -3) favour the incumbent's lower numbers; n = 4, hindsight only."
+ },
+ "defects_in_the_repair": [
+  {
+   "id": "ECW-D1",
+   "what": "no overtime: event-sum club points tie in 1.8% (TB@DAL) and 3.7% (ATL@NO) of worlds vs 0.29% of 2021-2025 final scores",
+   "severity": "game-outcome validity; small DFS cost"
+  },
+  {
+   "id": "ECW-D2",
+   "what": "defensive/return TD and safety points (0.65-0.89 per club-game) are added ON TOP of a drawn remainder the kicker only partly consumes; club points rise by +0.10 to +0.59 per club vs the drawn total, and total SD rises by 0.5-0.8",
+   "severity": "mean and dispersion of club scoring; feeds DST points allowed"
+  },
+  {
+   "id": "ECW-D3",
+   "what": "margins of 3 or 7 occur in 8.3% / 11.0% of worlds vs 22.4% in history: the FG count is a rounded share of a continuous remainder, not a drive outcome",
+   "severity": "game-outcome shape"
+  },
+  {
+   "id": "ECW-D4",
+   "what": "receiver DK distributions widen (every skill player, median SD ratio 1.11-1.13) and exceed the historical within-player SD benchmark for most receivers. Probably partly unmasking, not created: the incumbent's near-zero catch-TD correlation offset the raw simulator's wide yards-per-catch (CV, TB@DAL receivers with >2 catches: 0.82 incumbent, 0.72 repaired, 0.53 median in 2021-2025 history)",
+   "severity": "calibration risk; blocks promotion until measured on more slates"
+  },
+  {
+   "id": "ECW-D5",
+   "what": "DST tuples are drawn in the band of the CONTINUOUS points allowed and scored on the event-sum points; the band differs in 372-498 of 2,000 worlds per DST",
+   "severity": "named by the module; measured here"
+  },
+  {
+   "id": "ECW-D6",
+   "what": "DST uses league-average conditional tuples, discarding the club-specific event rates in the DST projection",
+   "severity": "DST mean; needs club-adjusted components"
+  },
+  {
+   "id": "ECW-D7",
+   "what": "the club passing anchor is a free choice that moves skill means by up to ~2 DK (London +2.09 under QB anchor, Penix -2.02 under receiver anchor), because the projection itself does not close the passing game",
+   "severity": "owner decision"
+  },
+  {
+   "id": "ECW-D8",
+   "what": "the shadow runner does not record whether a point-in-time manifest was active. ATL@NO reproduces only under NFL_PIT_MANIFEST (without it the kickers differ by up to 8 DK and the runner refuses); the repaired arm's kicker inputs come from whatever data is live",
+   "severity": "provenance; fail-closed today via the reproduction check"
+  }
+ ],
+ "promotion_requirements_unmet": [
+  "End-to-end regression via nfl/tests/run_suite.py of every module that consumes worlds (showdown_portfolio, world_accounting_check, postgame graders, classic_slate_run) with the arm wired in -- NOT RUN here; only nfl/tests/test_event_consistent_worlds.py was run (74 passed).",
+  "Classic integration via nfl/tools/classic_slate_run.py -- NOT ATTEMPTED; the arm is Showdown-only.",
+  "Owner decision on the club passing anchor (QB vs receiver side), and on whether DST means should follow the DST projection or the simulator events.",
+  "Club-adjusted DST component draws (replace the multiplicative DK anchor in BOTH arms) and a re-measurement against history.",
+  "Overtime (or an explicit tie-break) in event-sum club points, and a re-check of 3/7 margin frequencies.",
+  "Resolve the double-count of defensive/return TD and safety points against the drawn remainder (ECW-D2).",
+  "Receiver dispersion re-measured on more slates and against a conditional (not within-season) benchmark (ECW-D4).",
+  "A forward-chained, pre-registered evaluation on new slates with point-in-time manifests; two development games cannot establish an improvement.",
+  "Runner records the active PIT manifest seal in its report (ECW-D8).",
+  "A seed-only lineup-overlap baseline, so a lineup-replacement share can be read against selection noise."
+ ],
+ "calibration_tables": {
+  "TB_DAL_2026W5": {
+   "ALL_DRAWN": {
+    "inc": {
+     "n": 49,
+     "mean_crps": 2.0302,
+     "mean_error": 0.0528,
+     "coverage_50": 0.6531,
+     "coverage_80": 0.7959,
+     "coverage_90": 0.8571,
+     "pit_mean": 0.5038,
+     "pit_deciles": [
+      3,
+      4,
+      3,
+      2,
+      24,
+      1,
+      1,
+      2,
+      2,
+      7
+     ]
+    },
+    "rep_qb": {
+     "n": 49,
+     "mean_crps": 2.0625,
+     "mean_error": 0.0674,
+     "coverage_50": 0.6939,
+     "coverage_80": 0.8367,
+     "coverage_90": 0.8571,
+     "pit_mean": 0.5157,
+     "pit_deciles": [
+      2,
+      3,
+      4,
+      3,
+      21,
+      4,
+      0,
+      3,
+      3,
+      6
+     ]
+    },
+    "rep_rec": {
+     "n": 49,
+     "mean_crps": 2.0579,
+     "mean_error": 0.1569,
+     "coverage_50": 0.6939,
+     "coverage_80": 0.8367,
+     "coverage_90": 0.8571,
+     "pit_mean": 0.512,
+     "pit_deciles": [
+      2,
+      4,
+      3,
+      3,
+      22,
+      3,
+      0,
+      4,
+      2,
+      6
+     ]
+    },
+    "paired_crps_rep_qb_minus_inc": {
+     "mean_paired_crps_diff": 0.0323,
+     "player_bootstrap_95": [
+      -0.0541,
+      0.1445
+     ],
+     "n_players_better": 29,
+     "n_players_worse": 19,
+     "n_equal": 1,
+     "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+    },
+    "paired_crps_rep_rec_minus_inc": {
+     "mean_paired_crps_diff": 0.0277,
+     "player_bootstrap_95": [
+      -0.0537,
+      0.1388
+     ],
+     "n_players_better": 27,
+     "n_players_worse": 21,
+     "n_equal": 1,
+     "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+    }
+   },
+   "INC_MEAN_GE_1": {
+    "inc": {
+     "n": 24,
+     "mean_crps": 3.9135,
+     "mean_error": 0.3003,
+     "coverage_50": 0.4167,
+     "coverage_80": 0.7083,
+     "coverage_90": 0.7917,
+     "pit_mean": 0.4705,
+     "pit_deciles": [
+      3,
+      4,
+      3,
+      1,
+      3,
+      1,
+      1,
+      2,
+      2,
+      4
+     ]
+    },
+    "rep_qb": {
+     "n": 24,
+     "mean_crps": 3.9753,
+     "mean_error": 0.3296,
+     "coverage_50": 0.5,
+     "coverage_80": 0.7917,
+     "coverage_90": 0.7917,
+     "pit_mean": 0.4911,
+     "pit_deciles": [
+      2,
+      3,
+      4,
+      2,
+      2,
+      2,
+      0,
+      3,
+      3,
+      3
+     ]
+    },
+    "rep_rec": {
+     "n": 24,
+     "mean_crps": 3.9656,
+     "mean_error": 0.5101,
+     "coverage_50": 0.5,
+     "coverage_80": 0.7917,
+     "coverage_90": 0.7917,
+     "pit_mean": 0.4834,
+     "pit_deciles": [
+      2,
+      4,
+      3,
+      2,
+      3,
+      1,
+      0,
+      4,
+      2,
+      3
+     ]
+    },
+    "paired_crps_rep_qb_minus_inc": {
+     "mean_paired_crps_diff": 0.0618,
+     "player_bootstrap_95": [
+      -0.1138,
+      0.3094
+     ],
+     "n_players_better": 12,
+     "n_players_worse": 12,
+     "n_equal": 0,
+     "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+    },
+    "paired_crps_rep_rec_minus_inc": {
+     "mean_paired_crps_diff": 0.0521,
+     "player_bootstrap_95": [
+      -0.1064,
+      0.2867
+     ],
+     "n_players_better": 11,
+     "n_players_worse": 13,
+     "n_equal": 0,
+     "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+    }
+   },
+   "SKILL_INC_MEAN_GE_1": {
+    "inc": {
+     "n": 20,
+     "mean_crps": 4.3491,
+     "mean_error": 0.0881,
+     "coverage_50": 0.35,
+     "coverage_80": 0.65,
+     "coverage_90": 0.75,
+     "pit_mean": 0.4899,
+     "pit_deciles": [
+      3,
+      3,
+      2,
+      1,
+      2,
+      1,
+      1,
+      1,
+      2,
+      4
+     ]
+    },
+    "rep_qb": {
+     "n": 20,
+     "mean_crps": 4.2935,
+     "mean_error": -0.0205,
+     "coverage_50": 0.5,
+     "coverage_80": 0.75,
+     "coverage_90": 0.75,
+     "pit_mean": 0.5097,
+     "pit_deciles": [
+      2,
+      2,
+      3,
+      2,
+      1,
+      2,
+      0,
+      2,
+      3,
+      3
+     ]
+    },
+    "rep_rec": {
+     "n": 20,
+     "mean_crps": 4.2819,
+     "mean_error": 0.1962,
+     "coverage_50": 0.5,
+     "coverage_80": 0.75,
+     "coverage_90": 0.75,
+     "pit_mean": 0.5006,
+     "pit_deciles": [
+      2,
+      3,
+      2,
+      2,
+      2,
+      1,
+      0,
+      3,
+      2,
+      3
+     ]
+    },
+    "paired_crps_rep_qb_minus_inc": {
+     "mean_paired_crps_diff": -0.0556,
+     "player_bootstrap_95": [
+      -0.1762,
+      0.071
+     ],
+     "n_players_better": 11,
+     "n_players_worse": 9,
+     "n_equal": 0,
+     "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+    },
+    "paired_crps_rep_rec_minus_inc": {
+     "mean_paired_crps_diff": -0.0672,
+     "player_bootstrap_95": [
+      -0.1708,
+      0.0245
+     ],
+     "n_players_better": 10,
+     "n_players_worse": 10,
+     "n_equal": 0,
+     "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+    }
+   },
+   "DST_AND_K": {
+    "inc": {
+     "n": 4,
+     "mean_crps": 1.7353,
+     "mean_error": 1.3613,
+     "coverage_50": 0.75,
+     "coverage_80": 1.0,
+     "coverage_90": 1.0,
+     "pit_mean": 0.3737,
+     "pit_deciles": [
+      0,
+      1,
+      1,
+      0,
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
+     ]
+    },
+    "rep_qb": {
+     "n": 4,
+     "mean_crps": 2.3841,
+     "mean_error": 2.0799,
+     "coverage_50": 0.5,
+     "coverage_80": 1.0,
+     "coverage_90": 1.0,
+     "pit_mean": 0.3977,
+     "pit_deciles": [
+      0,
+      1,
+      1,
+      0,
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
+     ]
+    },
+    "rep_rec": {
+     "n": 4,
+     "mean_crps": 2.3841,
+     "mean_error": 2.0799,
+     "coverage_50": 0.5,
+     "coverage_80": 1.0,
+     "coverage_90": 1.0,
+     "pit_mean": 0.3977,
+     "pit_deciles": [
+      0,
+      1,
+      1,
+      0,
+      1,
+      0,
+      0,
+      1,
+      0,
+      0
+     ]
+    },
+    "paired_crps_rep_qb_minus_inc": {
+     "mean_paired_crps_diff": 0.6488,
+     "player_bootstrap_95": [
+      0.0087,
+      1.655
+     ],
+     "n_players_better": 1,
+     "n_players_worse": 3,
+     "n_equal": 0,
+     "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+    },
+    "paired_crps_rep_rec_minus_inc": {
+     "mean_paired_crps_diff": 0.6488,
+     "player_bootstrap_95": [
+      0.0087,
+      1.655
+     ],
+     "n_players_better": 1,
+     "n_players_worse": 3,
+     "n_equal": 0,
+     "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+    }
+   }
+  },
+  "ATL_NO_2026W4": {
+   "ALL_DRAWN": {
+    "inc": {
+     "n": 30,
+     "mean_crps": 2.5797,
+     "mean_error": -0.4898,
+     "coverage_50": 0.6333,
+     "coverage_80": 0.7667,
+     "coverage_90": 0.8333,
+     "pit_mean": 0.4955,
+     "pit_deciles": [
+      3,
+      0,
+      2,
+      6,
+      10,
+      0,
+      1,
+      2,
+      1,
+      5
+     ]
+    },
+    "rep_qb": {
+     "n": 30,
+     "mean_crps": 2.6252,
+     "mean_error": -0.2407,
+     "coverage_50": 0.7333,
+     "coverage_80": 0.8,
+     "coverage_90": 0.8667,
+     "pit_mean": 0.5038,
+     "pit_deciles": [
+      2,
+      1,
+      2,
+      6,
+      8,
+      2,
+      2,
+      1,
+      2,
+      4
+     ]
+    },
+    "rep_rec": {
+     "n": 30,
+     "mean_crps": 2.6135,
+     "mean_error": -0.4453,
+     "coverage_50": 0.7,
+     "coverage_80": 0.8,
+     "coverage_90": 0.8333,
+     "pit_mean": 0.5125,
+     "pit_deciles": [
+      2,
+      1,
+      2,
+      5,
+      8,
+      3,
+      2,
+      1,
+      2,
+      4
+     ]
+    },
+    "paired_crps_rep_qb_minus_inc": {
+     "mean_paired_crps_diff": 0.0455,
+     "player_bootstrap_95": [
+      -0.0599,
+      0.1737
+     ],
+     "n_players_better": 14,
+     "n_players_worse": 16,
+     "n_equal": 0,
+     "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+    },
+    "paired_crps_rep_rec_minus_inc": {
+     "mean_paired_crps_diff": 0.0339,
+     "player_bootstrap_95": [
+      -0.0426,
+      0.1319
+     ],
+     "n_players_better": 14,
+     "n_players_worse": 16,
+     "n_equal": 0,
+     "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+    }
+   },
+   "INC_MEAN_GE_1": {
+    "inc": {
+     "n": 20,
+     "mean_crps": 3.5626,
+     "mean_error": -0.5574,
+     "coverage_50": 0.6,
+     "coverage_80": 0.8,
+     "coverage_90": 0.85,
+     "pit_mean": 0.5009,
+     "pit_deciles": [
+      2,
+      0,
+      2,
+      5,
+      4,
+      0,
+      1,
+      2,
+      1,
+      3
+     ]
+    },
+    "rep_qb": {
+     "n": 20,
+     "mean_crps": 3.6296,
+     "mean_error": -0.1952,
+     "coverage_50": 0.75,
+     "coverage_80": 0.85,
+     "coverage_90": 0.9,
+     "pit_mean": 0.5072,
+     "pit_deciles": [
+      1,
+      1,
+      2,
+      5,
+      2,
+      2,
+      2,
+      1,
+      2,
+      2
+     ]
+    },
+    "rep_rec": {
+     "n": 20,
+     "mean_crps": 3.6109,
+     "mean_error": -0.4968,
+     "coverage_50": 0.7,
+     "coverage_80": 0.85,
+     "coverage_90": 0.85,
+     "pit_mean": 0.5197,
+     "pit_deciles": [
+      1,
+      1,
+      2,
+      4,
+      2,
+      3,
+      2,
+      1,
+      2,
+      2
+     ]
+    },
+    "paired_crps_rep_qb_minus_inc": {
+     "mean_paired_crps_diff": 0.0671,
+     "player_bootstrap_95": [
+      -0.0909,
+      0.252
+     ],
+     "n_players_better": 7,
+     "n_players_worse": 13,
+     "n_equal": 0,
+     "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+    },
+    "paired_crps_rep_rec_minus_inc": {
+     "mean_paired_crps_diff": 0.0483,
+     "player_bootstrap_95": [
+      -0.0606,
+      0.1925
+     ],
+     "n_players_better": 7,
+     "n_players_worse": 13,
+     "n_equal": 0,
+     "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+    }
+   },
+   "SKILL_INC_MEAN_GE_1": {
+    "inc": {
+     "n": 16,
+     "mean_crps": 3.7584,
+     "mean_error": -1.4866,
+     "coverage_50": 0.5625,
+     "coverage_80": 0.8125,
+     "coverage_90": 0.875,
+     "pit_mean": 0.5405,
+     "pit_deciles": [
+      1,
+      0,
+      2,
+      4,
+      3,
+      0,
+      0,
+      2,
+      1,
+      3
+     ]
+    },
+    "rep_qb": {
+     "n": 16,
+     "mean_crps": 3.7504,
+     "mean_error": -1.2098,
+     "coverage_50": 0.75,
+     "coverage_80": 0.875,
+     "coverage_90": 0.9375,
+     "pit_mean": 0.5504,
+     "pit_deciles": [
+      0,
+      1,
+      2,
+      3,
+      2,
+      2,
+      1,
+      1,
+      2,
+      2
+     ]
+    },
+    "rep_rec": {
+     "n": 16,
+     "mean_crps": 3.7269,
+     "mean_error": -1.5868,
+     "coverage_50": 0.6875,
+     "coverage_80": 0.875,
+     "coverage_90": 0.875,
+     "pit_mean": 0.5661,
+     "pit_deciles": [
+      0,
+      1,
+      2,
+      2,
+      2,
+      3,
+      1,
+      1,
+      2,
+      2
+     ]
+    },
+    "paired_crps_rep_qb_minus_inc": {
+     "mean_paired_crps_diff": -0.0081,
+     "player_bootstrap_95": [
+      -0.1608,
+      0.1748
+     ],
+     "n_players_better": 7,
+     "n_players_worse": 9,
+     "n_equal": 0,
+     "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+    },
+    "paired_crps_rep_rec_minus_inc": {
+     "mean_paired_crps_diff": -0.0315,
+     "player_bootstrap_95": [
+      -0.118,
+      0.0499
+     ],
+     "n_players_better": 7,
+     "n_players_worse": 9,
+     "n_equal": 0,
+     "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+    }
+   },
+   "DST_AND_K": {
+    "inc": {
+     "n": 4,
+     "mean_crps": 2.7792,
+     "mean_error": 3.1595,
+     "coverage_50": 0.75,
+     "coverage_80": 0.75,
+     "coverage_90": 0.75,
+     "pit_mean": 0.3426,
+     "pit_deciles": [
+      1,
+      0,
+      0,
+      1,
+      1,
+      0,
+      1,
+      0,
+      0,
+      0
+     ]
+    },
+    "rep_qb": {
+     "n": 4,
+     "mean_crps": 3.1467,
+     "mean_error": 3.8631,
+     "coverage_50": 0.75,
+     "coverage_80": 0.75,
+     "coverage_90": 0.75,
+     "pit_mean": 0.3341,
+     "pit_deciles": [
+      1,
+      0,
+      0,
+      2,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+     ]
+    },
+    "rep_rec": {
+     "n": 4,
+     "mean_crps": 3.1467,
+     "mean_error": 3.8631,
+     "coverage_50": 0.75,
+     "coverage_80": 0.75,
+     "coverage_90": 0.75,
+     "pit_mean": 0.3341,
+     "pit_deciles": [
+      1,
+      0,
+      0,
+      2,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+     ]
+    },
+    "paired_crps_rep_qb_minus_inc": {
+     "mean_paired_crps_diff": 0.3675,
+     "player_bootstrap_95": [
+      0.0242,
+      0.8657
+     ],
+     "n_players_better": 0,
+     "n_players_worse": 4,
+     "n_equal": 0,
+     "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+    },
+    "paired_crps_rep_rec_minus_inc": {
+     "mean_paired_crps_diff": 0.3675,
+     "player_bootstrap_95": [
+      0.0242,
+      0.8657
+     ],
+     "n_players_better": 0,
+     "n_players_worse": 4,
+     "n_equal": 0,
+     "CAVEAT": "player-level bootstrap inside one game ignores within-game correlation (players share one game script); anti-conservative"
+    }
+   }
+  },
+  "POOLED": {
+   "ALL_DRAWN": {
+    "inc": {
+     "n": 79,
+     "mean_crps": 2.2389,
+     "mean_error": -0.1533,
+     "coverage_50": 0.6456,
+     "coverage_80": 0.7848,
+     "coverage_90": 0.8481,
+     "pit_mean": 0.5007,
+     "pit_deciles": [
+      6,
+      4,
+      5,
+      8,
+      34,
+      1,
+      2,
+      4,
+      3,
+      12
+     ]
+    },
+    "rep_qb": {
+     "n": 79,
+     "mean_crps": 2.2762,
+     "mean_error": -0.0496,
+     "coverage_50": 0.7089,
+     "coverage_80": 0.8228,
+     "coverage_90": 0.8608,
+     "pit_mean": 0.5112,
+     "pit_deciles": [
+      4,
+      4,
+      6,
+      9,
+      29,
+      6,
+      2,
+      4,
+      5,
+      10
+     ]
+    },
+    "rep_rec": {
+     "n": 79,
+     "mean_crps": 2.2689,
+     "mean_error": -0.0718,
+     "coverage_50": 0.6962,
+     "coverage_80": 0.8228,
+     "coverage_90": 0.8481,
+     "pit_mean": 0.5122,
+     "pit_deciles": [
+      4,
+      5,
+      5,
+      8,
+      30,
+      6,
+      2,
+      5,
+      4,
+      10
+     ]
+    },
+    "paired_crps_rep_qb_minus_inc": {
+     "per_game_mean_diff": {
+      "TB_DAL_2026W5": 0.0323,
+      "ATL_NO_2026W4": 0.0455
+     },
+     "pooled_mean_diff": 0.0373,
+     "n_games": 2,
+     "CLUSTER_NOTE": "two game clusters: a cluster bootstrap over 2 games has 3 distinct resamples and is not reported; per-game values are the evidence"
+    },
+    "paired_crps_rep_rec_minus_inc": {
+     "per_game_mean_diff": {
+      "TB_DAL_2026W5": 0.0277,
+      "ATL_NO_2026W4": 0.0339
+     },
+     "pooled_mean_diff": 0.03,
+     "n_games": 2,
+     "CLUSTER_NOTE": "two game clusters: a cluster bootstrap over 2 games has 3 distinct resamples and is not reported; per-game values are the evidence"
+    }
+   },
+   "INC_MEAN_GE_1": {
+    "inc": {
+     "n": 44,
+     "mean_crps": 3.754,
+     "mean_error": -0.0895,
+     "coverage_50": 0.5,
+     "coverage_80": 0.75,
+     "coverage_90": 0.8182,
+     "pit_mean": 0.4843,
+     "pit_deciles": [
+      5,
+      4,
+      5,
+      6,
+      7,
+      1,
+      2,
+      4,
+      3,
+      7
+     ]
+    },
+    "rep_qb": {
+     "n": 44,
+     "mean_crps": 3.8182,
+     "mean_error": 0.091,
+     "coverage_50": 0.6136,
+     "coverage_80": 0.8182,
+     "coverage_90": 0.8409,
+     "pit_mean": 0.4984,
+     "pit_deciles": [
+      3,
+      4,
+      6,
+      7,
+      4,
+      4,
+      2,
+      4,
+      5,
+      5
+     ]
+    },
+    "rep_rec": {
+     "n": 44,
+     "mean_crps": 3.8044,
+     "mean_error": 0.0524,
+     "coverage_50": 0.5909,
+     "coverage_80": 0.8182,
+     "coverage_90": 0.8182,
+     "pit_mean": 0.4999,
+     "pit_deciles": [
+      3,
+      5,
+      5,
+      6,
+      5,
+      4,
+      2,
+      5,
+      4,
+      5
+     ]
+    },
+    "paired_crps_rep_qb_minus_inc": {
+     "per_game_mean_diff": {
+      "TB_DAL_2026W5": 0.0618,
+      "ATL_NO_2026W4": 0.0671
+     },
+     "pooled_mean_diff": 0.0642,
+     "n_games": 2,
+     "CLUSTER_NOTE": "two game clusters: a cluster bootstrap over 2 games has 3 distinct resamples and is not reported; per-game values are the evidence"
+    },
+    "paired_crps_rep_rec_minus_inc": {
+     "per_game_mean_diff": {
+      "TB_DAL_2026W5": 0.0521,
+      "ATL_NO_2026W4": 0.0483
+     },
+     "pooled_mean_diff": 0.0504,
+     "n_games": 2,
+     "CLUSTER_NOTE": "two game clusters: a cluster bootstrap over 2 games has 3 distinct resamples and is not reported; per-game values are the evidence"
+    }
+   },
+   "SKILL_INC_MEAN_GE_1": {
+    "inc": {
+     "n": 36,
+     "mean_crps": 4.0866,
+     "mean_error": -0.6117,
+     "coverage_50": 0.4444,
+     "coverage_80": 0.7222,
+     "coverage_90": 0.8056,
+     "pit_mean": 0.5124,
+     "pit_deciles": [
+      4,
+      3,
+      4,
+      5,
+      5,
+      1,
+      1,
+      3,
+      3,
+      7
+     ]
+    },
+    "rep_qb": {
+     "n": 36,
+     "mean_crps": 4.0521,
+     "mean_error": -0.5491,
+     "coverage_50": 0.6111,
+     "coverage_80": 0.8056,
+     "coverage_90": 0.8333,
+     "pit_mean": 0.5278,
+     "pit_deciles": [
+      2,
+      3,
+      5,
+      5,
+      3,
+      4,
+      1,
+      3,
+      5,
+      5
+     ]
+    },
+    "rep_rec": {
+     "n": 36,
+     "mean_crps": 4.0352,
+     "mean_error": -0.5963,
+     "coverage_50": 0.5833,
+     "coverage_80": 0.8056,
+     "coverage_90": 0.8056,
+     "pit_mean": 0.5297,
+     "pit_deciles": [
+      2,
+      4,
+      4,
+      4,
+      4,
+      4,
+      1,
+      4,
+      4,
+      5
+     ]
+    },
+    "paired_crps_rep_qb_minus_inc": {
+     "per_game_mean_diff": {
+      "TB_DAL_2026W5": -0.0556,
+      "ATL_NO_2026W4": -0.0081
+     },
+     "pooled_mean_diff": -0.0345,
+     "n_games": 2,
+     "CLUSTER_NOTE": "two game clusters: a cluster bootstrap over 2 games has 3 distinct resamples and is not reported; per-game values are the evidence"
+    },
+    "paired_crps_rep_rec_minus_inc": {
+     "per_game_mean_diff": {
+      "TB_DAL_2026W5": -0.0672,
+      "ATL_NO_2026W4": -0.0315
+     },
+     "pooled_mean_diff": -0.0514,
+     "n_games": 2,
+     "CLUSTER_NOTE": "two game clusters: a cluster bootstrap over 2 games has 3 distinct resamples and is not reported; per-game values are the evidence"
+    }
+   },
+   "DST_AND_K": {
+    "inc": {
+     "n": 8,
+     "mean_crps": 2.2572,
+     "mean_error": 2.2604,
+     "coverage_50": 0.75,
+     "coverage_80": 0.875,
+     "coverage_90": 0.875,
+     "pit_mean": 0.3582,
+     "pit_deciles": [
+      1,
+      1,
+      1,
+      1,
+      2,
+      0,
+      1,
+      1,
+      0,
+      0
+     ]
+    },
+    "rep_qb": {
+     "n": 8,
+     "mean_crps": 2.7654,
+     "mean_error": 2.9715,
+     "coverage_50": 0.625,
+     "coverage_80": 0.875,
+     "coverage_90": 0.875,
+     "pit_mean": 0.3659,
+     "pit_deciles": [
+      1,
+      1,
+      1,
+      2,
+      1,
+      0,
+      1,
+      1,
+      0,
+      0
+     ]
+    },
+    "rep_rec": {
+     "n": 8,
+     "mean_crps": 2.7654,
+     "mean_error": 2.9715,
+     "coverage_50": 0.625,
+     "coverage_80": 0.875,
+     "coverage_90": 0.875,
+     "pit_mean": 0.3659,
+     "pit_deciles": [
+      1,
+      1,
+      1,
+      2,
+      1,
+      0,
+      1,
+      1,
+      0,
+      0
+     ]
+    },
+    "paired_crps_rep_qb_minus_inc": {
+     "per_game_mean_diff": {
+      "TB_DAL_2026W5": 0.6488,
+      "ATL_NO_2026W4": 0.3675
+     },
+     "pooled_mean_diff": 0.5082,
+     "n_games": 2,
+     "CLUSTER_NOTE": "two game clusters: a cluster bootstrap over 2 games has 3 distinct resamples and is not reported; per-game values are the evidence"
+    },
+    "paired_crps_rep_rec_minus_inc": {
+     "per_game_mean_diff": {
+      "TB_DAL_2026W5": 0.6488,
+      "ATL_NO_2026W4": 0.3675
+     },
+     "pooled_mean_diff": 0.5082,
+     "n_games": 2,
+     "CLUSTER_NOTE": "two game clusters: a cluster bootstrap over 2 games has 3 distinct resamples and is not reported; per-game values are the evidence"
+    }
+   }
+  },
+  "POOLED_BY_POSITION": {
+   "DST": {
+    "n": 4,
+    "inc": {
+     "mean_error": 2.8436,
+     "mean_crps": 2.953
+    },
+    "rep_qb": {
+     "mean_error": 4.2523,
+     "mean_crps": 3.9529
+    },
+    "rep_rec": {
+     "mean_error": 4.2523,
+     "mean_crps": 3.9529
+    }
+   },
+   "K": {
+    "n": 4,
+    "inc": {
+     "mean_error": 1.6771,
+     "mean_crps": 1.5614
+    },
+    "rep_qb": {
+     "mean_error": 1.6908,
+     "mean_crps": 1.5779
+    },
+    "rep_rec": {
+     "mean_error": 1.6908,
+     "mean_crps": 1.5779
+    }
+   },
+   "QB": {
+    "n": 10,
+    "inc": {
+     "mean_error": 1.4414,
+     "mean_crps": 0.9815
+    },
+    "rep_qb": {
+     "mean_error": 1.4105,
+     "mean_crps": 0.9851
+    },
+    "rep_rec": {
+     "mean_error": 1.3538,
+     "mean_crps": 0.9602
+    }
+   },
+   "RB": {
+    "n": 15,
+    "inc": {
+     "mean_error": -3.176,
+     "mean_crps": 3.6607
+    },
+    "rep_qb": {
+     "mean_error": -3.0765,
+     "mean_crps": 3.6331
+    },
+    "rep_rec": {
+     "mean_error": -3.1172,
+     "mean_crps": 3.6348
+    }
+   },
+   "TE": {
+    "n": 19,
+    "inc": {
+     "mean_error": 1.0268,
+     "mean_crps": 0.7708
+    },
+    "rep_qb": {
+     "mean_error": 1.0194,
+     "mean_crps": 0.7308
+    },
+    "rep_rec": {
+     "mean_error": 1.0351,
+     "mean_crps": 0.76
+    }
+   },
+   "WR": {
+    "n": 27,
+    "inc": {
+     "mean_error": -0.6103,
+     "mean_crps": 2.9423
+    },
+    "rep_qb": {
+     "mean_error": -0.5563,
+     "mean_crps": 2.9431
+    },
+    "rep_rec": {
+     "mean_error": -0.5885,
+     "mean_crps": 2.9094
+    }
+   }
+  }
+ },
+ "reproduce": {
+  "atl_repaired": "NFL_PIT_MANIFEST=nfl/warehouse/pit_manifests/PIT_MANIFEST.ATL_NO_2026W4.1294f0dc638d95c9.json python3.12 nfl/research/accounting_repair/run_event_consistent_shadow.py nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX nfl/research/accounting_repair/ATL_NO_2026W4",
+  "history": "EVAL_WORK=<dir> python3.12 nfl/research/accounting_repair/integration_eval/hist.py <dir>/hist.json",
+  "measurements": "EVAL_WORK=<dir> python3.12 nfl/research/accounting_repair/integration_eval/evaluate.py <dir>/MEASUREMENTS.json",
+  "dispersion": "EVAL_WORK=<dir> python3.12 nfl/research/accounting_repair/integration_eval/dispersion.py <dir>/DISPERSION.json",
+  "portfolios": "python3.12 nfl/research/accounting_repair/integration_eval/build_portfolio.py <DRAWS.json> <out_dir>   (incumbent / repaired / hybrid DRAWS)",
+  "lineups": "EVAL_WORK=<dir> python3.12 nfl/research/accounting_repair/integration_eval/lineups.py <repaired_pf> <control_pf> <dir>/LINEUPS.json <hybrid_pf>",
+  "compose": "EVAL_WORK=<dir> python3.12 nfl/research/accounting_repair/integration_eval/compose.py",
+  "all with": "PYTHONPATH=<numpy/pandas site>; never -I"
+ }
+}

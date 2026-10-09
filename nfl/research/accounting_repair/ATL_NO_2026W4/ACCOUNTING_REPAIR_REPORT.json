@@ -1,0 +1,4112 @@
+{
+ "ARTIFACT": "ACCOUNTING_REPAIR_REPORT",
+ "spec_version": "event-consistent-worlds-1",
+ "tag": "ATL_NO_2026W4",
+ "scenario_dir": "nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX",
+ "inputs_sha256": {
+  "nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX/SHOWDOWN_ATL_NO_2026W4_PROJ.json": "3e6898124439a2e9ba33bd98da552c6d0795eb904051ecfec92ddfca46126cb9",
+  "nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX/SHOWDOWN_ATL_NO_2026W4_STATE.json": "3a4795eadb29e26c0db70ebd1dc95023b404d2d0ba034545453e5e8ff518bdd4",
+  "nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX/SHOWDOWN_ATL_NO_2026W4_DRAWS.json": "43d6938e0b65c8a18ddca3613ce16223751e621412074f5408ae82332bcbf7a0",
+  "nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX/SHOWDOWN_ATL_NO_2026W4_WORLDS.npz": "2280be4b41709dddd6e58949880074309f7656315e92067889bc563f081d87a9"
+ },
+ "n_worlds": 2000,
+ "seed": 20261005,
+ "incumbent_reproduced": {
+  "max_abs_dk_diff": 0.0,
+  "players": 30
+ },
+ "incumbent_dst_multiplicative_anchor": {
+  "Saints|NO": {
+   "factor": 0.7599,
+   "raw_mean": 8.615,
+   "target": 6.547
+  },
+  "Falcons|ATL": {
+   "factor": 0.8674,
+   "raw_mean": 6.47,
+   "target": 5.612
+  }
+ },
+ "SHADOW_ONLY": "no production module reads these worlds",
+ "before": {
+  "world_accounting_check": {
+   "NO:PASS_YDS_EQ_REC_YDS": 1970,
+   "NO:PASS_TD_EQ_REC_TD": 1,
+   "NO:INT_LE_OPP_TAKEAWAYS": 491,
+   "NO:POINTS_GE_6_PER_TD": 70,
+   "ATL:PASS_YDS_EQ_REC_YDS": 1988,
+   "ATL:INT_LE_OPP_TAKEAWAYS": 303,
+   "ATL:POINTS_GE_6_PER_TD": 83,
+   "YDS_WITHOUT_CATCH": 1527,
+   "REC_TD_WITHOUT_CATCH": 422
+  },
+  "event_checks": {
+   "REC_TD_LE_RECEPTIONS": 453,
+   "RUSH_TD_LE_CARRIES": 84,
+   "NO:CLUB_TD_EQ_PLAYER_TD": 70,
+   "NO:DST_DK_FROM_COMPONENTS": 1964,
+   "ATL:CLUB_TD_EQ_PLAYER_TD": 11,
+   "ATL:DST_DK_FROM_COMPONENTS": 1909
+  },
+  "event_checks_not_measurable": [
+   "ATL:KICKER_DK_FROM_EVENTS",
+   "ATL:POINTS_EQ_EVENT_SUM",
+   "NO:KICKER_DK_FROM_EVENTS",
+   "NO:POINTS_EQ_EVENT_SUM"
+  ],
+  "detail": {
+   "NO:PASS_YDS_EQ_REC_YDS": {
+    "violations": 1970,
+    "of": 2000,
+    "detail": "gross passing minus receiving yards",
+    "legitimate_exception_available": "NONE_REPRESENTED",
+    "mean_diff": -2.899,
+    "max_abs_diff": 139.7,
+    "tolerance": 0.65
+   },
+   "NO:PASS_TD_EQ_REC_TD": {
+    "violations": 1,
+    "of": 2000,
+    "detail": "passing TDs vs receiving TDs",
+    "legitimate_exception_available": "NONE_REPRESENTED"
+   },
+   "NO:TARGETS_LE_ATTEMPTS": {
+    "violations": 0,
+    "of": 2000,
+    "detail": "club targets vs club pass attempts",
+    "legitimate_exception_available": "NONE_REPRESENTED"
+   },
+   "NO:INT_LE_OPP_TAKEAWAYS": {
+    "violations": 491,
+    "of": 2000,
+    "detail": "interceptions thrown vs Falcons|ATL takeaways (raw DST components, before the anchor step)",
+    "legitimate_exception_available": "NONE_REPRESENTED",
+    "worlds_with_ints": 1131
+   },
+   "NO:POINTS_GE_6_PER_TD": {
+    "violations": 70,
+    "of": 2000,
+    "detail": "published club points vs 6 x offensive TDs in the same world",
+    "legitimate_exception_available": "NONE_REPRESENTED"
+   },
+   "ATL:PASS_YDS_EQ_REC_YDS": {
+    "violations": 1988,
+    "of": 2000,
+    "detail": "gross passing minus receiving yards",
+    "legitimate_exception_available": "NONE_REPRESENTED",
+    "mean_diff": 40.73,
+    "max_abs_diff": 200.6,
+    "tolerance": 0.65
+   },
+   "ATL:PASS_TD_EQ_REC_TD": {
+    "violations": 0,
+    "of": 2000,
+    "detail": "passing TDs vs receiving TDs",
+    "legitimate_exception_available": "NONE_REPRESENTED"
+   },
+   "ATL:TARGETS_LE_ATTEMPTS": {
+    "violations": 0,
+    "of": 2000,
+    "detail": "club targets vs club pass attempts",
+    "legitimate_exception_available": "NONE_REPRESENTED"
+   },
+   "ATL:INT_LE_OPP_TAKEAWAYS": {
+    "violations": 303,
+    "of": 2000,
+    "detail": "interceptions thrown vs Saints|NO takeaways (raw DST components, before the anchor step)",
+    "legitimate_exception_available": "NONE_REPRESENTED",
+    "worlds_with_ints": 942
+   },
+   "ATL:POINTS_GE_6_PER_TD": {
+    "violations": 83,
+    "of": 2000,
+    "detail": "published club points vs 6 x offensive TDs in the same world",
+    "legitimate_exception_available": "NONE_REPRESENTED"
+   },
+   "REC_LE_TARGETS": {
+    "violations": 0,
+    "of": 2000,
+    "detail": "any player with receptions > targets (per world)",
+    "legitimate_exception_available": "NONE_REPRESENTED"
+   },
+   "YDS_WITHOUT_CATCH": {
+    "violations": 1527,
+    "of": 2000,
+    "detail": "any player with receiving yards and no reception (per world)",
+    "legitimate_exception_available": "NONE_REPRESENTED",
+    "player_world_cells": 2756
+   },
+   "REC_TD_WITHOUT_CATCH": {
+    "violations": 422,
+    "of": 2000,
+    "detail": "any player with a receiving TD and no reception (per world)",
+    "legitimate_exception_available": "NONE_REPRESENTED",
+    "player_world_cells": 477
+   },
+   "INT_LE_ATTEMPTS": {
+    "violations": 0,
+    "of": 2000,
+    "detail": "any passer with more interceptions than attempts (per world)",
+    "legitimate_exception_available": "NOT_APPLICABLE"
+   },
+   "INACTIVE_NO_EVENTS": {
+    "violations": 0,
+    "of": 2000,
+    "detail": "0 ordinary-OUT players carried in the worlds",
+    "legitimate_exception_available": "NOT_APPLICABLE",
+    "out_players_in_worlds": []
+   },
+   "DK_FROM_PUBLISHED": {
+    "players": 26,
+    "violations": 0,
+    "of": 52000,
+    "bonus_line_storage_rounding_cells": 1,
+    "detail": "player-world cells whose scored DK is not reproduced by the published stat line within 0.06 points and half a yard-storage unit"
+   }
+  },
+  "event_detail": {
+   "REC_TD_LE_RECEPTIONS": {
+    "violations": 453,
+    "of": 2000,
+    "detail": "any player with more receiving TDs than receptions",
+    "player_world_cells": 520
+   },
+   "RUSH_TD_LE_CARRIES": {
+    "violations": 84,
+    "of": 2000,
+    "detail": "any player with more rushing TDs than carries",
+    "player_world_cells": 86
+   },
+   "RUSH_YDS_WITHOUT_CARRY": {
+    "violations": 0,
+    "of": 2000,
+    "detail": "any player with rushing yards and no carry",
+    "player_world_cells": 0
+   },
+   "NO:CLUB_TD_EQ_PLAYER_TD": {
+    "violations": 70,
+    "of": 2000,
+    "detail": "club offensive TDs (scoring worlds) vs TDs on player lines"
+   },
+   "NO:POINTS_EQ_EVENT_SUM": {
+    "state": "NOT_MEASURABLE",
+    "detail": "the artifact stores no per-world scoring events"
+   },
+   "NO:KICKER_DK_FROM_EVENTS": {
+    "state": "NOT_MEASURABLE",
+    "detail": "the artifact stores no per-world XP made / FG bands"
+   },
+   "NO:DST_DK_FROM_COMPONENTS": {
+    "violations": 1964,
+    "of": 2000,
+    "detail": "Saints|NO DK vs tier(published points allowed) + sacks + 2 takeaways + 6 def TD + 2 safeties"
+   },
+   "ATL:CLUB_TD_EQ_PLAYER_TD": {
+    "violations": 11,
+    "of": 2000,
+    "detail": "club offensive TDs (scoring worlds) vs TDs on player lines"
+   },
+   "ATL:POINTS_EQ_EVENT_SUM": {
+    "state": "NOT_MEASURABLE",
+    "detail": "the artifact stores no per-world scoring events"
+   },
+   "ATL:KICKER_DK_FROM_EVENTS": {
+    "state": "NOT_MEASURABLE",
+    "detail": "the artifact stores no per-world XP made / FG bands"
+   },
+   "ATL:DST_DK_FROM_COMPONENTS": {
+    "violations": 1909,
+    "of": 2000,
+    "detail": "Falcons|ATL DK vs tier(published points allowed) + sacks + 2 takeaways + 6 def TD + 2 safeties"
+   }
+  }
+ },
+ "arms": {
+  "CLUB_PASS_YARDS_ON_INCUMBENT_QB_MEAN": {
+   "out_dir": "nfl/research/accounting_repair/ATL_NO_2026W4/EVENT_CONSISTENT",
+   "default": true,
+   "after": {
+    "world_accounting_check": {},
+    "event_checks": {},
+    "event_checks_not_measurable": [],
+    "detail": {
+     "NO:PASS_YDS_EQ_REC_YDS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "gross passing minus receiving yards",
+      "legitimate_exception_available": "NONE_REPRESENTED",
+      "mean_diff": -0.0,
+      "max_abs_diff": 0.2,
+      "tolerance": 0.65
+     },
+     "NO:PASS_TD_EQ_REC_TD": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "passing TDs vs receiving TDs",
+      "legitimate_exception_available": "NONE_REPRESENTED"
+     },
+     "NO:TARGETS_LE_ATTEMPTS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "club targets vs club pass attempts",
+      "legitimate_exception_available": "NONE_REPRESENTED"
+     },
+     "NO:INT_LE_OPP_TAKEAWAYS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "interceptions thrown vs Falcons|ATL takeaways (raw DST components, before the anchor step)",
+      "legitimate_exception_available": "NONE_REPRESENTED",
+      "worlds_with_ints": 1117
+     },
+     "NO:POINTS_GE_6_PER_TD": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "published club points vs 6 x offensive TDs in the same world",
+      "legitimate_exception_available": "NONE_REPRESENTED"
+     },
+     "ATL:PASS_YDS_EQ_REC_YDS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "gross passing minus receiving yards",
+      "legitimate_exception_available": "NONE_REPRESENTED",
+      "mean_diff": -0.003,
+      "max_abs_diff": 0.2,
+      "tolerance": 0.65
+     },
+     "ATL:PASS_TD_EQ_REC_TD": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "passing TDs vs receiving TDs",
+      "legitimate_exception_available": "NONE_REPRESENTED"
+     },
+     "ATL:TARGETS_LE_ATTEMPTS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "club targets vs club pass attempts",
+      "legitimate_exception_available": "NONE_REPRESENTED"
+     },
+     "ATL:INT_LE_OPP_TAKEAWAYS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "interceptions thrown vs Saints|NO takeaways (raw DST components, before the anchor step)",
+      "legitimate_exception_available": "NONE_REPRESENTED",
+      "worlds_with_ints": 957
+     },
+     "ATL:POINTS_GE_6_PER_TD": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "published club points vs 6 x offensive TDs in the same world",
+      "legitimate_exception_available": "NONE_REPRESENTED"
+     },
+     "REC_LE_TARGETS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "any player with receptions > targets (per world)",
+      "legitimate_exception_available": "NONE_REPRESENTED"
+     },
+     "YDS_WITHOUT_CATCH": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "any player with receiving yards and no reception (per world)",
+      "legitimate_exception_available": "NONE_REPRESENTED",
+      "player_world_cells": 0
+     },
+     "REC_TD_WITHOUT_CATCH": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "any player with a receiving TD and no reception (per world)",
+      "legitimate_exception_available": "NONE_REPRESENTED",
+      "player_world_cells": 0
+     },
+     "INT_LE_ATTEMPTS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "any passer with more interceptions than attempts (per world)",
+      "legitimate_exception_available": "NOT_APPLICABLE"
+     },
+     "INACTIVE_NO_EVENTS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "0 ordinary-OUT players carried in the worlds",
+      "legitimate_exception_available": "NOT_APPLICABLE",
+      "out_players_in_worlds": []
+     },
+     "DK_FROM_PUBLISHED": {
+      "players": 26,
+      "violations": 0,
+      "of": 52000,
+      "bonus_line_storage_rounding_cells": 2,
+      "detail": "player-world cells whose scored DK is not reproduced by the published stat line within 0.06 points and half a yard-storage unit"
+     }
+    },
+    "event_detail": {
+     "REC_TD_LE_RECEPTIONS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "any player with more receiving TDs than receptions",
+      "player_world_cells": 0
+     },
+     "RUSH_TD_LE_CARRIES": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "any player with more rushing TDs than carries",
+      "player_world_cells": 0
+     },
+     "RUSH_YDS_WITHOUT_CARRY": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "any player with rushing yards and no carry",
+      "player_world_cells": 0
+     },
+     "NO:CLUB_TD_EQ_PLAYER_TD": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "club offensive TDs (scoring worlds) vs TDs on player lines"
+     },
+     "NO:EVENT_TD_EQ_PLAYER_TD": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "offensive TDs in the events vs on player lines"
+     },
+     "NO:POINTS_EQ_EVENT_SUM": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "published club points vs 6(TD+defTD)+XP+2*2pt+3*FG+2*safety"
+     },
+     "NO:KICKER_DK_FROM_EVENTS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "Daniel Carlson|NO DK vs XP + 3/4/5 by FG band"
+     },
+     "NO:FG_BANDS_SUM": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "FG made by band sums to FG made"
+     },
+     "NO:DST_DK_FROM_COMPONENTS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "Saints|NO DK vs tier(published points allowed) + sacks + 2 takeaways + 6 def TD + 2 safeties"
+     },
+     "ATL:CLUB_TD_EQ_PLAYER_TD": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "club offensive TDs (scoring worlds) vs TDs on player lines"
+     },
+     "ATL:EVENT_TD_EQ_PLAYER_TD": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "offensive TDs in the events vs on player lines"
+     },
+     "ATL:POINTS_EQ_EVENT_SUM": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "published club points vs 6(TD+defTD)+XP+2*2pt+3*FG+2*safety"
+     },
+     "ATL:KICKER_DK_FROM_EVENTS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "Nick Folk|ATL DK vs XP + 3/4/5 by FG band"
+     },
+     "ATL:FG_BANDS_SUM": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "FG made by band sums to FG made"
+     },
+     "ATL:DST_DK_FROM_COMPONENTS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "Falcons|ATL DK vs tier(published points allowed) + sacks + 2 takeaways + 6 def TD + 2 safeties"
+     }
+    }
+   },
+   "account": {
+    "anchor": "CLUB_PASS_YARDS_ON_INCUMBENT_QB_MEAN",
+    "clubs": {
+     "NO": {
+      "qbs": [
+       "Spencer Rattler|NO",
+       "Tyler Shough|NO"
+      ],
+      "n_receivers": 11,
+      "club_pass_yards_target": 277.74,
+      "club_factor": 0.99599,
+      "incumbent_qb_pass_yards_mean": 277.74,
+      "incumbent_receiver_yards_sum_mean": 280.636,
+      "club_yards_per_catch_fallback": 10.4842,
+      "receivers_on_club_ypc_fallback": [],
+      "worlds_pass_yards_with_no_represented_passer": 0,
+      "worlds_raw_qb_pass_td_ne_receiver_td": 1,
+      "worlds_raw_club_td_ne_player_td": 70,
+      "worlds_club_td_below_player_td": 0,
+      "pass_td_unplaced_no_catch": 0,
+      "rush_td_unplaced_no_carry": 0,
+      "pass_td_dropped_no_represented_passer": 0,
+      "rush_yard_cells_zeroed_no_carry": 14,
+      "int_target_mean": 0.8543,
+      "opp_takeaways_mean": 1.321,
+      "int_share_of_opp_takeaways_q": 0.64673,
+      "q_capped_at_1": false,
+      "ints_capped_at_attempts": 0,
+      "int_mean": 0.8385,
+      "implied_fumble_takeaways_mean": 0.4825
+     },
+     "ATL": {
+      "qbs": [
+       "Michael Penix Jr.|ATL",
+       "Tua Tagovailoa|ATL"
+      ],
+      "n_receivers": 11,
+      "club_pass_yards_target": 256.197,
+      "club_factor": 1.20515,
+      "incumbent_qb_pass_yards_mean": 256.197,
+      "incumbent_receiver_yards_sum_mean": 215.468,
+      "club_yards_per_catch_fallback": 11.1166,
+      "receivers_on_club_ypc_fallback": [],
+      "worlds_pass_yards_with_no_represented_passer": 0,
+      "worlds_raw_qb_pass_td_ne_receiver_td": 0,
+      "worlds_raw_club_td_ne_player_td": 11,
+      "worlds_club_td_below_player_td": 0,
+      "pass_td_unplaced_no_catch": 0,
+      "rush_td_unplaced_no_carry": 0,
+      "pass_td_dropped_no_represented_passer": 0,
+      "rush_yard_cells_zeroed_no_carry": 15,
+      "int_target_mean": 0.6472,
+      "opp_takeaways_mean": 1.4605,
+      "int_share_of_opp_takeaways_q": 0.44315,
+      "q_capped_at_1": false,
+      "ints_capped_at_attempts": 0,
+      "int_mean": 0.64,
+      "implied_fumble_takeaways_mean": 0.8205
+     }
+    },
+    "NOT_REPRESENTED": {
+     "LATERALS_NON_QB_PASSES_PENALTIES": "no such events in nfl/sim/game.py; no identity exception is available",
+     "NEGATIVE_YARDAGE": "raw simulator yards are >= 0 per player-world; not represented",
+     "FUMBLES_LOST": "non-INT DST takeaways are not debited to any player (DK -1 fumble lost not drawn)",
+     "TWO_POINT_CONVERSIONS_PLAYER_CREDIT": "in club points, credited to no player DK line",
+     "TRY_AFTER_DEFENSIVE_TD": "not drawn; defensive/return TDs add exactly 6 to club points",
+     "DST_BAND_FROM_CONTINUOUS_POINTS": "DST tuple band chosen by the raw continuous points allowed; tier recomputed on event points; band changes counted",
+     "QB_SPLIT_BY_ATTEMPTS": "with two QBs, yards/TDs/INTs are shared by world attempts (catch-to-passer pairing is not simulated)",
+     "DST_AND_KICKER_NOT_RESCALED": "their DK is the DK scoring of the published events; drift reported",
+     "DST_POINTS_ALLOWED_DEFINITION": "all opponent club points (incl. the opponent DST defensive/return TDs and safeties), as the raw simulator used; DK's exact treatment of those is not verified here",
+     "DRAWN_TOTAL_AND_MARGIN": "published club points are event sums and no longer equal the simulator's drawn continuous total/margin; the drawn values still steer volume, TD count and FG count",
+     "INT_TO_OWN_ATTEMPTS": "INTs follow the opposing takeaways (thinned), not the world's own attempts, apart from the cap INT <= attempts"
+    },
+    "dst_band_changed_worlds": {
+     "Saints|NO": 498,
+     "Falcons|ATL": 457
+    },
+    "kicker_keys": {
+     "NO": "Daniel Carlson|NO",
+     "ATL": "Nick Folk|ATL"
+    },
+    "dst_keys": {
+     "NO": "Saints|NO",
+     "ATL": "Falcons|ATL"
+    }
+   },
+   "player_drift_sorted": [
+    {
+     "player": "Drake London|ATL",
+     "position": "WR",
+     "projection_dk": 20.502,
+     "incumbent_mean": 20.0037,
+     "repaired_mean": 22.0964,
+     "drift": 2.0927,
+     "paired_se": 0.1326,
+     "repaired_minus_projection": 1.5944
+    },
+    {
+     "player": "Saints|NO",
+     "position": "DST",
+     "projection_dk": 6.5468,
+     "incumbent_mean": 6.5468,
+     "repaired_mean": 8.525,
+     "drift": 1.9782,
+     "paired_se": 0.0431,
+     "repaired_minus_projection": 1.9782
+    },
+    {
+     "player": "Bijan Robinson|ATL",
+     "position": "RB",
+     "projection_dk": 27.1438,
+     "incumbent_mean": 26.0113,
+     "repaired_mean": 27.2006,
+     "drift": 1.1893,
+     "paired_se": 0.0937,
+     "repaired_minus_projection": 0.0568
+    },
+    {
+     "player": "Falcons|ATL",
+     "position": "DST",
+     "projection_dk": 5.6116,
+     "incumbent_mean": 5.6116,
+     "repaired_mean": 6.366,
+     "drift": 0.7544,
+     "paired_se": 0.0324,
+     "repaired_minus_projection": 0.7544
+    },
+    {
+     "player": "Kyle Pitts Sr.|ATL",
+     "position": "TE",
+     "projection_dk": 5.2682,
+     "incumbent_mean": 5.1303,
+     "repaired_mean": 5.6711,
+     "drift": 0.5408,
+     "paired_se": 0.0833,
+     "repaired_minus_projection": 0.4029
+    },
+    {
+     "player": "Jahan Dotson|ATL",
+     "position": "WR",
+     "projection_dk": 4.171,
+     "incumbent_mean": 4.0889,
+     "repaired_mean": 4.4952,
+     "drift": 0.4063,
+     "paired_se": 0.0823,
+     "repaired_minus_projection": 0.3242
+    },
+    {
+     "player": "Alvin Kamara|NO",
+     "position": "RB",
+     "projection_dk": 13.679,
+     "incumbent_mean": 13.6617,
+     "repaired_mean": 13.9985,
+     "drift": 0.3368,
+     "paired_se": 0.1097,
+     "repaired_minus_projection": 0.3195
+    },
+    {
+     "player": "Tyler Shough|NO",
+     "position": "QB",
+     "projection_dk": 21.5792,
+     "incumbent_mean": 22.4578,
+     "repaired_mean": 22.169,
+     "drift": -0.2888,
+     "paired_se": 0.1106,
+     "repaired_minus_projection": 0.5898
+    },
+    {
+     "player": "Austin Hooper|ATL",
+     "position": "TE",
+     "projection_dk": 3.6281,
+     "incumbent_mean": 3.6439,
+     "repaired_mean": 3.8924,
+     "drift": 0.2485,
+     "paired_se": 0.075,
+     "repaired_minus_projection": 0.2643
+    },
+    {
+     "player": "Brian Robinson Jr.|ATL",
+     "position": "RB",
+     "projection_dk": 4.9405,
+     "incumbent_mean": 4.6527,
+     "repaired_mean": 4.802,
+     "drift": 0.1492,
+     "paired_se": 0.0543,
+     "repaired_minus_projection": -0.1385
+    },
+    {
+     "player": "Juwan Johnson|NO",
+     "position": "TE",
+     "projection_dk": 15.4202,
+     "incumbent_mean": 16.1659,
+     "repaired_mean": 16.0379,
+     "drift": -0.1281,
+     "paired_se": 0.1197,
+     "repaired_minus_projection": 0.6177
+    },
+    {
+     "player": "Zachariah Branch|ATL",
+     "position": "WR",
+     "projection_dk": 0.7799,
+     "incumbent_mean": 0.7474,
+     "repaired_mean": 0.8415,
+     "drift": 0.0941,
+     "paired_se": 0.0296,
+     "repaired_minus_projection": 0.0616
+    },
+    {
+     "player": "Daniel Carlson|NO",
+     "position": "K",
+     "projection_dk": 8.2596,
+     "incumbent_mean": 8.606,
+     "repaired_mean": 8.672,
+     "drift": 0.066,
+     "paired_se": 0.048,
+     "repaired_minus_projection": 0.4124
+    },
+    {
+     "player": "Kendre Miller|NO",
+     "position": "RB",
+     "projection_dk": 3.6771,
+     "incumbent_mean": 3.7518,
+     "repaired_mean": 3.8178,
+     "drift": 0.066,
+     "paired_se": 0.0629,
+     "repaired_minus_projection": 0.1407
+    },
+    {
+     "player": "Kevin Austin Jr.|NO",
+     "position": "WR",
+     "projection_dk": 0.7908,
+     "incumbent_mean": 0.751,
+     "repaired_mean": 0.8016,
+     "drift": 0.0507,
+     "paired_se": 0.0315,
+     "repaired_minus_projection": 0.0108
+    },
+    {
+     "player": "Michael Penix Jr.|ATL",
+     "position": "QB",
+     "projection_dk": 15.8572,
+     "incumbent_mean": 15.3284,
+     "repaired_mean": 15.2792,
+     "drift": -0.0492,
+     "paired_se": 0.0746,
+     "repaired_minus_projection": -0.578
+    },
+    {
+     "player": "Bryce Lance|NO",
+     "position": "WR",
+     "projection_dk": 2.663,
+     "incumbent_mean": 2.6994,
+     "repaired_mean": 2.6567,
+     "drift": -0.0427,
+     "paired_se": 0.0584,
+     "repaired_minus_projection": -0.0063
+    },
+    {
+     "player": "Chris Olave|NO",
+     "position": "WR",
+     "projection_dk": 25.318,
+     "incumbent_mean": 25.6656,
+     "repaired_mean": 25.624,
+     "drift": -0.0417,
+     "paired_se": 0.1323,
+     "repaired_minus_projection": 0.306
+    },
+    {
+     "player": "Oscar Delp|NO",
+     "position": "TE",
+     "projection_dk": 1.443,
+     "incumbent_mean": 1.4707,
+     "repaired_mean": 1.4372,
+     "drift": -0.0334,
+     "paired_se": 0.0366,
+     "repaired_minus_projection": -0.0058
+    },
+    {
+     "player": "Chris Blair|ATL",
+     "position": "WR",
+     "projection_dk": 0.151,
+     "incumbent_mean": 0.154,
+     "repaired_mean": 0.1798,
+     "drift": 0.0258,
+     "paired_se": 0.0159,
+     "repaired_minus_projection": 0.0288
+    },
+    {
+     "player": "Devaughn Vele|NO",
+     "position": "WR",
+     "projection_dk": 10.5903,
+     "incumbent_mean": 11.0204,
+     "repaired_mean": 10.9986,
+     "drift": -0.0218,
+     "paired_se": 0.1049,
+     "repaired_minus_projection": 0.4083
+    },
+    {
+     "player": "Treyton Welch|NO",
+     "position": "TE",
+     "projection_dk": 0.3216,
+     "incumbent_mean": 0.3145,
+     "repaired_mean": 0.336,
+     "drift": 0.0215,
+     "paired_se": 0.0184,
+     "repaired_minus_projection": 0.0144
+    },
+    {
+     "player": "CJ Donaldson|NO",
+     "position": "RB",
+     "projection_dk": 0.5173,
+     "incumbent_mean": 0.5199,
+     "repaired_mean": 0.5399,
+     "drift": 0.02,
+     "paired_se": 0.029,
+     "repaired_minus_projection": 0.0226
+    },
+    {
+     "player": "Nick Folk|ATL",
+     "position": "K",
+     "projection_dk": 8.9192,
+     "incumbent_mean": 7.8735,
+     "repaired_mean": 7.8895,
+     "drift": 0.016,
+     "paired_se": 0.041,
+     "repaired_minus_projection": -1.0297
+    },
+    {
+     "player": "Charlie Woerner|ATL",
+     "position": "TE",
+     "projection_dk": 0.4008,
+     "incumbent_mean": 0.3858,
+     "repaired_mean": 0.4006,
+     "drift": 0.0147,
+     "paired_se": 0.0277,
+     "repaired_minus_projection": -0.0002
+    },
+    {
+     "player": "Spencer Rattler|NO",
+     "position": "QB",
+     "projection_dk": 0.0948,
+     "incumbent_mean": 0.0988,
+     "repaired_mean": 0.1085,
+     "drift": 0.0098,
+     "paired_se": 0.0107,
+     "repaired_minus_projection": 0.0137
+    },
+    {
+     "player": "Tua Tagovailoa|ATL",
+     "position": "QB",
+     "projection_dk": 0.0529,
+     "incumbent_mean": 0.0584,
+     "repaired_mean": 0.0516,
+     "drift": -0.0068,
+     "paired_se": 0.0082,
+     "repaired_minus_projection": -0.0013
+    },
+    {
+     "player": "Olamide Zaccheaus|ATL",
+     "position": "WR",
+     "projection_dk": 2.4856,
+     "incumbent_mean": 2.4222,
+     "repaired_mean": 2.4272,
+     "drift": 0.005,
+     "paired_se": 0.0587,
+     "repaired_minus_projection": -0.0584
+    },
+    {
+     "player": "Barion Brown|NO",
+     "position": "WR",
+     "projection_dk": 0.2015,
+     "incumbent_mean": 0.202,
+     "repaired_mean": 0.2042,
+     "drift": 0.0022,
+     "paired_se": 0.0152,
+     "repaired_minus_projection": 0.0027
+    },
+    {
+     "player": "Nick Muse|ATL",
+     "position": "TE",
+     "projection_dk": 0.0179,
+     "incumbent_mean": 0.0207,
+     "repaired_mean": 0.0187,
+     "drift": -0.002,
+     "paired_se": 0.0038,
+     "repaired_minus_projection": 0.0008
+    }
+   ],
+   "skill_stat_means": {
+    "Alvin Kamara|NO": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 12.4085,
+      "repaired": 12.4085
+     },
+     "rush_yards": {
+      "incumbent": 39.9937,
+      "repaired": 39.9937
+     },
+     "rush_td": {
+      "incumbent": 0.355,
+      "repaired": 0.39
+     },
+     "targets": {
+      "incumbent": 5.724,
+      "repaired": 5.724
+     },
+     "receptions": {
+      "incumbent": 4.7155,
+      "repaired": 4.7155
+     },
+     "rec_yards": {
+      "incumbent": 21.2383,
+      "repaired": 20.991
+     },
+     "rec_td": {
+      "incumbent": 0.1025,
+      "repaired": 0.127
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Austin Hooper|ATL": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.394,
+      "repaired": 0.394
+     },
+     "rush_yards": {
+      "incumbent": 1.8214,
+      "repaired": 1.8214
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.001
+     },
+     "targets": {
+      "incumbent": 1.9115,
+      "repaired": 1.9115
+     },
+     "receptions": {
+      "incumbent": 1.3125,
+      "repaired": 1.3125
+     },
+     "rec_yards": {
+      "incumbent": 12.9575,
+      "repaired": 14.9474
+     },
+     "rec_td": {
+      "incumbent": 0.141,
+      "repaired": 0.1445
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Barion Brown|NO": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.0505,
+      "repaired": 0.0505
+     },
+     "rush_yards": {
+      "incumbent": 0.2721,
+      "repaired": 0.2721
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0015
+     },
+     "targets": {
+      "incumbent": 0.111,
+      "repaired": 0.111
+     },
+     "receptions": {
+      "incumbent": 0.068,
+      "repaired": 0.068
+     },
+     "rec_yards": {
+      "incumbent": 0.8283,
+      "repaired": 0.775
+     },
+     "rec_td": {
+      "incumbent": 0.004,
+      "repaired": 0.0035
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Bijan Robinson|ATL": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 20.2775,
+      "repaired": 20.2775
+     },
+     "rush_yards": {
+      "incumbent": 107.7019,
+      "repaired": 107.7019
+     },
+     "rush_td": {
+      "incumbent": 0.5475,
+      "repaired": 0.5495
+     },
+     "targets": {
+      "incumbent": 6.6385,
+      "repaired": 6.6385
+     },
+     "receptions": {
+      "incumbent": 5.214,
+      "repaired": 5.214
+     },
+     "rec_yards": {
+      "incumbent": 44.456,
+      "repaired": 52.9444
+     },
+     "rec_td": {
+      "incumbent": 0.1145,
+      "repaired": 0.1405
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Brian Robinson Jr.|ATL": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 6.871,
+      "repaired": 6.871
+     },
+     "rush_yards": {
+      "incumbent": 29.5066,
+      "repaired": 29.5066
+     },
+     "rush_td": {
+      "incumbent": 0.071,
+      "repaired": 0.0775
+     },
+     "targets": {
+      "incumbent": 0.698,
+      "repaired": 0.698
+     },
+     "receptions": {
+      "incumbent": 0.637,
+      "repaired": 0.637
+     },
+     "rec_yards": {
+      "incumbent": 5.0407,
+      "repaired": 6.0982
+     },
+     "rec_td": {
+      "incumbent": 0.0135,
+      "repaired": 0.013
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Bryce Lance|NO": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.057,
+      "repaired": 0.057
+     },
+     "rush_yards": {
+      "incumbent": 0.2916,
+      "repaired": 0.2916
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0005
+     },
+     "targets": {
+      "incumbent": 1.7875,
+      "repaired": 1.7875
+     },
+     "receptions": {
+      "incumbent": 0.9905,
+      "repaired": 0.9905
+     },
+     "rec_yards": {
+      "incumbent": 12.5227,
+      "repaired": 12.5753
+     },
+     "rec_td": {
+      "incumbent": 0.069,
+      "repaired": 0.0565
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "CJ Donaldson|NO": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.6175,
+      "repaired": 0.6175
+     },
+     "rush_yards": {
+      "incumbent": 1.9096,
+      "repaired": 1.9096
+     },
+     "rush_td": {
+      "incumbent": 0.0195,
+      "repaired": 0.022
+     },
+     "targets": {
+      "incumbent": 0.265,
+      "repaired": 0.265
+     },
+     "receptions": {
+      "incumbent": 0.1695,
+      "repaired": 0.1695
+     },
+     "rec_yards": {
+      "incumbent": 0.364,
+      "repaired": 0.3539
+     },
+     "rec_td": {
+      "incumbent": 0.001,
+      "repaired": 0.002
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Charlie Woerner|ATL": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.0035,
+      "repaired": 0.0035
+     },
+     "rush_yards": {
+      "incumbent": 0.0202,
+      "repaired": 0.0202
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "targets": {
+      "incumbent": 0.196,
+      "repaired": 0.196
+     },
+     "receptions": {
+      "incumbent": 0.1295,
+      "repaired": 0.1295
+     },
+     "rec_yards": {
+      "incumbent": 1.433,
+      "repaired": 1.5654
+     },
+     "rec_td": {
+      "incumbent": 0.0185,
+      "repaired": 0.0185
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Chris Blair|ATL": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.01,
+      "repaired": 0.01
+     },
+     "rush_yards": {
+      "incumbent": 0.0876,
+      "repaired": 0.0876
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "targets": {
+      "incumbent": 0.122,
+      "repaired": 0.122
+     },
+     "receptions": {
+      "incumbent": 0.0595,
+      "repaired": 0.0595
+     },
+     "rec_yards": {
+      "incumbent": 0.6477,
+      "repaired": 0.8454
+     },
+     "rec_td": {
+      "incumbent": 0.0035,
+      "repaired": 0.0045
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Chris Olave|NO": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.0375,
+      "repaired": 0.0375
+     },
+     "rush_yards": {
+      "incumbent": 0.1437,
+      "repaired": 0.1437
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0005
+     },
+     "targets": {
+      "incumbent": 12.5145,
+      "repaired": 12.5145
+     },
+     "receptions": {
+      "incumbent": 8.827,
+      "repaired": 8.827
+     },
+     "rec_yards": {
+      "incumbent": 119.4327,
+      "repaired": 118.9561
+     },
+     "rec_td": {
+      "incumbent": 0.539,
+      "repaired": 0.5465
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Devaughn Vele|NO": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.966,
+      "repaired": 0.966
+     },
+     "rush_yards": {
+      "incumbent": 4.5012,
+      "repaired": 4.5012
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0155
+     },
+     "targets": {
+      "incumbent": 5.98,
+      "repaired": 5.98
+     },
+     "receptions": {
+      "incumbent": 3.965,
+      "repaired": 3.965
+     },
+     "rec_yards": {
+      "incumbent": 46.5227,
+      "repaired": 45.6748
+     },
+     "rec_td": {
+      "incumbent": 0.2845,
+      "repaired": 0.274
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Drake London|ATL": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.397,
+      "repaired": 0.397
+     },
+     "rush_yards": {
+      "incumbent": 1.6539,
+      "repaired": 1.6539
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0025
+     },
+     "targets": {
+      "incumbent": 8.4135,
+      "repaired": 8.4135
+     },
+     "receptions": {
+      "incumbent": 5.9835,
+      "repaired": 5.9835
+     },
+     "rec_yards": {
+      "incumbent": 100.0885,
+      "repaired": 119.0802
+     },
+     "rec_td": {
+      "incumbent": 0.427,
+      "repaired": 0.4095
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Jahan Dotson|ATL": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.0325,
+      "repaired": 0.0325
+     },
+     "rush_yards": {
+      "incumbent": 0.2035,
+      "repaired": 0.2035
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0005
+     },
+     "targets": {
+      "incumbent": 3.302,
+      "repaired": 3.302
+     },
+     "receptions": {
+      "incumbent": 1.5745,
+      "repaired": 1.5745
+     },
+     "rec_yards": {
+      "incumbent": 17.2605,
+      "repaired": 20.903
+     },
+     "rec_td": {
+      "incumbent": 0.127,
+      "repaired": 0.1255
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Juwan Johnson|NO": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 1.2605,
+      "repaired": 1.2605
+     },
+     "rush_yards": {
+      "incumbent": 5.5825,
+      "repaired": 5.5825
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.008
+     },
+     "targets": {
+      "incumbent": 7.4885,
+      "repaired": 7.4885
+     },
+     "receptions": {
+      "incumbent": 5.6545,
+      "repaired": 5.6545
+     },
+     "rec_yards": {
+      "incumbent": 64.9568,
+      "repaired": 64.0061
+     },
+     "rec_td": {
+      "incumbent": 0.483,
+      "repaired": 0.471
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Kendre Miller|NO": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 5.222,
+      "repaired": 5.222
+     },
+     "rush_yards": {
+      "incumbent": 18.8305,
+      "repaired": 18.8305
+     },
+     "rush_td": {
+      "incumbent": 0.115,
+      "repaired": 0.132
+     },
+     "targets": {
+      "incumbent": 1.0415,
+      "repaired": 1.0415
+     },
+     "receptions": {
+      "incumbent": 0.782,
+      "repaired": 0.782
+     },
+     "rec_yards": {
+      "incumbent": 3.6073,
+      "repaired": 3.4272
+     },
+     "rec_td": {
+      "incumbent": 0.004,
+      "repaired": 0.001
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Kevin Austin Jr.|NO": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.055,
+      "repaired": 0.055
+     },
+     "rush_yards": {
+      "incumbent": 0.2963,
+      "repaired": 0.2963
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.003
+     },
+     "targets": {
+      "incumbent": 0.4755,
+      "repaired": 0.4755
+     },
+     "receptions": {
+      "incumbent": 0.2855,
+      "repaired": 0.2855
+     },
+     "rec_yards": {
+      "incumbent": 3.5483,
+      "repaired": 3.4998
+     },
+     "rec_td": {
+      "incumbent": 0.013,
+      "repaired": 0.0195
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Kyle Pitts Sr.|ATL": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.013,
+      "repaired": 0.013
+     },
+     "rush_yards": {
+      "incumbent": 0.0424,
+      "repaired": 0.0424
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "targets": {
+      "incumbent": 4.347,
+      "repaired": 4.347
+     },
+     "receptions": {
+      "incumbent": 2.043,
+      "repaired": 2.043
+     },
+     "rec_yards": {
+      "incumbent": 22.5656,
+      "repaired": 27.1633
+     },
+     "rec_td": {
+      "incumbent": 0.136,
+      "repaired": 0.1395
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Michael Penix Jr.|ATL": {
+     "pass_att": {
+      "incumbent": 31.42,
+      "repaired": 31.42
+     },
+     "pass_yards": {
+      "incumbent": 255.5531,
+      "repaired": 255.424
+     },
+     "pass_td": {
+      "incumbent": 1.08,
+      "repaired": 1.0825
+     },
+     "carries": {
+      "incumbent": 2.305,
+      "repaired": 2.305
+     },
+     "rush_yards": {
+      "incumbent": 3.8574,
+      "repaired": 3.8574
+     },
+     "rush_td": {
+      "incumbent": 0.0295,
+      "repaired": 0.022
+     },
+     "targets": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "receptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "rec_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "rec_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "interceptions": {
+      "incumbent": 0.6315,
+      "repaired": 0.639
+     }
+    },
+    "Nick Muse|ATL": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "rush_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "targets": {
+      "incumbent": 0.0125,
+      "repaired": 0.0125
+     },
+     "receptions": {
+      "incumbent": 0.0085,
+      "repaired": 0.0085
+     },
+     "rec_yards": {
+      "incumbent": 0.0923,
+      "repaired": 0.1018
+     },
+     "rec_td": {
+      "incumbent": 0.0005,
+      "repaired": 0.0
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Olamide Zaccheaus|ATL": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.051,
+      "repaired": 0.051
+     },
+     "rush_yards": {
+      "incumbent": 0.2265,
+      "repaired": 0.2265
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0005
+     },
+     "targets": {
+      "incumbent": 1.7655,
+      "repaired": 1.7655
+     },
+     "receptions": {
+      "incumbent": 1.099,
+      "repaired": 1.099
+     },
+     "rec_yards": {
+      "incumbent": 7.515,
+      "repaired": 8.6151
+     },
+     "rec_td": {
+      "incumbent": 0.0915,
+      "repaired": 0.0725
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Oscar Delp|NO": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.013,
+      "repaired": 0.013
+     },
+     "rush_yards": {
+      "incumbent": 0.0459,
+      "repaired": 0.0459
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0005
+     },
+     "targets": {
+      "incumbent": 0.914,
+      "repaired": 0.914
+     },
+     "receptions": {
+      "incumbent": 0.645,
+      "repaired": 0.645
+     },
+     "rec_yards": {
+      "incumbent": 6.2756,
+      "repaired": 6.0911
+     },
+     "rec_td": {
+      "incumbent": 0.031,
+      "repaired": 0.028
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Spencer Rattler|NO": {
+     "pass_att": {
+      "incumbent": 0.1215,
+      "repaired": 0.1215
+     },
+     "pass_yards": {
+      "incumbent": 0.6953,
+      "repaired": 0.7898
+     },
+     "pass_td": {
+      "incumbent": 0.002,
+      "repaired": 0.004
+     },
+     "carries": {
+      "incumbent": 0.0875,
+      "repaired": 0.0875
+     },
+     "rush_yards": {
+      "incumbent": 0.5345,
+      "repaired": 0.5345
+     },
+     "rush_td": {
+      "incumbent": 0.002,
+      "repaired": 0.0015
+     },
+     "targets": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "receptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "rec_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "rec_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "interceptions": {
+      "incumbent": 0.0025,
+      "repaired": 0.0015
+     }
+    },
+    "Treyton Welch|NO": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.0055,
+      "repaired": 0.0055
+     },
+     "rush_yards": {
+      "incumbent": 0.0312,
+      "repaired": 0.0312
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.001
+     },
+     "targets": {
+      "incumbent": 0.195,
+      "repaired": 0.195
+     },
+     "receptions": {
+      "incumbent": 0.14,
+      "repaired": 0.14
+     },
+     "rec_yards": {
+      "incumbent": 1.3389,
+      "repaired": 1.3892
+     },
+     "rec_td": {
+      "incumbent": 0.006,
+      "repaired": 0.008
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Tua Tagovailoa|ATL": {
+     "pass_att": {
+      "incumbent": 0.0905,
+      "repaired": 0.0905
+     },
+     "pass_yards": {
+      "incumbent": 0.6436,
+      "repaired": 0.7727
+     },
+     "pass_td": {
+      "incumbent": 0.0045,
+      "repaired": 0.002
+     },
+     "carries": {
+      "incumbent": 0.0575,
+      "repaired": 0.0575
+     },
+     "rush_yards": {
+      "incumbent": 0.1367,
+      "repaired": 0.1367
+     },
+     "rush_td": {
+      "incumbent": 0.0005,
+      "repaired": 0.0
+     },
+     "targets": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "receptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "rec_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "rec_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "interceptions": {
+      "incumbent": 0.002,
+      "repaired": 0.001
+     }
+    },
+    "Tyler Shough|NO": {
+     "pass_att": {
+      "incumbent": 41.472,
+      "repaired": 41.472
+     },
+     "pass_yards": {
+      "incumbent": 277.0444,
+      "repaired": 276.9498
+     },
+     "pass_td": {
+      "incumbent": 1.5345,
+      "repaired": 1.533
+     },
+     "carries": {
+      "incumbent": 5.2795,
+      "repaired": 5.2795
+     },
+     "rush_yards": {
+      "incumbent": 24.1798,
+      "repaired": 24.1798
+     },
+     "rush_td": {
+      "incumbent": 0.4255,
+      "repaired": 0.3755
+     },
+     "targets": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "receptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "rec_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "rec_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "interceptions": {
+      "incumbent": 0.837,
+      "repaired": 0.837
+     }
+    },
+    "Zachariah Branch|ATL": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.0195,
+      "repaired": 0.0195
+     },
+     "rush_yards": {
+      "incumbent": 0.0876,
+      "repaired": 0.0876
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0005
+     },
+     "targets": {
+      "incumbent": 0.492,
+      "repaired": 0.492
+     },
+     "receptions": {
+      "incumbent": 0.3285,
+      "repaired": 0.3285
+     },
+     "rec_yards": {
+      "incumbent": 3.4115,
+      "repaired": 3.9325
+     },
+     "rec_td": {
+      "incumbent": 0.0115,
+      "repaired": 0.0165
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    }
+   },
+   "club": {
+    "NO": {
+     "SKILL": {
+      "incumbent": 98.779,
+      "repaired": 98.73,
+      "change": -0.049
+     },
+     "K": {
+      "incumbent": 8.606,
+      "repaired": 8.672,
+      "change": 0.066
+     },
+     "DST": {
+      "incumbent": 6.547,
+      "repaired": 8.525,
+      "change": 1.978
+     },
+     "ALL": {
+      "incumbent": 113.932,
+      "repaired": 115.927,
+      "change": 1.995
+     },
+     "club_points_mean": {
+      "incumbent_continuous": 23.028,
+      "repaired_event_sum": 23.398
+     },
+     "club_pass_yards_mean": {
+      "incumbent_qb": 277.74,
+      "incumbent_receivers": 280.636,
+      "repaired_both_sides": 277.74
+     }
+    },
+    "ATL": {
+     "SKILL": {
+      "incumbent": 82.648,
+      "repaired": 87.356,
+      "change": 4.708
+     },
+     "K": {
+      "incumbent": 7.873,
+      "repaired": 7.889,
+      "change": 0.016
+     },
+     "DST": {
+      "incumbent": 5.612,
+      "repaired": 6.366,
+      "change": 0.754
+     },
+     "ALL": {
+      "incumbent": 96.133,
+      "repaired": 101.612,
+      "change": 5.479
+     },
+     "club_points_mean": {
+      "incumbent_continuous": 17.555,
+      "repaired_event_sum": 17.839
+     },
+     "club_pass_yards_mean": {
+      "incumbent_qb": 256.197,
+      "incumbent_receivers": 215.468,
+      "repaired_both_sides": 256.197
+     }
+    }
+   },
+   "club_stat_totals": {
+    "NO": {
+     "pass_att": {
+      "incumbent": 41.593,
+      "repaired": 41.593
+     },
+     "pass_yards": {
+      "incumbent": 277.74,
+      "repaired": 277.74
+     },
+     "pass_td": {
+      "incumbent": 1.536,
+      "repaired": 1.537
+     },
+     "carries": {
+      "incumbent": 26.06,
+      "repaired": 26.06
+     },
+     "rush_yards": {
+      "incumbent": 96.613,
+      "repaired": 96.613
+     },
+     "rush_td": {
+      "incumbent": 0.917,
+      "repaired": 0.952
+     },
+     "targets": {
+      "incumbent": 36.496,
+      "repaired": 36.496
+     },
+     "receptions": {
+      "incumbent": 26.242,
+      "repaired": 26.242
+     },
+     "rec_yards": {
+      "incumbent": 280.636,
+      "repaired": 277.74
+     },
+     "rec_td": {
+      "incumbent": 1.537,
+      "repaired": 1.537
+     },
+     "interceptions": {
+      "incumbent": 0.839,
+      "repaired": 0.838
+     }
+    },
+    "ATL": {
+     "pass_att": {
+      "incumbent": 31.511,
+      "repaired": 31.511
+     },
+     "pass_yards": {
+      "incumbent": 256.197,
+      "repaired": 256.197
+     },
+     "pass_td": {
+      "incumbent": 1.085,
+      "repaired": 1.085
+     },
+     "carries": {
+      "incumbent": 30.431,
+      "repaired": 30.431
+     },
+     "rush_yards": {
+      "incumbent": 145.346,
+      "repaired": 145.346
+     },
+     "rush_td": {
+      "incumbent": 0.648,
+      "repaired": 0.654
+     },
+     "targets": {
+      "incumbent": 27.899,
+      "repaired": 27.899
+     },
+     "receptions": {
+      "incumbent": 18.39,
+      "repaired": 18.39
+     },
+     "rec_yards": {
+      "incumbent": 215.468,
+      "repaired": 256.197
+     },
+     "rec_td": {
+      "incumbent": 1.085,
+      "repaired": 1.085
+     },
+     "interceptions": {
+      "incumbent": 0.633,
+      "repaired": 0.64
+     }
+    }
+   }
+  },
+  "CLUB_PASS_YARDS_ON_INCUMBENT_RECEIVER_SUM": {
+   "out_dir": "nfl/research/accounting_repair/ATL_NO_2026W4/EVENT_CONSISTENT_RECEIVER_ANCHOR",
+   "default": false,
+   "after": {
+    "world_accounting_check": {},
+    "event_checks": {},
+    "event_checks_not_measurable": [],
+    "detail": {
+     "NO:PASS_YDS_EQ_REC_YDS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "gross passing minus receiving yards",
+      "legitimate_exception_available": "NONE_REPRESENTED",
+      "mean_diff": 0.001,
+      "max_abs_diff": 0.2,
+      "tolerance": 0.65
+     },
+     "NO:PASS_TD_EQ_REC_TD": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "passing TDs vs receiving TDs",
+      "legitimate_exception_available": "NONE_REPRESENTED"
+     },
+     "NO:TARGETS_LE_ATTEMPTS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "club targets vs club pass attempts",
+      "legitimate_exception_available": "NONE_REPRESENTED"
+     },
+     "NO:INT_LE_OPP_TAKEAWAYS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "interceptions thrown vs Falcons|ATL takeaways (raw DST components, before the anchor step)",
+      "legitimate_exception_available": "NONE_REPRESENTED",
+      "worlds_with_ints": 1117
+     },
+     "NO:POINTS_GE_6_PER_TD": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "published club points vs 6 x offensive TDs in the same world",
+      "legitimate_exception_available": "NONE_REPRESENTED"
+     },
+     "ATL:PASS_YDS_EQ_REC_YDS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "gross passing minus receiving yards",
+      "legitimate_exception_available": "NONE_REPRESENTED",
+      "mean_diff": 0.001,
+      "max_abs_diff": 0.3,
+      "tolerance": 0.65
+     },
+     "ATL:PASS_TD_EQ_REC_TD": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "passing TDs vs receiving TDs",
+      "legitimate_exception_available": "NONE_REPRESENTED"
+     },
+     "ATL:TARGETS_LE_ATTEMPTS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "club targets vs club pass attempts",
+      "legitimate_exception_available": "NONE_REPRESENTED"
+     },
+     "ATL:INT_LE_OPP_TAKEAWAYS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "interceptions thrown vs Saints|NO takeaways (raw DST components, before the anchor step)",
+      "legitimate_exception_available": "NONE_REPRESENTED",
+      "worlds_with_ints": 957
+     },
+     "ATL:POINTS_GE_6_PER_TD": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "published club points vs 6 x offensive TDs in the same world",
+      "legitimate_exception_available": "NONE_REPRESENTED"
+     },
+     "REC_LE_TARGETS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "any player with receptions > targets (per world)",
+      "legitimate_exception_available": "NONE_REPRESENTED"
+     },
+     "YDS_WITHOUT_CATCH": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "any player with receiving yards and no reception (per world)",
+      "legitimate_exception_available": "NONE_REPRESENTED",
+      "player_world_cells": 0
+     },
+     "REC_TD_WITHOUT_CATCH": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "any player with a receiving TD and no reception (per world)",
+      "legitimate_exception_available": "NONE_REPRESENTED",
+      "player_world_cells": 0
+     },
+     "INT_LE_ATTEMPTS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "any passer with more interceptions than attempts (per world)",
+      "legitimate_exception_available": "NOT_APPLICABLE"
+     },
+     "INACTIVE_NO_EVENTS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "0 ordinary-OUT players carried in the worlds",
+      "legitimate_exception_available": "NOT_APPLICABLE",
+      "out_players_in_worlds": []
+     },
+     "DK_FROM_PUBLISHED": {
+      "players": 26,
+      "violations": 0,
+      "of": 52000,
+      "bonus_line_storage_rounding_cells": 6,
+      "detail": "player-world cells whose scored DK is not reproduced by the published stat line within 0.06 points and half a yard-storage unit"
+     }
+    },
+    "event_detail": {
+     "REC_TD_LE_RECEPTIONS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "any player with more receiving TDs than receptions",
+      "player_world_cells": 0
+     },
+     "RUSH_TD_LE_CARRIES": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "any player with more rushing TDs than carries",
+      "player_world_cells": 0
+     },
+     "RUSH_YDS_WITHOUT_CARRY": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "any player with rushing yards and no carry",
+      "player_world_cells": 0
+     },
+     "NO:CLUB_TD_EQ_PLAYER_TD": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "club offensive TDs (scoring worlds) vs TDs on player lines"
+     },
+     "NO:EVENT_TD_EQ_PLAYER_TD": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "offensive TDs in the events vs on player lines"
+     },
+     "NO:POINTS_EQ_EVENT_SUM": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "published club points vs 6(TD+defTD)+XP+2*2pt+3*FG+2*safety"
+     },
+     "NO:KICKER_DK_FROM_EVENTS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "Daniel Carlson|NO DK vs XP + 3/4/5 by FG band"
+     },
+     "NO:FG_BANDS_SUM": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "FG made by band sums to FG made"
+     },
+     "NO:DST_DK_FROM_COMPONENTS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "Saints|NO DK vs tier(published points allowed) + sacks + 2 takeaways + 6 def TD + 2 safeties"
+     },
+     "ATL:CLUB_TD_EQ_PLAYER_TD": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "club offensive TDs (scoring worlds) vs TDs on player lines"
+     },
+     "ATL:EVENT_TD_EQ_PLAYER_TD": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "offensive TDs in the events vs on player lines"
+     },
+     "ATL:POINTS_EQ_EVENT_SUM": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "published club points vs 6(TD+defTD)+XP+2*2pt+3*FG+2*safety"
+     },
+     "ATL:KICKER_DK_FROM_EVENTS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "Nick Folk|ATL DK vs XP + 3/4/5 by FG band"
+     },
+     "ATL:FG_BANDS_SUM": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "FG made by band sums to FG made"
+     },
+     "ATL:DST_DK_FROM_COMPONENTS": {
+      "violations": 0,
+      "of": 2000,
+      "detail": "Falcons|ATL DK vs tier(published points allowed) + sacks + 2 takeaways + 6 def TD + 2 safeties"
+     }
+    }
+   },
+   "account": {
+    "anchor": "CLUB_PASS_YARDS_ON_INCUMBENT_RECEIVER_SUM",
+    "clubs": {
+     "NO": {
+      "qbs": [
+       "Spencer Rattler|NO",
+       "Tyler Shough|NO"
+      ],
+      "n_receivers": 11,
+      "club_pass_yards_target": 280.636,
+      "club_factor": 1.00637,
+      "incumbent_qb_pass_yards_mean": 277.74,
+      "incumbent_receiver_yards_sum_mean": 280.636,
+      "club_yards_per_catch_fallback": 10.4842,
+      "receivers_on_club_ypc_fallback": [],
+      "worlds_pass_yards_with_no_represented_passer": 0,
+      "worlds_raw_qb_pass_td_ne_receiver_td": 1,
+      "worlds_raw_club_td_ne_player_td": 70,
+      "worlds_club_td_below_player_td": 0,
+      "pass_td_unplaced_no_catch": 0,
+      "rush_td_unplaced_no_carry": 0,
+      "pass_td_dropped_no_represented_passer": 0,
+      "rush_yard_cells_zeroed_no_carry": 14,
+      "int_target_mean": 0.8543,
+      "opp_takeaways_mean": 1.321,
+      "int_share_of_opp_takeaways_q": 0.64673,
+      "q_capped_at_1": false,
+      "ints_capped_at_attempts": 0,
+      "int_mean": 0.8385,
+      "implied_fumble_takeaways_mean": 0.4825
+     },
+     "ATL": {
+      "qbs": [
+       "Michael Penix Jr.|ATL",
+       "Tua Tagovailoa|ATL"
+      ],
+      "n_receivers": 11,
+      "club_pass_yards_target": 215.468,
+      "club_factor": 1.01356,
+      "incumbent_qb_pass_yards_mean": 256.197,
+      "incumbent_receiver_yards_sum_mean": 215.468,
+      "club_yards_per_catch_fallback": 11.1166,
+      "receivers_on_club_ypc_fallback": [],
+      "worlds_pass_yards_with_no_represented_passer": 0,
+      "worlds_raw_qb_pass_td_ne_receiver_td": 0,
+      "worlds_raw_club_td_ne_player_td": 11,
+      "worlds_club_td_below_player_td": 0,
+      "pass_td_unplaced_no_catch": 0,
+      "rush_td_unplaced_no_carry": 0,
+      "pass_td_dropped_no_represented_passer": 0,
+      "rush_yard_cells_zeroed_no_carry": 15,
+      "int_target_mean": 0.6472,
+      "opp_takeaways_mean": 1.4605,
+      "int_share_of_opp_takeaways_q": 0.44315,
+      "q_capped_at_1": false,
+      "ints_capped_at_attempts": 0,
+      "int_mean": 0.64,
+      "implied_fumble_takeaways_mean": 0.8205
+     }
+    },
+    "NOT_REPRESENTED": {
+     "LATERALS_NON_QB_PASSES_PENALTIES": "no such events in nfl/sim/game.py; no identity exception is available",
+     "NEGATIVE_YARDAGE": "raw simulator yards are >= 0 per player-world; not represented",
+     "FUMBLES_LOST": "non-INT DST takeaways are not debited to any player (DK -1 fumble lost not drawn)",
+     "TWO_POINT_CONVERSIONS_PLAYER_CREDIT": "in club points, credited to no player DK line",
+     "TRY_AFTER_DEFENSIVE_TD": "not drawn; defensive/return TDs add exactly 6 to club points",
+     "DST_BAND_FROM_CONTINUOUS_POINTS": "DST tuple band chosen by the raw continuous points allowed; tier recomputed on event points; band changes counted",
+     "QB_SPLIT_BY_ATTEMPTS": "with two QBs, yards/TDs/INTs are shared by world attempts (catch-to-passer pairing is not simulated)",
+     "DST_AND_KICKER_NOT_RESCALED": "their DK is the DK scoring of the published events; drift reported",
+     "DST_POINTS_ALLOWED_DEFINITION": "all opponent club points (incl. the opponent DST defensive/return TDs and safeties), as the raw simulator used; DK's exact treatment of those is not verified here",
+     "DRAWN_TOTAL_AND_MARGIN": "published club points are event sums and no longer equal the simulator's drawn continuous total/margin; the drawn values still steer volume, TD count and FG count",
+     "INT_TO_OWN_ATTEMPTS": "INTs follow the opposing takeaways (thinned), not the world's own attempts, apart from the cap INT <= attempts"
+    },
+    "dst_band_changed_worlds": {
+     "Saints|NO": 498,
+     "Falcons|ATL": 457
+    },
+    "kicker_keys": {
+     "NO": "Daniel Carlson|NO",
+     "ATL": "Nick Folk|ATL"
+    },
+    "dst_keys": {
+     "NO": "Saints|NO",
+     "ATL": "Falcons|ATL"
+    }
+   },
+   "player_drift_sorted": [
+    {
+     "player": "Michael Penix Jr.|ATL",
+     "position": "QB",
+     "projection_dk": 15.8572,
+     "incumbent_mean": 15.3284,
+     "repaired_mean": 13.3115,
+     "drift": -2.0169,
+     "paired_se": 0.07,
+     "repaired_minus_projection": -2.5457
+    },
+    {
+     "player": "Saints|NO",
+     "position": "DST",
+     "projection_dk": 6.5468,
+     "incumbent_mean": 6.5468,
+     "repaired_mean": 8.525,
+     "drift": 1.9782,
+     "paired_se": 0.0431,
+     "repaired_minus_projection": 1.9782
+    },
+    {
+     "player": "Falcons|ATL",
+     "position": "DST",
+     "projection_dk": 5.6116,
+     "incumbent_mean": 5.6116,
+     "repaired_mean": 6.366,
+     "drift": 0.7544,
+     "paired_se": 0.0324,
+     "repaired_minus_projection": 0.7544
+    },
+    {
+     "player": "Alvin Kamara|NO",
+     "position": "RB",
+     "projection_dk": 13.679,
+     "incumbent_mean": 13.6617,
+     "repaired_mean": 14.0204,
+     "drift": 0.3587,
+     "paired_se": 0.1097,
+     "repaired_minus_projection": 0.3414
+    },
+    {
+     "player": "Bijan Robinson|ATL",
+     "position": "RB",
+     "projection_dk": 27.1438,
+     "incumbent_mean": 26.0113,
+     "repaired_mean": 26.212,
+     "drift": 0.2007,
+     "paired_se": 0.0884,
+     "repaired_minus_projection": -0.9318
+    },
+    {
+     "player": "Tyler Shough|NO",
+     "position": "QB",
+     "projection_dk": 21.5792,
+     "incumbent_mean": 22.4578,
+     "repaired_mean": 22.304,
+     "drift": -0.1538,
+     "paired_se": 0.111,
+     "repaired_minus_projection": 0.7248
+    },
+    {
+     "player": "Olamide Zaccheaus|ATL",
+     "position": "WR",
+     "projection_dk": 2.4856,
+     "incumbent_mean": 2.4222,
+     "repaired_mean": 2.2857,
+     "drift": -0.1365,
+     "paired_se": 0.0569,
+     "repaired_minus_projection": -0.1999
+    },
+    {
+     "player": "Drake London|ATL",
+     "position": "WR",
+     "projection_dk": 20.502,
+     "incumbent_mean": 20.0037,
+     "repaired_mean": 19.8749,
+     "drift": -0.1289,
+     "paired_se": 0.1221,
+     "repaired_minus_projection": -0.6271
+    },
+    {
+     "player": "Chris Olave|NO",
+     "position": "WR",
+     "projection_dk": 25.318,
+     "incumbent_mean": 25.6656,
+     "repaired_mean": 25.7705,
+     "drift": 0.1049,
+     "paired_se": 0.1326,
+     "repaired_minus_projection": 0.4525
+    },
+    {
+     "player": "Kyle Pitts Sr.|ATL",
+     "position": "TE",
+     "projection_dk": 5.2682,
+     "incumbent_mean": 5.1303,
+     "repaired_mean": 5.2032,
+     "drift": 0.073,
+     "paired_se": 0.0782,
+     "repaired_minus_projection": -0.065
+    },
+    {
+     "player": "Kendre Miller|NO",
+     "position": "RB",
+     "projection_dk": 3.6771,
+     "incumbent_mean": 3.7518,
+     "repaired_mean": 3.8214,
+     "drift": 0.0696,
+     "paired_se": 0.0629,
+     "repaired_minus_projection": 0.1443
+    },
+    {
+     "player": "Daniel Carlson|NO",
+     "position": "K",
+     "projection_dk": 8.2596,
+     "incumbent_mean": 8.606,
+     "repaired_mean": 8.672,
+     "drift": 0.066,
+     "paired_se": 0.048,
+     "repaired_minus_projection": 0.4124
+    },
+    {
+     "player": "Jahan Dotson|ATL",
+     "position": "WR",
+     "projection_dk": 4.171,
+     "incumbent_mean": 4.0889,
+     "repaired_mean": 4.1434,
+     "drift": 0.0544,
+     "paired_se": 0.0773,
+     "repaired_minus_projection": -0.0276
+    },
+    {
+     "player": "Kevin Austin Jr.|NO",
+     "position": "WR",
+     "projection_dk": 0.7908,
+     "incumbent_mean": 0.751,
+     "repaired_mean": 0.8053,
+     "drift": 0.0543,
+     "paired_se": 0.0316,
+     "repaired_minus_projection": 0.0145
+    },
+    {
+     "player": "Juwan Johnson|NO",
+     "position": "TE",
+     "projection_dk": 15.4202,
+     "incumbent_mean": 16.1659,
+     "repaired_mean": 16.1136,
+     "drift": -0.0523,
+     "paired_se": 0.1198,
+     "repaired_minus_projection": 0.6934
+    },
+    {
+     "player": "Brian Robinson Jr.|ATL",
+     "position": "RB",
+     "projection_dk": 4.9405,
+     "incumbent_mean": 4.6527,
+     "repaired_mean": 4.7005,
+     "drift": 0.0478,
+     "paired_se": 0.0535,
+     "repaired_minus_projection": -0.24
+    },
+    {
+     "player": "Devaughn Vele|NO",
+     "position": "WR",
+     "projection_dk": 10.5903,
+     "incumbent_mean": 11.0204,
+     "repaired_mean": 11.0537,
+     "drift": 0.0333,
+     "paired_se": 0.1052,
+     "repaired_minus_projection": 0.4634
+    },
+    {
+     "player": "Bryce Lance|NO",
+     "position": "WR",
+     "projection_dk": 2.663,
+     "incumbent_mean": 2.6994,
+     "repaired_mean": 2.6698,
+     "drift": -0.0296,
+     "paired_se": 0.0586,
+     "repaired_minus_projection": 0.0068
+    },
+    {
+     "player": "Oscar Delp|NO",
+     "position": "TE",
+     "projection_dk": 1.443,
+     "incumbent_mean": 1.4707,
+     "repaired_mean": 1.4436,
+     "drift": -0.0271,
+     "paired_se": 0.0367,
+     "repaired_minus_projection": 0.0006
+    },
+    {
+     "player": "Zachariah Branch|ATL",
+     "position": "WR",
+     "projection_dk": 0.7799,
+     "incumbent_mean": 0.7474,
+     "repaired_mean": 0.7745,
+     "drift": 0.0271,
+     "paired_se": 0.0271,
+     "repaired_minus_projection": -0.0054
+    },
+    {
+     "player": "Treyton Welch|NO",
+     "position": "TE",
+     "projection_dk": 0.3216,
+     "incumbent_mean": 0.3145,
+     "repaired_mean": 0.339,
+     "drift": 0.0245,
+     "paired_se": 0.0182,
+     "repaired_minus_projection": 0.0174
+    },
+    {
+     "player": "CJ Donaldson|NO",
+     "position": "RB",
+     "projection_dk": 0.5173,
+     "incumbent_mean": 0.5199,
+     "repaired_mean": 0.5402,
+     "drift": 0.0204,
+     "paired_se": 0.029,
+     "repaired_minus_projection": 0.0229
+    },
+    {
+     "player": "Nick Folk|ATL",
+     "position": "K",
+     "projection_dk": 8.9192,
+     "incumbent_mean": 7.8735,
+     "repaired_mean": 7.8895,
+     "drift": 0.016,
+     "paired_se": 0.041,
+     "repaired_minus_projection": -1.0297
+    },
+    {
+     "player": "Chris Blair|ATL",
+     "position": "WR",
+     "projection_dk": 0.151,
+     "incumbent_mean": 0.154,
+     "repaired_mean": 0.1664,
+     "drift": 0.0123,
+     "paired_se": 0.0148,
+     "repaired_minus_projection": 0.0154
+    },
+    {
+     "player": "Tua Tagovailoa|ATL",
+     "position": "QB",
+     "projection_dk": 0.0529,
+     "incumbent_mean": 0.0584,
+     "repaired_mean": 0.0467,
+     "drift": -0.0117,
+     "paired_se": 0.0082,
+     "repaired_minus_projection": -0.0062
+    },
+    {
+     "player": "Charlie Woerner|ATL",
+     "position": "TE",
+     "projection_dk": 0.4008,
+     "incumbent_mean": 0.3858,
+     "repaired_mean": 0.3757,
+     "drift": -0.0101,
+     "paired_se": 0.0269,
+     "repaired_minus_projection": -0.0251
+    },
+    {
+     "player": "Spencer Rattler|NO",
+     "position": "QB",
+     "projection_dk": 0.0948,
+     "incumbent_mean": 0.0988,
+     "repaired_mean": 0.1089,
+     "drift": 0.0101,
+     "paired_se": 0.0107,
+     "repaired_minus_projection": 0.0141
+    },
+    {
+     "player": "Nick Muse|ATL",
+     "position": "TE",
+     "projection_dk": 0.0179,
+     "incumbent_mean": 0.0207,
+     "repaired_mean": 0.0171,
+     "drift": -0.0037,
+     "paired_se": 0.0036,
+     "repaired_minus_projection": -0.0008
+    },
+    {
+     "player": "Barion Brown|NO",
+     "position": "WR",
+     "projection_dk": 0.2015,
+     "incumbent_mean": 0.202,
+     "repaired_mean": 0.205,
+     "drift": 0.003,
+     "paired_se": 0.0153,
+     "repaired_minus_projection": 0.0035
+    },
+    {
+     "player": "Austin Hooper|ATL",
+     "position": "TE",
+     "projection_dk": 3.6281,
+     "incumbent_mean": 3.6439,
+     "repaired_mean": 3.6428,
+     "drift": -0.0011,
+     "paired_se": 0.0724,
+     "repaired_minus_projection": 0.0147
+    }
+   ],
+   "skill_stat_means": {
+    "Alvin Kamara|NO": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 12.4085,
+      "repaired": 12.4085
+     },
+     "rush_yards": {
+      "incumbent": 39.9937,
+      "repaired": 39.9937
+     },
+     "rush_td": {
+      "incumbent": 0.355,
+      "repaired": 0.39
+     },
+     "targets": {
+      "incumbent": 5.724,
+      "repaired": 5.724
+     },
+     "receptions": {
+      "incumbent": 4.7155,
+      "repaired": 4.7155
+     },
+     "rec_yards": {
+      "incumbent": 21.2383,
+      "repaired": 21.2099
+     },
+     "rec_td": {
+      "incumbent": 0.1025,
+      "repaired": 0.127
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Austin Hooper|ATL": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.394,
+      "repaired": 0.394
+     },
+     "rush_yards": {
+      "incumbent": 1.8214,
+      "repaired": 1.8214
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.001
+     },
+     "targets": {
+      "incumbent": 1.9115,
+      "repaired": 1.9115
+     },
+     "receptions": {
+      "incumbent": 1.3125,
+      "repaired": 1.3125
+     },
+     "rec_yards": {
+      "incumbent": 12.9575,
+      "repaired": 12.5712
+     },
+     "rec_td": {
+      "incumbent": 0.141,
+      "repaired": 0.1445
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Barion Brown|NO": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.0505,
+      "repaired": 0.0505
+     },
+     "rush_yards": {
+      "incumbent": 0.2721,
+      "repaired": 0.2721
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0015
+     },
+     "targets": {
+      "incumbent": 0.111,
+      "repaired": 0.111
+     },
+     "receptions": {
+      "incumbent": 0.068,
+      "repaired": 0.068
+     },
+     "rec_yards": {
+      "incumbent": 0.8283,
+      "repaired": 0.7831
+     },
+     "rec_td": {
+      "incumbent": 0.004,
+      "repaired": 0.0035
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Bijan Robinson|ATL": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 20.2775,
+      "repaired": 20.2775
+     },
+     "rush_yards": {
+      "incumbent": 107.7019,
+      "repaired": 107.7019
+     },
+     "rush_td": {
+      "incumbent": 0.5475,
+      "repaired": 0.5495
+     },
+     "targets": {
+      "incumbent": 6.6385,
+      "repaired": 6.6385
+     },
+     "receptions": {
+      "incumbent": 5.214,
+      "repaired": 5.214
+     },
+     "rec_yards": {
+      "incumbent": 44.456,
+      "repaired": 44.5277
+     },
+     "rec_td": {
+      "incumbent": 0.1145,
+      "repaired": 0.1405
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Brian Robinson Jr.|ATL": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 6.871,
+      "repaired": 6.871
+     },
+     "rush_yards": {
+      "incumbent": 29.5066,
+      "repaired": 29.5066
+     },
+     "rush_td": {
+      "incumbent": 0.071,
+      "repaired": 0.0775
+     },
+     "targets": {
+      "incumbent": 0.698,
+      "repaired": 0.698
+     },
+     "receptions": {
+      "incumbent": 0.637,
+      "repaired": 0.637
+     },
+     "rec_yards": {
+      "incumbent": 5.0407,
+      "repaired": 5.1287
+     },
+     "rec_td": {
+      "incumbent": 0.0135,
+      "repaired": 0.013
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Bryce Lance|NO": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.057,
+      "repaired": 0.057
+     },
+     "rush_yards": {
+      "incumbent": 0.2916,
+      "repaired": 0.2916
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0005
+     },
+     "targets": {
+      "incumbent": 1.7875,
+      "repaired": 1.7875
+     },
+     "receptions": {
+      "incumbent": 0.9905,
+      "repaired": 0.9905
+     },
+     "rec_yards": {
+      "incumbent": 12.5227,
+      "repaired": 12.7064
+     },
+     "rec_td": {
+      "incumbent": 0.069,
+      "repaired": 0.0565
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "CJ Donaldson|NO": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.6175,
+      "repaired": 0.6175
+     },
+     "rush_yards": {
+      "incumbent": 1.9096,
+      "repaired": 1.9096
+     },
+     "rush_td": {
+      "incumbent": 0.0195,
+      "repaired": 0.022
+     },
+     "targets": {
+      "incumbent": 0.265,
+      "repaired": 0.265
+     },
+     "receptions": {
+      "incumbent": 0.1695,
+      "repaired": 0.1695
+     },
+     "rec_yards": {
+      "incumbent": 0.364,
+      "repaired": 0.3576
+     },
+     "rec_td": {
+      "incumbent": 0.001,
+      "repaired": 0.002
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Charlie Woerner|ATL": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.0035,
+      "repaired": 0.0035
+     },
+     "rush_yards": {
+      "incumbent": 0.0202,
+      "repaired": 0.0202
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "targets": {
+      "incumbent": 0.196,
+      "repaired": 0.196
+     },
+     "receptions": {
+      "incumbent": 0.1295,
+      "repaired": 0.1295
+     },
+     "rec_yards": {
+      "incumbent": 1.433,
+      "repaired": 1.3166
+     },
+     "rec_td": {
+      "incumbent": 0.0185,
+      "repaired": 0.0185
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Chris Blair|ATL": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.01,
+      "repaired": 0.01
+     },
+     "rush_yards": {
+      "incumbent": 0.0876,
+      "repaired": 0.0876
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "targets": {
+      "incumbent": 0.122,
+      "repaired": 0.122
+     },
+     "receptions": {
+      "incumbent": 0.0595,
+      "repaired": 0.0595
+     },
+     "rec_yards": {
+      "incumbent": 0.6477,
+      "repaired": 0.711
+     },
+     "rec_td": {
+      "incumbent": 0.0035,
+      "repaired": 0.0045
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Chris Olave|NO": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.0375,
+      "repaired": 0.0375
+     },
+     "rush_yards": {
+      "incumbent": 0.1437,
+      "repaired": 0.1437
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0005
+     },
+     "targets": {
+      "incumbent": 12.5145,
+      "repaired": 12.5145
+     },
+     "receptions": {
+      "incumbent": 8.827,
+      "repaired": 8.827
+     },
+     "rec_yards": {
+      "incumbent": 119.4327,
+      "repaired": 120.1964
+     },
+     "rec_td": {
+      "incumbent": 0.539,
+      "repaired": 0.5465
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Devaughn Vele|NO": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.966,
+      "repaired": 0.966
+     },
+     "rush_yards": {
+      "incumbent": 4.5012,
+      "repaired": 4.5012
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0155
+     },
+     "targets": {
+      "incumbent": 5.98,
+      "repaired": 5.98
+     },
+     "receptions": {
+      "incumbent": 3.965,
+      "repaired": 3.965
+     },
+     "rec_yards": {
+      "incumbent": 46.5227,
+      "repaired": 46.1511
+     },
+     "rec_td": {
+      "incumbent": 0.2845,
+      "repaired": 0.274
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Drake London|ATL": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.397,
+      "repaired": 0.397
+     },
+     "rush_yards": {
+      "incumbent": 1.6539,
+      "repaired": 1.6539
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0025
+     },
+     "targets": {
+      "incumbent": 8.4135,
+      "repaired": 8.4135
+     },
+     "receptions": {
+      "incumbent": 5.9835,
+      "repaired": 5.9835
+     },
+     "rec_yards": {
+      "incumbent": 100.0885,
+      "repaired": 100.1496
+     },
+     "rec_td": {
+      "incumbent": 0.427,
+      "repaired": 0.4095
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Jahan Dotson|ATL": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.0325,
+      "repaired": 0.0325
+     },
+     "rush_yards": {
+      "incumbent": 0.2035,
+      "repaired": 0.2035
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0005
+     },
+     "targets": {
+      "incumbent": 3.302,
+      "repaired": 3.302
+     },
+     "receptions": {
+      "incumbent": 1.5745,
+      "repaired": 1.5745
+     },
+     "rec_yards": {
+      "incumbent": 17.2605,
+      "repaired": 17.58
+     },
+     "rec_td": {
+      "incumbent": 0.127,
+      "repaired": 0.1255
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Juwan Johnson|NO": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 1.2605,
+      "repaired": 1.2605
+     },
+     "rush_yards": {
+      "incumbent": 5.5825,
+      "repaired": 5.5825
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.008
+     },
+     "targets": {
+      "incumbent": 7.4885,
+      "repaired": 7.4885
+     },
+     "receptions": {
+      "incumbent": 5.6545,
+      "repaired": 5.6545
+     },
+     "rec_yards": {
+      "incumbent": 64.9568,
+      "repaired": 64.6735
+     },
+     "rec_td": {
+      "incumbent": 0.483,
+      "repaired": 0.471
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Kendre Miller|NO": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 5.222,
+      "repaired": 5.222
+     },
+     "rush_yards": {
+      "incumbent": 18.8305,
+      "repaired": 18.8305
+     },
+     "rush_td": {
+      "incumbent": 0.115,
+      "repaired": 0.132
+     },
+     "targets": {
+      "incumbent": 1.0415,
+      "repaired": 1.0415
+     },
+     "receptions": {
+      "incumbent": 0.782,
+      "repaired": 0.782
+     },
+     "rec_yards": {
+      "incumbent": 3.6073,
+      "repaired": 3.463
+     },
+     "rec_td": {
+      "incumbent": 0.004,
+      "repaired": 0.001
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Kevin Austin Jr.|NO": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.055,
+      "repaired": 0.055
+     },
+     "rush_yards": {
+      "incumbent": 0.2963,
+      "repaired": 0.2963
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.003
+     },
+     "targets": {
+      "incumbent": 0.4755,
+      "repaired": 0.4755
+     },
+     "receptions": {
+      "incumbent": 0.2855,
+      "repaired": 0.2855
+     },
+     "rec_yards": {
+      "incumbent": 3.5483,
+      "repaired": 3.5363
+     },
+     "rec_td": {
+      "incumbent": 0.013,
+      "repaired": 0.0195
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Kyle Pitts Sr.|ATL": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.013,
+      "repaired": 0.013
+     },
+     "rush_yards": {
+      "incumbent": 0.0424,
+      "repaired": 0.0424
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "targets": {
+      "incumbent": 4.347,
+      "repaired": 4.347
+     },
+     "receptions": {
+      "incumbent": 2.043,
+      "repaired": 2.043
+     },
+     "rec_yards": {
+      "incumbent": 22.5656,
+      "repaired": 22.8451
+     },
+     "rec_td": {
+      "incumbent": 0.136,
+      "repaired": 0.1395
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Michael Penix Jr.|ATL": {
+     "pass_att": {
+      "incumbent": 31.42,
+      "repaired": 31.42
+     },
+     "pass_yards": {
+      "incumbent": 255.5531,
+      "repaired": 214.8185
+     },
+     "pass_td": {
+      "incumbent": 1.08,
+      "repaired": 1.0825
+     },
+     "carries": {
+      "incumbent": 2.305,
+      "repaired": 2.305
+     },
+     "rush_yards": {
+      "incumbent": 3.8574,
+      "repaired": 3.8574
+     },
+     "rush_td": {
+      "incumbent": 0.0295,
+      "repaired": 0.022
+     },
+     "targets": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "receptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "rec_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "rec_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "interceptions": {
+      "incumbent": 0.6315,
+      "repaired": 0.639
+     }
+    },
+    "Nick Muse|ATL": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "rush_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "targets": {
+      "incumbent": 0.0125,
+      "repaired": 0.0125
+     },
+     "receptions": {
+      "incumbent": 0.0085,
+      "repaired": 0.0085
+     },
+     "rec_yards": {
+      "incumbent": 0.0923,
+      "repaired": 0.0856
+     },
+     "rec_td": {
+      "incumbent": 0.0005,
+      "repaired": 0.0
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Olamide Zaccheaus|ATL": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.051,
+      "repaired": 0.051
+     },
+     "rush_yards": {
+      "incumbent": 0.2265,
+      "repaired": 0.2265
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0005
+     },
+     "targets": {
+      "incumbent": 1.7655,
+      "repaired": 1.7655
+     },
+     "receptions": {
+      "incumbent": 1.099,
+      "repaired": 1.099
+     },
+     "rec_yards": {
+      "incumbent": 7.515,
+      "repaired": 7.2455
+     },
+     "rec_td": {
+      "incumbent": 0.0915,
+      "repaired": 0.0725
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Oscar Delp|NO": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.013,
+      "repaired": 0.013
+     },
+     "rush_yards": {
+      "incumbent": 0.0459,
+      "repaired": 0.0459
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0005
+     },
+     "targets": {
+      "incumbent": 0.914,
+      "repaired": 0.914
+     },
+     "receptions": {
+      "incumbent": 0.645,
+      "repaired": 0.645
+     },
+     "rec_yards": {
+      "incumbent": 6.2756,
+      "repaired": 6.1546
+     },
+     "rec_td": {
+      "incumbent": 0.031,
+      "repaired": 0.028
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Spencer Rattler|NO": {
+     "pass_att": {
+      "incumbent": 0.1215,
+      "repaired": 0.1215
+     },
+     "pass_yards": {
+      "incumbent": 0.6953,
+      "repaired": 0.7981
+     },
+     "pass_td": {
+      "incumbent": 0.002,
+      "repaired": 0.004
+     },
+     "carries": {
+      "incumbent": 0.0875,
+      "repaired": 0.0875
+     },
+     "rush_yards": {
+      "incumbent": 0.5345,
+      "repaired": 0.5345
+     },
+     "rush_td": {
+      "incumbent": 0.002,
+      "repaired": 0.0015
+     },
+     "targets": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "receptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "rec_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "rec_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "interceptions": {
+      "incumbent": 0.0025,
+      "repaired": 0.0015
+     }
+    },
+    "Treyton Welch|NO": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.0055,
+      "repaired": 0.0055
+     },
+     "rush_yards": {
+      "incumbent": 0.0312,
+      "repaired": 0.0312
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.001
+     },
+     "targets": {
+      "incumbent": 0.195,
+      "repaired": 0.195
+     },
+     "receptions": {
+      "incumbent": 0.14,
+      "repaired": 0.14
+     },
+     "rec_yards": {
+      "incumbent": 1.3389,
+      "repaired": 1.4037
+     },
+     "rec_td": {
+      "incumbent": 0.006,
+      "repaired": 0.008
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    },
+    "Tua Tagovailoa|ATL": {
+     "pass_att": {
+      "incumbent": 0.0905,
+      "repaired": 0.0905
+     },
+     "pass_yards": {
+      "incumbent": 0.6436,
+      "repaired": 0.6498
+     },
+     "pass_td": {
+      "incumbent": 0.0045,
+      "repaired": 0.002
+     },
+     "carries": {
+      "incumbent": 0.0575,
+      "repaired": 0.0575
+     },
+     "rush_yards": {
+      "incumbent": 0.1367,
+      "repaired": 0.1367
+     },
+     "rush_td": {
+      "incumbent": 0.0005,
+      "repaired": 0.0
+     },
+     "targets": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "receptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "rec_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "rec_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "interceptions": {
+      "incumbent": 0.002,
+      "repaired": 0.001
+     }
+    },
+    "Tyler Shough|NO": {
+     "pass_att": {
+      "incumbent": 41.472,
+      "repaired": 41.472
+     },
+     "pass_yards": {
+      "incumbent": 277.0444,
+      "repaired": 279.8375
+     },
+     "pass_td": {
+      "incumbent": 1.5345,
+      "repaired": 1.533
+     },
+     "carries": {
+      "incumbent": 5.2795,
+      "repaired": 5.2795
+     },
+     "rush_yards": {
+      "incumbent": 24.1798,
+      "repaired": 24.1798
+     },
+     "rush_td": {
+      "incumbent": 0.4255,
+      "repaired": 0.3755
+     },
+     "targets": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "receptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "rec_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "rec_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "interceptions": {
+      "incumbent": 0.837,
+      "repaired": 0.837
+     }
+    },
+    "Zachariah Branch|ATL": {
+     "pass_att": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_yards": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "pass_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     },
+     "carries": {
+      "incumbent": 0.0195,
+      "repaired": 0.0195
+     },
+     "rush_yards": {
+      "incumbent": 0.0876,
+      "repaired": 0.0876
+     },
+     "rush_td": {
+      "incumbent": 0.0,
+      "repaired": 0.0005
+     },
+     "targets": {
+      "incumbent": 0.492,
+      "repaired": 0.492
+     },
+     "receptions": {
+      "incumbent": 0.3285,
+      "repaired": 0.3285
+     },
+     "rec_yards": {
+      "incumbent": 3.4115,
+      "repaired": 3.3073
+     },
+     "rec_td": {
+      "incumbent": 0.0115,
+      "repaired": 0.0165
+     },
+     "interceptions": {
+      "incumbent": 0.0,
+      "repaired": 0.0
+     }
+    }
+   },
+   "club": {
+    "NO": {
+     "SKILL": {
+      "incumbent": 98.779,
+      "repaired": 99.195,
+      "change": 0.416
+     },
+     "K": {
+      "incumbent": 8.606,
+      "repaired": 8.672,
+      "change": 0.066
+     },
+     "DST": {
+      "incumbent": 6.547,
+      "repaired": 8.525,
+      "change": 1.978
+     },
+     "ALL": {
+      "incumbent": 113.932,
+      "repaired": 116.392,
+      "change": 2.46
+     },
+     "club_points_mean": {
+      "incumbent_continuous": 23.028,
+      "repaired_event_sum": 23.398
+     },
+     "club_pass_yards_mean": {
+      "incumbent_qb": 277.74,
+      "incumbent_receivers": 280.636,
+      "repaired_both_sides": 280.636
+     }
+    },
+    "ATL": {
+     "SKILL": {
+      "incumbent": 82.648,
+      "repaired": 80.754,
+      "change": -1.894
+     },
+     "K": {
+      "incumbent": 7.873,
+      "repaired": 7.889,
+      "change": 0.016
+     },
+     "DST": {
+      "incumbent": 5.612,
+      "repaired": 6.366,
+      "change": 0.754
+     },
+     "ALL": {
+      "incumbent": 96.133,
+      "repaired": 95.01,
+      "change": -1.123
+     },
+     "club_points_mean": {
+      "incumbent_continuous": 17.555,
+      "repaired_event_sum": 17.839
+     },
+     "club_pass_yards_mean": {
+      "incumbent_qb": 256.197,
+      "incumbent_receivers": 215.468,
+      "repaired_both_sides": 215.468
+     }
+    }
+   },
+   "club_stat_totals": {
+    "NO": {
+     "pass_att": {
+      "incumbent": 41.593,
+      "repaired": 41.593
+     },
+     "pass_yards": {
+      "incumbent": 277.74,
+      "repaired": 280.636
+     },
+     "pass_td": {
+      "incumbent": 1.536,
+      "repaired": 1.537
+     },
+     "carries": {
+      "incumbent": 26.06,
+      "repaired": 26.06
+     },
+     "rush_yards": {
+      "incumbent": 96.613,
+      "repaired": 96.613
+     },
+     "rush_td": {
+      "incumbent": 0.917,
+      "repaired": 0.952
+     },
+     "targets": {
+      "incumbent": 36.496,
+      "repaired": 36.496
+     },
+     "receptions": {
+      "incumbent": 26.242,
+      "repaired": 26.242
+     },
+     "rec_yards": {
+      "incumbent": 280.636,
+      "repaired": 280.636
+     },
+     "rec_td": {
+      "incumbent": 1.537,
+      "repaired": 1.537
+     },
+     "interceptions": {
+      "incumbent": 0.839,
+      "repaired": 0.838
+     }
+    },
+    "ATL": {
+     "pass_att": {
+      "incumbent": 31.511,
+      "repaired": 31.511
+     },
+     "pass_yards": {
+      "incumbent": 256.197,
+      "repaired": 215.468
+     },
+     "pass_td": {
+      "incumbent": 1.085,
+      "repaired": 1.085
+     },
+     "carries": {
+      "incumbent": 30.431,
+      "repaired": 30.431
+     },
+     "rush_yards": {
+      "incumbent": 145.346,
+      "repaired": 145.346
+     },
+     "rush_td": {
+      "incumbent": 0.648,
+      "repaired": 0.654
+     },
+     "targets": {
+      "incumbent": 27.899,
+      "repaired": 27.899
+     },
+     "receptions": {
+      "incumbent": 18.39,
+      "repaired": 18.39
+     },
+     "rec_yards": {
+      "incumbent": 215.468,
+      "repaired": 215.468
+     },
+     "rec_td": {
+      "incumbent": 1.085,
+      "repaired": 1.085
+     },
+     "interceptions": {
+      "incumbent": 0.633,
+      "repaired": 0.64
+     }
+    }
+   }
+  }
+ }
+}
