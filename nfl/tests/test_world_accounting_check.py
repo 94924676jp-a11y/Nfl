@@ -60,6 +60,28 @@ def coherent(n=4):
             'Q|HHH': [QB] * n, 'R1|HHH': [WR1] * n, 'R2|HHH': [WR2] * n}
 
 
+def test_classic_points_read_from_each_clubs_own_game():
+    """CLASSIC FILES HOLD SEVERAL GAMES (2026-10-09). The points check read pts[0] -- the first game -- for every club,
+    so a second game's club scoring 7 with two offensive TDs passed against the first game's 17."""
+    n = 4
+    L = coherent(n)
+    for c in ('CCC', 'DDD'):
+        L[f'Q|{c}'] = [QB] * n
+        L[f'R1|{c}'] = [WR1] * n
+        L[f'R2|{c}'] = [WR2] * n
+    sd = scenario(L, [(17.0, 17.0)] * n, {c: [1] * n for c in ('AAA', 'HHH', 'CCC', 'DDD')})
+    import json as _j
+    z = np.load(sd / 'X_WORLDS.npz')
+    meta = _j.loads(z['meta'].tobytes())
+    meta['games'] = [{'game_id': 'G1', 'home': 'HHH', 'away': 'AAA'}, {'game_id': 'G2', 'home': 'DDD', 'away': 'CCC'}]
+    pts = np.array([[(17.0, 17.0)] * n, [(7.0, 17.0)] * n], dtype='float32')   # DDD scores 7 with 2 TDs
+    np.savez(sd / 'X_WORLDS.npz', stats=z['stats'], points=pts, meta=np.frombuffer(_j.dumps(meta).encode(), dtype='uint8'))
+    r = W.check(sd)
+    check('DDD:POINTS_GE_6_PER_TD' in r['VIOLATED'], f"second game's club is checked against its own points ({sorted(r['VIOLATED'])})")
+    check('CCC:POINTS_GE_6_PER_TD' not in r['VIOLATED'] and 'HHH:POINTS_GE_6_PER_TD' not in r['VIOLATED'],
+          'clubs whose own points cover their TDs pass')
+
+
 def test_coherent_passes():
     r = W.check(scenario(coherent(), [(17.0, 17.0)] * 4, {'AAA': [1] * 4, 'HHH': [1] * 4}))
     check(r['VIOLATED'] == {}, f"a coherent published world passes every check ({r['VIOLATED']})")
@@ -115,7 +137,7 @@ def test_bonus_line_rounding_is_not_a_violation():
 
 
 if __name__ == '__main__':
-    for t in (test_coherent_passes, test_each_break_is_caught, test_independent_audit_counterexample_through_real_transform,
+    for t in (test_classic_points_read_from_each_clubs_own_game, test_coherent_passes, test_each_break_is_caught, test_independent_audit_counterexample_through_real_transform,
               test_bonus_line_rounding_is_not_a_violation):
         print(t.__name__)
         t()

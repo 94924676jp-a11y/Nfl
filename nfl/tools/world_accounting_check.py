@@ -79,7 +79,9 @@ def check(sd, max_examples=5):
                      'legitimate_exception_available': exception, **kw}
 
     games = meta['games']
-    for g in games:
+    # THE GAME INDEX, NOT THE FIRST GAME (2026-10-09). `points` is [game, world, (home, away)]; a Showdown file holds
+    # one game so pts[0] was right there, but on a Classic file every club was compared with the first game's points.
+    for gi, g in enumerate(games):
         for c, opp in ((g['home'], g['away']), (g['away'], g['home'])):
             m = club == c
             py = S[m, :, F['pass_yards']].sum(0)
@@ -102,7 +104,7 @@ def check(sd, max_examples=5):
                     worlds_with_ints=int((ints > 0).sum()))
             col = 0 if c == g['home'] else 1
             td = (S[m, :, F['pass_td']].sum(0) + S[m, :, F['rush_td']].sum(0))
-            put(f'{c}:POINTS_GE_6_PER_TD', pts[0, :, col] + 1e-9 < 6 * td,
+            put(f'{c}:POINTS_GE_6_PER_TD', pts[gi, :, col] + 1e-9 < 6 * td,
                 'published club points vs 6 x offensive TDs in the same world')
     rec, tgt, recyd, rectd = (S[:, :, F[f]] for f in ('receptions', 'targets', 'rec_yards', 'rec_td'))
     put('REC_LE_TARGETS', (rec > tgt).any(0), 'any player with receptions > targets (per world)')
