@@ -674,6 +674,17 @@ DISPOSITIONS[('score_state_v1', 'nfl/postgame/showdown_atl_no_coherence.py')] = 
     'read_on': '2026-10-07',
 }
 
+# nfl/postgame/showdown_postgame.py (slate-generic Showdown postgame, added 2026-10-09). Read 2026-10-09.
+DISPOSITIONS[('score_state_v1', 'nfl/postgame/showdown_postgame.py')] = {
+    'verdict': 'HOMONYM_NOT_APPLICATION',
+    'evidence': ("`wp` in grade_teams (:314-:328) is WORLD POINTS -- `draws_doc['world_points']`, each club's "
+                 "score in every sealed simulated world -- compared with the realised final score to report its "
+                 "probability transform. 'game script' occurs only inside the calibration_summary READING caveat "
+                 "string (:303). No win probability or game-state value is read or applied; the module is "
+                 "POSTGAME_ACTUAL (docstring) and writes no forecast input."),
+    'read_on': '2026-10-09',
+}
+
 def audit() -> Outcome:
     files = _files()
     if not files:

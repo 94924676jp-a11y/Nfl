@@ -266,7 +266,9 @@ def test_the_other_production_graders_carry_the_same_stamp():
         p.name for p in (Path(_REPO) / 'nfl/postgame').glob('*.py')
         if "'state': 'GRADED'" in p.read_text()
         or "'grade_state': ('GRADED'" in p.read_text())
-    known = {'grade_projections.py', 'grade_week.py'}
+    # auto_postgame.py (2026-10-09): records a SLATE as GRADED only after join_provenance.assert_graded_row passes
+    # on every player row that showdown_postgame.actuals stamps (identity / governed absence; no id -> ungradeable).
+    known = {'grade_projections.py', 'grade_week.py', 'auto_postgame.py'}
     check('no unaccounted GRADED emitter in nfl/postgame',
           set(emitters) <= known, f'{emitters} vs known {sorted(known)}')
     for m in emitters:

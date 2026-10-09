@@ -43,6 +43,7 @@ _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
+from nfl.postgame import join_provenance as JP  # noqa: E402
 from nfl.product import dk_scoring as DKS  # noqa: E402
 
 SALARY_CAP = 50000
@@ -139,6 +140,12 @@ def actuals(pbp_gz, state, game):
             k['xp_att'] += 1
             k['xp_made'] += r.get('extra_point_result') == 'good'
             k['xp_missed'] += r.get('extra_point_result') != 'good'
+    # EVERY ID THE PLAY-BY-PLAY NAMES FOR THIS GAME, in any role. A player in it is MATCHED_BY_IDENTITY (a zero is a
+    # REAL_ZERO); a player with an id who is not in it recorded no production in a covered game (a governed
+    # ABSENCE_RESOLVED_TO_ZERO); a player with no id is IDENTITY_NOT_ESTABLISHED and is NOT graded (join_provenance).
+    seen_ids = set()
+    for c in [c for c in g.columns if c.endswith('_player_id')]:
+        seen_ids |= set(g[c].dropna().astype(str))
     dst = {}
     for team in (home, away):
         opp = away if team == home else home
@@ -154,10 +161,19 @@ def actuals(pbp_gz, state, game):
         dst[team] = {'sacks': sacks, 'ints': ints, 'fumble_recoveries': fr, 'tds': dtd, 'safeties': saf,
                      'blocked_kicks': blk, 'points_allowed_final': final[opp], 'opp_return_tds': opp_ret_td,
                      'points_allowed_excl_return_td6': pa}
-    players = {}
+    players, ungradeable = {}, {}
+
+    def _prov(gid):
+        if gid in seen_ids:
+            return JP.stamp(JP.MATCHED_BY_IDENTITY, key=gid, zero_basis=JP.REAL_ZERO)
+        return JP.stamp(JP.ABSENCE_RESOLVED_TO_ZERO, key='ZERO_NO_RECORDED_PRODUCTION',
+                        zero_basis=JP.ABSENCE_RESOLVED_TO_ZERO)
     for v in state['players'].values():
         nm, tm, pos = v['name'], v['team'], v['position']
         key = f'{nm}|{tm}'
+        if pos != 'DST' and not v.get('gsis_id'):
+            ungradeable[key] = JP.IDENTITY_NOT_ESTABLISHED
+            continue
         if pos == 'DST':
             x = dst[tm]
             players[key] = {'pos': 'DST', 'stats': x, 'dk_A': DKS.dst_points(points_allowed=x['points_allowed_final'],
@@ -165,20 +181,27 @@ def actuals(pbp_gz, state, game):
                             safeties=x['safeties'], blocked_kicks=x['blocked_kicks']),
                             'dk_B': DKS.dst_points(points_allowed=x['points_allowed_excl_return_td6'], sacks=x['sacks'],
                             ints=x['ints'], fumble_recoveries=x['fumble_recoveries'], tds=x['tds'],
-                            safeties=x['safeties'], blocked_kicks=x['blocked_kicks'])}
+                            safeties=x['safeties'], blocked_kicks=x['blocked_kicks']),
+                            'join_provenance': JP.stamp(JP.MATCHED_BY_IDENTITY, key=f'club:{tm}', zero_basis=JP.REAL_ZERO)}
             continue
         s = st.get(v.get('gsis_id'), collections.Counter())
         if pos == 'K':
             a = (s['fg_lt40'] * DKS.FG_UNDER_40 + s['fg_40s'] * DKS.FG_40_49 + s['fg_50p'] * DKS.FG_50_PLUS
                  + s['xp_made'] * DKS.EXTRA_POINT)
-            players[key] = {'pos': 'K', 'stats': dict(s), 'dk_A': float(a), 'dk_B': float(a - s['fg_missed'])}
+            players[key] = {'pos': 'K', 'stats': dict(s), 'dk_A': float(a), 'dk_B': float(a - s['fg_missed']),
+                            'join_provenance': _prov(v['gsis_id'])}
             continue
         p = float(DKS.skill_points(1, pass_yds=[s['pass_yds']], pass_td=[s['pass_td']], ints=[s['int']],
                                    rush_yds=[s['rush_yds']], rush_td=[s['rush_td']], rec=[s['rec']],
                                    rec_yds=[s['rec_yds']], rec_td=[s['rec_td']], fumbles_lost=[s['fum_lost']])[0])
         p += DKS.realised_extra_points(two_pt=s['two_pt'], return_td=s['return_td'])
-        players[key] = {'pos': pos, 'stats': dict(s), 'dk_A': round(p, 2), 'dk_B': round(p, 2)}
-    return {'final': final, 'home': home, 'away': away, 'n_plays': int(len(g)), 'dst': dst, 'players': players}
+        players[key] = {'pos': pos, 'stats': dict(s), 'dk_A': round(p, 2), 'dk_B': round(p, 2),
+                        'join_provenance': _prov(v['gsis_id'])}
+    for key, r in players.items():
+        JP.assert_graded_row(r, actual=r['dk_A'], where=f'{game}:{key}')
+    return {'final': final, 'home': home, 'away': away, 'n_plays': int(len(g)), 'dst': dst, 'players': players,
+            'ungradeable': ungradeable,
+            'join_audit': {j: sum(1 for r in players.values() if r['join_provenance']['join'] == j) for j in JP.JOINS}}
 
 
 def game_flow(pbp_gz, game):
@@ -237,6 +260,8 @@ def grade_players(act, draws_doc, fc_csv=None, worlds_npz=None):
     for k, d in draws_doc['draws'].items():
         a = np.asarray(d, dtype=float)
         if k not in act['players']:
+            if k in act.get('ungradeable', {}):
+                continue          # reported in the document's `ungradeable`, never given a number
             raise PostgameError(f'PLAYER_NOT_SCORED {k}')
         y = float(act['players'][k]['dk_A'])
         f = (fc.get(k) or {}).get('proj')
@@ -523,7 +548,8 @@ def run(config_path, pbp_gz, history_csv=None, write=True):
     doc = {'ARTIFACT': 'SHOWDOWN_POSTGAME', 'LAYER': 'POSTGAME_ACTUAL', 'game': cfg['game'], 'tag': cfg['tag'],
            'freeze': frz, 'final_score': act['final'], 'n_plays': act['n_plays'], 'dst_components': act['dst'],
            'game_flow': game_flow(pbp_gz, cfg['game']),
-           'player_actuals': act['players'], 'player_grading': sorted(rows, key=lambda r: -abs(r['our_error'])),
+           'player_actuals': act['players'], 'ungradeable': act['ungradeable'], 'join_audit': act['join_audit'],
+           'player_grading': sorted(rows, key=lambda r: -abs(r['our_error'])),
            'stat_grading': stat_rows, 'team_grading': grade_teams(act, draws),
            'calibration_this_game': calibration_summary(rows), 'hindsight_optimum': hs, 'portfolios': ports,
            'contest_financials': contest_financials(history_csv, cfg.get('contests', ()), per_entry),

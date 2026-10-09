@@ -145,3 +145,44 @@ the play-by-play).
 - exact hindsight against brute force;
 - the captain multiplier;
 - the probability-transform handling of ties.
+
+## Authoritative harness status after tonight's changes (2026-10-09, measured)
+
+**The full run did not complete.** `python3.12 nfl/tests/run_suite.py` reached module 317 of 383 before my 7,000-second
+limit stopped it, and the disk was full during part of that run. **This is not a suite result.**
+
+**Failures among the 317 modules that ran: 52 modules.** All 52 were rerun at commit `72ac4292`, the last commit
+before tonight's code changes, in a clean worktree:
+
+**45 fail identically at the baseline.** They are pre-existing; see `docs/NFL_SUITE_REMEDIATION_BACKLOG.md`.
+
+**3 were regressions caused by tonight's postgame code, all fixed:**
+- `test_missing_is_not_zero`: `auto_postgame.py` emitted `GRADED` without the join-provenance contract.
+  - The contract caught a real defect: a player whose identity failed to join would have scored a silent 0.
+  - `showdown_postgame.actuals` now stamps every player with MATCHED_BY_IDENTITY, a governed ABSENCE_RESOLVED_TO_ZERO,
+    or, with no ID, IDENTITY_NOT_ESTABLISHED, in which case the player is not graded.
+  - `auto_postgame` asserts the contract before recording GRADED. On TB@DAL: 26 identity matches, 26 governed
+    absences, 0 ungradeable.
+- `test_ownership_audit` and `test_non_evidentiary_refusal`: the audit flagged `showdown_postgame.py` (`wp` = world
+  points, "game script" in a caveat string). Read it and recorded a HOMONYM disposition, the same procedure as the
+  2026-10-07 ATL@NO entry.
+- After the fixes: these 3, plus 7 postgame suites, give 423 checks with 0 failing.
+
+**4 differ for environmental reasons, not tonight's code:**
+- `test_lineage`: `nfl/derived/ROLE_STATE.json` (git-ignored, built at 14:34 on Oct 8) is stale against
+  `player_prior.py`, which changed in `e1e6d755` at 19:17. The baseline checkout has no derived file, so it skipped
+  the check.
+  - **Real finding:** the shared derived artifact needs a rebuild through `nfl/tools/role_state.py`.
+  - Not rebuilt tonight, because the rebuild changes the projection inputs for the next slate.
+- `test_r5_active_pool`: depends on which git-ignored roster vintages are on disk.
+- `test_agent_state`: AGENT_STATE names an older HEAD; it fails at the baseline too.
+- `test_full_slate_rehearsal`: 2 failing at the baseline as well.
+
+**Test-isolation leak found:** the full run rewrote 3 tracked files (timestamp and counter churn):
+- `DK_WEEK3_PLACEHOLDER_PORTFOLIO_AUDIT.json`
+- `DK_WEEK3_PROJECTION_SOURCE_LEDGER.json`
+- `nfl/research/v2/r5/active_board_pointer.json`
+
+They were restored. A suite should never write tracked files; logged for the harness owner.
+
+**Not run:** modules 318–383. They need a complete run with a longer limit.

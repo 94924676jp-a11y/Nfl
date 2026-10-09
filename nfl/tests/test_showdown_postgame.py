@@ -84,6 +84,31 @@ def test_financials_unknown_without_entry_history():
     check(f['STATUS'] == 'UNKNOWN' and 'winnings' in f['fields_unknown'], 'no entry history -> financials UNKNOWN, never estimated')
 
 
+def test_every_scored_player_proves_its_join():
+    """join_provenance contract: an id seen in the game is MATCHED_BY_IDENTITY, an id not seen is a governed
+    ABSENCE_RESOLVED_TO_ZERO, and a player with no id is NOT graded at all (never an anonymous 0)."""
+    from nfl.postgame import join_provenance as JP
+    st = _atl_state()
+    st = json.loads(json.dumps(st))
+    victim = next(k for k, v in st['players'].items() if v['position'] not in ('DST', 'K'))
+    vk = f"{st['players'][victim]['name']}|{st['players'][victim]['team']}"
+    st['players'][victim]['gsis_id'] = None
+    a = SP.actuals(ATL_PBP, st, '2026_04_ATL_NO')
+    check(vk not in a['players'] and a['ungradeable'].get(vk) == JP.IDENTITY_NOT_ESTABLISHED,
+          f'a player with no id is ungradeable, not scored 0 ({vk})')
+    joins = {r['join_provenance']['join'] for r in a['players'].values()}
+    check(joins <= set(JP.GRADEABLE), f'every scored row carries a gradeable join {sorted(joins)}')
+    ok = True
+    for k, r in a['players'].items():
+        try:
+            JP.assert_graded_row(r, actual=r['dk_A'], where=k)
+        except (JP.AnonymousZero, JP.JoinNotDeclared):
+            ok = False
+    check(ok, 'assert_graded_row passes on every scored row (zeros carry a zero_basis)')
+    check(a['join_audit'][JP.MATCHED_BY_IDENTITY] > 0 and a['join_audit'][JP.ABSENCE_RESOLVED_TO_ZERO] > 0,
+          f"identity matches and governed absences both present {a['join_audit']}")
+
+
 def _brute(pts, players):
     best = -1e9
     for c in players:

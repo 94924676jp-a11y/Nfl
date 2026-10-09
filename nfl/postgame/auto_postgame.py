@@ -28,6 +28,7 @@ _REPO = pathlib.Path(__file__).resolve().parents[2]
 if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
+from nfl.postgame import join_provenance as JP  # noqa: E402
 from nfl.postgame import showdown_postgame as SP  # noqa: E402
 
 PBP_URL = 'https://github.com/nflverse/nflverse-data/releases/download/pbp/play_by_play_{season}.csv.gz'
@@ -103,6 +104,9 @@ def run_all(pbp=None, histories=None, configs=None):
                     doc['nflverse_stats_cross_check'] = cross_check(doc, st, sp, cfg['game'])
                 except Exception as e:  # noqa: BLE001 -- the cross-check is advisory; its absence is recorded
                     doc['nflverse_stats_cross_check'] = {'STATUS': 'NOT_RUN', 'reason': repr(e)[:200]}
+                # A slate is GRADED only if every scored player row proves its join (join_provenance contract).
+                for k, r in doc['player_actuals'].items():
+                    JP.assert_graded_row(r, actual=r['dk_A'], where=f"{cfg['tag']}:{k}")
                 done.write_text(json.dumps(doc, indent=1, default=float) + '\n')
                 rec = {'tag': cfg['tag'], 'state': 'GRADED', 'at': _now(), 'final': doc['final_score'],
                        'cross_check': doc['nflverse_stats_cross_check']['STATUS']}
