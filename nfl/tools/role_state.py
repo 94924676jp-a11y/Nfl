@@ -172,8 +172,13 @@ def _evidence_order_key(row, dk_id):
         r if (isinstance(u, int) and r < u) else None)
     o = ((row.get('observed_2026') or {}).get('combined') or {})
     share = o.get('rush_share') if row.get('position') == 'RB' else o.get('target_share')
-    return (r, c if isinstance(c, int) else 99, u if isinstance(u, int) else 99,
-            -(share if isinstance(share, (int, float)) else 0.0), str(dk_id))
+    cc, uu = (c if isinstance(c, int) else 99), (u if isinstance(u, int) else 99)
+    # TIGHT ENDS: USAGE BEFORE CHART. A club's chart TE1 is often its in-line blocker, while the ceiling governs a
+    # receiving role measured in targets (PIT 2026 W5: chart TE1 Darnell Washington, 9% of targets; usage TE1 Pat
+    # Freiermuth, 13%). Measured in 2026 W2-W4 tied TE rooms: chart 3 of 8 picked the room's target leader, usage 4 of 8
+    # (exploratory, n = 8). Receivers and backs keep chart first (WR 20 of 32 vs usage 5; RB 5 of 7 vs 2).
+    second, third = ((uu, cc) if row.get('position') == 'TE' else (cc, uu))
+    return (r, second, third, -(share if isinstance(share, (int, float)) else 0.0), str(dk_id))
 
 
 def assign(players, panel=None):

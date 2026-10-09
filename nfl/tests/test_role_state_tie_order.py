@@ -40,6 +40,12 @@ def test_chart_breaks_a_tie_whatever_the_ids():
         check(r[ids[1]] == 1 and r[ids[0]] == 2, f'ids {ids}: the chart WR1 ranks 1, the usage WR1 ranks 2 ({r})')
 
 
+def test_tight_end_tie_uses_usage_first():
+    P = {'a': _p('Receiving TE', 1, 1, 2, pos='TE'), 'b': _p('Blocking TE', 1, 2, 1, pos='TE')}
+    r = RS._position_scoped_ranks(P)
+    check(r == {'a': 1, 'b': 2}, f'TE tie: the usage (target) leader ranks 1 over the chart TE1 ({r})')
+
+
 def test_derived_when_the_state_does_not_record_the_chart():
     P = {'a': _p('Usage One', 1, 1, None, record_chart=False), 'b': _p('Chart One', 1, 2, None, record_chart=False)}
     r = RS._position_scoped_ranks(P)
