@@ -101,7 +101,7 @@
   {
    "id": "W5-G13",
    "class": "CONFIRMED_CORRECTNESS_DEFECT",
-   "status": "MEASURED, NOT REPAIRED -- candidate TIE-1 is research only",
+   "status": "REPAIRED 2026-10-09 (39340321 evidence order; a8efedae TE usage-first). Exploratory evidence; 58-suite regression in nfl/tests/certificates/",
    "finding": "role_state._position_scoped_ranks breaks a tie in the supplied depth rank by sorting (rank, dk_id): the identifier decides who is rank 1 and who is capped at SECONDARY. The tie is created upstream by classic_slate_state (RB/WR/TE rank = MIN(usage rank, chart rank)), so two room-mates often both hold rank 1.",
    "measured": {
     "week5_research_state_rooms_with_tied_rank": 26,
@@ -124,6 +124,15 @@
     "reading": "TIE-1 removes the id dependence but replaces it with an observed-share rule that demotes a returning starter (Jefferson missed W4). Neither is validated. Distance to FC is reported only as a diagnostic and is not a target.",
     "artifacts": "nfl/dfs/salaries/classic_early_2026W5/research_projection/tie1_research_arm/",
     "next": "preregister and evaluate forward-chained on 2026 W1-W4 role states against realised usage share, not against FC, before any promotion"
+   },
+   "repair": {
+    "rule": "rank, chart rank (usage first for TE), usage rank, observed share, id last",
+    "invariance": "relabelling ids of the W4 Early state changes no band or ceiling (old code: Nacua, Adams, Watson, Golden, Doubs changed)",
+    "replays": {
+     "oracle_2026_W2_W4": "-0.148 [-0.271, -0.034], 369 players, 50 club-weeks",
+     "real_W4_Early_pool": "+0.069 [-0.098, +0.259], 132 players, 16 clubs"
+    },
+    "week5_effect": "Chase 14.81->18.70, McLaurin 9.82->13.77, Higgins 21.09->16.77, Diggs 14.70->11.74, Hollins 10.35->7.06"
    }
   },
   {
@@ -139,6 +148,26 @@
    "status": "OPEN -- resolves when an official OUT designation is captured",
    "finding": "CHI: the nflverse schedule capture lists Tyson Bagent and Caleb Williams did not practise, yet the engine starts Williams (captured depth chart rank 1, no designation) at 21.96 DK points and gives Bagent 0.07. The secondary news supplement reports Williams ruled out (CONFIRMED tag, Chicago Sun-Times 2026-10-05) -- a discovery signal, not consumed by rule.",
    "effect": "every CHI and GB projection is conditioned on the wrong QB if the report is right. An OUT designation in the Friday capture moves the QB order to Bagent through _qb_rank with no code change."
+  },
+  {
+   "id": "W5-G16",
+   "class": "CONFIRMED_UNIT_DEFECT",
+   "status": "MEASURED; candidate AP-1 preregistered (2026 W6-W11), not promoted",
+   "finding": "proj_v1.allocate_opportunity uses depth_shares appearance_rate -- the share of club-weeks with at least r players recording the measure -- as P(this player plays). His own appearance record (observed_2026.weeks_played) is not read.",
+   "measured": "2021-2025: pregame WR5 who played the prior 3 weeks appears again 67% (n=52) vs table 7.7%; WR4 67% vs 27%; RB3 75% vs 23%; TE3 67% vs 12%",
+   "effect": "volume moves from active backups to starters (FC diagnosis pattern: Noel 0.077, Monangai 0.635 despite 4/4 games)"
+  },
+  {
+   "id": "W5-G17",
+   "class": "SHADOW_NOT_PROMOTABLE",
+   "status": "accounting repair: damage detected on calibration, means and game outcomes (INTEGRATION_EVALUATION_2026-10-09)",
+   "finding": "event-consistent worlds fix every accounting law but over-disperse receivers, produce 1.8-3.7% ties vs 0.29% historical (no overtime), double-count defensive TD points, and reshuffle 169 of 190 lineups; the incumbent DST is itself defective (non-integer DST in 92-98% of worlds)"
+  },
+  {
+   "id": "W5-G18",
+   "class": "QB_IDENTITY_TEAM_VOLUME",
+   "status": "OPEN research (QBCTX failed; QBCTX-DB1 preregistered)",
+   "finding": "CHI and WAS QB scenarios move the QB but no receiver by 0.5 DK: team volume and shares ignore who throws (W5-G1 made measurable on this slate)"
   }
  ],
  "engine_dependency_audit_2026-10-09": {

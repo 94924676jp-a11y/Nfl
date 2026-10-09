@@ -1,0 +1,3167 @@
+{
+ "meta": {
+  "ARTIFACT": "FC_DISAGREEMENT_DIAGNOSIS",
+  "as_of": "2026-10-09",
+  "read_only_sources": {
+   "incumbent": "/home/user/p0work/nfl-w5/nfl/dfs/salaries/runs/w5_research/incumbent",
+   "tie1": "/home/user/p0work/nfl-w5/nfl/dfs/salaries/runs/w5_research/tie1",
+   "scenario": "/home/user/p0work/nfl-w5/nfl/dfs/salaries/runs/w5_research/scenario_reported_outs",
+   "evidence_board": "/home/user/nfl/nfl/dfs/salaries/classic_early_2026W5/WEEK5_EVIDENCE_BOARD.json",
+   "research_board": "/home/user/nfl/nfl/dfs/salaries/classic_early_2026W5/WEEK5_FULL_PLAYER_RESEARCH_BOARD.json",
+   "stats_2026": "raw/classic_early_2026W5/NFLVERSE_STATS_PLAYER_WEEK_2026 (scored with classic_week_research.dk_points)"
+  },
+  "FC_IS": "an independent benchmark only; agreement with FC is not a target",
+  "PRIMARY_RULE": "primary = the cause accounting for the largest measured or bounded share of ours-minus-FC; demonstrable defects are flagged by defect_suspected regardless of size",
+  "observed_2026_IS_NOT": "an outcome of the predicted game; it is pre-kickoff input evidence, 2-4 games, noisy",
+  "counts_by_primary_cause": {
+   "AVAILABILITY_ASSUMPTION": 6,
+   "FC_SPECIFIC": 10,
+   "ROLE_JUDGEMENT": 1,
+   "ROLE_EVIDENCE_DEFECT": 1,
+   "VOLUME_OR_EFFICIENCY_MODEL": 3
+  },
+  "n_rows": 21,
+  "structural_pattern": "all 5 rows where we exceed FC are club rank-1 players with p_plays 1.0; all 12 where we trail FC have p_plays < 1 (depth rank >= 2). Against their own 2026 production, rank-1 Warren/Doubs/Washington sit +3.3/+3.6/+4.6 above while depth-2+ Allen/Henderson/Monangai/Noel sit below. Hypothesis, not a finding: rank-only P(plays) removes volume from depth 2+ and club renormalisation (claim_sum < 1) returns it pro rata, concentrating it on starters."
+ },
+ "rows": [
+  {
+   "player": "Tyson Bagent",
+   "team": "CHI",
+   "pos": "QB",
+   "ours": 0.07,
+   "ours_if_plays": 7.21,
+   "fc": 13.14,
+   "fc_floor": 3.69,
+   "fc_ceiling": 25.74,
+   "fc_depth_tag": "QB1",
+   "diff": -13.07,
+   "p_plays": {
+    "carries": 0.13838,
+    "pass_attempts": 0.13838,
+    "targets": 0.13838
+   },
+   "volume": {
+    "unconditional": {
+     "targets": 0.0,
+     "carries": 0.04,
+     "pass_attempts": 0.1
+    },
+    "if_plays": {
+     "targets": 0.0,
+     "carries": 0.29,
+     "pass_attempts": 0.72
+    },
+    "final_club_share": {
+     "targets": 0.0,
+     "carries": 0.00115,
+     "pass_attempts": 0.00291
+    },
+    "claims_before_normalising": {
+     "carries": 0.007949,
+     "pass_attempts": 0.0195,
+     "targets": 3e-05
+    },
+    "club_claim_sum_before_normalising": {
+     "targets": 0.8648,
+     "carries": 0.9558,
+     "pass_attempts": 0.9288
+    }
+   },
+   "efficiency": {
+    "dk_per_opportunity_if_plays": 7.158,
+    "rates": {
+     "catch_rate": null,
+     "completion_rate": 0.605,
+     "yards_per_attempt": 6.297,
+     "yards_per_carry": 2.408,
+     "yards_per_target": null
+    },
+    "prior_tier": "ARCHETYPE",
+    "prior_confidence": "LOW",
+    "prior_effective_obs": 95.59
+   },
+   "td_expectation_if_plays": {
+    "rush_td": 0.022,
+    "rec_td": 0.0,
+    "pass_td": 1.711,
+    "club_pool_scale": {
+     "rec_pool_scale": 0.9786,
+     "rush_pool_scale": 0.6133
+    }
+   },
+   "observed_2026": {
+    "games_played": 2,
+    "dk_avg": 5.99,
+    "dk_avg_source": "research board (snap-based participation)",
+    "engine_weeks_played": 2,
+    "engine_observed_share": {
+     "target_share": 0.0,
+     "rush_share": 0.0252
+    },
+    "per_stat_row_game": {
+     "games_played": 2,
+     "weeks": [
+      2,
+      4
+     ],
+     "dk_by_week": [
+      2.16,
+      9.82
+     ],
+     "dk_avg": 5.99,
+     "targets_pg": 0.0,
+     "carries_pg": 2.0,
+     "pass_att_pg": 21.5,
+     "td_pg": 0.0,
+     "pass_td_pg": 0.0
+    },
+    "research_board_estimates": {
+     "games_played_2026": 2,
+     "dk_avg_2026": 5.99,
+     "dk_last_game": 9.82,
+     "last_game_week": 4,
+     "target_share_avg": 0.0,
+     "carry_share_avg": 0.037,
+     "red_zone_targets_2026": 0,
+     "red_zone_carries_2026": 4
+    }
+   },
+   "availability": {
+    "state": "UNKNOWN_ACTIVE_STATE",
+    "practice_engine_state": null,
+    "practice_board_latest": null,
+    "injury": null
+   },
+   "role_band": "SECONDARY",
+   "ceiling": "SECONDARY",
+   "evidence_for_ceiling": {
+    "evidence": "DEPTH_RANK_2",
+    "depth_rank_supplied": 2,
+    "depth_usage_rank": 1,
+    "depth_chart_captured": [
+     "QB2"
+    ],
+    "depth_source": "DEPTH_CHART_CAPTURED 20261008T225113Z",
+    "position_rank": 2,
+    "historical_band": "ALPHA",
+    "observed_band": null,
+    "observed_share": null,
+    "capped": true,
+    "cap_reason": "observed usage suggested ALPHA but evidence DEPTH_RANK_2 ceilings at SECONDARY. observed usage is capped at SECONDARY when it is the ONLY evidence, because a large observed share held while the starter was injured is not a claim on the role once he returns. This is the rule that expires an injury-replacement workload.",
+    "role_evidence_conflict": null,
+    "stored_not_consumed": [
+     "LISTED_STARTER_NOT_CONSUMED: schedule capture lists Tyson Bagent; engine starts Caleb Williams",
+     "QB_REGIME_NOT_CONSUMED: QB_REGIME_CHANGE; THIN_STARTER_EVIDENCE; QB_CHURN",
+     "TEAMMATE_PRACTICE_NOT_CONSUMED: Caleb Williams, D'Andre Swift, Kyle Monangai did not practise, undesignated",
+     "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] Tyson Bagent will start Week 5 at GB. Ben Johnson on ESPN 1000 Monday: 'Tyson will be the ; [REPORTED] QB by week: Williams started W1 and W2 and was hurt in the W2 9-3 loss to MIN. Case Keenum"
+    ]
+   },
+   "tie1_arm_value": 0.07,
+   "tie1_arm_band_ceiling": [
+    "SECONDARY",
+    "SECONDARY"
+   ],
+   "scenario_value": 19.03,
+   "scenario_note": null,
+   "primary_cause": "AVAILABILITY_ASSUMPTION",
+   "secondary_causes": [
+    "VOLUME_OR_EFFICIENCY_MODEL"
+   ],
+   "evidence_line": "engine starts Caleb Williams (captured chart QB1, no designation); nflverse schedule capture lists Bagent; [CONFIRMED] Sun-Times 2026-10-05: Williams (Grade 2 hamstring) out, Bagent starts; Bagent p_plays 0.138 -> 0.07; scenario 19.03",
+   "defect_suspected": false,
+   "assumption_contradicted_by_captured_evidence": true,
+   "note": "Our number rests on Williams starting, which captured evidence contradicts (schedule listing + CONFIRMED news + Williams DNP). Known open gap W5-G15 (by rule, news and schedule listing are not consumed until an OUT designation); a design gap rather than a code defect. In the scenario our Bagent (19.03) exceeds FC (13.14) by 5.9; his 2026 DK avg is 5.99 over 2 appearances (one start, 9.82), and team volume is QB-blind (W5-G1)."
+  },
+  {
+   "player": "Ja'Marr Chase",
+   "team": "CIN",
+   "pos": "WR",
+   "ours": 14.81,
+   "ours_if_plays": 16.48,
+   "fc": 23.47,
+   "fc_floor": 4.57,
+   "fc_ceiling": 48.67,
+   "fc_depth_tag": "WR1",
+   "diff": -8.66,
+   "p_plays": {
+    "carries": 0.86052,
+    "pass_attempts": 1.0,
+    "targets": 0.86052
+   },
+   "volume": {
+    "unconditional": {
+     "targets": 7.58,
+     "carries": 0.05,
+     "pass_attempts": 0.0
+    },
+    "if_plays": {
+     "targets": 8.47,
+     "carries": 0.06,
+     "pass_attempts": 0.0
+    },
+    "final_club_share": {
+     "targets": 0.20354,
+     "carries": 0.0024,
+     "pass_attempts": 8e-05
+    },
+    "claims_before_normalising": {
+     "carries": 0.00314,
+     "pass_attempts": 0.000153,
+     "targets": 0.212333
+    },
+    "club_claim_sum_before_normalising": {
+     "targets": 0.8975,
+     "carries": 0.9836,
+     "pass_attempts": 0.9991
+    }
+   },
+   "efficiency": {
+    "dk_per_opportunity_if_plays": 1.932,
+    "rates": {
+     "catch_rate": 0.729,
+     "completion_rate": null,
+     "yards_per_attempt": null,
+     "yards_per_carry": null,
+     "yards_per_target": 8.03
+    },
+    "prior_tier": "PLAYER_OWN_OFF_ROLE",
+    "prior_confidence": "LOW",
+    "prior_effective_obs": 5.82
+   },
+   "td_expectation_if_plays": {
+    "rush_td": 0.002,
+    "rec_td": 0.49,
+    "pass_td": 0.0,
+    "club_pool_scale": {
+     "rec_pool_scale": 1.0844,
+     "rush_pool_scale": 1.3184
+    }
+   },
+   "observed_2026": {
+    "games_played": 4,
+    "dk_avg": 15.05,
+    "dk_avg_source": "research board (snap-based participation)",
+    "engine_weeks_played": 4,
+    "engine_observed_share": {
+     "target_share": 0.1806,
+     "rush_share": 0.0
+    },
+    "per_stat_row_game": {
+     "games_played": 4,
+     "weeks": [
+      1,
+      2,
+      3,
+      4
+     ],
+     "dk_by_week": [
+      3.2,
+      26.5,
+      24.8,
+      5.7
+     ],
+     "dk_avg": 15.05,
+     "targets_pg": 7.0,
+     "carries_pg": 0.0,
+     "pass_att_pg": 0.0,
+     "td_pg": 0.75,
+     "pass_td_pg": 0.0
+    },
+    "research_board_estimates": {
+     "games_played_2026": 4,
+     "dk_avg_2026": 15.05,
+     "dk_last_game": 5.7,
+     "last_game_week": 4,
+     "target_share_avg": 0.197,
+     "carry_share_avg": 0.0,
+     "red_zone_targets_2026": 4,
+     "red_zone_carries_2026": 0,
+     "snap_trend_pp": -31.0
+    }
+   },
+   "availability": {
+    "state": "UNKNOWN_ACTIVE_STATE",
+    "practice_engine_state": "Did Not Participate In Practice",
+    "practice_board_latest": "Limited Participation in Practice",
+    "injury": "Concussion"
+   },
+   "role_band": "SECONDARY",
+   "ceiling": "SECONDARY",
+   "evidence_for_ceiling": {
+    "evidence": "DEPTH_RANK_2",
+    "depth_rank_supplied": 1,
+    "depth_usage_rank": 2,
+    "depth_chart_captured": [
+     "WR1"
+    ],
+    "depth_source": "MIN(PREGAME_USAGE_HISTORY, DEPTH_CHART_CAPTURED)",
+    "position_rank": 2,
+    "historical_band": "ALPHA",
+    "observed_band": "PRIMARY",
+    "observed_share": 0.1806,
+    "capped": true,
+    "cap_reason": "observed usage suggested ALPHA but evidence DEPTH_RANK_2 ceilings at SECONDARY. observed usage is capped at SECONDARY when it is the ONLY evidence, because a large observed share held while the starter was injured is not a claim on the role once he returns. This is the rule that expires an injury-replacement workload.",
+    "role_evidence_conflict": {
+     "kind": "HISTORY_ABOVE_EVIDENCE_CEILING",
+     "history_band": "ALPHA",
+     "assigned_band": "SECONDARY",
+     "evidence": "DEPTH_RANK_2",
+     "ceiling": "SECONDARY"
+    },
+    "stored_not_consumed": [
+     "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 0.86)",
+     "TEAMMATE_PRACTICE_NOT_CONSUMED: Tee Higgins did not practise, undesignated",
+     "DEPTH_TIE_BROKEN_BY_ID: supplied rank 1 shared by 2 at WR; ceiling SECONDARY",
+     "ROLE_HISTORY_ABOVE_CEILING: history ALPHA, assigned SECONDARY",
+     "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] WR Ja'Marr Chase (concussion, in protocol): DNP Wednesday, limited Thursday. He needs a fu"
+    ]
+   },
+   "tie1_arm_value": 14.9,
+   "tie1_arm_band_ceiling": [
+    "PRIMARY",
+    "ALPHA"
+   ],
+   "scenario_value": 14.81,
+   "scenario_note": null,
+   "primary_cause": "FC_SPECIFIC",
+   "secondary_causes": [
+    "ROLE_EVIDENCE_DEFECT",
+    "AVAILABILITY_ASSUMPTION",
+    "VOLUME_OR_EFFICIENCY_MODEL"
+   ],
+   "evidence_line": "2026 DK avg 15.05 (W1-3 healthy 18.17, W4 concussion exit 20% snaps/3 tgts); ours 14.81 (if-plays 16.48 x p_plays 0.86); FC 23.47 = full-health WR1; in concussion protocol, 'needs a full practice to clear' [CONFIRMED]",
+   "defect_suspected": true,
+   "assumption_contradicted_by_captured_evidence": true,
+   "note": "W5-G13 present and contradicts captured chart: Chase chart WR1, Higgins chart WR2, both supplied rank 1 (min(usage,chart)); id 00-0036410 < 00-0036900 gives Higgins position rank 1, Chase DEPTH_RANK_2 -> SECONDARY ceiling, prior discounted to PLAYER_OWN_OFF_ROLE, allocation rank 2 -> p_plays 0.86 (rank-2 base rate, not a concussion model). TIE-1 measured effect only +0.09 (one-ALPHA rule then picks Higgins by observed share; allocation rank stays 2). Pooled 4-week share 0.18 includes the W4 injury exit (W5-G8). Largest piece of the gap is FC pricing ~5.3 above his healthy 2026 average while he is in protocol. Engine practice line lags (DNP Wed) vs board (Limited Thu), W5-G14."
+  },
+  {
+   "player": "Braelon Allen",
+   "team": "NYJ",
+   "pos": "RB",
+   "ours": 4.72,
+   "ours_if_plays": 6.93,
+   "fc": 13.13,
+   "fc_floor": 6.68,
+   "fc_ceiling": 21.73,
+   "fc_depth_tag": "RB1",
+   "diff": -8.41,
+   "p_plays": {
+    "carries": 0.63492,
+    "pass_attempts": 1.0,
+    "targets": 0.63492
+   },
+   "volume": {
+    "unconditional": {
+     "targets": 1.13,
+     "carries": 5.13,
+     "pass_attempts": 0
+    },
+    "if_plays": {
+     "targets": 1.74,
+     "carries": 7.24,
+     "pass_attempts": 0
+    },
+    "final_club_share": {
+     "targets": 0.0409,
+     "carries": 0.19904,
+     "pass_attempts": 0.0
+    },
+    "claims_before_normalising": {
+     "carries": 0.319076,
+     "pass_attempts": 0.0,
+     "targets": 0.060211
+    },
+    "club_claim_sum_before_normalising": {
+     "targets": 0.9347,
+     "carries": 1.005,
+     "pass_attempts": 0.9965
+    }
+   },
+   "efficiency": {
+    "dk_per_opportunity_if_plays": 0.772,
+    "rates": {
+     "catch_rate": 0.817,
+     "completion_rate": null,
+     "yards_per_attempt": null,
+     "yards_per_carry": 3.68,
+     "yards_per_target": 3.79
+    },
+    "prior_tier": "PLAYER_OWN_OFF_ROLE",
+    "prior_confidence": "LOW",
+    "prior_effective_obs": 5.51
+   },
+   "td_expectation_if_plays": {
+    "rush_td": 0.202,
+    "rec_td": 0.16,
+    "pass_td": 0.0,
+    "club_pool_scale": {
+     "rec_pool_scale": 1.347,
+     "rush_pool_scale": 1.0355
+    }
+   },
+   "observed_2026": {
+    "games_played": 4,
+    "dk_avg": 6.47,
+    "dk_avg_source": "research board (snap-based participation)",
+    "engine_weeks_played": 4,
+    "engine_observed_share": {
+     "target_share": 0.0636,
+     "rush_share": 0.3333
+    },
+    "per_stat_row_game": {
+     "games_played": 4,
+     "weeks": [
+      1,
+      2,
+      3,
+      4
+     ],
+     "dk_by_week": [
+      4.0,
+      8.5,
+      4.7,
+      8.7
+     ],
+     "dk_avg": 6.47,
+     "targets_pg": 1.75,
+     "carries_pg": 8.25,
+     "pass_att_pg": 0.0,
+     "td_pg": 0.25,
+     "pass_td_pg": 0.0
+    },
+    "research_board_estimates": {
+     "games_played_2026": 4,
+     "dk_avg_2026": 6.47,
+     "dk_last_game": 8.7,
+     "last_game_week": 4,
+     "target_share_avg": 0.072,
+     "carry_share_avg": 0.413,
+     "red_zone_targets_2026": 3,
+     "red_zone_carries_2026": 5,
+     "snap_trend_pp": 37.5
+    }
+   },
+   "availability": {
+    "state": "UNKNOWN_ACTIVE_STATE",
+    "practice_engine_state": null,
+    "practice_board_latest": null,
+    "injury": null
+   },
+   "role_band": "SECONDARY",
+   "ceiling": "SECONDARY",
+   "evidence_for_ceiling": {
+    "evidence": "DEPTH_RANK_2",
+    "depth_rank_supplied": 2,
+    "depth_usage_rank": 2,
+    "depth_chart_captured": [
+     "RB2"
+    ],
+    "depth_source": "MIN(PREGAME_USAGE_HISTORY, DEPTH_CHART_CAPTURED)",
+    "position_rank": 2,
+    "historical_band": "SECONDARY",
+    "observed_band": "SECONDARY",
+    "observed_share": 0.3333,
+    "capped": false,
+    "cap_reason": null,
+    "role_evidence_conflict": null,
+    "stored_not_consumed": [
+     "TEAMMATE_PRACTICE_NOT_CONSUMED: Breece Hall, Adonai Mitchell did not practise, undesignated"
+    ]
+   },
+   "tie1_arm_value": 4.74,
+   "tie1_arm_band_ceiling": [
+    "SECONDARY",
+    "SECONDARY"
+   ],
+   "scenario_value": 10.56,
+   "scenario_note": null,
+   "primary_cause": "AVAILABILITY_ASSUMPTION",
+   "secondary_causes": [
+    "ROLE_JUDGEMENT",
+    "VOLUME_OR_EFFICIENCY_MODEL"
+   ],
+   "evidence_line": "Breece Hall projected at p_plays 1.0 despite DNP Wed+Thu, 'essentially out' [REPORTED]; FC omits Hall and tags Allen RB1; Allen rank 2 p_plays 0.635 -> 4.72; scenario (Hall out) 10.56; FC 13.13",
+   "defect_suspected": false,
+   "assumption_contradicted_by_captured_evidence": true,
+   "note": "FC's number is a Hall-out number. Setting Hall out moves Allen 4.72 -> 10.56 (closes 5.8 of 8.4). Residual 2.6: band stays SECONDARY from his own history/usage (ceiling lifts to ALPHA via the W5-G12 fix) and Hall's carries are spread club-wide pro rata (W5-G11). Practice evidence is captured; the 'out' reading is REPORTED tier only."
+  },
+  {
+   "player": "Mason Taylor",
+   "team": "NYJ",
+   "pos": "TE",
+   "ours": 0.38,
+   "ours_if_plays": 2.9,
+   "fc": 8.19,
+   "fc_floor": 0.69,
+   "fc_ceiling": 18.19,
+   "fc_depth_tag": "TE2",
+   "diff": -7.81,
+   "p_plays": {
+    "carries": 0.11989,
+    "pass_attempts": 1.0,
+    "targets": 0.11989
+   },
+   "volume": {
+    "unconditional": {
+     "targets": 0.32,
+     "carries": 0.0,
+     "pass_attempts": 0
+    },
+    "if_plays": {
+     "targets": 2.46,
+     "carries": 0.03,
+     "pass_attempts": 0
+    },
+    "final_club_share": {
+     "targets": 0.01156,
+     "carries": 0.00015,
+     "pass_attempts": 0.0
+    },
+    "claims_before_normalising": {
+     "carries": 0.00128,
+     "pass_attempts": 0.0,
+     "targets": 0.090105
+    },
+    "club_claim_sum_before_normalising": {
+     "targets": 0.9347,
+     "carries": 1.005,
+     "pass_attempts": 0.9965
+    }
+   },
+   "efficiency": {
+    "dk_per_opportunity_if_plays": 1.165,
+    "rates": {
+     "catch_rate": 0.661,
+     "completion_rate": null,
+     "yards_per_attempt": null,
+     "yards_per_carry": null,
+     "yards_per_target": 3.096
+    },
+    "prior_tier": "ROLE_GROUP",
+    "prior_confidence": "LOW",
+    "prior_effective_obs": 6.56
+   },
+   "td_expectation_if_plays": {
+    "rush_td": 0.001,
+    "rec_td": 0.085,
+    "pass_td": 0.0,
+    "club_pool_scale": {
+     "rec_pool_scale": 1.347,
+     "rush_pool_scale": 1.0355
+    }
+   },
+   "observed_2026": {
+    "games_played": 2,
+    "dk_avg": 0.9,
+    "dk_avg_source": "research board (snap-based participation)",
+    "engine_weeks_played": 1,
+    "engine_observed_share": {
+     "target_share": 0.0273,
+     "rush_share": 0.0
+    },
+    "per_stat_row_game": {
+     "games_played": 1,
+     "weeks": [
+      1
+     ],
+     "dk_by_week": [
+      1.8
+     ],
+     "dk_avg": 1.8,
+     "targets_pg": 3.0,
+     "carries_pg": 0.0,
+     "pass_att_pg": 0.0,
+     "td_pg": 0.0,
+     "pass_td_pg": 0.0
+    },
+    "research_board_estimates": {
+     "games_played_2026": 2,
+     "dk_avg_2026": 0.9,
+     "dk_last_game": 0.0,
+     "last_game_week": 2,
+     "target_share_avg": 0.065,
+     "carry_share_avg": 0.0,
+     "red_zone_targets_2026": 0,
+     "red_zone_carries_2026": 0
+    }
+   },
+   "availability": {
+    "state": "UNKNOWN_ACTIVE_STATE",
+    "practice_engine_state": "Full Participation in Practice",
+    "practice_board_latest": "Full Participation in Practice",
+    "injury": "Thumb"
+   },
+   "role_band": "ROTATIONAL",
+   "ceiling": "ROTATIONAL",
+   "evidence_for_ceiling": {
+    "evidence": "DEPTH_RANK_3",
+    "depth_rank_supplied": 2,
+    "depth_usage_rank": null,
+    "depth_chart_captured": [
+     "TE2"
+    ],
+    "depth_source": "MIN(PREGAME_USAGE_HISTORY, DEPTH_CHART_CAPTURED)",
+    "position_rank": 3,
+    "historical_band": "ALPHA",
+    "observed_band": "FRINGE",
+    "observed_share": 0.0273,
+    "capped": true,
+    "cap_reason": "observed usage suggested ALPHA but evidence DEPTH_RANK_3 ceilings at ROTATIONAL. observed usage is capped at SECONDARY when it is the ONLY evidence, because a large observed share held while the starter was injured is not a claim on the role once he returns. This is the rule that expires an injury-replacement workload.",
+    "role_evidence_conflict": {
+     "kind": "HISTORY_ABOVE_EVIDENCE_CEILING",
+     "history_band": "ALPHA",
+     "assigned_band": "ROTATIONAL",
+     "evidence": "DEPTH_RANK_3",
+     "ceiling": "ROTATIONAL"
+    },
+    "stored_not_consumed": [
+     "TEAMMATE_PRACTICE_NOT_CONSUMED: Breece Hall, Adonai Mitchell did not practise, undesignated",
+     "DEPTH_TIE_BROKEN_BY_ID: supplied rank 2 shared by 2 at TE; ceiling ROTATIONAL",
+     "ROLE_HISTORY_ABOVE_CEILING: history ALPHA, assigned ROTATIONAL"
+    ]
+   },
+   "tie1_arm_value": 2.46,
+   "tie1_arm_band_ceiling": [
+    "SECONDARY",
+    "SECONDARY"
+   ],
+   "scenario_value": 0.45,
+   "scenario_note": null,
+   "primary_cause": "FC_SPECIFIC",
+   "secondary_causes": [
+    "ROLE_EVIDENCE_DEFECT",
+    "AVAILABILITY_ASSUMPTION"
+   ],
+   "evidence_line": "captured chart TE2 (Ruckert TE3) but engine ties Taylor (chart 2, no usage) with Ruckert (usage 2) at rank 2; id 00-0037805 < 00-0040736 puts Taylor at position rank 3 -> ROTATIONAL, p_plays 0.12 -> 0.38; TIE-1 gives 2.46 (p 0.579); 2026 avg 0.9 in 2 gp; FC 8.19",
+   "defect_suspected": true,
+   "assumption_contradicted_by_captured_evidence": true,
+   "note": "Demonstrable W5-G13 defect against captured evidence: the id tie-break inverts the club's own chart order and costs 2.08 DK (TIE-1 measured). Even repaired, FC is ~5.7 above anything his 2026 usage supports, so by magnitude the gap is FC's (likely a Hall/Mitchell-out redistribution). Scenario keeps the tie (0.45). He practised Full (thumb)."
+  },
+  {
+   "player": "Malik McClain",
+   "team": "NYJ",
+   "pos": "WR",
+   "ours": 0.62,
+   "ours_if_plays": 2.24,
+   "fc": 8.17,
+   "fc_floor": 0.0,
+   "fc_ceiling": 0.0,
+   "fc_depth_tag": "WR3",
+   "diff": -7.55,
+   "p_plays": {
+    "carries": 0.26562,
+    "pass_attempts": 1.0,
+    "targets": 0.26562
+   },
+   "volume": {
+    "unconditional": {
+     "targets": 0.31,
+     "carries": 0.13,
+     "pass_attempts": 0.0
+    },
+    "if_plays": {
+     "targets": 1.11,
+     "carries": 0.47,
+     "pass_attempts": 0.0
+    },
+    "final_club_share": {
+     "targets": 0.01111,
+     "carries": 0.00496,
+     "pass_attempts": 0.00015
+    },
+    "claims_before_normalising": {
+     "carries": 0.01901,
+     "pass_attempts": 0.00029,
+     "targets": 0.03909
+    },
+    "club_claim_sum_before_normalising": {
+     "targets": 0.9347,
+     "carries": 1.005,
+     "pass_attempts": 0.9965
+    }
+   },
+   "efficiency": {
+    "dk_per_opportunity_if_plays": 1.406,
+    "rates": {
+     "catch_rate": 0.619,
+     "completion_rate": null,
+     "yards_per_attempt": null,
+     "yards_per_carry": null,
+     "yards_per_target": 5.658
+    },
+    "prior_tier": "ROLE_GROUP",
+    "prior_confidence": "LOW",
+    "prior_effective_obs": 3.87
+   },
+   "td_expectation_if_plays": {
+    "rush_td": 0.044,
+    "rec_td": 0.109,
+    "pass_td": 0.0,
+    "club_pool_scale": {
+     "rec_pool_scale": 1.347,
+     "rush_pool_scale": 1.0355
+    }
+   },
+   "observed_2026": {
+    "games_played": 2,
+    "dk_avg": 0.0,
+    "dk_avg_source": "research board (snap-based participation)",
+    "engine_weeks_played": null,
+    "engine_observed_share": null,
+    "per_stat_row_game": {
+     "games_played": 1,
+     "weeks": [
+      3
+     ],
+     "dk_by_week": [
+      0.0
+     ],
+     "dk_avg": 0.0,
+     "targets_pg": 0.0,
+     "carries_pg": 0.0,
+     "pass_att_pg": 0.0,
+     "td_pg": 0.0,
+     "pass_td_pg": 0.0
+    },
+    "research_board_estimates": {
+     "games_played_2026": 2,
+     "dk_avg_2026": 0.0,
+     "dk_last_game": 0.0,
+     "last_game_week": 4,
+     "target_share_avg": 0.0,
+     "carry_share_avg": 0.0,
+     "red_zone_targets_2026": 0,
+     "red_zone_carries_2026": 0
+    }
+   },
+   "availability": {
+    "state": "UNKNOWN_ACTIVE_STATE",
+    "practice_engine_state": null,
+    "practice_board_latest": null,
+    "injury": null
+   },
+   "role_band": "FRINGE",
+   "ceiling": "FRINGE",
+   "evidence_for_ceiling": {
+    "evidence": "DEPTH_RANK_4_PLUS",
+    "depth_rank_supplied": 4,
+    "depth_usage_rank": null,
+    "depth_chart_captured": [
+     "WR4"
+    ],
+    "depth_source": "MIN(PREGAME_USAGE_HISTORY, DEPTH_CHART_CAPTURED)",
+    "position_rank": 4,
+    "historical_band": null,
+    "observed_band": null,
+    "observed_share": null,
+    "capped": false,
+    "cap_reason": null,
+    "role_evidence_conflict": null,
+    "stored_not_consumed": [
+     "TEAMMATE_PRACTICE_NOT_CONSUMED: Breece Hall, Adonai Mitchell did not practise, undesignated"
+    ]
+   },
+   "tie1_arm_value": 0.62,
+   "tie1_arm_band_ceiling": [
+    "FRINGE",
+    "FRINGE"
+   ],
+   "scenario_value": 1.66,
+   "scenario_note": null,
+   "primary_cause": "FC_SPECIFIC",
+   "secondary_causes": [
+    "AVAILABILITY_ASSUMPTION"
+   ],
+   "evidence_line": "2026: 2 gp (snaps 27%, 3%), 0 targets, DK avg 0.0; chart WR4 -> FRINGE, p 0.266; ours 0.62; scenario (Mitchell out) 1.66; FC 8.17 with floor 0.0 and ceiling 0.0",
+   "defect_suspected": false,
+   "assumption_contradicted_by_captured_evidence": false,
+   "note": "FC tags him WR3 (Mitchell-out promotion) and its own row is internally inconsistent (proj 8.17, floor 0, ceiling 0). No 2026 evidence of a receiving role."
+  },
+  {
+   "player": "TreVeyon Henderson",
+   "team": "NE",
+   "pos": "RB",
+   "ours": 5.33,
+   "ours_if_plays": 7.48,
+   "fc": 12.79,
+   "fc_floor": 0.0,
+   "fc_ceiling": 31.79,
+   "fc_depth_tag": "RB2",
+   "diff": -7.46,
+   "p_plays": {
+    "carries": 0.63492,
+    "pass_attempts": 1.0,
+    "targets": 0.63492
+   },
+   "volume": {
+    "unconditional": {
+     "targets": 1.27,
+     "carries": 7.23,
+     "pass_attempts": 0
+    },
+    "if_plays": {
+     "targets": 1.95,
+     "carries": 9.8,
+     "pass_attempts": 0
+    },
+    "final_club_share": {
+     "targets": 0.04398,
+     "carries": 0.2447,
+     "pass_attempts": 0.0
+    },
+    "claims_before_normalising": {
+     "carries": 0.414184,
+     "pass_attempts": 0.0,
+     "targets": 0.05673
+    },
+    "club_claim_sum_before_normalising": {
+     "targets": 0.8189,
+     "carries": 0.9394,
+     "pass_attempts": 0.9721
+    }
+   },
+   "efficiency": {
+    "dk_per_opportunity_if_plays": 0.636,
+    "rates": {
+     "catch_rate": 0.52,
+     "completion_rate": null,
+     "yards_per_attempt": null,
+     "yards_per_carry": 4.177,
+     "yards_per_target": 3.268
+    },
+    "prior_tier": "PLAYER_OWN_ROLE",
+    "prior_confidence": "MEDIUM",
+    "prior_effective_obs": 9.66
+   },
+   "td_expectation_if_plays": {
+    "rush_td": 0.246,
+    "rec_td": 0.018,
+    "pass_td": 0.0,
+    "club_pool_scale": {
+     "rec_pool_scale": 0.9162,
+     "rush_pool_scale": 1.3391
+    }
+   },
+   "observed_2026": {
+    "games_played": 3,
+    "dk_avg": 7.23,
+    "dk_avg_source": "research board (snap-based participation)",
+    "engine_weeks_played": 3,
+    "engine_observed_share": {
+     "target_share": 0.0254,
+     "rush_share": 0.3167
+    },
+    "per_stat_row_game": {
+     "games_played": 3,
+     "weeks": [
+      2,
+      3,
+      4
+     ],
+     "dk_by_week": [
+      13.6,
+      3.9,
+      4.2
+     ],
+     "dk_avg": 7.23,
+     "targets_pg": 1.0,
+     "carries_pg": 12.67,
+     "pass_att_pg": 0.0,
+     "td_pg": 0.33,
+     "pass_td_pg": 0.0
+    },
+    "research_board_estimates": {
+     "games_played_2026": 3,
+     "dk_avg_2026": 7.23,
+     "dk_last_game": 4.2,
+     "last_game_week": 4,
+     "target_share_avg": 0.03,
+     "carry_share_avg": 0.426,
+     "red_zone_targets_2026": 0,
+     "red_zone_carries_2026": 2,
+     "snap_trend_pp": -11.5
+    }
+   },
+   "availability": {
+    "state": "UNKNOWN_ACTIVE_STATE",
+    "practice_engine_state": null,
+    "practice_board_latest": null,
+    "injury": null
+   },
+   "role_band": "SECONDARY",
+   "ceiling": "SECONDARY",
+   "evidence_for_ceiling": {
+    "evidence": "DEPTH_RANK_2",
+    "depth_rank_supplied": 1,
+    "depth_usage_rank": 1,
+    "depth_chart_captured": [
+     "RB2"
+    ],
+    "depth_source": "MIN(PREGAME_USAGE_HISTORY, DEPTH_CHART_CAPTURED)",
+    "position_rank": 2,
+    "historical_band": "SECONDARY",
+    "observed_band": "SECONDARY",
+    "observed_share": 0.3167,
+    "capped": false,
+    "cap_reason": null,
+    "role_evidence_conflict": null,
+    "stored_not_consumed": [
+     "TEAMMATE_PRACTICE_NOT_CONSUMED: Mack Hollins did not practise, undesignated",
+     "DEPTH_TIE_BROKEN_BY_ID: supplied rank 1 shared by 2 at RB; ceiling SECONDARY"
+    ]
+   },
+   "tie1_arm_value": 5.32,
+   "tie1_arm_band_ceiling": [
+    "SECONDARY",
+    "ALPHA"
+   ],
+   "scenario_value": 5.33,
+   "scenario_note": null,
+   "primary_cause": "FC_SPECIFIC",
+   "secondary_causes": [
+    "ROLE_JUDGEMENT",
+    "ROLE_EVIDENCE_DEFECT"
+   ],
+   "evidence_line": "2026: 3 gp, 12.7 car/g, 3.71 ypc, DK avg 7.23; ours if-plays 7.48 x p_plays 0.635 = 5.33; FC 12.79 (+5.6 over his average); tie with Stevenson at rank 1 broken by id",
+   "defect_suspected": false,
+   "assumption_contradicted_by_captured_evidence": false,
+   "note": "W5-G13 tie present (Henderson usage 1/chart RB2, Stevenson usage 2/chart RB1, both rank 1) but the id order happens to match the captured chart, and TIE-1 moves him -0.01. Our conditional number matches his 2026 production; the rank-2 appearance base rate (0.635) costs 2.2 DK although he played every week since W2. FC is the outlier against his production."
+  },
+  {
+   "player": "Rico Dowdle",
+   "team": "PIT",
+   "pos": "RB",
+   "ours": 6.38,
+   "ours_if_plays": 9.13,
+   "fc": 12.79,
+   "fc_floor": 0.19,
+   "fc_ceiling": 29.59,
+   "fc_depth_tag": "RB2",
+   "diff": -6.41,
+   "p_plays": {
+    "carries": 0.63492,
+    "pass_attempts": 1.0,
+    "targets": 0.63492
+   },
+   "volume": {
+    "unconditional": {
+     "targets": 2.1,
+     "carries": 5.9,
+     "pass_attempts": 0
+    },
+    "if_plays": {
+     "targets": 3.19,
+     "carries": 8.06,
+     "pass_attempts": 0
+    },
+    "final_club_share": {
+     "targets": 0.06299,
+     "carries": 0.25966,
+     "pass_attempts": 0.0
+    },
+    "claims_before_normalising": {
+     "carries": 0.40419,
+     "pass_attempts": 0.0,
+     "targets": 0.090342
+    },
+    "club_claim_sum_before_normalising": {
+     "targets": 0.9106,
+     "carries": 0.9759,
+     "pass_attempts": 0.9842
+    }
+   },
+   "efficiency": {
+    "dk_per_opportunity_if_plays": 0.811,
+    "rates": {
+     "catch_rate": 0.683,
+     "completion_rate": null,
+     "yards_per_attempt": null,
+     "yards_per_carry": 3.291,
+     "yards_per_target": 4.915
+    },
+    "prior_tier": "PLAYER_OWN_ROLE",
+    "prior_confidence": "HIGH",
+    "prior_effective_obs": 19.07
+   },
+   "td_expectation_if_plays": {
+    "rush_td": 0.41,
+    "rec_td": 0.041,
+    "pass_td": 0.0,
+    "club_pool_scale": {
+     "rec_pool_scale": 1.0399,
+     "rush_pool_scale": 1.6925
+    }
+   },
+   "observed_2026": {
+    "games_played": 2,
+    "dk_avg": 5.25,
+    "dk_avg_source": "research board (snap-based participation)",
+    "engine_weeks_played": 2,
+    "engine_observed_share": {
+     "target_share": 0.0486,
+     "rush_share": 0.1744
+    },
+    "per_stat_row_game": {
+     "games_played": 2,
+     "weeks": [
+      1,
+      2
+     ],
+     "dk_by_week": [
+      4.1,
+      6.4
+     ],
+     "dk_avg": 5.25,
+     "targets_pg": 3.5,
+     "carries_pg": 7.5,
+     "pass_att_pg": 0.0,
+     "td_pg": 0.0,
+     "pass_td_pg": 0.0
+    },
+    "research_board_estimates": {
+     "games_played_2026": 2,
+     "dk_avg_2026": 5.25,
+     "dk_last_game": 6.4,
+     "last_game_week": 2,
+     "target_share_avg": 0.095,
+     "carry_share_avg": 0.343,
+     "red_zone_targets_2026": 0,
+     "red_zone_carries_2026": 1
+    }
+   },
+   "availability": {
+    "state": "UNKNOWN_ACTIVE_STATE",
+    "practice_engine_state": "Limited Participation in Practice",
+    "practice_board_latest": "Limited Participation in Practice",
+    "injury": "Toe"
+   },
+   "role_band": "SECONDARY",
+   "ceiling": "SECONDARY",
+   "evidence_for_ceiling": {
+    "evidence": "DEPTH_RANK_2",
+    "depth_rank_supplied": 2,
+    "depth_usage_rank": 2,
+    "depth_chart_captured": [
+     "RB2"
+    ],
+    "depth_source": "MIN(PREGAME_USAGE_HISTORY, DEPTH_CHART_CAPTURED)",
+    "position_rank": 2,
+    "historical_band": "PRIMARY",
+    "observed_band": "ROTATIONAL",
+    "observed_share": 0.1744,
+    "capped": true,
+    "cap_reason": "observed usage suggested PRIMARY but evidence DEPTH_RANK_2 ceilings at SECONDARY. observed usage is capped at SECONDARY when it is the ONLY evidence, because a large observed share held while the starter was injured is not a claim on the role once he returns. This is the rule that expires an injury-replacement workload.",
+    "role_evidence_conflict": null,
+    "stored_not_consumed": [
+     "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 0.63)",
+     "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] RB Rico Dowdle (toe; dislocated W2, hasn't played since) limited. CB Jamel Dean (ankle) DN"
+    ]
+   },
+   "tie1_arm_value": 6.34,
+   "tie1_arm_band_ceiling": [
+    "SECONDARY",
+    "SECONDARY"
+   ],
+   "scenario_value": 6.49,
+   "scenario_note": null,
+   "primary_cause": "FC_SPECIFIC",
+   "secondary_causes": [
+    "ROLE_JUDGEMENT",
+    "AVAILABILITY_ASSUMPTION"
+   ],
+   "evidence_line": "dislocated toe W2, no game since, limited [CONFIRMED]; 2026: 2 gp, 7.5 car/g, 2.47 ypc, DK avg 5.25; ours 6.38 (if-plays 9.13, p 0.635, DEPTH_RANK_2 cap SECONDARY, history PRIMARY); FC 12.79",
+   "defect_suspected": false,
+   "assumption_contradicted_by_captured_evidence": false,
+   "note": "Our number sits slightly above his 2026 production; FC treats PIT as a near-even committee (Warren 13.28 / Dowdle 12.79). The real disagreement is the PIT split (see Warren); our RB2 SECONDARY cap is a defensible but disputable call for a returning back with PRIMARY history."
+  },
+  {
+   "player": "Jauan Jennings",
+   "team": "MIN",
+   "pos": "WR",
+   "ours": 1.89,
+   "ours_if_plays": 3.06,
+   "fc": 8.26,
+   "fc_floor": 0.0,
+   "fc_ceiling": 24.46,
+   "fc_depth_tag": "WR3",
+   "diff": -6.37,
+   "p_plays": {
+    "carries": 0.58651,
+    "pass_attempts": 1.0,
+    "targets": 0.58651
+   },
+   "volume": {
+    "unconditional": {
+     "targets": 1.5,
+     "carries": 0.45,
+     "pass_attempts": 0
+    },
+    "if_plays": {
+     "targets": 2.46,
+     "carries": 0.45,
+     "pass_attempts": 0
+    },
+    "final_club_share": {
+     "targets": 0.05729,
+     "carries": 0.01702,
+     "pass_attempts": 0.0
+    },
+    "claims_before_normalising": {
+     "carries": 0.0,
+     "pass_attempts": 0.0,
+     "targets": 0.095246
+    },
+    "club_claim_sum_before_normalising": {
+     "targets": 0.9749,
+     "carries": 0.8294,
+     "pass_attempts": 0.8694
+    }
+   },
+   "efficiency": {
+    "dk_per_opportunity_if_plays": 1.05,
+    "rates": {
+     "catch_rate": 0.542,
+     "completion_rate": null,
+     "yards_per_attempt": null,
+     "yards_per_carry": null,
+     "yards_per_target": 4.354
+    },
+    "prior_tier": "PLAYER_OWN_OFF_ROLE",
+    "prior_confidence": "LOW",
+    "prior_effective_obs": 3.25
+   },
+   "td_expectation_if_plays": {
+    "rush_td": 0.008,
+    "rec_td": 0.101,
+    "pass_td": 0.0,
+    "club_pool_scale": {
+     "rec_pool_scale": 1.0356,
+     "rush_pool_scale": 1.1053
+    }
+   },
+   "observed_2026": {
+    "games_played": 3,
+    "dk_avg": 0.97,
+    "dk_avg_source": "research board (snap-based participation)",
+    "engine_weeks_played": 3,
+    "engine_observed_share": {
+     "target_share": 0.04,
+     "rush_share": 0.0
+    },
+    "per_stat_row_game": {
+     "games_played": 3,
+     "weeks": [
+      1,
+      3,
+      4
+     ],
+     "dk_by_week": [
+      0.0,
+      1.1,
+      1.8
+     ],
+     "dk_avg": 0.97,
+     "targets_pg": 1.33,
+     "carries_pg": 0.0,
+     "pass_att_pg": 0.0,
+     "td_pg": 0.0,
+     "pass_td_pg": 0.0
+    },
+    "research_board_estimates": {
+     "games_played_2026": 3,
+     "dk_avg_2026": 0.97,
+     "dk_last_game": 1.8,
+     "last_game_week": 4,
+     "target_share_avg": 0.051,
+     "carry_share_avg": 0.0,
+     "red_zone_targets_2026": 0,
+     "red_zone_carries_2026": 0,
+     "snap_trend_pp": 23.5
+    }
+   },
+   "availability": {
+    "state": "UNKNOWN_ACTIVE_STATE",
+    "practice_engine_state": null,
+    "practice_board_latest": null,
+    "injury": null
+   },
+   "role_band": "ROTATIONAL",
+   "ceiling": "ROTATIONAL",
+   "evidence_for_ceiling": {
+    "evidence": "DEPTH_RANK_3",
+    "depth_rank_supplied": 3,
+    "depth_usage_rank": 3,
+    "depth_chart_captured": [
+     "WR3"
+    ],
+    "depth_source": "MIN(PREGAME_USAGE_HISTORY, DEPTH_CHART_CAPTURED)",
+    "position_rank": 3,
+    "historical_band": "ALPHA",
+    "observed_band": "ROTATIONAL",
+    "observed_share": 0.04,
+    "capped": true,
+    "cap_reason": "observed usage suggested ALPHA but evidence DEPTH_RANK_3 ceilings at ROTATIONAL. observed usage is capped at SECONDARY when it is the ONLY evidence, because a large observed share held while the starter was injured is not a claim on the role once he returns. This is the rule that expires an injury-replacement workload.",
+    "role_evidence_conflict": {
+     "kind": "HISTORY_ABOVE_EVIDENCE_CEILING",
+     "history_band": "ALPHA",
+     "assigned_band": "ROTATIONAL",
+     "evidence": "DEPTH_RANK_3",
+     "ceiling": "ROTATIONAL"
+    },
+    "stored_not_consumed": [
+     "QB_REGIME_NOT_CONSUMED: QB_REGIME_CHANGE",
+     "TEAMMATE_PRACTICE_NOT_CONSUMED: Jordan Addison did not practise, undesignated",
+     "ROLE_HISTORY_ABOVE_CEILING: history ALPHA, assigned ROTATIONAL"
+    ]
+   },
+   "tie1_arm_value": 1.87,
+   "tie1_arm_band_ceiling": [
+    "ROTATIONAL",
+    "ROTATIONAL"
+   ],
+   "scenario_value": 1.89,
+   "scenario_note": null,
+   "primary_cause": "FC_SPECIFIC",
+   "secondary_causes": [
+    "ROLE_JUDGEMENT",
+    "VOLUME_OR_EFFICIENCY_MODEL"
+   ],
+   "evidence_line": "2026: 3 gp, 1.3 tgt/g, share 0.04, DK avg 0.97 (snaps 48/80/95%); chart WR3 -> DEPTH_RANK_3 ROTATIONAL, history ALPHA conflict; ours 1.89 (p 0.587, if-plays 3.06); FC 8.26",
+   "defect_suspected": false,
+   "assumption_contradicted_by_captured_evidence": false,
+   "note": "FC prices his ALPHA history (49ers); every 2026 signal except snap share says a low-target role. Rank-3 appearance base rate (0.587) is low for a 95%-snap player but immaterial to the gap. MIN QB regime (Murray W3-4) not consumed (W5-G1); Addison DNP not consumed."
+  },
+  {
+   "player": "Kyle Monangai",
+   "team": "CHI",
+   "pos": "RB",
+   "ours": 7.63,
+   "ours_if_plays": 10.89,
+   "fc": 13.94,
+   "fc_floor": 1.34,
+   "fc_ceiling": 30.74,
+   "fc_depth_tag": "RB2",
+   "diff": -6.31,
+   "p_plays": {
+    "carries": 0.63492,
+    "pass_attempts": 1.0,
+    "targets": 0.63492
+   },
+   "volume": {
+    "unconditional": {
+     "targets": 1.11,
+     "carries": 8.54,
+     "pass_attempts": 0
+    },
+    "if_plays": {
+     "targets": 1.71,
+     "carries": 11.75,
+     "pass_attempts": 0
+    },
+    "final_club_share": {
+     "targets": 0.03592,
+     "carries": 0.24593,
+     "pass_attempts": 0.0
+    },
+    "claims_before_normalising": {
+     "carries": 0.370832,
+     "pass_attempts": 0.0,
+     "targets": 0.048928
+    },
+    "club_claim_sum_before_normalising": {
+     "targets": 0.8648,
+     "carries": 0.9558,
+     "pass_attempts": 0.9288
+    }
+   },
+   "efficiency": {
+    "dk_per_opportunity_if_plays": 0.809,
+    "rates": {
+     "catch_rate": 0.84,
+     "completion_rate": null,
+     "yards_per_attempt": null,
+     "yards_per_carry": 5.019,
+     "yards_per_target": 6.36
+    },
+    "prior_tier": "PLAYER_OWN_ROLE",
+    "prior_confidence": "MEDIUM",
+    "prior_effective_obs": 8.96
+   },
+   "td_expectation_if_plays": {
+    "rush_td": 0.316,
+    "rec_td": 0.048,
+    "pass_td": 0.0,
+    "club_pool_scale": {
+     "rec_pool_scale": 0.9786,
+     "rush_pool_scale": 0.6133
+    }
+   },
+   "observed_2026": {
+    "games_played": 4,
+    "dk_avg": 16.32,
+    "dk_avg_source": "research board (snap-based participation)",
+    "engine_weeks_played": 4,
+    "engine_observed_share": {
+     "target_share": 0.0413,
+     "rush_share": 0.3774
+    },
+    "per_stat_row_game": {
+     "games_played": 4,
+     "weeks": [
+      1,
+      2,
+      3,
+      4
+     ],
+     "dk_by_week": [
+      23.4,
+      7.8,
+      3.1,
+      31.0
+     ],
+     "dk_avg": 16.32,
+     "targets_pg": 1.25,
+     "carries_pg": 15.0,
+     "pass_att_pg": 0.0,
+     "td_pg": 0.75,
+     "pass_td_pg": 0.0
+    },
+    "research_board_estimates": {
+     "games_played_2026": 4,
+     "dk_avg_2026": 16.32,
+     "dk_last_game": 31.0,
+     "last_game_week": 4,
+     "target_share_avg": 0.044,
+     "carry_share_avg": 0.355,
+     "red_zone_targets_2026": 1,
+     "red_zone_carries_2026": 14,
+     "snap_trend_pp": 4.0
+    }
+   },
+   "availability": {
+    "state": "UNKNOWN_ACTIVE_STATE",
+    "practice_engine_state": "Did Not Participate In Practice",
+    "practice_board_latest": "Did Not Participate In Practice",
+    "injury": "Thumb, Toe"
+   },
+   "role_band": "SECONDARY",
+   "ceiling": "SECONDARY",
+   "evidence_for_ceiling": {
+    "evidence": "DEPTH_RANK_2",
+    "depth_rank_supplied": 2,
+    "depth_usage_rank": 2,
+    "depth_chart_captured": [
+     "RB2"
+    ],
+    "depth_source": "MIN(PREGAME_USAGE_HISTORY, DEPTH_CHART_CAPTURED)",
+    "position_rank": 2,
+    "historical_band": "SECONDARY",
+    "observed_band": "PRIMARY",
+    "observed_share": 0.3774,
+    "capped": true,
+    "cap_reason": "observed usage suggested PRIMARY but evidence DEPTH_RANK_2 ceilings at SECONDARY. observed usage is capped at SECONDARY when it is the ONLY evidence, because a large observed share held while the starter was injured is not a claim on the role once he returns. This is the rule that expires an injury-replacement workload.",
+    "role_evidence_conflict": null,
+    "stored_not_consumed": [
+     "PRACTICE_STATUS_NOT_CONSUMED: Did Not Participate In Practice; no designation yet, projection assumes he plays (p_plays 0.63)",
+     "LISTED_STARTER_NOT_CONSUMED: schedule capture lists Tyson Bagent; engine starts Caleb Williams",
+     "QB_REGIME_NOT_CONSUMED: QB_REGIME_CHANGE; THIN_STARTER_EVIDENCE; QB_CHURN",
+     "TEAMMATE_PRACTICE_NOT_CONSUMED: Caleb Williams, D'Andre Swift did not practise, undesignated",
+     "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] RB Kyle Monangai (thumb/toe): DNP Wednesday and Thursday. ESPN's Jeremy Fowler reports tur; [CONFIRMED] W4: Monangai had 30 carries, 146 yds, 2 TD; Swift had 15 carries, 58 yds. Johnson called S"
+    ]
+   },
+   "tie1_arm_value": 7.61,
+   "tie1_arm_band_ceiling": [
+    "SECONDARY",
+    "SECONDARY"
+   ],
+   "scenario_value": 7.94,
+   "scenario_note": null,
+   "primary_cause": "ROLE_JUDGEMENT",
+   "secondary_causes": [
+    "AVAILABILITY_ASSUMPTION",
+    "VOLUME_OR_EFFICIENCY_MODEL"
+   ],
+   "evidence_line": "chart RB2, depth_rank 2 -> DEPTH_RANK_2 ceiling SECONDARY (observed PRIMARY, rush share 0.377; W4 30 car vs Swift 15); p_plays 0.635 = RB rank-2 base rate though 4/4 gp; cond. 11.75 car vs 15.0/g; ours 7.63, FC 13.94, 2026 avg 16.32",
+   "defect_suspected": false,
+   "assumption_contradicted_by_captured_evidence": false,
+   "note": "Role call: chart RB2 caps him SECONDARY and the rank-2 appearance base rate removes 3.3 DK, while 2026 usage (and Swift's W4 fumble benching [CONFIRMED]) argue a larger share. Cuts the other way: turf toe, DNP Wed+Thu, 'Week 5 in doubt' [CONFIRMED], not consumed. CHI QB identity (Williams vs Bagent) not consumed; scenario moves him only +0.31 (W5-G1)."
+  },
+  {
+   "player": "Kevin Austin Jr.",
+   "team": "NO",
+   "pos": "WR",
+   "ours": 0.77,
+   "ours_if_plays": 2.82,
+   "fc": 7.02,
+   "fc_floor": 1.47,
+   "fc_ceiling": 14.42,
+   "fc_depth_tag": "WR4",
+   "diff": -6.25,
+   "p_plays": {
+    "carries": 0.26562,
+    "pass_attempts": 1.0,
+    "targets": 0.26562
+   },
+   "volume": {
+    "unconditional": {
+     "targets": 0.46,
+     "carries": 0.06,
+     "pass_attempts": 0.0
+    },
+    "if_plays": {
+     "targets": 1.68,
+     "carries": 0.22,
+     "pass_attempts": 0.0
+    },
+    "final_club_share": {
+     "targets": 0.01216,
+     "carries": 0.00241,
+     "pass_attempts": 4e-05
+    },
+    "claims_before_normalising": {
+     "carries": 0.008247,
+     "pass_attempts": 8.7e-05,
+     "targets": 0.04225
+    },
+    "club_claim_sum_before_normalising": {
+     "targets": 0.923,
+     "carries": 0.8189,
+     "pass_attempts": 0.9879
+    }
+   },
+   "efficiency": {
+    "dk_per_opportunity_if_plays": 1.475,
+    "rates": {
+     "catch_rate": 0.616,
+     "completion_rate": null,
+     "yards_per_attempt": null,
+     "yards_per_carry": 5.388,
+     "yards_per_target": 7.465
+    },
+    "prior_tier": "ARCHETYPE",
+    "prior_confidence": "LOW",
+    "prior_effective_obs": 133.45
+   },
+   "td_expectation_if_plays": {
+    "rush_td": 0.014,
+    "rec_td": 0.053,
+    "pass_td": 0.0,
+    "club_pool_scale": {
+     "rec_pool_scale": 0.8377,
+     "rush_pool_scale": 0.9973
+    }
+   },
+   "observed_2026": {
+    "games_played": 4,
+    "dk_avg": 0.42,
+    "dk_avg_source": "research board (snap-based participation)",
+    "engine_weeks_played": 1,
+    "engine_observed_share": {
+     "target_share": 0.0058,
+     "rush_share": 0.0
+    },
+    "per_stat_row_game": {
+     "games_played": 1,
+     "weeks": [
+      2
+     ],
+     "dk_by_week": [
+      1.7
+     ],
+     "dk_avg": 1.7,
+     "targets_pg": 1.0,
+     "carries_pg": 0.0,
+     "pass_att_pg": 0.0,
+     "td_pg": 0.0,
+     "pass_td_pg": 0.0
+    },
+    "research_board_estimates": {
+     "games_played_2026": 4,
+     "dk_avg_2026": 0.42,
+     "dk_last_game": 0.0,
+     "last_game_week": 4,
+     "target_share_avg": 0.008,
+     "carry_share_avg": 0.0,
+     "red_zone_targets_2026": 0,
+     "red_zone_carries_2026": 0,
+     "snap_trend_pp": 6.5
+    }
+   },
+   "availability": {
+    "state": "UNKNOWN_ACTIVE_STATE",
+    "practice_engine_state": null,
+    "practice_board_latest": null,
+    "injury": null
+   },
+   "role_band": "FRINGE",
+   "ceiling": "FRINGE",
+   "evidence_for_ceiling": {
+    "evidence": "DEPTH_RANK_4_PLUS",
+    "depth_rank_supplied": 4,
+    "depth_usage_rank": 4,
+    "depth_chart_captured": [
+     "WR4"
+    ],
+    "depth_source": "MIN(PREGAME_USAGE_HISTORY, DEPTH_CHART_CAPTURED)",
+    "position_rank": 4,
+    "historical_band": "PRIMARY",
+    "observed_band": "FRINGE",
+    "observed_share": 0.0058,
+    "capped": true,
+    "cap_reason": "observed usage suggested PRIMARY but evidence DEPTH_RANK_4_PLUS ceilings at FRINGE. observed usage is capped at SECONDARY when it is the ONLY evidence, because a large observed share held while the starter was injured is not a claim on the role once he returns. This is the rule that expires an injury-replacement workload.",
+    "role_evidence_conflict": {
+     "kind": "HISTORY_ABOVE_EVIDENCE_CEILING",
+     "history_band": "PRIMARY",
+     "assigned_band": "FRINGE",
+     "evidence": "DEPTH_RANK_4_PLUS",
+     "ceiling": "FRINGE"
+    },
+    "stored_not_consumed": [
+     "TEAMMATE_PRACTICE_NOT_CONSUMED: Alvin Kamara, Barion Brown, Chris Olave did not practise, undesignated",
+     "ROLE_HISTORY_ABOVE_CEILING: history PRIMARY, assigned FRINGE"
+    ]
+   },
+   "tie1_arm_value": 0.77,
+   "tie1_arm_band_ceiling": [
+    "FRINGE",
+    "FRINGE"
+   ],
+   "scenario_value": 0.77,
+   "scenario_note": null,
+   "primary_cause": "FC_SPECIFIC",
+   "secondary_causes": [
+    "ROLE_JUDGEMENT"
+   ],
+   "evidence_line": "2026: 4 gp, snaps 6-14%, 1 target total, DK avg 0.42; chart WR4 -> FRINGE (history PRIMARY conflict), p 0.266, if-plays 2.82; ours 0.77; FC 7.02",
+   "defect_suspected": false,
+   "assumption_contradicted_by_captured_evidence": false,
+   "note": "Even at p_plays 1.0 we would be 2.8. FC is the outlier against every 2026 signal."
+  },
+  {
+   "player": "Theo Johnson",
+   "team": "NYG",
+   "pos": "TE",
+   "ours": 2.33,
+   "ours_if_plays": 3.85,
+   "fc": 8.23,
+   "fc_floor": 0.58,
+   "fc_ceiling": 18.43,
+   "fc_depth_tag": "TE2",
+   "diff": -5.9,
+   "p_plays": {
+    "carries": 0.57899,
+    "pass_attempts": 1.0,
+    "targets": 0.57899
+   },
+   "volume": {
+    "unconditional": {
+     "targets": 1.77,
+     "carries": 0.36,
+     "pass_attempts": 0
+    },
+    "if_plays": {
+     "targets": 2.92,
+     "carries": 0.36,
+     "pass_attempts": 0
+    },
+    "final_club_share": {
+     "targets": 0.06162,
+     "carries": 0.01202,
+     "pass_attempts": 0.0
+    },
+    "claims_before_normalising": {
+     "carries": 0.0,
+     "pass_attempts": 0.0,
+     "targets": 0.10358
+    },
+    "club_claim_sum_before_normalising": {
+     "targets": 0.9733,
+     "carries": 0.977,
+     "pass_attempts": 0.949
+    }
+   },
+   "efficiency": {
+    "dk_per_opportunity_if_plays": 1.174,
+    "rates": {
+     "catch_rate": 0.453,
+     "completion_rate": null,
+     "yards_per_attempt": null,
+     "yards_per_carry": null,
+     "yards_per_target": 5.058
+    },
+    "prior_tier": "PLAYER_OWN_OFF_ROLE",
+    "prior_confidence": "LOW",
+    "prior_effective_obs": 3.76
+   },
+   "td_expectation_if_plays": {
+    "rush_td": 0.001,
+    "rec_td": 0.174,
+    "pass_td": 0.0,
+    "club_pool_scale": {
+     "rec_pool_scale": 1.0606,
+     "rush_pool_scale": 0.8101
+    }
+   },
+   "observed_2026": {
+    "games_played": 4,
+    "dk_avg": 2.5,
+    "dk_avg_source": "research board (snap-based participation)",
+    "engine_weeks_played": 3,
+    "engine_observed_share": {
+     "target_share": 0.0541,
+     "rush_share": 0.0
+    },
+    "per_stat_row_game": {
+     "games_played": 3,
+     "weeks": [
+      1,
+      2,
+      4
+     ],
+     "dk_by_week": [
+      1.9,
+      0.0,
+      8.1
+     ],
+     "dk_avg": 3.33,
+     "targets_pg": 2.0,
+     "carries_pg": 0.0,
+     "pass_att_pg": 0.0,
+     "td_pg": 0.33,
+     "pass_td_pg": 0.0
+    },
+    "research_board_estimates": {
+     "games_played_2026": 4,
+     "dk_avg_2026": 2.5,
+     "dk_last_game": 8.1,
+     "last_game_week": 4,
+     "target_share_avg": 0.048,
+     "carry_share_avg": 0.0,
+     "red_zone_targets_2026": 1,
+     "red_zone_carries_2026": 0,
+     "snap_trend_pp": -12.0
+    }
+   },
+   "availability": {
+    "state": "UNKNOWN_ACTIVE_STATE",
+    "practice_engine_state": null,
+    "practice_board_latest": null,
+    "injury": null
+   },
+   "role_band": "SECONDARY",
+   "ceiling": "SECONDARY",
+   "evidence_for_ceiling": {
+    "evidence": "DEPTH_RANK_2",
+    "depth_rank_supplied": 2,
+    "depth_usage_rank": 2,
+    "depth_chart_captured": [
+     "TE2"
+    ],
+    "depth_source": "MIN(PREGAME_USAGE_HISTORY, DEPTH_CHART_CAPTURED)",
+    "position_rank": 2,
+    "historical_band": "ALPHA",
+    "observed_band": "ROTATIONAL",
+    "observed_share": 0.0541,
+    "capped": true,
+    "cap_reason": "observed usage suggested ALPHA but evidence DEPTH_RANK_2 ceilings at SECONDARY. observed usage is capped at SECONDARY when it is the ONLY evidence, because a large observed share held while the starter was injured is not a claim on the role once he returns. This is the rule that expires an injury-replacement workload.",
+    "role_evidence_conflict": {
+     "kind": "HISTORY_ABOVE_EVIDENCE_CEILING",
+     "history_band": "ALPHA",
+     "assigned_band": "SECONDARY",
+     "evidence": "DEPTH_RANK_2",
+     "ceiling": "SECONDARY"
+    },
+    "stored_not_consumed": [
+     "TEAMMATE_PRACTICE_NOT_CONSUMED: Najee Harris, Malik Nabers did not practise, undesignated",
+     "ROLE_HISTORY_ABOVE_CEILING: history ALPHA, assigned SECONDARY"
+    ]
+   },
+   "tie1_arm_value": 2.33,
+   "tie1_arm_band_ceiling": [
+    "SECONDARY",
+    "SECONDARY"
+   ],
+   "scenario_value": 2.33,
+   "scenario_note": null,
+   "primary_cause": "FC_SPECIFIC",
+   "secondary_causes": [
+    "ROLE_JUDGEMENT",
+    "AVAILABILITY_ASSUMPTION"
+   ],
+   "evidence_line": "2026: 4 gp, 1.5 tgt/g, share 0.054, DK avg 2.5; chart TE2 behind Likely (share 0.315) -> DEPTH_RANK_2 SECONDARY, history ALPHA; ours 2.33 (p 0.579, if-plays 3.85); FC 8.23",
+   "defect_suspected": false,
+   "assumption_contradicted_by_captured_evidence": false,
+   "note": "FC is 3.3x his 2026 average; possibly FC redistributes for Nabers / Najee Harris (both DNP, undesignated, not consumed by us). Our number is consistent with his 2026 role."
+  },
+  {
+   "player": "Jaylin Noel",
+   "team": "HOU",
+   "pos": "WR",
+   "ours": 0.48,
+   "ours_if_plays": 5.83,
+   "fc": 5.91,
+   "fc_floor": 0.0,
+   "fc_ceiling": 15.11,
+   "fc_depth_tag": "WR4",
+   "diff": -5.43,
+   "p_plays": {
+    "carries": 0.07698,
+    "pass_attempts": 1.0,
+    "targets": 0.07698
+   },
+   "volume": {
+    "unconditional": {
+     "targets": 0.22,
+     "carries": 0.05,
+     "pass_attempts": 0.0
+    },
+    "if_plays": {
+     "targets": 2.61,
+     "carries": 0.62,
+     "pass_attempts": 0.0
+    },
+    "final_club_share": {
+     "targets": 0.00645,
+     "carries": 0.00194,
+     "pass_attempts": 4e-05
+    },
+    "claims_before_normalising": {
+     "carries": 0.024866,
+     "pass_attempts": 8.7e-05,
+     "targets": 0.074788
+    },
+    "club_claim_sum_before_normalising": {
+     "targets": 0.8919,
+     "carries": 0.9078,
+     "pass_attempts": 0.9912
+    }
+   },
+   "efficiency": {
+    "dk_per_opportunity_if_plays": 1.805,
+    "rates": {
+     "catch_rate": 0.623,
+     "completion_rate": null,
+     "yards_per_attempt": null,
+     "yards_per_carry": 8.333,
+     "yards_per_target": 12.122
+    },
+    "prior_tier": "ROLE_GROUP",
+    "prior_confidence": "LOW",
+    "prior_effective_obs": 5.39
+   },
+   "td_expectation_if_plays": {
+    "rush_td": 0.015,
+    "rec_td": 0.062,
+    "pass_td": 0.0,
+    "club_pool_scale": {
+     "rec_pool_scale": 0.9959,
+     "rush_pool_scale": 1.1612
+    }
+   },
+   "observed_2026": {
+    "games_played": 4,
+    "dk_avg": 7.28,
+    "dk_avg_source": "research board (snap-based participation)",
+    "engine_weeks_played": 4,
+    "engine_observed_share": {
+     "target_share": 0.087,
+     "rush_share": 0.0333
+    },
+    "per_stat_row_game": {
+     "games_played": 4,
+     "weeks": [
+      1,
+      2,
+      3,
+      4
+     ],
+     "dk_by_week": [
+      7.3,
+      5.4,
+      4.5,
+      11.9
+     ],
+     "dk_avg": 7.28,
+     "targets_pg": 3.0,
+     "carries_pg": 0.75,
+     "pass_att_pg": 0.0,
+     "td_pg": 0.0,
+     "pass_td_pg": 0.0
+    },
+    "research_board_estimates": {
+     "games_played_2026": 4,
+     "dk_avg_2026": 7.28,
+     "dk_last_game": 11.9,
+     "last_game_week": 4,
+     "target_share_avg": 0.087,
+     "carry_share_avg": 0.039,
+     "red_zone_targets_2026": 0,
+     "red_zone_carries_2026": 0,
+     "snap_trend_pp": -1.0
+    }
+   },
+   "availability": {
+    "state": "UNKNOWN_ACTIVE_STATE",
+    "practice_engine_state": null,
+    "practice_board_latest": null,
+    "injury": null
+   },
+   "role_band": "FRINGE",
+   "ceiling": "FRINGE",
+   "evidence_for_ceiling": {
+    "evidence": "DEPTH_RANK_4_PLUS",
+    "depth_rank_supplied": 4,
+    "depth_usage_rank": 4,
+    "depth_chart_captured": [
+     "WR4"
+    ],
+    "depth_source": "MIN(PREGAME_USAGE_HISTORY, DEPTH_CHART_CAPTURED)",
+    "position_rank": 5,
+    "historical_band": "PRIMARY",
+    "observed_band": "SECONDARY",
+    "observed_share": 0.087,
+    "capped": true,
+    "cap_reason": "observed usage suggested PRIMARY but evidence DEPTH_RANK_4_PLUS ceilings at FRINGE. observed usage is capped at SECONDARY when it is the ONLY evidence, because a large observed share held while the starter was injured is not a claim on the role once he returns. This is the rule that expires an injury-replacement workload.",
+    "role_evidence_conflict": {
+     "kind": "HISTORY_ABOVE_EVIDENCE_CEILING",
+     "history_band": "PRIMARY",
+     "assigned_band": "FRINGE",
+     "evidence": "DEPTH_RANK_4_PLUS",
+     "ceiling": "FRINGE"
+    },
+    "stored_not_consumed": [
+     "ROLE_HISTORY_ABOVE_CEILING: history PRIMARY, assigned FRINGE"
+    ]
+   },
+   "tie1_arm_value": 0.47,
+   "tie1_arm_band_ceiling": [
+    "FRINGE",
+    "FRINGE"
+   ],
+   "scenario_value": 0.48,
+   "scenario_note": null,
+   "primary_cause": "ROLE_EVIDENCE_DEFECT",
+   "secondary_causes": [
+    "ROLE_JUDGEMENT"
+   ],
+   "evidence_line": "4/4 gp, 3.0 tgt/g, snaps 30/60/26/62%, DK avg 7.28; supplied rank 4 (chart WR4) re-indexed to position rank 5 after the Collins/Hutchinson rank-1 tie, behind Jared Wayne (chart WR5, usage 3); p_plays 0.077 -> 0.48; if-plays 5.83 vs FC 5.91",
+   "defect_suspected": true,
+   "assumption_contradicted_by_captured_evidence": true,
+   "note": "The whole gap is P(plays): our conditional 5.83 equals FC's 5.91. Two compounding mechanisms: (a) ordinal re-indexing after a tie (sorted (1,1,2,3,4) -> 1..5) demotes everyone below a tie by one slot, which W5-G13 does not name and TIE-1 (competition rank 1,1,3,4,5) does not fix; rank 4 would give p 0.266 (~+1.1 DK); (b) P(plays) comes only from a league base rate by depth rank (measured on realised-volume ranks) and ignores his own 4/4 appearance record. Suspected defect, needs a failing test."
+  },
+  {
+   "player": "Jaylen Warren",
+   "team": "PIT",
+   "pos": "RB",
+   "ours": 18.38,
+   "ours_if_plays": 18.36,
+   "fc": 13.28,
+   "fc_floor": 4.13,
+   "fc_ceiling": 25.48,
+   "fc_depth_tag": "RB1",
+   "diff": 5.1,
+   "p_plays": {
+    "carries": 1.0,
+    "pass_attempts": 1.0,
+    "targets": 1.0
+   },
+   "volume": {
+    "unconditional": {
+     "targets": 4.89,
+     "carries": 13.31,
+     "pass_attempts": 0
+    },
+    "if_plays": {
+     "targets": 4.89,
+     "carries": 13.3,
+     "pass_attempts": 0
+    },
+    "final_club_share": {
+     "targets": 0.14672,
+     "carries": 0.586,
+     "pass_attempts": 0.0
+    },
+    "claims_before_normalising": {
+     "carries": 0.57917,
+     "pass_attempts": 0.0,
+     "targets": 0.133599
+    },
+    "club_claim_sum_before_normalising": {
+     "targets": 0.9106,
+     "carries": 0.9759,
+     "pass_attempts": 0.9842
+    }
+   },
+   "efficiency": {
+    "dk_per_opportunity_if_plays": 1.009,
+    "rates": {
+     "catch_rate": 0.72,
+     "completion_rate": null,
+     "yards_per_attempt": null,
+     "yards_per_carry": 5.292,
+     "yards_per_target": 6.966
+    },
+    "prior_tier": "PLAYER_OWN_OFF_ROLE",
+    "prior_confidence": "LOW",
+    "prior_effective_obs": 2.86
+   },
+   "td_expectation_if_plays": {
+    "rush_td": 0.425,
+    "rec_td": 0.2,
+    "pass_td": 0.0,
+    "club_pool_scale": {
+     "rec_pool_scale": 1.0399,
+     "rush_pool_scale": 1.6925
+    }
+   },
+   "observed_2026": {
+    "games_played": 4,
+    "dk_avg": 15.05,
+    "dk_avg_source": "research board (snap-based participation)",
+    "engine_weeks_played": 4,
+    "engine_observed_share": {
+     "target_share": 0.1389,
+     "rush_share": 0.6395
+    },
+    "per_stat_row_game": {
+     "games_played": 4,
+     "weeks": [
+      1,
+      2,
+      3,
+      4
+     ],
+     "dk_by_week": [
+      11.3,
+      9.7,
+      23.6,
+      15.6
+     ],
+     "dk_avg": 15.05,
+     "targets_pg": 5.0,
+     "carries_pg": 13.75,
+     "pass_att_pg": 0.0,
+     "td_pg": 0.0,
+     "pass_td_pg": 0.0
+    },
+    "research_board_estimates": {
+     "games_played_2026": 4,
+     "dk_avg_2026": 15.05,
+     "dk_last_game": 15.6,
+     "last_game_week": 4,
+     "target_share_avg": 0.138,
+     "carry_share_avg": 0.647,
+     "red_zone_targets_2026": 4,
+     "red_zone_carries_2026": 3,
+     "snap_trend_pp": 39.5
+    }
+   },
+   "availability": {
+    "state": "UNKNOWN_ACTIVE_STATE",
+    "practice_engine_state": null,
+    "practice_board_latest": null,
+    "injury": null
+   },
+   "role_band": "ALPHA",
+   "ceiling": "ALPHA",
+   "evidence_for_ceiling": {
+    "evidence": "DEPTH_RANK_1",
+    "depth_rank_supplied": 1,
+    "depth_usage_rank": 1,
+    "depth_chart_captured": [
+     "RB1"
+    ],
+    "depth_source": "MIN(PREGAME_USAGE_HISTORY, DEPTH_CHART_CAPTURED)",
+    "position_rank": 1,
+    "historical_band": "SECONDARY",
+    "observed_band": "ALPHA",
+    "observed_share": 0.6395,
+    "capped": false,
+    "cap_reason": null,
+    "role_evidence_conflict": null,
+    "stored_not_consumed": []
+   },
+   "tie1_arm_value": 18.25,
+   "tie1_arm_band_ceiling": [
+    "ALPHA",
+    "ALPHA"
+   ],
+   "scenario_value": 18.68,
+   "scenario_note": null,
+   "primary_cause": "VOLUME_OR_EFFICIENCY_MODEL",
+   "secondary_causes": [
+    "ROLE_JUDGEMENT"
+   ],
+   "evidence_line": "volume matches 2026 (13.3 car/4.9 tgt vs 13.75/5.0 per g) but TD expectation 0.63/g (rush 0.42 + rec 0.20; PIT rush TD pool scale 1.69) vs 0 TDs in 2026; ours 18.38 vs 2026 avg 15.05, FC 13.28",
+   "defect_suspected": false,
+   "assumption_contradicted_by_captured_evidence": false,
+   "note": "Excess over his own production is touchdowns: the PIT rush pool scale of 1.69 says measured rates and club volume disagree, and Warren absorbs it. Secondary role question: pooled W1-4 carry share 0.64 includes Dowdle-absent W3-4 (0.74/0.895); with Dowdle W1-2 it was 0.48. Dowdle is now limited (returning). Net PIT RB pair: ours 24.75 vs FC 26.07, so the split is disputed, not the total."
+  },
+  {
+   "player": "Chris Olave",
+   "team": "NO",
+   "pos": "WR",
+   "ours": 23.49,
+   "ours_if_plays": 23.48,
+   "fc": 18.17,
+   "fc_floor": 6.47,
+   "fc_ceiling": 33.77,
+   "fc_depth_tag": "WR1",
+   "diff": 5.32,
+   "p_plays": {
+    "carries": 1.0,
+    "pass_attempts": 1.0,
+    "targets": 1.0
+   },
+   "volume": {
+    "unconditional": {
+     "targets": 11.75,
+     "carries": 0.03,
+     "pass_attempts": 0.01
+    },
+    "if_plays": {
+     "targets": 11.74,
+     "carries": 0.03,
+     "pass_attempts": 0.01
+    },
+    "final_club_share": {
+     "targets": 0.30914,
+     "carries": 0.00111,
+     "pass_attempts": 0.00018
+    },
+    "claims_before_normalising": {
+     "carries": 0.001013,
+     "pass_attempts": 0.000347,
+     "targets": 0.285408
+    },
+    "club_claim_sum_before_normalising": {
+     "targets": 0.923,
+     "carries": 0.8189,
+     "pass_attempts": 0.9879
+    }
+   },
+   "efficiency": {
+    "dk_per_opportunity_if_plays": 1.994,
+    "rates": {
+     "catch_rate": 0.7,
+     "completion_rate": null,
+     "yards_per_attempt": null,
+     "yards_per_carry": null,
+     "yards_per_target": 9.564
+    },
+    "prior_tier": "PLAYER_OWN_ROLE",
+    "prior_confidence": "HIGH",
+    "prior_effective_obs": 19.18
+   },
+   "td_expectation_if_plays": {
+    "rush_td": 0.0,
+    "rec_td": 0.442,
+    "pass_td": 0.0,
+    "club_pool_scale": {
+     "rec_pool_scale": 0.8377,
+     "rush_pool_scale": 0.9973
+    }
+   },
+   "observed_2026": {
+    "games_played": 4,
+    "dk_avg": 24.77,
+    "dk_avg_source": "research board (snap-based participation)",
+    "engine_weeks_played": 4,
+    "engine_observed_share": {
+     "target_share": 0.2807,
+     "rush_share": 0.0
+    },
+    "per_stat_row_game": {
+     "games_played": 4,
+     "weeks": [
+      1,
+      2,
+      3,
+      4
+     ],
+     "dk_by_week": [
+      31.2,
+      22.6,
+      22.7,
+      22.6
+     ],
+     "dk_avg": 24.77,
+     "targets_pg": 12.0,
+     "carries_pg": 0.0,
+     "pass_att_pg": 0.0,
+     "td_pg": 0.25,
+     "pass_td_pg": 0.0
+    },
+    "research_board_estimates": {
+     "games_played_2026": 4,
+     "dk_avg_2026": 24.77,
+     "dk_last_game": 22.6,
+     "last_game_week": 4,
+     "target_share_avg": 0.285,
+     "carry_share_avg": 0.0,
+     "red_zone_targets_2026": 5,
+     "red_zone_carries_2026": 0,
+     "snap_trend_pp": 0.0
+    }
+   },
+   "availability": {
+    "state": "UNKNOWN_ACTIVE_STATE",
+    "practice_engine_state": "Did Not Participate In Practice",
+    "practice_board_latest": "Limited Participation in Practice",
+    "injury": "Not injury related - resting player, Foot"
+   },
+   "role_band": "ALPHA",
+   "ceiling": "ALPHA",
+   "evidence_for_ceiling": {
+    "evidence": "DEPTH_RANK_1",
+    "depth_rank_supplied": 1,
+    "depth_usage_rank": 1,
+    "depth_chart_captured": [
+     "WR1"
+    ],
+    "depth_source": "MIN(PREGAME_USAGE_HISTORY, DEPTH_CHART_CAPTURED)",
+    "position_rank": 1,
+    "historical_band": "ALPHA",
+    "observed_band": "ALPHA",
+    "observed_share": 0.2807,
+    "capped": false,
+    "cap_reason": null,
+    "role_evidence_conflict": null,
+    "stored_not_consumed": [
+     "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 1.0)",
+     "TEAMMATE_PRACTICE_NOT_CONSUMED: Alvin Kamara, Barion Brown did not practise, undesignated",
+     "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] RB Alvin Kamara (back): DNP Wednesday, limited Thursday. WR Chris Olave: rest day Wednesda"
+    ]
+   },
+   "tie1_arm_value": 23.48,
+   "tie1_arm_band_ceiling": [
+    "ALPHA",
+    "ALPHA"
+   ],
+   "scenario_value": 23.49,
+   "scenario_note": null,
+   "primary_cause": "FC_SPECIFIC",
+   "secondary_causes": [
+    "AVAILABILITY_ASSUMPTION"
+   ],
+   "evidence_line": "2026: 4 gp, 12.0 tgt/g, DK avg 24.77; ours 11.75 tgt, 23.49 (p_plays 1.0); FC 18.17; new foot injury, limited Thu [CONFIRMED] not consumed",
+   "defect_suspected": false,
+   "assumption_contradicted_by_captured_evidence": false,
+   "note": "Our number tracks his 2026 volume and production; FC discounts ~6.6 below his average, plausibly for the new foot injury, which we do not consume (W5-G4, no designation yet). Engine state still carries Wednesday DNP line (W5-G14)."
+  },
+  {
+   "player": "T.J. Hockenson",
+   "team": "MIN",
+   "pos": "TE",
+   "ours": 13.17,
+   "ours_if_plays": 13.13,
+   "fc": 7.66,
+   "fc_floor": 0.0,
+   "fc_ceiling": 23.06,
+   "fc_depth_tag": "TE1",
+   "diff": 5.51,
+   "p_plays": {
+    "carries": 1.0,
+    "pass_attempts": 1.0,
+    "targets": 1.0
+   },
+   "volume": {
+    "unconditional": {
+     "targets": 6.73,
+     "carries": 0.01,
+     "pass_attempts": 0
+    },
+    "if_plays": {
+     "targets": 6.71,
+     "carries": 0.01,
+     "pass_attempts": 0
+    },
+    "final_club_share": {
+     "targets": 0.2563,
+     "carries": 0.00053,
+     "pass_attempts": 0.0
+    },
+    "claims_before_normalising": {
+     "carries": 0.00045,
+     "pass_attempts": 0.0,
+     "targets": 0.249913
+    },
+    "club_claim_sum_before_normalising": {
+     "targets": 0.9749,
+     "carries": 0.8294,
+     "pass_attempts": 0.8694
+    }
+   },
+   "efficiency": {
+    "dk_per_opportunity_if_plays": 1.952,
+    "rates": {
+     "catch_rate": 0.803,
+     "completion_rate": null,
+     "yards_per_attempt": null,
+     "yards_per_carry": null,
+     "yards_per_target": 7.327
+    },
+    "prior_tier": "PLAYER_OWN_ROLE",
+    "prior_confidence": "HIGH",
+    "prior_effective_obs": 16.37
+   },
+   "td_expectation_if_plays": {
+    "rush_td": 0.005,
+    "rec_td": 0.441,
+    "pass_td": 0.0,
+    "club_pool_scale": {
+     "rec_pool_scale": 1.0356,
+     "rush_pool_scale": 1.1053
+    }
+   },
+   "observed_2026": {
+    "games_played": 4,
+    "dk_avg": 12.62,
+    "dk_avg_source": "research board (snap-based participation)",
+    "engine_weeks_played": 4,
+    "engine_observed_share": {
+     "target_share": 0.26,
+     "rush_share": 0.0
+    },
+    "per_stat_row_game": {
+     "games_played": 4,
+     "weeks": [
+      1,
+      2,
+      3,
+      4
+     ],
+     "dk_by_week": [
+      13.6,
+      5.9,
+      3.1,
+      27.9
+     ],
+     "dk_avg": 12.62,
+     "targets_pg": 6.5,
+     "carries_pg": 0.0,
+     "pass_att_pg": 0.0,
+     "td_pg": 0.25,
+     "pass_td_pg": 0.0
+    },
+    "research_board_estimates": {
+     "games_played_2026": 4,
+     "dk_avg_2026": 12.62,
+     "dk_last_game": 27.9,
+     "last_game_week": 4,
+     "target_share_avg": 0.245,
+     "carry_share_avg": 0.0,
+     "red_zone_targets_2026": 5,
+     "red_zone_carries_2026": 0,
+     "snap_trend_pp": 16.5
+    }
+   },
+   "availability": {
+    "state": "UNKNOWN_ACTIVE_STATE",
+    "practice_engine_state": null,
+    "practice_board_latest": null,
+    "injury": null
+   },
+   "role_band": "ALPHA",
+   "ceiling": "ALPHA",
+   "evidence_for_ceiling": {
+    "evidence": "DEPTH_RANK_1",
+    "depth_rank_supplied": 1,
+    "depth_usage_rank": 1,
+    "depth_chart_captured": [
+     "TE1"
+    ],
+    "depth_source": "MIN(PREGAME_USAGE_HISTORY, DEPTH_CHART_CAPTURED)",
+    "position_rank": 1,
+    "historical_band": "ALPHA",
+    "observed_band": "ALPHA",
+    "observed_share": 0.26,
+    "capped": false,
+    "cap_reason": null,
+    "role_evidence_conflict": null,
+    "stored_not_consumed": [
+     "QB_REGIME_NOT_CONSUMED: QB_REGIME_CHANGE",
+     "TEAMMATE_PRACTICE_NOT_CONSUMED: Jordan Addison did not practise, undesignated"
+    ]
+   },
+   "tie1_arm_value": 13.0,
+   "tie1_arm_band_ceiling": [
+    "ALPHA",
+    "ALPHA"
+   ],
+   "scenario_value": 13.17,
+   "scenario_note": null,
+   "primary_cause": "FC_SPECIFIC",
+   "secondary_causes": [
+    "VOLUME_OR_EFFICIENCY_MODEL"
+   ],
+   "evidence_line": "2026: 4 gp, 6.5 tgt/g, share 0.26, DK avg 12.62; ours 6.73 tgt, 13.17; FC 7.66 (-5.0 under his average)",
+   "defect_suspected": false,
+   "assumption_contradicted_by_captured_evidence": false,
+   "note": "Our number matches his 2026 volume and production. MIN QB regime change (Murray W3-4) is not consumed (W5-G1), which could matter either way."
+  },
+  {
+   "player": "Romeo Doubs",
+   "team": "NE",
+   "pos": "WR",
+   "ours": 14.7,
+   "ours_if_plays": 14.7,
+   "fc": 9.05,
+   "fc_floor": 0.0,
+   "fc_ceiling": 22.05,
+   "fc_depth_tag": "WR1",
+   "diff": 5.65,
+   "p_plays": {
+    "carries": 1.0,
+    "pass_attempts": 1.0,
+    "targets": 1.0
+   },
+   "volume": {
+    "unconditional": {
+     "targets": 7.02,
+     "carries": 2.29,
+     "pass_attempts": 0
+    },
+    "if_plays": {
+     "targets": 7.02,
+     "carries": 2.29,
+     "pass_attempts": 0
+    },
+    "final_club_share": {
+     "targets": 0.24276,
+     "carries": 0.07757,
+     "pass_attempts": 0.0
+    },
+    "claims_before_normalising": {
+     "carries": 0.0,
+     "pass_attempts": 0.0,
+     "targets": 0.198804
+    },
+    "club_claim_sum_before_normalising": {
+     "targets": 0.8189,
+     "carries": 0.9394,
+     "pass_attempts": 0.9721
+    }
+   },
+   "efficiency": {
+    "dk_per_opportunity_if_plays": 1.578,
+    "rates": {
+     "catch_rate": 0.613,
+     "completion_rate": null,
+     "yards_per_attempt": null,
+     "yards_per_carry": null,
+     "yards_per_target": 9.476
+    },
+    "prior_tier": "PLAYER_OWN_ROLE",
+    "prior_confidence": "MEDIUM",
+    "prior_effective_obs": 10.7
+   },
+   "td_expectation_if_plays": {
+    "rush_td": 0.05,
+    "rec_td": 0.48,
+    "pass_td": 0.0,
+    "club_pool_scale": {
+     "rec_pool_scale": 0.9162,
+     "rush_pool_scale": 1.3391
+    }
+   },
+   "observed_2026": {
+    "games_played": 4,
+    "dk_avg": 11.07,
+    "dk_avg_source": "research board (snap-based participation)",
+    "engine_weeks_played": 4,
+    "engine_observed_share": {
+     "target_share": 0.1695,
+     "rush_share": 0.0
+    },
+    "per_stat_row_game": {
+     "games_played": 4,
+     "weeks": [
+      1,
+      2,
+      3,
+      4
+     ],
+     "dk_by_week": [
+      0.0,
+      12.6,
+      7.9,
+      23.8
+     ],
+     "dk_avg": 11.07,
+     "targets_pg": 5.0,
+     "carries_pg": 0.0,
+     "pass_att_pg": 0.0,
+     "td_pg": 0.5,
+     "pass_td_pg": 0.0
+    },
+    "research_board_estimates": {
+     "games_played_2026": 4,
+     "dk_avg_2026": 11.07,
+     "dk_last_game": 23.8,
+     "last_game_week": 4,
+     "target_share_avg": 0.168,
+     "carry_share_avg": 0.0,
+     "red_zone_targets_2026": 4,
+     "red_zone_carries_2026": 0,
+     "snap_trend_pp": 7.0
+    }
+   },
+   "availability": {
+    "state": "UNKNOWN_ACTIVE_STATE",
+    "practice_engine_state": null,
+    "practice_board_latest": null,
+    "injury": null
+   },
+   "role_band": "ALPHA",
+   "ceiling": "ALPHA",
+   "evidence_for_ceiling": {
+    "evidence": "DEPTH_RANK_1",
+    "depth_rank_supplied": 1,
+    "depth_usage_rank": 1,
+    "depth_chart_captured": [
+     "WR1"
+    ],
+    "depth_source": "MIN(PREGAME_USAGE_HISTORY, DEPTH_CHART_CAPTURED)",
+    "position_rank": 1,
+    "historical_band": "ALPHA",
+    "observed_band": "PRIMARY",
+    "observed_share": 0.1695,
+    "capped": false,
+    "cap_reason": null,
+    "role_evidence_conflict": null,
+    "stored_not_consumed": [
+     "TEAMMATE_PRACTICE_NOT_CONSUMED: Mack Hollins did not practise, undesignated"
+    ]
+   },
+   "tie1_arm_value": 14.66,
+   "tie1_arm_band_ceiling": [
+    "ALPHA",
+    "ALPHA"
+   ],
+   "scenario_value": 14.7,
+   "scenario_note": null,
+   "primary_cause": "VOLUME_OR_EFFICIENCY_MODEL",
+   "secondary_causes": [
+    "FC_SPECIFIC"
+   ],
+   "evidence_line": "target share 0.243 (7.02 tgt) vs 2026 0.169 (5.0/g): blend with ALPHA prior 0.257 at 1/3 weight -> claim 0.199, then NE target claim_sum 0.819 renormalises x1.22; plus 2.29 carries with 0 carries in 2026; ours 14.70 vs avg 11.07, FC 9.05",
+   "defect_suspected": true,
+   "assumption_contradicted_by_captured_evidence": true,
+   "note": "Volume excess is prior plus club renormalisation (missing claim mass, largely from rank-based p_plays < 1 on NE depth 2+, is spread pro rata onto p=1 starters). Minor suspected defect: his carries field has claim 0 yet final share 0.078 because the WR depth table (measured on targets) is read as a club share of carries (LEGACY_TABLE_SHARE_READ_AS_CLUB_SHARE, CROSS_FIELD_PRIOR_SCOPE=QB_ONLY): about 0.3 DK, contradicted by zero 2026 carries. FC is also 2.0 below his 2026 average."
+  },
+  {
+   "player": "Malik Washington",
+   "team": "MIA",
+   "pos": "WR",
+   "ours": 14.34,
+   "ours_if_plays": 14.31,
+   "fc": 8.16,
+   "fc_floor": 2.46,
+   "fc_ceiling": 15.76,
+   "fc_depth_tag": "WR1",
+   "diff": 6.18,
+   "p_plays": {
+    "carries": 1.0,
+    "pass_attempts": 1.0,
+    "targets": 1.0
+   },
+   "volume": {
+    "unconditional": {
+     "targets": 8.3,
+     "carries": 1.56,
+     "pass_attempts": 0
+    },
+    "if_plays": {
+     "targets": 8.28,
+     "carries": 1.56,
+     "pass_attempts": 0
+    },
+    "final_club_share": {
+     "targets": 0.31508,
+     "carries": 0.06314,
+     "pass_attempts": 0.0
+    },
+    "claims_before_normalising": {
+     "carries": 0.046496,
+     "pass_attempts": 0.0,
+     "targets": 0.240803
+    },
+    "club_claim_sum_before_normalising": {
+     "targets": 0.7641,
+     "carries": 0.7364,
+     "pass_attempts": 0.9159
+    }
+   },
+   "efficiency": {
+    "dk_per_opportunity_if_plays": 1.454,
+    "rates": {
+     "catch_rate": 0.642,
+     "completion_rate": null,
+     "yards_per_attempt": null,
+     "yards_per_carry": 3.331,
+     "yards_per_target": 6.907
+    },
+    "prior_tier": "PLAYER_OWN_OFF_ROLE",
+    "prior_confidence": "LOW",
+    "prior_effective_obs": 3.88
+   },
+   "td_expectation_if_plays": {
+    "rush_td": 0.099,
+    "rec_td": 0.31,
+    "pass_td": 0.0,
+    "club_pool_scale": {
+     "rec_pool_scale": 1.1376,
+     "rush_pool_scale": 0.5743
+    }
+   },
+   "observed_2026": {
+    "games_played": 4,
+    "dk_avg": 9.78,
+    "dk_avg_source": "research board (snap-based participation)",
+    "engine_weeks_played": 4,
+    "engine_observed_share": {
+     "target_share": 0.2745,
+     "rush_share": 0.0521
+    },
+    "per_stat_row_game": {
+     "games_played": 4,
+     "weeks": [
+      1,
+      2,
+      3,
+      4
+     ],
+     "dk_by_week": [
+      7.3,
+      8.7,
+      11.1,
+      12.0
+     ],
+     "dk_avg": 9.78,
+     "targets_pg": 7.0,
+     "carries_pg": 1.25,
+     "pass_att_pg": 0.0,
+     "td_pg": 0.0,
+     "pass_td_pg": 0.0
+    },
+    "research_board_estimates": {
+     "games_played_2026": 4,
+     "dk_avg_2026": 9.78,
+     "dk_last_game": 12.0,
+     "last_game_week": 4,
+     "target_share_avg": 0.273,
+     "carry_share_avg": 0.053,
+     "red_zone_targets_2026": 1,
+     "red_zone_carries_2026": 2,
+     "snap_trend_pp": 1.0
+    }
+   },
+   "availability": {
+    "state": "UNKNOWN_ACTIVE_STATE",
+    "practice_engine_state": null,
+    "practice_board_latest": null,
+    "injury": null
+   },
+   "role_band": "ALPHA",
+   "ceiling": "ALPHA",
+   "evidence_for_ceiling": {
+    "evidence": "DEPTH_RANK_1",
+    "depth_rank_supplied": 1,
+    "depth_usage_rank": 1,
+    "depth_chart_captured": [
+     "WR1"
+    ],
+    "depth_source": "MIN(PREGAME_USAGE_HISTORY, DEPTH_CHART_CAPTURED)",
+    "position_rank": 1,
+    "historical_band": "PRIMARY",
+    "observed_band": "ALPHA",
+    "observed_share": 0.2745,
+    "capped": false,
+    "cap_reason": null,
+    "role_evidence_conflict": null,
+    "stored_not_consumed": [
+     "TEAMMATE_PRACTICE_NOT_CONSUMED: Caleb Douglas did not practise, undesignated",
+     "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] Oct 5: RB Carlos Washington waived. Oct 7: DT Kenneth Grant designated to return from IR. "
+    ]
+   },
+   "tie1_arm_value": 14.2,
+   "tie1_arm_band_ceiling": [
+    "ALPHA",
+    "ALPHA"
+   ],
+   "scenario_value": 14.34,
+   "scenario_note": null,
+   "primary_cause": "VOLUME_OR_EFFICIENCY_MODEL",
+   "secondary_causes": [
+    "FC_SPECIFIC"
+   ],
+   "evidence_line": "target share 0.315 (8.3 tgt) vs 2026 0.2745 (7.0/g): blended claim 0.241 x (1/MIA target claim_sum 0.764 = 1.31); TD expectation 0.41/g vs 0 TDs in 2026; ours 14.34 vs avg 9.78; FC 8.16",
+   "defect_suspected": false,
+   "assumption_contradicted_by_captured_evidence": false,
+   "note": "MIA has the lowest target claim_sum on the slate (0.764), so every MIA claim is scaled up 31%; the alpha absorbs most. Ours +4.6 over his production, FC -1.6 under it. Not shown to be a defect: renormalisation is declared, but its size here deserves a check of what the missing 24% is."
+  },
+  {
+   "player": "Michael Pittman",
+   "team": "PIT",
+   "pos": "WR",
+   "ours": 7.97,
+   "ours_if_plays": 9.12,
+   "fc": null,
+   "fc_floor": null,
+   "fc_ceiling": null,
+   "fc_depth_tag": null,
+   "diff": null,
+   "p_plays": {
+    "carries": 0.86052,
+    "pass_attempts": 1.0,
+    "targets": 0.86052
+   },
+   "volume": {
+    "unconditional": {
+     "targets": 5.12,
+     "carries": 0.01,
+     "pass_attempts": 0
+    },
+    "if_plays": {
+     "targets": 5.81,
+     "carries": 0.02,
+     "pass_attempts": 0
+    },
+    "final_club_share": {
+     "targets": 0.15365,
+     "carries": 0.00057,
+     "pass_attempts": 0.0
+    },
+    "claims_before_normalising": {
+     "carries": 0.000656,
+     "pass_attempts": 0.0,
+     "targets": 0.162594
+    },
+    "club_claim_sum_before_normalising": {
+     "targets": 0.9106,
+     "carries": 0.9759,
+     "pass_attempts": 0.9842
+    }
+   },
+   "efficiency": {
+    "dk_per_opportunity_if_plays": 1.565,
+    "rates": {
+     "catch_rate": 0.617,
+     "completion_rate": null,
+     "yards_per_attempt": null,
+     "yards_per_carry": null,
+     "yards_per_target": 7.274
+    },
+    "prior_tier": "PLAYER_OWN_OFF_ROLE",
+    "prior_confidence": "LOW",
+    "prior_effective_obs": 6.16
+   },
+   "td_expectation_if_plays": {
+    "rush_td": 0.001,
+    "rec_td": 0.192,
+    "pass_td": 0.0,
+    "club_pool_scale": {
+     "rec_pool_scale": 1.0399,
+     "rush_pool_scale": 1.6925
+    }
+   },
+   "observed_2026": {
+    "games_played": 3,
+    "dk_avg": 5.3,
+    "dk_avg_source": "nflverse stat rows (player not on FC-derived research board)",
+    "engine_weeks_played": 3,
+    "engine_observed_share": {
+     "target_share": 0.0833,
+     "rush_share": 0.0
+    },
+    "per_stat_row_game": {
+     "games_played": 3,
+     "weeks": [
+      1,
+      3,
+      4
+     ],
+     "dk_by_week": [
+      8.8,
+      3.6,
+      3.5
+     ],
+     "dk_avg": 5.3,
+     "targets_pg": 4.0,
+     "carries_pg": 0.0,
+     "pass_att_pg": 0.0,
+     "td_pg": 0.0,
+     "pass_td_pg": 0.0
+    },
+    "research_board_estimates": null
+   },
+   "availability": {
+    "state": "UNKNOWN_ACTIVE_STATE",
+    "practice_engine_state": "Limited Participation in Practice",
+    "practice_board_latest": "Limited Participation in Practice",
+    "injury": null
+   },
+   "role_band": "SECONDARY",
+   "ceiling": "SECONDARY",
+   "evidence_for_ceiling": {
+    "evidence": "DEPTH_RANK_2",
+    "depth_rank_supplied": 2,
+    "depth_usage_rank": 4,
+    "depth_chart_captured": null,
+    "depth_source": "MIN(PREGAME_USAGE_HISTORY, DEPTH_CHART_CAPTURED)",
+    "position_rank": 2,
+    "historical_band": "ALPHA",
+    "observed_band": "SECONDARY",
+    "observed_share": 0.0833,
+    "capped": true,
+    "cap_reason": "observed usage suggested ALPHA but evidence DEPTH_RANK_2 ceilings at SECONDARY. observed usage is capped at SECONDARY when it is the ONLY evidence, because a large observed share held while the starter was injured is not a claim on the role once he returns. This is the rule that expires an injury-replacement workload.",
+    "role_evidence_conflict": {
+     "kind": "HISTORY_ABOVE_EVIDENCE_CEILING",
+     "history_band": "ALPHA",
+     "assigned_band": "SECONDARY",
+     "evidence": "DEPTH_RANK_2",
+     "ceiling": "SECONDARY"
+    },
+    "stored_not_consumed": [
+     "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 0.86)",
+     "DEPTH_TIE_BROKEN_BY_ID: supplied rank 2 shared by 2 at WR; ceiling SECONDARY",
+     "ROLE_HISTORY_ABOVE_CEILING: history ALPHA, assigned SECONDARY",
+     "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] WR Michael Pittman Jr. (foot): limited Wednesday, DNP Thursday. Mike McCarthy says he aggr"
+    ]
+   },
+   "tie1_arm_value": 7.85,
+   "tie1_arm_band_ceiling": [
+    "SECONDARY",
+    "SECONDARY"
+   ],
+   "scenario_value": null,
+   "scenario_note": "set OUT in scenario_reported_outs (no projection)",
+   "primary_cause": "AVAILABILITY_ASSUMPTION",
+   "secondary_causes": [
+    "ROLE_EVIDENCE_DEFECT"
+   ],
+   "evidence_line": "FC omits him; [CONFIRMED] aggravated foot, limited Wed, DNP Thu, 'expected to miss multiple weeks', IR not announced; engine p_plays 0.86 (rank-2 base rate) -> 7.97; 2026: 3 gp, 4.0 tgt/g, DK avg 5.3",
+   "defect_suspected": false,
+   "assumption_contradicted_by_captured_evidence": true,
+   "note": "Our number assumes he plays against CONFIRMED-tier news (no designation captured yet, so by rule not consumed). Even if he plays, 7.97 is above his 2026 production (history ALPHA, prior PLAYER_OWN_OFF_ROLE). W5-G13 tie with Roman Wilson at rank 2 broken by id, consistent with chart (Pittman WR2, Wilson WR3); harmless here."
+  },
+  {
+   "player": "Breece Hall",
+   "team": "NYJ",
+   "pos": "RB",
+   "ours": 15.0,
+   "ours_if_plays": 15.0,
+   "fc": null,
+   "fc_floor": null,
+   "fc_ceiling": null,
+   "fc_depth_tag": null,
+   "diff": null,
+   "p_plays": {
+    "carries": 1.0,
+    "pass_attempts": 1.0,
+    "targets": 1.0
+   },
+   "volume": {
+    "unconditional": {
+     "targets": 3.49,
+     "carries": 15.19,
+     "pass_attempts": 0.0
+    },
+    "if_plays": {
+     "targets": 3.49,
+     "carries": 15.19,
+     "pass_attempts": 0.0
+    },
+    "final_club_share": {
+     "targets": 0.12615,
+     "carries": 0.589,
+     "pass_attempts": 0.00014
+    },
+    "claims_before_normalising": {
+     "carries": 0.5995,
+     "pass_attempts": 0.00028,
+     "targets": 0.11791
+    },
+    "club_claim_sum_before_normalising": {
+     "targets": 0.9347,
+     "carries": 1.005,
+     "pass_attempts": 0.9965
+    }
+   },
+   "efficiency": {
+    "dk_per_opportunity_if_plays": 0.803,
+    "rates": {
+     "catch_rate": 0.91,
+     "completion_rate": null,
+     "yards_per_attempt": null,
+     "yards_per_carry": 3.642,
+     "yards_per_target": 8.892
+    },
+    "prior_tier": "PLAYER_OWN_ROLE",
+    "prior_confidence": "HIGH",
+    "prior_effective_obs": 20.87
+   },
+   "td_expectation_if_plays": {
+    "rush_td": 0.417,
+    "rec_td": 0.058,
+    "pass_td": 0.0,
+    "club_pool_scale": {
+     "rec_pool_scale": 1.347,
+     "rush_pool_scale": 1.0355
+    }
+   },
+   "observed_2026": {
+    "games_played": 3,
+    "dk_avg": 15.17,
+    "dk_avg_source": "nflverse stat rows (player not on FC-derived research board)",
+    "engine_weeks_played": 3,
+    "engine_observed_share": {
+     "target_share": 0.0909,
+     "rush_share": 0.5152
+    },
+    "per_stat_row_game": {
+     "games_played": 3,
+     "weeks": [
+      1,
+      2,
+      3
+     ],
+     "dk_by_week": [
+      22.8,
+      14.2,
+      8.5
+     ],
+     "dk_avg": 15.17,
+     "targets_pg": 3.33,
+     "carries_pg": 17.0,
+     "pass_att_pg": 0.0,
+     "td_pg": 0.33,
+     "pass_td_pg": 0.0
+    },
+    "research_board_estimates": null
+   },
+   "availability": {
+    "state": "UNKNOWN_ACTIVE_STATE",
+    "practice_engine_state": "Did Not Participate In Practice",
+    "practice_board_latest": "Did Not Participate In Practice",
+    "injury": null
+   },
+   "role_band": "PRIMARY",
+   "ceiling": "ALPHA",
+   "evidence_for_ceiling": {
+    "evidence": "DEPTH_RANK_1",
+    "depth_rank_supplied": 1,
+    "depth_usage_rank": 1,
+    "depth_chart_captured": null,
+    "depth_source": "MIN(PREGAME_USAGE_HISTORY, DEPTH_CHART_CAPTURED)",
+    "position_rank": 1,
+    "historical_band": "PRIMARY",
+    "observed_band": "PRIMARY",
+    "observed_share": 0.5152,
+    "capped": false,
+    "cap_reason": null,
+    "role_evidence_conflict": null,
+    "stored_not_consumed": [
+     "PRACTICE_STATUS_NOT_CONSUMED: Did Not Participate In Practice; no designation yet, projection assumes he plays (p_plays 1.0)",
+     "TEAMMATE_PRACTICE_NOT_CONSUMED: Adonai Mitchell did not practise, undesignated",
+     "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] RB Breece Hall (quad), WR Adonai Mitchell, G Dylan Parham, LB Kiko (Francisco) Mauigoa: DN"
+    ]
+   },
+   "tie1_arm_value": 14.96,
+   "tie1_arm_band_ceiling": [
+    "PRIMARY",
+    "ALPHA"
+   ],
+   "scenario_value": null,
+   "scenario_note": "set OUT in scenario_reported_outs (no projection)",
+   "primary_cause": "AVAILABILITY_ASSUMPTION",
+   "secondary_causes": [],
+   "evidence_line": "FC omits him; DNP Wed+Thu (quad), 'essentially out' [REPORTED]; engine p_plays 1.0 -> 15.00; 2026: 3 gp, 17.0 car/g, DK avg 15.17",
+   "defect_suspected": false,
+   "assumption_contradicted_by_captured_evidence": true,
+   "note": "Conditional on playing, our number matches his 2026 production. The disagreement is only whether he plays. Practice DNP is captured; the 'out' reading is REPORTED tier."
+  },
+  {
+   "player": "Adonai Mitchell",
+   "team": "NYJ",
+   "pos": "WR",
+   "ours": 8.09,
+   "ours_if_plays": 9.2,
+   "fc": null,
+   "fc_floor": null,
+   "fc_ceiling": null,
+   "fc_depth_tag": null,
+   "diff": null,
+   "p_plays": {
+    "carries": 0.86052,
+    "pass_attempts": 1.0,
+    "targets": 0.86052
+   },
+   "volume": {
+    "unconditional": {
+     "targets": 5.23,
+     "carries": 0.08,
+     "pass_attempts": 0.01
+    },
+    "if_plays": {
+     "targets": 5.9,
+     "carries": 0.09,
+     "pass_attempts": 0.01
+    },
+    "final_club_share": {
+     "targets": 0.18927,
+     "carries": 0.00303,
+     "pass_attempts": 0.00027
+    },
+    "claims_before_normalising": {
+     "carries": 0.00358,
+     "pass_attempts": 0.00054,
+     "targets": 0.205589
+    },
+    "club_claim_sum_before_normalising": {
+     "targets": 0.9347,
+     "carries": 1.005,
+     "pass_attempts": 0.9965
+    }
+   },
+   "efficiency": {
+    "dk_per_opportunity_if_plays": 1.534,
+    "rates": {
+     "catch_rate": 0.5,
+     "completion_rate": null,
+     "yards_per_attempt": null,
+     "yards_per_carry": null,
+     "yards_per_target": 7.027
+    },
+    "prior_tier": "PLAYER_OWN_OFF_ROLE",
+    "prior_confidence": "LOW",
+    "prior_effective_obs": 5.1
+   },
+   "td_expectation_if_plays": {
+    "rush_td": 0.007,
+    "rec_td": 0.32,
+    "pass_td": 0.0,
+    "club_pool_scale": {
+     "rec_pool_scale": 1.347,
+     "rush_pool_scale": 1.0355
+    }
+   },
+   "observed_2026": {
+    "games_played": 2,
+    "dk_avg": 10.65,
+    "dk_avg_source": "nflverse stat rows (player not on FC-derived research board)",
+    "engine_weeks_played": 2,
+    "engine_observed_share": {
+     "target_share": 0.1364,
+     "rush_share": 0.0
+    },
+    "per_stat_row_game": {
+     "games_played": 2,
+     "weeks": [
+      1,
+      2
+     ],
+     "dk_by_week": [
+      9.0,
+      12.3
+     ],
+     "dk_avg": 10.65,
+     "targets_pg": 7.5,
+     "carries_pg": 0.0,
+     "pass_att_pg": 0.0,
+     "td_pg": 0.0,
+     "pass_td_pg": 0.0
+    },
+    "research_board_estimates": null
+   },
+   "availability": {
+    "state": "UNKNOWN_ACTIVE_STATE",
+    "practice_engine_state": "Did Not Participate In Practice",
+    "practice_board_latest": "Did Not Participate In Practice",
+    "injury": null
+   },
+   "role_band": "SECONDARY",
+   "ceiling": "SECONDARY",
+   "evidence_for_ceiling": {
+    "evidence": "DEPTH_RANK_2",
+    "depth_rank_supplied": 2,
+    "depth_usage_rank": 2,
+    "depth_chart_captured": null,
+    "depth_source": "MIN(PREGAME_USAGE_HISTORY, DEPTH_CHART_CAPTURED)",
+    "position_rank": 2,
+    "historical_band": "ALPHA",
+    "observed_band": "SECONDARY",
+    "observed_share": 0.1364,
+    "capped": true,
+    "cap_reason": "observed usage suggested ALPHA but evidence DEPTH_RANK_2 ceilings at SECONDARY. observed usage is capped at SECONDARY when it is the ONLY evidence, because a large observed share held while the starter was injured is not a claim on the role once he returns. This is the rule that expires an injury-replacement workload.",
+    "role_evidence_conflict": {
+     "kind": "HISTORY_ABOVE_EVIDENCE_CEILING",
+     "history_band": "ALPHA",
+     "assigned_band": "SECONDARY",
+     "evidence": "DEPTH_RANK_2",
+     "ceiling": "SECONDARY"
+    },
+    "stored_not_consumed": [
+     "PRACTICE_STATUS_NOT_CONSUMED: Did Not Participate In Practice; no designation yet, projection assumes he plays (p_plays 0.86)",
+     "TEAMMATE_PRACTICE_NOT_CONSUMED: Breece Hall did not practise, undesignated",
+     "ROLE_HISTORY_ABOVE_CEILING: history ALPHA, assigned SECONDARY",
+     "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] RB Breece Hall (quad), WR Adonai Mitchell, G Dylan Parham, LB Kiko (Francisco) Mauigoa: DN"
+    ]
+   },
+   "tie1_arm_value": 8.04,
+   "tie1_arm_band_ceiling": [
+    "SECONDARY",
+    "SECONDARY"
+   ],
+   "scenario_value": null,
+   "scenario_note": "set OUT in scenario_reported_outs (no projection)",
+   "primary_cause": "AVAILABILITY_ASSUMPTION",
+   "secondary_causes": [
+    "ROLE_JUDGEMENT"
+   ],
+   "evidence_line": "FC omits him; DNP Wed+Thu (finger), 'essentially out' [REPORTED]; engine p_plays 0.86 (rank-2 base rate) -> 8.09; 2026: 2 gp, 7.5 tgt/g, DK avg 10.65",
+   "defect_suspected": false,
+   "assumption_contradicted_by_captured_evidence": true,
+   "note": "Disagreement is whether he plays. If he plays, our number is below his 2-game production (DEPTH_RANK_2 SECONDARY cap, history ALPHA conflict)."
+  },
+  {
+   "player": "Caleb Williams",
+   "team": "CHI",
+   "pos": "QB",
+   "ours": 21.96,
+   "ours_if_plays": 21.96,
+   "fc": null,
+   "fc_floor": null,
+   "fc_ceiling": null,
+   "fc_depth_tag": null,
+   "diff": null,
+   "p_plays": {
+    "carries": 1.0,
+    "pass_attempts": 1.0,
+    "targets": 1.0
+   },
+   "volume": {
+    "unconditional": {
+     "targets": 0.04,
+     "carries": 7.02,
+     "pass_attempts": 34.83
+    },
+    "if_plays": {
+     "targets": 0.04,
+     "carries": 6.99,
+     "pass_attempts": 34.83
+    },
+    "final_club_share": {
+     "targets": 0.00117,
+     "carries": 0.20211,
+     "pass_attempts": 0.99619
+    },
+    "claims_before_normalising": {
+     "carries": 0.193493,
+     "pass_attempts": 0.924466,
+     "targets": 0.001015
+    },
+    "club_claim_sum_before_normalising": {
+     "targets": 0.8648,
+     "carries": 0.9558,
+     "pass_attempts": 0.9288
+    }
+   },
+   "efficiency": {
+    "dk_per_opportunity_if_plays": 0.525,
+    "rates": {
+     "catch_rate": 1.0,
+     "completion_rate": 0.579,
+     "yards_per_attempt": 6.52,
+     "yards_per_carry": 6.279,
+     "yards_per_target": 11.0
+    },
+    "prior_tier": "PLAYER_OWN_ROLE",
+    "prior_confidence": "HIGH",
+    "prior_effective_obs": 20.52
+   },
+   "td_expectation_if_plays": {
+    "rush_td": 0.284,
+    "rec_td": 0.0,
+    "pass_td": 1.711,
+    "club_pool_scale": {
+     "rec_pool_scale": 0.9786,
+     "rush_pool_scale": 0.6133
+    }
+   },
+   "observed_2026": {
+    "games_played": 2,
+    "dk_avg": 22.99,
+    "dk_avg_source": "nflverse stat rows (player not on FC-derived research board)",
+    "engine_weeks_played": 2,
+    "engine_observed_share": {
+     "target_share": 0.0,
+     "rush_share": 0.0943
+    },
+    "per_stat_row_game": {
+     "games_played": 2,
+     "weeks": [
+      1,
+      2
+     ],
+     "dk_by_week": [
+      37.26,
+      8.72
+     ],
+     "dk_avg": 22.99,
+     "targets_pg": 0.0,
+     "carries_pg": 7.5,
+     "pass_att_pg": 27.5,
+     "td_pg": 1.0,
+     "pass_td_pg": 1.0
+    },
+    "research_board_estimates": null
+   },
+   "availability": {
+    "state": "UNKNOWN_ACTIVE_STATE",
+    "practice_engine_state": "Did Not Participate In Practice",
+    "practice_board_latest": "Did Not Participate In Practice",
+    "injury": null
+   },
+   "role_band": "ALPHA",
+   "ceiling": "ALPHA",
+   "evidence_for_ceiling": {
+    "evidence": "DEPTH_RANK_1",
+    "depth_rank_supplied": 1,
+    "depth_usage_rank": 3,
+    "depth_chart_captured": null,
+    "depth_source": "DEPTH_CHART_CAPTURED 20261008T225113Z",
+    "position_rank": 1,
+    "historical_band": "ALPHA",
+    "observed_band": null,
+    "observed_share": null,
+    "capped": false,
+    "cap_reason": null,
+    "role_evidence_conflict": null,
+    "stored_not_consumed": [
+     "PRACTICE_STATUS_NOT_CONSUMED: Did Not Participate In Practice; no designation yet, projection assumes he plays (p_plays 1.0)",
+     "LISTED_STARTER_NOT_CONSUMED: schedule capture lists Tyson Bagent; engine starts Caleb Williams",
+     "QB_REGIME_NOT_CONSUMED: QB_REGIME_CHANGE; THIN_STARTER_EVIDENCE; QB_CHURN",
+     "TEAMMATE_PRACTICE_NOT_CONSUMED: D'Andre Swift, Kyle Monangai did not practise, undesignated",
+     "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] Tyson Bagent will start Week 5 at GB. Ben Johnson on ESPN 1000 Monday: 'Tyson will be the ; [REPORTED] QB by week: Williams started W1 and W2 and was hurt in the W2 9-3 loss to MIN. Case Keenum"
+    ]
+   },
+   "tie1_arm_value": 21.96,
+   "tie1_arm_band_ceiling": [
+    "ALPHA",
+    "ALPHA"
+   ],
+   "scenario_value": null,
+   "scenario_note": "set OUT in scenario_reported_outs (no projection)",
+   "primary_cause": "AVAILABILITY_ASSUMPTION",
+   "secondary_causes": [
+    "VOLUME_OR_EFFICIENCY_MODEL"
+   ],
+   "evidence_line": "FC omits him; [CONFIRMED] Chicago Sun-Times 2026-10-05: ruled out (Grade 2 hamstring), Bagent starts; nflverse schedule capture lists Bagent; DNP; engine starts him from captured chart QB1 at p_plays 1.0 -> 21.96; 2026: 2 gp, DK avg 22.99",
+   "defect_suspected": false,
+   "assumption_contradicted_by_captured_evidence": true,
+   "note": "The strongest contradiction on the board: our number assumes a starter whom CONFIRMED news and the captured schedule listing both say will not play. Open gap W5-G15; every CHI and GB projection is conditioned on him."
+  }
+ ]
+}

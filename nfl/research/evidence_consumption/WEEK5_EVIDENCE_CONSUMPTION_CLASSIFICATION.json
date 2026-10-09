@@ -1,0 +1,2911 @@
+{
+ "ARTIFACT": "WEEK5_EVIDENCE_CONSUMPTION_CLASSIFICATION",
+ "board": "nfl/dfs/salaries/classic_early_2026W5/WEEK5_EVIDENCE_BOARD.json",
+ "qb_verification": "nfl/dfs/salaries/classic_early_2026W5/qb_verification/WEEK5_QB_STARTER_VERIFICATION.json",
+ "n_board_rows": 161,
+ "n_rows_with_flags": 141,
+ "n_flags": 314,
+ "by_category": {
+  "C3_RESEARCH_REQUIRED": 86,
+  "C2_REPRESENTED_INDIRECTLY": 112,
+  "C4_UNVERIFIED_SPECULATIVE": 74,
+  "C1_CONFIRMED_SHOULD_CONSUME": 42
+ },
+ "by_kind": [
+  {
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "n": 112
+  },
+  {
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "n": 64
+  },
+  {
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "category": "C3_RESEARCH_REQUIRED",
+   "n": 36
+  },
+  {
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "n": 32
+  },
+  {
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "category": "C3_RESEARCH_REQUIRED",
+   "n": 29
+  },
+  {
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "category": "C3_RESEARCH_REQUIRED",
+   "n": 18
+  },
+  {
+   "flag": "LISTED_STARTER_NOT_CONSUMED",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "n": 10
+  },
+  {
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "n": 10
+  },
+  {
+   "flag": "OPPONENT_QB_NOT_CONSUMED",
+   "category": "C3_RESEARCH_REQUIRED",
+   "n": 3
+  }
+ ],
+ "never_inputs": [
+  {
+   "item": "Fantasy Cruncher projections, floors, ceilings, ownership",
+   "category": "C5_SHOULD_NOT_INFLUENCE",
+   "reason": "benchmark only"
+  },
+  {
+   "item": "sportsbook props, spreads, totals (incl. nflverse schedule market columns)",
+   "category": "C5_SHOULD_NOT_INFLUENCE",
+   "reason": "owner production contract: football-only arm"
+  },
+  {
+   "item": "third-party simulation outputs (Stokastic sims, ownership, leverage)",
+   "category": "C5_SHOULD_NOT_INFLUENCE",
+   "reason": "external model output"
+  },
+  {
+   "item": "realised ownership of a contest before it locks",
+   "category": "C5_SHOULD_NOT_INFLUENCE",
+   "reason": "not available prelock"
+  }
+ ],
+ "rows": [
+  {
+   "player": "JaMarr Chase",
+   "team": "CIN",
+   "pos": "WR",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 1.0)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "JaMarr Chase",
+   "team": "CIN",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Tee Higgins did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "JaMarr Chase",
+   "team": "CIN",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] WR Ja'Marr Chase (concussion, in protocol): DNP Wednesday, limited Thursday. He needs a fu",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Joe Burrow",
+   "team": "CIN",
+   "pos": "QB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Ja'Marr Chase, Tee Higgins did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Joe Burrow",
+   "team": "CIN",
+   "pos": "QB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] Joe Burrow has no injury designation for Week 5 (tracker checked Oct 8) and has not missed",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Nico Collins",
+   "team": "HOU",
+   "pos": "WR",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 1.0)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Nico Collins",
+   "team": "HOU",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] WR Nico Collins: limited Wednesday (NIR rest). He missed 2 games with a hamstring and retu",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Tyler Shough",
+   "team": "NO",
+   "pos": "QB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Alvin Kamara, Barion Brown, Chris Olave did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Tyler Shough",
+   "team": "NO",
+   "pos": "QB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] Tyler Shough has started W1-W4 (W4: 30/48, 286 yds, 1 TD in the 45-24 MNF loss to ATL; tea; [CONFLICTING] Shough's Wednesday practice status: limited (SI headline, Fantasy Footballers, AtoZ) vs fu",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Jonathan Taylor",
+   "team": "IND",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Ashton Dulin did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Jonathan Taylor",
+   "team": "IND",
+   "pos": "RB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFLICTING] RB Jonathan Taylor (NIR/rest): full Thursday. His Wednesday status conflicts: DNP rest (on",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Deshaun Watson",
+   "team": "CLE",
+   "pos": "QB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Tylan Wallace did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Deshaun Watson",
+   "team": "CLE",
+   "pos": "QB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] Deshaun Watson is the expected starter. He won the job over Shedeur Sanders in August and ",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Jayden Daniels",
+   "team": "WAS",
+   "pos": "QB",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_DIFFERS_FROM_LAST_GAME; QB_CHURN",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "QB identity sets the QB himself (chart) but not team volume/shares; the QB-conditioned candidate FAILED its bar (1 of 3); dropbacks preregistered prospectively (QBCTX-DB1)"
+  },
+  {
+   "player": "Jayden Daniels",
+   "team": "WAS",
+   "pos": "QB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Marcus Mariota, Stefon Diggs, Terry McLaurin did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Jayden Daniels",
+   "team": "WAS",
+   "pos": "QB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] Jayden Daniels (left elbow dislocated W2 at DAL) returns Week 5: full Wednesday and Thursd",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Chase Brown",
+   "team": "CIN",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Ja'Marr Chase, Tee Higgins did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "C.J. Stroud",
+   "team": "HOU",
+   "pos": "QB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] C.J. Stroud is on no Week 5 report. W4 vs DAL: 21/31, 347 yds, 2 TD; no INTs this season; ",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Aaron Jones",
+   "team": "MIN",
+   "pos": "RB",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 1.0)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Aaron Jones",
+   "team": "MIN",
+   "pos": "RB",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_REGIME_CHANGE",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "QB identity sets the QB himself (chart) but not team volume/shares; the QB-conditioned candidate FAILED its bar (1 of 3); dropbacks preregistered prospectively (QBCTX-DB1)"
+  },
+  {
+   "player": "Aaron Jones",
+   "team": "MIN",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Jordan Addison did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Aaron Rodgers",
+   "team": "PIT",
+   "pos": "QB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] Aaron Rodgers is on no Week 5 report and is expected to face IND. W4 (TNF Oct 1, L 27-24 v",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Chris Olave",
+   "team": "NO",
+   "pos": "WR",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 1.0)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Chris Olave",
+   "team": "NO",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Alvin Kamara, Barion Brown did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Chris Olave",
+   "team": "NO",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] RB Alvin Kamara (back): DNP Wednesday, limited Thursday. WR Chris Olave: rest day Wednesda",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Malik Willis",
+   "team": "MIA",
+   "pos": "QB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Caleb Douglas did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Malik Willis",
+   "team": "MIA",
+   "pos": "QB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] Malik Willis has been the starter since being named on Sept 8, with 4 games (712 yds, 1 TD",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "D'Andre Swift",
+   "team": "CHI",
+   "pos": "RB",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 1.0)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "D'Andre Swift",
+   "team": "CHI",
+   "pos": "RB",
+   "flag": "LISTED_STARTER_NOT_CONSUMED",
+   "detail": "LISTED_STARTER_NOT_CONSUMED: schedule capture lists Tyson Bagent; engine starts Caleb Williams",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "the nflverse schedule QB field is a listing, not an announcement, and was contradicted by play-by-play in week 4 (Keenum listed, Bagent threw every pass); the starter itself is resolved by the QB verification board, not by this field"
+  },
+  {
+   "player": "D'Andre Swift",
+   "team": "CHI",
+   "pos": "RB",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_REGIME_CHANGE; THIN_STARTER_EVIDENCE; QB_CHURN",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "starter identity: every secondary source and the official practice report point to Bagent; the engine starts Williams from a stale chart capture. Consumed through the starter path once official (designation) or owner-relayed; scenario forecast until then"
+  },
+  {
+   "player": "D'Andre Swift",
+   "team": "CHI",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Caleb Williams, Kyle Monangai did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "D'Andre Swift",
+   "team": "CHI",
+   "pos": "RB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] RB D'Andre Swift (hip/knee): DNP Wednesday, limited Thursday.; [CONFIRMED] W4: Monangai had 30 carries, 146 yds, 2 TD; Swift had 15 carries, 58 yds. Johnson called S",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Christian Watson",
+   "team": "GB",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Chris Brooks did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Tee Higgins",
+   "team": "CIN",
+   "pos": "WR",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Did Not Participate In Practice; no designation yet, projection assumes he plays (p_plays 0.86)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Tee Higgins",
+   "team": "CIN",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Ja'Marr Chase did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Tee Higgins",
+   "team": "CIN",
+   "pos": "WR",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history ALPHA, assigned SECONDARY",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Tee Higgins",
+   "team": "CIN",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] WR Tee Higgins (groin/neck; W4 adductor): DNP Wednesday and Thursday, after Zac Taylor had",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Jordan Love",
+   "team": "GB",
+   "pos": "QB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Chris Brooks did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Jordan Love",
+   "team": "GB",
+   "pos": "QB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] No 2026 result shows Jordan Love injured, absent from a Week 5 report, or replaced. A Sept",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Geno Smith",
+   "team": "NYJ",
+   "pos": "QB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Breece Hall, Adonai Mitchell did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Geno Smith",
+   "team": "NYJ",
+   "pos": "QB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] Geno Smith is the starter (902 yds, 72.7%, 5 TD per NFL.com). W4 loss at CHI: 8/15, 119 yd",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Kyler Murray",
+   "team": "MIN",
+   "pos": "QB",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_REGIME_CHANGE",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "QB identity sets the QB himself (chart) but not team volume/shares; the QB-conditioned candidate FAILED its bar (1 of 3); dropbacks preregistered prospectively (QBCTX-DB1)"
+  },
+  {
+   "player": "Kyler Murray",
+   "team": "MIN",
+   "pos": "QB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Jordan Addison did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Kyler Murray",
+   "team": "MIN",
+   "pos": "QB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] Kyler Murray is expected to start Week 5; he is not on the Week 5 injury report. QB by wee",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Ashton Jeanty",
+   "team": "LV",
+   "pos": "RB",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 1.0)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Ashton Jeanty",
+   "team": "LV",
+   "pos": "RB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] Wed/Thu: TE Brock Bowers (knee) LP/FP; RB Ashton Jeanty (ankle) FP/LP (a Thursday downgrad",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Kirk Cousins",
+   "team": "LV",
+   "pos": "QB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] Kirk Cousins is the starter; Kubiak named him over No. 1 pick Fernando Mendoza in August. ",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Garrett Wilson",
+   "team": "NYJ",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Breece Hall, Adonai Mitchell did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Garrett Wilson",
+   "team": "NYJ",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] RB Breece Hall (quad), WR Adonai Mitchell, G Dylan Parham, LB Kiko (Francisco) Mauigoa: DN",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Drake Maye",
+   "team": "NE",
+   "pos": "QB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Mack Hollins did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Drake Maye",
+   "team": "NE",
+   "pos": "QB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] Drake Maye (right shoulder, 'dinged' in the W3 35-6 loss to JAX) had no designation in W4 ",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Jameis Winston",
+   "team": "NYG",
+   "pos": "QB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Najee Harris, Malik Nabers did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Jameis Winston",
+   "team": "NYG",
+   "pos": "QB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] Jameis Winston is the starter; Harbaugh: 'He'll be the starter.' Jaxson Dart started W1 an",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Brock Bowers",
+   "team": "LV",
+   "pos": "TE",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] Wed/Thu: TE Brock Bowers (knee) LP/FP; RB Ashton Jeanty (ankle) FP/LP (a Thursday downgrad",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Daniel Jones",
+   "team": "IND",
+   "pos": "QB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Ashton Dulin did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Daniel Jones",
+   "team": "IND",
+   "pos": "QB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] Daniel Jones is the expected starter: he gave the Week 5 press conference and is not on th",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Justin Jefferson",
+   "team": "MIN",
+   "pos": "WR",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 1.0)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Justin Jefferson",
+   "team": "MIN",
+   "pos": "WR",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_REGIME_CHANGE",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "QB identity sets the QB himself (chart) but not team volume/shares; the QB-conditioned candidate FAILED its bar (1 of 3); dropbacks preregistered prospectively (QBCTX-DB1)"
+  },
+  {
+   "player": "Justin Jefferson",
+   "team": "MIN",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Jordan Addison did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Justin Jefferson",
+   "team": "MIN",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFLICTING] WR Justin Jefferson (right ankle sprain): limited Wednesday; practicing for the first time",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Harold Fannin Jr.",
+   "team": "CLE",
+   "pos": "TE",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Tylan Wallace did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Harold Fannin Jr.",
+   "team": "CLE",
+   "pos": "TE",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] DNP Wed and Thu: DT Mason Graham (knee/ankle), DT Mike Hall Jr. (ankle). DT Kalia Davis (q",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Cam Skattebo",
+   "team": "NYG",
+   "pos": "RB",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 1.0)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Cam Skattebo",
+   "team": "NYG",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Najee Harris, Malik Nabers did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Cam Skattebo",
+   "team": "NYG",
+   "pos": "RB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFLICTING] RB Cam Skattebo (shoulder) limited Wednesday in a no-contact jersey. Thursday: 'shed' the ",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Kyle Monangai",
+   "team": "CHI",
+   "pos": "RB",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Did Not Participate In Practice; no designation yet, projection assumes he plays (p_plays 0.63)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Kyle Monangai",
+   "team": "CHI",
+   "pos": "RB",
+   "flag": "LISTED_STARTER_NOT_CONSUMED",
+   "detail": "LISTED_STARTER_NOT_CONSUMED: schedule capture lists Tyson Bagent; engine starts Caleb Williams",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "the nflverse schedule QB field is a listing, not an announcement, and was contradicted by play-by-play in week 4 (Keenum listed, Bagent threw every pass); the starter itself is resolved by the QB verification board, not by this field"
+  },
+  {
+   "player": "Kyle Monangai",
+   "team": "CHI",
+   "pos": "RB",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_REGIME_CHANGE; THIN_STARTER_EVIDENCE; QB_CHURN",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "starter identity: every secondary source and the official practice report point to Bagent; the engine starts Williams from a stale chart capture. Consumed through the starter path once official (designation) or owner-relayed; scenario forecast until then"
+  },
+  {
+   "player": "Kyle Monangai",
+   "team": "CHI",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Caleb Williams, D'Andre Swift did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Kyle Monangai",
+   "team": "CHI",
+   "pos": "RB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] RB Kyle Monangai (thumb/toe): DNP Wednesday and Thursday. ESPN's Jeremy Fowler reports tur; [CONFIRMED] W4: Monangai had 30 carries, 146 yds, 2 TD; Swift had 15 carries, 58 yds. Johnson called S",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Cam Ward",
+   "team": "TEN",
+   "pos": "QB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Tony Pollard did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Cam Ward",
+   "team": "TEN",
+   "pos": "QB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] Cam Ward started W4 at BAL (20/31, 222 yds, 1 TD, 1 INT). I found no Week 5 injury listing",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Dalton Schultz",
+   "team": "HOU",
+   "pos": "TE",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] WR Nico Collins: limited Wednesday (NIR rest). He missed 2 games with a hamstring and retu",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Terry McLaurin",
+   "team": "WAS",
+   "pos": "WR",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Did Not Participate In Practice; no designation yet, projection assumes he plays (p_plays 1.0)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Terry McLaurin",
+   "team": "WAS",
+   "pos": "WR",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_DIFFERS_FROM_LAST_GAME; QB_CHURN",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "QB identity sets the QB himself (chart) but not team volume/shares; the QB-conditioned candidate FAILED its bar (1 of 3); dropbacks preregistered prospectively (QBCTX-DB1)"
+  },
+  {
+   "player": "Terry McLaurin",
+   "team": "WAS",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Marcus Mariota, Stefon Diggs did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Terry McLaurin",
+   "team": "WAS",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] WR Terry McLaurin (hamstring): DNP Wednesday and Thursday; missed W4.",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Malik Nabers",
+   "team": "NYG",
+   "pos": "WR",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 1.0)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Malik Nabers",
+   "team": "NYG",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Najee Harris did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Malik Nabers",
+   "team": "NYG",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] WR Malik Nabers (knee soreness) DNP Wednesday, limited Thursday; he says 'We'll see.' LT A",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Tyson Bagent",
+   "team": "CHI",
+   "pos": "QB",
+   "flag": "LISTED_STARTER_NOT_CONSUMED",
+   "detail": "LISTED_STARTER_NOT_CONSUMED: schedule capture lists Tyson Bagent; engine starts Caleb Williams",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "the nflverse schedule QB field is a listing, not an announcement, and was contradicted by play-by-play in week 4 (Keenum listed, Bagent threw every pass); the starter itself is resolved by the QB verification board, not by this field"
+  },
+  {
+   "player": "Tyson Bagent",
+   "team": "CHI",
+   "pos": "QB",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_REGIME_CHANGE; THIN_STARTER_EVIDENCE; QB_CHURN",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "starter identity: every secondary source and the official practice report point to Bagent; the engine starts Williams from a stale chart capture. Consumed through the starter path once official (designation) or owner-relayed; scenario forecast until then"
+  },
+  {
+   "player": "Tyson Bagent",
+   "team": "CHI",
+   "pos": "QB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Caleb Williams, D'Andre Swift, Kyle Monangai did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Tyson Bagent",
+   "team": "CHI",
+   "pos": "QB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] Tyson Bagent will start Week 5 at GB. Ben Johnson on ESPN 1000 Monday: 'Tyson will be the ; [REPORTED] QB by week: Williams started W1 and W2 and was hurt in the W2 9-3 loss to MIN. Case Keenum",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Braelon Allen",
+   "team": "NYJ",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Breece Hall, Adonai Mitchell did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Tucker Kraft",
+   "team": "GB",
+   "pos": "TE",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Chris Brooks did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Keenan Allen",
+   "team": "IND",
+   "pos": "WR",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 0.86)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Keenan Allen",
+   "team": "IND",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Ashton Dulin did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Keenan Allen",
+   "team": "IND",
+   "pos": "WR",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history ALPHA, assigned SECONDARY",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Keenan Allen",
+   "team": "IND",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] WR Keenan Allen (groin/rest): limited; missed W4. WR Alec Pierce on IR. WR Ashton Dulin (h; [REPORTED] With Pierce on IR, Allen is slotted as the top WR. The Colts are on a rest disadvantage af",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "TreVeyon Henderson",
+   "team": "NE",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Mack Hollins did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Rico Dowdle",
+   "team": "PIT",
+   "pos": "RB",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 0.63)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Rico Dowdle",
+   "team": "PIT",
+   "pos": "RB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] RB Rico Dowdle (toe; dislocated W2, hasn't played since) limited. CB Jamel Dean (ankle) DN",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Tyler Warren",
+   "team": "IND",
+   "pos": "TE",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Ashton Dulin did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Luther Burden III",
+   "team": "CHI",
+   "pos": "WR",
+   "flag": "LISTED_STARTER_NOT_CONSUMED",
+   "detail": "LISTED_STARTER_NOT_CONSUMED: schedule capture lists Tyson Bagent; engine starts Caleb Williams",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "the nflverse schedule QB field is a listing, not an announcement, and was contradicted by play-by-play in week 4 (Keenum listed, Bagent threw every pass); the starter itself is resolved by the QB verification board, not by this field"
+  },
+  {
+   "player": "Luther Burden III",
+   "team": "CHI",
+   "pos": "WR",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_REGIME_CHANGE; THIN_STARTER_EVIDENCE; QB_CHURN",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "starter identity: every secondary source and the official practice report point to Bagent; the engine starts Williams from a stale chart capture. Consumed through the starter path once official (designation) or owner-relayed; scenario forecast until then"
+  },
+  {
+   "player": "Luther Burden III",
+   "team": "CHI",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Caleb Williams, D'Andre Swift, Kyle Monangai did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Alvin Kamara",
+   "team": "NO",
+   "pos": "RB",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 1.0)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Alvin Kamara",
+   "team": "NO",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Barion Brown, Chris Olave did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Alvin Kamara",
+   "team": "NO",
+   "pos": "RB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] RB Alvin Kamara (back): DNP Wednesday, limited Thursday. WR Chris Olave: rest day Wednesda",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Denzel Boston",
+   "team": "CLE",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Tylan Wallace did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Isaiah Likely",
+   "team": "NYG",
+   "pos": "TE",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 1.0)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Isaiah Likely",
+   "team": "NYG",
+   "pos": "TE",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Najee Harris, Malik Nabers did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Stefon Diggs",
+   "team": "WAS",
+   "pos": "WR",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Did Not Participate In Practice; no designation yet, projection assumes he plays (p_plays 0.86)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Stefon Diggs",
+   "team": "WAS",
+   "pos": "WR",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_DIFFERS_FROM_LAST_GAME; QB_CHURN",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "QB identity sets the QB himself (chart) but not team volume/shares; the QB-conditioned candidate FAILED its bar (1 of 3); dropbacks preregistered prospectively (QBCTX-DB1)"
+  },
+  {
+   "player": "Stefon Diggs",
+   "team": "WAS",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Marcus Mariota, Terry McLaurin did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Stefon Diggs",
+   "team": "WAS",
+   "pos": "WR",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history ALPHA, assigned SECONDARY",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Stefon Diggs",
+   "team": "WAS",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFLICTING] WR Stefon Diggs (hamstring): official report DNP both days vs ESPN 'returned to practice T",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Colston Loveland",
+   "team": "CHI",
+   "pos": "TE",
+   "flag": "LISTED_STARTER_NOT_CONSUMED",
+   "detail": "LISTED_STARTER_NOT_CONSUMED: schedule capture lists Tyson Bagent; engine starts Caleb Williams",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "the nflverse schedule QB field is a listing, not an announcement, and was contradicted by play-by-play in week 4 (Keenum listed, Bagent threw every pass); the starter itself is resolved by the QB verification board, not by this field"
+  },
+  {
+   "player": "Colston Loveland",
+   "team": "CHI",
+   "pos": "TE",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_REGIME_CHANGE; THIN_STARTER_EVIDENCE; QB_CHURN",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "starter identity: every secondary source and the official practice report point to Bagent; the engine starts Williams from a stale chart capture. Consumed through the starter path once official (designation) or owner-relayed; scenario forecast until then"
+  },
+  {
+   "player": "Colston Loveland",
+   "team": "CHI",
+   "pos": "TE",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Caleb Williams, D'Andre Swift, Kyle Monangai did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Juwan Johnson",
+   "team": "NO",
+   "pos": "TE",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Alvin Kamara, Barion Brown, Chris Olave did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Devaughn Vele",
+   "team": "NO",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Alvin Kamara, Barion Brown, Chris Olave did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Carnell Tate",
+   "team": "TEN",
+   "pos": "WR",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 1.0)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Carnell Tate",
+   "team": "TEN",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Tony Pollard did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Carnell Tate",
+   "team": "TEN",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] RB Tony Pollard (foot) DNP to FP. Rookie WR Carnell Tate (back) added Thursday as limited.",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Rome Odunze",
+   "team": "CHI",
+   "pos": "WR",
+   "flag": "LISTED_STARTER_NOT_CONSUMED",
+   "detail": "LISTED_STARTER_NOT_CONSUMED: schedule capture lists Tyson Bagent; engine starts Caleb Williams",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "the nflverse schedule QB field is a listing, not an announcement, and was contradicted by play-by-play in week 4 (Keenum listed, Bagent threw every pass); the starter itself is resolved by the QB verification board, not by this field"
+  },
+  {
+   "player": "Rome Odunze",
+   "team": "CHI",
+   "pos": "WR",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_REGIME_CHANGE; THIN_STARTER_EVIDENCE; QB_CHURN",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "starter identity: every secondary source and the official practice report point to Bagent; the engine starts Williams from a stale chart capture. Consumed through the starter path once official (designation) or owner-relayed; scenario forecast until then"
+  },
+  {
+   "player": "Rome Odunze",
+   "team": "CHI",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Caleb Williams, D'Andre Swift, Kyle Monangai did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Rhamondre Stevenson",
+   "team": "NE",
+   "pos": "RB",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 1.0)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Rhamondre Stevenson",
+   "team": "NE",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Mack Hollins did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Rhamondre Stevenson",
+   "team": "NE",
+   "pos": "RB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] DNP Wednesday: WR Mack Hollins (calf), CB Christian Gonzalez (shoulder; 5 straight missed ",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Wan'Dale Robinson",
+   "team": "TEN",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Tony Pollard did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Wan'Dale Robinson",
+   "team": "TEN",
+   "pos": "WR",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history ALPHA, assigned SECONDARY",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Wan'Dale Robinson",
+   "team": "TEN",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] RB Tony Pollard (foot) DNP to FP. Rookie WR Carnell Tate (back) added Thursday as limited.",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Kenyon Sadiq",
+   "team": "NYJ",
+   "pos": "TE",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Breece Hall, Adonai Mitchell did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Josh Downs",
+   "team": "IND",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Ashton Dulin did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Tony Pollard",
+   "team": "TEN",
+   "pos": "RB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] RB Tony Pollard (foot) DNP to FP. Rookie WR Carnell Tate (back) added Thursday as limited.",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "MarShawn Lloyd",
+   "team": "GB",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Chris Brooks did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Quinshon Judkins",
+   "team": "CLE",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Tylan Wallace did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Quinshon Judkins",
+   "team": "CLE",
+   "pos": "RB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] DNP Wed and Thu: DT Mason Graham (knee/ankle), DT Mike Hall Jr. (ankle). DT Kalia Davis (q",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "KC Concepcion",
+   "team": "CLE",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Tylan Wallace did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Caleb Douglas",
+   "team": "MIA",
+   "pos": "WR",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Did Not Participate In Practice; no designation yet, projection assumes he plays (p_plays 0.86)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Caleb Douglas",
+   "team": "MIA",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] Wednesday: DNP Rob Beal Jr. (hamstring), WR Caleb Douglas (ankle), CB Reese/Reece Taylor (; [REPORTED] Thursday: RB Jaylen Wright (toe) limited; five Dolphins DNP. Rookie WR Caleb Douglas, who ",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Mack Hollins",
+   "team": "NE",
+   "pos": "WR",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Did Not Participate In Practice; no designation yet, projection assumes he plays (p_plays 0.59)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Mack Hollins",
+   "team": "NE",
+   "pos": "WR",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history ALPHA, assigned ROTATIONAL",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Mack Hollins",
+   "team": "NE",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] DNP Wednesday: WR Mack Hollins (calf), CB Christian Gonzalez (shoulder; 5 straight missed ",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Mack Hollins",
+   "team": "NE",
+   "pos": "WR",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 4 of 4 weeks, P(plays) 0.587 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Roman Wilson",
+   "team": "PIT",
+   "pos": "WR",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 4 of 4 weeks, P(plays) 0.587 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Romeo Doubs",
+   "team": "NE",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Mack Hollins did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Hunter Henry",
+   "team": "NE",
+   "pos": "TE",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Mack Hollins did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Jacory Croskey-Merritt",
+   "team": "WAS",
+   "pos": "RB",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 1.0)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Jacory Croskey-Merritt",
+   "team": "WAS",
+   "pos": "RB",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_DIFFERS_FROM_LAST_GAME; QB_CHURN",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "QB identity sets the QB himself (chart) but not team volume/shares; the QB-conditioned candidate FAILED its bar (1 of 3); dropbacks preregistered prospectively (QBCTX-DB1)"
+  },
+  {
+   "player": "Jacory Croskey-Merritt",
+   "team": "WAS",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Marcus Mariota, Stefon Diggs, Terry McLaurin did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Rachaad White",
+   "team": "WAS",
+   "pos": "RB",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 0.63)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Rachaad White",
+   "team": "WAS",
+   "pos": "RB",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_DIFFERS_FROM_LAST_GAME; QB_CHURN",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "QB identity sets the QB himself (chart) but not team volume/shares; the QB-conditioned candidate FAILED its bar (1 of 3); dropbacks preregistered prospectively (QBCTX-DB1)"
+  },
+  {
+   "player": "Rachaad White",
+   "team": "WAS",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Marcus Mariota, Stefon Diggs, Terry McLaurin did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Mike Gesicki",
+   "team": "CIN",
+   "pos": "TE",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Ja'Marr Chase, Tee Higgins did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Jerry Jeudy",
+   "team": "CLE",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Tylan Wallace did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Jerry Jeudy",
+   "team": "CLE",
+   "pos": "WR",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history ALPHA, assigned ROTATIONAL",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Jerry Jeudy",
+   "team": "CLE",
+   "pos": "WR",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 3 of 4 weeks, P(plays) 0.587 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Matthew Golden",
+   "team": "GB",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Chris Brooks did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Jauan Jennings",
+   "team": "MIN",
+   "pos": "WR",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_REGIME_CHANGE",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "QB identity sets the QB himself (chart) but not team volume/shares; the QB-conditioned candidate FAILED its bar (1 of 3); dropbacks preregistered prospectively (QBCTX-DB1)"
+  },
+  {
+   "player": "Jauan Jennings",
+   "team": "MIN",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Jordan Addison did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Jauan Jennings",
+   "team": "MIN",
+   "pos": "WR",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history ALPHA, assigned ROTATIONAL",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Jauan Jennings",
+   "team": "MIN",
+   "pos": "WR",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 3 of 4 weeks, P(plays) 0.587 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Theo Johnson",
+   "team": "NYG",
+   "pos": "TE",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Najee Harris, Malik Nabers did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Theo Johnson",
+   "team": "NYG",
+   "pos": "TE",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history ALPHA, assigned SECONDARY",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Theo Johnson",
+   "team": "NYG",
+   "pos": "TE",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 3 of 4 weeks, P(plays) 0.579 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Mason Taylor",
+   "team": "NYJ",
+   "pos": "TE",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Breece Hall, Adonai Mitchell did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Mason Taylor",
+   "team": "NYJ",
+   "pos": "TE",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history ALPHA, assigned ROTATIONAL",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Malik McClain",
+   "team": "NYJ",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Breece Hall, Adonai Mitchell did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Malik Washington",
+   "team": "MIA",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Caleb Douglas did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Malik Washington",
+   "team": "MIA",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] Oct 5: RB Carlos Washington waived. Oct 7: DT Kenneth Grant designated to return from IR. ",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Jordan Addison",
+   "team": "MIN",
+   "pos": "WR",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 0.86)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Jordan Addison",
+   "team": "MIN",
+   "pos": "WR",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_REGIME_CHANGE",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "QB identity sets the QB himself (chart) but not team volume/shares; the QB-conditioned candidate FAILED its bar (1 of 3); dropbacks preregistered prospectively (QBCTX-DB1)"
+  },
+  {
+   "player": "Jordan Addison",
+   "team": "MIN",
+   "pos": "WR",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history ALPHA, assigned SECONDARY",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Jordan Addison",
+   "team": "MIN",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] WR Jordan Addison (hamstring) DNP Wednesday, limited Thursday. LT Christian Darrisaw (conc",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Greg Dulcich",
+   "team": "MIA",
+   "pos": "TE",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Caleb Douglas did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Kalif Raymond",
+   "team": "CHI",
+   "pos": "WR",
+   "flag": "LISTED_STARTER_NOT_CONSUMED",
+   "detail": "LISTED_STARTER_NOT_CONSUMED: schedule capture lists Tyson Bagent; engine starts Caleb Williams",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "the nflverse schedule QB field is a listing, not an announcement, and was contradicted by play-by-play in week 4 (Keenum listed, Bagent threw every pass); the starter itself is resolved by the QB verification board, not by this field"
+  },
+  {
+   "player": "Kalif Raymond",
+   "team": "CHI",
+   "pos": "WR",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_REGIME_CHANGE; THIN_STARTER_EVIDENCE; QB_CHURN",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "starter identity: every secondary source and the official practice report point to Bagent; the engine starts Williams from a stale chart capture. Consumed through the starter path once official (designation) or owner-relayed; scenario forecast until then"
+  },
+  {
+   "player": "Kalif Raymond",
+   "team": "CHI",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Caleb Williams, D'Andre Swift, Kyle Monangai did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Kalif Raymond",
+   "team": "CHI",
+   "pos": "WR",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 4 of 4 weeks, P(plays) 0.587 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Giants",
+   "team": "NYG",
+   "pos": "DST",
+   "flag": "OPPONENT_QB_NOT_CONSUMED",
+   "detail": "OPPONENT_QB_NOT_CONSUMED: QB_DIFFERS_FROM_LAST_GAME; QB_CHURN",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the DST model does not condition on the opposing QB (D-02); no validated effect size"
+  },
+  {
+   "player": "T.J. Hockenson",
+   "team": "MIN",
+   "pos": "TE",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_REGIME_CHANGE",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "QB identity sets the QB himself (chart) but not team volume/shares; the QB-conditioned candidate FAILED its bar (1 of 3); dropbacks preregistered prospectively (QBCTX-DB1)"
+  },
+  {
+   "player": "T.J. Hockenson",
+   "team": "MIN",
+   "pos": "TE",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Jordan Addison did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Malachi Fields",
+   "team": "NYG",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Najee Harris, Malik Nabers did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Darnell Washington",
+   "team": "PIT",
+   "pos": "TE",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] Oct 6: CB Terrell Smith signed off Washington's practice squad. Oct 8: S DeShon Elliott de",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Darnell Washington",
+   "team": "PIT",
+   "pos": "TE",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 4 of 4 weeks, P(plays) 0.579 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Isaiah Williams",
+   "team": "NYJ",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Breece Hall, Adonai Mitchell did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Isaiah Williams",
+   "team": "NYJ",
+   "pos": "WR",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history PRIMARY, assigned ROTATIONAL",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Isaiah Williams",
+   "team": "NYJ",
+   "pos": "WR",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 4 of 4 weeks, P(plays) 0.587 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Michael Mayer",
+   "team": "LV",
+   "pos": "TE",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history ALPHA, assigned SECONDARY",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Michael Mayer",
+   "team": "LV",
+   "pos": "TE",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 4 of 4 weeks, P(plays) 0.579 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Antonio Williams",
+   "team": "WAS",
+   "pos": "WR",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_DIFFERS_FROM_LAST_GAME; QB_CHURN",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "QB identity sets the QB himself (chart) but not team volume/shares; the QB-conditioned candidate FAILED its bar (1 of 3); dropbacks preregistered prospectively (QBCTX-DB1)"
+  },
+  {
+   "player": "Antonio Williams",
+   "team": "WAS",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Marcus Mariota, Stefon Diggs, Terry McLaurin did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Antonio Williams",
+   "team": "WAS",
+   "pos": "WR",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 4 of 4 weeks, P(plays) 0.587 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Kevin Austin Jr.",
+   "team": "NO",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Alvin Kamara, Barion Brown, Chris Olave did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Kevin Austin Jr.",
+   "team": "NO",
+   "pos": "WR",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history PRIMARY, assigned FRINGE",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Darnell Mooney",
+   "team": "NYG",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Najee Harris, Malik Nabers did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Darnell Mooney",
+   "team": "NYG",
+   "pos": "WR",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history ALPHA, assigned ROTATIONAL",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Darnell Mooney",
+   "team": "NYG",
+   "pos": "WR",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 4 of 4 weeks, P(plays) 0.587 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Chigoziem Okonkwo",
+   "team": "WAS",
+   "pos": "TE",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 1.0)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Chigoziem Okonkwo",
+   "team": "WAS",
+   "pos": "TE",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_DIFFERS_FROM_LAST_GAME; QB_CHURN",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "QB identity sets the QB himself (chart) but not team volume/shares; the QB-conditioned candidate FAILED its bar (1 of 3); dropbacks preregistered prospectively (QBCTX-DB1)"
+  },
+  {
+   "player": "Chigoziem Okonkwo",
+   "team": "WAS",
+   "pos": "TE",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Marcus Mariota, Stefon Diggs, Terry McLaurin did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Tyjae Spears",
+   "team": "TEN",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Tony Pollard did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Kayshon Boutte",
+   "team": "HOU",
+   "pos": "WR",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history PRIMARY, assigned ROTATIONAL",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Kayshon Boutte",
+   "team": "HOU",
+   "pos": "WR",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 4 of 4 weeks, P(plays) 0.587 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Mike Washington Jr.",
+   "team": "LV",
+   "pos": "RB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] Wed/Thu: TE Brock Bowers (knee) LP/FP; RB Ashton Jeanty (ankle) FP/LP (a Thursday downgrad; [CONFIRMED] WR Dont'e Thornton Jr. designated to return from IR (after 4 weeks on IR).",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Dohnte Meyers",
+   "team": "CIN",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Ja'Marr Chase, Tee Higgins did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Dohnte Meyers",
+   "team": "CIN",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] WRs Colbie Young and Andrei Iosivas are also out injured; Dohnte Meyers and Mitchell Tinsl",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Dohnte Meyers",
+   "team": "CIN",
+   "pos": "WR",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 4 of 4 weeks, P(plays) 0.266 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Germie Bernard",
+   "team": "PIT",
+   "pos": "WR",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 3 of 4 weeks, P(plays) 0.266 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Jaylin Noel",
+   "team": "HOU",
+   "pos": "WR",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history PRIMARY, assigned FRINGE",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Jaylin Noel",
+   "team": "HOU",
+   "pos": "WR",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 4 of 4 weeks, P(plays) 0.077 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Jalen Nailor",
+   "team": "LV",
+   "pos": "WR",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Did Not Participate In Practice; no designation yet, projection assumes he plays (p_plays 0.86)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Jalen Nailor",
+   "team": "LV",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] Wed/Thu: TE Brock Bowers (knee) LP/FP; RB Ashton Jeanty (ankle) FP/LP (a Thursday downgrad",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Ollie Gordon II",
+   "team": "MIA",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Caleb Douglas did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Ollie Gordon II",
+   "team": "MIA",
+   "pos": "RB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] De'Von Achane is out for the season (torn ACL, W3 vs KC). Ollie Gordon II took over in W4 ",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "DJ Herman",
+   "team": "MIA",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Caleb Douglas did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Elic Ayomanor",
+   "team": "TEN",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Tony Pollard did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Elic Ayomanor",
+   "team": "TEN",
+   "pos": "WR",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history ALPHA, assigned ROTATIONAL",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Elic Ayomanor",
+   "team": "TEN",
+   "pos": "WR",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 4 of 4 weeks, P(plays) 0.587 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Cole Kmet",
+   "team": "CHI",
+   "pos": "TE",
+   "flag": "LISTED_STARTER_NOT_CONSUMED",
+   "detail": "LISTED_STARTER_NOT_CONSUMED: schedule capture lists Tyson Bagent; engine starts Caleb Williams",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "the nflverse schedule QB field is a listing, not an announcement, and was contradicted by play-by-play in week 4 (Keenum listed, Bagent threw every pass); the starter itself is resolved by the QB verification board, not by this field"
+  },
+  {
+   "player": "Cole Kmet",
+   "team": "CHI",
+   "pos": "TE",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_REGIME_CHANGE; THIN_STARTER_EVIDENCE; QB_CHURN",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "starter identity: every secondary source and the official practice report point to Bagent; the engine starts Williams from a stale chart capture. Consumed through the starter path once official (designation) or owner-relayed; scenario forecast until then"
+  },
+  {
+   "player": "Cole Kmet",
+   "team": "CHI",
+   "pos": "TE",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Caleb Williams, D'Andre Swift, Kyle Monangai did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Cole Kmet",
+   "team": "CHI",
+   "pos": "TE",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history ALPHA, assigned ROTATIONAL",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Cole Kmet",
+   "team": "CHI",
+   "pos": "TE",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 4 of 4 weeks, P(plays) 0.12 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Saints",
+   "team": "NO",
+   "pos": "DST",
+   "flag": "OPPONENT_QB_NOT_CONSUMED",
+   "detail": "OPPONENT_QB_NOT_CONSUMED: QB_REGIME_CHANGE",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the DST model does not condition on the opposing QB (D-02); no validated effect size"
+  },
+  {
+   "player": "Raheim Sanders",
+   "team": "CLE",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Tylan Wallace did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Raheim Sanders",
+   "team": "CLE",
+   "pos": "RB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] Deshaun Watson is the expected starter. He won the job over Shedeur Sanders in August and ",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Treylon Burks",
+   "team": "WAS",
+   "pos": "WR",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_DIFFERS_FROM_LAST_GAME; QB_CHURN",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "QB identity sets the QB himself (chart) but not team volume/shares; the QB-conditioned candidate FAILED its bar (1 of 3); dropbacks preregistered prospectively (QBCTX-DB1)"
+  },
+  {
+   "player": "Treylon Burks",
+   "team": "WAS",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Marcus Mariota, Stefon Diggs, Terry McLaurin did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Treylon Burks",
+   "team": "WAS",
+   "pos": "WR",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history SECONDARY, assigned FRINGE",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Treylon Burks",
+   "team": "WAS",
+   "pos": "WR",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 3 of 4 weeks, P(plays) 0.266 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Chris Bell",
+   "team": "MIA",
+   "pos": "WR",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 0.59)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Chris Bell",
+   "team": "MIA",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Caleb Douglas did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Chris Bell",
+   "team": "MIA",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] Wednesday: DNP Rob Beal Jr. (hamstring), WR Caleb Douglas (ankle), CB Reese/Reece Taylor (",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Chris Bell",
+   "team": "MIA",
+   "pos": "WR",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 4 of 4 weeks, P(plays) 0.587 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Noah Fant",
+   "team": "NO",
+   "pos": "TE",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 0.58)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Noah Fant",
+   "team": "NO",
+   "pos": "TE",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Alvin Kamara, Barion Brown, Chris Olave did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Noah Fant",
+   "team": "NO",
+   "pos": "TE",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history ALPHA, assigned SECONDARY",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Foster Moreau",
+   "team": "HOU",
+   "pos": "TE",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 4 of 4 weeks, P(plays) 0.579 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Jonnu Smith",
+   "team": "GB",
+   "pos": "TE",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Chris Brooks did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Jonnu Smith",
+   "team": "GB",
+   "pos": "TE",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history ALPHA, assigned SECONDARY",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Jonnu Smith",
+   "team": "GB",
+   "pos": "TE",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 3 of 4 weeks, P(plays) 0.579 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Najee Harris",
+   "team": "NYG",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Malik Nabers did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Najee Harris",
+   "team": "NYG",
+   "pos": "RB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFLICTING] RB Cam Skattebo (shoulder) limited Wednesday in a no-contact jersey. Thursday: 'shed' the ",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Gunnar Helm",
+   "team": "TEN",
+   "pos": "TE",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 1.0)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Gunnar Helm",
+   "team": "TEN",
+   "pos": "TE",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Tony Pollard did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Demario Douglas",
+   "team": "NE",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Mack Hollins did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Jaylen Wright",
+   "team": "MIA",
+   "pos": "RB",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 0.63)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Jaylen Wright",
+   "team": "MIA",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Caleb Douglas did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Jaylen Wright",
+   "team": "MIA",
+   "pos": "RB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] Thursday: RB Jaylen Wright (toe) limited; five Dolphins DNP. Rookie WR Caleb Douglas, who ; [REPORTED] Oct 5: RB Carlos Washington waived. Oct 7: DT Kenneth Grant designated to return from IR. ",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Kendre Miller",
+   "team": "NO",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Alvin Kamara, Barion Brown, Chris Olave did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Ben Sinnott",
+   "team": "WAS",
+   "pos": "TE",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_DIFFERS_FROM_LAST_GAME; QB_CHURN",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "QB identity sets the QB himself (chart) but not team volume/shares; the QB-conditioned candidate FAILED its bar (1 of 3); dropbacks preregistered prospectively (QBCTX-DB1)"
+  },
+  {
+   "player": "Ben Sinnott",
+   "team": "WAS",
+   "pos": "TE",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Marcus Mariota, Stefon Diggs, Terry McLaurin did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Mo Alie-Cox",
+   "team": "IND",
+   "pos": "TE",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Ashton Dulin did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Drew Sample",
+   "team": "CIN",
+   "pos": "TE",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Ja'Marr Chase, Tee Higgins did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Cody White",
+   "team": "LV",
+   "pos": "WR",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 0.59)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Cody White",
+   "team": "LV",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] Wed/Thu: TE Brock Bowers (knee) LP/FP; RB Ashton Jeanty (ankle) FP/LP (a Thursday downgrad",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Cody White",
+   "team": "LV",
+   "pos": "WR",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 4 of 4 weeks, P(plays) 0.587 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Samaje Perine",
+   "team": "CIN",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Ja'Marr Chase, Tee Higgins did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Efton Chism III",
+   "team": "NE",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Mack Hollins did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Efton Chism III",
+   "team": "NE",
+   "pos": "WR",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history SECONDARY, assigned FRINGE",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Efton Chism III",
+   "team": "NE",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] DNP Wednesday: WR Mack Hollins (calf), CB Christian Gonzalez (shoulder; 5 straight missed ",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Efton Chism III",
+   "team": "NE",
+   "pos": "WR",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 3 of 4 weeks, P(plays) 0.266 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Bryce Lance",
+   "team": "NO",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Alvin Kamara, Barion Brown, Chris Olave did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Bryce Lance",
+   "team": "NO",
+   "pos": "WR",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 4 of 4 weeks, P(plays) 0.587 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Isaiah Davis",
+   "team": "NYJ",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Breece Hall, Adonai Mitchell did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Isaiah Bond",
+   "team": "CLE",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Tylan Wallace did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Isaiah Bond",
+   "team": "CLE",
+   "pos": "WR",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history PRIMARY, assigned FRINGE",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Will Kacmarek",
+   "team": "MIA",
+   "pos": "TE",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Caleb Douglas did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Will Kacmarek",
+   "team": "MIA",
+   "pos": "TE",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 3 of 4 weeks, P(plays) 0.579 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Daniel Bellinger",
+   "team": "TEN",
+   "pos": "TE",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Tony Pollard did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Daniel Bellinger",
+   "team": "TEN",
+   "pos": "TE",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 4 of 4 weeks, P(plays) 0.579 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Ashton Dulin",
+   "team": "IND",
+   "pos": "WR",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Did Not Participate In Practice; no designation yet, projection assumes he plays (p_plays 0.27)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Ashton Dulin",
+   "team": "IND",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] WR Keenan Allen (groin/rest): limited; missed W4. WR Alec Pierce on IR. WR Ashton Dulin (h",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Packers",
+   "team": "GB",
+   "pos": "DST",
+   "flag": "OPPONENT_QB_NOT_CONSUMED",
+   "detail": "OPPONENT_QB_NOT_CONSUMED: QB_REGIME_CHANGE; THIN_STARTER_EVIDENCE; QB_CHURN",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the DST model does not condition on the opposing QB (D-02); no validated effect size"
+  },
+  {
+   "player": "Calvin Ridley",
+   "team": "TEN",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Tony Pollard did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Calvin Ridley",
+   "team": "TEN",
+   "pos": "WR",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history ALPHA, assigned FRINGE",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Calvin Ridley",
+   "team": "TEN",
+   "pos": "WR",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 3 of 4 weeks, P(plays) 0.266 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Laquon Treadwell",
+   "team": "IND",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Ashton Dulin did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Laquon Treadwell",
+   "team": "IND",
+   "pos": "WR",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history PRIMARY, assigned ROTATIONAL",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Laquon Treadwell",
+   "team": "IND",
+   "pos": "WR",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 4 of 4 weeks, P(plays) 0.587 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Kaleb Johnson",
+   "team": "GB",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Chris Brooks did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Colbie Young",
+   "team": "CIN",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Ja'Marr Chase, Tee Higgins did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Colbie Young",
+   "team": "CIN",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] WRs Colbie Young and Andrei Iosivas are also out injured; Dohnte Meyers and Mitchell Tinsl",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Skyy Moore",
+   "team": "GB",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Chris Brooks did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Skyy Moore",
+   "team": "GB",
+   "pos": "WR",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 4 of 4 weeks, P(plays) 0.587 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Ben Skowronek",
+   "team": "PIT",
+   "pos": "WR",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history PRIMARY, assigned FRINGE",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Ben Skowronek",
+   "team": "PIT",
+   "pos": "WR",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 3 of 4 weeks, P(plays) 0.077 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Dareke Young",
+   "team": "LV",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] Wed/Thu: TE Brock Bowers (knee) LP/FP; RB Ashton Jeanty (ankle) FP/LP (a Thursday downgrad",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Bo Melton",
+   "team": "GB",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Chris Brooks did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Bo Melton",
+   "team": "GB",
+   "pos": "WR",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 4 of 4 weeks, P(plays) 0.266 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  },
+  {
+   "player": "Seth McGowan",
+   "team": "IND",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Ashton Dulin did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Tai Felton",
+   "team": "MIN",
+   "pos": "WR",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_REGIME_CHANGE",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "QB identity sets the QB himself (chart) but not team volume/shares; the QB-conditioned candidate FAILED its bar (1 of 3); dropbacks preregistered prospectively (QBCTX-DB1)"
+  },
+  {
+   "player": "Tai Felton",
+   "team": "MIN",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Jordan Addison did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "DeeJay Dallas",
+   "team": "MIN",
+   "pos": "RB",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_REGIME_CHANGE",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "QB identity sets the QB himself (chart) but not team volume/shares; the QB-conditioned candidate FAILED its bar (1 of 3); dropbacks preregistered prospectively (QBCTX-DB1)"
+  },
+  {
+   "player": "DeeJay Dallas",
+   "team": "MIN",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Jordan Addison did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Zavion Thomas",
+   "team": "CHI",
+   "pos": "WR",
+   "flag": "LISTED_STARTER_NOT_CONSUMED",
+   "detail": "LISTED_STARTER_NOT_CONSUMED: schedule capture lists Tyson Bagent; engine starts Caleb Williams",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "the nflverse schedule QB field is a listing, not an announcement, and was contradicted by play-by-play in week 4 (Keenum listed, Bagent threw every pass); the starter itself is resolved by the QB verification board, not by this field"
+  },
+  {
+   "player": "Zavion Thomas",
+   "team": "CHI",
+   "pos": "WR",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_REGIME_CHANGE; THIN_STARTER_EVIDENCE; QB_CHURN",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "starter identity: every secondary source and the official practice report point to Bagent; the engine starts Williams from a stale chart capture. Consumed through the starter path once official (designation) or owner-relayed; scenario forecast until then"
+  },
+  {
+   "player": "Zavion Thomas",
+   "team": "CHI",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Caleb Williams, D'Andre Swift, Kyle Monangai did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Charlie Jones",
+   "team": "NYG",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Najee Harris, Malik Nabers did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Charlie Jones",
+   "team": "NYG",
+   "pos": "WR",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history SECONDARY, assigned FRINGE",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Michael Pittman",
+   "team": "PIT",
+   "pos": "WR",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Limited Participation in Practice; no designation yet, projection assumes he plays (p_plays 0.86)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Michael Pittman",
+   "team": "PIT",
+   "pos": "WR",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history ALPHA, assigned SECONDARY",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Michael Pittman",
+   "team": "PIT",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] WR Michael Pittman Jr. (foot): limited Wednesday, DNP Thursday. Mike McCarthy says he aggr",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Breece Hall",
+   "team": "NYJ",
+   "pos": "RB",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Did Not Participate In Practice; no designation yet, projection assumes he plays (p_plays 1.0)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Breece Hall",
+   "team": "NYJ",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Adonai Mitchell did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Breece Hall",
+   "team": "NYJ",
+   "pos": "RB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] RB Breece Hall (quad), WR Adonai Mitchell, G Dylan Parham, LB Kiko (Francisco) Mauigoa: DN",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Adonai Mitchell",
+   "team": "NYJ",
+   "pos": "WR",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Did Not Participate In Practice; no designation yet, projection assumes he plays (p_plays 0.86)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Adonai Mitchell",
+   "team": "NYJ",
+   "pos": "WR",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Breece Hall did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Adonai Mitchell",
+   "team": "NYJ",
+   "pos": "WR",
+   "flag": "ROLE_HISTORY_ABOVE_CEILING",
+   "detail": "ROLE_HISTORY_ABOVE_CEILING: history ALPHA, assigned SECONDARY",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "the engine names the conflict; for WR rank 2/3 it is the position-blind ceiling (50% of 1,890 WR2-weeks realise above SECONDARY). The formation-ceiling candidate (A2) improved 25 oracle replay games but not the real W4 pool: research, preregister"
+  },
+  {
+   "player": "Adonai Mitchell",
+   "team": "NYJ",
+   "pos": "WR",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] RB Breece Hall (quad), WR Adonai Mitchell, G Dylan Parham, LB Kiko (Francisco) Mauigoa: DN",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Caleb Williams",
+   "team": "CHI",
+   "pos": "QB",
+   "flag": "PRACTICE_STATUS_NOT_CONSUMED",
+   "detail": "PRACTICE_STATUS_NOT_CONSUMED: Did Not Participate In Practice; no designation yet, projection assumes he plays (p_plays 1.0)",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "practice participation has no validated mapping to P(plays) or workload; the OFFICIAL designation it precedes IS consumed (OUT moves volume) once captured Friday (W5-G14 capture lag)"
+  },
+  {
+   "player": "Caleb Williams",
+   "team": "CHI",
+   "pos": "QB",
+   "flag": "LISTED_STARTER_NOT_CONSUMED",
+   "detail": "LISTED_STARTER_NOT_CONSUMED: schedule capture lists Tyson Bagent; engine starts Caleb Williams",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "the nflverse schedule QB field is a listing, not an announcement, and was contradicted by play-by-play in week 4 (Keenum listed, Bagent threw every pass); the starter itself is resolved by the QB verification board, not by this field"
+  },
+  {
+   "player": "Caleb Williams",
+   "team": "CHI",
+   "pos": "QB",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_REGIME_CHANGE; THIN_STARTER_EVIDENCE; QB_CHURN",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "starter identity: every secondary source and the official practice report point to Bagent; the engine starts Williams from a stale chart capture. Consumed through the starter path once official (designation) or owner-relayed; scenario forecast until then"
+  },
+  {
+   "player": "Caleb Williams",
+   "team": "CHI",
+   "pos": "QB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: D'Andre Swift, Kyle Monangai did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Caleb Williams",
+   "team": "CHI",
+   "pos": "QB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [CONFIRMED] Tyson Bagent will start Week 5 at GB. Ben Johnson on ESPN 1000 Monday: 'Tyson will be the ; [REPORTED] QB by week: Williams started W1 and W2 and was hurt in the W2 9-3 loss to MIN. Case Keenum",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Kaytron Allen",
+   "team": "WAS",
+   "pos": "RB",
+   "flag": "QB_REGIME_NOT_CONSUMED",
+   "detail": "QB_REGIME_NOT_CONSUMED: QB_DIFFERS_FROM_LAST_GAME; QB_CHURN",
+   "category": "C3_RESEARCH_REQUIRED",
+   "reason": "QB identity sets the QB himself (chart) but not team volume/shares; the QB-conditioned candidate FAILED its bar (1 of 3); dropbacks preregistered prospectively (QBCTX-DB1)"
+  },
+  {
+   "player": "Kaytron Allen",
+   "team": "WAS",
+   "pos": "RB",
+   "flag": "TEAMMATE_PRACTICE_NOT_CONSUMED",
+   "detail": "TEAMMATE_PRACTICE_NOT_CONSUMED: Marcus Mariota, Stefon Diggs, Terry McLaurin did not practise, undesignated",
+   "category": "C2_REPRESENTED_INDIRECTLY",
+   "reason": "a teammate designated OUT or inactive is redistributed pro rata club-wide by the allocator; before a designation nothing should move"
+  },
+  {
+   "player": "Kaytron Allen",
+   "team": "WAS",
+   "pos": "RB",
+   "flag": "SECONDARY_NEWS_NOT_CONSUMED",
+   "detail": "SECONDARY_NEWS_NOT_CONSUMED: [REPORTED] Oct 6: WR Jaylin Lane placed on IR. Oct 8: RB Kaytron Allen waived.",
+   "category": "C4_UNVERIFIED_SPECULATIVE",
+   "reason": "web supplement: a discovery signal by rule; it moves nothing until an official designation or captured document confirms it"
+  },
+  {
+   "player": "Kaytron Allen",
+   "team": "WAS",
+   "pos": "RB",
+   "flag": "APPEARANCE_HISTORY_NOT_CONSUMED",
+   "detail": "APPEARANCE_HISTORY_NOT_CONSUMED: played 3 of 4 weeks, P(plays) 0.23 from the club-slot table by allocation rank (W5-G16)",
+   "category": "C1_CONFIRMED_SHOULD_CONSUME",
+   "reason": "his own appearance record is stored (observed_2026.weeks_played) but P(plays) comes from a club-slot table by allocation rank: a WR5 who played the prior three weeks appears again 67% of the time (2021-2025) against the table 7.7% (W5-G16). Candidate AP-1 measured on the real W4 pool (-0.116 [-0.274, +0.046]); preregistered, not promoted"
+  }
+ ]
+}

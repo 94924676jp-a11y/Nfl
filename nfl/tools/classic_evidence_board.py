@@ -75,7 +75,7 @@ def load_run(run_dir):
     return st, pj, dr, rs
 
 
-def build(board_dir, run_dir, week, news=None, alt_dir=None):
+def build(board_dir, run_dir, week, news=None, alt_dir=None, min_points=4.0, scenarios=None):
     bd = pathlib.Path(board_dir)
     W = f'WEEK{week}'
     board = json.loads((bd / f'{W}_FULL_PLAYER_RESEARCH_BOARD.json').read_text())
@@ -116,8 +116,13 @@ def build(board_dir, run_dir, week, news=None, alt_dir=None):
     rows_in = [r for r in board['rows'] if r['positive_projection']]
     fc_keys = {_nk(r['player'], r['team']) for r in board['rows']}
     fc_gsis = {(r.get('identity') or {}).get('gsis_id') for r in board['rows']} - {None}
-    extra = [r for r in pj['rows'].values() if r['position'] != 'DST' and (r.get('dk_points') or 0) >= 4
+    extra = [r for r in pj['rows'].values() if r['position'] != 'DST' and (r.get('dk_points') or 0) >= min_points
              and r.get('gsis_id') not in fc_gsis and _nk(r['name'], r['team']) not in fc_keys]
+    scen = {}
+    for label, sdir in (scenarios or {}).items():
+        sp = json.loads((pathlib.Path(sdir) / 'PROJ.json').read_text())['rows']
+        scen[label] = {r.get('gsis_id') or _nk(r['name'], r['team']): r for r in sp.values()}
+    n_prior_weeks = int(week) - 1
     out = []
 
     def one(name, team, pos, b=None, gsis=None):
@@ -153,7 +158,9 @@ def build(board_dir, run_dir, week, news=None, alt_dir=None):
         if pos in SKILL and mates:
             flags.append(f"TEAMMATE_PRACTICE_NOT_CONSUMED: {', '.join(mates[:5])} did not practise, undesignated")
         rnk = sv.get('depth_rank')
-        if pos in SKILL and isinstance(rnk, int) and rank_ct[(team, pos, rnk)] > 1:
+        tie = pos in SKILL and isinstance(rnk, int) and rank_ct[(team, pos, rnk)] > 1
+        # since 2026-10-09 (W5-G13) role_state breaks a tie by evidence; the flag fires only for a state built before that
+        if tie and 'depth_chart_rank' not in sv:
             scoped = (pr or {}).get('_chart_rank')
             flags.append(f'DEPTH_TIE_BROKEN_BY_ID: supplied rank {rnk} shared by {rank_ct[(team, pos, rnk)]} at {pos}; '
                          f'ceiling {(pr or {}).get("askable_ceiling")}')
@@ -167,6 +174,30 @@ def build(board_dir, run_dir, week, news=None, alt_dir=None):
             flags.append('OPPONENT_QB_NOT_CONSUMED: ' + '; '.join(
                 f.split(':')[0] for f in qbb[(b or {}).get('opp')]['flags']))
         a = (alt_g.get(gsis) or alt.get(key)) if pos != 'DST' else None
+        obs = sv.get('observed_2026') or {}
+        pp = (pr or {}).get('p_plays') or {}
+        pmin = min(pp.values()) if pp else None
+        if (pos in ('RB', 'WR', 'TE') and isinstance(pmin, (int, float)) and pmin < 0.6
+                and (obs.get('weeks_played') or 0) >= min(3, n_prior_weeks)):
+            flags.append(f"APPEARANCE_HISTORY_NOT_CONSUMED: played {obs.get('weeks_played')} of {n_prior_weeks} weeks, "
+                         f"P(plays) {round(pmin, 3)} from the club-slot table by allocation rank (W5-G16)")
+        consumed = None if pos == 'DST' else {
+            'availability': {'status': ca.get('status'), 'tier': ca.get('tier'),
+                             'moves_projection': ca.get('status') in ('CONFIRMED_INACTIVE', 'REPORTED_INACTIVE_OFFICIAL_RELEASE_CITED',
+                                                                      'REPORTED_INACTIVE_HIGH_CONFIDENCE', 'REPORTED_OUT_UNVERIFIED',
+                                                                      'NO_OFFENSIVE_ROLE_ROSTER_POSITION')},
+            'depth': {'rank': sv.get('depth_rank'), 'usage_rank': sv.get('depth_usage_rank'),
+                      'chart_rank': sv.get('depth_chart_rank'), 'source': sv.get('depth_source')},
+            'current_season_weeks_used': (pr or {}).get('current_season_weeks'),
+            'prior': {'tier': (pr or {}).get('prior_tier'), 'seasons': (pr or {}).get('prior_seasons_used'),
+                      'confidence': (pr or {}).get('prior_confidence')},
+            'role': {'band': (pr or {}).get('role_band'), 'ceiling': (pr or {}).get('askable_ceiling')},
+            'p_plays_source': 'club-slot appearance table by allocation rank (proj_v1.allocate_opportunity)',
+            'club_qb_used': eq,
+            'NOT_READ': ['practice participation', 'DOUBTFUL/QUESTIONABLE as a probability', 'QB identity for team volume',
+                         'opponent', 'weather', 'offensive line', 'secondary news', 'FC', 'sportsbook prices']}
+        scen_vals = {lab: round(((S.get(gsis) or S.get(key) or {}).get('dk_points') or 0), 2)
+                     for lab, S in scen.items()} if pos != 'DST' else {}
         return {
             'player': name, 'team': team, 'pos': pos, 'opp': (b or {}).get('opp') or (sv.get('opponent')),
             'game_id': sv.get('game_id') or (b or {}).get('game_id'),
@@ -196,6 +227,11 @@ def build(board_dir, run_dir, week, news=None, alt_dir=None):
             'ours_minus_benchmark': (round(pr['dk_points'] - b['fc_proj'], 2)
                                      if b and pr and isinstance(pr.get('dk_points'), (int, float)) else None),
             'research_flags': (b or {}).get('flags'),
+            'EVIDENCE_CONSUMED_BY_ENGINE': consumed,
+            'depth_tie': ({'supplied_rank': rnk, 'n_tied': rank_ct[(team, pos, rnk)],
+                           'resolved_by': 'evidence order: chart rank (usage first for TE), usage rank, observed share'}
+                          if tie else None),
+            'scenario_dk_points': scen_vals,
             'STORED_NOT_CONSUMED': flags,
         }
 
@@ -250,9 +286,13 @@ def main(argv=None):
     ap.add_argument('--news')
     ap.add_argument('--alt')
     ap.add_argument('--out')
+    ap.add_argument('--min-points', type=float, default=4.0,
+                    help='also board every player the benchmark omits whose projection reaches this')
+    ap.add_argument('--scenario', action='append', default=[], help='LABEL=RUN_DIR, a research scenario column')
     a = ap.parse_args(argv)
     news = json.loads(pathlib.Path(a.news).read_text()) if a.news else None
-    rows = build(a.board_dir, a.run_dir, a.week, news, a.alt)
+    rows = build(a.board_dir, a.run_dir, a.week, news, a.alt, a.min_points,
+                 dict(x.split('=', 1) for x in a.scenario))
     doc = write(rows, a.out or a.board_dir, a.week, {'run_dir': a.run_dir, 'alt_run_dir': a.alt})
     print(json.dumps(doc['summary'], indent=1))
     return 0
