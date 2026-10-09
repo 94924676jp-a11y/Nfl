@@ -1,0 +1,279 @@
+{
+ "ARTIFACT": "SHOWDOWN_SEARCH_REPORT",
+ "build_dir": "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL_ELIGIBILITY_FIX_R1",
+ "n_worlds": 2000,
+ "universe": {
+  "dk_pool_rows": 52,
+  "eligible_people_in_candidates": 31,
+  "audit_n_eligible": 31,
+  "captain_x_5flex_combinations": 4417686,
+  "legal_lineups_exact": 4303819,
+  "combinations_formula": "31 x C(30,5) = 4417686"
+ },
+ "generated": {
+  "by_generator": {
+   "EXACT_OR_NEAR_OPTIMAL": 2619,
+   "FORCED_CAPTAIN": 2768
+  },
+  "distinct_candidates_read_by_selector": 5387,
+  "share_of_legal_universe": 0.001252
+ },
+ "scored": {
+  "candidates": 5387,
+  "worlds": 2000,
+  "score_matrix_cells": 10774000,
+  "NOTE": "every candidate is scored in every world; 2,000 is the number of simulated games, not lineups"
+ },
+ "contests": {
+  "196438543": {
+   "entries": 150,
+   "distinct_selected": 150,
+   "relaxation_level": 1,
+   "final_caps": {
+    "player": 75,
+    "captain": 45,
+    "overlap": 5
+   },
+   "selection_method": "GREEDY_THEN_1SWAP_POLISH",
+   "objective": "greedy max E_w[min(hits, m)], hit = score >= 0.9 x world optimum",
+   "depth_m": 1,
+   "players_at_player_cap": [
+    "Bucky Irving",
+    "CeeDee Lamb",
+    "Dak Prescott",
+    "Javonte Williams"
+   ],
+   "candidates_with_higher_own_proxy_than_weakest_selected_but_not_selected": 4104,
+   "binding_reason_post_hoc": {
+    "PLAYER_CAP": 4084,
+    "MARGINAL": 18,
+    "OVERLAP": 2
+   },
+   "examples": {
+    "PLAYER_CAP": [
+     {
+      "captain": "CeeDee Lamb",
+      "flex": [
+       "Bucky Irving",
+       "Cade Otton",
+       "Dak Prescott",
+       "Jake Ferguson",
+       "Tyler Goodson"
+      ],
+      "first_place_proxy": 0.182
+     },
+     {
+      "captain": "CeeDee Lamb",
+      "flex": [
+       "Bucky Irving",
+       "Dak Prescott",
+       "Javonte Williams",
+       "Payne Durham",
+       "Tyler Goodson"
+      ],
+      "first_place_proxy": 0.181
+     },
+     {
+      "captain": "CeeDee Lamb",
+      "flex": [
+       "Brandon Aubrey",
+       "Cade Otton",
+       "Dak Prescott",
+       "Javonte Williams",
+       "Payne Durham"
+      ],
+      "first_place_proxy": 0.1675
+     }
+    ],
+    "MARGINAL": [
+     {
+      "captain": "Jalon Daniels",
+      "flex": [
+       "Brandon Aubrey",
+       "Cade Otton",
+       "Chris Godwin Jr.",
+       "Emeka Egbuka",
+       "George Pickens"
+      ],
+      "first_place_proxy": 0.0035
+     },
+     {
+      "captain": "George Pickens",
+      "flex": [
+       "Brandon Aubrey",
+       "Cade Otton",
+       "Chris Godwin Jr.",
+       "Emeka Egbuka",
+       "Jalon Daniels"
+      ],
+      "first_place_proxy": 0.003
+     },
+     {
+      "captain": "Chris Godwin Jr.",
+      "flex": [
+       "Brandon Aubrey",
+       "Cade Otton",
+       "Emeka Egbuka",
+       "George Pickens",
+       "Jalon Daniels"
+      ],
+      "first_place_proxy": 0.0025
+     }
+    ],
+    "OVERLAP": [
+     {
+      "captain": "Jalon Daniels",
+      "flex": [
+       "Brandon Aubrey",
+       "Chase McLaughlin",
+       "Emeka Egbuka",
+       "George Pickens",
+       "Jake Ferguson"
+      ],
+      "first_place_proxy": 0.0015
+     },
+     {
+      "captain": "Chris Godwin Jr.",
+      "flex": [
+       "Brandon Aubrey",
+       "Emeka Egbuka",
+       "George Pickens",
+       "Jake Ferguson",
+       "Jalon Daniels"
+      ],
+      "first_place_proxy": 0.001
+     }
+    ]
+   },
+   "NOTE": "rejection reasons reconstructed against the FINAL portfolio; the greedy selector does not log them"
+  },
+  "196438555": {
+   "entries": 20,
+   "distinct_selected": 20,
+   "relaxation_level": 0,
+   "final_caps": {
+    "player": 10,
+    "captain": 6,
+    "overlap": 4
+   },
+   "selection_method": "GREEDY_THEN_1SWAP_POLISH",
+   "objective": "greedy max E_w[min(hits, m)], hit = score >= 0.9 x world optimum",
+   "depth_m": 2,
+   "players_at_player_cap": [
+    "Brandon Aubrey",
+    "Bucky Irving",
+    "Cade Otton",
+    "CeeDee Lamb",
+    "Dak Prescott",
+    "Jalon Daniels",
+    "Javonte Williams"
+   ],
+   "candidates_with_higher_own_proxy_than_weakest_selected_but_not_selected": 4226,
+   "binding_reason_post_hoc": {
+    "PLAYER_CAP": 4226
+   },
+   "examples": {
+    "PLAYER_CAP": [
+     {
+      "captain": "CeeDee Lamb",
+      "flex": [
+       "Bucky Irving",
+       "Cade Otton",
+       "Dak Prescott",
+       "Jake Ferguson",
+       "Tyler Goodson"
+      ],
+      "first_place_proxy": 0.182
+     },
+     {
+      "captain": "CeeDee Lamb",
+      "flex": [
+       "Brandon Aubrey",
+       "Cade Otton",
+       "Dak Prescott",
+       "Javonte Williams",
+       "Payne Durham"
+      ],
+      "first_place_proxy": 0.1675
+     },
+     {
+      "captain": "CeeDee Lamb",
+      "flex": [
+       "Bucky Irving",
+       "Cade Otton",
+       "Dak Prescott",
+       "Emeka Egbuka",
+       "Payne Durham"
+      ],
+      "first_place_proxy": 0.167
+     }
+    ]
+   },
+   "NOTE": "rejection reasons reconstructed against the FINAL portfolio; the greedy selector does not log them"
+  },
+  "196438556": {
+   "entries": 20,
+   "distinct_selected": 20,
+   "relaxation_level": 0,
+   "final_caps": {
+    "player": 10,
+    "captain": 6,
+    "overlap": 4
+   },
+   "selection_method": "GREEDY_THEN_1SWAP_POLISH",
+   "objective": "greedy max E_w[min(hits, m)], hit = score >= 0.9 x world optimum",
+   "depth_m": 2,
+   "players_at_player_cap": [
+    "Brandon Aubrey",
+    "Bucky Irving",
+    "Cade Otton",
+    "CeeDee Lamb",
+    "Dak Prescott",
+    "Jalon Daniels",
+    "Javonte Williams"
+   ],
+   "candidates_with_higher_own_proxy_than_weakest_selected_but_not_selected": 4226,
+   "binding_reason_post_hoc": {
+    "PLAYER_CAP": 4226
+   },
+   "examples": {
+    "PLAYER_CAP": [
+     {
+      "captain": "CeeDee Lamb",
+      "flex": [
+       "Bucky Irving",
+       "Cade Otton",
+       "Dak Prescott",
+       "Jake Ferguson",
+       "Tyler Goodson"
+      ],
+      "first_place_proxy": 0.182
+     },
+     {
+      "captain": "CeeDee Lamb",
+      "flex": [
+       "Brandon Aubrey",
+       "Cade Otton",
+       "Dak Prescott",
+       "Javonte Williams",
+       "Payne Durham"
+      ],
+      "first_place_proxy": 0.1675
+     },
+     {
+      "captain": "CeeDee Lamb",
+      "flex": [
+       "Bucky Irving",
+       "Cade Otton",
+       "Dak Prescott",
+       "Emeka Egbuka",
+       "Payne Durham"
+      ],
+      "first_place_proxy": 0.167
+     }
+    ]
+   },
+   "NOTE": "rejection reasons reconstructed against the FINAL portfolio; the greedy selector does not log them"
+  }
+ }
+}
