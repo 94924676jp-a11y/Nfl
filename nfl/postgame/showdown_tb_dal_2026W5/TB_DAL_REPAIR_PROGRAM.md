@@ -96,7 +96,7 @@ the play-by-play).
 | Pregame freeze manifest before grading | P0 | **DONE** | `PREGAME_FREEZE_MANIFEST.json` (97 hashes, re-verified by the grader) |
 | Accepted-entry reconciliation | P0 | **BUILT**; waits on the DK export | `contest_financials` (172/172 on ATL@NO) |
 | Simulation accounting (D-05) | P0 | IN PROGRESS (isolated arm) | section F |
-| Disclose relaxation level in every portfolio summary (D-09) | P0 | NEXT | — |
+| Disclose relaxation level in every portfolio summary (D-09) | P0 | **DONE** | the build summary now prints `relax L<n> caps {...}` for every contest; cycle1, finalization_gates and next_slate suites: 60 checks, 0 failing |
 | QB-conditioned volume, QB rushing, shares (D-02, D-03) | P1 | PLAN + predeclared experiment | section G |
 | Lower-tail volatility (D-01, D-04) | P2 | MEASURED; repair next | `STAR_DUD_RATE_2021_2025.json` |
 | Ownership and field simulation (D-06) | P2 | BLOCKED on standings exports | outbox |

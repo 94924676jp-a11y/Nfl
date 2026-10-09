@@ -1038,6 +1038,8 @@ def run(export, draws_path, out_dir, prefix, *, inactives=None, proj_path=None, 
         return Outcome.fail('SHOWDOWN_UPLOAD_FAILED_VERIFICATION', ver.detail, audit=audit)
     return Outcome.ok('SHOWDOWN_PORTFOLIO_BUILT', audit, f'{len(cands)} candidates; '
                       + '; '.join(f"{P['contest']['name'][:40]} {len(P['chosen'])}/{len(P['contest']['entries'])} cov {P['coverage']:.3f}"
+                                  # D-09 (TB@DAL postgame): a relaxed cap must be visible wherever the build is summarised
+                                  f" relax L{P['relaxation_level']} caps {P['relaxation_log'][-1]['caps']}"
                                   for P in portfolios.values()))
 
 
