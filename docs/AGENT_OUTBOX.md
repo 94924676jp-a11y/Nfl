@@ -4190,3 +4190,19 @@ The 14:00Z entry said the DKEntries export was "needed for our own projections".
 1. The CHI starting QB from a team source (Williams vs Bagent; see W5-G15).
 2. The Friday injury designations for the 16 slate clubs, if the 21:30Z capture fails.
 3. Kaytron Allen (WAS): waived or not. He is still ACT in the official week 5 roster capture.
+
+## 2026-10-09 17:25Z: Week 5 Classic -- three verifications only the networked agent can close before Sunday
+
+1. **CHI starting QB.** Need: the Friday 2026-10-09 official injury report game status for Caleb Williams (hamstring),
+   or a chicagobears.com / press-conference statement naming the starter.
+   - Every SECONDARY source names Tyson Bagent.
+   - The engine still starts Williams from the 2026-10-08 chart capture.
+   - Scenario forecasts for both are on the board.
+2. **Ja'Marr Chase (CIN).** Need: the Friday game status.
+   - The official practice report shows Limited, concussion.
+   - SECONDARY sources say he is in protocol and needs a full practice to clear.
+   - Our 18.70 assumes he plays.
+3. **WAS QB and receivers.** Need: Friday game statuses for Jayden Daniels (elbow; full practice), Marcus Mariota
+   (knee; DNP), Terry McLaurin (hamstring; DNP), Stefon Diggs (hamstring; DNP).
+
+Unchanged: the Week 5 DK file (DKSalaries.csv to price; DKEntries.csv to assign entries) from the owner.
