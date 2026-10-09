@@ -1,146 +1,189 @@
-# Week 5 Classic (Sunday 1:00 ET, 8 games): prioritized decision board, Friday 2026-10-09 ~17:10Z
+# Week 5 Classic (Sunday 1:00 ET, 8 games): decision board, refreshed Friday 2026-10-09 ~19:55Z
 
-**State: NOT READY TO EXPORT LINEUPS.** Two things are missing:
-- there is no DraftKings file for this slate;
-- the Friday official designations are not yet captured (the trigger runs at 21:30Z).
+**Readiness: NOT READY to produce entered Classic portfolios.** Three things are missing:
+- the DraftKings salary file;
+- the official Friday designations (not yet published in the nflverse feed at 19:21Z; trigger 21:30Z);
+- a starter decision for CHI (see A1).
 
-**Our projections exist** for 266 players across 8 games, at 2,000 simulated games, with the sanity check passing:
-`nfl/dfs/salaries/runs/w5_final/` (the production code, including the tie-order repair), board
-`WEEK5_EVIDENCE_BOARD.{json,csv}`.
+Our independent projections exist (266 players, 2,000 worlds), but **eleven player numbers are unreliable** (§3) and the
+simulated worlds carry five known unrepaired defects (§6). Nothing here recommends a lineup or a wager. FC is a
+benchmark only.
 
-Nothing here recommends a lineup or a wager. Nothing was uploaded or entered. FantasyCruncher (FC) is a benchmark, never
-an input.
+**Owner rulings recorded:** `docs/OWNER_RULINGS_RELAYED_2026-10-09.md`.
+- Tie repair provisionally retained.
+- Accounting repair not promoted.
+- Opponent adjustment: research only.
 
-The previous version of this board is in git history (commit `78c66ef3`).
+## 1. Official eligibility and QB status
 
-## A. What could materially change Sunday's lineups (ranked)
+**Captured OFFICIAL tier.** The newest capture is the nflverse injury file at 19:21Z (Thursday practice). No Sunday-club
+game designation is in it yet.
 
-| # | Item | Evidence and tier | Our number now | Scenario / research number | Resolves when |
-|---|---|---|---|---|---|
-| 1 | **CHI starting QB** | Williams: DNP Wed and Thu (OFFICIAL practice report). Bagent: every SECONDARY source, including Ben Johnson's "Tyson will be the guy" relayed by six outlets; he threw all 34 W4 attempts. The engine starts Williams only because the 10-08 chart capture lists him QB1 | Williams 21.92, Bagent 0.07 | Bagent starts: Bagent **19.01**, Williams 0; Swift +0.8; **CHI receivers move < 0.5** | Friday designation (21:30Z refresh) or a team statement relayed to us |
-| 2 | **Ja'Marr Chase availability** | OFFICIAL practice: Limited, **concussion**. SECONDARY: in protocol, needs a full practice to clear | **18.70** (was 14.81 before the tie repair) | — | Friday designation; Sunday inactives |
-| 3 | **WAS QB** | Daniels: full practice Wed and Thu (OFFICIAL), first game back. Mariota: DNP (knee). Kaliakmanis threw 33 of 37 W4 attempts | Daniels 19.83 | Mariota starts: 18.07. Kaliakmanis starts: 12.44. WAS receivers move < 0.5, RBs +1 to +2.2 | Friday designation |
-| 4 | **NYJ backfield and receivers** | Hall and Mitchell: DNP Wed and Thu (OFFICIAL). "Essentially out" is REPORTED only | Hall 15.00, Mitchell 8.09, Braelon Allen 4.72 | Both out: Allen **10.56** (ceiling SECONDARY → ALPHA under the committed absent-rank fix), G. Wilson +3.7, I. Williams +3.9 | Friday designation |
-| 5 | **Depth-tie repair moves major receivers** | W5-G13, repaired in production (§B) | Chase 18.70 (+3.89), McLaurin 13.77 (+3.95), Higgins 16.77 (−4.32), Diggs 11.74 (−2.97), Hollins 7.06 (−3.28) | — | done; McLaurin and Diggs both DNP (OFFICIAL), so see row 6 |
-| 6 | **WAS receivers' availability** | McLaurin DNP Wed and Thu (OFFICIAL; missed W4). Diggs DNP (OFFICIAL); SECONDARY conflicting | as above | — | Friday designation |
-| 7 | **PIT** | Pittman: limited then DNP (OFFICIAL); "multiple weeks" (SECONDARY, CONFIRMED tag) | Pittman 7.97 | out: R. Wilson +3.6, Bernard +2.1 | Friday designation |
-| 8 | **Appearance-rate defect** (W5-G16, research) | Backups who played every week get P(plays) from a club-slot table: Noel 0.077, Monangai 0.635, Henderson 0.635 | e.g. Noel 0.48, Monangai 7.63 | research arm AP-1 (not used) | prospective test, preregistered |
+**SECONDARY tier (Friday web reports, discovery only:** `raw/classic_early_2026W5/NEWS_SUPPLEMENT_WEB_FRIDAY_2026-10-09.63b7c01f3a1c9533.json`).
+These do not move the engine until captured.
 
-**The QB-identity limitation applies to rows 1 and 3** (W5-G1). Changing the starter moves the QB's own projection but
-not his teammates' volume or shares. Bagent starting changes no CHI receiver by even half a point. The QB-conditioned
-candidate failed its bar, so this is a known gap, not a hidden one.
+| Club | QB in the engine | Expected starter (QB verification) | Friday reports (SECONDARY) | Status |
+|---|---|---|---|---|
+| **CHI** | **Caleb Williams** (stale 10-08 chart) | **Tyson Bagent** | Williams listed Questionable after a limited Friday practice; Ben Johnson: Bagent starts | **CONFLICT: see A1** |
+| **WAS** | Jayden Daniels | Daniels | Quinn: Daniels will play; **Diggs ruled out**; McLaurin Questionable (first practice Friday) | provisional |
+| CIN | Burrow | Burrow | **Chase Questionable**: in concussion protocol, practised Friday | QB fine; WR1 uncertain |
+| GB, MIA, LV, NE, MIN, NO, CLE, NYJ, IND, PIT, HOU, TEN, NYG | chart QB1 | same | — | consistent across sources, not yet official |
 
-## B. Fixed: correctness repairs in production
+**A1, CHI. A Questionable tag does not make the engine drop Williams.** It consumes a starter only from a captured
+official document, or one you relay. Johnson's statement reaches us only through outlets. Two ways to resolve it:
+- you relay "Bagent starts" (recorded as OWNER_RELAYED); or
+- an official inactive or Out is captured Sunday.
 
-1. **An absent starter no longer holds a depth rank** (`8d7c9822`). 34/34 checks. 41-suite regression: every failure
-   matches the baseline.
-2. **A tied depth rank is broken by football evidence, never by the player ID** (`39340321`, plus `a8efedae` for
-   tight ends). Details:
-   - **The defect.** The state gives a back or receiver the *minimum* of his usage and chart ranks, so the chart WR1
-     and the usage WR1 both held rank 1, and the DraftKings ID decided which took the ALPHA ceiling. Relabelling the
-     IDs of the stored W4 state changed the band or ceiling of Nacua, Adams, Watson, Golden and Doubs.
-   - **The rule now:** rank, then the chart rank (usage first for TEs, whose chart TE1 is often the blocker), then
-     usage rank, then observed share. The ID is used only when nothing else separates them.
-   - **Evidence.** Across 47 tied rooms in 2026 W2–W4, the chart's choice was the player who led his room in targets or
-     carries in 28. Usage's choice was in 11 and ID order's in 18; by position, WR 20 vs 5 vs 10 of 32.
-   - **Replays.** In point-in-time replays of 2026 W2–W4 (25 games, oracle availability), absolute DK error on changed
-     players fell by 0.148, 95% club-week interval [−0.271, −0.034]. On the real W4 Early pool it was neutral: +0.069
-     [−0.098, +0.259]. The rule was chosen on the same 2026 weeks, so this evidence is **exploratory**, not
-     confirmatory.
-   - **The ten tied Week 5 groups** are in `nfl/research/role_ceiling/W5_TIED_GROUPS_AUDIT.json`. Three changed
-     (CIN WR, WAS WR, PIT TE); seven were already in chart order.
-   - Tests: `test_role_state_tie_order` 11/11. On the old code, the tie and ID-invariance checks fail.
-   - The 58-suite regression is recorded in `nfl/tests/certificates/`.
-3. **Football forecasting no longer needs the DraftKings entries file** (`d41ef192`). The research universe comes from
-   the official roster capture. DKSalaries is enough to price the slate; DKEntries is needed only to assign entries.
+Until then, use the `CHI_BAGENT_STARTS` scenario. **Do not use production's 21.92 for Williams.**
 
-## C. Research-only (measured, not promoted)
+## 2. Major personnel dependencies (scenario runs on the final engine; `research_projection/final_2026-10-09/`)
 
-| Item | Result | Why not promoted |
+| Dependency | Production now | If it goes the other way | Notes |
+|---|---|---|---|
+| CHI: Bagent starts | Williams 21.92, Bagent 0.07 | Bagent **19.01**, Williams 0, Swift +0.8 | **CHI receivers move < 0.5**: QB identity is not consumed (W5-G18), so their numbers are unreliable either way |
+| CHI: Monangai out (reported) | Monangai 7.61, Swift 16.85 | Swift **19.74** | — |
+| CIN: Chase out | Chase 18.70, Higgins 16.77 | Higgins **25.07**, Gesicki +1.9 | the Higgins jump is partly slot mechanics (§3) |
+| WAS: Diggs out (reported) | Diggs 11.74, McLaurin 13.77 | McLaurin **15.91**, A. Williams 4.17 → **8.12** | — |
+| WAS: McLaurin out | | Diggs 16.48 | if both are out, A. Williams becomes WR1 (not run) |
+| WAS: Daniels does not start | Daniels 19.83 | Mariota 18.07, or Kaliakmanis 12.44 | Quinn says Daniels plays |
+| NYJ: Hall + Mitchell out | Hall 15.00, Mitchell 8.09, B. Allen 4.72 | B. Allen **10.56**, G. Wilson **19.71**, I. Williams 7.52, Sadiq 9.55 | both DNP Wednesday and Thursday |
+| PIT: Pittman out | Pittman 7.97 | R. Wilson **8.43**, Bernard 3.38 | latest OFFICIAL practice: DNP Thursday (foot); the engine state still shows Wednesday's Limited (W5-G14) |
+
+## 3. Projections: corrected, provisional, unreliable
+
+**Corrected by the tie repair (production).**
+
+| Player | Before | After | Notes |
+|---|---|---|---|
+| Chase | 14.81 | **18.70** | — |
+| Higgins | 21.09 | **16.77** | — |
+| McLaurin | 9.82 | **13.77** | — |
+| Diggs | 14.70 | **11.74** | — |
+| Freiermuth | 10.49 | 10.49 | unchanged; TE usage-first |
+| Washington | 3.99 | 3.99 | unchanged |
+
+Player-level review: `WEEK5_ROLE_CHANGE_REVIEW.md`. The ordering is supported for CIN and PIT; WAS is decided by
+availability.
+
+**Unreliable: do not use as point estimates without the stated condition.**
+
+| # | Player | Production | Why | Use instead |
+|---|---|---|---|---|
+| 1 | Caleb Williams (CHI QB) | 21.92 | Bagent expected to start | CHI_BAGENT_STARTS |
+| 2 | Tyson Bagent (CHI QB) | 0.07 | same | CHI_BAGENT_STARTS: 19.01 |
+| 3 | CHI receivers: Odunze, Burden, Loveland, Swift (and Monangai) | starter-QB volume | QB identity not consumed (W5-G18) | no validated adjustment; treat as wide uncertainty |
+| 4 | Breece Hall (NYJ) | 15.00 | DNP Wed and Thu; "essentially out" | NYJ scenario (expectation ≈ 0) |
+| 5 | Adonai Mitchell (NYJ) | 8.09 | same | NYJ scenario |
+| 6 | Braelon Allen (NYJ) | 4.72 | depends on Hall | 10.56 if Hall is out |
+| 7 | Michael Pittman (PIT) | 7.97 | DNP Thursday; "multiple weeks" | PIT scenario |
+| 8 | Stefon Diggs (WAS) | 11.74 | reported OUT by Quinn | WAS_DIGGS_OUT |
+| 9 | Ja'Marr Chase / Tee Higgins (CIN) | 18.70 / 16.77 | Chase Q (concussion) carries P(plays) 1.0; Higgins is discounted to 0.861 by the slot table despite 72–93% snaps | read both with CIN_CHASE_OUT |
+| 10 | Jaylin Noel (HOU) | 0.48 | slot P(plays) 0.077 despite targets every week (W5-G16); rank pushed down by the Collins/Hutchinson tie | AP-1 research gives 3.71 |
+| 11 | Kyle Monangai (CHI) | 7.61 | turf toe, reported out; also slot P(plays) 0.635 | CHI_MONANGAI_OUT |
+
+**Provisional (number defensible, a known defect or open question applies).** Each is listed with its FC benchmark.
+
+| Player | Ours | FC | Open question |
+|---|---|---|---|
+| Warren | 18.38 | 13.28 | TD expectation 0.63/game vs 0 TDs in 2026 |
+| Doubs | 14.79 | 9.05 | renormalised volume, 7.0 targets vs 5.0 observed |
+| Malik Washington | 14.34 | 8.16 | share ×1.31 renormalisation |
+| Olave | 23.49 | 18.17 | **new foot injury, Limited Thursday**, not represented |
+| Mason Taylor | 0.38 | 8.19 | — |
+| Dowdle | 6.38 | 12.79 | — |
+| McLaurin | 13.77 | 13.22 | Questionable |
+
+**Also limited Thursday, undesignated:** Collins, Jeanty, A. Jones and Swift.
+
+## 4. Material disagreements with FC (`fc_diagnosis/FC_DISAGREEMENT_DIAGNOSIS_FINAL.{md,json}`)
+
+Of the 16 players with |ours − FC| ≥ 5, plus the 4 FC omits:
+
+| Verdict | Count | Players |
 |---|---|---|
-| RC-1 formation ceiling (WR2 and WR3 read as starters) | A rank-2 WR realises above the SECONDARY cap in 50% of 1,890 weeks (RB2 18%, TE2 10%). Oracle replays −0.217 [−0.327, −0.102]; real W4 pool +0.054 [−0.154, +0.294] | did not replicate on the real pool; preregistered W6–W11 |
-| AP-1 appearance history | WR5 who played the prior three weeks appears again 67% of the time vs the table's 7.7%; RB3 75% vs 23%. Real W4 pool −0.116 [−0.274, +0.046]; RB MAE 4.86 → 4.55 | one week; preregistered W6–W11 |
-| Simulation-accounting repair | event laws 0/2,000 violations; DST incumbent shown defective (non-integer DST scores in 92–98% of worlds). But receivers are over-dispersed, ties run 1.8–3.7% vs 0.29% historical, there is no overtime, defensive TDs are double-counted, and only 21 of 190 lineups survive | `nfl/research/accounting_repair/INTEGRATION_EVALUATION_2026-10-09.md`; needs fixes and an owner ruling on the anchor |
-| QBCTX shadow | FAILED 1 of 3 | dropbacks alone preregistered (QBCTX-DB1), W6–W14 |
-| Simulation-query tool | 90/90 checks; answers only from stored worlds, with SEs and refusals | `nfl/tools/sim_query.py`, research tool |
+| Our number supported | 6 | McClain, Henderson, Jennings, Austin Jr., Theo Johnson, Hockenson |
+| Provisional | 8 | B. Allen, M. Taylor, Dowdle, Monangai, Warren, Olave, Doubs, M. Washington |
+| Unreliable | 6 | Bagent, C. Williams, Pittman, Hall, Mitchell, Noel |
 
-## D. Starting quarterbacks (`qb_verification/WEEK5_QB_STARTER_VERIFICATION.json`)
+Primary causes:
 
-**None is confirmed at the OFFICIAL tier yet.** At 16:14Z no Friday designation was out. Fifteen clubs are
-REPORTED_SECONDARY_CONSISTENT and need no scenario. Scenarios exist for CHI (Bagent) and WAS (Mariota or
-Kaliakmanis).
+| Cause | Players |
+|---|---|
+| FC-specific (our number tracks 2026 usage) | 9 |
+| Availability assumption | 6 |
+| Volume model | 3 |
+| Role judgement | 1 |
+| Role defect | 1 |
+| Identity errors | **0** |
 
-| CHI | GB | CIN | MIA | LV | NE | MIN | NO |
-|---|---|---|---|---|---|---|---|
-| **Bagent** (engine: Williams, row A1) | Love | Burrow | Willis | Cousins | Maye | Murray | Shough |
+## 5. Accepted fixes; remaining defects
 
-| CLE | NYJ | IND | PIT | HOU | TEN | NYG | WAS |
-|---|---|---|---|---|---|---|---|
-| Watson | G. Smith | D. Jones | Rodgers | Stroud | Ward | Winston | Daniels (scenario needed) |
+**Accepted (in production):**
 
-**The nflverse schedule's QB field is unreliable.** It listed Keenum for CHI's W4 game, but the play-by-play shows
-Bagent threw every pass. It is classified unverified and never consumed.
-
-## E. The 140 "stored but not consumed" flags, classified
-
-Source: `nfl/research/evidence_consumption/WEEK5_EVIDENCE_CONSUMPTION_CLASSIFICATION.json`. There are 314 flags on 141
-of 161 rows.
-
-| Category | Flags | What |
+| Fix | Commit | Notes |
 |---|---|---|
-| C1 confirmed, should consume | 42 | appearance history (32 rows, W5-G16, research arm AP-1); CHI starter identity (10 rows, scenario until official). The 38 depth-tie rows are now consumed correctly (repaired) |
-| C2 represented indirectly | 112 | teammate practice: redistribution engages when a teammate is designated OUT or inactive |
-| C3 research required | 86 | practice participation → P(plays) (36); WR ceiling (29); QB identity → team volume (17); opponent QB for DST (3) |
-| C4 unverified | 74 | secondary news (64, discovery only); schedule QB listing (10) |
-| C5 must not influence | — | FC, sportsbook prices, third-party sims and ownership, contest ownership before lock |
+| Absent starter holds no depth rank | `8d7c9822` | — |
+| Tied depth rank broken by evidence | `39340321` + `a8efedae` | provisional per owner; rollback = revert both |
+| Football universe independent of the DK entries file | `d41ef192` | — |
+| `world_accounting_check` reads each club's own game | `8e10cc5f` | validation tool only |
 
-**Highest-impact bounded improvements, in order:**
-1. The tie repair (**done**).
-2. The CHI and WAS starter scenarios (**done**). They switch on an official designation, with no code change.
-3. The Friday designation capture into the manifest (scheduled).
-4. AP-1 and RC-1, prospectively.
-5. QB-conditioned team volume: research. QBCTX-DB1 covers dropbacks.
+**Measured, not promoted:**
 
-## F. FC disagreements (diagnostic; `fc_diagnosis/FC_DISAGREEMENT_DIAGNOSIS.json`)
+| Candidate | Result |
+|---|---|
+| RC-1 WR2 ceiling | half of 1,890 WR2-weeks realise above the cap; did not replicate on the real W4 pool. Preregistered W6–W11 |
+| AP-1 appearance history | WR5 that played 3 straight weeks plays again 67% vs the engine's 7.7%. Preregistered W6–W11 |
+| Accounting repair | damage detected; not promoted |
+| **DST integer-event scorer** (`5e21aed2`, OFF) | root cause found: `classic_slate_run.py:150` multiplies a realised integer DST score by the mean anchor (raw draws 100% integer; published 92–98% non-integer). Fix keeps every club and player draw and rebuilds the DST from integer events. History (mean / P(≥15)): **6.49 / 9.8%**; incumbent 5.94 / 6.4%; fix (mean follows events) 6.35 / 7.5%. **Owner decision: whether the DST mean follows the events or the projection.** Kicker: no defect |
+| Opponent adjustment (research) | **FAILS** its preregistered bar on held-out 2024–2025 (CRPS −0.9% to −1.5%, intervals include zero). Unplanned finding: the own-team baseline over-reacts (slopes 0.59–0.67) |
 
-On 156 players: correlation **0.874**, mean ours − FC −0.78, mean absolute 2.32, and **16** players differ by 5 or
-more.
+## 6. Simulation calibration and accounting limitations (`world_audit/WEEK5_WORLD_CORRECTNESS_AUDIT.md`)
 
-For the 21 largest gaps (17 differences of at least 5 points plus the 4 players FC omits), the primary cause is:
+**None of these can be safely repaired before Sunday.** The optimizer bias is stated for each.
 
-| Cause | Players | Detail |
+| Defect | Size on Week 5 | Optimizer bias |
 |---|---|---|
-| FC-specific (our number tracks 2026 production) | 10 | Henderson, Dowdle, Olave, Hockenson, M. Taylor, McClain, Jennings, Austin, T. Johnson, Chase (before the repair) |
-| Availability assumption | 6 | Bagent, Allen, Hall, Mitchell, Pittman, Williams |
-| Volume model | 3 | Warren, Doubs, Washington |
-| Role judgement | 1 | Monangai |
-| Role defect | 1 | Noel (appearance) |
-| Identity errors | **0** | — |
+| Star lower tail too thin (D-01) | players projected 20+: P(<5 DK) 0.62% simulated vs 6.57% historical for 20+ ppg WR (Olave 8.8×, Collins 6×, Shough 20×) | **toward stars and stacks built on them** |
+| World accounting (D-05) | receiving yards ≠ passing yards in 30,641 of 32,000 club-worlds (CHI receivers +28 yds/world, MIA −26); receiving yards with no catch 17,192; receiving TD with no catch 4,151 | toward CHI/GB/MIN pass-catchers; away from MIA/NYJ |
+| No did-not-play worlds; slot P(plays) (W5-G16) | 157 players' P(plays) < 1 is spread as reduced volume in every world; no world is a backup-QB game | away from active WR2/WR3/RB2/TE2 |
+| QB identity ignored (W5-G18) | CHI and WAS receivers unchanged under a QB switch | toward those receivers if a backup starts |
+| DST rescale | 96% of DST worlds non-integer; factors 0.56–1.34 | distribution-based selection only: toward MIN/PIT/LV DST, away from NYJ/MIA/TEN/GB |
 
-The tie defect was the primary cause of none of them, but it did move Chase by +3.9 once repaired.
+**Also:**
+- Fumbles are not modelled.
+- 93 cells exceed the NFL single-game passing record.
+- Simulated-minus-projected TDs run NO +0.24 and CLE −0.28 per club.
 
-## G. Ownership and duplication; contest construction
+**Conditional vs unconditional:**
+- `dk_points` is P(plays) × if-plays, and the worlds are centred on it.
+- `dk_points_if_plays` summed over a club is 28–59% higher than the club total. Never sum or jointly use the
+  conditional numbers.
 
-- **No Classic field model yet.** The no-fit FC-proportional ownership incumbent is declared pregame.
-- **The TB@DAL study** (`nfl/research/external_strategy/stokastic_tb_dal_2026W5/`) shows our optimizer has no field,
-  duplication or payout term:
-  - our lineups averaged 40 field copies;
-  - the on-air "most-duped" lineup had 295 actual copies;
-  - our star lower tail is about 10× too thin (Lamb P(<5 DK) 0.45% vs 6.6% observed).
-- **Classic plan:** `CLASSIC_PORTFOLIO_RESEARCH_PLAN.md`.
-- **Gap board:** `IMPLEMENTATION_GAP_BOARD.md`. GAP-05, opponent adjustment, is excluded by your instruction (item 9)
-  and needs your ruling.
+## 7. Readiness to produce independent Classic portfolios
 
-## H. Requirements for final lineup exports
+| Requirement | State |
+|---|---|
+| Independent projections and worlds | **READY**: 266 players, 2,000 worlds, plus 10 scenario runs |
+| Availability resolved | **NOT READY**: Friday designations, CHI starter, Chase protocol, Diggs/McLaurin, NYJ, PIT |
+| Correct DK pool with salaries and ids | **MISSING**: no DKSalaries or DKEntries file |
+| Optimizer inputs free of known bias | **NO**: §6. A portfolio built today would over-concentrate on stars and on CHI/GB/MIN pass-catchers |
+| Ownership and duplication model | research only (FC-proportional no-fit incumbent declared; no Classic field model) |
+| Payout tables | **MISSING**: no EV objective possible |
 
-1. **DK file:**
-   - DKSalaries.csv is enough to price and optimise (preliminary optimisation can run then);
-   - DKEntries.csv is needed for entry assignment and the upload check.
-2. **Friday designations** (21:30Z trigger): rebuild the state, the projections, the evidence board and this board.
-3. **CHI and WAS starters:** official designation or a team statement relayed to us. Switch to the matching scenario.
-4. **Sunday inactives** (15:40Z trigger): rebuild, then roster-eligibility gate, upload verify and freeze manifest.
-5. **Owner decisions:**
-   - RC-1 and AP-1 promotion after prospective evidence;
-   - the accounting-repair anchor;
-   - GAP-05;
-   - payout tables before any EV claim.
+## 8. Exact requirements for final DraftKings salary mapping and upload
+
+1. **The DK file for the Week 5 Sunday Early Classic slate.**
+   - `DKSalaries.csv` is enough to map our universe to DK ids and salaries.
+   - `DKEntries.csv` adds entry and contest ids and is required for the upload.
+   - Register it as `pool_blob` / `entries_blob` in `early_only.SLATES['2026W5']` (its hash goes into the vintage
+     manifest), then rebuild the state from the DK pool. The research universe is not uploadable by construction.
+2. **Identity join:** every DK pool row must resolve to a GSIS id. Unresolved rows are carried as non-playable and
+   counted, never guessed.
+3. **Friday designations** captured into the vintage manifest (21:30Z trigger), then rebuild.
+4. **CHI starter:** your relay, or a captured official document, entered through the evidence packet.
+5. **Sunday official inactives** (15:40Z trigger), then rebuild, the roster-eligibility gate, `classic_upload_verify`
+   and the freeze manifest before 17:00Z.
+6. **Your decisions:**
+   - the DST mean anchor;
+   - whether to build portfolios on worlds with the §6 biases, with the caps unchanged;
+   - payout tables, before any EV claim.

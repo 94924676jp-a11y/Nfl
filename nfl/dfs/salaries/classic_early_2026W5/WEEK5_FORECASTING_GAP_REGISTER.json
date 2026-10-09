@@ -168,6 +168,24 @@
    "class": "QB_IDENTITY_TEAM_VOLUME",
    "status": "OPEN research (QBCTX failed; QBCTX-DB1 preregistered)",
    "finding": "CHI and WAS QB scenarios move the QB but no receiver by 0.5 DK: team volume and shares ignore who throws (W5-G1 made measurable on this slate)"
+  },
+  {
+   "id": "W5-G19",
+   "class": "DST_SCORING_DEFECT",
+   "status": "ROOT CAUSE FOUND; shadow fix nfl/sim/dst_k_event_scoring.py (ENABLED=False); owner decision on mean anchoring",
+   "finding": "classic_slate_run.anchor_means (line 150) multiplies a realised integer DST draw by projection/simulated-mean, so 92-98% of published DST worlds are non-integer and the distribution is stretched or shrunk (DAL SD 5.91 -> 3.00; TB min -4.75)"
+  },
+  {
+   "id": "W5-G20",
+   "class": "VALIDATION_TOOL_DEFECT",
+   "status": "REPAIRED 8e10cc5f",
+   "finding": "world_accounting_check POINTS_GE_6_PER_TD read the first game for every club on Classic files"
+  },
+  {
+   "id": "W5-G21",
+   "class": "RESEARCH_RESULT",
+   "status": "opponent adjustment FAILS preregistered bar (nfl/research/opponent_adjustment)",
+   "finding": "unplanned: own-team baseline over-reacts to club history (held-out slopes 0.59-0.67)"
   }
  ],
  "engine_dependency_audit_2026-10-09": {
