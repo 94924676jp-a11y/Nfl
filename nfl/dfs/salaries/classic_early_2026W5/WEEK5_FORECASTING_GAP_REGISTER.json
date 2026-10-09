@@ -61,6 +61,22 @@
    "slate_impact": "44 players with a >=15pp snap-share swing",
    "finding": "4-game pooled usage treats a role change and a one-game anomaly alike",
    "fix": "role-state recency review per flagged player; no automatic change"
+  },
+  {
+   "id": "W5-G9",
+   "class": "INCOMPLETE_DATA",
+   "slate_impact": "Kaytron Allen (WAS RB, 12 carries 2026)",
+   "finding": "reported waived 2026-10-08 (single web summary, REPORTED) but ACT in the nflverse week-5 roster capture -- the Demercado pattern: a capture lags a transaction",
+   "engine_consumes": "roster_eligibility.classify takes a transactions record; none is captured for Week 5 yet",
+   "fix": "record relayed transactions (TRANSACTIONS file, provenance tier) before any upload; until confirmed, treat as BLOCKED (unknown is never eligible)"
+  },
+  {
+   "id": "W5-G10",
+   "class": "INCOMPLETE_DATA",
+   "slate_impact": "Mariota, Pittman, Breece Hall, Adonai Mitchell, Caleb Williams (all ACT, all DNP), Kaytron Allen",
+   "finding": "the FantasyCruncher export omits ACT players with real 2026 usage; it is not the DK pool. The DK pool (DKEntries) will list them",
+   "engine_consumes": "the Classic pipeline reads the DK pool, so it will see them; research and redistribution must cover them",
+   "fix": "board lists them under export_omits_active_players_with_usage; resolve each by Friday designation"
   }
  ]
 }

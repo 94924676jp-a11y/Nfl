@@ -284,6 +284,26 @@ def build(raw, season, week, kickoff, news=None):
                                     'depth': 'NFLVERSE_DEPTH_CHARTS_2026_LATEST', 'usage': ['NFLVERSE_PBP_2026',
                                     'NFLVERSE_SNAP_COUNTS_2026', 'NFLVERSE_STATS_PLAYER_WEEK_2026']}
 
+    # PLAYERS THE EXPORT OMITS. A third-party export is not the DK pool: it can silently drop players it expects to sit.
+    # Every ACT skill player on a slate club with real 2026 usage who is absent from the export is listed, because his
+    # status (and the redistribution if he sits) belongs to the research whether or not the benchmark shows him.
+    in_export = {(norm(r['Player']), r['Team']) for r in export}
+    omitted = []
+    for x in r5[r5.team.isin(teams) & r5.position.isin(SKILL) & (r5.status == 'ACT')].itertuples():
+        if (norm(x.full_name), x.team) in in_export:
+            continue
+        gid = x.gsis_id
+        t_ = sum(int(v) for (tm, w, pid), v in tgt.items() if pid == gid)
+        c_ = sum(int(v) for (tm, w, pid), v in car.items() if pid == gid)
+        att = sum(int(v.get(x.full_name[0] + '.' + x.full_name.split(' ', 1)[-1], 0)) for (tm, w), v in qb_week.items() if tm == x.team)
+        if t_ + c_ + att >= 10:
+            ij = inj_by.get(gid)
+            omitted.append({'player': x.full_name, 'team': x.team, 'pos': x.position, 'roster_status': x.status,
+                            'targets_2026': t_, 'carries_2026': c_, 'pass_att_2026': att,
+                            'practice_status_latest': getattr(ij, 'practice_status', None) if ij is not None else None,
+                            'injury': getattr(ij, 'practice_primary_injury', None) if ij is not None else None,
+                            'READING': 'absent from the third-party export but ACT with real usage; research his status '
+                                       'and the redistribution if he sits'})
     # dependency board: each club's skill players who are not plainly available, and who inherits the role
     dep_board = {}
     for t in teams:
@@ -325,6 +345,7 @@ def build(raw, season, week, kickoff, news=None):
         'role_change_flags': [f"{x['player']}|{x['team']}: {f}" for x in rows for f in x['flags'] if f.startswith('ROLE_CHANGE')],
         'missed_last_game_positive': [f"{x['player']}|{x['team']}" for x in rows if x['positive_projection']
                                       and any(f.startswith('MISSED_LAST_GAME') for f in x['flags'])],
+        'export_omits_active_players_with_usage': omitted,
         'awaiting_evidence': ['Friday game designations', 'official inactives (~11:30 ET Sunday)', 'confirmed starters',
                               'weather on game day', 'DK DKEntries export (ids, contests) for our own projections'],
         'zero_projection_screen': dict(collections.Counter(x.get('zero_projection_screen') for x in rows
