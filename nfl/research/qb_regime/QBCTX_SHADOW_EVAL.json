@@ -1,0 +1,1493 @@
+{
+ "artifact": "QBCTX_SHADOW_EVAL",
+ "label": "SHADOW_RESEARCH_NOT_PRODUCTION",
+ "fingerprint": {
+  "arm": "QBCTX_2026_10_ROLE_SHADOW",
+  "label": "SHADOW_RESEARCH_NOT_PRODUCTION",
+  "module_sha256": "fa17eb88a7bd38825086713271fc3a306a2d4980c72b014577056d6904a82b8d",
+  "inputs_sha256": {
+   "nfl/research/postgame/pbp_2021.e8743a568f99667a.csv.gz": "e8743a568f99667a8bdcd29ba12224ee1782ad2b7916bee78ee335c099383739",
+   "nfl/research/postgame/pbp_2022.0c69a71eb3949895.csv.gz": "0c69a71eb39498956c7b1d5c1ca52ce7fe679934a95d1af249facb5ea9829ea4",
+   "nfl/research/postgame/pbp_2023.4649804ee0f0a40b.csv.gz": "4649804ee0f0a40b41e51ec75a1ce921949d7fab5459213488656b92f78560e8",
+   "nfl/research/postgame/pbp_2024.23370d5d10f8104d.csv.gz": "23370d5d10f8104d80d46a1fc5e61f4f6f5a3263fe96fe2dd629913cfcb08c06",
+   "nfl/research/postgame/pbp_2025.2f135887790a013f.csv.gz": "2f135887790a013fd004e609e37096bb4816d5cc80b9f19122e1bad478961978",
+   "nfl/dfs/salaries/raw/classic_early_2026W5/NFLVERSE_PBP_2026.e7c162e793cb0f82.csv.gz": "e7c162e793cb0f828b97c9c92bf6efd7d60ff35eb6ef9b407b8d16001fd2a39a",
+   "nfl/dfs/salaries/classic_early_2026W5/WEEK5_QB_REGIME_BOARD.json": "fa8ce84df86dff29517f68719ad6a2a787831f07f029bb398f191f5ce8ff170f",
+   "nfl/dfs/salaries/raw/classic_early_2026W5/NFLVERSE_ROSTER_WEEKLY_2026.046ebaf4bdee3c23.slate16.csv.gz": "497ac000223947e51832bbbddf7266930113bd67f59a9dd4a29e1574af32a61d",
+   "nfl/tools/proj_v1.py": "48e0c0091e8e6b97cf23b429d86bac8189530c0f00b38329f77118b0498f26d2"
+  },
+  "boot": {
+   "B": 4000,
+   "seed": 20261009
+  },
+  "python": "3.12.3",
+  "numpy": "2.5.3",
+  "pandas": "3.0.6"
+ },
+ "predeclaration": "module docstring P1-P8, committed alone before any result (commit dd440398); amendment A1 (exposure model) made after the prior fit and before any evaluation metric, recorded in the docstring",
+ "HEADLINE_VERDICT_PRIMARY": {
+  "dropbacks": {
+   "qb_change_improves": true,
+   "qb_change_ci_hi": -0.04024656792540515,
+   "stable_noninferior": true,
+   "stable_ci_hi": 0.04259352723498348,
+   "stable_margin": 0.12790512140639443,
+   "PASS": true
+  },
+  "pass_rate": {
+   "qb_change_improves": false,
+   "qb_change_ci_hi": 0.0006514234898161406,
+   "stable_noninferior": true,
+   "stable_ci_hi": 0.0005578569411472605,
+   "stable_margin": 0.0016151157177123796,
+   "PASS": false
+  },
+  "qb_rush": {
+   "qb_change_improves": false,
+   "qb_change_ci_hi": 0.036845738467435635,
+   "stable_noninferior": false,
+   "stable_ci_hi": 0.05426890850176141,
+   "stable_margin": 0.030491107968192967,
+   "PASS": false
+  },
+  "OVERALL_PASS": false
+ },
+ "starter_rule": "most dropbacks (qb_dropback, `id`), ties: pass attempts then id; SPLIT if leader < 60%",
+ "definitions": {
+  "dropbacks": "qb_dropback == 1 (pass attempts + sacks + scrambles), REG, two-point tries excluded",
+  "pass_att": "play_type pass, pass_attempt == 1, not a sack",
+  "pass_rate": "dropbacks / (dropbacks + designed runs)",
+  "qb_rush": "starter designed runs + scrambles; KNEELS EXCLUDED. So TB 2026 W5 Daniels counts 5 here (5 scrambles) against 7 in the brief, which counted his 2 kneel-downs.",
+  "bias": "forecast minus actual"
+ },
+ "incumbent_approximation": "Team volume: proj_v1.team_volume formula exactly (current-season club mean blended with prior-season club mean at TEAM_VOLUME_PRIOR_GAMES pseudo-games), MINUS the market-response adjustment (the FOOTBALL_ONLY arm path; no historical lines are joined here). Pass rate: blended dropbacks / (blended dropbacks + blended designed runs). QB carries: proj_v1._combine of (prior = the QB's own pooled carry share over all PRIOR seasons, every role, weight = his prior-season appearances capped at PRIOR_WEIGHT_CAP; or, with no prior-season appearance, the all-QB cohort share at weight PRIOR_WEIGHT_CAP) and (current = his pooled carry share over every current-season game he appeared in, starts and relief together, weight = those games), times the blended club carries. NOT mirrored: player_prior recency decay and role-similarity weighting, the six-tier ladder (approximated by own-history-else-cohort), allocate_opportunity renormalisation across the roster, the depth-rank appearance discount (the starter is known, so rank 1 applies no discount in proj_v1 either), and the market response.",
+ "constants_provenance": {
+  "TEAM_VOLUME_PRIOR_GAMES": {
+   "value": 4.0,
+   "provenance": "READ from nfl/tools/proj_v1.py source (production DECLARED pseudo-games). Used identically in both arms, so the club baseline is the incumbent's and is not part of the treatment."
+  },
+  "PRIOR_WEIGHT_CAP": {
+   "value": 2.0,
+   "provenance": "READ from nfl/tools/proj_v1.py source. Incumbent QB-carry blend only."
+  },
+  "SPLIT_THRESHOLD": {
+   "value": 0.6,
+   "provenance": "SPECIFIED by the task brief (flag games whose dropback leader had < 60%). A labelling threshold: it never changes a forecast; it only defines the sensitivity subset."
+  },
+  "DOMINANT_WINDOW": {
+   "value": 8,
+   "provenance": "SPECIFIED by the task brief (\"e.g. last 8 club games\"). Defines the QB-CHANGE / STABLE subsets only; not a model input."
+  },
+  "TEAMMATE_WINDOW": {
+   "value": 8,
+   "provenance": "DOCUMENTED PRIOR: same 8-game window as the subset definition, for the report-only teammate shares. Not tuned."
+  },
+  "MU0": {
+   "value": 0.0,
+   "provenance": "DOCUMENTED PRIOR, owner ruling 2026-10-08: no universal backup-QB penalty. The population mean of the QB deviation is fixed at 0 so the treatment is QB-SPECIFIC only; the empirical mean is reported as a diagnostic and is NOT used."
+  },
+  "EXPOSURE_A": {
+   "value": "f - c",
+   "provenance": "DERIVED (amendment A1): a club-game observes the QB contrast Delta_q with exposure a = (his dropback share f) - (his share c of the baseline composition). Starts, relief and missed games all enter through a; supersedes the original f^2 relief rule (the case c = 0)."
+  },
+  "RELIEF_WEIGHT_RUSH": {
+   "value": "estimated",
+   "provenance": "ESTIMATED per fit window: inverse-variance ratio s2_start / s2_relief of per-dropback rush-rate noise about the QB's start rate, capped at 1 (DOCUMENTED PRIOR: a relief appearance never outweighs a start)."
+  },
+  "TAU2 / SIGMA2 (volume, pass rate, pass attempts)": {
+   "value": "estimated",
+   "provenance": "ESTIMATED per fit window by profile maximum likelihood of r = a*Delta_q + e over QB starts (A1); the likelihood is maximised over a log grid of tau2/s2 whose resolution is computational, not a model constant."
+  },
+  "P0 / TAU2 / S2 (rush rate)": {
+   "value": "estimated",
+   "provenance": "ESTIMATED per fit window: pooled position rate, between-QB variance by weighted method of moments, overdispersed within-QB noise."
+  },
+  "S_START": {
+   "value": "estimated",
+   "provenance": "ESTIMATED per fit window: mean starter share of club dropbacks over all starts."
+  },
+  "COHORT_CARRY_SHARE": {
+   "value": "estimated",
+   "provenance": "ESTIMATED per fit window: pooled QB carry share over all QB appearances (approximates proj_v1 ARCHETYPE cohort prior; see INCUMBENT_APPROXIMATION)."
+  },
+  "TEAMMATE TAU2 / S2": {
+   "value": "estimated",
+   "provenance": "ESTIMATED per fit window by method of moments on (dominant-QB minus other-QB) share contrasts within player-club-seasons."
+  },
+  "EVAL_SEASONS": {
+   "value": [
+    2024,
+    2025
+   ],
+   "provenance": "SPECIFIED by the task brief."
+  },
+  "BOOT_B / BOOT_SEED": {
+   "value": [
+    4000,
+    20261009
+   ],
+   "provenance": "PREDECLARED (P6). Seed is the predeclaration date."
+  },
+  "CI_LEVEL": {
+   "value": 0.95,
+   "provenance": "SPECIFIED by the task brief."
+  },
+  "NONINF_FRAC": {
+   "value": 0.02,
+   "provenance": "SPECIFIED by the task brief (+2% of incumbent STABLE MAE)."
+  },
+  "INTERVAL_LEVEL": {
+   "value": 0.8,
+   "provenance": "DOCUMENTED reporting choice for Week 5 intervals (empirical out-of-sample error quantiles 10/90 from 2024-2025). Changes no point forecast."
+  },
+  "W5_CUTOFF": {
+   "value": "2026-10-11",
+   "provenance": "Sunday 2026-10-11 kickoff date from WEEK5_QB_REGIME_BOARD.json meta.kickoff_utc."
+  }
+ },
+ "priors_by_forecast_season": {
+  "2024": {
+   "season": 2024,
+   "fit_seasons": [
+    2021,
+    2022,
+    2023
+   ],
+   "residual_fit_seasons": [
+    2022,
+    2023
+   ],
+   "volume": {
+    "dropbacks": {
+     "tau2": 7.829137898029073,
+     "sigma2": 65.87398590671934,
+     "lambda_tau2_over_s2": 0.11885022274370188,
+     "lambda_at_grid_edge": false,
+     "loglik_best": -2285.177654378864,
+     "loglik_tau2_zero": -2287.6528893541927,
+     "lr_stat_vs_tau2_zero": 4.950469950656952,
+     "n_starts": 1086,
+     "n_qbs": 88,
+     "n_starts_abs_a_gt_half": 310,
+     "mean_r_over_a_where_abs_a_gt_half_DIAGNOSTIC_NOT_USED": -1.0218713857078767,
+     "mean_r_all_starts_DIAGNOSTIC_NOT_USED": -0.3607383508488584
+    },
+    "pass_att": {
+     "tau2": 15.438016441933147,
+     "sigma2": 56.05204979245923,
+     "lambda_tau2_over_s2": 0.2754228703338169,
+     "lambda_at_grid_edge": false,
+     "loglik_best": -2208.003647122646,
+     "loglik_tau2_zero": -2217.0441599566902,
+     "lr_stat_vs_tau2_zero": 18.08102566808884,
+     "n_starts": 1086,
+     "n_qbs": 88,
+     "n_starts_abs_a_gt_half": 310,
+     "mean_r_over_a_where_abs_a_gt_half_DIAGNOSTIC_NOT_USED": -1.3195761533296444,
+     "mean_r_all_starts_DIAGNOSTIC_NOT_USED": -0.44056665748932955
+    },
+    "pass_rate": {
+     "tau2": 0.001001794618183838,
+     "sigma2": 0.010251294124920946,
+     "lambda_tau2_over_s2": 0.09772372209558111,
+     "lambda_at_grid_edge": false,
+     "loglik_best": 2477.6142882028903,
+     "loglik_tau2_zero": 2476.247750626012,
+     "lr_stat_vs_tau2_zero": 2.7330751537565448,
+     "n_starts": 1086,
+     "n_qbs": 88,
+     "n_starts_abs_a_gt_half": 310,
+     "mean_r_over_a_where_abs_a_gt_half_DIAGNOSTIC_NOT_USED": -0.015711811247721204,
+     "mean_r_all_starts_DIAGNOSTIC_NOT_USED": -0.004146061769297815
+    }
+   },
+   "rush": {
+    "p0": 0.08746360563568822,
+    "tau2": 0.0042610027484924744,
+    "tau_sd": 0.06527635673421484,
+    "s2_per_dropback": 0.12481494549039432,
+    "s2_relief_per_dropback": 3.0976463901345332,
+    "relief_weight": 0.04029347761833251,
+    "relief_weight_uncapped": 0.04029347761833251,
+    "n_qbs": 98,
+    "n_start_games": 1630,
+    "n_relief_games": 250
+   },
+   "s_start": 0.9688394766119911,
+   "cohort_carry_share": 0.11173426178601675,
+   "teammate": {
+    "tau2": 0.00033102227260288627,
+    "s2_per_game": 0.003429975579732285,
+    "n_contrasts": 639
+   }
+  },
+  "2025": {
+   "season": 2025,
+   "fit_seasons": [
+    2021,
+    2022,
+    2023,
+    2024
+   ],
+   "residual_fit_seasons": [
+    2022,
+    2023,
+    2024
+   ],
+   "volume": {
+    "dropbacks": {
+     "tau2": 7.901856882753209,
+     "sigma2": 66.48583991124194,
+     "lambda_tau2_over_s2": 0.11885022274370188,
+     "lambda_at_grid_edge": false,
+     "loglik_best": -3436.470477979699,
+     "loglik_tau2_zero": -3441.263094753876,
+     "lr_stat_vs_tau2_zero": 9.585233548354154,
+     "n_starts": 1630,
+     "n_qbs": 97,
+     "n_starts_abs_a_gt_half": 466,
+     "mean_r_over_a_where_abs_a_gt_half_DIAGNOSTIC_NOT_USED": -0.8147906775616642,
+     "mean_r_all_starts_DIAGNOSTIC_NOT_USED": -0.29744846476231196
+    },
+    "pass_att": {
+     "tau2": 12.927889772683121,
+     "sigma2": 57.08574070257993,
+     "lambda_tau2_over_s2": 0.2264644307593062,
+     "lambda_at_grid_edge": false,
+     "loglik_best": -3322.374118376728,
+     "loglik_tau2_zero": -3335.3546154162777,
+     "lr_stat_vs_tau2_zero": 25.96099407909969,
+     "n_starts": 1630,
+     "n_qbs": 97,
+     "n_starts_abs_a_gt_half": 466,
+     "mean_r_over_a_where_abs_a_gt_half_DIAGNOSTIC_NOT_USED": -0.858739773612136,
+     "mean_r_all_starts_DIAGNOSTIC_NOT_USED": -0.30401250854795386
+    },
+    "pass_rate": {
+     "tau2": 0.001826109033061894,
+     "sigma2": 0.010035215537881356,
+     "lambda_tau2_over_s2": 0.18197008586099825,
+     "lambda_at_grid_edge": false,
+     "loglik_best": 3728.158491453732,
+     "loglik_tau2_zero": 3720.043197828836,
+     "lr_stat_vs_tau2_zero": 16.230587249791824,
+     "n_starts": 1630,
+     "n_qbs": 97,
+     "n_starts_abs_a_gt_half": 466,
+     "mean_r_over_a_where_abs_a_gt_half_DIAGNOSTIC_NOT_USED": -0.012160307923688407,
+     "mean_r_all_starts_DIAGNOSTIC_NOT_USED": -0.0034627424480704544
+    }
+   },
+   "rush": {
+    "p0": 0.08936481694158033,
+    "tau2": 0.004220276200883801,
+    "tau_sd": 0.06496365292133595,
+    "s2_per_dropback": 0.125458297018096,
+    "s2_relief_per_dropback": 2.550358681751384,
+    "relief_weight": 0.04919241278326435,
+    "relief_weight_uncapped": 0.04919241278326435,
+    "n_qbs": 106,
+    "n_start_games": 2174,
+    "n_relief_games": 333
+   },
+   "s_start": 0.9689545809615093,
+   "cohort_carry_share": 0.1126006498092951,
+   "teammate": {
+    "tau2": 0.00030467512394483955,
+    "s2_per_game": 0.003466096787575461,
+    "n_contrasts": 838
+   }
+  },
+  "2026": {
+   "season": 2026,
+   "fit_seasons": [
+    2021,
+    2022,
+    2023,
+    2024,
+    2025
+   ],
+   "residual_fit_seasons": [
+    2022,
+    2023,
+    2024,
+    2025
+   ],
+   "volume": {
+    "dropbacks": {
+     "tau2": 9.9394353439878,
+     "sigma2": 65.6691980866787,
+     "lambda_tau2_over_s2": 0.1513561248436207,
+     "lambda_at_grid_edge": false,
+     "loglik_best": -4573.709110164828,
+     "loglik_tau2_zero": -4584.3277977762855,
+     "lr_stat_vs_tau2_zero": 21.237375222914125,
+     "n_starts": 2174,
+     "n_qbs": 110,
+     "n_starts_abs_a_gt_half": 642,
+     "mean_r_over_a_where_abs_a_gt_half_DIAGNOSTIC_NOT_USED": -1.2218228273607306,
+     "mean_r_all_starts_DIAGNOSTIC_NOT_USED": -0.3647859203980211
+    },
+    "pass_att": {
+     "tau2": 14.374404597414896,
+     "sigma2": 56.57048013944504,
+     "lambda_tau2_over_s2": 0.25409727055493064,
+     "lambda_at_grid_edge": false,
+     "loglik_best": -4422.859530983166,
+     "loglik_tau2_zero": -4444.46963962578,
+     "lr_stat_vs_tau2_zero": 43.22021728522668,
+     "n_starts": 2174,
+     "n_qbs": 110,
+     "n_starts_abs_a_gt_half": 642,
+     "mean_r_over_a_where_abs_a_gt_half_DIAGNOSTIC_NOT_USED": -1.1506465806537973,
+     "mean_r_all_starts_DIAGNOSTIC_NOT_USED": -0.36186479037264696
+    },
+    "pass_rate": {
+     "tau2": 0.0016288502011793258,
+     "sigma2": 0.010043408928282422,
+     "lambda_tau2_over_s2": 0.16218100973589297,
+     "lambda_at_grid_edge": false,
+     "loglik_best": 4974.766494184579,
+     "loglik_tau2_zero": 4962.852820628137,
+     "lr_stat_vs_tau2_zero": 23.827347112883217,
+     "n_starts": 2174,
+     "n_qbs": 110,
+     "n_starts_abs_a_gt_half": 642,
+     "mean_r_over_a_where_abs_a_gt_half_DIAGNOSTIC_NOT_USED": -0.016283581609513723,
+     "mean_r_all_starts_DIAGNOSTIC_NOT_USED": -0.004059677809875245
+    }
+   },
+   "rush": {
+    "p0": 0.08931293056148265,
+    "tau2": 0.00381937868393371,
+    "tau_sd": 0.06180112202811297,
+    "s2_per_dropback": 0.12382300991834311,
+    "s2_relief_per_dropback": 2.663424769849359,
+    "relief_weight": 0.046490147317112485,
+    "relief_weight_uncapped": 0.046490147317112485,
+    "n_qbs": 118,
+    "n_start_games": 2718,
+    "n_relief_games": 424
+   },
+   "s_start": 0.9694242770781092,
+   "cohort_carry_share": 0.11216216216216217,
+   "teammate": {
+    "tau2": 0.0003892103327606299,
+    "s2_per_game": 0.0034588676072092096,
+    "n_contrasts": 1068
+   }
+  }
+ },
+ "n_team_games": {
+  "total": 1088,
+  "QB_CHANGE": 303,
+  "STABLE": 785,
+  "SPLIT": 22,
+  "QB_CHANGE_SPLIT": 15
+ },
+ "evaluation": {
+  "PRIMARY_ALL_TEAM_GAMES": {
+   "QB_CHANGE": {
+    "dropbacks": {
+     "n_team_games": 303,
+     "incumbent": {
+      "mae": 6.912054783616214,
+      "rmse": 8.524870051491744,
+      "bias_forecast_minus_actual": 0.6564048394061858
+     },
+     "candidate": {
+      "mae": 6.696130211483248,
+      "rmse": 8.335058724313125,
+      "bias_forecast_minus_actual": 0.5114094029367477
+     },
+     "rmse_diff_cand_minus_inc": -0.18981132717861904,
+     "mae_diff_cand_minus_inc": {
+      "point": -0.21592457213296612,
+      "ci_lo": -0.3937630808737558,
+      "ci_hi": -0.04024656792540515,
+      "n_clusters": 53,
+      "B": 4000,
+      "seed": 20261009
+     }
+    },
+    "pass_rate": {
+     "n_team_games": 303,
+     "incumbent": {
+      "mae": 0.08433987240967461,
+      "rmse": 0.10241411577136586,
+      "bias_forecast_minus_actual": 0.00940070269103922
+     },
+     "candidate": {
+      "mae": 0.08244684654243951,
+      "rmse": 0.10035496337327107,
+      "bias_forecast_minus_actual": 0.006104878326915635
+     },
+     "rmse_diff_cand_minus_inc": -0.002059152398094788,
+     "mae_diff_cand_minus_inc": {
+      "point": -0.0018930258672350958,
+      "ci_lo": -0.004800232217086542,
+      "ci_hi": 0.0006514234898161406,
+      "n_clusters": 53,
+      "B": 4000,
+      "seed": 20261009
+     }
+    },
+    "qb_rush": {
+     "n_team_games": 303,
+     "incumbent": {
+      "mae": 1.749715968806624,
+      "rmse": 2.3989861666199275,
+      "bias_forecast_minus_actual": -0.5943852773577524
+     },
+     "candidate": {
+      "mae": 1.6702901827670271,
+      "rmse": 2.1916533597346626,
+      "bias_forecast_minus_actual": 0.2158687862085308
+     },
+     "rmse_diff_cand_minus_inc": -0.2073328068852649,
+     "mae_diff_cand_minus_inc": {
+      "point": -0.07942578603959682,
+      "ci_lo": -0.20135456243829544,
+      "ci_hi": 0.036845738467435635,
+      "n_clusters": 53,
+      "B": 4000,
+      "seed": 20261009
+     }
+    },
+    "pass_att": {
+     "n_team_games": 303,
+     "incumbent": {
+      "mae": 6.476569223128219,
+      "rmse": 7.917360822482055,
+      "bias_forecast_minus_actual": 0.47367290959528313
+     },
+     "candidate": {
+      "mae": 6.1218546939937815,
+      "rmse": 7.627004457245209,
+      "bias_forecast_minus_actual": 0.2639109520830527
+     },
+     "rmse_diff_cand_minus_inc": -0.29035636523684616,
+     "mae_diff_cand_minus_inc": {
+      "point": -0.35471452913443713,
+      "ci_lo": -0.5881034475741287,
+      "ci_hi": -0.11851323399242471,
+      "n_clusters": 53,
+      "B": 4000,
+      "seed": 20261009
+     }
+    }
+   },
+   "STABLE": {
+    "dropbacks": {
+     "n_team_games": 785,
+     "incumbent": {
+      "mae": 6.395256070319721,
+      "rmse": 8.149435901700983,
+      "bias_forecast_minus_actual": 0.2578243001061955
+     },
+     "candidate": {
+      "mae": 6.406530763729656,
+      "rmse": 8.14931336591062,
+      "bias_forecast_minus_actual": 0.3078421162921101
+     },
+     "rmse_diff_cand_minus_inc": -0.00012253579036247686,
+     "mae_diff_cand_minus_inc": {
+      "point": 0.011274693409934144,
+      "ci_lo": -0.020783873627049136,
+      "ci_hi": 0.04259352723498348,
+      "n_clusters": 64,
+      "B": 4000,
+      "seed": 20261009
+     }
+    },
+    "pass_rate": {
+     "n_team_games": 785,
+     "incumbent": {
+      "mae": 0.08075578588561898,
+      "rmse": 0.10145568386574834,
+      "bias_forecast_minus_actual": 0.0018786032634732146
+     },
+     "candidate": {
+      "mae": 0.08089357017049267,
+      "rmse": 0.10143487918447162,
+      "bias_forecast_minus_actual": 0.002339333406881022
+     },
+     "rmse_diff_cand_minus_inc": -2.0804681276714865e-05,
+     "mae_diff_cand_minus_inc": {
+      "point": 0.00013778428487369598,
+      "ci_lo": -0.00028848083897647453,
+      "ci_hi": 0.0005578569411472605,
+      "n_clusters": 64,
+      "B": 4000,
+      "seed": 20261009
+     }
+    },
+    "qb_rush": {
+     "n_team_games": 785,
+     "incumbent": {
+      "mae": 1.5245553984096483,
+      "rmse": 2.016591580901954,
+      "bias_forecast_minus_actual": 0.060718631905003095
+     },
+     "candidate": {
+      "mae": 1.5454395369841523,
+      "rmse": 2.0372636410890697,
+      "bias_forecast_minus_actual": 0.10894367212308687
+     },
+     "rmse_diff_cand_minus_inc": 0.020672060187115537,
+     "mae_diff_cand_minus_inc": {
+      "point": 0.020884138574503996,
+      "ci_lo": -0.013128869027248713,
+      "ci_hi": 0.05426890850176141,
+      "n_clusters": 64,
+      "B": 4000,
+      "seed": 20261009
+     }
+    },
+    "pass_att": {
+     "n_team_games": 785,
+     "incumbent": {
+      "mae": 6.081542895163937,
+      "rmse": 7.679622944026023,
+      "bias_forecast_minus_actual": 0.20982900971891957
+     },
+     "candidate": {
+      "mae": 6.087395515088547,
+      "rmse": 7.671933124479233,
+      "bias_forecast_minus_actual": 0.28438571562020004
+     },
+     "rmse_diff_cand_minus_inc": -0.0076898195467896,
+     "mae_diff_cand_minus_inc": {
+      "point": 0.005852619924609392,
+      "ci_lo": -0.034692172963269395,
+      "ci_hi": 0.04341130088785899,
+      "n_clusters": 64,
+      "B": 4000,
+      "seed": 20261009
+     }
+    }
+   },
+   "verdict": {
+    "dropbacks": {
+     "qb_change_improves": true,
+     "qb_change_ci_hi": -0.04024656792540515,
+     "stable_noninferior": true,
+     "stable_ci_hi": 0.04259352723498348,
+     "stable_margin": 0.12790512140639443,
+     "PASS": true
+    },
+    "pass_rate": {
+     "qb_change_improves": false,
+     "qb_change_ci_hi": 0.0006514234898161406,
+     "stable_noninferior": true,
+     "stable_ci_hi": 0.0005578569411472605,
+     "stable_margin": 0.0016151157177123796,
+     "PASS": false
+    },
+    "qb_rush": {
+     "qb_change_improves": false,
+     "qb_change_ci_hi": 0.036845738467435635,
+     "stable_noninferior": false,
+     "stable_ci_hi": 0.05426890850176141,
+     "stable_margin": 0.030491107968192967,
+     "PASS": false
+    },
+    "OVERALL_PASS": false
+   }
+  },
+  "SENSITIVITY_EXCLUDING_SPLIT": {
+   "QB_CHANGE": {
+    "dropbacks": {
+     "n_team_games": 288,
+     "incumbent": {
+      "mae": 6.918970992661036,
+      "rmse": 8.473901878984375,
+      "bias_forecast_minus_actual": 0.7507973580305003
+     },
+     "candidate": {
+      "mae": 6.6928332213946256,
+      "rmse": 8.290707047344956,
+      "bias_forecast_minus_actual": 0.6454258344737437
+     },
+     "rmse_diff_cand_minus_inc": -0.18319483163941896,
+     "mae_diff_cand_minus_inc": {
+      "point": -0.22613777126641033,
+      "ci_lo": -0.41356231089039514,
+      "ci_hi": -0.04614553272449703,
+      "n_clusters": 53,
+      "B": 4000,
+      "seed": 20261009
+     }
+    },
+    "pass_rate": {
+     "n_team_games": 288,
+     "incumbent": {
+      "mae": 0.08377758229647221,
+      "rmse": 0.1018290151002723,
+      "bias_forecast_minus_actual": 0.01049848594644078
+     },
+     "candidate": {
+      "mae": 0.08255548043011168,
+      "rmse": 0.10014884488672968,
+      "bias_forecast_minus_actual": 0.007836301758617208
+     },
+     "rmse_diff_cand_minus_inc": -0.0016801702135426227,
+     "mae_diff_cand_minus_inc": {
+      "point": -0.0012221018663605282,
+      "ci_lo": -0.004004271157626017,
+      "ci_hi": 0.0011797014365465051,
+      "n_clusters": 53,
+      "B": 4000,
+      "seed": 20261009
+     }
+    },
+    "qb_rush": {
+     "n_team_games": 288,
+     "incumbent": {
+      "mae": 1.7289796232478147,
+      "rmse": 2.3763335013458833,
+      "bias_forecast_minus_actual": -0.6369450744233967
+     },
+     "candidate": {
+      "mae": 1.6168754897996354,
+      "rmse": 2.142658847923939,
+      "bias_forecast_minus_actual": 0.1263353292525622
+     },
+     "rmse_diff_cand_minus_inc": -0.23367465342194427,
+     "mae_diff_cand_minus_inc": {
+      "point": -0.11210413344817938,
+      "ci_lo": -0.2394359107814657,
+      "ci_hi": 0.006950060292705976,
+      "n_clusters": 53,
+      "B": 4000,
+      "seed": 20261009
+     }
+    },
+    "pass_att": {
+     "n_team_games": 288,
+     "incumbent": {
+      "mae": 6.437854831961144,
+      "rmse": 7.863366207177871,
+      "bias_forecast_minus_actual": 0.4756661102055841
+     },
+     "candidate": {
+      "mae": 6.106745425752769,
+      "rmse": 7.592030996931008,
+      "bias_forecast_minus_actual": 0.339781472739097
+     },
+     "rmse_diff_cand_minus_inc": -0.27133521024686313,
+     "mae_diff_cand_minus_inc": {
+      "point": -0.33110940620837503,
+      "ci_lo": -0.5688228784134925,
+      "ci_hi": -0.08796986028211617,
+      "n_clusters": 53,
+      "B": 4000,
+      "seed": 20261009
+     }
+    }
+   },
+   "STABLE": {
+    "dropbacks": {
+     "n_team_games": 778,
+     "incumbent": {
+      "mae": 6.412357851502074,
+      "rmse": 8.168030950293533,
+      "bias_forecast_minus_actual": 0.2805991915212265
+     },
+     "candidate": {
+      "mae": 6.4237990315297315,
+      "rmse": 8.167937992294979,
+      "bias_forecast_minus_actual": 0.3307886152927867
+     },
+     "rmse_diff_cand_minus_inc": -9.295799855379983e-05,
+     "mae_diff_cand_minus_inc": {
+      "point": 0.01144118002765726,
+      "ci_lo": -0.021080069556941018,
+      "ci_hi": 0.04306829836664765,
+      "n_clusters": 64,
+      "B": 4000,
+      "seed": 20261009
+     }
+    },
+    "pass_rate": {
+     "n_team_games": 778,
+     "incumbent": {
+      "mae": 0.0810957735294537,
+      "rmse": 0.10178189111133736,
+      "bias_forecast_minus_actual": 0.0020324126735361036
+     },
+     "candidate": {
+      "mae": 0.08122173234841044,
+      "rmse": 0.10175893632386435,
+      "bias_forecast_minus_actual": 0.0025072041389172448
+     },
+     "rmse_diff_cand_minus_inc": -2.2954787473009053e-05,
+     "mae_diff_cand_minus_inc": {
+      "point": 0.0001259588189567451,
+      "ci_lo": -0.0003074426794557952,
+      "ci_hi": 0.0005468159890951568,
+      "n_clusters": 64,
+      "B": 4000,
+      "seed": 20261009
+     }
+    },
+    "qb_rush": {
+     "n_team_games": 778,
+     "incumbent": {
+      "mae": 1.5290287610357056,
+      "rmse": 2.022581497681527,
+      "bias_forecast_minus_actual": 0.06065191329848374
+     },
+     "candidate": {
+      "mae": 1.55037574552782,
+      "rmse": 2.0435666464265383,
+      "bias_forecast_minus_actual": 0.10616298068370786
+     },
+     "rmse_diff_cand_minus_inc": 0.02098514874501145,
+     "mae_diff_cand_minus_inc": {
+      "point": 0.021346984492114363,
+      "ci_lo": -0.01358934211409372,
+      "ci_hi": 0.05595439105272901,
+      "n_clusters": 64,
+      "B": 4000,
+      "seed": 20261009
+     }
+    },
+    "pass_att": {
+     "n_team_games": 778,
+     "incumbent": {
+      "mae": 6.1045282621301595,
+      "rmse": 7.700662960347863,
+      "bias_forecast_minus_actual": 0.22045304707868887
+     },
+     "candidate": {
+      "mae": 6.111712484114469,
+      "rmse": 7.69324489108881,
+      "bias_forecast_minus_actual": 0.2939245254673492
+     },
+     "rmse_diff_cand_minus_inc": -0.007418069259053084,
+     "mae_diff_cand_minus_inc": {
+      "point": 0.00718422198430968,
+      "ci_lo": -0.033199260285085325,
+      "ci_hi": 0.04495305709472603,
+      "n_clusters": 64,
+      "B": 4000,
+      "seed": 20261009
+     }
+    }
+   },
+   "verdict": {
+    "dropbacks": {
+     "qb_change_improves": true,
+     "qb_change_ci_hi": -0.04614553272449703,
+     "stable_noninferior": true,
+     "stable_ci_hi": 0.04306829836664765,
+     "stable_margin": 0.1282471570300415,
+     "PASS": true
+    },
+    "pass_rate": {
+     "qb_change_improves": false,
+     "qb_change_ci_hi": 0.0011797014365465051,
+     "stable_noninferior": true,
+     "stable_ci_hi": 0.0005468159890951568,
+     "stable_margin": 0.001621915470589074,
+     "PASS": false
+    },
+    "qb_rush": {
+     "qb_change_improves": false,
+     "qb_change_ci_hi": 0.006950060292705976,
+     "stable_noninferior": false,
+     "stable_ci_hi": 0.05595439105272901,
+     "stable_margin": 0.030580575220714112,
+     "PASS": false
+    },
+    "OVERALL_PASS": false
+   }
+  },
+  "BY_SEASON_DESCRIPTIVE": {
+   "2024": {
+    "QB_CHANGE": {
+     "dropbacks": {
+      "n_team_games": 152,
+      "incumbent": {
+       "mae": 6.625898611302448,
+       "rmse": 8.353956778243433,
+       "bias_forecast_minus_actual": 0.13432357773552375
+      },
+      "candidate": {
+       "mae": 6.415347109675676,
+       "rmse": 8.155373480100813,
+       "bias_forecast_minus_actual": 0.05934711473544431
+      },
+      "rmse_diff_cand_minus_inc": -0.1985832981426192,
+      "mae_diff_cand_minus_inc": {
+       "point": -0.21055150162677183,
+       "ci_lo": -0.46536731577349455,
+       "ci_hi": 0.030750385673642466,
+       "n_clusters": 27,
+       "B": 4000,
+       "seed": 20261009
+      }
+     },
+     "pass_rate": {
+      "n_team_games": 152,
+      "incumbent": {
+       "mae": 0.08490489684805849,
+       "rmse": 0.10437474122811702,
+       "bias_forecast_minus_actual": 0.001880636337228451
+      },
+      "candidate": {
+       "mae": 0.08258118015149075,
+       "rmse": 0.10050121830178485,
+       "bias_forecast_minus_actual": 0.00039813830831153746
+      },
+      "rmse_diff_cand_minus_inc": -0.003873522926332168,
+      "mae_diff_cand_minus_inc": {
+       "point": -0.0023237166965677375,
+       "ci_lo": -0.00647925591860022,
+       "ci_hi": 0.0010132180898684698,
+       "n_clusters": 27,
+       "B": 4000,
+       "seed": 20261009
+      }
+     },
+     "qb_rush": {
+      "n_team_games": 152,
+      "incumbent": {
+       "mae": 1.7865063134777983,
+       "rmse": 2.465824240436406,
+       "bias_forecast_minus_actual": -0.6843066129179991
+      },
+      "candidate": {
+       "mae": 1.6710844111997956,
+       "rmse": 2.2746812674337527,
+       "bias_forecast_minus_actual": 0.09102776690051716
+      },
+      "rmse_diff_cand_minus_inc": -0.19114297300265326,
+      "mae_diff_cand_minus_inc": {
+       "point": -0.11542190227800275,
+       "ci_lo": -0.23571694751195846,
+       "ci_hi": 0.010073552230037034,
+       "n_clusters": 27,
+       "B": 4000,
+       "seed": 20261009
+      }
+     }
+    },
+    "STABLE": {
+     "dropbacks": {
+      "n_team_games": 392,
+      "incumbent": {
+       "mae": 6.554985438607688,
+       "rmse": 8.327786312149904,
+       "bias_forecast_minus_actual": 0.1853621549104815
+      },
+      "candidate": {
+       "mae": 6.565763729211342,
+       "rmse": 8.321703380866483,
+       "bias_forecast_minus_actual": 0.23326706739057146
+      },
+      "rmse_diff_cand_minus_inc": -0.006082931283421189,
+      "mae_diff_cand_minus_inc": {
+       "point": 0.010778290603654206,
+       "ci_lo": -0.037083191591594324,
+       "ci_hi": 0.053307727927785015,
+       "n_clusters": 32,
+       "B": 4000,
+       "seed": 20261009
+      }
+     },
+     "pass_rate": {
+      "n_team_games": 392,
+      "incumbent": {
+       "mae": 0.08009887798701744,
+       "rmse": 0.10054580412285267,
+       "bias_forecast_minus_actual": 0.0021831387388742073
+      },
+      "candidate": {
+       "mae": 0.08032504882157455,
+       "rmse": 0.10064898075347928,
+       "bias_forecast_minus_actual": 0.002583422785048199
+      },
+      "rmse_diff_cand_minus_inc": 0.00010317663062660298,
+      "mae_diff_cand_minus_inc": {
+       "point": 0.00022617083455711562,
+       "ci_lo": -0.00021284489510799305,
+       "ci_hi": 0.0006953634421153243,
+       "n_clusters": 32,
+       "B": 4000,
+       "seed": 20261009
+      }
+     },
+     "qb_rush": {
+      "n_team_games": 392,
+      "incumbent": {
+       "mae": 1.5487642076239752,
+       "rmse": 2.061733944132597,
+       "bias_forecast_minus_actual": -0.061951722449977764
+      },
+      "candidate": {
+       "mae": 1.5622985142402004,
+       "rmse": 2.043325754431901,
+       "bias_forecast_minus_actual": 0.03307726158086425
+      },
+      "rmse_diff_cand_minus_inc": -0.01840818970069602,
+      "mae_diff_cand_minus_inc": {
+       "point": 0.013534306616225233,
+       "ci_lo": -0.02694650260206199,
+       "ci_hi": 0.0573698214850886,
+       "n_clusters": 32,
+       "B": 4000,
+       "seed": 20261009
+      }
+     }
+    }
+   },
+   "2025": {
+    "QB_CHANGE": {
+     "dropbacks": {
+      "n_team_games": 151,
+      "incumbent": {
+       "mae": 7.20010602991881,
+       "rmse": 8.693522282456717,
+       "bias_forecast_minus_actual": 1.1819435928759912
+      },
+      "candidate": {
+       "mae": 6.978772804031268,
+       "rmse": 8.51210399199384,
+       "bias_forecast_minus_actual": 0.9664654811261392
+      },
+      "rmse_diff_cand_minus_inc": -0.1814182904628776,
+      "mae_diff_cand_minus_inc": {
+       "point": -0.221333225887542,
+       "ci_lo": -0.4846805579907397,
+       "ci_hi": 0.016085584190965105,
+       "n_clusters": 26,
+       "B": 4000,
+       "seed": 20261009
+      }
+     },
+     "pass_rate": {
+      "n_team_games": 151,
+      "incumbent": {
+       "mae": 0.08377110608759279,
+       "rmse": 0.10040184564405336,
+       "bias_forecast_minus_actual": 0.01697057080878251
+      },
+      "candidate": {
+       "mae": 0.08231162330683824,
+       "rmse": 0.10020752428208314,
+       "bias_forecast_minus_actual": 0.011849411325775386
+      },
+      "rmse_diff_cand_minus_inc": -0.000194321361970215,
+      "mae_diff_cand_minus_inc": {
+       "point": -0.0014594827807545563,
+       "ci_lo": -0.00529019677622029,
+       "ci_hi": 0.0017557040051138504,
+       "n_clusters": 26,
+       "B": 4000,
+       "seed": 20261009
+      }
+     },
+     "qb_rush": {
+      "n_team_games": 151,
+      "incumbent": {
+       "mae": 1.7126819794687538,
+       "rmse": 2.3297696729732937,
+       "bias_forecast_minus_actual": -0.503868436263994
+      },
+      "candidate": {
+       "mae": 1.669490694543313,
+       "rmse": 2.1047703436403373,
+       "bias_forecast_minus_actual": 0.3415365672338161
+      },
+      "rmse_diff_cand_minus_inc": -0.2249993293329564,
+      "mae_diff_cand_minus_inc": {
+       "point": -0.043191284925440776,
+       "ci_lo": -0.26098837646565076,
+       "ci_hi": 0.13821384782606577,
+       "n_clusters": 26,
+       "B": 4000,
+       "seed": 20261009
+      }
+     }
+    },
+    "STABLE": {
+     "dropbacks": {
+      "n_team_games": 393,
+      "incumbent": {
+       "mae": 6.235933138083377,
+       "rmse": 7.967563230273147,
+       "bias_forecast_minus_actual": 0.3301020632530655
+      },
+      "candidate": {
+       "mae": 6.247702971188127,
+       "rmse": 7.9736500141195155,
+       "bias_forecast_minus_actual": 0.3822274067994973
+      },
+      "rmse_diff_cand_minus_inc": 0.006086783846368071,
+      "mae_diff_cand_minus_inc": {
+       "point": 0.011769833104749772,
+       "ci_lo": -0.03152009584661158,
+       "ci_hi": 0.055753920910902595,
+       "n_clusters": 32,
+       "B": 4000,
+       "seed": 20261009
+      }
+     },
+     "pass_rate": {
+      "n_team_games": 393,
+      "incumbent": {
+       "mae": 0.08141102226285002,
+       "rmse": 0.10235519123923244,
+       "bias_forecast_minus_actual": 0.0015748426875007231
+      },
+      "candidate": {
+       "mae": 0.08146064490020237,
+       "rmse": 0.10221275844105869,
+       "bias_forecast_minus_actual": 0.0020958651212791557
+      },
+      "rmse_diff_cand_minus_inc": -0.0001424327981737472,
+      "mae_diff_cand_minus_inc": {
+       "point": 4.962263735235062e-05,
+       "ci_lo": -0.0007151605308080406,
+       "ci_hi": 0.0007241752078774607,
+       "n_clusters": 32,
+       "B": 4000,
+       "seed": 20261009
+      }
+     },
+     "qb_rush": {
+      "n_team_games": 393,
+      "incumbent": {
+       "mae": 1.5004081892187675,
+       "rmse": 1.970534144119893,
+       "bias_forecast_minus_actual": 0.1830768479537372
+      },
+      "candidate": {
+       "mae": 1.5286234578890612,
+       "rmse": 2.031198929669617,
+       "bias_forecast_minus_actual": 0.18461703836367535
+      },
+      "rmse_diff_cand_minus_inc": 0.06066478554972421,
+      "mae_diff_cand_minus_inc": {
+       "point": 0.02821526867029367,
+       "ci_lo": -0.020365433995758974,
+       "ci_hi": 0.08385286775918911,
+       "n_clusters": 32,
+       "B": 4000,
+       "seed": 20261009
+      }
+     }
+    }
+   }
+  },
+  "TEAMMATE_TARGET_SHARES_REPORT_ONLY": {
+   "QB_CHANGE": {
+    "n_player_games": 1918,
+    "incumbent": {
+     "mae": 0.052649749883245084,
+     "rmse": 0.06871225341361488,
+     "bias_forecast_minus_actual": -0.0018131520302871024
+    },
+    "candidate": {
+     "mae": 0.05254075919140592,
+     "rmse": 0.0685502652609734,
+     "bias_forecast_minus_actual": -0.0019113624638380823
+    },
+    "mae_diff_cand_minus_inc": {
+     "point": -0.0001089906918391656,
+     "ci_lo": -0.0003900301629799128,
+     "ci_hi": 0.0001300604138441428,
+     "n_clusters": 53,
+     "B": 4000,
+     "seed": 20261009
+    }
+   },
+   "STABLE": {
+    "n_player_games": 5134,
+    "incumbent": {
+     "mae": 0.04981595975868769,
+     "rmse": 0.0659250237008361,
+     "bias_forecast_minus_actual": -0.0013460571022509474
+    },
+    "candidate": {
+     "mae": 0.049791261823969576,
+     "rmse": 0.06588885900671178,
+     "bias_forecast_minus_actual": -0.0013713433905244183
+    },
+    "mae_diff_cand_minus_inc": {
+     "point": -2.4697934718112546e-05,
+     "ci_lo": -7.693365324953964e-05,
+     "ci_hi": 2.608556328138445e-05,
+     "n_clusters": 64,
+     "B": 4000,
+     "seed": 20261009
+    }
+   },
+   "CAVEAT": "REPORT ONLY, no bar. Player set is OUTCOME-CONDITIONED (players active in the game, active = >= 1 target or designed carry); identical set for both arms, so the paired difference is interpretable but the levels are not deployable error rates."
+  }
+ },
+ "prospective_2026_descriptive": {
+  "NOTE": "DESCRIPTIVE ONLY (P8). Priors fitted on 2021-2025. Nothing tuned to any 2026 game.",
+  "weeks": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "by_subset": {
+   "QB_CHANGE": {
+    "dropbacks": {
+     "n": 34,
+     "incumbent_mae": 6.0802,
+     "candidate_mae": 6.5024
+    },
+    "pass_rate": {
+     "n": 34,
+     "incumbent_mae": 0.0798,
+     "candidate_mae": 0.0842
+    },
+    "qb_rush": {
+     "n": 34,
+     "incumbent_mae": 1.5359,
+     "candidate_mae": 1.5398
+    },
+    "pass_att": {
+     "n": 34,
+     "incumbent_mae": 5.1916,
+     "candidate_mae": 5.8404
+    }
+   },
+   "STABLE": {
+    "dropbacks": {
+     "n": 96,
+     "incumbent_mae": 6.7106,
+     "candidate_mae": 6.6949
+    },
+    "pass_rate": {
+     "n": 96,
+     "incumbent_mae": 0.0681,
+     "candidate_mae": 0.0669
+    },
+    "qb_rush": {
+     "n": 96,
+     "incumbent_mae": 1.5213,
+     "candidate_mae": 1.6973
+    },
+    "pass_att": {
+     "n": 96,
+     "incumbent_mae": 6.4272,
+     "candidate_mae": 6.4106
+    }
+   }
+  },
+  "TB_weeks_4_5": [
+   {
+    "game_id": "2026_04_GB_TB",
+    "week": 4,
+    "starter": "J.Daniels",
+    "subset": "QB_CHANGE",
+    "dominant_starter_prior_8": "B.Mayfield",
+    "qb_prior_starts": 0,
+    "qb_prior_relief": 1,
+    "dropbacks": {
+     "actual": 36.0,
+     "incumbent": 38.8739,
+     "candidate": 38.9785
+    },
+    "pass_rate": {
+     "actual": 0.5902,
+     "incumbent": 0.6392,
+     "candidate": 0.6405
+    },
+    "qb_rush": {
+     "actual": 8.0,
+     "incumbent": 2.2494,
+     "candidate": 3.4095
+    },
+    "pass_att": {
+     "actual": 27.0,
+     "incumbent": 32.8655,
+     "candidate": 32.9673
+    }
+   },
+   {
+    "game_id": "2026_05_TB_DAL",
+    "week": 5,
+    "starter": "J.Daniels",
+    "subset": "QB_CHANGE",
+    "dominant_starter_prior_8": "B.Mayfield",
+    "qb_prior_starts": 1,
+    "qb_prior_relief": 1,
+    "dropbacks": {
+     "actual": 31.0,
+     "incumbent": 38.5147,
+     "candidate": 38.2824
+    },
+    "pass_rate": {
+     "actual": 0.4921,
+     "incumbent": 0.6331,
+     "candidate": 0.6284
+    },
+    "qb_rush": {
+     "actual": 5.0,
+     "incumbent": 3.6494,
+     "candidate": 5.919
+    },
+    "pass_att": {
+     "actual": 25.0,
+     "incumbent": 32.1324,
+     "candidate": 31.2217
+    }
+   }
+  ],
+  "TB_weeks_4_5_detail": {
+   "2026_04_GB_TB": {
+    "qb_evidence": {
+     "starts": 0,
+     "relief": 1,
+     "absent_from_baseline_games": 0,
+     "exposure_info_sum_a2": 0.007561436672967863,
+     "baseline_composition_c": 0.012422360248447204,
+     "target_exposure_a": 0.957001916829662
+    },
+    "qb_deviation": {
+     "dropbacks": {
+      "raw_contrast": 95.6078431372549,
+      "shrink": 0.0011431614393806078,
+      "posterior_contrast": 0.10929519957685968,
+      "posterior_contrast_sd": 3.150884473409543,
+      "delta_applied": 0.10459571549533517
+     },
+     "pass_att": {
+      "raw_contrast": 55.47058823529409,
+      "shrink": 0.0019176559501861996,
+      "posterior_contrast": 0.10637350358974029,
+      "posterior_contrast_sd": 3.787722196110517,
+      "delta_applied": 0.10179964683526839
+     },
+     "pass_rate": {
+      "raw_contrast": 1.0764885550496008,
+      "shrink": 0.001224819412376934,
+      "posterior_contrast": 0.001318504079426347,
+      "posterior_contrast_sd": 0.04033429252922465,
+      "delta_applied": 0.001261810931358743
+     }
+    },
+    "rush_evidence": {
+     "start_games": 0,
+     "relief_games": 1,
+     "start_rush": 0,
+     "start_dropbacks": 0,
+     "relief_rush": 1,
+     "relief_dropbacks": 4,
+     "raw_rate": 0.25,
+     "shrink": 0.005703326877216288,
+     "rate": 0.09022938144343247,
+     "position_prior_p0": 0.08931293056148265
+    },
+    "incumbent_rush_basis": {
+     "prior_tier": "COHORT",
+     "prior_share": 0.11216216216216217,
+     "prior_n": 2.0,
+     "current_share_pooled_all_roles": 0.047619047619047616,
+     "current_n": 1,
+     "combined_carry_share": 0.09064779064779065,
+     "club_carries": 24.815126050420165
+    },
+    "teammates_REPORT_ONLY": [
+     {
+      "name": "M.Evans",
+      "player": "00-0031408",
+      "incumbent_share": 0.2462,
+      "candidate_share": 0.2462,
+      "games_with_qb": 0,
+      "games_other_qb": 8,
+      "share_with_qb_raw": null,
+      "share_other_qb_raw": 0.2434,
+      "shrink": 0.0
+     },
+     {
+      "name": "E.Egbuka",
+      "player": "00-0040129",
+      "incumbent_share": 0.1876,
+      "candidate_share": 0.1876,
+      "games_with_qb": 0,
+      "games_other_qb": 20,
+      "share_with_qb_raw": null,
+      "share_other_qb_raw": 0.2318,
+      "shrink": 0.0
+     },
+     {
+      "name": "C.Otton",
+      "player": "00-0038129",
+      "incumbent_share": 0.1802,
+      "candidate_share": 0.1802,
+      "games_with_qb": 0,
+      "games_other_qb": 18,
+      "share_with_qb_raw": null,
+      "share_other_qb_raw": 0.1749,
+      "shrink": 0.0
+     },
+     {
+      "name": "T.Hurst",
+      "player": "00-0041048",
+      "incumbent_share": 0.1363,
+      "candidate_share": 0.1363,
+      "games_with_qb": 0,
+      "games_other_qb": 3,
+      "share_with_qb_raw": null,
+      "share_other_qb_raw": 0.1363,
+      "shrink": 0.0
+     },
+     {
+      "name": "B.Irving",
+      "player": "00-0039361",
+      "incumbent_share": 0.1154,
+      "candidate_share": 0.1154,
+      "games_with_qb": 0,
+      "games_other_qb": 13,
+      "share_with_qb_raw": null,
+      "share_other_qb_raw": 0.1205,
+      "shrink": 0.0
+     },
+     {
+      "name": "J.McMillan",
+      "player": "00-0039855",
+      "incumbent_share": 0.0922,
+      "candidate_share": 0.0922,
+      "games_with_qb": 0,
+      "games_other_qb": 5,
+      "share_with_qb_raw": null,
+      "share_other_qb_raw": 0.0922,
+      "shrink": 0.0
+     }
+    ]
+   },
+   "2026_05_TB_DAL": {
+    "qb_evidence": {
+     "starts": 1,
+     "relief": 1,
+     "absent_from_baseline_games": 0,
+     "exposure_info_sum_a2": 0.9828710312102156,
+     "baseline_composition_c": 0.1358695652173913,
+     "target_exposure_a": 0.8335547118607178
+    },
+    "qb_deviation": {
+     "dropbacks": {
+      "raw_contrast": -2.1521803210431285,
+      "shrink": 0.12949884285554727,
+      "posterior_contrast": -0.27870486119156535,
+      "posterior_contrast_sd": 2.941477514499108,
+      "delta_applied": -0.23231575026471663
+     },
+     "pass_att": {
+      "raw_contrast": -5.466887088469647,
+      "shrink": 0.1998366683165948,
+      "posterior_contrast": -1.0924845018227836,
+      "posterior_contrast_sd": 3.391440914070708,
+      "delta_applied": -0.9106456041291903
+     },
+     "pass_rate": {
+      "raw_contrast": -0.041004441937754786,
+      "shrink": 0.13748714988945912,
+      "posterior_contrast": -0.0056375838548297155,
+      "posterior_contrast_sd": 0.037482052097267946,
+      "delta_applied": -0.004699234585703219
+     }
+    },
+    "rush_evidence": {
+     "start_games": 1,
+     "relief_games": 1,
+     "start_rush": 8,
+     "start_dropbacks": 36,
+     "relief_rush": 1,
+     "relief_dropbacks": 4,
+     "raw_rate": 0.22236497294211482,
+     "shrink": 0.5274488176944483,
+     "rate": 0.15949107300697873,
+     "position_prior_p0": 0.08931293056148265
+    },
+    "incumbent_rush_basis": {
+     "prior_tier": "COHORT",
+     "prior_share": 0.11216216216216217,
+     "prior_n": 2.0,
+     "current_share_pooled_all_roles": 0.17307692307692307,
+     "current_n": 2,
+     "combined_carry_share": 0.14261954261954263,
+     "club_carries": 25.588235294117645
+    },
+    "teammates_REPORT_ONLY": [
+     {
+      "name": "M.Evans",
+      "player": "00-0031408",
+      "incumbent_share": 0.2462,
+      "candidate_share": 0.2462,
+      "games_with_qb": 0,
+      "games_other_qb": 8,
+      "share_with_qb_raw": null,
+      "share_other_qb_raw": 0.2434,
+      "shrink": 0.0
+     },
+     {
+      "name": "C.Otton",
+      "player": "00-0038129",
+      "incumbent_share": 0.1927,
+      "candidate_share": 0.1974,
+      "games_with_qb": 1,
+      "games_other_qb": 18,
+      "share_with_qb_raw": 0.2308,
+      "share_other_qb_raw": 0.1749,
+      "shrink": 0.0963
+     },
+     {
+      "name": "E.Egbuka",
+      "player": "00-0040129",
+      "incumbent_share": 0.1667,
+      "candidate_share": 0.1601,
+      "games_with_qb": 1,
+      "games_other_qb": 20,
+      "share_with_qb_raw": 0.1538,
+      "share_other_qb_raw": 0.2318,
+      "shrink": 0.0968
+     },
+     {
+      "name": "T.Hurst",
+      "player": "00-0041048",
+      "incumbent_share": 0.1311,
+      "candidate_share": 0.1299,
+      "games_with_qb": 1,
+      "games_other_qb": 3,
+      "share_with_qb_raw": 0.1154,
+      "share_other_qb_raw": 0.1363,
+      "shrink": 0.0778
+     },
+     {
+      "name": "B.Irving",
+      "player": "00-0039361",
+      "incumbent_share": 0.102,
+      "candidate_share": 0.092,
+      "games_with_qb": 1,
+      "games_other_qb": 13,
+      "share_with_qb_raw": 0.0,
+      "share_other_qb_raw": 0.1205,
+      "shrink": 0.0946
+     },
+     {
+      "name": "J.McMillan",
+      "player": "00-0039855",
+      "incumbent_share": 0.0922,
+      "candidate_share": 0.0922,
+      "games_with_qb": 0,
+      "games_other_qb": 5,
+      "share_with_qb_raw": null,
+      "share_other_qb_raw": 0.0922,
+      "shrink": 0.0
+     }
+    ]
+   }
+  }
+ }
+}
