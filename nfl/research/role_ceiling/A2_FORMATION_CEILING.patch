@@ -1,0 +1,37 @@
+diff --git a/nfl/tools/role_state.py b/nfl/tools/role_state.py
+index f83ef835..62e9b112 100644
+--- a/nfl/tools/role_state.py
++++ b/nfl/tools/role_state.py
+@@ -73,6 +73,20 @@ CEILING_BY_EVIDENCE = {
+ #: other.
+ ALPHA_LIMIT = {'QB': 1, 'RB': 1, 'WR': 1, 'TE': 1}
+ 
++#: How many players at each position START, the formation this codebase already declares
++#: (classic_slate_state.NO_USAGE_CHART_LIFT_LIMIT: "one RB and one TE start, three WRs start"). CEILING_BY_EVIDENCE
++#: is read at the rank BEYOND the starters, so a club's WR2 and WR3 -- starters -- are not capped as backups.
++#: MEASURED before this change (2021-2026 player-weeks, pregame usage rank, realised share band): a rank-2 WR realised
++#: a role above the old SECONDARY cap in 50% of 1,890 weeks (23% ALPHA), against 18% for a rank-2 RB and 10% for a
++#: rank-2 TE. The one-ALPHA-per-room rule still orders the starters, so WR2 lands at PRIMARY when WR1 is ALPHA.
++STARTERS_BY_POSITION = {'QB': 1, 'RB': 1, 'TE': 1, 'WR': 3}
++
++
++def _ceiling_rank(rank, pos):
++    """Position depth rank -> the rank CEILING_BY_EVIDENCE is read at: every starter reads rank 1."""
++    return max(1, rank - (STARTERS_BY_POSITION.get(pos, 1) - 1))
++
++
+ REPLACEMENT_EXPIRES = (
+     'observed usage is capped at SECONDARY when it is the ONLY evidence, because a large '
+     'observed share held while the starter was injured is not a claim on the role once he '
+@@ -208,8 +222,9 @@ def assign(players, panel=None):
+         if pred:
+             ev, ceiling = 'PREDICTED_STARTER', CEILING_BY_EVIDENCE['PREDICTED_STARTER']
+         elif isinstance(rank, int) and rank >= 1:
+-            key = ('DEPTH_RANK_1' if rank == 1 else 'DEPTH_RANK_2' if rank == 2
+-                   else 'DEPTH_RANK_3' if rank == 3 else 'DEPTH_RANK_4_PLUS')
++            erank = _ceiling_rank(rank, pos)
++            key = ('DEPTH_RANK_1' if erank == 1 else 'DEPTH_RANK_2' if erank == 2
++                   else 'DEPTH_RANK_3' if erank == 3 else 'DEPTH_RANK_4_PLUS')
+             ev, ceiling = key, CEILING_BY_EVIDENCE[key]
+         elif obs_band:
+             ev, ceiling = 'OBSERVED_ONLY', CEILING_BY_EVIDENCE['OBSERVED_ONLY']
