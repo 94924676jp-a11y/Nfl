@@ -1,0 +1,38 @@
+{
+ "ARTIFACT": "TIEFIX_REGRESSION_RECORD",
+ "fix_commit": "f65096c5 (= 39340321 on the main branch)",
+ "baseline_commit": "78c66ef3",
+ "modules": 58,
+ "baseline_modules": 57,
+ "baseline_excludes": "test_role_state_tie_order (does not exist at baseline)",
+ "fix_failing": {
+  "nfl/tests/test_appearance_successor.py": 1,
+  "nfl/tests/test_classic_slate_state.py": 1,
+  "nfl/tests/test_football_only_arm.py": 4,
+  "nfl/tests/test_role_depth_adversarial.py": 1,
+  "nfl/tests/test_v1_draw_artifact.py": 3,
+  "nfl/tests/test_v1_projection.py": 1,
+  "nfl/tests/test_v1_rushing_a1.py": 3
+ },
+ "baseline_failing": {
+  "nfl/tests/test_appearance_candidate_b.py": 2,
+  "nfl/tests/test_appearance_successor.py": 1,
+  "nfl/tests/test_classic_slate_state.py": 1,
+  "nfl/tests/test_football_only_arm.py": 4,
+  "nfl/tests/test_p1_appearance_repair.py": 1,
+  "nfl/tests/test_r7_appearance_frame.py": 3,
+  "nfl/tests/test_role_depth_adversarial.py": 1,
+  "nfl/tests/test_v1_draw_artifact.py": 3,
+  "nfl/tests/test_v1_projection.py": 1,
+  "nfl/tests/test_v1_rushing_a1.py": 3
+ },
+ "new_failures_in_fix": {},
+ "failing_only_in_baseline": {
+  "nfl/tests/test_appearance_candidate_b.py": 2,
+  "nfl/tests/test_p1_appearance_repair.py": 1,
+  "nfl/tests/test_r7_appearance_frame.py": 3
+ },
+ "NOTE_ON_BASELINE_ONLY": "the two runs executed concurrently; the three appearance modules failing only in the baseline passed in the fix run and in the earlier 41-suite run, so they are recorded as UNEXPLAINED (probable contention), not as evidence for the fix",
+ "te_follow_up": "a8efedae (TE usage-first) was not in this run; covered by the targeted confirmation run on the final head",
+ "verdict": "NO NEW FAILURE: every failing module in the fix run fails identically at baseline"
+}
