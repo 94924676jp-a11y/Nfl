@@ -1,9 +1,27 @@
-# Week 5 Classic (Sunday 1:00 ET, 8 games): decision board, refreshed Friday 2026-10-09 ~19:45Z
+# Week 5 Classic (Sunday 1:00 ET, 8 games): decision board, refreshed Friday 2026-10-09 ~19:45Z; checked 21:31Z
 
 **Readiness: NOT READY to produce entered Classic portfolios.** Three things are missing:
-- the DraftKings salary file;
-- the official Friday designations (not yet published in the nflverse feed at 19:21Z; trigger 21:30Z);
-- a starter decision for CHI (see A1).
+- the DraftKings salary file (none in `nfl/dfs/inbox/drop/` at 21:31Z);
+- the official Friday designations. They are still not in the nflverse injury file at 21:30Z (byte-identical to the
+  08:16Z capture). nflverse refreshes injuries daily at 07:00 UTC, so they cannot arrive there before **Saturday
+  07:00Z**. The NFL.com page is unreachable from this executor. Until they arrive, every player is undesignated, and
+  undesignated is not inactive;
+- a starter decision for CHI (see A1). No designation for Caleb Williams has been captured. Chart QB1 is still
+  Williams (QB2 Bagent), and his practice line is DNP.
+
+**Refresh log, Friday evening.**
+- **~20:13Z rebuild on newly synced captures** (`research_projection/rebuild_2026-10-09/`; see
+  `docs/INTEGRATION_FEASIBILITY_AUDIT_2026-10-09.md`).
+  - The projection below had been built on Wednesday's injury file and the 10-08 depth chart.
+  - Thursday's practice report changed 26 practice lines and **moved no projection**: the engine reads designations,
+    not practice lines.
+  - The 10-09 depth chart changed WAS's RB order:
+    - Austin Ekeler moved from depth 4 to 3, 0.35 → 2.65 points;
+    - Kaytron Allen fell from 1.15 to 0.12 points.
+
+    Every other number on this board stands (summed change across all 266 players: 4.31 points).
+- **21:30Z check.** Injuries, rosters and depth charts are unchanged; only the schedule file changed, and the
+  projection does not read it. The rebuild planner reports NO_CHANGE, so the boards were not rebuilt.
 
 Our independent projections exist (266 players, 2,000 worlds), but **eleven player numbers are unreliable** (§3) and the
 simulated worlds carry five known unrepaired defects (§6). Nothing here recommends a lineup or a wager. FC is a
