@@ -58,6 +58,7 @@ def out_path(slate_id: str) -> pathlib.Path:
 
 
 NEXT_HEALTHY_TIER = 'DEPTH_CHART_NEXT_HEALTHY_AFTER_REPORTED_OUT'
+RESEARCH_UNIVERSE_CODE = 'RESEARCH_UNIVERSE_BUILT'
 #: highest chart rank that may lift a player who has NO usage history (see _qb_rank)
 NO_USAGE_CHART_LIFT_LIMIT = {'RB': 2, 'TE': 2, 'WR': 4}
 from nfl.tools.sunday_evidence import STATE_FOR_SOURCE as SE_STATE_FOR_SOURCE  # noqa: E402
@@ -209,17 +210,30 @@ def captured_qb_depth(as_of: str) -> dict:
 
 
 def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_starters=None,
-          evidence_packet=None, write: bool = True) -> Outcome:
+          evidence_packet=None, write: bool = True, research_universe=None) -> Outcome:
     """`evidence_packet`: a loaded nfl/tools/sunday_evidence packet (inactives, cleared players,
-    starting quarterbacks, each with its provenance tier). See that module for the rules."""
+    starting quarterbacks, each with its provenance tier). See that module for the rules.
+
+    `research_universe`: a PASS Outcome from `nfl/tools/research_universe.build`, used IN PLACE OF
+    DraftKings' pool when no DK file for the slate exists. Football forecasting needs a player
+    universe; it does not need DK's ids. A state built this way carries `RESEARCH_UNIVERSE` as its
+    export, synthetic `RU-` ids, and is never written to the production state path, so no portfolio
+    or upload stage can read it."""
     files = EO.slate_files(slate_id)
-    po = EO.pool(files['entries_blob'], files['entries_sha'])
-    if po.state.value != 'PASS':
-        return po
-    if not po.evidence.get('sha256_matches_declared'):
-        return Outcome.fail('CLASSIC_STATE_EXPORT_HASH_MISMATCH',
-                            f'{files["entries_blob"]} does not hash to its manifest row',
-                            cause=Cause.DATA)
+    if research_universe is not None:
+        po = research_universe
+        if po.state.value != 'PASS' or po.code != RESEARCH_UNIVERSE_CODE:
+            return Outcome.fail('CLASSIC_STATE_RESEARCH_UNIVERSE_INVALID',
+                                f'research universe is {po.state.value} {po.code}', cause=Cause.DATA)
+        write = False
+    else:
+        po = EO.pool(files['pool_blob'], files['pool_sha'])
+        if po.state.value != 'PASS':
+            return po
+        if not po.evidence.get('sha256_matches_declared'):
+            return Outcome.fail('CLASSIC_STATE_EXPORT_HASH_MISMATCH',
+                                f'{files["pool_blob"]} does not hash to its manifest row',
+                                cause=Cause.DATA)
     sl = EO.slate(po.value, expected_kickoff=files['kickoff'])
     if sl.state.value != 'PASS':
         return sl
@@ -361,8 +375,12 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
         'slate_id': slate_id, 'built_at_utc': dt.datetime.now(dt.timezone.utc).isoformat(),
         'as_of': as_of, 'season': season, 'week': week, 'kickoff': files['kickoff'],
         'games': {gid: {'away': a, 'home': h} for (a, h), (gid, _w) in sorted(games.items())},
-        'export': str(pathlib.Path(files['entries_blob']).relative_to(_REPO)),
-        'export_sha256': files['entries_sha'],
+        'export': ('RESEARCH_UNIVERSE' if research_universe is not None
+                   else str(pathlib.Path(files['pool_blob']).relative_to(_REPO))),
+        'export_sha256': (research_universe.evidence.get('sha256') if research_universe is not None
+                          else files['pool_sha']),
+        'universe_kind': ('RESEARCH_UNIVERSE_NOT_UPLOADABLE' if research_universe is not None
+                          else 'DK_POOL'),
         'freshness': {'code': fr.code, **{k: fr.evidence.get(k) for k in (
             'n_games_consumed', 'n_games_scored', 'same_week_games_already_played')}},
         'environment': {'games': env,
@@ -421,7 +439,7 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
     return Outcome.measured('CLASSIC_SLATE_STATE_BUILT', out, n_measured=len(players),
                             what='DK pool rows carried into the slate state',
                             detail=f'{len(players)} players, {len(games)} games, week {week}',
-                            path=str(out_path(slate_id).relative_to(_REPO)), week=week,
+                            path=str(out_path(slate_id).relative_to(_REPO)) if write else None, week=week,
                             availability=dict(status_counts),
                             n_unresolved_not_projected=len(unresolved_ids))
 

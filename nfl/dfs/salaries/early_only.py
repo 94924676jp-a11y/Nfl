@@ -82,6 +82,11 @@ SLATES = {
                'entries_sha': None,   # filled below from the manifest row, never typed in
                'salary_blob': _REPO / 'nfl' / 'vintage' / 'dk_salaries_early.da5fd2511ea37072.csv.gz',
                'kickoff': '10/04/2026 01:00PM ET'},
+    # No DK file for this slate exists in the repository (owner request open, docs/AGENT_OUTBOX.md).
+    # The football universe is built from the roster capture instead (nfl/tools/research_universe.py);
+    # the entries/pool blobs are added here when a DK export arrives, and only then can it be priced.
+    '2026W5': {'entries_blob': None, 'entries_sha': None, 'salary_blob': None,
+               'kickoff': '10/11/2026 01:00PM ET'},
 }
 
 
@@ -105,8 +110,15 @@ def _manifest_sha(blob) -> str | None:
 def slate_files(slate_id: str) -> dict:
     """The declared files for one slate, with the entries hash read from the manifest."""
     d = dict(SLATES[slate_id])
-    if not d.get('entries_sha'):
+    if d.get('entries_blob') and not d.get('entries_sha'):
         d['entries_sha'] = _manifest_sha(d['entries_blob'])
+    # THE POOL IS NOT THE ENTRIES. The football universe needs only DK's player pool; a DKSalaries
+    # export carries it as well as a DKEntries export does. `pool_blob` names whichever file supplies
+    # it and defaults to the entries export, so every registered week behaves exactly as before.
+    if not d.get('pool_blob'):
+        d['pool_blob'], d['pool_sha'] = d.get('entries_blob'), d.get('entries_sha')
+    elif not d.get('pool_sha'):
+        d['pool_sha'] = _manifest_sha(d['pool_blob'])
     return d
 
 _GAME = re.compile(r'^([A-Z]{2,3})@([A-Z]{2,3})\s+(.*)$')
@@ -161,23 +173,38 @@ def entries(blob=None, sha_declared=None) -> Outcome:
         by_fee=dict(fees), total_entered=round(total, 2))
 
 
+def _pool_header(rows):
+    """(row index, column offset) of the pool header, or (None, None).
+
+    The pool block is the same nine columns in both DK files that carry it, at different offsets:
+    a DKEntries export puts it at column 14 beside the entry lineups, a DKSalaries export at column
+    0. The header is FOUND by its own cells (`Position` immediately followed by `Name + ID`), never
+    by a fixed offset, so the football universe does not depend on which of the two files exists.
+    """
+    for i, r in enumerate(rows):
+        cells = [(c or '').strip() for c in r]
+        for j in range(len(cells) - 1):
+            if cells[j] == 'Position' and cells[j + 1] == 'Name + ID':
+                return i, j
+    return None, None
+
+
 def pool(blob=None, sha_declared=None) -> Outcome:
     """The contest player pool, with DraftKings' own IDs and roster slots."""
     raw, sha, ok = _read(blob or ENTRIES_BLOB, sha_declared or ENTRIES_SHA)
     rows = list(csv.reader(raw.decode('utf-8-sig').splitlines()))
-    hi = next((i for i, r in enumerate(rows)
-               if len(r) > 14 and (r[14] or '').strip() == 'Position'), None)
+    hi, off = _pool_header(rows)
     if hi is None:
         raise PoolNotFound(
-            'the entries export has no row whose 15th cell is `Position`, so '
+            'the file has no row carrying a `Position` cell followed by `Name + ID`, so '
             'it carries no player-pool block. The pool is not reconstructed '
             'from the entry lineups, which name only nine players.')
-    hdr = [c.strip() for c in rows[hi][14:]]
+    hdr = [c.strip() for c in rows[hi][off:]]
     out, bad_game, bad_salary = [], [], []
     for r in rows[hi + 1:]:
-        if len(r) <= 14 or not (r[14] or '').strip():
+        if len(r) <= off or not (r[off] or '').strip():
             continue
-        d = dict(zip(hdr, [c.strip() for c in r[14:]]))
+        d = dict(zip(hdr, [c.strip() for c in r[off:]]))
         gi = d.get('Game Info', '')
         m = _GAME.match(gi)
         if not m:
@@ -209,7 +236,7 @@ def pool(blob=None, sha_declared=None) -> Outcome:
         })
     ev = {'spec_version': SPEC_VERSION, 'sha256': sha,
           'sha256_matches_declared': ok, 'n_rows': len(out),
-          'pool_header_line': hi + 1,
+          'pool_header_line': hi + 1, 'pool_header_column': off,
           'malformed_game_info': bad_game, 'malformed_salaries': bad_salary}
     if not out:
         return Outcome.blocked('DK_POOL_EMPTY', 'zero pool rows.',
