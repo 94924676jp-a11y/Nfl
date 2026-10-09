@@ -4206,3 +4206,19 @@ The 14:00Z entry said the DKEntries export was "needed for our own projections".
    (knee; DNP), Terry McLaurin (hamstring; DNP), Stefon Diggs (hamstring; DNP).
 
 Unchanged: the Week 5 DK file (DKSalaries.csv to price; DKEntries.csv to assign entries) from the owner.
+
+## OUT-044 — read four terms pages live, so the integration matrix rests on text rather than search snippets
+
+From this executor, every vendor page returned 403 or failed to resolve. The integration matrix
+(`nfl/integrations/matrix.py`, `docs/INTEGRATION_FEASIBILITY_AUDIT_2026-10-09.md`) therefore rates these clauses
+SNIPPET_ONLY. Two of them decide whether sources we capture today may keep running (owner decisions OD-1, OD-2).
+
+Need: the current text of each clause, with its URL, the retrieval time, and a quote of the sentence.
+1. **NFL.com Terms of Service.** The clause on "systematic retrieval of data ... to create or compile ... a database",
+   and whether it covers the injury report (nfl.com/injuries/) and inactives (nfl.com/inactives/) pages.
+2. **Disney/ESPN Terms of Use.** The automated-means and scraping clause, as it applies to site.api.espn.com.
+3. **DraftKings Terms of Use.** The "automated means (including ... scripts and third-party tools)" clause, plus any
+   DraftKings help article that documents the salary CSV, the entries CSV, and the contest-standings export.
+4. **Fantasy Cruncher Terms.** The robots and scrapers clause, and whether the CSV exports need a paid plan.
+
+None of this is a request to fetch the pages' data. Read the terms only.

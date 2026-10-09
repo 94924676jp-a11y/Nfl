@@ -1,0 +1,1052 @@
+{
+  "meta": {
+    "title": "Platform terms and API feasibility audit for an NFL DFS forecasting workflow",
+    "retrieved": "2026-10-09",
+    "method": "WebSearch (standard/extended) for discovery; WebFetch for primary documents; git clone of public GitHub repos for nflverse.",
+    "fetch_failures": [
+      {
+        "tool": "WebFetch",
+        "url": "https://www.draftkings.com/help/terms",
+        "error": "getaddrinfo ENOTFOUND www.draftkings.com"
+      },
+      {
+        "tool": "WebFetch",
+        "url": "https://sportsbook.draftkings.com/legal/us-terms-of-use",
+        "error": "getaddrinfo ENOTFOUND sportsbook.draftkings.com"
+      },
+      {
+        "tool": "WebFetch",
+        "url": "https://help.draftkings.com/hc/en-us/articles/4405223983635-Fantasy-Sports-Fair-Play-Commitment-US",
+        "error": "getaddrinfo ENOTFOUND help.draftkings.com"
+      },
+      {
+        "tool": "WebFetch",
+        "url": "https://support.draftkings.com/dk/en-us/fantasy-sports-fair-play-commitment?id=kb_article_view&sysparm_article=KB0010662",
+        "error": "getaddrinfo ENOTFOUND support.draftkings.com"
+      },
+      {
+        "tool": "WebFetch",
+        "url": "https://www.legalsportsreport.com/2197/draftkings-scripting-controversy/",
+        "error": "getaddrinfo ENOTFOUND www.legalsportsreport.com"
+      },
+      {
+        "tool": "WebFetch",
+        "url": "https://nflreadr.nflverse.com/",
+        "error": "getaddrinfo ENOTFOUND nflreadr.nflverse.com"
+      },
+      {
+        "tool": "curl (Bash)",
+        "url": "https://www.draftkings.com/fantasy-fair-play-commitment",
+        "error": "CONNECT tunnel failed, response 403 (egress proxy policy)"
+      },
+      {
+        "tool": "proxy status log",
+        "url": "www.nfl.com:443, site.api.espn.com:443",
+        "error": "connect_rejected 403 recorded by agent proxy"
+      }
+    ],
+    "primary_access_note": "Only github.com was reachable for primary reads (WebFetch of github.com pages, and anonymous git clone of nflverse/nflreadr @23f915a5be30415aeaa0c5c80cd23b2c69cda122 and nflverse/nflverse-data @a78da18ca93f167bd0a2af274df48f539fa4153c). Every non-GitHub vendor document (DraftKings, Fantasy Cruncher, NFL, Sportradar, SportsDataIO, Genius, ESPN/Disney, Sports Reference, RotoWire) was seen ONLY through search-engine result summaries and is labelled SNIPPET_ONLY. SNIPPET_ONLY quotes are text as the search tool returned it; they may be paraphrased or truncated and must be re-verified against the live page before being relied on.",
+    "not_legal_advice": true,
+    "snippet_caveat": "SNIPPET_ONLY quotes containing '...' or a parenthetical were assembled from search-tool summaries; they are not verified verbatim text."
+  },
+  "services": {
+    "draftkings_dfs": {
+      "api": {
+        "finding": "No official public developer API for DFS was found. The commonly used JSON endpoints (api.draftkings.com/draftgroups/v1/draftgroups/{id}/draftables, www.draftkings.com/lobby/getcontests) are undocumented and documented only by third parties, who state DraftKings does not intend public use. No DraftKings document sanctioning them was found.",
+        "classification": "UNOFFICIAL_UNDOCUMENTED",
+        "evidence": [
+          {
+            "url": "https://github.com/SeanDrum/Draft-Kings-API-Documentation",
+            "quote": "This is unofficial documentation for the Draft Kings API.",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          },
+          {
+            "url": "https://github.com/SeanDrum/Draft-Kings-API-Documentation",
+            "quote": "Draft Kings very much does NOT intend to have this API used by the public",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          },
+          {
+            "url": "https://github.com/jaebradley/draftkings_client",
+            "quote": "To the best of my knowledge, DraftKings does not have an \"official\", well-documented public-facing API.",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          },
+          {
+            "url": "https://github.com/jaebradley/draftkings_client",
+            "quote": "Instead, they have various HTTP endpoints that do not require authentication (so are \"public\" in this manner).",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          },
+          {
+            "url": "https://oddspapi.io/blog/draftkings-api-odds-access/",
+            "quote": "reverse-engineered endpoints exist on GitHub but break often and violate ToS (third-party claim, not DraftKings)",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "official_export": {
+        "finding": "Manual, logged-in CSV exports exist: (1) contest GameCenter 'Export Lineups to CSV' (documented by DraftKings' own Fair Play Commitment page); (2) salary file DKSalaries.csv via 'Export to CSV' on the draft-team/lineup page (described only by third parties); (3) 'Edit Entries' -> Download producing DKEntries.csv, plus CSV upload of new lineups and re-upload of edited entries (described only by third-party tool vendors). No DraftKings help article for (2) or (3) was retrieved.",
+        "classification": "OFFICIAL_MANUAL_EXPORT",
+        "evidence": [
+          {
+            "url": "https://support.draftkings.com/dk/en-us/fantasy-sports-fair-play-commitment?id=kb_article_view&sysparm_article=KB0010662",
+            "quote": "When logged into DraftKings on desktop, laptop, or mobile web, a downloadable .CSV file that lists each entry is available in the GameCenter by clicking Export Lineups to CSV. This downloadable file includes rankings of lineups, FPTS, and athlete drafted percentages.",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://deepmetricanalytics.com/mlb/dfs-lineup-optimizer",
+            "quote": "Open your contest, go to Draft team, and choose Export to CSV, which gives DKSalaries.csv (search-summary paraphrase of a third-party page)",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://support.fantasylabs.com/hc/en-us/articles/360000419652-Editing-Entries-DraftKings-Written-Tutorial",
+            "quote": "Lineups, then \"Edit Entries,\" then \"Download\" ... the file you'll download will be called DKEntries.csv",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://www.runthesims.com/docs/bulk-entering-draftkings/",
+            "quote": "click the slate you are uploading for to highlight it, then click the Upload CSV button",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://www.lineupdrafter.com/draftkings-lineup-upload",
+            "quote": "DraftKings upload page https://www.draftkings.com/lineup/upload (third-party)",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://huggingface.co/spaces/Multichem-PD/DFS_Contest_Analyzer/blob/5370c500050a7f977a3402a9130f28463c3c6a83/app.py",
+            "quote": "https://www.draftkings.com/contest/exportfullstandingscsv/{contestId} (URL pattern in a third-party tool; unverified against DraftKings)",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "scheduled_delivery": {
+        "finding": "No scheduled, push, webhook or feed delivery offered to DFS users was found.",
+        "classification": "NOT_OFFERED",
+        "evidence": []
+      },
+      "authenticated_integration": {
+        "finding": "No public OAuth / API-key / developer program found. Third-party sources say documentation is shared only with contracted partners under NDA; partner arrangements exist (e.g. StreamNFT for Reignmakers) but none open to an individual forecaster were found.",
+        "classification": "NOT_OFFERED",
+        "evidence": [
+          {
+            "url": "https://cryptsy.com/draftkings-api/",
+            "quote": "there is no public DraftKings developer documentation, and documentation is shared only with contracted partners under NDA after a business-level agreement is signed (third-party claim)",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://dknetwork.draftkings.com/2023/10/24/free-reignmakers-football-optimizer-by-draftkings-partner-streamnft-available-now/",
+            "quote": "export all of your lineups from StreamNFT, and import them directly into DraftKings",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "automated_access_terms": {
+        "finding": "Prohibited. US Terms of Use bar automated means (scripts, third-party tools) to create/enter/withdraw contests or create/edit lineups, and bar harvesting bots/spiders/screen scrapers to obtain information on the site. The Fair Play Commitment says browser scripts or bots are prohibited. Optimizer tools must require multiple substantive user decisions. History: scripts briefly permitted for limited actions (2015), banned again January 2016 when DraftKings launched its own lineup tool. DraftKings has issued cease-and-desist letters over scraping (SuperLobby, 2015). Manual CSV export then manual CSV upload is the only route consistent with these terms.",
+        "classification": "PROHIBITED_BY_TERMS",
+        "evidence": [
+          {
+            "url": "https://sportsbook.draftkings.com/legal/us-terms-of-use",
+            "quote": "using automated means (including but not limited to scripts and third-party tools) to interact with the Website in any way, including, but not limited to: creating a contest, entering a contest, withdrawing from a contest, creating a lineup, and editing a lineup",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://sportsbook.draftkings.com/legal/watl-terms-of-use",
+            "quote": "using automated means (including but not limited to harvesting bots, robots, parser, spiders, or screen scrapers) to obtain, collect, or access any information on the Website or of any User for any purpose",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://sportsbook.draftkings.com/legal/us-terms-of-use",
+            "quote": "Content providers are expressly prohibited from engaging in the distribution of pre-built lineups that require no substantive input from the user ... Lineup tools must require multiple, substantive, independent decisions by the users in order to generate a lineup",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://help.draftkings.com/hc/en-us/articles/4405223983635-Fantasy-Sports-Fair-Play-Commitment-US",
+            "quote": "the use of automation tools such as browser scripts or bots is prohibited",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://www.espn.com/chalk/story/_/id/14623271/draftkings-bans-use-offsite-scripts-identify-experienced-players",
+            "quote": "DraftKings bans use of offsite scripts (2016 headline)",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://www.legalsportsreport.com/2197/draftkings-scripting-controversy/",
+            "quote": "changed its terms to allow customers to use scripts to automate a short list of time-consuming behaviors (2015, superseded)",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://www.legalsportsreport.com/8018/time-draftkings-issues-cease-desist-letter/",
+            "quote": "such a cease and desist request is standard procedure when it discovers what it believes to be a violation of its terms of use",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "redistribution_terms": {
+        "finding": "Third-party content providers may not distribute pre-built lineups needing no substantive user input. No clause specifically on redistributing exported salary/contest CSVs was retrieved; full TOU text not readable (DNS failure).",
+        "classification": "UNKNOWN",
+        "evidence": [
+          {
+            "url": "https://sportsbook.draftkings.com/legal/us-terms-of-use",
+            "quote": "Content providers are expressly prohibited from engaging in the distribution of pre-built lineups that require no substantive input from the user",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      }
+    },
+    "fantasy_cruncher": {
+      "api": {
+        "finding": "No Fantasy Cruncher API or developer data feed was found.",
+        "classification": "NOT_OFFERED",
+        "evidence": []
+      },
+      "official_export": {
+        "finding": "In-product CSV/XLSX downloads exist: Lineup Cruncher 'Export Tools' -> 'Download XX Lineups as CSV' for upload to DraftKings; Lineup Rewind pages offer 'Download CSV Format' / 'Download XLSX Format' and 'Download / Copy PlayerList'. Whether projection/player-pool export is premium-only: NOT FOUND. Forum descriptions are dated (2016).",
+        "classification": "OFFICIAL_MANUAL_EXPORT",
+        "evidence": [
+          {
+            "url": "https://www.fantasycruncher.com/forum/viewtopic.php?pid=3864",
+            "quote": "Open the \"Export Tools\" option at the top of the created lineups ... Click \"Download XX Lineups as CSV\" button",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://www.fantasycruncher.com/lineup-rewind/draftkings/VAL/2026-04-11",
+            "quote": "Download CSV Format / Download XLSX Format / Download / Copy PlayerList (page controls seen in snippet)",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://www.fantasycruncher.com/forum/viewtopic.php?id=1512",
+            "quote": "paste those lineups into DKEntries.csv, save it, and upload it to DraftKings using the edit lineups button (community workaround)",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "scheduled_delivery": {
+        "finding": "No scheduled or push delivery found.",
+        "classification": "NOT_OFFERED",
+        "evidence": []
+      },
+      "authenticated_integration": {
+        "finding": "No OAuth/API key/partner program found; access is a personal, non-transferable membership license.",
+        "classification": "NOT_OFFERED",
+        "evidence": [
+          {
+            "url": "https://www.fantasycruncher.com/tos",
+            "quote": "limited, non-exclusive, non-transferable, license to access the Fantasy Cruncher service",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "automated_access_terms": {
+        "finding": "Prohibited: TOS bars robots, spiders, scrapers or other automated means, and data mining/extraction. Account sharing: no explicit clause found (license is non-transferable; 'Account Owner' concept) -> UNKNOWN for credential sharing specifically.",
+        "classification": "PROHIBITED_BY_TERMS",
+        "evidence": [
+          {
+            "url": "https://www.fantasycruncher.com/tos",
+            "quote": "any robot, spider, scraper or other automated means to access the service ... any data mining, data gathering or extraction method",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://www.fantasycruncher.com/tos",
+            "quote": "for your personal and non-commercial use only",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "redistribution_terms": {
+        "finding": "Prohibited without written permission, except personal caching; explicit carve-out lets users share their own lineups (text or image).",
+        "classification": "PROHIBITED_BY_TERMS",
+        "evidence": [
+          {
+            "url": "https://www.fantasycruncher.com/tos",
+            "quote": "not archive, download, or redistribute ... content without written permission, except for caching necessary for personal use",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://www.fantasycruncher.com/tos",
+            "quote": "share your own lineups created by you on other websites or social media platforms (text or image)",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      }
+    },
+    "nflverse": {
+      "api": {
+        "finding": "No hosted API; data is published as public GitHub release assets (rds/csv/parquet) fetched over HTTPS by nflreadr (R) or by URL. Officially supported by the project, no key needed.",
+        "classification": "OFFICIALLY_SUPPORTED",
+        "evidence": [
+          {
+            "url": "https://github.com/nflverse/nflverse-data (DESCRIPTION, LICENSE.md, workflows.md @a78da18)",
+            "quote": "This repository holds automated data releases for nflverse projects (i.e. all of the data powered/scraped via GitHub Actions).",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          },
+          {
+            "url": "https://github.com/nflverse/nflverse-data (DESCRIPTION, LICENSE.md, workflows.md @a78da18)",
+            "quote": "You can download data hosted here with the `{nflreadr}` package, or manually download and access the [releases](https://github.com/nflverse/nflverse-data/releases) page.",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          },
+          {
+            "url": "https://github.com/nflverse/nflverse-data/releases/tag/injuries",
+            "quote": "Injuries data, accessed with `nflreadr::load_injuries()`",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          },
+          {
+            "url": "https://github.com/nflverse/nflverse-data/releases/tag/depth_charts",
+            "quote": "Depth chart data, accessed with `nflreadr::load_depth_charts()`",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          }
+        ]
+      },
+      "official_export": {
+        "finding": "Direct file downloads (csv/parquet/rds) from release pages, e.g. releases/download/depth_charts/depth_charts_{season}.rds.",
+        "classification": "OFFICIALLY_SUPPORTED",
+        "evidence": [
+          {
+            "url": "https://github.com/nflverse/nflreadr/blob/main/R/load_depth_charts.R",
+            "quote": "https://github.com/nflverse/nflverse-data/releases/download/depth_charts/depth_charts_{seasons}.rds",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          }
+        ]
+      },
+      "scheduled_delivery": {
+        "finding": "Pull-only on a published cron cadence (no push). Injuries: daily 07:00 UTC Sep-Feb. Rosters and depth charts: daily 07:00 UTC year-round. Schedules: every 5 minutes in season. PBP/player stats: nightly 09:00 UTC plus game-window runs; raw pbp every 15 min; stat corrections Wed 02:00 UTC. PFR snap counts/advstats and FTN charting: every 6 h in season. Note: workflows.md is labelled internal and dated 16 Sep 2026.",
+        "classification": "OFFICIALLY_SUPPORTED",
+        "evidence": [
+          {
+            "url": "https://github.com/nflverse/nflreadr/blob/main/vignettes/articles/nflverse_data_schedule.Rmd (published at nflreadr.nflverse.com/articles/nflverse_data_schedule.html)",
+            "quote": "[Injury Data](https://nflreadr.nflverse.com/articles/dictionary_injuries.html) updates every day at 7AM UTC throughout the season.",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          },
+          {
+            "url": "https://github.com/nflverse/nflreadr/blob/main/vignettes/articles/nflverse_data_schedule.Rmd (published at nflreadr.nflverse.com/articles/nflverse_data_schedule.html)",
+            "quote": "[Depth Charts](https://nflreadr.nflverse.com/articles/dictionary_depth_charts.html) update every day at 7AM UTC throughout the year.",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          },
+          {
+            "url": "https://github.com/nflverse/nflreadr/blob/main/vignettes/articles/nflverse_data_schedule.Rmd (published at nflreadr.nflverse.com/articles/nflverse_data_schedule.html)",
+            "quote": "[Roster data](https://nflreadr.nflverse.com/reference/load_rosters.html) updates every day at 7AM UTC.",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          },
+          {
+            "url": "https://github.com/nflverse/nflreadr/blob/main/vignettes/articles/nflverse_data_schedule.Rmd (published at nflreadr.nflverse.com/articles/nflverse_data_schedule.html)",
+            "quote": "[Game/Schedule data](https://nflreadr.nflverse.com/reference/load_schedules.html) updates very 5 minutes during the season.",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          },
+          {
+            "url": "https://github.com/nflverse/nflreadr/blob/main/vignettes/articles/nflverse_data_schedule.Rmd (published at nflreadr.nflverse.com/articles/nflverse_data_schedule.html)",
+            "quote": "[Snap Count data](https://nflreadr.nflverse.com/reference/load_snap_counts.html) updates every day at 0, 6, 12, 18 UTC during the season. The actual availability of new data depends on the update schedule of PFR.",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          },
+          {
+            "url": "https://github.com/nflverse/nflreadr/blob/main/vignettes/articles/nflverse_data_schedule.Rmd (published at nflreadr.nflverse.com/articles/nflverse_data_schedule.html)",
+            "quote": "In all cases, it is recommended to update the data again during the night from Wednesday to Thursday in order to also receive the stat corrections that the NFL will incorporate from Monday to Wednesday at the latest.",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          },
+          {
+            "url": "https://github.com/nflverse/nflverse-data (DESCRIPTION, LICENSE.md, workflows.md @a78da18)",
+            "quote": "# runs every day at 7:00 AM UTC from Sep to Feb\ncron:  '0 7 * 1,2,9,10,11,12 *'  (update_injuries.yaml)",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          }
+        ]
+      },
+      "authenticated_integration": {
+        "finding": "None needed; anonymous public downloads.",
+        "classification": "NOT_OFFERED",
+        "evidence": []
+      },
+      "automated_access_terms": {
+        "finding": "Automated download is the intended use (nflreadr is a programmatic loader). However, nflverse itself scrapes/derives from third parties: depth charts switched from NFL Data Exchange to ESPN (2025); snap counts/advstats/combine/draft from Pro Football Reference; participation and charting from FTN; injuries 'collected from an API' (source not named); IDs keyed on NFL GSIS. Upstream terms (ESPN/Disney, Sports Reference, NFL) therefore still bind the underlying data.",
+        "classification": "OFFICIALLY_SUPPORTED",
+        "evidence": [
+          {
+            "url": "https://github.com/nflverse/nflreadr/blob/main/NEWS.md",
+            "quote": "Please note that the [data structure](https://nflreadr.nflverse.com/articles/dictionary_depth_charts.html) has changed because the data source had to be changed from NFL Data Exchange to ESPN. (#275, #277)",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          },
+          {
+            "url": "https://github.com/nflverse/nflreadr/blob/main/R/load_snap_counts.R",
+            "quote": "@description Loads game level snap counts stats provided by Pro Football Reference",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          },
+          {
+            "url": "https://github.com/nflverse/nflreadr/blob/main/R/load_injuries.R",
+            "quote": "Data collected from an API for weekly injury report data.",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          },
+          {
+            "url": "https://github.com/nflverse/nflreadr/blob/main/data-raw/dictionary_injuries.csv",
+            "quote": "gsis_id,numeric,Game Stats and Info Service ID: the primary ID for play-by-play data.",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          }
+        ]
+      },
+      "redistribution_terms": {
+        "finding": "Split licensing. nflreadr code: MIT. nflverse-data repository: CC BY 4.0 (attribution). But nflreadr states NFL data belong to their owners and are governed by their terms -- so CC BY on the repo does not clear upstream rights. FTN charting and 2023+ participation: CC-BY-SA 4.0 with mandatory attribution 'FTN Data via nflverse'. No per-dataset licence statement found for injuries, rosters, depth charts, schedules or player stats beyond the repo licence.",
+        "classification": "UNKNOWN",
+        "evidence": [
+          {
+            "url": "https://github.com/nflverse/nflreadr (README.md @23f915a)",
+            "quote": "The R code for this package is released as open source under the [MIT License](https://nflreadr.nflverse.com/LICENSE.html). NFL data accessed by this package belong to their respective owners, and are governed by their terms of use.",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          },
+          {
+            "url": "https://github.com/nflverse/nflverse-data (DESCRIPTION, LICENSE.md, workflows.md @a78da18)",
+            "quote": "License: CC BY 4.0",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          },
+          {
+            "url": "https://github.com/nflverse/nflverse-data",
+            "quote": "CC-BY-4.0 license (GitHub repository sidebar, via WebFetch)",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          },
+          {
+            "url": "https://github.com/nflverse/nflreadr/blob/main/R/load_ftn_charting.R",
+            "quote": "is released under the [CC-BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) Creative Commons license and attribution must be made to **FTN Data via nflverse**",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          },
+          {
+            "url": "https://github.com/nflverse/nflreadr/blob/main/R/load_participation.R",
+            "quote": "Participation data prior to 2023 is from NFL NGS. Participation data from 2023 onwards is courtesy of FTN and is provided after all post-season games are completed.",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          },
+          {
+            "url": "https://github.com/nflverse/nflreadr/blob/main/vignettes/articles/nflverse_data_schedule.Rmd (published at nflreadr.nflverse.com/articles/nflverse_data_schedule.html)",
+            "quote": "Participation data from 2023 onwards is courtesy of FTN and is provided **after all post-season games are completed**. It does not update during the season!",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          }
+        ]
+      }
+    },
+    "nfl_official": {
+      "api": {
+        "finding": "No official public NFL developer API found. Official data is distributed by licence: Genius Sports is the exclusive distributor of official play-by-play, Next Gen Stats and the betting data feed (2021; extended 2023 through 2027-28; expanded 2025 through the 2029 season). Sportradar held the exclusive statistics distribution role from 2015 and a betting-data deal in 2020; no source explicitly states its termination (Genius displacing it is an inference).",
+        "classification": "LICENSED_PAID",
+        "evidence": [
+          {
+            "url": "https://www.businesswire.com/news/home/20230706824603/en/National-Football-League-Extends-Strategic-Partnership-with-Genius-Sports-as-Exclusive-Official-NFL-Data-and-Watch-Bet-Distribution-Partner",
+            "quote": "exclusive distributor of real-time, official play-by-play statistics, proprietary Next Gen Stats (\"NGS\") data and the NFL's official sports betting data feed to media companies and sports betting operators globally",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://www.businesswire.com/news/home/20250611456305/en/The-National-Football-League-Expands-and-Extends-Strategic-Partnership-with-Genius-Sports-in-Multi-Year-Deal",
+            "quote": "will run through the end of the 2029 NFL season",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://www.sec.gov/Archives/edgar/data/1836470/000119312521269445/d122309df1a.htm",
+            "quote": "2014: Established partnership with the NFL as first league deal with a major US league (Sportradar F-1/A)",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://www.espn.com/chalk/story/_/id/27372703/nfl-data-set-distributed-bookmakers",
+            "quote": "exclusive rights to distribute real-time, play-by-play data that is used to create updated odds and betting propositions throughout a game (Sportradar, 2019-2020)",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "official_export": {
+        "finding": "Official injury report is published as web pages on NFL.com (per-game practice and game status); inactives appear as NFL.com articles about 90 minutes before kickoff; NFL.com has a transaction hub. No official CSV/PDF download confirmed (operations.nfl.com injury PDF: NOT FOUND). Reporting cadence comes from the Personnel (Injury) Report Policy: practice reports by 4:00 p.m. ET on the three practice days; Game Status Report Friday (Sunday game).",
+        "classification": "OFFICIAL_MANUAL_EXPORT",
+        "evidence": [
+          {
+            "url": "https://www.nfl.com/injuries/",
+            "quote": "Official Latest NFL Injury Report for Players - Week 5 of the 2026 Season (page title)",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://operations.nfl.com/calendar-events/nfl-important-dates",
+            "quote": "each club is required to file a Practice Report by 4:00 p.m., New York time, (or as soon as possible after the completion of practice)",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://operations.nfl.com/calendar-events/nfl-important-dates",
+            "quote": "On days that a team practices, an estimated injury report for practice status is not acceptable",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://africa.espn.com/fantasy/football/story/_/page/FFSundayInactives-47255473/nfl-fantasy-football-espn-injured-inactives-watchlist-week-15-2025-december-14",
+            "quote": "official Sunday inactives should begin coming in approximately 90 minutes before the scheduled kickoff times",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://www.nfl.com/news/nfl-news-roundup-latest-league-updates-from-thursday-oct-8",
+            "quote": "NFL.com's transaction hub offers a daily breakdown",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "scheduled_delivery": {
+        "finding": "Only via licensed feeds (Genius Sports). No free push/scheduled delivery from NFL found.",
+        "classification": "LICENSED_PAID",
+        "evidence": []
+      },
+      "authenticated_integration": {
+        "finding": "Partner licensing through Genius Sports (B2B, media and betting operators). No individual developer program found.",
+        "classification": "LICENSED_PAID",
+        "evidence": [
+          {
+            "url": "https://www.businesswire.com/news/home/20211122006102/en/FanDuel-Expands-Genius-Sports-Partnership-to-Include-Official-NFL-Data-Content-and-Fan-Engagement-Solutions",
+            "quote": "providing sportsbook partners including FanDuel with access to the NFL's proprietary Next Gen Stats (NGS) data, and official sports betting data feed",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "automated_access_terms": {
+        "finding": "Prohibited without consent: NFL.com terms limit use to individual non-commercial purposes, prohibit systematic retrieval to build a database absent written consent, and bar robots/spiders for harvesting; subscription terms bar bypassing robot-exclusion measures. Note the support-page copy was ~567 days old in the index.",
+        "classification": "PROHIBITED_BY_TERMS",
+        "evidence": [
+          {
+            "url": "https://support.nfl.com/hc/en-us/articles/35869743904916-NFL-com-Terms-and-Conditions",
+            "quote": "systematic retrieval of data or other content from the Services, whether to create or compile a collection, compilation, database, or directory, is prohibited absent express prior written consent",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://support.nfl.com/hc/en-us/articles/35869743904916-NFL-com-Terms-and-Conditions",
+            "quote": "using browsers, spiders, robots, avatars or intelligent agents to harvest information for commercial purposes",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://www.nfl.com/legal/subscriptions_terms",
+            "quote": "not to try to bypass robot exclusion headers or other measures NFL uses to restrict access to the Products (last updated September 4, 2026)",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "redistribution_terms": {
+        "finding": "Use limited to individual non-commercial and informational purposes; redistribution not permitted without consent (exact redistribution clause not retrieved).",
+        "classification": "PROHIBITED_BY_TERMS",
+        "evidence": [
+          {
+            "url": "https://support.nfl.com/hc/en-us/articles/35869743904916-NFL-com-Terms-and-Conditions",
+            "quote": "individual non-commercial and informational purposes",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      }
+    },
+    "sportradar_nfl_api": {
+      "api": {
+        "finding": "Documented NFL API (v7, 'official' path) with rosters, weekly depth charts, weekly injuries incl. practice status. B2B: pull, store, serve.",
+        "classification": "LICENSED_PAID",
+        "evidence": [
+          {
+            "url": "https://developer.sportradar.com/football/reference/nfl-overview",
+            "quote": "team rosters, depth charts, weekly injuries, seasonal statistics, subjective statistics, and draft information",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://developer.sportradar.com/football/v5/reference/nfl-weekly-injuries",
+            "quote": "GET https://api.sportradar.com/nfl/official/trial/v7/en/seasons/2025/REG/10/injuries.json",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://developer.sportradar.com/getting-started/docs/your-account",
+            "quote": "B2B (Business-to-Business) and are not intended to be called directly from a client application",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "official_export": {
+        "finding": "No end-user CSV export; API only.",
+        "classification": "NOT_OFFERED",
+        "evidence": []
+      },
+      "scheduled_delivery": {
+        "finding": "Pull API with cache TTLs (e.g. 120 s on injuries); push feeds not confirmed for NFL in sources seen. Depth charts not maintained in offseason.",
+        "classification": "LICENSED_PAID",
+        "evidence": [
+          {
+            "url": "https://developer.sportradar.com/docs/read/american_football/NFL_v5",
+            "quote": "120s Time To Live / Cache",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://developer.sportradar.com/football/reference/nfl-overview",
+            "quote": "Depth charts are not monitored in the offseason",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "authenticated_integration": {
+        "finding": "API key (x-api-key). Free trial exists: 30 days, 1,000 requests per rolling 30 days, 1 QPS (an older FAQ said 90 days). DFS salaries: NOT FOUND for Sportradar NFL.",
+        "classification": "LICENSED_PAID",
+        "evidence": [
+          {
+            "url": "https://developer.sportradar.com/getting-started/docs/your-account",
+            "quote": "our trials last 30 days ... 1,000 requests (quota) per rolling 30 days ... 1 QPS",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "automated_access_terms": {
+        "finding": "Automated API access is the licensed mode. Trial is for internal testing and evaluation only, non-commercial.",
+        "classification": "LICENSED_PAID",
+        "evidence": [
+          {
+            "url": "https://developer.sportradar.com/apps/tos",
+            "quote": "Free Trial means non-commercial use of the Service provided by the Company to prospective customers for internal testing and evaluation purposes only",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "redistribution_terms": {
+        "finding": "Trial/evaluation use may not be published or displayed; commercial redistribution requires a paid licence.",
+        "classification": "PROHIBITED_BY_TERMS",
+        "evidence": [
+          {
+            "url": "https://developer.sportradar.com/sportradar-updates/page/master-terms-and-conditions-for-non-betting-services",
+            "quote": "use the Sportradar Materials in connection with any commercial use or any use involving publication or display of the Data or Content in any form or media",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      }
+    },
+    "sportsdataio_nfl_api": {
+      "api": {
+        "finding": "Documented NFL REST API (v3) incl. Injuries by season/week/team, InjuredPlayers (low latency), Depth Charts (current state only; no history), rosters, and DFS Slates by Week/Date with DraftKings, FanDuel and Yahoo salaries.",
+        "classification": "LICENSED_PAID",
+        "evidence": [
+          {
+            "url": "https://sportsdata.io/developers/api-documentation/nfl",
+            "quote": "https://api.sportsdata.io/v3/nfl/stats/json/Injuries/{season}/{week}",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://sportsdata.io/developers/api-documentation/nfl",
+            "quote": "Depth charts are current-state only. Historical depth charts are not available.",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://sportsdata.io/developers/coverages/nfl",
+            "quote": "NFL salaries and slates are available for FanDuel, DraftKings, and Yahoo",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://support.sportsdata.io/hc/en-us/articles/4405153845271-Fantasy-Projections-and-DFS-Guide",
+            "quote": "The \"Main\" Sunday slate is typically available at least 48 hours before kickoff",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://support.sportsdata.io/hc/en-us/articles/9911200480663-Process-Guide-Injuries",
+            "quote": "our injury data is updated around the clock",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "official_export": {
+        "finding": "Database downloads are marketed, and a data-dictionary download exists; end-user CSV export specifics NOT FOUND.",
+        "classification": "LICENSED_PAID",
+        "evidence": [
+          {
+            "url": "https://github.com/api-evangelist/sportsdataio",
+            "quote": "robust REST APIs, responsive widgets, database downloads, and fantasy sports tools",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "scheduled_delivery": {
+        "finding": "Pull API with recommended polling intervals (injuries every 5-10 min; depth charts 5-min call interval). Push not confirmed.",
+        "classification": "LICENSED_PAID",
+        "evidence": [
+          {
+            "url": "https://support.sportsdata.io/hc/en-us/articles/9911200480663-Process-Guide-Injuries",
+            "quote": "calling the injuries endpoints every 5 to 10 minutes",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "authenticated_integration": {
+        "finding": "API key via query string or Ocp-Apim-Subscription-Key header. Free trial exists but returns scrambled data unusable for analysis. Discovery Lab personal-use tier: one-day delayed, not for commercial redistribution. Commercial use requires sales agreement.",
+        "classification": "LICENSED_PAID",
+        "evidence": [
+          {
+            "url": "https://sportsdata.io/developers",
+            "quote": "All of our API endpoints can be accessed via an HTTP GET request using your API key.",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://sportsdata.io/developers",
+            "quote": "trial data is not real and cannot be used for analysis or display (scrambled for demonstration purposes)",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://discoverylab.sportsdata.io/",
+            "quote": "Sports Data for students, hobbyists, and early-stage ideas",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://sportsdata.io/developers",
+            "quote": "delayed by one day ... not licensed for commercial redistribution (Discovery Lab)",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "automated_access_terms": {
+        "finding": "Automated API access is the licensed mode under key and plan limits.",
+        "classification": "LICENSED_PAID",
+        "evidence": []
+      },
+      "redistribution_terms": {
+        "finding": "Non-exclusive, non-transferable, non-sublicensable licence; no copying/redistribution except as expressly allowed or with written consent.",
+        "classification": "PROHIBITED_BY_TERMS",
+        "evidence": [
+          {
+            "url": "https://sportsdata.io/terms-of-service",
+            "quote": "copied, distributed, republished, uploaded, posted or transmitted except as the Terms expressly allow or with prior written consent (search summary of clause; verify)",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      }
+    },
+    "genius_sports": {
+      "api": {
+        "finding": "Exclusive official NFL data distributor (B2B to media companies and sportsbooks). No self-serve public developer API, pricing, injury/depth-chart/DFS-salary product, or trial was found.",
+        "classification": "LICENSED_PAID",
+        "evidence": [
+          {
+            "url": "https://www.businesswire.com/news/home/20230706824603/en/National-Football-League-Extends-Strategic-Partnership-with-Genius-Sports-as-Exclusive-Official-NFL-Data-and-Watch-Bet-Distribution-Partner",
+            "quote": "to media companies and sports betting operators globally",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "official_export": {
+        "finding": "NOT FOUND",
+        "classification": "UNKNOWN",
+        "evidence": []
+      },
+      "scheduled_delivery": {
+        "finding": "Real-time official feeds to licensees (per press releases); terms NOT FOUND.",
+        "classification": "LICENSED_PAID",
+        "evidence": []
+      },
+      "authenticated_integration": {
+        "finding": "Enterprise contract only (inferred from operator press releases).",
+        "classification": "LICENSED_PAID",
+        "evidence": []
+      },
+      "automated_access_terms": {
+        "finding": "NOT FOUND",
+        "classification": "UNKNOWN",
+        "evidence": []
+      },
+      "redistribution_terms": {
+        "finding": "NOT FOUND",
+        "classification": "UNKNOWN",
+        "evidence": []
+      }
+    },
+    "espn_hidden_api": {
+      "api": {
+        "finding": "site.api.espn.com and related hosts serve undocumented JSON used by ESPN's own apps; no developer program (old Developer Center retired). Reachability not tested (egress proxy rejected site.api.espn.com).",
+        "classification": "UNOFFICIAL_UNDOCUMENTED",
+        "evidence": [
+          {
+            "url": "https://github.com/pseudo-r/Public-ESPN-API",
+            "quote": "Unofficial ESPN endpoint documentation and reference code. Not affiliated with upstream providers; no hosted API or data service.",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          },
+          {
+            "url": "https://github.com/pseudo-r/Public-ESPN-API",
+            "quote": "These APIs are not officially supported and may change without notice",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          },
+          {
+            "url": "https://github.com/pseudo-r/Public-ESPN-API",
+            "quote": "Be respectful — no official limits published, but excessive requests may be blocked",
+            "retrieved": "2026-10-09",
+            "tier": "PRIMARY"
+          },
+          {
+            "url": "https://scrapecreators.com/blog/espn-api-sports-data",
+            "quote": "undocumented endpoints that developers have discovered by reverse-engineering ESPN's web and mobile applications",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "official_export": {
+        "finding": "NOT FOUND",
+        "classification": "NOT_OFFERED",
+        "evidence": []
+      },
+      "scheduled_delivery": {
+        "finding": "NOT FOUND",
+        "classification": "NOT_OFFERED",
+        "evidence": []
+      },
+      "authenticated_integration": {
+        "finding": "No developer key program; Developer Center retired (third-party claim).",
+        "classification": "NOT_OFFERED",
+        "evidence": [
+          {
+            "url": "https://publicapis.io/espn-sports-api",
+            "quote": "the old ESPN Developer Center (and its apikey parameter) was retired years ago",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "automated_access_terms": {
+        "finding": "ESPN is governed by the Disney Terms of Use, which prohibit robot/spider/scraper/script access, including for data mining or web scraping, without express written permission. Relevant because nflverse depth charts now derive from ESPN.",
+        "classification": "PROHIBITED_BY_TERMS",
+        "evidence": [
+          {
+            "url": "https://disneytermsofuse.com/english/",
+            "quote": "using a robot, spider, script, or other automated means, including, for the avoidance of doubt, for the purposes of creating or developing any AI Tool, data mining or web scraping",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://disneytermsofuse.com/app/uploads/2019/09/Terms-of-Use_09262019-2.pdf",
+            "quote": "which may be branded Disney, ABC, ESPN, Marvel, Pixar, Lucasfilm, FX",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "redistribution_terms": {
+        "finding": "Not separately retrieved; covered by Disney TOU restrictions on copying.",
+        "classification": "PROHIBITED_BY_TERMS",
+        "evidence": [
+          {
+            "url": "https://disneytermsofuse.com/app/uploads/2019/09/Terms-of-Use_09262019-2.pdf",
+            "quote": "copy or monitor any part of the services with a robot, search engine, \"spider,\" \"scraper\" or other automated means or manual process without our express written permission (search paraphrase of 2019 text)",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      }
+    },
+    "pro_football_reference": {
+      "api": {
+        "finding": "No public API. Stathead is a paid query product; custom data requests cost at least $5,000.",
+        "classification": "NOT_OFFERED",
+        "evidence": [
+          {
+            "url": "https://www.sports-reference.com/data_use.html",
+            "quote": "we will not fulfill any requests for data for custom downloads, unless you are prepared to pay a minimum of $5,000 for any such request",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "official_export": {
+        "finding": "Per-table CSV/share export on pages ('sharing or repackaging data from individual pages is welcomed' with credit).",
+        "classification": "OFFICIAL_MANUAL_EXPORT",
+        "evidence": [
+          {
+            "url": "https://www.sports-reference.com/termsofuse.html",
+            "quote": "sharing or repackaging data from individual pages is welcomed, whether for commercial or non-commercial purposes, provided SRL is credited",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "scheduled_delivery": {
+        "finding": "NOT FOUND",
+        "classification": "NOT_OFFERED",
+        "evidence": []
+      },
+      "authenticated_integration": {
+        "finding": "Stathead subscription (web UI); no API keys found.",
+        "classification": "NOT_OFFERED",
+        "evidence": []
+      },
+      "automated_access_terms": {
+        "finding": "Rate-limited bots tolerated: 20 requests/minute for most SR sites (10 for FBref/Stathead); violators jailed up to a day. Stathead terms bar bots/scrapers that interfere with the site without written permission.",
+        "classification": "PROHIBITED_BY_TERMS",
+        "evidence": [
+          {
+            "url": "https://www.sports-reference.com/bot-traffic.html",
+            "quote": "our other sites more often than twenty requests in a minute",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://www.sports-reference.com/bot-traffic.html",
+            "quote": "your session will be in jail for up to a day",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "redistribution_terms": {
+        "finding": "Facts reusable with credit, but no websites/tools built on scraped data and no gen-AI training without permission; some licensed datasets may not be redistributed at all.",
+        "classification": "PROHIBITED_BY_TERMS",
+        "evidence": [
+          {
+            "url": "https://www.sports-reference.com/data_use.html",
+            "quote": "you should not create websites or tools based on data you scrape from Sports Reference or any of our sites or use our data to train generative artificial intelligence models without our permission",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://www.sports-reference.com/data_use.html",
+            "quote": "For some of our datasets, our licenses completely preclude any redistribution of the data.",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      }
+    },
+    "rotowire": {
+      "api": {
+        "finding": "Licensed B2B data/content syndication (injuries, news, lineups, projections with DFS salaries, depth charts) via partner page; no public API docs or prices found. Free RSS/XML player-news feeds exist.",
+        "classification": "LICENSED_PAID",
+        "evidence": [
+          {
+            "url": "https://www.rotowire.com/partner/",
+            "quote": "100+ companies across the fantasy and sports betting landscape",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://www.rotowire.com/partner/",
+            "quote": "pre-season and in-season player stats with recommended DFS salaries",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          },
+          {
+            "url": "https://www.rotowire.com/rss/",
+            "quote": "RotoWire RSS Feeds (page title)",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "official_export": {
+        "finding": "NOT FOUND for consumer CSV export.",
+        "classification": "UNKNOWN",
+        "evidence": []
+      },
+      "scheduled_delivery": {
+        "finding": "RSS feeds (pull) free; enterprise feed cadence not documented ('updated the moment information becomes available' for lineups).",
+        "classification": "LICENSED_PAID",
+        "evidence": [
+          {
+            "url": "https://www.rotowire.com/partner/",
+            "quote": "updated the moment information becomes available",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "authenticated_integration": {
+        "finding": "Enterprise agreement via partner page; no self-serve keys found.",
+        "classification": "LICENSED_PAID",
+        "evidence": []
+      },
+      "automated_access_terms": {
+        "finding": "Specific scraping clause NOT FOUND in snippets; individual licence is limited and revocable.",
+        "classification": "UNKNOWN",
+        "evidence": [
+          {
+            "url": "https://www.rotowire.com/termsandconditions.php",
+            "quote": "limited, revocable, non-exclusive, non-transferrable license",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      },
+      "redistribution_terms": {
+        "finding": "Individual licence non-transferable; commercial redistribution would need a separate agreement (inferred).",
+        "classification": "UNKNOWN",
+        "evidence": [
+          {
+            "url": "https://www.rotowire.com/termsandconditions.php",
+            "quote": "limited, revocable, non-exclusive, non-transferrable license",
+            "retrieved": "2026-10-09",
+            "tier": "SNIPPET_ONLY"
+          }
+        ]
+      }
+    }
+  }
+}

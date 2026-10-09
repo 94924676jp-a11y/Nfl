@@ -1,0 +1,51 @@
+[
+ {
+  "id": "OD-1",
+  "kind": "INTEGRATION",
+  "question": "Keep, stop, or replace the scheduled fetch of the NFL.com injury and inactives pages (I05, I06)?",
+  "why": "NFL.com terms, seen as search text only, bar systematic retrieval to compile a database without consent. The fetch runs today in .github/workflows/nfl-capture.yml.",
+  "agent_view": "Check the live NFL.com terms page first. If the clause is confirmed, stop the page fetch and use nflverse injuries for designations and the owner relay for inactives. The agent does not change the workflow until the owner decides."
+ },
+ {
+  "id": "OD-2",
+  "kind": "INTEGRATION",
+  "question": "Stop the scheduled ESPN injuries JSON fetch (I07)?",
+  "why": "Undocumented API under terms that bar automated retrieval; it discharges no forecast target.",
+  "agent_view": "Stop it: the forecast reads nothing from it."
+ },
+ {
+  "id": "OD-3",
+  "kind": "INTEGRATION",
+  "question": "License a provider (SportsDataIO, Sportradar) for DK salaries, inactives or in-season charting?",
+  "why": "It is the only automated route to DK salaries and official inactives that fits the terms. It costs money, which is the owner's decision alone.",
+  "agent_view": "No change needed for Sunday; the manual drop folder removes the copy-and-paste."
+ },
+ {
+  "id": "OD-4",
+  "kind": "INTEGRATION",
+  "question": "May the agent dispatch the capture workflow and commit capture syncs into this branch without asking each time?",
+  "why": "An attempt to dispatch nfl-capture.yml was refused by this session's permission classifier as an unrequested action in a connected app. The sync into the working tree ran; the dispatch did not.",
+  "agent_view": "Leave it on its schedule; ask for a dispatch only when a deadline needs it."
+ },
+ {
+  "id": "SUN-1",
+  "kind": "SLATE",
+  "question": "Who starts at QB for CHI (Caleb Williams DNP)?",
+  "why": "No official designation captured; the board carries a Bagent scenario.",
+  "agent_view": "nfl/dfs/salaries/classic_early_2026W5/WEEK5_SUNDAY_DECISION_BOARD.md"
+ },
+ {
+  "id": "SUN-2",
+  "kind": "MODEL",
+  "question": "DST mean: follow simulated events or the projection anchor?",
+  "why": "Decision 2 follow-up; the bounded fix is built and disabled.",
+  "agent_view": "nfl/research/dst_scoring/"
+ },
+ {
+  "id": "SUN-3",
+  "kind": "FILE",
+  "question": "Drop DKSalaries.csv for the Sunday Early classic slate (and DKEntries.csv once entered).",
+  "why": "DK ids and salaries come only from the owner's manual export.",
+  "agent_view": "nfl/dfs/inbox/drop/"
+ }
+]
