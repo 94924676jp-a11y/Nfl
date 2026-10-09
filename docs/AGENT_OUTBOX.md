@@ -4113,3 +4113,23 @@ recorded, not worked around.
 
 **Rules.** Context only: it is never a model input. The file is saved content-addressed next to the others; nothing
 is overwritten.
+
+## 2026-10-09 04:05Z: TB@DAL postgame results (owner asked for a score review)
+
+**Needed for:** the postgame review of the 190 entries (corrected upload `9d05d9bb`) against what actually happened.
+
+**What I tried.** nflverse `stats_player_week_2026.csv` and `play_by_play_2026.csv.gz` both download here (200), but
+at 04:03Z they stop at week 4, so the game is not in them yet. ESPN and Sleeper return 403 through my proxy.
+
+**Requested, any one of these, in order of preference:**
+1. **DraftKings contest standings CSV** for each contest id: `196438543`, `196438555`, `196438556` (the "export
+   standings" download). It carries every entry's points and rank, each player's FPTS, and **% drafted**, which is the
+   field ownership we have never had.
+2. Final DK fantasy points per player for game TB@DAL, 2026-10-08, with the source and capture time.
+3. The final box score (passing, rushing, receiving, kicking, DST) for the same game.
+
+**Also useful:** what DraftKings shows as entered for our 190 entry ids. That settles whether the corrected file was
+the one that was accepted.
+
+**Rules.** Saved content-addressed under `nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/`, nothing overwritten. Results
+are graded against predictions made before the game, and are never used to change those predictions after the fact.
