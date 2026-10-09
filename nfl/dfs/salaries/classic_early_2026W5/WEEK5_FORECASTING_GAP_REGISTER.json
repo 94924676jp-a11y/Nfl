@@ -77,6 +77,39 @@
    "finding": "the FantasyCruncher export omits ACT players with real 2026 usage; it is not the DK pool. The DK pool (DKEntries) will list them",
    "engine_consumes": "the Classic pipeline reads the DK pool, so it will see them; research and redistribution must cover them",
    "fix": "board lists them under export_omits_active_players_with_usage; resolve each by Friday designation"
+  },
+  {
+   "id": "W5-G11",
+   "class": "UNVALIDATED_ASSUMPTION",
+   "slate_impact": "every OUT player on Sunday (Monangai? Breece Hall, Pittman, McLaurin...)",
+   "finding": "an OUT player's targets/carries are redistributed pro rata across the whole club, not to his role (e.g. RB carries partly to WRs/QB; WR targets partly to RBs)",
+   "fix": "role-aware redistribution candidate measured on 2021-2025 absences (who actually absorbed the volume), shadow; explain.py:64-66 notes the measured study exists but is not wired"
+  },
+  {
+   "id": "W5-G12",
+   "class": "CONFIRMED_CORRECTNESS_DEFECT?",
+   "status": "SUSPECTED -- needs a failing test",
+   "slate_impact": "any club whose depth-1 skill player is OUT",
+   "finding": "absent player can share depth_rank 1 with his replacement (role_state.py:125-152); replacement may get SECONDARY ceiling by a dk_id tie-break"
   }
- ]
+ ],
+ "engine_dependency_audit_2026-10-09": {
+  "source": "read-only code audit of the production path (file:line refs in the summary below)",
+  "summary": "production reacts to only two personnel signals: who is ruled OUT and depth-chart order. Club volume, team scoring, efficiency, DST and kicker are built from club history and are QB-, OL-, opponent- and weather-blind. An OUT player's opportunity is re-normalised PRO RATA across the whole club (all position groups) by remaining claims x P(plays) (proj_v1.allocate_opportunity :773-951); redistribution.py is documentation only.",
+  "by_circumstance": {
+   "QB change": "PARTIAL -- new starter takes the attempts on his own pass prior; team volume, scoring, receiver efficiency, opposing DST, kicker QB-blind (proj_v1.py:167-273; football_points.py:69-84)",
+   "RB out / WR out": "IMPLEMENTED pro rata club-wide (not role-aware; carries can flow to QB; no goal-line handling)",
+   "TE blocking vs receiving": "MISSING (no routes/participation data)",
+   "multiple OL out": "MISSING (OL inactives dropped as unpriced: showdown_slate_state.py:337-350)",
+   "opponent CB / pass rusher out": "MISSING (dst_model is club-level)",
+   "play-caller change": "MISSING",
+   "returning from injury": "PARTIAL -- full chart rank and role, no ramp or snap limit",
+   "backup becomes starter": "IMPLEMENTED via depth rank (higher ceiling/appearance; own claim does not scale)",
+   "Limited / QUESTIONABLE / DOUBTFUL": "MISSING -- full projection; DOUBTFUL is NOT absent (availability.py:115-116); practice status displayed only",
+   "multiple injuries": "mechanically re-normalised; no depleted-offense volume or efficiency penalty",
+   "weather / roof": "MISSING (carried, never read; weather not captured)",
+   "opponent defensive strength": "MISSING for volume and efficiency (football_points.py OPPONENT_ADJUSTMENT NOT_MODELLED)"
+  },
+  "suspected_defect": "role_state._position_scoped_ranks (role_state.py:125-152) re-ranks absent players too: an OUT RB1 and his replacement can both carry depth_rank 1, tie broken by dk_id; if the replacement loses he gets the SECONDARY ceiling. Allocator unaffected (absent rows never reach it); role-band ceiling affected. No test. TO VERIFY with a failing test before any fix."
+ }
 }
