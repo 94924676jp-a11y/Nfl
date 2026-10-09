@@ -1,0 +1,982 @@
+{
+ "ARTIFACT": "DST_K_SCORING_AUDIT",
+ "date": "2026-10-09",
+ "base_commit": "a392914492f4b2981702a69ea4be81b67db8f823",
+ "STATUS": "SHADOW ONLY. Nothing promoted; no production file changed. Development data, exploratory.",
+ "ROOT_CAUSE": {
+  "what": "an expected-value anchor applied to an already-scored realised DST draw: the raw simulator DST score is an integer in 100% of worlds; one multiplicative factor per DST, applied after scoring, makes it non-integer in 92-98% of worlds",
+  "where": [
+   "nfl/tools/classic_slate_run.py:150 anchor_means: out[k] = [x * f for x in v]",
+   "nfl/tools/showdown_slate_run.py:113-114 dst = {...not skill, not kicker}; CR.anchor_means(dst, targets)",
+   "nfl/tools/classic_slate_run.py:276-277 rest = {...not skill} (DST: no stat line); anchor_means(rest, targets)"
+  ],
+  "not_the_cause": [
+   "nfl/sim/dst.py:242-254 DstModel.draw_components (integer tier + integer tuples)",
+   "nfl/sim/game.py:323-324 (stores the raw integer draw)",
+   "nfl/product/dk_scoring.py dst_points / kicker_points (pure adapters)"
+  ],
+  "reconstruction": "published == S0 x factor to <= 3.6e-15 for all 4 Showdown DSTs; Classic replay reproduces all 266 published draws exactly (max |diff| 0.0) and S0 equals the raw draw for all 16 DSTs"
+ },
+ "per_dst": [
+  {
+   "slate": "TB_DAL_2026W5",
+   "dst": "Cowboys|DAL",
+   "projection": 3.9071,
+   "S0_raw_mean": 7.6835,
+   "S0_non_integer": 0.0,
+   "S1_published_mean": 3.9071,
+   "S1_non_integer": 0.973,
+   "anchor_factor": 0.5085,
+   "FIX_EVENTS_mean": 5.504,
+   "FIX_PROJECTION_mean": 3.889,
+   "FIX_PROJECTION_state": "PROJECTION_MEAN_REACHED",
+   "FIX_PROJECTION_multiplier": 0.43088,
+   "mean_change_vs_published": {
+    "EVENTS": 1.5969,
+    "PROJECTION": -0.0181
+   },
+   "events_minus_projection_decomposed": {
+    "points_allowed_tier": 0.3782,
+    "interceptions": 1.0651,
+    "free_components_band_effect": 0.1854,
+    "NOTE": "expected values; the realised EVENTS mean adds Monte Carlo noise (MCSE ~0.1)"
+   },
+   "all_fix_checks_pass": true
+  },
+  {
+   "slate": "TB_DAL_2026W5",
+   "dst": "Buccaneers|TB",
+   "projection": 4.309,
+   "S0_raw_mean": 3.631,
+   "S0_non_integer": 0.0,
+   "S1_published_mean": 4.309,
+   "S1_non_integer": 0.921,
+   "anchor_factor": 1.1867,
+   "FIX_EVENTS_mean": 3.5865,
+   "FIX_PROJECTION_mean": 4.3045,
+   "FIX_PROJECTION_state": "PROJECTION_MEAN_REACHED",
+   "FIX_PROJECTION_multiplier": 1.20627,
+   "mean_change_vs_published": {
+    "EVENTS": -0.7225,
+    "PROJECTION": -0.0045
+   },
+   "events_minus_projection_decomposed": {
+    "points_allowed_tier": -0.1952,
+    "interceptions": 0.0403,
+    "free_components_band_effect": -0.5279,
+    "NOTE": "expected values; the realised EVENTS mean adds Monte Carlo noise (MCSE ~0.1)"
+   },
+   "all_fix_checks_pass": true
+  },
+  {
+   "slate": "ATL_NO_2026W4",
+   "dst": "Saints|NO",
+   "projection": 6.5468,
+   "S0_raw_mean": 8.615,
+   "S0_non_integer": 0.0,
+   "S1_published_mean": 6.5468,
+   "S1_non_integer": 0.982,
+   "anchor_factor": 0.7599,
+   "FIX_EVENTS_mean": 7.928,
+   "FIX_PROJECTION_mean": 6.4985,
+   "FIX_PROJECTION_state": "PROJECTION_MEAN_REACHED",
+   "FIX_PROJECTION_multiplier": 0.6925,
+   "mean_change_vs_published": {
+    "EVENTS": 1.3812,
+    "PROJECTION": -0.0483
+   },
+   "events_minus_projection_decomposed": {
+    "points_allowed_tier": 0.669,
+    "interceptions": 0.309,
+    "free_components_band_effect": 0.5243,
+    "NOTE": "expected values; the realised EVENTS mean adds Monte Carlo noise (MCSE ~0.1)"
+   },
+   "all_fix_checks_pass": true
+  },
+  {
+   "slate": "ATL_NO_2026W4",
+   "dst": "Falcons|ATL",
+   "projection": 5.6116,
+   "S0_raw_mean": 6.4695,
+   "S0_non_integer": 0.0,
+   "S1_published_mean": 5.6116,
+   "S1_non_integer": 0.9545,
+   "anchor_factor": 0.8674,
+   "FIX_EVENTS_mean": 5.6315,
+   "FIX_PROJECTION_mean": 5.594,
+   "FIX_PROJECTION_state": "PROJECTION_MEAN_REACHED",
+   "FIX_PROJECTION_multiplier": 0.98363,
+   "mean_change_vs_published": {
+    "EVENTS": 0.0199,
+    "PROJECTION": -0.0176
+   },
+   "events_minus_projection_decomposed": {
+    "points_allowed_tier": -0.2318,
+    "interceptions": 0.3177,
+    "free_components_band_effect": -0.0265,
+    "NOTE": "expected values; the realised EVENTS mean adds Monte Carlo noise (MCSE ~0.1)"
+   },
+   "all_fix_checks_pass": true
+  },
+  {
+   "slate": "CLASSIC_EARLY_2026W5",
+   "dst": "GB DST|GB",
+   "projection": 3.5516,
+   "S0_raw_mean": 5.144,
+   "S0_non_integer": 0.0,
+   "S1_published_mean": 3.5516,
+   "S1_non_integer": 0.9515,
+   "anchor_factor": 0.6904,
+   "FIX_EVENTS_mean": 3.649,
+   "FIX_PROJECTION_mean": 3.509,
+   "FIX_PROJECTION_state": "PROJECTION_MEAN_REACHED",
+   "FIX_PROJECTION_multiplier": 0.94495,
+   "mean_change_vs_published": {
+    "EVENTS": 0.0974,
+    "PROJECTION": -0.0426
+   },
+   "events_minus_projection_decomposed": {
+    "points_allowed_tier": 0.3103,
+    "interceptions": 0.0272,
+    "free_components_band_effect": -0.1987,
+    "NOTE": "expected values; the realised EVENTS mean adds Monte Carlo noise (MCSE ~0.1)"
+   },
+   "all_fix_checks_pass": true
+  },
+  {
+   "slate": "CLASSIC_EARLY_2026W5",
+   "dst": "CHI DST|CHI",
+   "projection": 6.965,
+   "S0_raw_mean": 6.8475,
+   "S0_non_integer": 0.0,
+   "S1_published_mean": 6.965,
+   "S1_non_integer": 0.97,
+   "anchor_factor": 1.0172,
+   "FIX_EVENTS_mean": 6.2235,
+   "FIX_PROJECTION_mean": 6.8755,
+   "FIX_PROJECTION_state": "PROJECTION_MEAN_REACHED",
+   "FIX_PROJECTION_multiplier": 1.17167,
+   "mean_change_vs_published": {
+    "EVENTS": -0.7415,
+    "PROJECTION": -0.0895
+   },
+   "events_minus_projection_decomposed": {
+    "points_allowed_tier": -0.1486,
+    "interceptions": -0.6499,
+    "free_components_band_effect": 0.0998,
+    "NOTE": "expected values; the realised EVENTS mean adds Monte Carlo noise (MCSE ~0.1)"
+   },
+   "all_fix_checks_pass": true
+  },
+  {
+   "slate": "CLASSIC_EARLY_2026W5",
+   "dst": "MIA DST|MIA",
+   "projection": 3.7794,
+   "S0_raw_mean": 6.391,
+   "S0_non_integer": 0.0,
+   "S1_published_mean": 3.7794,
+   "S1_non_integer": 0.959,
+   "anchor_factor": 0.5914,
+   "FIX_EVENTS_mean": 4.576,
+   "FIX_PROJECTION_mean": 3.7695,
+   "FIX_PROJECTION_state": "PROJECTION_MEAN_REACHED",
+   "FIX_PROJECTION_multiplier": 0.66635,
+   "mean_change_vs_published": {
+    "EVENTS": 0.7966,
+    "PROJECTION": -0.0099
+   },
+   "events_minus_projection_decomposed": {
+    "points_allowed_tier": 0.3832,
+    "interceptions": 0.4606,
+    "free_components_band_effect": -0.0292,
+    "NOTE": "expected values; the realised EVENTS mean adds Monte Carlo noise (MCSE ~0.1)"
+   },
+   "all_fix_checks_pass": true
+  },
+  {
+   "slate": "CLASSIC_EARLY_2026W5",
+   "dst": "CIN DST|CIN",
+   "projection": 8.0729,
+   "S0_raw_mean": 8.8145,
+   "S0_non_integer": 0.0,
+   "S1_published_mean": 8.0729,
+   "S1_non_integer": 0.982,
+   "anchor_factor": 0.9159,
+   "FIX_EVENTS_mean": 8.973,
+   "FIX_PROJECTION_mean": 8.079,
+   "FIX_PROJECTION_state": "PROJECTION_MEAN_REACHED",
+   "FIX_PROJECTION_multiplier": 0.835,
+   "mean_change_vs_published": {
+    "EVENTS": 0.9001,
+    "PROJECTION": 0.0061
+   },
+   "events_minus_projection_decomposed": {
+    "points_allowed_tier": 0.076,
+    "interceptions": 0.2113,
+    "free_components_band_effect": 0.6672,
+    "NOTE": "expected values; the realised EVENTS mean adds Monte Carlo noise (MCSE ~0.1)"
+   },
+   "all_fix_checks_pass": true
+  },
+  {
+   "slate": "CLASSIC_EARLY_2026W5",
+   "dst": "NYJ DST|NYJ",
+   "projection": 4.96,
+   "S0_raw_mean": 8.805,
+   "S0_non_integer": 0.0,
+   "S1_published_mean": 4.96,
+   "S1_non_integer": 0.975,
+   "anchor_factor": 0.5633,
+   "FIX_EVENTS_mean": 7.1215,
+   "FIX_PROJECTION_mean": 4.9785,
+   "FIX_PROJECTION_state": "PROJECTION_MEAN_REACHED",
+   "FIX_PROJECTION_multiplier": 0.42637,
+   "mean_change_vs_published": {
+    "EVENTS": 2.1615,
+    "PROJECTION": 0.0185
+   },
+   "events_minus_projection_decomposed": {
+    "points_allowed_tier": 0.5687,
+    "interceptions": 1.137,
+    "free_components_band_effect": 0.4213,
+    "NOTE": "expected values; the realised EVENTS mean adds Monte Carlo noise (MCSE ~0.1)"
+   },
+   "all_fix_checks_pass": true
+  },
+  {
+   "slate": "CLASSIC_EARLY_2026W5",
+   "dst": "CLE DST|CLE",
+   "projection": 7.2494,
+   "S0_raw_mean": 7.464,
+   "S0_non_integer": 0.0,
+   "S1_published_mean": 7.2494,
+   "S1_non_integer": 0.969,
+   "anchor_factor": 0.9712,
+   "FIX_EVENTS_mean": 7.0825,
+   "FIX_PROJECTION_mean": 7.261,
+   "FIX_PROJECTION_state": "PROJECTION_MEAN_REACHED",
+   "FIX_PROJECTION_multiplier": 1.0468,
+   "mean_change_vs_published": {
+    "EVENTS": -0.1669,
+    "PROJECTION": 0.0116
+   },
+   "events_minus_projection_decomposed": {
+    "points_allowed_tier": -0.1393,
+    "interceptions": -0.3651,
+    "free_components_band_effect": 0.2951,
+    "NOTE": "expected values; the realised EVENTS mean adds Monte Carlo noise (MCSE ~0.1)"
+   },
+   "all_fix_checks_pass": true
+  },
+  {
+   "slate": "CLASSIC_EARLY_2026W5",
+   "dst": "TEN DST|TEN",
+   "projection": 4.6206,
+   "S0_raw_mean": 6.98,
+   "S0_non_integer": 0.0,
+   "S1_published_mean": 4.6206,
+   "S1_non_integer": 0.964,
+   "anchor_factor": 0.662,
+   "FIX_EVENTS_mean": 5.921,
+   "FIX_PROJECTION_mean": 4.6125,
+   "FIX_PROJECTION_state": "PROJECTION_MEAN_REACHED",
+   "FIX_PROJECTION_multiplier": 0.62102,
+   "mean_change_vs_published": {
+    "EVENTS": 1.3004,
+    "PROJECTION": -0.0081
+   },
+   "events_minus_projection_decomposed": {
+    "points_allowed_tier": 0.4304,
+    "interceptions": 0.7451,
+    "free_components_band_effect": 0.1174,
+    "NOTE": "expected values; the realised EVENTS mean adds Monte Carlo noise (MCSE ~0.1)"
+   },
+   "all_fix_checks_pass": true
+  },
+  {
+   "slate": "CLASSIC_EARLY_2026W5",
+   "dst": "HOU DST|HOU",
+   "projection": 8.4185,
+   "S0_raw_mean": 8.921,
+   "S0_non_integer": 0.0,
+   "S1_published_mean": 8.4185,
+   "S1_non_integer": 0.9765,
+   "anchor_factor": 0.9437,
+   "FIX_EVENTS_mean": 9.2095,
+   "FIX_PROJECTION_mean": 8.3885,
+   "FIX_PROJECTION_state": "PROJECTION_MEAN_REACHED",
+   "FIX_PROJECTION_multiplier": 0.85305,
+   "mean_change_vs_published": {
+    "EVENTS": 0.791,
+    "PROJECTION": -0.03
+   },
+   "events_minus_projection_decomposed": {
+    "points_allowed_tier": 0.1029,
+    "interceptions": 0.0204,
+    "free_components_band_effect": 0.7143,
+    "NOTE": "expected values; the realised EVENTS mean adds Monte Carlo noise (MCSE ~0.1)"
+   },
+   "all_fix_checks_pass": true
+  },
+  {
+   "slate": "CLASSIC_EARLY_2026W5",
+   "dst": "PIT DST|PIT",
+   "projection": 7.1243,
+   "S0_raw_mean": 5.3325,
+   "S0_non_integer": 0.0,
+   "S1_published_mean": 7.1243,
+   "S1_non_integer": 0.947,
+   "anchor_factor": 1.336,
+   "FIX_EVENTS_mean": 6.695,
+   "FIX_PROJECTION_mean": 7.0695,
+   "FIX_PROJECTION_state": "PROJECTION_MEAN_REACHED",
+   "FIX_PROJECTION_multiplier": 1.0832,
+   "mean_change_vs_published": {
+    "EVENTS": -0.4293,
+    "PROJECTION": -0.0548
+   },
+   "events_minus_projection_decomposed": {
+    "points_allowed_tier": 0.325,
+    "interceptions": -0.4514,
+    "free_components_band_effect": -0.3216,
+    "NOTE": "expected values; the realised EVENTS mean adds Monte Carlo noise (MCSE ~0.1)"
+   },
+   "all_fix_checks_pass": true
+  },
+  {
+   "slate": "CLASSIC_EARLY_2026W5",
+   "dst": "IND DST|IND",
+   "projection": 4.9683,
+   "S0_raw_mean": 6.387,
+   "S0_non_integer": 0.0,
+   "S1_published_mean": 4.9683,
+   "S1_non_integer": 0.9635,
+   "anchor_factor": 0.7779,
+   "FIX_EVENTS_mean": 5.119,
+   "FIX_PROJECTION_mean": 4.8855,
+   "FIX_PROJECTION_state": "PROJECTION_MEAN_REACHED",
+   "FIX_PROJECTION_multiplier": 0.93805,
+   "mean_change_vs_published": {
+    "EVENTS": 0.1507,
+    "PROJECTION": -0.0828
+   },
+   "events_minus_projection_decomposed": {
+    "points_allowed_tier": -0.2771,
+    "interceptions": 0.4775,
+    "free_components_band_effect": -0.0043,
+    "NOTE": "expected values; the realised EVENTS mean adds Monte Carlo noise (MCSE ~0.1)"
+   },
+   "all_fix_checks_pass": true
+  },
+  {
+   "slate": "CLASSIC_EARLY_2026W5",
+   "dst": "NE DST|NE",
+   "projection": 6.6015,
+   "S0_raw_mean": 7.097,
+   "S0_non_integer": 0.0,
+   "S1_published_mean": 6.6015,
+   "S1_non_integer": 0.9625,
+   "anchor_factor": 0.9302,
+   "FIX_EVENTS_mean": 7.2875,
+   "FIX_PROJECTION_mean": 6.512,
+   "FIX_PROJECTION_state": "PROJECTION_MEAN_REACHED",
+   "FIX_PROJECTION_multiplier": 0.83808,
+   "mean_change_vs_published": {
+    "EVENTS": 0.686,
+    "PROJECTION": -0.0895
+   },
+   "events_minus_projection_decomposed": {
+    "points_allowed_tier": 0.4027,
+    "interceptions": 0.1468,
+    "free_components_band_effect": 0.228,
+    "NOTE": "expected values; the realised EVENTS mean adds Monte Carlo noise (MCSE ~0.1)"
+   },
+   "all_fix_checks_pass": true
+  },
+  {
+   "slate": "CLASSIC_EARLY_2026W5",
+   "dst": "LV DST|LV",
+   "projection": 6.5234,
+   "S0_raw_mean": 6.096,
+   "S0_non_integer": 0.0,
+   "S1_published_mean": 6.5234,
+   "S1_non_integer": 0.96,
+   "anchor_factor": 1.0701,
+   "FIX_EVENTS_mean": 6.071,
+   "FIX_PROJECTION_mean": 6.584,
+   "FIX_PROJECTION_state": "PROJECTION_MEAN_REACHED",
+   "FIX_PROJECTION_multiplier": 1.09829,
+   "mean_change_vs_published": {
+    "EVENTS": -0.4524,
+    "PROJECTION": 0.0606
+   },
+   "events_minus_projection_decomposed": {
+    "points_allowed_tier": -0.2132,
+    "interceptions": -0.1136,
+    "free_components_band_effect": -0.1157,
+    "NOTE": "expected values; the realised EVENTS mean adds Monte Carlo noise (MCSE ~0.1)"
+   },
+   "all_fix_checks_pass": true
+  },
+  {
+   "slate": "CLASSIC_EARLY_2026W5",
+   "dst": "NO DST|NO",
+   "projection": 5.6104,
+   "S0_raw_mean": 7.677,
+   "S0_non_integer": 0.0,
+   "S1_published_mean": 5.6104,
+   "S1_non_integer": 0.968,
+   "anchor_factor": 0.7308,
+   "FIX_EVENTS_mean": 6.804,
+   "FIX_PROJECTION_mean": 5.5705,
+   "FIX_PROJECTION_state": "PROJECTION_MEAN_REACHED",
+   "FIX_PROJECTION_multiplier": 0.72202,
+   "mean_change_vs_published": {
+    "EVENTS": 1.1936,
+    "PROJECTION": -0.0399
+   },
+   "events_minus_projection_decomposed": {
+    "points_allowed_tier": 0.4484,
+    "interceptions": 0.4458,
+    "free_components_band_effect": 0.2789,
+    "NOTE": "expected values; the realised EVENTS mean adds Monte Carlo noise (MCSE ~0.1)"
+   },
+   "all_fix_checks_pass": true
+  },
+  {
+   "slate": "CLASSIC_EARLY_2026W5",
+   "dst": "MIN DST|MIN",
+   "projection": 8.0633,
+   "S0_raw_mean": 6.026,
+   "S0_non_integer": 0.0,
+   "S1_published_mean": 8.0633,
+   "S1_non_integer": 0.9465,
+   "anchor_factor": 1.3381,
+   "FIX_EVENTS_mean": 7.9495,
+   "FIX_PROJECTION_mean": 8.041,
+   "FIX_PROJECTION_state": "PROJECTION_MEAN_REACHED",
+   "FIX_PROJECTION_multiplier": 1.01371,
+   "mean_change_vs_published": {
+    "EVENTS": -0.1138,
+    "PROJECTION": -0.0223
+   },
+   "events_minus_projection_decomposed": {
+    "points_allowed_tier": -0.2594,
+    "interceptions": 0.2904,
+    "free_components_band_effect": -0.1125,
+    "NOTE": "expected values; the realised EVENTS mean adds Monte Carlo noise (MCSE ~0.1)"
+   },
+   "all_fix_checks_pass": true
+  },
+  {
+   "slate": "CLASSIC_EARLY_2026W5",
+   "dst": "WAS DST|WAS",
+   "projection": 5.8016,
+   "S0_raw_mean": 7.401,
+   "S0_non_integer": 0.0,
+   "S1_published_mean": 5.8016,
+   "S1_non_integer": 0.9665,
+   "anchor_factor": 0.7839,
+   "FIX_EVENTS_mean": 6.3445,
+   "FIX_PROJECTION_mean": 5.7465,
+   "FIX_PROJECTION_state": "PROJECTION_MEAN_REACHED",
+   "FIX_PROJECTION_multiplier": 0.84331,
+   "mean_change_vs_published": {
+    "EVENTS": 0.5429,
+    "PROJECTION": -0.0551
+   },
+   "events_minus_projection_decomposed": {
+    "points_allowed_tier": 0.3986,
+    "interceptions": 0.0374,
+    "free_components_band_effect": 0.2057,
+    "NOTE": "expected values; the realised EVENTS mean adds Monte Carlo noise (MCSE ~0.1)"
+   },
+   "all_fix_checks_pass": true
+  },
+  {
+   "slate": "CLASSIC_EARLY_2026W5",
+   "dst": "NYG DST|NYG",
+   "projection": 6.0178,
+   "S0_raw_mean": 6.275,
+   "S0_non_integer": 0.0,
+   "S1_published_mean": 6.0178,
+   "S1_non_integer": 0.9545,
+   "anchor_factor": 0.959,
+   "FIX_EVENTS_mean": 5.2355,
+   "FIX_PROJECTION_mean": 6.118,
+   "FIX_PROJECTION_state": "PROJECTION_MEAN_REACHED",
+   "FIX_PROJECTION_multiplier": 1.25113,
+   "mean_change_vs_published": {
+    "EVENTS": -0.7823,
+    "PROJECTION": 0.1002
+   },
+   "events_minus_projection_decomposed": {
+    "points_allowed_tier": -0.2004,
+    "interceptions": -0.6414,
+    "free_components_band_effect": 0.0101,
+    "NOTE": "expected values; the realised EVENTS mean adds Monte Carlo noise (MCSE ~0.1)"
+   },
+   "all_fix_checks_pass": true
+  }
+ ],
+ "distribution_vs_history": {
+  "HISTORY_2021_2025_rule_A (per club-game, unconditional)": {
+   "mean": 6.4904,
+   "sd": 5.7679,
+   "p_le_0": 0.121,
+   "p_ge_15": 0.0982,
+   "non_integer_share": 0.0
+  },
+  "S0_raw_simulator (average over 20 DST-slates of the per-DST statistic)": {
+   "mean": 6.9029,
+   "sd": 5.7418,
+   "p_le_0": 0.1069,
+   "p_ge_15": 0.1135,
+   "non_integer_share": 0.0
+  },
+  "S1_published_after_anchor (average over 20 DST-slates of the per-DST statistic)": {
+   "mean": 5.9351,
+   "sd": 5.0157,
+   "p_le_0": 0.1069,
+   "p_ge_15": 0.0641,
+   "non_integer_share": 0.9623
+  },
+  "FIX_EVENTS (average over 20 DST-slates of the per-DST statistic)": {
+   "mean": 6.3456,
+   "sd": 4.9638,
+   "p_le_0": 0.101,
+   "p_ge_15": 0.0752,
+   "non_integer_share": 0.0
+  },
+  "FIX_PROJECTION (average over 20 DST-slates of the per-DST statistic)": {
+   "mean": 5.9143,
+   "sd": 4.8055,
+   "p_le_0": 0.1113,
+   "p_ge_15": 0.0623,
+   "non_integer_share": 0.0
+  }
+ },
+ "kickers": {
+  "per_kicker": [
+   {
+    "slate": "TB_DAL_2026W5",
+    "kicker": "Brandon Aubrey|DAL",
+    "mean": 9.2525,
+    "sd": 4.8789,
+    "p_le_0": 0.0025,
+    "p_ge_15": 0.147,
+    "non_integer_share": 0.0,
+    "reproduced": true,
+    "rescored_through_dk_scoring_equals_published": true,
+    "point_projection_kicker_model_miss_minus_1": 10.6565,
+    "share_6td_plus_xp_plus_3fg_exceeds_rounded_club_points": 0.1895,
+    "share_offensive_td_points_exceed_club_points": 0.0365
+   },
+   {
+    "slate": "TB_DAL_2026W5",
+    "kicker": "Chase McLaughlin|TB",
+    "mean": 7.9765,
+    "sd": 4.6474,
+    "p_le_0": 0.0375,
+    "p_ge_15": 0.098,
+    "non_integer_share": 0.0,
+    "reproduced": true,
+    "rescored_through_dk_scoring_equals_published": true,
+    "point_projection_kicker_model_miss_minus_1": 8.3651,
+    "share_6td_plus_xp_plus_3fg_exceeds_rounded_club_points": 0.1505,
+    "share_offensive_td_points_exceed_club_points": 0.035
+   },
+   {
+    "slate": "ATL_NO_2026W4",
+    "kicker": "Daniel Carlson|NO",
+    "mean": 8.606,
+    "sd": 4.6778,
+    "p_le_0": 0.015,
+    "p_ge_15": 0.116,
+    "non_integer_share": 0.0,
+    "reproduced": true,
+    "rescored_through_dk_scoring_equals_published": true,
+    "point_projection_kicker_model_miss_minus_1": 8.2596,
+    "share_6td_plus_xp_plus_3fg_exceeds_rounded_club_points": 0.1565,
+    "share_offensive_td_points_exceed_club_points": 0.037
+   },
+   {
+    "slate": "ATL_NO_2026W4",
+    "kicker": "Nick Folk|ATL",
+    "mean": 7.8735,
+    "sd": 4.965,
+    "p_le_0": 0.0575,
+    "p_ge_15": 0.103,
+    "non_integer_share": 0.0,
+    "reproduced": true,
+    "rescored_through_dk_scoring_equals_published": true,
+    "point_projection_kicker_model_miss_minus_1": 8.9192,
+    "share_6td_plus_xp_plus_3fg_exceeds_rounded_club_points": 0.1445,
+    "share_offensive_td_points_exceed_club_points": 0.0425
+   }
+  ],
+  "history_2021_2025_rule_A": {
+   "mean": 8.2053,
+   "sd": 4.5602,
+   "p_le_0": 0.0232,
+   "p_ge_15": 0.0912,
+   "non_integer_share": 0.0
+  }
+ },
+ "downstream": {
+  "TB_DAL_2026W5": {
+   "n_players": 49,
+   "n_dst_replaced": 2,
+   "non_dst_players_changed": [],
+   "skill_and_kicker_draws_bit_identical": true
+  },
+  "ATL_NO_2026W4": {
+   "n_players": 30,
+   "n_dst_replaced": 2,
+   "non_dst_players_changed": [],
+   "skill_and_kicker_draws_bit_identical": true
+  },
+  "CLASSIC_EARLY_2026W5": {
+   "n_players": 266,
+   "n_dst_replaced": 16,
+   "non_dst_players_changed": [],
+   "skill_draws_bit_identical": true
+  }
+ },
+ "secondary_findings": {
+  "Cowboys|DAL": {
+   "tier_convention_disagreement": {
+    "dst_tier_floor_vs_rounded_integer": 0.072,
+    "dk_scoring_on_continuous_vs_rounded_integer": 0.078,
+    "dst_tier_floor_vs_dk_scoring_on_continuous": 0.15,
+    "mean_tier_floor": 1.41,
+    "mean_tier_rounded": 1.256,
+    "conditioning_band_continuous_vs_integer": 0.0605
+   },
+   "incumbent_interception_consistency": {
+    "opposing_qbs": [
+     "Jalon Daniels|TB",
+     "Brett Rypien|TB",
+     "Easton Stick|TB"
+    ],
+    "world_ints_mean": 0.709,
+    "share_qb_ints_exceed_raw_takeaways": 0.2045,
+    "raw_takeaways_mean": 1.375
+   },
+   "opponent_points": {
+    "non_integer_share": 0.9745,
+    "share_in_open_0_1": 0.008,
+    "mean": 19.744
+   }
+  },
+  "Buccaneers|TB": {
+   "tier_convention_disagreement": {
+    "dst_tier_floor_vs_rounded_integer": 0.057,
+    "dk_scoring_on_continuous_vs_rounded_integer": 0.0515,
+    "dst_tier_floor_vs_dk_scoring_on_continuous": 0.1085,
+    "mean_tier_floor": -1.143,
+    "mean_tier_rounded": -1.239,
+    "conditioning_band_continuous_vs_integer": 0.0405
+   },
+   "incumbent_interception_consistency": {
+    "opposing_qbs": [
+     "Dak Prescott|DAL",
+     "Joe Milton III|DAL",
+     "Sam Howell|DAL"
+    ],
+    "world_ints_mean": 0.7775,
+    "share_qb_ints_exceed_raw_takeaways": 0.2715,
+    "raw_takeaways_mean": 1.06
+   },
+   "opponent_points": {
+    "non_integer_share": 0.9985,
+    "share_in_open_0_1": 0.0,
+    "mean": 30.118
+   }
+  },
+  "Saints|NO": {
+   "tier_convention_disagreement": {
+    "dst_tier_floor_vs_rounded_integer": 0.069,
+    "dk_scoring_on_continuous_vs_rounded_integer": 0.069,
+    "dst_tier_floor_vs_dk_scoring_on_continuous": 0.138,
+    "mean_tier_floor": 2.0345,
+    "mean_tier_rounded": 1.8965,
+    "conditioning_band_continuous_vs_integer": 0.0575
+   },
+   "incumbent_interception_consistency": {
+    "opposing_qbs": [
+     "Michael Penix Jr.|ATL",
+     "Tua Tagovailoa|ATL"
+    ],
+    "world_ints_mean": 0.6335,
+    "share_qb_ints_exceed_raw_takeaways": 0.1515,
+    "raw_takeaways_mean": 1.4605
+   },
+   "opponent_points": {
+    "non_integer_share": 0.965,
+    "share_in_open_0_1": 0.011,
+    "mean": 17.555
+   }
+  },
+  "Falcons|ATL": {
+   "tier_convention_disagreement": {
+    "dst_tier_floor_vs_rounded_integer": 0.076,
+    "dk_scoring_on_continuous_vs_rounded_integer": 0.069,
+    "dst_tier_floor_vs_dk_scoring_on_continuous": 0.145,
+    "mean_tier_floor": 0.508,
+    "mean_tier_rounded": 0.363,
+    "conditioning_band_continuous_vs_integer": 0.0655
+   },
+   "incumbent_interception_consistency": {
+    "opposing_qbs": [
+     "Tyler Shough|NO",
+     "Spencer Rattler|NO"
+    ],
+    "world_ints_mean": 0.8395,
+    "share_qb_ints_exceed_raw_takeaways": 0.2455,
+    "raw_takeaways_mean": 1.321
+   },
+   "opponent_points": {
+    "non_integer_share": 0.9945,
+    "share_in_open_0_1": 0.004,
+    "mean": 23.028
+   }
+  }
+ },
+ "history": {
+  "n_dst_club_games": 2718,
+  "dst_dk_rule_A": {
+   "n": 2718,
+   "mean": 6.4904,
+   "sd": 5.7679,
+   "p_le_0": 0.121,
+   "p_ge_10": 0.2531,
+   "p_ge_15": 0.0982,
+   "p_ge_20": 0.0309,
+   "integer_share": 1.0,
+   "p10": 0.0,
+   "p50": 6.0,
+   "p90": 14.0
+  },
+  "dst_dk_rule_B": {
+   "n": 2718,
+   "mean": 6.6358,
+   "sd": 5.7399,
+   "p_le_0": 0.1126,
+   "p_ge_10": 0.2605,
+   "p_ge_15": 0.1015,
+   "p_ge_20": 0.0313,
+   "integer_share": 1.0,
+   "p10": 0.0,
+   "p50": 6.0,
+   "p90": 15.0
+  },
+  "dst_component_means_per_club_game": {
+   "sacks": 2.4106,
+   "ints": 0.75607,
+   "fumble_recoveries": 0.49853,
+   "tds": 0.13355,
+   "safeties": 0.02391,
+   "blocked_kicks": 0.07174,
+   "two_pt_returns": 0.00184
+  },
+  "pa_tier_points_mean_rule_A": 0.5743,
+  "kicker_dk_rule_A": {
+   "n": 2718,
+   "mean": 8.2053,
+   "sd": 4.5602,
+   "p_le_0": 0.0232,
+   "p_ge_10": 0.3657,
+   "p_ge_15": 0.0912,
+   "p_ge_20": 0.0143,
+   "integer_share": 1.0,
+   "p10": 3.0,
+   "p50": 8.0,
+   "p90": 14.0
+  },
+  "dispersion_within_club_season": {
+   "sacks": {
+    "within_club_season_var": 2.99093,
+    "mean": 2.4106,
+    "var_to_mean": 1.2407,
+    "within_club_season_and_band_var": 2.64448,
+    "var_to_mean_after_band": 1.097,
+    "nb_k_after_band": 24.8458,
+    "FAMILY": "NEGATIVE_BINOMIAL",
+    "FAMILY_RULE": "negative binomial only when the after-band variance exceeds the mean by more than 5%; otherwise Poisson. 5% is a declared materiality threshold, not a fit."
+   },
+   "ints": {
+    "within_club_season_var": 0.77315,
+    "mean": 0.75607,
+    "var_to_mean": 1.0226,
+    "within_club_season_and_band_var": 0.73344,
+    "var_to_mean_after_band": 0.9701,
+    "nb_k_after_band": null,
+    "FAMILY": "POISSON",
+    "FAMILY_RULE": "negative binomial only when the after-band variance exceeds the mean by more than 5%; otherwise Poisson. 5% is a declared materiality threshold, not a fit."
+   },
+   "fumble_recoveries": {
+    "within_club_season_var": 0.48345,
+    "mean": 0.49853,
+    "var_to_mean": 0.9698,
+    "within_club_season_and_band_var": 0.46916,
+    "var_to_mean_after_band": 0.9411,
+    "nb_k_after_band": null,
+    "FAMILY": "POISSON",
+    "FAMILY_RULE": "negative binomial only when the after-band variance exceeds the mean by more than 5%; otherwise Poisson. 5% is a declared materiality threshold, not a fit."
+   },
+   "tds": {
+    "within_club_season_var": 0.13511,
+    "mean": 0.13355,
+    "var_to_mean": 1.0116,
+    "within_club_season_and_band_var": 0.13432,
+    "var_to_mean_after_band": 1.0057,
+    "nb_k_after_band": null,
+    "FAMILY": "POISSON",
+    "FAMILY_RULE": "negative binomial only when the after-band variance exceeds the mean by more than 5%; otherwise Poisson. 5% is a declared materiality threshold, not a fit."
+   },
+   "safeties": {
+    "within_club_season_var": 0.02428,
+    "mean": 0.02391,
+    "var_to_mean": 1.0152,
+    "within_club_season_and_band_var": 0.02427,
+    "var_to_mean_after_band": 1.0147,
+    "nb_k_after_band": null,
+    "FAMILY": "POISSON",
+    "FAMILY_RULE": "negative binomial only when the after-band variance exceeds the mean by more than 5%; otherwise Poisson. 5% is a declared materiality threshold, not a fit."
+   },
+   "blocked_kicks": {
+    "within_club_season_var": 0.06967,
+    "mean": 0.07174,
+    "var_to_mean": 0.9711,
+    "within_club_season_and_band_var": 0.06972,
+    "var_to_mean_after_band": 0.9718,
+    "nb_k_after_band": null,
+    "FAMILY": "POISSON",
+    "FAMILY_RULE": "negative binomial only when the after-band variance exceeds the mean by more than 5%; otherwise Poisson. 5% is a declared materiality threshold, not a fit."
+   },
+   "two_pt_returns": {
+    "within_club_season_var": 0.00184,
+    "mean": 0.00184,
+    "var_to_mean": 1.0,
+    "within_club_season_and_band_var": 0.00168,
+    "var_to_mean_after_band": 0.911,
+    "nb_k_after_band": null,
+    "FAMILY": "POISSON",
+    "FAMILY_RULE": "negative binomial only when the after-band variance exceeds the mean by more than 5%; otherwise Poisson. 5% is a declared materiality threshold, not a fit."
+   }
+  },
+  "bands_rule_A": {
+   "0-10": {
+    "n": 226,
+    "mean": {
+     "sacks": 3.70796,
+     "ints": 1.18142,
+     "fumble_recoveries": 0.70796,
+     "tds": 0.19469,
+     "safeties": 0.02655,
+     "blocked_kicks": 0.08407,
+     "two_pt_returns": 0.0
+    },
+    "ratio_to_all": {
+     "sacks": 1.53819,
+     "ints": 1.56257,
+     "fumble_recoveries": 1.42011,
+     "tds": 1.45776,
+     "safeties": 1.11014,
+     "blocked_kicks": 1.17182,
+     "two_pt_returns": 0.0
+    }
+   },
+   "10-17": {
+    "n": 506,
+    "mean": {
+     "sacks": 2.98419,
+     "ints": 0.99012,
+     "fumble_recoveries": 0.63834,
+     "tds": 0.1581,
+     "safeties": 0.0336,
+     "blocked_kicks": 0.07312,
+     "two_pt_returns": 0.0
+    },
+    "ratio_to_all": {
+     "sacks": 1.23795,
+     "ints": 1.30956,
+     "fumble_recoveries": 1.28045,
+     "tds": 1.18381,
+     "safeties": 1.40486,
+     "blocked_kicks": 1.01922,
+     "two_pt_returns": 0.0
+    }
+   },
+   "17-24": {
+    "n": 763,
+    "mean": {
+     "sacks": 2.49934,
+     "ints": 0.79948,
+     "fumble_recoveries": 0.52163,
+     "tds": 0.12451,
+     "safeties": 0.01966,
+     "blocked_kicks": 0.06815,
+     "two_pt_returns": 0.00262
+    },
+    "ratio_to_all": {
+     "sacks": 1.03682,
+     "ints": 1.05741,
+     "fumble_recoveries": 1.04633,
+     "tds": 0.93227,
+     "safeties": 0.82206,
+     "blocked_kicks": 0.94993,
+     "two_pt_returns": 1.4249
+    }
+   },
+   "24-31": {
+    "n": 662,
+    "mean": {
+     "sacks": 2.08761,
+     "ints": 0.60574,
+     "fumble_recoveries": 0.43505,
+     "tds": 0.1148,
+     "safeties": 0.02266,
+     "blocked_kicks": 0.08006,
+     "two_pt_returns": 0.0
+    },
+    "ratio_to_all": {
+     "sacks": 0.86602,
+     "ints": 0.80117,
+     "fumble_recoveries": 0.87266,
+     "tds": 0.8596,
+     "safeties": 0.94748,
+     "blocked_kicks": 1.11592,
+     "two_pt_returns": 0.0
+    }
+   },
+   "31-1000000": {
+    "n": 561,
+    "mean": {
+     "sacks": 1.63102,
+     "ints": 0.49198,
+     "fumble_recoveries": 0.33155,
+     "tds": 0.12121,
+     "safeties": 0.02139,
+     "blocked_kicks": 0.06061,
+     "two_pt_returns": 0.00535
+    },
+    "ratio_to_all": {
+     "sacks": 0.6766,
+     "ints": 0.6507,
+     "fumble_recoveries": 0.66506,
+     "tds": 0.90759,
+     "safeties": 0.89445,
+     "blocked_kicks": 0.84476,
+     "two_pt_returns": 2.90695
+    }
+   }
+  }
+ },
+ "inputs": {
+  "TB_DAL_2026W5": "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL",
+  "ATL_NO_2026W4": "nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX (kickers re-drawn under NFL_PIT_MANIFEST=nfl/warehouse/pit_manifests/PIT_MANIFEST.ATL_NO_2026W4.1294f0dc638d95c9.json)",
+  "CLASSIC_EARLY_2026W5": "/home/user/nfl/nfl/dfs/salaries/classic_early_2026W5/research_projection/final_2026-10-09/RESEARCH_STATE_2026W5"
+ }
+}

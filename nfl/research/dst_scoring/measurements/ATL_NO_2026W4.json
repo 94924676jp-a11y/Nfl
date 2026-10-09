@@ -1,0 +1,443 @@
+{
+ "scenario": "nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX",
+ "draws_file": "SHOWDOWN_ATL_NO_2026W4_DRAWS.json",
+ "n_worlds": 2000,
+ "seed": 20261005,
+ "fix_seed": 20268716,
+ "dst": {
+  "Saints|NO": {
+   "projection_dk_points": 6.5468,
+   "projection_event_items": {
+    "blocked_kick": 0.0,
+    "fumble_recovery": 1.2437,
+    "interception": 0.958,
+    "points_allowed": 1.2275,
+    "return_td": 0.605,
+    "sack": 2.5126,
+    "safety": 0.0
+   },
+   "S0_raw_simulator": {
+    "mean": 8.615,
+    "sd": 5.8841,
+    "mcse": 0.1316,
+    "p_le_0": 0.0465,
+    "p_ge_10": 0.398,
+    "p_ge_15": 0.1645,
+    "p_ge_20": 0.045,
+    "non_integer_share": 0.0,
+    "min": -4.0,
+    "max": 32.0,
+    "component_means": {
+     "sacks": 2.7715,
+     "takeaways": 1.4605,
+     "def_td": 0.1395,
+     "safeties": 0.0255,
+     "tier_points": 2.0345
+    }
+   },
+   "S1_published_after_anchor": {
+    "mean": 6.5468,
+    "sd": 4.4715,
+    "mcse": 0.1,
+    "p_le_0": 0.0465,
+    "p_ge_10": 0.195,
+    "p_ge_15": 0.045,
+    "p_ge_20": 0.007,
+    "non_integer_share": 0.982,
+    "min": -3.039721416134649,
+    "max": 24.317771329077193,
+    "anchor_factor_recorded": 0.7599,
+    "anchor_factor_exact": 0.75993,
+    "max_abs_S0_x_factor_minus_published": 0.0
+   },
+   "opponent_points": {
+    "non_integer_share": 0.965,
+    "share_in_open_0_1": 0.011,
+    "mean": 17.555
+   },
+   "tier_convention_disagreement": {
+    "dst_tier_floor_vs_rounded_integer": 0.069,
+    "dk_scoring_on_continuous_vs_rounded_integer": 0.069,
+    "dst_tier_floor_vs_dk_scoring_on_continuous": 0.138,
+    "mean_tier_floor": 2.0345,
+    "mean_tier_rounded": 1.8965,
+    "conditioning_band_continuous_vs_integer": 0.0575
+   },
+   "incumbent_interception_consistency": {
+    "opposing_qbs": [
+     "Michael Penix Jr.|ATL",
+     "Tua Tagovailoa|ATL"
+    ],
+    "world_ints_mean": 0.6335,
+    "share_qb_ints_exceed_raw_takeaways": 0.1515,
+    "raw_takeaways_mean": 1.4605
+   },
+   "FIX": {
+    "EVENTS": {
+     "summary": {
+      "mean": 7.928,
+      "sd": 5.3526,
+      "mcse": 0.1197,
+      "p_le_0": 0.049,
+      "p_ge_10": 0.342,
+      "p_ge_15": 0.1205,
+      "p_ge_20": 0.029,
+      "non_integer_share": 0.0,
+      "min": -4.0,
+      "max": 28.0
+     },
+     "account": {
+      "mean_mode": "EVENTS",
+      "state": "EVENTS_MEAN",
+      "multiplier_on_free_rates": 1.0,
+      "club_rates": {
+       "sacks": 2.5126,
+       "fumble_recoveries": 0.62185,
+       "tds": 0.10083,
+       "safeties": 0.0,
+       "blocked_kicks": 0.0
+      },
+      "expected_tier_points": 1.8965,
+      "expected_int_points": 1.267,
+      "expected_free_points_at_m1": 4.8856,
+      "expected_mean": 8.0491,
+      "projection_dk_points": 6.5468,
+      "projection_int_rate_of_this_defence": 0.479,
+      "world_int_rate_from_opposing_qbs": 0.6335,
+      "shortfall_if_unreachable": null,
+      "seed": 20268716,
+      "params": "nfl/research/dst_scoring/DST_K_HISTORY_2021_2025.json"
+     },
+     "component_means": {
+      "points_allowed": 17.548,
+      "ints": 0.6335,
+      "sacks": 2.8365,
+      "fumble_recoveries": 0.6775,
+      "tds": 0.0955,
+      "safeties": 0.0,
+      "blocked_kicks": 0.0
+     },
+     "checks": {
+      "all_integer": true,
+      "valid_dk_values": true,
+      "dk_equals_dk_scoring_of_components": true,
+      "points_allowed_band_matches_opponent_points": true,
+      "ints_reconcile_with_opposing_qbs": true
+     }
+    },
+    "PROJECTION": {
+     "summary": {
+      "mean": 6.4985,
+      "sd": 4.7583,
+      "mcse": 0.1064,
+      "p_le_0": 0.066,
+      "p_ge_10": 0.244,
+      "p_ge_15": 0.0685,
+      "p_ge_20": 0.0095,
+      "non_integer_share": 0.0,
+      "min": -4.0,
+      "max": 29.0
+     },
+     "account": {
+      "mean_mode": "PROJECTION",
+      "state": "PROJECTION_MEAN_REACHED",
+      "multiplier_on_free_rates": 0.6925,
+      "club_rates": {
+       "sacks": 2.5126,
+       "fumble_recoveries": 0.62185,
+       "tds": 0.10083,
+       "safeties": 0.0,
+       "blocked_kicks": 0.0
+      },
+      "expected_tier_points": 1.8965,
+      "expected_int_points": 1.267,
+      "expected_free_points_at_m1": 4.8856,
+      "expected_mean": 6.5468,
+      "projection_dk_points": 6.5468,
+      "projection_int_rate_of_this_defence": 0.479,
+      "world_int_rate_from_opposing_qbs": 0.6335,
+      "shortfall_if_unreachable": null,
+      "seed": 20268716,
+      "params": "nfl/research/dst_scoring/DST_K_HISTORY_2021_2025.json"
+     },
+     "component_means": {
+      "points_allowed": 17.548,
+      "ints": 0.6335,
+      "sacks": 1.956,
+      "fumble_recoveries": 0.484,
+      "tds": 0.0685,
+      "safeties": 0.0,
+      "blocked_kicks": 0.0
+     },
+     "checks": {
+      "all_integer": true,
+      "valid_dk_values": true,
+      "dk_equals_dk_scoring_of_components": true,
+      "points_allowed_band_matches_opponent_points": true,
+      "ints_reconcile_with_opposing_qbs": true
+     }
+    }
+   },
+   "mean_change_vs_published": {
+    "EVENTS": 1.3812,
+    "PROJECTION": -0.0483
+   },
+   "corr_with_opponent_points": {
+    "S1_published": -0.6951,
+    "FIX_EVENTS": -0.7336,
+    "FIX_PROJECTION": -0.7435
+   }
+  },
+  "Falcons|ATL": {
+   "projection_dk_points": 5.6116,
+   "projection_event_items": {
+    "blocked_kick": 0.0672,
+    "fumble_recovery": 0.7563,
+    "interception": 1.3613,
+    "points_allowed": 0.5948,
+    "return_td": 0.2017,
+    "sack": 2.6303,
+    "safety": 0.0
+   },
+   "S0_raw_simulator": {
+    "mean": 6.4695,
+    "sd": 5.7925,
+    "mcse": 0.1295,
+    "p_le_0": 0.126,
+    "p_ge_10": 0.25,
+    "p_ge_15": 0.1005,
+    "p_ge_20": 0.03,
+    "non_integer_share": 0.0,
+    "min": -4.0,
+    "max": 35.0,
+    "component_means": {
+     "sacks": 2.4435,
+     "takeaways": 1.321,
+     "def_td": 0.1375,
+     "safeties": 0.0255,
+     "tier_points": 0.508
+    }
+   },
+   "S1_published_after_anchor": {
+    "mean": 5.6116,
+    "sd": 5.0244,
+    "mcse": 0.1123,
+    "p_le_0": 0.126,
+    "p_ge_10": 0.182,
+    "p_ge_15": 0.053,
+    "p_ge_20": 0.011,
+    "non_integer_share": 0.9545,
+    "min": -3.4695726099389446,
+    "max": 30.358760336965766,
+    "anchor_factor_recorded": 0.8674,
+    "anchor_factor_exact": 0.867393,
+    "max_abs_S0_x_factor_minus_published": 0.0
+   },
+   "opponent_points": {
+    "non_integer_share": 0.9945,
+    "share_in_open_0_1": 0.004,
+    "mean": 23.028
+   },
+   "tier_convention_disagreement": {
+    "dst_tier_floor_vs_rounded_integer": 0.076,
+    "dk_scoring_on_continuous_vs_rounded_integer": 0.069,
+    "dst_tier_floor_vs_dk_scoring_on_continuous": 0.145,
+    "mean_tier_floor": 0.508,
+    "mean_tier_rounded": 0.363,
+    "conditioning_band_continuous_vs_integer": 0.0655
+   },
+   "incumbent_interception_consistency": {
+    "opposing_qbs": [
+     "Tyler Shough|NO",
+     "Spencer Rattler|NO"
+    ],
+    "world_ints_mean": 0.8395,
+    "share_qb_ints_exceed_raw_takeaways": 0.2455,
+    "raw_takeaways_mean": 1.321
+   },
+   "FIX": {
+    "EVENTS": {
+     "summary": {
+      "mean": 5.6315,
+      "sd": 4.5155,
+      "mcse": 0.101,
+      "p_le_0": 0.1125,
+      "p_ge_10": 0.1855,
+      "p_ge_15": 0.039,
+      "p_ge_20": 0.006,
+      "non_integer_share": 0.0,
+      "min": -4.0,
+      "max": 24.0
+     },
+     "account": {
+      "mean_mode": "EVENTS",
+      "state": "EVENTS_MEAN",
+      "multiplier_on_free_rates": 1.0,
+      "club_rates": {
+       "sacks": 2.6303,
+       "fumble_recoveries": 0.37815,
+       "tds": 0.03362,
+       "safeties": 0.0,
+       "blocked_kicks": 0.0336
+      },
+      "expected_tier_points": 0.363,
+      "expected_int_points": 1.679,
+      "expected_free_points_at_m1": 3.629,
+      "expected_mean": 5.671,
+      "projection_dk_points": 5.6116,
+      "projection_int_rate_of_this_defence": 0.68065,
+      "world_int_rate_from_opposing_qbs": 0.8395,
+      "shortfall_if_unreachable": null,
+      "seed": 20268716,
+      "params": "nfl/research/dst_scoring/DST_K_HISTORY_2021_2025.json"
+     },
+     "component_means": {
+      "points_allowed": 23.042,
+      "ints": 0.8395,
+      "sacks": 2.6005,
+      "fumble_recoveries": 0.3555,
+      "tds": 0.0355,
+      "safeties": 0.0,
+      "blocked_kicks": 0.0325
+     },
+     "checks": {
+      "all_integer": true,
+      "valid_dk_values": true,
+      "dk_equals_dk_scoring_of_components": true,
+      "points_allowed_band_matches_opponent_points": true,
+      "ints_reconcile_with_opposing_qbs": true
+     }
+    },
+    "PROJECTION": {
+     "summary": {
+      "mean": 5.594,
+      "sd": 4.595,
+      "mcse": 0.1027,
+      "p_le_0": 0.1155,
+      "p_ge_10": 0.1785,
+      "p_ge_15": 0.0385,
+      "p_ge_20": 0.0105,
+      "non_integer_share": 0.0,
+      "min": -4.0,
+      "max": 27.0
+     },
+     "account": {
+      "mean_mode": "PROJECTION",
+      "state": "PROJECTION_MEAN_REACHED",
+      "multiplier_on_free_rates": 0.98363,
+      "club_rates": {
+       "sacks": 2.6303,
+       "fumble_recoveries": 0.37815,
+       "tds": 0.03362,
+       "safeties": 0.0,
+       "blocked_kicks": 0.0336
+      },
+      "expected_tier_points": 0.363,
+      "expected_int_points": 1.679,
+      "expected_free_points_at_m1": 3.629,
+      "expected_mean": 5.6116,
+      "projection_dk_points": 5.6116,
+      "projection_int_rate_of_this_defence": 0.68065,
+      "world_int_rate_from_opposing_qbs": 0.8395,
+      "shortfall_if_unreachable": null,
+      "seed": 20268716,
+      "params": "nfl/research/dst_scoring/DST_K_HISTORY_2021_2025.json"
+     },
+     "component_means": {
+      "points_allowed": 23.042,
+      "ints": 0.8395,
+      "sacks": 2.563,
+      "fumble_recoveries": 0.3485,
+      "tds": 0.0385,
+      "safeties": 0.0,
+      "blocked_kicks": 0.0305
+     },
+     "checks": {
+      "all_integer": true,
+      "valid_dk_values": true,
+      "dk_equals_dk_scoring_of_components": true,
+      "points_allowed_band_matches_opponent_points": true,
+      "ints_reconcile_with_opposing_qbs": true
+     }
+    }
+   },
+   "mean_change_vs_published": {
+    "EVENTS": 0.0199,
+    "PROJECTION": -0.0176
+   },
+   "corr_with_opponent_points": {
+    "S1_published": -0.6747,
+    "FIX_EVENTS": -0.7065,
+    "FIX_PROJECTION": -0.7097
+   }
+  }
+ },
+ "kickers": {
+  "Daniel Carlson|NO": {
+   "published": {
+    "mean": 8.606,
+    "sd": 4.6778,
+    "mcse": 0.1046,
+    "p_le_0": 0.015,
+    "p_ge_10": 0.3975,
+    "p_ge_15": 0.116,
+    "p_ge_20": 0.018,
+    "non_integer_share": 0.0,
+    "min": 0.0,
+    "max": 26.0
+   },
+   "reproduced_draw_for_draw": true,
+   "max_abs_reproduction_diff": 0.0,
+   "rescored_through_dk_scoring_equals_published": true,
+   "all_integer": true,
+   "valid_values": true,
+   "xp_made_le_offensive_td": true,
+   "share_6td_plus_xp_plus_3fg_exceeds_rounded_club_points": 0.1565,
+   "share_offensive_td_points_exceed_club_points": 0.037,
+   "component_means": {
+    "fg_0_39": 0.8815,
+    "fg_40_49": 0.3855,
+    "fg_50_plus": 0.4605,
+    "xp_made": 2.117
+   },
+   "point_projection_kicker_model": 8.2596,
+   "FIX": "NONE NEEDED: the published Showdown kicker is already dk_scoring of its own integer components"
+  },
+  "Nick Folk|ATL": {
+   "published": {
+    "mean": 7.8735,
+    "sd": 4.965,
+    "mcse": 0.111,
+    "p_le_0": 0.0575,
+    "p_ge_10": 0.3505,
+    "p_ge_15": 0.103,
+    "p_ge_20": 0.0185,
+    "non_integer_share": 0.0,
+    "min": 0.0,
+    "max": 24.0
+   },
+   "reproduced_draw_for_draw": true,
+   "max_abs_reproduction_diff": 0.0,
+   "rescored_through_dk_scoring_equals_published": true,
+   "all_integer": true,
+   "valid_values": true,
+   "xp_made_le_offensive_td": true,
+   "share_6td_plus_xp_plus_3fg_exceeds_rounded_club_points": 0.1445,
+   "share_offensive_td_points_exceed_club_points": 0.0425,
+   "component_means": {
+    "fg_0_39": 0.543,
+    "fg_40_49": 0.6355,
+    "fg_50_plus": 0.441,
+    "xp_made": 1.4975
+   },
+   "point_projection_kicker_model": 8.9192,
+   "FIX": "NONE NEEDED: the published Showdown kicker is already dk_scoring of its own integer components"
+  }
+ },
+ "downstream": {
+  "n_players": 30,
+  "n_dst_replaced": 2,
+  "non_dst_players_changed": [],
+  "skill_and_kicker_draws_bit_identical": true
+ }
+}

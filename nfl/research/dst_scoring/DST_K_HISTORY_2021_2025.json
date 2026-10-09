@@ -1,0 +1,265 @@
+{
+ "ARTIFACT": "DST_K_HISTORY",
+ "spec_version": "dst-k-history-1",
+ "seasons": [
+  2021,
+  2022,
+  2023,
+  2024,
+  2025
+ ],
+ "source_files": {
+  "2021": "nfl/research/postgame/pbp_2021.e8743a568f99667a.csv.gz",
+  "2022": "nfl/research/postgame/pbp_2022.0c69a71eb3949895.csv.gz",
+  "2023": "nfl/research/postgame/pbp_2023.4649804ee0f0a40b.csv.gz",
+  "2024": "nfl/research/postgame/pbp_2024.23370d5d10f8104d.csv.gz",
+  "2025": "nfl/research/postgame/pbp_2025.2f135887790a013f.csv.gz"
+ },
+ "n_dst_club_games": 2718,
+ "n_kicker_club_games": 2718,
+ "DEFINITIONS": "(stated because each one has been derived wrongly somewhere in this repository):\n  sacks             sack == 1 and defteam == club\n  interceptions     interception == 1 and defteam == club\n  fumble recoveries fumble_recovery_1_team == club and fumbled_1_team != club (offence AND special teams,\n                    which is what DK credits; postgame's fumble_lost & defteam misses special-teams muffs)\n  def/return TD     touchdown == 1 and td_team == club and (td_team == defteam or return_touchdown == 1). The\n                    second clause is needed because on a kickoff nflfastR makes the RECEIVING club posteam, so a\n                    kick-return TD has td_team == posteam (nfl/sim/dst.py's td_team == defteam misses it)\n  safeties          safety == 1 and defteam == club\n  blocked kicks     (punt_blocked == 1 or field_goal_result == 'blocked' or extra_point_result == 'blocked')\n                    and defteam == club\n  2-pt/XP returns   (defensive_two_point_conv == 1 or defensive_extra_point_conv == 1) and defteam == club\n  points allowed    RULE A, the repository's grading rule (nfl/postgame/showdown_postgame.py dk_A): the opponent's\n                    final score. RULE B (dk_B): minus 6 per opponent return/defensive TD. Both are reported.\n  kicker            rule A (nfl/tools/kicker_world.MISS_RULE): FG <40 +3, 40-49 +4, 50+ +5 by kick_distance,\n                    XP made +1, a miss scores 0. Per club-game (the club's kickers summed).",
+ "dst_dk_rule_A": {
+  "n": 2718,
+  "mean": 6.4904,
+  "sd": 5.7679,
+  "p_le_0": 0.121,
+  "p_ge_10": 0.2531,
+  "p_ge_15": 0.0982,
+  "p_ge_20": 0.0309,
+  "integer_share": 1.0,
+  "p10": 0.0,
+  "p50": 6.0,
+  "p90": 14.0
+ },
+ "dst_dk_rule_B": {
+  "n": 2718,
+  "mean": 6.6358,
+  "sd": 5.7399,
+  "p_le_0": 0.1126,
+  "p_ge_10": 0.2605,
+  "p_ge_15": 0.1015,
+  "p_ge_20": 0.0313,
+  "integer_share": 1.0,
+  "p10": 0.0,
+  "p50": 6.0,
+  "p90": 15.0
+ },
+ "dst_component_means_per_club_game": {
+  "sacks": 2.4106,
+  "ints": 0.75607,
+  "fumble_recoveries": 0.49853,
+  "tds": 0.13355,
+  "safeties": 0.02391,
+  "blocked_kicks": 0.07174,
+  "two_pt_returns": 0.00184
+ },
+ "points_allowed_rule_A": {
+  "n": 2718,
+  "mean": 22.5118,
+  "sd": 9.899,
+  "p_le_0": 0.0107,
+  "p_ge_10": 0.9169,
+  "p_ge_15": 0.7833,
+  "p_ge_20": 0.6233,
+  "integer_share": 1.0,
+  "p10": 10.0,
+  "p50": 22.0,
+  "p90": 35.0
+ },
+ "pa_tier_points_mean_rule_A": 0.5743,
+ "bands_rule_A": {
+  "0-10": {
+   "n": 226,
+   "mean": {
+    "sacks": 3.70796,
+    "ints": 1.18142,
+    "fumble_recoveries": 0.70796,
+    "tds": 0.19469,
+    "safeties": 0.02655,
+    "blocked_kicks": 0.08407,
+    "two_pt_returns": 0.0
+   },
+   "ratio_to_all": {
+    "sacks": 1.53819,
+    "ints": 1.56257,
+    "fumble_recoveries": 1.42011,
+    "tds": 1.45776,
+    "safeties": 1.11014,
+    "blocked_kicks": 1.17182,
+    "two_pt_returns": 0.0
+   }
+  },
+  "10-17": {
+   "n": 506,
+   "mean": {
+    "sacks": 2.98419,
+    "ints": 0.99012,
+    "fumble_recoveries": 0.63834,
+    "tds": 0.1581,
+    "safeties": 0.0336,
+    "blocked_kicks": 0.07312,
+    "two_pt_returns": 0.0
+   },
+   "ratio_to_all": {
+    "sacks": 1.23795,
+    "ints": 1.30956,
+    "fumble_recoveries": 1.28045,
+    "tds": 1.18381,
+    "safeties": 1.40486,
+    "blocked_kicks": 1.01922,
+    "two_pt_returns": 0.0
+   }
+  },
+  "17-24": {
+   "n": 763,
+   "mean": {
+    "sacks": 2.49934,
+    "ints": 0.79948,
+    "fumble_recoveries": 0.52163,
+    "tds": 0.12451,
+    "safeties": 0.01966,
+    "blocked_kicks": 0.06815,
+    "two_pt_returns": 0.00262
+   },
+   "ratio_to_all": {
+    "sacks": 1.03682,
+    "ints": 1.05741,
+    "fumble_recoveries": 1.04633,
+    "tds": 0.93227,
+    "safeties": 0.82206,
+    "blocked_kicks": 0.94993,
+    "two_pt_returns": 1.4249
+   }
+  },
+  "24-31": {
+   "n": 662,
+   "mean": {
+    "sacks": 2.08761,
+    "ints": 0.60574,
+    "fumble_recoveries": 0.43505,
+    "tds": 0.1148,
+    "safeties": 0.02266,
+    "blocked_kicks": 0.08006,
+    "two_pt_returns": 0.0
+   },
+   "ratio_to_all": {
+    "sacks": 0.86602,
+    "ints": 0.80117,
+    "fumble_recoveries": 0.87266,
+    "tds": 0.8596,
+    "safeties": 0.94748,
+    "blocked_kicks": 1.11592,
+    "two_pt_returns": 0.0
+   }
+  },
+  "31-1000000": {
+   "n": 561,
+   "mean": {
+    "sacks": 1.63102,
+    "ints": 0.49198,
+    "fumble_recoveries": 0.33155,
+    "tds": 0.12121,
+    "safeties": 0.02139,
+    "blocked_kicks": 0.06061,
+    "two_pt_returns": 0.00535
+   },
+   "ratio_to_all": {
+    "sacks": 0.6766,
+    "ints": 0.6507,
+    "fumble_recoveries": 0.66506,
+    "tds": 0.90759,
+    "safeties": 0.89445,
+    "blocked_kicks": 0.84476,
+    "two_pt_returns": 2.90695
+   }
+  }
+ },
+ "dispersion_within_club_season": {
+  "sacks": {
+   "within_club_season_var": 2.99093,
+   "mean": 2.4106,
+   "var_to_mean": 1.2407,
+   "within_club_season_and_band_var": 2.64448,
+   "var_to_mean_after_band": 1.097,
+   "nb_k_after_band": 24.8458,
+   "FAMILY": "NEGATIVE_BINOMIAL",
+   "FAMILY_RULE": "negative binomial only when the after-band variance exceeds the mean by more than 5%; otherwise Poisson. 5% is a declared materiality threshold, not a fit."
+  },
+  "ints": {
+   "within_club_season_var": 0.77315,
+   "mean": 0.75607,
+   "var_to_mean": 1.0226,
+   "within_club_season_and_band_var": 0.73344,
+   "var_to_mean_after_band": 0.9701,
+   "nb_k_after_band": null,
+   "FAMILY": "POISSON",
+   "FAMILY_RULE": "negative binomial only when the after-band variance exceeds the mean by more than 5%; otherwise Poisson. 5% is a declared materiality threshold, not a fit."
+  },
+  "fumble_recoveries": {
+   "within_club_season_var": 0.48345,
+   "mean": 0.49853,
+   "var_to_mean": 0.9698,
+   "within_club_season_and_band_var": 0.46916,
+   "var_to_mean_after_band": 0.9411,
+   "nb_k_after_band": null,
+   "FAMILY": "POISSON",
+   "FAMILY_RULE": "negative binomial only when the after-band variance exceeds the mean by more than 5%; otherwise Poisson. 5% is a declared materiality threshold, not a fit."
+  },
+  "tds": {
+   "within_club_season_var": 0.13511,
+   "mean": 0.13355,
+   "var_to_mean": 1.0116,
+   "within_club_season_and_band_var": 0.13432,
+   "var_to_mean_after_band": 1.0057,
+   "nb_k_after_band": null,
+   "FAMILY": "POISSON",
+   "FAMILY_RULE": "negative binomial only when the after-band variance exceeds the mean by more than 5%; otherwise Poisson. 5% is a declared materiality threshold, not a fit."
+  },
+  "safeties": {
+   "within_club_season_var": 0.02428,
+   "mean": 0.02391,
+   "var_to_mean": 1.0152,
+   "within_club_season_and_band_var": 0.02427,
+   "var_to_mean_after_band": 1.0147,
+   "nb_k_after_band": null,
+   "FAMILY": "POISSON",
+   "FAMILY_RULE": "negative binomial only when the after-band variance exceeds the mean by more than 5%; otherwise Poisson. 5% is a declared materiality threshold, not a fit."
+  },
+  "blocked_kicks": {
+   "within_club_season_var": 0.06967,
+   "mean": 0.07174,
+   "var_to_mean": 0.9711,
+   "within_club_season_and_band_var": 0.06972,
+   "var_to_mean_after_band": 0.9718,
+   "nb_k_after_band": null,
+   "FAMILY": "POISSON",
+   "FAMILY_RULE": "negative binomial only when the after-band variance exceeds the mean by more than 5%; otherwise Poisson. 5% is a declared materiality threshold, not a fit."
+  },
+  "two_pt_returns": {
+   "within_club_season_var": 0.00184,
+   "mean": 0.00184,
+   "var_to_mean": 1.0,
+   "within_club_season_and_band_var": 0.00168,
+   "var_to_mean_after_band": 0.911,
+   "nb_k_after_band": null,
+   "FAMILY": "POISSON",
+   "FAMILY_RULE": "negative binomial only when the after-band variance exceeds the mean by more than 5%; otherwise Poisson. 5% is a declared materiality threshold, not a fit."
+  }
+ },
+ "kicker_dk_rule_A": {
+  "n": 2718,
+  "mean": 8.2053,
+  "sd": 4.5602,
+  "p_le_0": 0.0232,
+  "p_ge_10": 0.3657,
+  "p_ge_15": 0.0912,
+  "p_ge_20": 0.0143,
+  "integer_share": 1.0,
+  "p10": 3.0,
+  "p50": 8.0,
+  "p90": 14.0
+ },
+ "kicker_fg_made_mean": 1.6762,
+ "kicker_xp_made_mean": 2.1402,
+ "READING": "Unconditional league history. A single slate conditions on its own matchup, so its distribution should be NARROWER than this, not equal to it; the comparison is about shape and support (integers, mass at <= 0, upper tail), not a target for a mean."
+}
