@@ -350,10 +350,16 @@ def upload_roster_eligibility(upload_csv, export, roster_capture, season, week, 
     res = E.classify(pool, rows, inactives or (), transactions or {}, elevations or ())
     by_id = {i: k for k, v in pool.items() for i in v['ids']}
     bad, n_lineups, unknown_ids = {}, 0, set()
-    for r in list(_csv.reader(open(upload_csv, encoding='utf-8-sig')))[1:]:
+    allr = list(_csv.reader(open(upload_csv, encoding='utf-8-sig')))
+    # slot columns from the header, so one gate serves Showdown (CPT + 5 FLEX) and Classic (QB..DST, 9 slots)
+    slot_idx = [i for i, h in enumerate(allr[0]) if h.strip() in ('CPT', 'FLEX', 'QB', 'RB', 'WR', 'TE', 'DST')]
+    if not slot_idx:
+        return ([f'ROSTER_ELIGIBILITY_UNVERIFIED (no lineup slot columns in the upload header {allr[0][:6]})'],
+                {'status': 'UNVERIFIED', 'reason': 'NO_SLOT_COLUMNS'})
+    for r in allr[1:]:
         if not r or not r[0].strip().isdigit():
             continue
-        ids = [x.strip().rsplit('(', 1)[-1].rstrip(')') for x in r[4:10]]
+        ids = [r[i].strip().rsplit('(', 1)[-1].rstrip(')') for i in slot_idx if i < len(r)]
         hit = False
         for i in ids:
             k = by_id.get(i)

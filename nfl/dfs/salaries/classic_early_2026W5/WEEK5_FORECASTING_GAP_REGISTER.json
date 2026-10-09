@@ -1,0 +1,66 @@
+{
+ "ARTIFACT": "WEEK5_FORECASTING_GAP_REGISTER",
+ "as_of_utc": "2026-10-09",
+ "items": [
+  {
+   "id": "W5-G1",
+   "class": "MISSING_FOOTBALL_DEPENDENCY",
+   "slate_impact": "CHI (Bagent: 1 start; Williams W1-2, Keenum W3), MIN (Murray W3-4 after Wentz W1-2), WAS (Daniels returning after Mariota W3, Kaliakmanis W4)",
+   "engine_consumes": "NO -- team volume, scoring and teammate shares carry no QB argument (proj_v1.team_volume; football_points.expected_points)",
+   "defect_ref": "D-02/D-03/D-04 (TB@DAL register)",
+   "fix": "QB plan section G: role-aware windows, QB-split team history, QB-conditioned shares, partially pooled; shadow only",
+   "acceptance": "predeclared CRPS/log-score experiment on 2021-2025 starter changes, clustered by game/team"
+  },
+  {
+   "id": "W5-G2",
+   "class": "CONFIRMED_CORRECTNESS_DEFECT",
+   "status": "FIXED 2026-10-09",
+   "slate_impact": "every Classic upload",
+   "finding": "the Classic path (classic_slate_state / classic_upload_verify / classic_finalize) never read roster status; the Sills/Demercado class of error was open for Sunday",
+   "fix": "classic_upload_verify now runs showdown_run_guards.upload_roster_eligibility (header-driven slots); fails closed for 2026W5+ slates without roster_capture; dk_pool finds its block by header; club codes (LAR->LA) and suffixes normalised",
+   "tests": "test_classic_roster_gate 9/9 (2026W4 upload passes; injected reserve refused); TB@DAL suites unchanged"
+  },
+  {
+   "id": "W5-G3",
+   "class": "INCOMPLETE_DATA",
+   "slate_impact": "all",
+   "finding": "no DK DKEntries export for Week 5 Classic: no DK player ids, contests or kickoff from DK; our projections cannot be built (classic_slate_pipeline needs it)",
+   "fix": "owner export (outbox)"
+  },
+  {
+   "id": "W5-G4",
+   "class": "UNVALIDATED_ASSUMPTION",
+   "slate_impact": "Chase (concussion; 20% snaps W4, limited), Jefferson (ankle; missed W4), Higgins/McLaurin/Diggs (DNP)",
+   "engine_consumes": "availability is binary (designation/inactive -> redistribution); no partial-workload or in-game-exit risk; practice DNP does not change a projection until a designation",
+   "fix": "research: measure snap share and DK outcome conditional on practice-week pattern (2021-2025 injuries x snaps), shadow"
+  },
+  {
+   "id": "W5-G5",
+   "class": "WEAK_STATISTICAL_MODEL",
+   "slate_impact": "all stars",
+   "finding": "lower tail ~10x too thin (TB@DAL D-01)",
+   "fix": "P2 volatility repair"
+  },
+  {
+   "id": "W5-G6",
+   "class": "CONFIRMED_CORRECTNESS_DEFECT",
+   "slate_impact": "all",
+   "finding": "published-world accounting violations (D-05); repair arm in progress in an isolated worktree",
+   "fix": "section F"
+  },
+  {
+   "id": "W5-G7",
+   "class": "DFS_OPTIMIZATION_WEAKNESS",
+   "slate_impact": "all contests",
+   "finding": "no validated ownership/duplication model; on TB@DAL a no-fit FC-proportional baseline beat both shadow ownership models and shadow dupe forecasts were uninformative",
+   "fix": "tournament plan (TB_DAL field study)"
+  },
+  {
+   "id": "W5-G8",
+   "class": "UNVALIDATED_ASSUMPTION",
+   "slate_impact": "44 players with a >=15pp snap-share swing",
+   "finding": "4-game pooled usage treats a role change and a one-game anomaly alike",
+   "fix": "role-state recency review per flagged player; no automatic change"
+  }
+ ]
+}

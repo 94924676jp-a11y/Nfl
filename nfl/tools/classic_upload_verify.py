@@ -44,6 +44,18 @@ HEADER = ['Entry ID', 'Contest Name', 'Contest ID', 'Entry Fee',
 SLOT_POS = {'QB': {'QB'}, 'RB': {'RB'}, 'WR': {'WR'}, 'TE': {'TE'}, 'DST': {'DST'}}
 CAP = 50000
 OUT_STATES = AV.ABSENT_STATUSES   # every absence, including relayed and unverified ones
+#: slates finalized before the roster-eligibility gate existed (2026-10-08); reported NOT_CHECKED, never PASS
+LEGACY_PRE_ROSTER_GATE = frozenset({'2026W2', '2026W3', '2026W4'})
+
+
+def _plain(f):
+    """The owner's entries export decompressed to a sibling temp file the eligibility gate can read as CSV."""
+    import gzip
+    import tempfile
+    raw = gzip.decompress(pathlib.Path(f['entries_blob']).read_bytes())
+    tmp = pathlib.Path(tempfile.mkdtemp()) / 'entries.csv'
+    tmp.write_bytes(raw)
+    return tmp
 
 
 def verify(rows, pool, entries, out_ids) -> Outcome:
@@ -135,11 +147,26 @@ def run(slate_id: str) -> Outcome:
                if v['current_availability']['status'] in OUT_STATES}
     rows = list(csv.reader(up.read_text().splitlines()))
     o = verify(rows, po.value, eo.value, out_ids)
+    # ROSTER ELIGIBILITY (TB@DAL 2026-10-08, found absent from the Classic path 2026-10-09): every uploaded player needs
+    # positive roster evidence (ACT, or DEV with an elevation record). A slate from 2026W5 on must declare its roster
+    # capture or the verify fails closed; 2026W2-W4 predate the gate and are recorded as unchecked, never as PASS.
+    from nfl.tools import showdown_run_guards as G
+    if f.get('roster_capture'):
+        _ld = lambda k, d: json.loads((_REPO / f[k]).read_text()) if f.get(k) else d  # noqa: E731
+        rb, rrep = G.upload_roster_eligibility(up, f['entries_blob_plain'] if f.get('entries_blob_plain') else _plain(f),
+                                               _REPO / f['roster_capture'], int(slate_id[:4]), int(slate_id.split('W')[1]),
+                                               _ld('official_inactives', []), _ld('transactions', {}), _ld('elevations', []))
+    elif slate_id in LEGACY_PRE_ROSTER_GATE:
+        rb, rrep = [], {'status': 'NOT_CHECKED_LEGACY_SLATE', 'reason': 'slate predates the roster-eligibility gate'}
+    else:
+        rb, rrep = ['ROSTER_ELIGIBILITY_UNVERIFIED (slate declares no roster_capture)'], {'status': 'UNVERIFIED'}
+    if rb and o.state.value == 'PASS':
+        o = Outcome.fail('UPLOAD_VERIFY_ROSTER_ELIGIBILITY', '; '.join(rb), cause=Cause.DATA, **(o.evidence or {}))
     doc = {'ARTIFACT': 'CLASSIC_UPLOAD_VERIFY', 'slate_id': slate_id,
            'upload_sha256': hashlib.sha256(up.read_bytes()).hexdigest(),
            'entries_sha256': f['entries_sha'], 'state': o.state.value, 'code': o.code, 'detail': o.detail,
            **{k: (o.evidence or {}).get(k) for k in ('per_contest', 'cross_contest_identical_lineups',
-                                                      'violations')}}
+                                                      'violations')}, 'roster_eligibility': rrep}
     (OUT_DIR / f'DK_{slate_id}_EARLY_UPLOAD_VERIFY.json').write_text(json.dumps(doc, indent=1))
     return o
 

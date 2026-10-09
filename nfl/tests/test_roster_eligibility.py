@@ -24,7 +24,9 @@ def check(ok, msg):
 def test_tb_dal_negative_controls():
     r = E.classify(E.dk_pool(EXPORT), E.roster_rows(ROSTERS, 2026, 5), json.loads(INACT.read_text()),
                    {'Emari Demercado': 'waived by DAL 2026-10-08 (owner relay of ESPN / A. Schefter)'}, ['Easton Stick'])
-    want_blocked = {('David Sills V', 'TB'): 'NOT_ON_WEEK_ROSTER', ('Josh Williams', 'TB'): 'PRACTICE_SQUAD_NOT_ELEVATED',
+    # Sills: RESERVE since 2026-10-09 -- with generational suffixes normalised, 'David Sills V' matches his roster
+    # record 'David Sills' (status RES = IR, as the owner reported). Before, the exact-name miss read NOT_ON_WEEK_ROSTER.
+    want_blocked = {('David Sills V', 'TB'): 'RESERVE', ('Josh Williams', 'TB'): 'PRACTICE_SQUAD_NOT_ELEVATED',
                     ('Emari Demercado', 'DAL'): 'RELEASED', ('Jalen McMillan', 'TB'): 'RESERVE',
                     ('Malik Davis', 'DAL'): 'RESERVE', ('Baker Mayfield', 'TB'): 'GAME_DAY_INACTIVE',
                     ('Camden Brown', 'DAL'): 'GAME_DAY_INACTIVE', ('Brett Rypien', 'TB'): 'PRACTICE_SQUAD_NOT_ELEVATED'}

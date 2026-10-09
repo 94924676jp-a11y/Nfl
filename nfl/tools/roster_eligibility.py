@@ -27,14 +27,32 @@ import json
 import pathlib
 
 ALIASES = {'Kenny Gainwell': 'Kenneth Gainwell'}
+#: DraftKings club code -> nflverse roster club code (DK writes LAR; nflverse writes LA)
+CLUB = {'LAR': 'LA', 'JAC': 'JAX', 'WSH': 'WAS'}
+
+
+def _norm(n):
+    """Name key robust to punctuation and generational suffixes (James Cook III == James Cook)."""
+    import re
+    n = re.sub(r"[.'`]", '', str(n)).lower()
+    n = re.sub(r'\b(jr|sr|ii|iii|iv|v)\b', '', n)
+    return re.sub(r'\s+', ' ', n).strip()
 
 
 def dk_pool(export):
+    """{(name, club): {'pos', 'ids'}} from the player-pool block of a DKEntries export. The block's column offset is
+    found from its own header ('Position', 'Name + ID'): Showdown puts it at column 11, Classic at 14. A fixed offset
+    read the Classic pool as nothing, and every id became 'unknown' -- an empty read is an error, never a result."""
     rows = list(csv.reader(open(export, newline='', encoding='utf-8-sig')))
+    off = next((i for r in rows for i in range(len(r) - 1) if r[i] == 'Position' and r[i + 1] == 'Name + ID'), None)
+    if off is None:
+        raise ValueError(f'DK_POOL_HEADER_NOT_FOUND {export}')
     out = {}
-    for t in (r[11:] for r in rows[1:]):
+    for t in (r[off:] for r in rows[1:]):
         if len(t) >= 8 and t[3].strip().isdigit():
             out.setdefault((t[2].strip(), t[7].strip()), {'pos': t[0], 'ids': []})['ids'].append(t[3].strip())
+    if not out:
+        raise ValueError(f'DK_POOL_EMPTY {export}')
     return out
 
 
@@ -50,6 +68,7 @@ def classify(pool, rosters, inactives=(), transactions=None, elevations=()):
     by = {}
     for r in rosters:
         by.setdefault((r['full_name'], r['team']), []).append(r)
+        by.setdefault(('~' + _norm(r['full_name']), r['team']), []).append(r)
     inact, elev = set(inactives), set(elevations)
     tx = transactions or {}
     out = {}
@@ -57,7 +76,9 @@ def classify(pool, rosters, inactives=(), transactions=None, elevations=()):
         if info['pos'] == 'DST':
             out[(name, club)] = {'eligible': True, 'reason': 'TEAM_DEFENCE', 'evidence': 'by construction'}
             continue
-        rr = by.get((name, club)) or by.get((ALIASES.get(name, ''), club)) or []
+        rc = CLUB.get(club, club)
+        rr = (by.get((name, rc)) or by.get((ALIASES.get(name, ''), rc)) or by.get(('~' + _norm(name), rc))
+              or by.get(('~' + _norm(ALIASES.get(name, '')), rc)) or [])
         st = sorted({r['status'] for r in rr})
         if name in tx:
             res = (False, 'RELEASED', tx[name])
