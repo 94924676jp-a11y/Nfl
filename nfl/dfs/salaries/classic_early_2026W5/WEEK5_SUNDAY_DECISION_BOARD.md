@@ -108,6 +108,22 @@ Each evidence row holds:
 **Rule followed:** an UNKNOWN or undesignated player is not inactive, and a missing designation is not "not playing".
 The engine moves volume only on an OUT designation or an official inactive.
 
+**Research scenario, not a forecast to use** (`research_projection/scenario_secondary_reported_outs/SCENARIO_DIFF.json`):
+- Williams, Hall, Mitchell and Pittman were set to REPORTED_OUT_UNVERIFIED because SECONDARY reports call them out.
+- The scenario ran on HEAD `bd895bb3`, which includes the absent-rank fix.
+
+What moved:
+- **Braelon Allen:** his ceiling rises from SECONDARY to **ALPHA**, and he goes from 4.72 to **10.56**. The fix lifts
+  the cap; his band stays SECONDARY on history and usage.
+- **Bagent:** 0.07 to **19.03**.
+- **CHI receivers:** move less than 1 point. That is W5-G1: QB identity does not move team volume or shares.
+- **Redistributed volume:**
+  - Garrett Wilson +3.71;
+  - Isaiah Williams +3.90;
+  - Kenyon Sadiq +1.82;
+  - Roman Wilson +3.61;
+  - Germie Bernard +2.10.
+
 ## 4. Forecasting limitations (what the numbers cannot see)
 
 1. **QB identity is not an input to team volume or receiver shares** (W5-G1).
