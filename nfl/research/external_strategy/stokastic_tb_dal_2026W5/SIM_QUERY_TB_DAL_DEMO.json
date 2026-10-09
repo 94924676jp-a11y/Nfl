@@ -1,0 +1,2219 @@
+{
+ "ARTIFACT": "SIM_QUERY_TB_DAL_DEMO",
+ "spec_version": "sim-query-1",
+ "tool": "nfl/tools/sim_query.py",
+ "tool_commit": "d0b5a8fd40959c25d56d8a18eacb28fb96101afb",
+ "READ_ONLY": true,
+ "WHAT_THIS_IS": "Every number below is a count or order statistic over stored TB@DAL 2026W5 worlds. No probability was invented, no language model was called, no sportsbook price was read. Betting use is out of scope.",
+ "CAVEAT": "An answer is only as good as the worlds. Known defects of the underlying worlds: lower-tail volatility under-stated (D-01); event accounting inconsistent in the incumbent (PRODUCTION) worlds (D-05), which is why the SHADOW event-consistent worlds are answered side by side. The SHADOW arm is research only and is consumed by no production path.",
+ "arms": {
+  "PRODUCTION": {
+   "spec_version": "sim-query-1",
+   "read_only": true,
+   "worlds_path": "/home/user/nfl/nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SHOWDOWN_TB_DAL_2026W5_WORLDS.npz",
+   "worlds_sha256": "6e8a34ccfbc59c0966732ed5f7941ed1a389358200ded20142e447642054204a",
+   "format": "WORLDS_NPZ_V1",
+   "format_writer": "nfl/tools/classic_slate_run.py:_write_worlds",
+   "n_worlds": 2000,
+   "n_stat_players": 45,
+   "stored_fields": [
+    "pass_att",
+    "pass_yards",
+    "pass_td",
+    "carries",
+    "rush_yards",
+    "rush_td",
+    "targets",
+    "receptions",
+    "rec_yards",
+    "rec_td",
+    "interceptions"
+   ],
+   "yard_storage": "1/10 yd",
+   "games": [
+    {
+     "game_id": "2026_05_TB_DAL",
+     "home": "DAL",
+     "away": "TB"
+    }
+   ],
+   "projection_sha256": "d16a86965c5f7646984d07f35cb6500898fc826c917f6fc52517a37d836e47f2",
+   "receipt_check": {
+    "state": "MATCH",
+    "receipt_entry": "football/SHOWDOWN_TB_DAL_2026W5_WORLDS.npz",
+    "receipt_sha256": "6e8a34ccfbc59c0966732ed5f7941ed1a389358200ded20142e447642054204a",
+    "path": "/home/user/nfl/nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/RUN_RECEIPT.json"
+   },
+   "draws_path": "/home/user/nfl/nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SHOWDOWN_TB_DAL_2026W5_DRAWS.json",
+   "draws_sha256": "a14075e64d471c633b9b55c52397e9e74c427df2fc61487b8860d3758dd8dfad",
+   "n_draw_players": 49,
+   "draws_projection_sha256": "d16a86965c5f7646984d07f35cb6500898fc826c917f6fc52517a37d836e47f2",
+   "draws_artifact": "SHOWDOWN_SLATE_DRAWS",
+   "draws_arm": null,
+   "draws_shadow_only": null,
+   "dk_alignment": {
+    "shared_keys": 45,
+    "agreement": 1.0,
+    "floor": 0.99,
+    "MEANING": "share of player-world cells where DK recomputed from the stored stat line equals the stored draw (within 0.06, or exactly a 3-point bonus line from 0.1-yd storage rounding)"
+   },
+   "model_label": "PRODUCTION",
+   "label_source": "PATH",
+   "layout": "SHOWDOWN"
+  },
+  "SHADOW": {
+   "spec_version": "sim-query-1",
+   "read_only": true,
+   "worlds_path": "/home/user/p0work/nfl-accounting-repair/nfl/research/accounting_repair/TB_DAL_2026W5/EVENT_CONSISTENT/SHOWDOWN_TB_DAL_2026W5_WORLDS.npz",
+   "worlds_sha256": "212420bab3607fec67b2ee3209561f6a23d03491427ecd5a3325ea2d512a9567",
+   "format": "WORLDS_NPZ_V1",
+   "format_writer": "nfl/tools/classic_slate_run.py:_write_worlds",
+   "n_worlds": 2000,
+   "n_stat_players": 45,
+   "stored_fields": [
+    "pass_att",
+    "pass_yards",
+    "pass_td",
+    "carries",
+    "rush_yards",
+    "rush_td",
+    "targets",
+    "receptions",
+    "rec_yards",
+    "rec_td",
+    "interceptions"
+   ],
+   "yard_storage": "1/10 yd",
+   "games": [
+    {
+     "game_id": "2026_05_TB_DAL",
+     "home": "DAL",
+     "away": "TB"
+    }
+   ],
+   "projection_sha256": "d16a86965c5f7646984d07f35cb6500898fc826c917f6fc52517a37d836e47f2",
+   "receipt_check": {
+    "state": "NO_RECEIPT"
+   },
+   "draws_path": "/home/user/p0work/nfl-accounting-repair/nfl/research/accounting_repair/TB_DAL_2026W5/EVENT_CONSISTENT/SHOWDOWN_TB_DAL_2026W5_DRAWS.json",
+   "draws_sha256": "4931cb39d55eed817f9985f35a560b7e3036d7bc839598a6b4ee04dd6c6e7bfc",
+   "n_draw_players": 49,
+   "draws_projection_sha256": "d16a86965c5f7646984d07f35cb6500898fc826c917f6fc52517a37d836e47f2",
+   "draws_artifact": "SHOWDOWN_SLATE_DRAWS",
+   "draws_arm": "EVENT_CONSISTENT_SHADOW",
+   "draws_shadow_only": "research arm; not consumed by any production path",
+   "dk_alignment": {
+    "shared_keys": 45,
+    "agreement": 1.0,
+    "floor": 0.99,
+    "MEANING": "share of player-world cells where DK recomputed from the stored stat line equals the stored draw (within 0.06, or exactly a 3-point bonus line from 0.1-yd storage rounding)"
+   },
+   "model_label": "SHADOW",
+   "label_source": "ARTIFACT_MARKER (draws ARM / SHADOW_ONLY)",
+   "layout": "SHOWDOWN"
+  }
+ },
+ "min_conditioning_worlds": 50,
+ "table": [
+  {
+   "question": "Jalon Daniels rush yards >= 50",
+   "PRODUCTION": {
+    "value": 0.1015,
+    "se": 0.006753,
+    "n": "203/2000"
+   },
+   "query_PRODUCTION": "P(rush_yards['Jalon Daniels|TB'] >= 50)",
+   "SHADOW": {
+    "value": 0.1015,
+    "se": 0.006753,
+    "n": "203/2000"
+   },
+   "query_SHADOW": "P(rush_yards['Jalon Daniels|TB'] >= 50)"
+  },
+  {
+   "question": "DAL wins by 20+",
+   "PRODUCTION": {
+    "value": 0.218,
+    "se": 0.009232,
+    "n": "436/2000"
+   },
+   "query_PRODUCTION": "P(margin['DAL'] >= 20)",
+   "SHADOW": {
+    "value": 0.2555,
+    "se": 0.009752,
+    "n": "511/2000"
+   },
+   "query_SHADOW": "P(margin['DAL'] >= 20)"
+  },
+  {
+   "question": "TB wins",
+   "PRODUCTION": {
+    "value": 0.192,
+    "se": 0.008807,
+    "n": "384/2000"
+   },
+   "query_PRODUCTION": "P(wins['TB'])",
+   "SHADOW": {
+    "value": 0.1925,
+    "se": 0.008816,
+    "n": "385/2000"
+   },
+   "query_SHADOW": "P(wins['TB'])"
+  },
+  {
+   "question": "Jalon Daniels pass attempts < 15",
+   "PRODUCTION": {
+    "value": 0.0025,
+    "se": 0.001117,
+    "n": "5/2000"
+   },
+   "query_PRODUCTION": "P(pass_att['Jalon Daniels|TB'] < 15)",
+   "SHADOW": {
+    "value": 0.0025,
+    "se": 0.001117,
+    "n": "5/2000"
+   },
+   "query_SHADOW": "P(pass_att['Jalon Daniels|TB'] < 15)"
+  },
+  {
+   "question": "Javonte Williams any TD AND Tyler Goodson any TD",
+   "PRODUCTION": {
+    "value": 0.15,
+    "se": 0.007984,
+    "n": "300/2000"
+   },
+   "query_PRODUCTION": "P(any_td['Javonte Williams|DAL'] >= 1 AND any_td['Tyler Goodson|DAL'] >= 1)",
+   "SHADOW": {
+    "value": 0.135,
+    "se": 0.007641,
+    "n": "270/2000"
+   },
+   "query_SHADOW": "P(any_td['Javonte Williams|DAL'] >= 1 AND any_td['Tyler Goodson|DAL'] >= 1)"
+  },
+  {
+   "question": "CeeDee Lamb any TD",
+   "PRODUCTION": {
+    "value": 0.534,
+    "se": 0.011154,
+    "n": "1068/2000"
+   },
+   "query_PRODUCTION": "P(any_td['CeeDee Lamb|DAL'] >= 1)",
+   "SHADOW": {
+    "value": 0.551,
+    "se": 0.011122,
+    "n": "1102/2000"
+   },
+   "query_SHADOW": "P(any_td['CeeDee Lamb|DAL'] >= 1)"
+  },
+  {
+   "question": "George Pickens any TD",
+   "PRODUCTION": {
+    "value": 0.322,
+    "se": 0.010448,
+    "n": "644/2000"
+   },
+   "query_PRODUCTION": "P(any_td['George Pickens|DAL'] >= 1)",
+   "SHADOW": {
+    "value": 0.311,
+    "se": 0.010351,
+    "n": "622/2000"
+   },
+   "query_SHADOW": "P(any_td['George Pickens|DAL'] >= 1)"
+  },
+  {
+   "question": "Bucky Irving any TD",
+   "PRODUCTION": {
+    "value": 0.427,
+    "se": 0.011061,
+    "n": "854/2000"
+   },
+   "query_PRODUCTION": "P(any_td['Bucky Irving|TB'] >= 1)",
+   "SHADOW": {
+    "value": 0.4065,
+    "se": 0.010983,
+    "n": "813/2000"
+   },
+   "query_SHADOW": "P(any_td['Bucky Irving|TB'] >= 1)"
+  },
+  {
+   "question": "Bucky Irving 2+ TD",
+   "PRODUCTION": {
+    "value": 0.1155,
+    "se": 0.007147,
+    "n": "231/2000"
+   },
+   "query_PRODUCTION": "P(any_td['Bucky Irving|TB'] >= 2)",
+   "SHADOW": {
+    "value": 0.124,
+    "se": 0.00737,
+    "n": "248/2000"
+   },
+   "query_SHADOW": "P(any_td['Bucky Irving|TB'] >= 2)"
+  },
+  {
+   "question": "corr(Javonte Williams DK, Tyler Goodson DK)",
+   "PRODUCTION": {
+    "value": -0.0339,
+    "se": 0.0224,
+    "ci95": [
+     -0.0776,
+     0.0099
+    ],
+    "n": 2000
+   },
+   "query_PRODUCTION": "CORR(dk_points['Javonte Williams|DAL'], dk_points['Tyler Goodson|DAL'])",
+   "SHADOW": {
+    "value": -0.0516,
+    "se": 0.0223,
+    "ci95": [
+     -0.0952,
+     -0.0078
+    ],
+    "n": 2000
+   },
+   "query_SHADOW": "CORR(dk_points['Javonte Williams|DAL'], dk_points['Tyler Goodson|DAL'])"
+  },
+  {
+   "question": "Lamb DK quantiles (unconditional, for reference)",
+   "PRODUCTION": {
+    "quantiles": {
+     "0.1": 14.0901,
+     "0.25": 19.6854,
+     "0.5": 27.4341,
+     "0.75": 36.1275,
+     "0.9": 43.1526
+    },
+    "se": {
+     "0.1": 0.3308,
+     "0.25": 0.2968,
+     "0.5": 0.2951,
+     "0.75": 0.3491,
+     "0.9": 0.4512
+    },
+    "n": 2000,
+    "status": "OK"
+   },
+   "query_PRODUCTION": "QUANTILES(dk_points['CeeDee Lamb|DAL'], 0.1, 0.25, 0.5, 0.75, 0.9)",
+   "SHADOW": {
+    "quantiles": {
+     "0.1": 12.6346,
+     "0.25": 19.1946,
+     "0.5": 27.3023,
+     "0.75": 36.8738,
+     "0.9": 45.8867
+    },
+    "se": {
+     "0.1": 0.2835,
+     "0.25": 0.3719,
+     "0.5": 0.2783,
+     "0.75": 0.4086,
+     "0.9": 0.6038
+    },
+    "n": 2000,
+    "status": "OK"
+   },
+   "query_SHADOW": "QUANTILES(dk_points['CeeDee Lamb|DAL'], 0.1, 0.25, 0.5, 0.75, 0.9)"
+  },
+  {
+   "question": "Prescott DK 25th percentile",
+   "PRODUCTION": {
+    "quantiles": {
+     "0.25": 16.6177
+    },
+    "se": {
+     "0.25": 0.2545
+    },
+    "n": 2000,
+    "status": "OK"
+   },
+   "query_PRODUCTION": "QUANTILES(dk_points['Dak Prescott|DAL'], 0.25)",
+   "SHADOW": {
+    "quantiles": {
+     "0.25": 16.3334
+    },
+    "se": {
+     "0.25": 0.2568
+    },
+    "n": 2000,
+    "status": "OK"
+   },
+   "query_SHADOW": "QUANTILES(dk_points['Dak Prescott|DAL'], 0.25)"
+  },
+  {
+   "question": "Lamb DK quantiles | Prescott DK below his own 25th percentile in the same arm",
+   "PRODUCTION": {
+    "quantiles": {
+     "0.1": 11.1521,
+     "0.25": 15.0262,
+     "0.5": 20.5848,
+     "0.75": 27.6188,
+     "0.9": 34.0732
+    },
+    "se": {
+     "0.1": 0.4212,
+     "0.25": 0.5487,
+     "0.5": 0.5211,
+     "0.75": 0.6772,
+     "0.9": 0.9149
+    },
+    "n": 500,
+    "status": "OK"
+   },
+   "query_PRODUCTION": "QUANTILES(dk_points['CeeDee Lamb|DAL'], 0.1, 0.25, 0.5, 0.75, 0.9 | dk_points['Dak Prescott|DAL'] < 16.6177)",
+   "SHADOW": {
+    "quantiles": {
+     "0.1": 9.6152,
+     "0.25": 13.6752,
+     "0.5": 20.2102,
+     "0.75": 26.5168,
+     "0.9": 31.2042
+    },
+    "se": {
+     "0.1": 0.6916,
+     "0.25": 0.5245,
+     "0.5": 0.582,
+     "0.75": 0.4158,
+     "0.9": 0.8805
+    },
+    "n": 500,
+    "status": "OK"
+   },
+   "query_SHADOW": "QUANTILES(dk_points['CeeDee Lamb|DAL'], 0.1, 0.25, 0.5, 0.75, 0.9 | dk_points['Dak Prescott|DAL'] < 16.3334)"
+  }
+ ],
+ "optimal_lineup_frequency": {
+  "pool": "/home/user/nfl/nfl/dfs/salaries/showdown_tb_dal/OFFICIAL_ELIGIBILITY_FIX_R1/SHOWDOWN_TB_DAL_CANDIDATES.csv",
+  "rule": "1.5 x CPT DK + sum FLEX DK; best candidate in the supplied pool per world; exact ties split",
+  "SCOPE": "optimal among the supplied R1 pool only, not among all legal lineups",
+  "table": [
+   {
+    "player": "CeeDee Lamb|DAL",
+    "PRODUCTION_cpt": 0.368,
+    "PRODUCTION_flex": 0.435,
+    "SHADOW_cpt": 0.3505,
+    "SHADOW_flex": 0.427,
+    "se_max": 0.011085
+   },
+   {
+    "player": "Dak Prescott|DAL",
+    "PRODUCTION_cpt": 0.135,
+    "PRODUCTION_flex": 0.606,
+    "SHADOW_cpt": 0.093,
+    "SHADOW_flex": 0.6795,
+    "se_max": 0.010926
+   },
+   {
+    "player": "Cade Otton|TB",
+    "PRODUCTION_cpt": 0.0755,
+    "PRODUCTION_flex": 0.4415,
+    "SHADOW_cpt": 0.056,
+    "SHADOW_flex": 0.469,
+    "se_max": 0.011104
+   },
+   {
+    "player": "Bucky Irving|TB",
+    "PRODUCTION_cpt": 0.1145,
+    "PRODUCTION_flex": 0.382,
+    "SHADOW_cpt": 0.092,
+    "SHADOW_flex": 0.402,
+    "se_max": 0.010865
+   },
+   {
+    "player": "Javonte Williams|DAL",
+    "PRODUCTION_cpt": 0.115,
+    "PRODUCTION_flex": 0.3495,
+    "SHADOW_cpt": 0.119,
+    "SHADOW_flex": 0.36,
+    "se_max": 0.010662
+   },
+   {
+    "player": "Jalon Daniels|TB",
+    "PRODUCTION_cpt": 0.031,
+    "PRODUCTION_flex": 0.317,
+    "SHADOW_cpt": 0.036,
+    "SHADOW_flex": 0.3145,
+    "se_max": 0.010405
+   },
+   {
+    "player": "Brandon Aubrey|DAL",
+    "PRODUCTION_cpt": 0.0225,
+    "PRODUCTION_flex": 0.2765,
+    "SHADOW_cpt": 0.0195,
+    "SHADOW_flex": 0.2665,
+    "se_max": 0.010001
+   },
+   {
+    "player": "Chase McLaughlin|TB",
+    "PRODUCTION_cpt": 0.009,
+    "PRODUCTION_flex": 0.263,
+    "SHADOW_cpt": 0.008,
+    "SHADOW_flex": 0.24775,
+    "se_max": 0.009845
+   },
+   {
+    "player": "Jake Ferguson|DAL",
+    "PRODUCTION_cpt": 0.0225,
+    "PRODUCTION_flex": 0.249,
+    "SHADOW_cpt": 0.032,
+    "SHADOW_flex": 0.262,
+    "se_max": 0.00967
+   },
+   {
+    "player": "Emeka Egbuka|TB",
+    "PRODUCTION_cpt": 0.032,
+    "PRODUCTION_flex": 0.233,
+    "SHADOW_cpt": 0.03,
+    "SHADOW_flex": 0.213,
+    "se_max": 0.009453
+   },
+   {
+    "player": "George Pickens|DAL",
+    "PRODUCTION_cpt": 0.024,
+    "PRODUCTION_flex": 0.1765,
+    "SHADOW_cpt": 0.0355,
+    "SHADOW_flex": 0.172,
+    "se_max": 0.008525
+   },
+   {
+    "player": "Tyler Goodson|DAL",
+    "PRODUCTION_cpt": 0.0065,
+    "PRODUCTION_flex": 0.1855,
+    "SHADOW_cpt": 0.01,
+    "SHADOW_flex": 0.1685,
+    "se_max": 0.008692
+   },
+   {
+    "player": "Payne Durham|TB",
+    "PRODUCTION_cpt": 0.002,
+    "PRODUCTION_flex": 0.186917,
+    "SHADOW_cpt": 0.001,
+    "SHADOW_flex": 0.177583,
+    "se_max": 0.008717
+   },
+   {
+    "player": "Buccaneers|TB",
+    "PRODUCTION_cpt": 0.01,
+    "PRODUCTION_flex": 0.177,
+    "SHADOW_cpt": 0.00725,
+    "SHADOW_flex": 0.13525,
+    "se_max": 0.008534
+   },
+   {
+    "player": "Ryan Flournoy|DAL",
+    "PRODUCTION_cpt": 0.0065,
+    "PRODUCTION_flex": 0.1485,
+    "SHADOW_cpt": 0.014,
+    "SHADOW_flex": 0.144,
+    "se_max": 0.007951
+   },
+   {
+    "player": "Chris Godwin Jr.|TB",
+    "PRODUCTION_cpt": 0.017,
+    "PRODUCTION_flex": 0.134,
+    "SHADOW_cpt": 0.017,
+    "SHADOW_flex": 0.1175,
+    "se_max": 0.007617
+   },
+   {
+    "player": "Ted Hurst III|TB",
+    "PRODUCTION_cpt": 0.0025,
+    "PRODUCTION_flex": 0.109,
+    "SHADOW_cpt": 0.0085,
+    "SHADOW_flex": 0.088,
+    "se_max": 0.006968
+   },
+   {
+    "player": "Brevyn Spann-Ford|DAL",
+    "PRODUCTION_cpt": 0.0015,
+    "PRODUCTION_flex": 0.0865,
+    "SHADOW_cpt": 0.0055,
+    "SHADOW_flex": 0.070417,
+    "se_max": 0.006286
+   },
+   {
+    "player": "Kenny Gainwell|TB",
+    "PRODUCTION_cpt": 0.0015,
+    "PRODUCTION_flex": 0.081,
+    "SHADOW_cpt": 0.007,
+    "SHADOW_flex": 0.069,
+    "se_max": 0.006101
+   },
+   {
+    "player": "Cowboys|DAL",
+    "PRODUCTION_cpt": 0.0015,
+    "PRODUCTION_flex": 0.043,
+    "SHADOW_cpt": 0.05075,
+    "SHADOW_flex": 0.1265,
+    "se_max": 0.004536
+   },
+   {
+    "player": "KaVontae Turpin|DAL",
+    "PRODUCTION_cpt": 0.0005,
+    "PRODUCTION_flex": 0.03575,
+    "SHADOW_cpt": 0.0025,
+    "SHADOW_flex": 0.038167,
+    "se_max": 0.004152
+   },
+   {
+    "player": "Sean Tucker|TB",
+    "PRODUCTION_cpt": 0.001,
+    "PRODUCTION_flex": 0.033,
+    "SHADOW_cpt": 0.0025,
+    "SHADOW_flex": 0.0205,
+    "se_max": 0.003994
+   },
+   {
+    "player": "Tez Johnson|TB",
+    "PRODUCTION_cpt": 0.0,
+    "PRODUCTION_flex": 0.016,
+    "SHADOW_cpt": 0.001,
+    "SHADOW_flex": 0.012,
+    "se_max": 0.002806
+   },
+   {
+    "player": "Luke Schoonmaker|DAL",
+    "PRODUCTION_cpt": 0.0,
+    "PRODUCTION_flex": 0.014167,
+    "SHADOW_cpt": 0.0005,
+    "SHADOW_flex": 0.0085,
+    "se_max": 0.002643
+   },
+   {
+    "player": "Bauer Sharp|TB",
+    "PRODUCTION_cpt": 0.0,
+    "PRODUCTION_flex": 0.006167,
+    "SHADOW_cpt": 0.0,
+    "SHADOW_flex": 0.004167,
+    "se_max": 0.001751
+   },
+   {
+    "player": "Jonathan Mingo|DAL",
+    "PRODUCTION_cpt": 0.0005,
+    "PRODUCTION_flex": 0.0055,
+    "SHADOW_cpt": 0.0005,
+    "SHADOW_flex": 0.003583,
+    "se_max": 0.001654
+   },
+   {
+    "player": "Kameron Johnson|TB",
+    "PRODUCTION_cpt": 0.0,
+    "PRODUCTION_flex": 0.006,
+    "SHADOW_cpt": 0.0005,
+    "SHADOW_flex": 0.002667,
+    "se_max": 0.001727
+   },
+   {
+    "player": "Ko Kieft|TB",
+    "PRODUCTION_cpt": 0.0,
+    "PRODUCTION_flex": 0.0025,
+    "SHADOW_cpt": 0.0,
+    "SHADOW_flex": 0.000417,
+    "se_max": 0.001117
+   },
+   {
+    "player": "Hunter Luepke|DAL",
+    "PRODUCTION_cpt": 0.0,
+    "PRODUCTION_flex": 0.0005,
+    "SHADOW_cpt": 0.0,
+    "SHADOW_flex": 0.0,
+    "se_max": 0.0005
+   },
+   {
+    "player": "Easton Stick|TB",
+    "PRODUCTION_cpt": 0.0,
+    "PRODUCTION_flex": 0.0,
+    "SHADOW_cpt": 0.0,
+    "SHADOW_flex": 0.0,
+    "se_max": 0.0
+   },
+   {
+    "player": "Sam Howell|DAL",
+    "PRODUCTION_cpt": 0.0,
+    "PRODUCTION_flex": 0.0,
+    "SHADOW_cpt": 0.0,
+    "SHADOW_flex": 0.0,
+    "se_max": 0.0
+   }
+  ],
+  "detail": {
+   "PRODUCTION": {
+    "query": "OPTIMAL_FREQUENCY(pool=SHOWDOWN_TB_DAL_CANDIDATES.csv, score=1.5*CPT+sum(FLEX))",
+    "kind": "OPTIMAL_LINEUP_FREQUENCY",
+    "status": "OK",
+    "n_worlds": 2000,
+    "denominator": 2000,
+    "n_candidates": 5387,
+    "model_label": "PRODUCTION",
+    "candidates_path": "/home/user/nfl/nfl/dfs/salaries/showdown_tb_dal/OFFICIAL_ELIGIBILITY_FIX_R1/SHOWDOWN_TB_DAL_CANDIDATES.csv",
+    "candidates_sha256": "901daa2af7c02aa042406a69ddec1fbb80b2f56d84300f303e813d5875c45e61",
+    "worlds_with_ties": 14,
+    "tie_rule": "exact ties split credit equally",
+    "distinct_optimal_candidates": 1425,
+    "se_method": "binomial sqrt(p(1-p)/n_worlds) per share",
+    "SCOPE": "optimal AMONG THE SUPPLIED POOL only; a player absent from the pool has share 0 by construction",
+    "players_in_draws_not_in_pool": [
+     "Anthony Smith|DAL",
+     "Brett Rypien|TB",
+     "CJ Dippre|TB",
+     "DJ Rogers|DAL",
+     "David Sills V|TB",
+     "Dean Patterson IV|TB",
+     "Emari Demercado|DAL",
+     "Eric Rivers Jr.|TB",
+     "Garrett Greene|TB",
+     "Israel Abanikanda|DAL",
+     "Jalen McMillan|TB",
+     "James Mitchell|DAL",
+     "Joe Milton III|DAL",
+     "Jordan Hudson|DAL",
+     "Josh Williams|TB",
+     "Malik Davis|DAL",
+     "Michael Trigg|DAL",
+     "Princeton Fant|DAL"
+    ],
+    "per_player": {
+     "CeeDee Lamb|DAL": {
+      "cpt_worlds": 736.0,
+      "cpt_share": 0.368,
+      "cpt_se": 0.010784,
+      "flex_worlds": 870.0,
+      "flex_share": 0.435,
+      "flex_se": 0.011085,
+      "any_share": 0.803
+     },
+     "Dak Prescott|DAL": {
+      "cpt_worlds": 270.0,
+      "cpt_share": 0.135,
+      "cpt_se": 0.007641,
+      "flex_worlds": 1212.0,
+      "flex_share": 0.606,
+      "flex_se": 0.010926,
+      "any_share": 0.741
+     },
+     "Cade Otton|TB": {
+      "cpt_worlds": 151.0,
+      "cpt_share": 0.0755,
+      "cpt_se": 0.005908,
+      "flex_worlds": 883.0,
+      "flex_share": 0.4415,
+      "flex_se": 0.011104,
+      "any_share": 0.517
+     },
+     "Bucky Irving|TB": {
+      "cpt_worlds": 229.0,
+      "cpt_share": 0.1145,
+      "cpt_se": 0.00712,
+      "flex_worlds": 764.0,
+      "flex_share": 0.382,
+      "flex_se": 0.010865,
+      "any_share": 0.4965
+     },
+     "Javonte Williams|DAL": {
+      "cpt_worlds": 230.0,
+      "cpt_share": 0.115,
+      "cpt_se": 0.007134,
+      "flex_worlds": 699.0,
+      "flex_share": 0.3495,
+      "flex_se": 0.010662,
+      "any_share": 0.4645
+     },
+     "Jalon Daniels|TB": {
+      "cpt_worlds": 62.0,
+      "cpt_share": 0.031,
+      "cpt_se": 0.003875,
+      "flex_worlds": 634.0,
+      "flex_share": 0.317,
+      "flex_se": 0.010405,
+      "any_share": 0.348
+     },
+     "Brandon Aubrey|DAL": {
+      "cpt_worlds": 45.0,
+      "cpt_share": 0.0225,
+      "cpt_se": 0.003316,
+      "flex_worlds": 553.0,
+      "flex_share": 0.2765,
+      "flex_se": 0.010001,
+      "any_share": 0.299
+     },
+     "Chase McLaughlin|TB": {
+      "cpt_worlds": 18.0,
+      "cpt_share": 0.009,
+      "cpt_se": 0.002112,
+      "flex_worlds": 526.0,
+      "flex_share": 0.263,
+      "flex_se": 0.009845,
+      "any_share": 0.272
+     },
+     "Jake Ferguson|DAL": {
+      "cpt_worlds": 45.0,
+      "cpt_share": 0.0225,
+      "cpt_se": 0.003316,
+      "flex_worlds": 498.0,
+      "flex_share": 0.249,
+      "flex_se": 0.00967,
+      "any_share": 0.2715
+     },
+     "Emeka Egbuka|TB": {
+      "cpt_worlds": 64.0,
+      "cpt_share": 0.032,
+      "cpt_se": 0.003935,
+      "flex_worlds": 466.0,
+      "flex_share": 0.233,
+      "flex_se": 0.009453,
+      "any_share": 0.265
+     },
+     "George Pickens|DAL": {
+      "cpt_worlds": 48.0,
+      "cpt_share": 0.024,
+      "cpt_se": 0.003422,
+      "flex_worlds": 353.0,
+      "flex_share": 0.1765,
+      "flex_se": 0.008525,
+      "any_share": 0.2005
+     },
+     "Tyler Goodson|DAL": {
+      "cpt_worlds": 13.0,
+      "cpt_share": 0.0065,
+      "cpt_se": 0.001797,
+      "flex_worlds": 371.0,
+      "flex_share": 0.1855,
+      "flex_se": 0.008692,
+      "any_share": 0.192
+     },
+     "Payne Durham|TB": {
+      "cpt_worlds": 4.0,
+      "cpt_share": 0.002,
+      "cpt_se": 0.000999,
+      "flex_worlds": 373.833,
+      "flex_share": 0.186917,
+      "flex_se": 0.008717,
+      "any_share": 0.188917
+     },
+     "Buccaneers|TB": {
+      "cpt_worlds": 20.0,
+      "cpt_share": 0.01,
+      "cpt_se": 0.002225,
+      "flex_worlds": 354.0,
+      "flex_share": 0.177,
+      "flex_se": 0.008534,
+      "any_share": 0.187
+     },
+     "Ryan Flournoy|DAL": {
+      "cpt_worlds": 13.0,
+      "cpt_share": 0.0065,
+      "cpt_se": 0.001797,
+      "flex_worlds": 297.0,
+      "flex_share": 0.1485,
+      "flex_se": 0.007951,
+      "any_share": 0.155
+     },
+     "Chris Godwin Jr.|TB": {
+      "cpt_worlds": 34.0,
+      "cpt_share": 0.017,
+      "cpt_se": 0.002891,
+      "flex_worlds": 268.0,
+      "flex_share": 0.134,
+      "flex_se": 0.007617,
+      "any_share": 0.151
+     },
+     "Ted Hurst III|TB": {
+      "cpt_worlds": 5.0,
+      "cpt_share": 0.0025,
+      "cpt_se": 0.001117,
+      "flex_worlds": 218.0,
+      "flex_share": 0.109,
+      "flex_se": 0.006968,
+      "any_share": 0.1115
+     },
+     "Brevyn Spann-Ford|DAL": {
+      "cpt_worlds": 3.0,
+      "cpt_share": 0.0015,
+      "cpt_se": 0.000865,
+      "flex_worlds": 173.0,
+      "flex_share": 0.0865,
+      "flex_se": 0.006286,
+      "any_share": 0.088
+     },
+     "Kenny Gainwell|TB": {
+      "cpt_worlds": 3.0,
+      "cpt_share": 0.0015,
+      "cpt_se": 0.000865,
+      "flex_worlds": 162.0,
+      "flex_share": 0.081,
+      "flex_se": 0.006101,
+      "any_share": 0.0825
+     },
+     "Cowboys|DAL": {
+      "cpt_worlds": 3.0,
+      "cpt_share": 0.0015,
+      "cpt_se": 0.000865,
+      "flex_worlds": 86.0,
+      "flex_share": 0.043,
+      "flex_se": 0.004536,
+      "any_share": 0.0445
+     },
+     "KaVontae Turpin|DAL": {
+      "cpt_worlds": 1.0,
+      "cpt_share": 0.0005,
+      "cpt_se": 0.0005,
+      "flex_worlds": 71.5,
+      "flex_share": 0.03575,
+      "flex_se": 0.004152,
+      "any_share": 0.03625
+     },
+     "Sean Tucker|TB": {
+      "cpt_worlds": 2.0,
+      "cpt_share": 0.001,
+      "cpt_se": 0.000707,
+      "flex_worlds": 66.0,
+      "flex_share": 0.033,
+      "flex_se": 0.003994,
+      "any_share": 0.034
+     },
+     "Tez Johnson|TB": {
+      "cpt_worlds": 0.0,
+      "cpt_share": 0.0,
+      "cpt_se": 0.0,
+      "flex_worlds": 32.0,
+      "flex_share": 0.016,
+      "flex_se": 0.002806,
+      "any_share": 0.016
+     },
+     "Luke Schoonmaker|DAL": {
+      "cpt_worlds": 0.0,
+      "cpt_share": 0.0,
+      "cpt_se": 0.0,
+      "flex_worlds": 28.333,
+      "flex_share": 0.014167,
+      "flex_se": 0.002643,
+      "any_share": 0.014167
+     },
+     "Bauer Sharp|TB": {
+      "cpt_worlds": 0.0,
+      "cpt_share": 0.0,
+      "cpt_se": 0.0,
+      "flex_worlds": 12.333,
+      "flex_share": 0.006167,
+      "flex_se": 0.001751,
+      "any_share": 0.006167
+     },
+     "Jonathan Mingo|DAL": {
+      "cpt_worlds": 1.0,
+      "cpt_share": 0.0005,
+      "cpt_se": 0.0005,
+      "flex_worlds": 11.0,
+      "flex_share": 0.0055,
+      "flex_se": 0.001654,
+      "any_share": 0.006
+     },
+     "Kameron Johnson|TB": {
+      "cpt_worlds": 0.0,
+      "cpt_share": 0.0,
+      "cpt_se": 0.0,
+      "flex_worlds": 12.0,
+      "flex_share": 0.006,
+      "flex_se": 0.001727,
+      "any_share": 0.006
+     },
+     "Ko Kieft|TB": {
+      "cpt_worlds": 0.0,
+      "cpt_share": 0.0,
+      "cpt_se": 0.0,
+      "flex_worlds": 5.0,
+      "flex_share": 0.0025,
+      "flex_se": 0.001117,
+      "any_share": 0.0025
+     },
+     "Hunter Luepke|DAL": {
+      "cpt_worlds": 0.0,
+      "cpt_share": 0.0,
+      "cpt_se": 0.0,
+      "flex_worlds": 1.0,
+      "flex_share": 0.0005,
+      "flex_se": 0.0005,
+      "any_share": 0.0005
+     },
+     "Easton Stick|TB": {
+      "cpt_worlds": 0.0,
+      "cpt_share": 0.0,
+      "cpt_se": 0.0,
+      "flex_worlds": 0.0,
+      "flex_share": 0.0,
+      "flex_se": 0.0,
+      "any_share": 0.0
+     },
+     "Sam Howell|DAL": {
+      "cpt_worlds": 0.0,
+      "cpt_share": 0.0,
+      "cpt_se": 0.0,
+      "flex_worlds": 0.0,
+      "flex_share": 0.0,
+      "flex_se": 0.0,
+      "any_share": 0.0
+     }
+    },
+    "top_candidates": [
+     {
+      "captain": "CeeDee Lamb|DAL",
+      "flex": [
+       "Bucky Irving|TB",
+       "Cade Otton|TB",
+       "Dak Prescott|DAL",
+       "Jalon Daniels|TB",
+       "Payne Durham|TB"
+      ],
+      "worlds": 24.0
+     },
+     {
+      "captain": "CeeDee Lamb|DAL",
+      "flex": [
+       "Cade Otton|TB",
+       "Dak Prescott|DAL",
+       "Emeka Egbuka|TB",
+       "Jalon Daniels|TB",
+       "Payne Durham|TB"
+      ],
+      "worlds": 12.333
+     },
+     {
+      "captain": "CeeDee Lamb|DAL",
+      "flex": [
+       "Bucky Irving|TB",
+       "Cade Otton|TB",
+       "Chase McLaughlin|TB",
+       "Dak Prescott|DAL",
+       "Ryan Flournoy|DAL"
+      ],
+      "worlds": 10.0
+     },
+     {
+      "captain": "CeeDee Lamb|DAL",
+      "flex": [
+       "Bucky Irving|TB",
+       "Chase McLaughlin|TB",
+       "Dak Prescott|DAL",
+       "Jake Ferguson|DAL",
+       "Tyler Goodson|DAL"
+      ],
+      "worlds": 10.0
+     },
+     {
+      "captain": "CeeDee Lamb|DAL",
+      "flex": [
+       "Cade Otton|TB",
+       "Dak Prescott|DAL",
+       "Jake Ferguson|DAL",
+       "Javonte Williams|DAL",
+       "Payne Durham|TB"
+      ],
+      "worlds": 9.5
+     },
+     {
+      "captain": "CeeDee Lamb|DAL",
+      "flex": [
+       "Brandon Aubrey|DAL",
+       "Chase McLaughlin|TB",
+       "Dak Prescott|DAL",
+       "Javonte Williams|DAL",
+       "Payne Durham|TB"
+      ],
+      "worlds": 9.0
+     },
+     {
+      "captain": "CeeDee Lamb|DAL",
+      "flex": [
+       "Brandon Aubrey|DAL",
+       "Buccaneers|TB",
+       "Bucky Irving|TB",
+       "Cade Otton|TB",
+       "Javonte Williams|DAL"
+      ],
+      "worlds": 8.0
+     },
+     {
+      "captain": "Dak Prescott|DAL",
+      "flex": [
+       "Cade Otton|TB",
+       "CeeDee Lamb|DAL",
+       "Jake Ferguson|DAL",
+       "Jalon Daniels|TB",
+       "Ted Hurst III|TB"
+      ],
+      "worlds": 8.0
+     },
+     {
+      "captain": "CeeDee Lamb|DAL",
+      "flex": [
+       "Brevyn Spann-Ford|DAL",
+       "Cade Otton|TB",
+       "Chase McLaughlin|TB",
+       "Dak Prescott|DAL",
+       "Javonte Williams|DAL"
+      ],
+      "worlds": 7.0
+     },
+     {
+      "captain": "CeeDee Lamb|DAL",
+      "flex": [
+       "Brandon Aubrey|DAL",
+       "Buccaneers|TB",
+       "Bucky Irving|TB",
+       "Cade Otton|TB",
+       "Dak Prescott|DAL"
+      ],
+      "worlds": 7.0
+     }
+    ],
+    "cross_check_vs_csv": {
+     "column": "n_worlds_optimal",
+     "candidates_equal": 5358,
+     "of": 5387,
+     "stated_total": 2000.0,
+     "ours_total": 2000.0,
+     "MEANING": "agreement with the CSV's own per-candidate count; the CSV may count optimality over a different pool, so disagreement is reported, not repaired"
+    }
+   },
+   "SHADOW": {
+    "query": "OPTIMAL_FREQUENCY(pool=SHOWDOWN_TB_DAL_CANDIDATES.csv, score=1.5*CPT+sum(FLEX))",
+    "kind": "OPTIMAL_LINEUP_FREQUENCY",
+    "status": "OK",
+    "n_worlds": 2000,
+    "denominator": 2000,
+    "n_candidates": 5387,
+    "model_label": "SHADOW",
+    "candidates_path": "/home/user/nfl/nfl/dfs/salaries/showdown_tb_dal/OFFICIAL_ELIGIBILITY_FIX_R1/SHOWDOWN_TB_DAL_CANDIDATES.csv",
+    "candidates_sha256": "901daa2af7c02aa042406a69ddec1fbb80b2f56d84300f303e813d5875c45e61",
+    "worlds_with_ties": 35,
+    "tie_rule": "exact ties split credit equally",
+    "distinct_optimal_candidates": 1159,
+    "se_method": "binomial sqrt(p(1-p)/n_worlds) per share",
+    "SCOPE": "optimal AMONG THE SUPPLIED POOL only; a player absent from the pool has share 0 by construction",
+    "players_in_draws_not_in_pool": [
+     "Anthony Smith|DAL",
+     "Brett Rypien|TB",
+     "CJ Dippre|TB",
+     "DJ Rogers|DAL",
+     "David Sills V|TB",
+     "Dean Patterson IV|TB",
+     "Emari Demercado|DAL",
+     "Eric Rivers Jr.|TB",
+     "Garrett Greene|TB",
+     "Israel Abanikanda|DAL",
+     "Jalen McMillan|TB",
+     "James Mitchell|DAL",
+     "Joe Milton III|DAL",
+     "Jordan Hudson|DAL",
+     "Josh Williams|TB",
+     "Malik Davis|DAL",
+     "Michael Trigg|DAL",
+     "Princeton Fant|DAL"
+    ],
+    "per_player": {
+     "CeeDee Lamb|DAL": {
+      "cpt_worlds": 701.0,
+      "cpt_share": 0.3505,
+      "cpt_se": 0.010669,
+      "flex_worlds": 854.0,
+      "flex_share": 0.427,
+      "flex_se": 0.011061,
+      "any_share": 0.7775
+     },
+     "Dak Prescott|DAL": {
+      "cpt_worlds": 186.0,
+      "cpt_share": 0.093,
+      "cpt_se": 0.006494,
+      "flex_worlds": 1359.0,
+      "flex_share": 0.6795,
+      "flex_se": 0.010435,
+      "any_share": 0.7725
+     },
+     "Cade Otton|TB": {
+      "cpt_worlds": 112.0,
+      "cpt_share": 0.056,
+      "cpt_se": 0.005141,
+      "flex_worlds": 938.0,
+      "flex_share": 0.469,
+      "flex_se": 0.011159,
+      "any_share": 0.525
+     },
+     "Bucky Irving|TB": {
+      "cpt_worlds": 184.0,
+      "cpt_share": 0.092,
+      "cpt_se": 0.006463,
+      "flex_worlds": 804.0,
+      "flex_share": 0.402,
+      "flex_se": 0.010963,
+      "any_share": 0.494
+     },
+     "Javonte Williams|DAL": {
+      "cpt_worlds": 238.0,
+      "cpt_share": 0.119,
+      "cpt_se": 0.00724,
+      "flex_worlds": 720.0,
+      "flex_share": 0.36,
+      "flex_se": 0.010733,
+      "any_share": 0.479
+     },
+     "Jalon Daniels|TB": {
+      "cpt_worlds": 72.0,
+      "cpt_share": 0.036,
+      "cpt_se": 0.004166,
+      "flex_worlds": 629.0,
+      "flex_share": 0.3145,
+      "flex_se": 0.010382,
+      "any_share": 0.3505
+     },
+     "Jake Ferguson|DAL": {
+      "cpt_worlds": 64.0,
+      "cpt_share": 0.032,
+      "cpt_se": 0.003935,
+      "flex_worlds": 524.0,
+      "flex_share": 0.262,
+      "flex_se": 0.009832,
+      "any_share": 0.294
+     },
+     "Brandon Aubrey|DAL": {
+      "cpt_worlds": 39.0,
+      "cpt_share": 0.0195,
+      "cpt_se": 0.003092,
+      "flex_worlds": 533.0,
+      "flex_share": 0.2665,
+      "flex_se": 0.009886,
+      "any_share": 0.286
+     },
+     "Chase McLaughlin|TB": {
+      "cpt_worlds": 16.0,
+      "cpt_share": 0.008,
+      "cpt_se": 0.001992,
+      "flex_worlds": 495.5,
+      "flex_share": 0.24775,
+      "flex_se": 0.009653,
+      "any_share": 0.25575
+     },
+     "Emeka Egbuka|TB": {
+      "cpt_worlds": 60.0,
+      "cpt_share": 0.03,
+      "cpt_se": 0.003814,
+      "flex_worlds": 426.0,
+      "flex_share": 0.213,
+      "flex_se": 0.009155,
+      "any_share": 0.243
+     },
+     "George Pickens|DAL": {
+      "cpt_worlds": 71.0,
+      "cpt_share": 0.0355,
+      "cpt_se": 0.004138,
+      "flex_worlds": 344.0,
+      "flex_share": 0.172,
+      "flex_se": 0.008438,
+      "any_share": 0.2075
+     },
+     "Payne Durham|TB": {
+      "cpt_worlds": 2.0,
+      "cpt_share": 0.001,
+      "cpt_se": 0.000707,
+      "flex_worlds": 355.167,
+      "flex_share": 0.177583,
+      "flex_se": 0.008545,
+      "any_share": 0.178583
+     },
+     "Tyler Goodson|DAL": {
+      "cpt_worlds": 20.0,
+      "cpt_share": 0.01,
+      "cpt_se": 0.002225,
+      "flex_worlds": 337.0,
+      "flex_share": 0.1685,
+      "flex_se": 0.00837,
+      "any_share": 0.1785
+     },
+     "Cowboys|DAL": {
+      "cpt_worlds": 101.5,
+      "cpt_share": 0.05075,
+      "cpt_se": 0.004908,
+      "flex_worlds": 253.0,
+      "flex_share": 0.1265,
+      "flex_se": 0.007433,
+      "any_share": 0.17725
+     },
+     "Ryan Flournoy|DAL": {
+      "cpt_worlds": 28.0,
+      "cpt_share": 0.014,
+      "cpt_se": 0.002627,
+      "flex_worlds": 288.0,
+      "flex_share": 0.144,
+      "flex_se": 0.007851,
+      "any_share": 0.158
+     },
+     "Buccaneers|TB": {
+      "cpt_worlds": 14.5,
+      "cpt_share": 0.00725,
+      "cpt_se": 0.001897,
+      "flex_worlds": 270.5,
+      "flex_share": 0.13525,
+      "flex_se": 0.007647,
+      "any_share": 0.1425
+     },
+     "Chris Godwin Jr.|TB": {
+      "cpt_worlds": 34.0,
+      "cpt_share": 0.017,
+      "cpt_se": 0.002891,
+      "flex_worlds": 235.0,
+      "flex_share": 0.1175,
+      "flex_se": 0.0072,
+      "any_share": 0.1345
+     },
+     "Ted Hurst III|TB": {
+      "cpt_worlds": 17.0,
+      "cpt_share": 0.0085,
+      "cpt_se": 0.002053,
+      "flex_worlds": 176.0,
+      "flex_share": 0.088,
+      "flex_se": 0.006335,
+      "any_share": 0.0965
+     },
+     "Kenny Gainwell|TB": {
+      "cpt_worlds": 14.0,
+      "cpt_share": 0.007,
+      "cpt_se": 0.001864,
+      "flex_worlds": 138.0,
+      "flex_share": 0.069,
+      "flex_se": 0.005667,
+      "any_share": 0.076
+     },
+     "Brevyn Spann-Ford|DAL": {
+      "cpt_worlds": 11.0,
+      "cpt_share": 0.0055,
+      "cpt_se": 0.001654,
+      "flex_worlds": 140.833,
+      "flex_share": 0.070417,
+      "flex_se": 0.005721,
+      "any_share": 0.075917
+     },
+     "KaVontae Turpin|DAL": {
+      "cpt_worlds": 5.0,
+      "cpt_share": 0.0025,
+      "cpt_se": 0.001117,
+      "flex_worlds": 76.333,
+      "flex_share": 0.038167,
+      "flex_se": 0.004284,
+      "any_share": 0.040667
+     },
+     "Sean Tucker|TB": {
+      "cpt_worlds": 5.0,
+      "cpt_share": 0.0025,
+      "cpt_se": 0.001117,
+      "flex_worlds": 41.0,
+      "flex_share": 0.0205,
+      "flex_se": 0.003169,
+      "any_share": 0.023
+     },
+     "Tez Johnson|TB": {
+      "cpt_worlds": 2.0,
+      "cpt_share": 0.001,
+      "cpt_se": 0.000707,
+      "flex_worlds": 24.0,
+      "flex_share": 0.012,
+      "flex_se": 0.002435,
+      "any_share": 0.013
+     },
+     "Luke Schoonmaker|DAL": {
+      "cpt_worlds": 1.0,
+      "cpt_share": 0.0005,
+      "cpt_se": 0.0005,
+      "flex_worlds": 17.0,
+      "flex_share": 0.0085,
+      "flex_se": 0.002053,
+      "any_share": 0.009
+     },
+     "Bauer Sharp|TB": {
+      "cpt_worlds": 0.0,
+      "cpt_share": 0.0,
+      "cpt_se": 0.0,
+      "flex_worlds": 8.333,
+      "flex_share": 0.004167,
+      "flex_se": 0.00144,
+      "any_share": 0.004167
+     },
+     "Jonathan Mingo|DAL": {
+      "cpt_worlds": 1.0,
+      "cpt_share": 0.0005,
+      "cpt_se": 0.0005,
+      "flex_worlds": 7.167,
+      "flex_share": 0.003583,
+      "flex_se": 0.001336,
+      "any_share": 0.004083
+     },
+     "Kameron Johnson|TB": {
+      "cpt_worlds": 1.0,
+      "cpt_share": 0.0005,
+      "cpt_se": 0.0005,
+      "flex_worlds": 5.333,
+      "flex_share": 0.002667,
+      "flex_se": 0.001153,
+      "any_share": 0.003167
+     },
+     "Ko Kieft|TB": {
+      "cpt_worlds": 0.0,
+      "cpt_share": 0.0,
+      "cpt_se": 0.0,
+      "flex_worlds": 0.833,
+      "flex_share": 0.000417,
+      "flex_se": 0.000456,
+      "any_share": 0.000417
+     },
+     "Easton Stick|TB": {
+      "cpt_worlds": 0.0,
+      "cpt_share": 0.0,
+      "cpt_se": 0.0,
+      "flex_worlds": 0.0,
+      "flex_share": 0.0,
+      "flex_se": 0.0,
+      "any_share": 0.0
+     },
+     "Hunter Luepke|DAL": {
+      "cpt_worlds": 0.0,
+      "cpt_share": 0.0,
+      "cpt_se": 0.0,
+      "flex_worlds": 0.0,
+      "flex_share": 0.0,
+      "flex_se": 0.0,
+      "any_share": 0.0
+     },
+     "Sam Howell|DAL": {
+      "cpt_worlds": 0.0,
+      "cpt_share": 0.0,
+      "cpt_se": 0.0,
+      "flex_worlds": 0.0,
+      "flex_share": 0.0,
+      "flex_se": 0.0,
+      "any_share": 0.0
+     }
+    },
+    "top_candidates": [
+     {
+      "captain": "CeeDee Lamb|DAL",
+      "flex": [
+       "Bucky Irving|TB",
+       "Cade Otton|TB",
+       "Dak Prescott|DAL",
+       "Jalon Daniels|TB",
+       "Payne Durham|TB"
+      ],
+      "worlds": 19.0
+     },
+     {
+      "captain": "CeeDee Lamb|DAL",
+      "flex": [
+       "Brandon Aubrey|DAL",
+       "Chase McLaughlin|TB",
+       "Dak Prescott|DAL",
+       "Javonte Williams|DAL",
+       "Payne Durham|TB"
+      ],
+      "worlds": 11.333
+     },
+     {
+      "captain": "CeeDee Lamb|DAL",
+      "flex": [
+       "Brevyn Spann-Ford|DAL",
+       "Cade Otton|TB",
+       "Cowboys|DAL",
+       "Dak Prescott|DAL",
+       "Javonte Williams|DAL"
+      ],
+      "worlds": 11.0
+     },
+     {
+      "captain": "CeeDee Lamb|DAL",
+      "flex": [
+       "Cade Otton|TB",
+       "Dak Prescott|DAL",
+       "Emeka Egbuka|TB",
+       "Jalon Daniels|TB",
+       "Payne Durham|TB"
+      ],
+      "worlds": 10.333
+     },
+     {
+      "captain": "CeeDee Lamb|DAL",
+      "flex": [
+       "Brandon Aubrey|DAL",
+       "Cade Otton|TB",
+       "Cowboys|DAL",
+       "Dak Prescott|DAL",
+       "Jake Ferguson|DAL"
+      ],
+      "worlds": 10.0
+     },
+     {
+      "captain": "CeeDee Lamb|DAL",
+      "flex": [
+       "Bucky Irving|TB",
+       "Cade Otton|TB",
+       "Chase McLaughlin|TB",
+       "Dak Prescott|DAL",
+       "Ryan Flournoy|DAL"
+      ],
+      "worlds": 9.5
+     },
+     {
+      "captain": "CeeDee Lamb|DAL",
+      "flex": [
+       "Bucky Irving|TB",
+       "Cowboys|DAL",
+       "Dak Prescott|DAL",
+       "Jake Ferguson|DAL",
+       "Tyler Goodson|DAL"
+      ],
+      "worlds": 9.0
+     },
+     {
+      "captain": "CeeDee Lamb|DAL",
+      "flex": [
+       "Buccaneers|TB",
+       "Bucky Irving|TB",
+       "Chase McLaughlin|TB",
+       "Cowboys|DAL",
+       "Dak Prescott|DAL"
+      ],
+      "worlds": 8.5
+     },
+     {
+      "captain": "CeeDee Lamb|DAL",
+      "flex": [
+       "Brevyn Spann-Ford|DAL",
+       "Cade Otton|TB",
+       "Chase McLaughlin|TB",
+       "Dak Prescott|DAL",
+       "Javonte Williams|DAL"
+      ],
+      "worlds": 8.167
+     },
+     {
+      "captain": "Cowboys|DAL",
+      "flex": [
+       "Brandon Aubrey|DAL",
+       "Cade Otton|TB",
+       "CeeDee Lamb|DAL",
+       "Dak Prescott|DAL",
+       "Javonte Williams|DAL"
+      ],
+      "worlds": 8.0
+     }
+    ],
+    "cross_check_vs_csv": {
+     "column": "n_worlds_optimal",
+     "candidates_equal": 3800,
+     "of": 5387,
+     "stated_total": 2000.0,
+     "ours_total": 2000.0,
+     "MEANING": "agreement with the CSV's own per-candidate count; the CSV may count optimality over a different pool, so disagreement is reported, not repaired"
+    }
+   }
+  }
+ },
+ "answers": [
+  {
+   "question": "Jalon Daniels rush yards >= 50",
+   "arm": "PRODUCTION",
+   "query": "P(rush_yards['Jalon Daniels|TB'] >= 50)",
+   "kind": "PROBABILITY",
+   "n_worlds": 2000,
+   "model_label": "PRODUCTION",
+   "min_conditioning_worlds": 50,
+   "numerator": 203,
+   "denominator": 2000,
+   "n_matching": 203,
+   "n_conditioning": null,
+   "status": "OK",
+   "value": 0.1015,
+   "se": 0.006753,
+   "se_method": "binomial sqrt(p(1-p)/denominator), worlds treated as independent draws",
+   "ci95_wilson": [
+    0.08902,
+    0.115508
+   ]
+  },
+  {
+   "question": "DAL wins by 20+",
+   "arm": "PRODUCTION",
+   "query": "P(margin['DAL'] >= 20)",
+   "kind": "PROBABILITY",
+   "n_worlds": 2000,
+   "model_label": "PRODUCTION",
+   "min_conditioning_worlds": 50,
+   "numerator": 436,
+   "denominator": 2000,
+   "n_matching": 436,
+   "n_conditioning": null,
+   "status": "OK",
+   "value": 0.218,
+   "se": 0.009232,
+   "se_method": "binomial sqrt(p(1-p)/denominator), worlds treated as independent draws",
+   "ci95_wilson": [
+    0.200455,
+    0.236627
+   ]
+  },
+  {
+   "question": "TB wins",
+   "arm": "PRODUCTION",
+   "query": "P(wins['TB'])",
+   "kind": "PROBABILITY",
+   "n_worlds": 2000,
+   "model_label": "PRODUCTION",
+   "min_conditioning_worlds": 50,
+   "numerator": 384,
+   "denominator": 2000,
+   "n_matching": 384,
+   "n_conditioning": null,
+   "status": "OK",
+   "value": 0.192,
+   "se": 0.008807,
+   "se_method": "binomial sqrt(p(1-p)/denominator), worlds treated as independent draws",
+   "ci95_wilson": [
+    0.175335,
+    0.209846
+   ]
+  },
+  {
+   "question": "Jalon Daniels pass attempts < 15",
+   "arm": "PRODUCTION",
+   "query": "P(pass_att['Jalon Daniels|TB'] < 15)",
+   "kind": "PROBABILITY",
+   "n_worlds": 2000,
+   "model_label": "PRODUCTION",
+   "min_conditioning_worlds": 50,
+   "numerator": 5,
+   "denominator": 2000,
+   "n_matching": 5,
+   "n_conditioning": null,
+   "status": "OK",
+   "value": 0.0025,
+   "se": 0.001117,
+   "se_method": "binomial sqrt(p(1-p)/denominator), worlds treated as independent draws",
+   "ci95_wilson": [
+    0.001068,
+    0.005839
+   ]
+  },
+  {
+   "question": "Javonte Williams any TD AND Tyler Goodson any TD",
+   "arm": "PRODUCTION",
+   "query": "P(any_td['Javonte Williams|DAL'] >= 1 AND any_td['Tyler Goodson|DAL'] >= 1)",
+   "kind": "PROBABILITY",
+   "n_worlds": 2000,
+   "model_label": "PRODUCTION",
+   "min_conditioning_worlds": 50,
+   "numerator": 300,
+   "denominator": 2000,
+   "n_matching": 300,
+   "n_conditioning": null,
+   "status": "OK",
+   "value": 0.15,
+   "se": 0.007984,
+   "se_method": "binomial sqrt(p(1-p)/denominator), worlds treated as independent draws",
+   "ci95_wilson": [
+    0.135023,
+    0.166319
+   ]
+  },
+  {
+   "question": "CeeDee Lamb any TD",
+   "arm": "PRODUCTION",
+   "query": "P(any_td['CeeDee Lamb|DAL'] >= 1)",
+   "kind": "PROBABILITY",
+   "n_worlds": 2000,
+   "model_label": "PRODUCTION",
+   "min_conditioning_worlds": 50,
+   "numerator": 1068,
+   "denominator": 2000,
+   "n_matching": 1068,
+   "n_conditioning": null,
+   "status": "OK",
+   "value": 0.534,
+   "se": 0.011154,
+   "se_method": "binomial sqrt(p(1-p)/denominator), worlds treated as independent draws",
+   "ci95_wilson": [
+    0.512093,
+    0.555776
+   ]
+  },
+  {
+   "question": "George Pickens any TD",
+   "arm": "PRODUCTION",
+   "query": "P(any_td['George Pickens|DAL'] >= 1)",
+   "kind": "PROBABILITY",
+   "n_worlds": 2000,
+   "model_label": "PRODUCTION",
+   "min_conditioning_worlds": 50,
+   "numerator": 644,
+   "denominator": 2000,
+   "n_matching": 644,
+   "n_conditioning": null,
+   "status": "OK",
+   "value": 0.322,
+   "se": 0.010448,
+   "se_method": "binomial sqrt(p(1-p)/denominator), worlds treated as independent draws",
+   "ci95_wilson": [
+    0.301881,
+    0.342802
+   ]
+  },
+  {
+   "question": "Bucky Irving any TD",
+   "arm": "PRODUCTION",
+   "query": "P(any_td['Bucky Irving|TB'] >= 1)",
+   "kind": "PROBABILITY",
+   "n_worlds": 2000,
+   "model_label": "PRODUCTION",
+   "min_conditioning_worlds": 50,
+   "numerator": 854,
+   "denominator": 2000,
+   "n_matching": 854,
+   "n_conditioning": null,
+   "status": "OK",
+   "value": 0.427,
+   "se": 0.011061,
+   "se_method": "binomial sqrt(p(1-p)/denominator), worlds treated as independent draws",
+   "ci95_wilson": [
+    0.405482,
+    0.448798
+   ]
+  },
+  {
+   "question": "Bucky Irving 2+ TD",
+   "arm": "PRODUCTION",
+   "query": "P(any_td['Bucky Irving|TB'] >= 2)",
+   "kind": "PROBABILITY",
+   "n_worlds": 2000,
+   "model_label": "PRODUCTION",
+   "min_conditioning_worlds": 50,
+   "numerator": 231,
+   "denominator": 2000,
+   "n_matching": 231,
+   "n_conditioning": null,
+   "status": "OK",
+   "value": 0.1155,
+   "se": 0.007147,
+   "se_method": "binomial sqrt(p(1-p)/denominator), worlds treated as independent draws",
+   "ci95_wilson": [
+    0.102223,
+    0.130251
+   ]
+  },
+  {
+   "question": "corr(Javonte Williams DK, Tyler Goodson DK)",
+   "arm": "PRODUCTION",
+   "query": "CORR(dk_points['Javonte Williams|DAL'], dk_points['Tyler Goodson|DAL'])",
+   "kind": "CORRELATION",
+   "n_worlds": 2000,
+   "model_label": "PRODUCTION",
+   "min_conditioning_worlds": 50,
+   "denominator": 2000,
+   "n_matching": 2000,
+   "n_conditioning": null,
+   "status": "OK",
+   "value": -0.0339,
+   "se": 0.0224,
+   "ci95": [
+    -0.0776,
+    0.0099
+   ],
+   "se_method": "Pearson over worlds; SE (1-r^2)/sqrt(n-3), ci95 by Fisher z",
+   "mean_x": 18.7278,
+   "mean_y": 4.4311
+  },
+  {
+   "question": "Lamb DK quantiles (unconditional, for reference)",
+   "arm": "PRODUCTION",
+   "query": "QUANTILES(dk_points['CeeDee Lamb|DAL'], 0.1, 0.25, 0.5, 0.75, 0.9)",
+   "kind": "QUANTILES",
+   "n_worlds": 2000,
+   "model_label": "PRODUCTION",
+   "min_conditioning_worlds": 50,
+   "denominator": 2000,
+   "n_matching": 2000,
+   "n_conditioning": null,
+   "status": "OK",
+   "value": {
+    "0.1": {
+     "value": 14.0901,
+     "ci95": [
+      13.4172,
+      14.714
+     ],
+     "se": 0.3308
+    },
+    "0.25": {
+     "value": 19.6854,
+     "ci95": [
+      19.0343,
+      20.1977
+     ],
+     "se": 0.2968
+    },
+    "0.5": {
+     "value": 27.4341,
+     "ci95": [
+      26.8342,
+      27.9911
+     ],
+     "se": 0.2951
+    },
+    "0.75": {
+     "value": 36.1275,
+     "ci95": [
+      35.3796,
+      36.748
+     ],
+     "se": 0.3491
+    },
+    "0.9": {
+     "value": 43.1526,
+     "ci95": [
+      42.3813,
+      44.15
+     ],
+     "se": 0.4512
+    }
+   },
+   "mean": 28.2764,
+   "se_method": "numpy.quantile (linear); SE = half-width of the distribution-free order-statistic 95% interval (binomial ranks n*q +/- z*sqrt(n q (1-q))) divided by 1.96; no resampling, so the answer is deterministic"
+  },
+  {
+   "question": "Prescott DK 25th percentile",
+   "arm": "PRODUCTION",
+   "query": "QUANTILES(dk_points['Dak Prescott|DAL'], 0.25)",
+   "kind": "QUANTILES",
+   "n_worlds": 2000,
+   "model_label": "PRODUCTION",
+   "min_conditioning_worlds": 50,
+   "denominator": 2000,
+   "n_matching": 2000,
+   "n_conditioning": null,
+   "status": "OK",
+   "value": {
+    "0.25": {
+     "value": 16.6177,
+     "ci95": [
+      16.1529,
+      17.1505
+     ],
+     "se": 0.2545
+    }
+   },
+   "mean": 22.4543,
+   "se_method": "numpy.quantile (linear); SE = half-width of the distribution-free order-statistic 95% interval (binomial ranks n*q +/- z*sqrt(n q (1-q))) divided by 1.96; no resampling, so the answer is deterministic"
+  },
+  {
+   "question": "Lamb DK quantiles | Prescott DK below his own 25th percentile in the same arm",
+   "arm": "PRODUCTION",
+   "prescott_p25_threshold": 16.6177,
+   "query": "QUANTILES(dk_points['CeeDee Lamb|DAL'], 0.1, 0.25, 0.5, 0.75, 0.9 | dk_points['Dak Prescott|DAL'] < 16.6177)",
+   "kind": "QUANTILES",
+   "n_worlds": 2000,
+   "model_label": "PRODUCTION",
+   "min_conditioning_worlds": 50,
+   "denominator": 500,
+   "n_matching": 500,
+   "n_conditioning": 500,
+   "status": "OK",
+   "value": {
+    "0.1": {
+     "value": 11.1521,
+     "ci95": [
+      10.1699,
+      11.8211
+     ],
+     "se": 0.4212
+    },
+    "0.25": {
+     "value": 15.0262,
+     "ci95": [
+      13.9046,
+      16.0556
+     ],
+     "se": 0.5487
+    },
+    "0.5": {
+     "value": 20.5848,
+     "ci95": [
+      19.3981,
+      21.4406
+     ],
+     "se": 0.5211
+    },
+    "0.75": {
+     "value": 27.6188,
+     "ci95": [
+      26.3776,
+      29.0322
+     ],
+     "se": 0.6772
+    },
+    "0.9": {
+     "value": 34.0732,
+     "ci95": [
+      31.8881,
+      35.4744
+     ],
+     "se": 0.9149
+    }
+   },
+   "mean": 21.7287,
+   "se_method": "numpy.quantile (linear); SE = half-width of the distribution-free order-statistic 95% interval (binomial ranks n*q +/- z*sqrt(n q (1-q))) divided by 1.96; no resampling, so the answer is deterministic"
+  },
+  {
+   "question": "Jalon Daniels rush yards >= 50",
+   "arm": "SHADOW",
+   "query": "P(rush_yards['Jalon Daniels|TB'] >= 50)",
+   "kind": "PROBABILITY",
+   "n_worlds": 2000,
+   "model_label": "SHADOW",
+   "min_conditioning_worlds": 50,
+   "numerator": 203,
+   "denominator": 2000,
+   "n_matching": 203,
+   "n_conditioning": null,
+   "status": "OK",
+   "value": 0.1015,
+   "se": 0.006753,
+   "se_method": "binomial sqrt(p(1-p)/denominator), worlds treated as independent draws",
+   "ci95_wilson": [
+    0.08902,
+    0.115508
+   ]
+  },
+  {
+   "question": "DAL wins by 20+",
+   "arm": "SHADOW",
+   "query": "P(margin['DAL'] >= 20)",
+   "kind": "PROBABILITY",
+   "n_worlds": 2000,
+   "model_label": "SHADOW",
+   "min_conditioning_worlds": 50,
+   "numerator": 511,
+   "denominator": 2000,
+   "n_matching": 511,
+   "n_conditioning": null,
+   "status": "OK",
+   "value": 0.2555,
+   "se": 0.009752,
+   "se_method": "binomial sqrt(p(1-p)/denominator), worlds treated as independent draws",
+   "ci95_wilson": [
+    0.236867,
+    0.275071
+   ]
+  },
+  {
+   "question": "TB wins",
+   "arm": "SHADOW",
+   "query": "P(wins['TB'])",
+   "kind": "PROBABILITY",
+   "n_worlds": 2000,
+   "model_label": "SHADOW",
+   "min_conditioning_worlds": 50,
+   "numerator": 385,
+   "denominator": 2000,
+   "n_matching": 385,
+   "n_conditioning": null,
+   "status": "OK",
+   "value": 0.1925,
+   "se": 0.008816,
+   "se_method": "binomial sqrt(p(1-p)/denominator), worlds treated as independent draws",
+   "ci95_wilson": [
+    0.175817,
+    0.210362
+   ]
+  },
+  {
+   "question": "Jalon Daniels pass attempts < 15",
+   "arm": "SHADOW",
+   "query": "P(pass_att['Jalon Daniels|TB'] < 15)",
+   "kind": "PROBABILITY",
+   "n_worlds": 2000,
+   "model_label": "SHADOW",
+   "min_conditioning_worlds": 50,
+   "numerator": 5,
+   "denominator": 2000,
+   "n_matching": 5,
+   "n_conditioning": null,
+   "status": "OK",
+   "value": 0.0025,
+   "se": 0.001117,
+   "se_method": "binomial sqrt(p(1-p)/denominator), worlds treated as independent draws",
+   "ci95_wilson": [
+    0.001068,
+    0.005839
+   ]
+  },
+  {
+   "question": "Javonte Williams any TD AND Tyler Goodson any TD",
+   "arm": "SHADOW",
+   "query": "P(any_td['Javonte Williams|DAL'] >= 1 AND any_td['Tyler Goodson|DAL'] >= 1)",
+   "kind": "PROBABILITY",
+   "n_worlds": 2000,
+   "model_label": "SHADOW",
+   "min_conditioning_worlds": 50,
+   "numerator": 270,
+   "denominator": 2000,
+   "n_matching": 270,
+   "n_conditioning": null,
+   "status": "OK",
+   "value": 0.135,
+   "se": 0.007641,
+   "se_method": "binomial sqrt(p(1-p)/denominator), worlds treated as independent draws",
+   "ci95_wilson": [
+    0.120721,
+    0.150678
+   ]
+  },
+  {
+   "question": "CeeDee Lamb any TD",
+   "arm": "SHADOW",
+   "query": "P(any_td['CeeDee Lamb|DAL'] >= 1)",
+   "kind": "PROBABILITY",
+   "n_worlds": 2000,
+   "model_label": "SHADOW",
+   "min_conditioning_worlds": 50,
+   "numerator": 1102,
+   "denominator": 2000,
+   "n_matching": 1102,
+   "n_conditioning": null,
+   "status": "OK",
+   "value": 0.551,
+   "se": 0.011122,
+   "se_method": "binomial sqrt(p(1-p)/denominator), worlds treated as independent draws",
+   "ci95_wilson": [
+    0.529124,
+    0.57268
+   ]
+  },
+  {
+   "question": "George Pickens any TD",
+   "arm": "SHADOW",
+   "query": "P(any_td['George Pickens|DAL'] >= 1)",
+   "kind": "PROBABILITY",
+   "n_worlds": 2000,
+   "model_label": "SHADOW",
+   "min_conditioning_worlds": 50,
+   "numerator": 622,
+   "denominator": 2000,
+   "n_matching": 622,
+   "n_conditioning": null,
+   "status": "OK",
+   "value": 0.311,
+   "se": 0.010351,
+   "se_method": "binomial sqrt(p(1-p)/denominator), worlds treated as independent draws",
+   "ci95_wilson": [
+    0.291091,
+    0.331633
+   ]
+  },
+  {
+   "question": "Bucky Irving any TD",
+   "arm": "SHADOW",
+   "query": "P(any_td['Bucky Irving|TB'] >= 1)",
+   "kind": "PROBABILITY",
+   "n_worlds": 2000,
+   "model_label": "SHADOW",
+   "min_conditioning_worlds": 50,
+   "numerator": 813,
+   "denominator": 2000,
+   "n_matching": 813,
+   "n_conditioning": null,
+   "status": "OK",
+   "value": 0.4065,
+   "se": 0.010983,
+   "se_method": "binomial sqrt(p(1-p)/denominator), worlds treated as independent draws",
+   "ci95_wilson": [
+    0.385173,
+    0.428186
+   ]
+  },
+  {
+   "question": "Bucky Irving 2+ TD",
+   "arm": "SHADOW",
+   "query": "P(any_td['Bucky Irving|TB'] >= 2)",
+   "kind": "PROBABILITY",
+   "n_worlds": 2000,
+   "model_label": "SHADOW",
+   "min_conditioning_worlds": 50,
+   "numerator": 248,
+   "denominator": 2000,
+   "n_matching": 248,
+   "n_conditioning": null,
+   "status": "OK",
+   "value": 0.124,
+   "se": 0.00737,
+   "se_method": "binomial sqrt(p(1-p)/denominator), worlds treated as independent draws",
+   "ci95_wilson": [
+    0.110272,
+    0.139169
+   ]
+  },
+  {
+   "question": "corr(Javonte Williams DK, Tyler Goodson DK)",
+   "arm": "SHADOW",
+   "query": "CORR(dk_points['Javonte Williams|DAL'], dk_points['Tyler Goodson|DAL'])",
+   "kind": "CORRELATION",
+   "n_worlds": 2000,
+   "model_label": "SHADOW",
+   "min_conditioning_worlds": 50,
+   "denominator": 2000,
+   "n_matching": 2000,
+   "n_conditioning": null,
+   "status": "OK",
+   "value": -0.0516,
+   "se": 0.0223,
+   "ci95": [
+    -0.0952,
+    -0.0078
+   ],
+   "se_method": "Pearson over worlds; SE (1-r^2)/sqrt(n-3), ci95 by Fisher z",
+   "mean_x": 18.9511,
+   "mean_y": 4.3519
+  },
+  {
+   "question": "Lamb DK quantiles (unconditional, for reference)",
+   "arm": "SHADOW",
+   "query": "QUANTILES(dk_points['CeeDee Lamb|DAL'], 0.1, 0.25, 0.5, 0.75, 0.9)",
+   "kind": "QUANTILES",
+   "n_worlds": 2000,
+   "model_label": "SHADOW",
+   "min_conditioning_worlds": 50,
+   "denominator": 2000,
+   "n_matching": 2000,
+   "n_conditioning": null,
+   "status": "OK",
+   "value": {
+    "0.1": {
+     "value": 12.6346,
+     "ci95": [
+      12.0198,
+      13.1312
+     ],
+     "se": 0.2835
+    },
+    "0.25": {
+     "value": 19.1946,
+     "ci95": [
+      18.3017,
+      19.7595
+     ],
+     "se": 0.3719
+    },
+    "0.5": {
+     "value": 27.3023,
+     "ci95": [
+      26.7893,
+      27.8802
+     ],
+     "se": 0.2783
+    },
+    "0.75": {
+     "value": 36.8738,
+     "ci95": [
+      36.0234,
+      37.625
+     ],
+     "se": 0.4086
+    },
+    "0.9": {
+     "value": 45.8867,
+     "ci95": [
+      44.7959,
+      47.1628
+     ],
+     "se": 0.6038
+    }
+   },
+   "mean": 28.5185,
+   "se_method": "numpy.quantile (linear); SE = half-width of the distribution-free order-statistic 95% interval (binomial ranks n*q +/- z*sqrt(n q (1-q))) divided by 1.96; no resampling, so the answer is deterministic"
+  },
+  {
+   "question": "Prescott DK 25th percentile",
+   "arm": "SHADOW",
+   "query": "QUANTILES(dk_points['Dak Prescott|DAL'], 0.25)",
+   "kind": "QUANTILES",
+   "n_worlds": 2000,
+   "model_label": "SHADOW",
+   "min_conditioning_worlds": 50,
+   "denominator": 2000,
+   "n_matching": 2000,
+   "n_conditioning": null,
+   "status": "OK",
+   "value": {
+    "0.25": {
+     "value": 16.3334,
+     "ci95": [
+      15.7855,
+      16.7921
+     ],
+     "se": 0.2568
+    }
+   },
+   "mean": 22.4029,
+   "se_method": "numpy.quantile (linear); SE = half-width of the distribution-free order-statistic 95% interval (binomial ranks n*q +/- z*sqrt(n q (1-q))) divided by 1.96; no resampling, so the answer is deterministic"
+  },
+  {
+   "question": "Lamb DK quantiles | Prescott DK below his own 25th percentile in the same arm",
+   "arm": "SHADOW",
+   "prescott_p25_threshold": 16.3334,
+   "query": "QUANTILES(dk_points['CeeDee Lamb|DAL'], 0.1, 0.25, 0.5, 0.75, 0.9 | dk_points['Dak Prescott|DAL'] < 16.3334)",
+   "kind": "QUANTILES",
+   "n_worlds": 2000,
+   "model_label": "SHADOW",
+   "min_conditioning_worlds": 50,
+   "denominator": 500,
+   "n_matching": 500,
+   "n_conditioning": 500,
+   "status": "OK",
+   "value": {
+    "0.1": {
+     "value": 9.6152,
+     "ci95": [
+      8.258,
+      10.969
+     ],
+     "se": 0.6916
+    },
+    "0.25": {
+     "value": 13.6752,
+     "ci95": [
+      12.6858,
+      14.7419
+     ],
+     "se": 0.5245
+    },
+    "0.5": {
+     "value": 20.2102,
+     "ci95": [
+      19.2247,
+      21.506
+     ],
+     "se": 0.582
+    },
+    "0.75": {
+     "value": 26.5168,
+     "ci95": [
+      25.757,
+      27.3868
+     ],
+     "se": 0.4158
+    },
+    "0.9": {
+     "value": 31.2042,
+     "ci95": [
+      29.7224,
+      33.1739
+     ],
+     "se": 0.8805
+    }
+   },
+   "mean": 20.4951,
+   "se_method": "numpy.quantile (linear); SE = half-width of the distribution-free order-statistic 95% interval (binomial ranks n*q +/- z*sqrt(n q (1-q))) divided by 1.96; no resampling, so the answer is deterministic"
+  }
+ ]
+}

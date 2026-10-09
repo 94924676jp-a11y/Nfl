@@ -1,0 +1,493 @@
+{
+ "ARTIFACT": "VIDEO_STRATEGY_CLAIMS_EXTRACTION",
+ "sources": {
+  "A": "A: \"Stokastic NFL Showdown Strategy Show\" (morning, TB@DAL 2026 W5 Thursday; owner-supplied transcript)",
+  "B": "B: \"Stokastic NFL Showdown Live Before Lock\" (recorded ~afternoon after inactives, premiered 7:15 ET; owner-supplied transcript; content from 58:26 is IN-GAME)",
+  "C": "third video https://www.youtube.com/watch?v=6uh5wC3Lecw: NO TRANSCRIPT SUPPLIED; contents UNVERIFIED"
+ },
+ "video_id_mapping": "UNVERIFIED: the owner supplied two transcripts for https://www.youtube.com/watch?v=SwoEzVWFSOA and https://www.youtube.com/watch?v=_FKfEJmHamA without saying which is which",
+ "name_note": "the transcripts say \"Jaylen Daniels\"; the TB quarterback in our data is Jalon Daniels (auto-caption spelling). Same for \"Kate Utten\"=Cade Otton, \"Ibuka\"=Emeka Egbuka, \"Florenoi\"=Ryan Flournoy, \"Javvante\"=Javonte Williams",
+ "READING": "presenter statements are claims, not facts; sim statistics are THEIR model outputs; ownership figures are THEIR forecasts; betting content is recorded only as a capability and is out of scope",
+ "claims": [
+  {
+   "source": "A",
+   "timestamp": "2:46-5:25",
+   "claim": "Their sims gave the prior Monday ATL@WAS outcome (B. Robinson 3 TD and Kamara TD) a ~0.0% probability; B. Robinson 3 TD alone ~56/10,000",
+   "kind": "TAIL_EVENT_OBSERVATION",
+   "testable": true,
+   "how_to_test": "tail calibration of our multi-TD probabilities (PIT of TD counts across graded slates)"
+  },
+  {
+   "source": "A",
+   "timestamp": "3:09-3:19",
+   "claim": "In their 10,000 sims Lamb scores a TD ~51%, Pickens ~44% (presenter said he had the wrong game pulled up first; figure ambiguous)",
+   "kind": "SIM_STATISTIC",
+   "testable": true,
+   "how_to_test": "compare with P(anytime TD) for Lamb/Pickens in our frozen OFFICIAL worlds; grade both against the one outcome only as hindsight"
+  },
+  {
+   "source": "A",
+   "timestamp": "5:35-6:06",
+   "claim": "Public perception treats Lamb as far more likely to score than Pickens; sims say the gap is small",
+   "kind": "PERCEPTION_VS_SIM",
+   "testable": true,
+   "how_to_test": "our frozen P(TD) gap; actual field ownership of Lamb vs Pickens"
+  },
+  {
+   "source": "A",
+   "timestamp": "7:31-7:47",
+   "claim": "Pickens cheaper than Lamb and has POSITIVE leverage at CPT and FLEX (their optimal rate > their projected ownership)",
+   "kind": "LEVERAGE",
+   "testable": true,
+   "how_to_test": "compute our optimal frequency (share of worlds a player is in the world-optimal lineup) vs pregame ownership forecast; compare with actual ownership"
+  },
+  {
+   "source": "A",
+   "timestamp": "9:21-10:10",
+   "claim": "Lamb had 21 targets last week; Pickens 3 last week but 25 over the prior three weeks; their targets were about equal over weeks 1-3",
+   "kind": "USAGE_FACT",
+   "testable": true,
+   "how_to_test": "2026 pbp DAL weeks 1-4 targets"
+  },
+  {
+   "source": "A",
+   "timestamp": "11:16-11:23",
+   "claim": "Pickens projected 3rd-highest owned FLEX and 2nd-highest owned CPT",
+   "kind": "OWNERSHIP_FORECAST",
+   "testable": true,
+   "how_to_test": "actual CPT/FLEX ownership from the preserved standings"
+  },
+  {
+   "source": "A",
+   "timestamp": "11:32-11:41",
+   "claim": "For a popular player the question is not whether to play him but whether you can build unique lineups around him",
+   "kind": "DUPLICATION_PRINCIPLE",
+   "testable": true,
+   "how_to_test": "exact-lineup duplication of our lineups containing him vs field"
+  },
+  {
+   "source": "A",
+   "timestamp": "12:03-12:18",
+   "claim": "If Tampa is competitive, TB 5-1 and 4-2 constructions are very low owned (natural leverage)",
+   "kind": "FIELD_CONSTRUCTION",
+   "testable": true,
+   "how_to_test": "team-split distribution of the actual field and of the top 1%"
+  },
+  {
+   "source": "A",
+   "timestamp": "16:07-16:29",
+   "claim": "CPT ownership: Pickens ~7-8%; Dak, Javonte, Lamb, Daniels the other popular captains",
+   "kind": "OWNERSHIP_FORECAST",
+   "testable": true,
+   "how_to_test": "actual CPT ownership"
+  },
+  {
+   "source": "A",
+   "timestamp": "16:29-17:40",
+   "claim": "Tampa defence looks good on paper but faced weak offenses; small sample",
+   "kind": "OPINION_WITH_DATA",
+   "testable": true,
+   "how_to_test": "points allowed by TB 2026 weeks 1-4 and opponent quality; not a model input"
+  },
+  {
+   "source": "A",
+   "timestamp": "20:46-21:38",
+   "claim": "Nobody vultures Javonte Williams goal-line work: 13 carries inside the 10 and 11 inside the 5, tied for league lead with Henry; 5 rush TD + 1 rec TD",
+   "kind": "USAGE_FACT",
+   "testable": true,
+   "how_to_test": "pbp 2026 weeks 1-4 inside-10/inside-5 carries, DAL backfield share; does our engine consume gl/rz carry share?"
+  },
+  {
+   "source": "A",
+   "timestamp": "22:10-22:21",
+   "claim": "Their portfolio: Javonte their highest-exposed captain (~23%), 46% overall",
+   "kind": "THEIR_PORTFOLIO",
+   "testable": false,
+   "how_to_test": "descriptive only"
+  },
+  {
+   "source": "A",
+   "timestamp": "24:49-25:20",
+   "claim": "Conditional query: best combo if Dallas wins by 10+ (Dallas +10, Goodson 10+ rush yds, Daniels under 2 pass TD)",
+   "kind": "SIM_QUERY_CAPABILITY",
+   "testable": true,
+   "how_to_test": "capability: conditional queries over worlds; betting use is out of scope for us"
+  },
+  {
+   "source": "A",
+   "timestamp": "25:56-27:41",
+   "claim": "Goodson ($2K FLEX): 16 snaps last game, 6 carries vs BAL, 3 vs HOU; short rest + big favourite => more backfield split; they are 3x the field",
+   "kind": "USAGE_FACT_AND_HYPOTHESIS",
+   "testable": true,
+   "how_to_test": "snap counts/carries 2026; actual Goodson ownership; our projected carries for Goodson"
+  },
+  {
+   "source": "A",
+   "timestamp": "28:13-28:32",
+   "claim": "P(Javonte and Goodson both score a TD) ~13% in their sims",
+   "kind": "JOINT_EVENT",
+   "testable": true,
+   "how_to_test": "joint probability in our worlds; same-backfield TD correlation"
+  },
+  {
+   "source": "A",
+   "timestamp": "28:47-29:30",
+   "claim": "Their exposures: Dak 65% FLEX/21% CPT; Javonte ~70%; Daniels 57%/15%; Lamb 12% CPT; most negatively leveraged = Lamb",
+   "kind": "THEIR_PORTFOLIO",
+   "testable": false,
+   "how_to_test": "descriptive only"
+  },
+  {
+   "source": "A",
+   "timestamp": "31:15-31:59",
+   "claim": "Aubrey rarely captain; they are under field at FLEX (25%); Aubrey pricier than a typical kicker; double-digit DK in 3 of 4 weeks",
+   "kind": "USAGE_FACT",
+   "testable": true,
+   "how_to_test": "2026 K DK points for Aubrey; actual ownership"
+  },
+  {
+   "source": "A",
+   "timestamp": "33:27-35:18",
+   "claim": "Dallas DST captain needs a low-event game where nobody explodes; if one skill player goes off, a DST captain cannot be optimal",
+   "kind": "CAPTAIN_CONDITIONAL_REASONING",
+   "testable": true,
+   "how_to_test": "in our worlds: P(DST is optimal CPT) and its conditions"
+  },
+  {
+   "source": "A",
+   "timestamp": "36:03-37:41",
+   "claim": "Many winning-build candidates are DAL 5-1/4-2; TB 4-2 low owned, TB 5-1 nearly unowned; most-duped lineups are Dallas-heavy",
+   "kind": "FIELD_CONSTRUCTION",
+   "testable": true,
+   "how_to_test": "actual field team splits and most-duplicated lineups in the standings"
+  },
+  {
+   "source": "A",
+   "timestamp": "39:20-39:41",
+   "claim": "Optimal lineups matter little: few hit the optimum; even with the right captain you must get the rest right",
+   "kind": "PRINCIPLE",
+   "testable": true,
+   "how_to_test": "our hit-proxy objective (>=0.9 x optimum) vs finish rank"
+  },
+  {
+   "source": "A",
+   "timestamp": "39:52-41:19",
+   "claim": "Leverage board: positive FLEX Goodson, Dak, Cowboys DST, Javonte, Gainwell, Daniels, Flournoy (34% exp vs 30% own); negative Lamb, Aubrey, Irving; \"you cannot be very negatively leveraged if you are irrelevant\"",
+   "kind": "LEVERAGE",
+   "testable": true,
+   "how_to_test": "definition: exposure minus ownership; our pregame exposures vs our pregame ownership forecast"
+  },
+  {
+   "source": "A",
+   "timestamp": "41:45-42:00",
+   "claim": "Correlation barely matters here: if a team can score six TDs everyone can coexist",
+   "kind": "CORRELATION_CLAIM",
+   "testable": true,
+   "how_to_test": "teammate DK correlation in our worlds and in historical pbp-derived DK"
+  },
+  {
+   "source": "A",
+   "timestamp": "45:17-46:11",
+   "claim": "Flournoy $3,800: ~75% of snaps every week, 23 targets in 4 games; low share but high volume",
+   "kind": "USAGE_FACT",
+   "testable": true,
+   "how_to_test": "snap counts and targets 2026"
+  },
+  {
+   "source": "A",
+   "timestamp": "46:33-46:40",
+   "claim": "Field will take big DAL weapons and fill with cheap TB players",
+   "kind": "FIELD_CONSTRUCTION",
+   "testable": true,
+   "how_to_test": "actual field"
+  },
+  {
+   "source": "A",
+   "timestamp": "47:06-47:54",
+   "claim": "Egbuka $8,200: no game above 11 DK all season",
+   "kind": "USAGE_FACT",
+   "testable": true,
+   "how_to_test": "2026 DK by week"
+  },
+  {
+   "source": "A",
+   "timestamp": "48:03-48:27",
+   "claim": "Dallas defence allowed 30 (HOU), 34 (BAL), 20 (WAS), 28 (NYG)",
+   "kind": "USAGE_FACT",
+   "testable": true,
+   "how_to_test": "2026 schedule results"
+  },
+  {
+   "source": "A",
+   "timestamp": "52:04-52:21",
+   "claim": "TB targets last week: Otton 6, Godwin 6, Egbuka 4, Hurst 3, C. Johnson 2, Tez Johnson 2, Gainwell 2, Irving 0",
+   "kind": "USAGE_FACT",
+   "testable": true,
+   "how_to_test": "pbp 2026 week 4"
+  },
+  {
+   "source": "A",
+   "timestamp": "53:18-53:49",
+   "claim": "Daniels' \"checkdown\" is running, reducing RB targets (Irving)",
+   "kind": "QB_DEPENDENCY_HYPOTHESIS",
+   "testable": true,
+   "how_to_test": "QB scramble rate vs RB target share across QB changes (needs many games; one game is anecdote)"
+  },
+  {
+   "source": "A",
+   "timestamp": "54:17-55:31",
+   "claim": "Irving P(TD) ~41-43% in their sims; 2+ TD ~10%",
+   "kind": "SIM_STATISTIC",
+   "testable": true,
+   "how_to_test": "our frozen P(TD) and P(2+ TD) for Irving"
+  },
+  {
+   "source": "A",
+   "timestamp": "57:51-58:20",
+   "claim": "Tampa wins 26% of their sims (8.5-point underdog)",
+   "kind": "SIM_STATISTIC",
+   "testable": true,
+   "how_to_test": "our P(TB win) in frozen worlds; win probability calibration needs many games"
+  },
+  {
+   "source": "B",
+   "timestamp": "3:36-4:00",
+   "claim": "Joey Porter Jr. out (illness); Dallas has many defensive inactives",
+   "kind": "AVAILABILITY_FACT",
+   "testable": true,
+   "how_to_test": "official inactives (our TB@DAL deadline capture was SECONDARY RotoWire); is DST strength adjusted for defensive inactives in our engine?"
+  },
+  {
+   "source": "B",
+   "timestamp": "4:25-5:27",
+   "claim": "Quadrant reasoning: DAL offence moves the ball and DAL defence is bad (near certain); TB defence solid; TB offence unknown",
+   "kind": "OPINION",
+   "testable": false,
+   "how_to_test": "not testable as stated"
+  },
+  {
+   "source": "B",
+   "timestamp": "7:11-7:38",
+   "claim": "Most-duped lineups slant DAL 4-2/5-1; any TB lean is naturally leveraged",
+   "kind": "FIELD_CONSTRUCTION",
+   "testable": true,
+   "how_to_test": "actual standings"
+  },
+  {
+   "source": "B",
+   "timestamp": "8:52-9:20",
+   "claim": "P(DAL wins by 20+) 23%; P(TB wins) 24%",
+   "kind": "SIM_STATISTIC",
+   "testable": true,
+   "how_to_test": "our frozen game margins"
+  },
+  {
+   "source": "B",
+   "timestamp": "9:58-10:34",
+   "claim": "Their sims gave ~8% Daniels captain; presenter would accept 15%",
+   "kind": "THEIR_PORTFOLIO",
+   "testable": false,
+   "how_to_test": "descriptive"
+  },
+  {
+   "source": "B",
+   "timestamp": "10:34-11:27",
+   "claim": "Daniels $8,600, mobile; rushing (8 rushes for 45 yds last game per later context) gives a path to ~25 DK without a receiver stack",
+   "kind": "QB_RUSHING",
+   "testable": true,
+   "how_to_test": "our QB rush projection for Daniels (D-03: generic cohort prior) vs his 2026 rushing"
+  },
+  {
+   "source": "B",
+   "timestamp": "11:48-12:10",
+   "claim": "Daniels' rushing came at the expense of Irving checkdowns (0 targets)",
+   "kind": "QB_DEPENDENCY_HYPOTHESIS",
+   "testable": true,
+   "how_to_test": "same as A 53:18"
+  },
+  {
+   "source": "B",
+   "timestamp": "12:23-12:41",
+   "claim": "P(Daniels 50+ rush yards) 38% in their sims",
+   "kind": "SIM_STATISTIC",
+   "testable": true,
+   "how_to_test": "our frozen worlds"
+  },
+  {
+   "source": "B",
+   "timestamp": "14:40-15:09",
+   "claim": "Their FLEX: with the field on Irving, over on Javonte, way over on Pickens (factory-setting sims)",
+   "kind": "THEIR_PORTFOLIO",
+   "testable": false,
+   "how_to_test": "descriptive"
+  },
+  {
+   "source": "B",
+   "timestamp": "16:00-16:52",
+   "claim": "Flournoy 6th-highest owned FLEX; Goodson nearly unowned (they 10%); Goodson 9 carries/11 opportunities over two competitive games",
+   "kind": "OWNERSHIP_FORECAST_AND_USAGE",
+   "testable": true,
+   "how_to_test": "actual ownership; pbp"
+  },
+  {
+   "source": "B",
+   "timestamp": "17:43-18:11",
+   "claim": "Daniels props 183.5 pass yds, 45.5 rush yds, 1+ TD -262; their projection 18.4 (4th highest); $800 cheaper than Pickens",
+   "kind": "MARKET_AND_PROJECTION",
+   "testable": true,
+   "how_to_test": "record only: sportsbook props are prohibited model inputs here; our frozen Daniels projection vs actual"
+  },
+  {
+   "source": "B",
+   "timestamp": "19:07-19:40",
+   "claim": "Pickens: healthy targets, clear role, touchdowns will regress up",
+   "kind": "REGRESSION_ARGUMENT",
+   "testable": true,
+   "how_to_test": "our TD expectation from opportunity (rz targets) vs his realised TD rate"
+  },
+  {
+   "source": "B",
+   "timestamp": "21:57-22:05",
+   "claim": "CPT ownership: Dak, Pickens, Javonte, Lamb 12-20% each",
+   "kind": "OWNERSHIP_FORECAST",
+   "testable": true,
+   "how_to_test": "actual CPT ownership"
+  },
+  {
+   "source": "B",
+   "timestamp": "22:40-23:06",
+   "claim": "Pickens projected to out-own Lamb at CPT; they are >2x the field on Pickens CPT",
+   "kind": "OWNERSHIP_FORECAST",
+   "testable": true,
+   "how_to_test": "actual CPT ownership"
+  },
+  {
+   "source": "B",
+   "timestamp": "23:14-23:29",
+   "claim": "With 20 lineups include a couple of TB captains (Irving or Daniels) unless sure of a rout",
+   "kind": "PORTFOLIO_RULE",
+   "testable": true,
+   "how_to_test": "portfolio diversification rule; testable only across many slates"
+  },
+  {
+   "source": "B",
+   "timestamp": "24:11-25:49",
+   "claim": "A TB pass catcher is optimal CPT only if TDs are scarce and drives stall; PPR spreads points to receivers",
+   "kind": "CAPTAIN_CONDITIONAL_REASONING",
+   "testable": true,
+   "how_to_test": "our worlds: conditions under which each TB receiver is optimal CPT"
+  },
+  {
+   "source": "B",
+   "timestamp": "26:26-26:53",
+   "claim": "Salary path: a non-top scorer can be optimal CPT by enabling the right FLEX combination (Olave Monday)",
+   "kind": "CAPTAIN_CONDITIONAL_REASONING",
+   "testable": true,
+   "how_to_test": "our hindsight optimum decomposition: CPT is not always the top scorer"
+  },
+  {
+   "source": "B",
+   "timestamp": "27:14-29:17",
+   "claim": "CPT 1.5x arithmetic: an elite scorer's bonus cannot be overcome at FLEX",
+   "kind": "CAPTAIN_ARITHMETIC",
+   "testable": true,
+   "how_to_test": "identity of DK scoring"
+  },
+  {
+   "source": "B",
+   "timestamp": "29:58-30:22",
+   "claim": "Otton captain 5.3% exposure vs ~2% field",
+   "kind": "THEIR_PORTFOLIO",
+   "testable": false,
+   "how_to_test": "descriptive"
+  },
+  {
+   "source": "B",
+   "timestamp": "31:10-33:52",
+   "claim": "Egbuka FLEX ownership ~15% (they 11%); 100+ rec yds 3.5%; first TD 3.5%; low Daniels passing volume suppresses all TB receivers",
+   "kind": "QB_DEPENDENCY_AND_SIM",
+   "testable": true,
+   "how_to_test": "receiver outcomes conditional on QB pass volume in our worlds"
+  },
+  {
+   "source": "B",
+   "timestamp": "37:00-38:32",
+   "claim": "11 of 150 of their lineups pair Javonte and Goodson: in favourable scripts a backfield shares MORE total carries rather than cannibalising",
+   "kind": "CORRELATION_CLAIM",
+   "testable": true,
+   "how_to_test": "RB1-RB2 same-team DK correlation in our worlds and in history"
+  },
+  {
+   "source": "B",
+   "timestamp": "39:35-39:48",
+   "claim": "P(Javonte and Goodson both TD) 13.9% vs a prediction-market 6.8%",
+   "kind": "JOINT_EVENT",
+   "testable": true,
+   "how_to_test": "our worlds; betting comparison out of scope"
+  },
+  {
+   "source": "B",
+   "timestamp": "40:15-42:35",
+   "claim": "Unknown QB spreads targets (max 6 last week) so cheap receivers are viable; backup QBs may favour secondary receivers they practise with (speculative); Hurst 1 target fewer than Egbuka on ~25 fewer snaps",
+   "kind": "QB_DEPENDENCY_HYPOTHESIS",
+   "testable": true,
+   "how_to_test": "target concentration under backup QBs (historical QB changes)"
+  },
+  {
+   "source": "B",
+   "timestamp": "43:52-44:00",
+   "claim": "P(Daniels < 15 pass attempts) 1.9%",
+   "kind": "SIM_STATISTIC",
+   "testable": true,
+   "how_to_test": "our worlds"
+  },
+  {
+   "source": "B",
+   "timestamp": "44:08-45:09",
+   "claim": "CPT leverage: Dak most positive, Javonte and Pickens positive, Lamb most negative",
+   "kind": "LEVERAGE",
+   "testable": true,
+   "how_to_test": "our definitions"
+  },
+  {
+   "source": "B",
+   "timestamp": "45:39-45:43",
+   "claim": "P(Goodson first TD) 4.1%",
+   "kind": "SIM_STATISTIC",
+   "testable": false,
+   "how_to_test": "our worlds carry no TD ordering; not measurable without event order"
+  },
+  {
+   "source": "B",
+   "timestamp": "48:25-49:40",
+   "claim": "Most-duped lineup (79 dupes in their projection): Dak, Aubrey, Lamb, Cowboys DST, Daniels, Flournoy, about 50K; most-duped lineups sit at/near the cap and \"make sense\"",
+   "kind": "DUPLICATION_FORECAST",
+   "testable": true,
+   "how_to_test": "exact count of that lineup in the actual standings; salary use of the most duplicated actual lineups"
+  },
+  {
+   "source": "B",
+   "timestamp": "55:46-56:40",
+   "claim": "To play Tampa you must assume they outperform projection (\"mentally boosting\")",
+   "kind": "PROCESS_MANUAL_OVERRIDE",
+   "testable": false,
+   "how_to_test": "our system forbids manual boosts; the analogue is scenario-conditional portfolios"
+  },
+  {
+   "source": "B",
+   "timestamp": "56:46-57:18",
+   "claim": "Sims updated after inactives; in NFL usually nothing further to update",
+   "kind": "PROCESS",
+   "testable": false,
+   "how_to_test": "descriptive"
+  },
+  {
+   "source": "B",
+   "timestamp": "58:26-end",
+   "claim": "IN-GAME: coin toss, live sims re-simulating after plays, Javonte TD, Pickens catches",
+   "kind": "POSTKICKOFF_EXCLUDED",
+   "testable": false,
+   "how_to_test": "excluded from every prelock comparison"
+  }
+ ]
+}

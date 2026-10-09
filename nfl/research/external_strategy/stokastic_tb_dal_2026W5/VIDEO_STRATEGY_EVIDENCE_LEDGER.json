@@ -1,0 +1,1232 @@
+{
+ "ARTIFACT": "VIDEO_STRATEGY_EVIDENCE_LEDGER",
+ "slate": "TB@DAL 2026 Week 5 Showdown (2026_05_TB_DAL)",
+ "READING": "Presenter statements are claims. Their sim numbers are THEIR model outputs, and their ownership numbers are THEIR forecasts. Nothing here enters our model. One slate is a diagnostic, not a dataset. HINDSIGHT notes use postgame data and are never evidence for or against a pregame process.",
+ "third_video": {
+  "url": "https://www.youtube.com/watch?v=6uh5wC3Lecw",
+  "status": "NO TRANSCRIPT; one web search (2026-10-09) returned nothing identifying this video ID. Title/topic UNKNOWN. SECONDARY/UNVERIFIED; no content inferred."
+ },
+ "classification_counts": {
+  "THEIR_MODEL_OUTPUT": 19,
+  "OPINION": 7,
+  "VERIFIED_FACT": 9,
+  "OWNERSHIP_FORECAST": 10,
+  "PRINCIPLE": 8,
+  "CAPABILITY": 1,
+  "CONTRADICTED_BY_DATA": 1,
+  "NOT_VERIFIABLE_HERE": 4,
+  "POSTKICKOFF_EXCLUDED": 1
+ },
+ "data_sources": {
+  "pbp_prelock": "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz (nflverse, retrieved 2026-10-07T16:59Z, weeks 1-4, pre-kickoff)",
+  "snaps_prelock": "nfl/postgame/raw/showdown_atl_no_2026W4/SNAP_COUNTS_2026.125e7bfba67b6b13.csv.gz (retrieved 2026-10-06T15:09Z, weeks 1-4)",
+  "weekly_stats_crosscheck": "nfl/postgame/raw/showdown_tb_dal_2026W5/NFLVERSE_STATS_PLAYER_WEEK_2026.8304933b6ee2bc2e.csv (captured 2026-10-09 post-kickoff; weeks 1-4 rows used only as a cross-check)",
+  "worlds": "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SHOWDOWN_TB_DAL_2026W5_WORLDS.npz + _DRAWS.json (frozen 23:08Z, before kickoff 00:15Z)",
+  "candidates": "OFFICIAL_ELIGIBILITY_FIX_R1/SHOWDOWN_TB_DAL_CANDIDATES.csv (5,387 candidates) scored in the 2,000 frozen worlds",
+  "actual_ownership": "nfl/postgame/showdown_tb_dal_2026W5/TB_DAL_2026W5_STANDINGS.json ownership[] (DK %Drafted, 150-max 196438543) -- ANSWER KEY ONLY",
+  "raw_standings": "nfl/postgame/raw/showdown_tb_dal_2026W5/DK_STANDINGS_*.csv.gz (owner upload 2026-10-09T13:17Z) -- ANSWER KEY ONLY",
+  "salaries": "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/DKEntries_TB_DAL_SHOWDOWN_2026W5.5d559e413e680cae.csv",
+  "inactives": "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/ROTOWIRE_INACTIVES_TB_DAL_2026W5.json (SECONDARY, RotoWire screenshot, received 23:06Z)",
+  "our_ownership_forecasts": "OFFICIAL/SHOWDOWN_TB_DAL_SHADOW_BOARD_BLEND.json (23:22Z), _FC_ONLY.json (23:23Z), research/ownership/predictions/SC_OWN_ROTATION_2_TB_DAL_2026W5_OFFICIAL.json (sealed 23:30Z)"
+ },
+ "claims": [
+  {
+   "id": "C01",
+   "source": "A",
+   "timestamp": "2:46-5:25",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "TAIL_EVENT_OBSERVATION",
+   "claim": "Their sims gave the prior Monday ATL@WAS outcome (B. Robinson 3 TD and Kamara TD) a ~0.0% probability; B. Robinson 3 TD alone ~56/10,000",
+   "classification": "THEIR_MODEL_OUTPUT",
+   "verdict": "EVENT_VERIFIED; GAME NAME CORRECTED",
+   "what_the_data_shows": "The Monday week-4 game was ATL@NO (2026_04_ATL_NO, 2026-10-05), not ATL@WAS. Play-by-play: Br.Robinson (Brian Robinson Jr.) 3 TD, Kamara 2 TD, so the described outcome occurred. Our own frozen ATL@NO worlds (RW_INACTIVES_CHARTFIX and RW_INACTIVES runs) gave Brian Robinson Jr. 3+ TD in 0 of 2,000 worlds (P(1+ TD) 8.2%); Bijan Robinson 3+ TD 3.95%. Both their model and ours treated it as a near-impossible tail; ours was thinner. Consistent with D-01 (thin tails), but one event cannot grade tail calibration.",
+   "our_frozen_number": "Brian Robinson Jr. P(3+ TD) = 0/2000 (upper 95% bound ~0.15%)",
+   "their_stated_number": "~56/10,000 (0.56%); joint with Kamara TD ~0.0%",
+   "cite": [
+    "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz (nflverse, retrieved 2026-10-07T16:59Z, weeks 1-4, pre-kickoff)",
+    "nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX/SHOWDOWN_ATL_NO_2026W4_WORLDS.npz",
+    "TB_DAL_DEFECT_REGISTER.json D-01"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": [
+    "TAIL_CALIBRATION"
+   ]
+  },
+  {
+   "id": "C02",
+   "source": "A",
+   "timestamp": "3:09-3:19",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "SIM_STATISTIC",
+   "claim": "In their 10,000 sims Lamb scores a TD ~51%, Pickens ~44% (presenter said he had the wrong game pulled up first; figure ambiguous)",
+   "classification": "THEIR_MODEL_OUTPUT",
+   "verdict": "AGREE_ON_LAMB; DISAGREE_ON_PICKENS",
+   "what_the_data_shows": "Our frozen worlds: P(anytime TD) Lamb 53.4%, Pickens 32.2% (MC SE ~1.1pp). Agreement on Lamb (theirs ~51%); we were ~12pp lower on Pickens (theirs ~44%; presenter flagged the figure as ambiguous). Our TD expectation follows red-zone opportunity: weeks 1-4 DAL red-zone targets Lamb 6, Pickens 3 of 22.",
+   "our_frozen_number": "Lamb 0.534, Pickens 0.322",
+   "their_stated_number": "Lamb ~0.51, Pickens ~0.44",
+   "cite": [
+    "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SHOWDOWN_TB_DAL_2026W5_WORLDS.npz + _DRAWS.json (frozen 23:08Z, before kickoff 00:15Z)",
+    "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz (nflverse, retrieved 2026-10-07T16:59Z, weeks 1-4, pre-kickoff)"
+   ],
+   "hindsight_note": "HINDSIGHT: Pickens scored 1 TD, Lamb 0. One outcome grades neither model.",
+   "secondary_tags": []
+  },
+  {
+   "id": "C03",
+   "source": "A",
+   "timestamp": "5:35-6:06",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "PERCEPTION_VS_SIM",
+   "claim": "Public perception treats Lamb as far more likely to score than Pickens; sims say the gap is small",
+   "classification": "OPINION",
+   "verdict": "NOT_SUPPORTED_BY_OUR_MODEL",
+   "what_the_data_shows": "\"Public perception\" is not measured anywhere in our data. Our own model put a 21pp gap between Lamb and Pickens P(TD), i.e. our engine sided with the \"perception\" they argue against. Field CPT ownership (answer key) Lamb 17.1% vs Pickens 12.0%.",
+   "our_frozen_number": "gap 0.212",
+   "their_stated_number": "gap ~0.07",
+   "cite": [
+    "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SHOWDOWN_TB_DAL_2026W5_WORLDS.npz + _DRAWS.json (frozen 23:08Z, before kickoff 00:15Z)",
+    "nfl/postgame/showdown_tb_dal_2026W5/TB_DAL_2026W5_STANDINGS.json ownership[] (DK %Drafted, 150-max 196438543) -- ANSWER KEY ONLY"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": [
+    "THEIR_MODEL_OUTPUT"
+   ]
+  },
+  {
+   "id": "C04",
+   "source": "A",
+   "timestamp": "7:31-7:47",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "LEVERAGE",
+   "claim": "Pickens cheaper than Lamb and has POSITIVE leverage at CPT and FLEX (their optimal rate > their projected ownership)",
+   "classification": "THEIR_MODEL_OUTPUT",
+   "verdict": "OUR_ENGINE_DISAGREES",
+   "what_the_data_shows": "Salaries VERIFIED: Pickens FLEX $9,400 / CPT $14,100 vs Lamb $11,800 / $17,700. Leverage is THEIR optimal minus THEIR ownership. Ours: Pickens optimal CPT 2.4% vs our sealed BLEND CPT forecast 3.9% (-1.5) and vs the no-fit FC-proportional baseline 9.3% (-6.9); optimal FLEX 17.6% vs BLEND 30.0% (-12.4). Our engine had Pickens NEGATIVELY leveraged.",
+   "our_frozen_number": "opt CPT 2.4%, opt FLEX 17.6%",
+   "their_stated_number": "positive leverage at CPT and FLEX",
+   "cite": [
+    "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/DKEntries_TB_DAL_SHOWDOWN_2026W5.5d559e413e680cae.csv",
+    "OFFICIAL_ELIGIBILITY_FIX_R1/SHOWDOWN_TB_DAL_CANDIDATES.csv (5,387 candidates) scored in the 2,000 frozen worlds",
+    "OFFICIAL/SHOWDOWN_TB_DAL_SHADOW_BOARD_BLEND.json (23:22Z), _FC_ONLY.json (23:23Z), research/ownership/predictions/SC_OWN_ROTATION_2_TB_DAL_2026W5_OFFICIAL.json (sealed 23:30Z)"
+   ],
+   "hindsight_note": "HINDSIGHT: actual field Pickens CPT 12.0%, FLEX 28.3%; he was a top-1% captain (49% of top-1% lineups).",
+   "secondary_tags": [
+    "VERIFIED_FACT (salaries)"
+   ]
+  },
+  {
+   "id": "C05",
+   "source": "A",
+   "timestamp": "9:21-10:10",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "USAGE_FACT",
+   "claim": "Lamb had 21 targets last week; Pickens 3 last week but 25 over the prior three weeks; their targets were about equal over weeks 1-3",
+   "classification": "VERIFIED_FACT",
+   "verdict": "VERIFIED_EXACTLY",
+   "what_the_data_shows": "Targets by week (pbp, two-point tries and sacks excluded): Lamb 8, 9, 8, 21; Pickens 6, 8, 11, 3. Lamb week 4 = 21 (nflverse weekly stats agree: 21 targets, 17 rec, 189 yds). Pickens week 4 = 3 at 86% of snaps; weeks 1-3 = 25. Weeks 1-3 Lamb 25 = Pickens 25: equal.",
+   "our_frozen_number": null,
+   "their_stated_number": null,
+   "cite": [
+    "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz (nflverse, retrieved 2026-10-07T16:59Z, weeks 1-4, pre-kickoff)",
+    "nfl/postgame/raw/showdown_tb_dal_2026W5/NFLVERSE_STATS_PLAYER_WEEK_2026.8304933b6ee2bc2e.csv (captured 2026-10-09 post-kickoff; weeks 1-4 rows used only as a cross-check)",
+    "nfl/postgame/raw/showdown_atl_no_2026W4/SNAP_COUNTS_2026.125e7bfba67b6b13.csv.gz (retrieved 2026-10-06T15:09Z, weeks 1-4)"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": []
+  },
+  {
+   "id": "C06",
+   "source": "A",
+   "timestamp": "11:16-11:23",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "OWNERSHIP_FORECAST",
+   "claim": "Pickens projected 3rd-highest owned FLEX and 2nd-highest owned CPT",
+   "classification": "OWNERSHIP_FORECAST",
+   "verdict": "CONTRADICTED_BY_ACTUAL",
+   "what_the_data_shows": "Actual 150-max: Pickens FLEX 28.3% ranked 7th (Dak 61.4, Daniels 45.3, Lamb 42.5, Javonte 37.0, Aubrey 30.3, Flournoy 29.1); CPT 12.0% ranked 4th (Lamb 17.1, Dak 16.4, Javonte 15.1). Their forecast ranks (3rd FLEX, 2nd CPT) were too high. Our sealed BLEND forecast had Pickens FLEX 30.0% (close) but CPT 3.9% (far too low).",
+   "our_frozen_number": "BLEND CPT 3.9 / FLEX 30.0; FC_ONLY 15.2 / 54.3",
+   "their_stated_number": "3rd FLEX, 2nd CPT",
+   "cite": [
+    "nfl/postgame/showdown_tb_dal_2026W5/TB_DAL_2026W5_STANDINGS.json ownership[] (DK %Drafted, 150-max 196438543) -- ANSWER KEY ONLY",
+    "OFFICIAL/SHOWDOWN_TB_DAL_SHADOW_BOARD_BLEND.json (23:22Z), _FC_ONLY.json (23:23Z), research/ownership/predictions/SC_OWN_ROTATION_2_TB_DAL_2026W5_OFFICIAL.json (sealed 23:30Z)"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": [
+    "CONTRADICTED_BY_DATA"
+   ]
+  },
+  {
+   "id": "C07",
+   "source": "A",
+   "timestamp": "11:32-11:41",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "DUPLICATION_PRINCIPLE",
+   "claim": "For a popular player the question is not whether to play him but whether you can build unique lineups around him",
+   "classification": "PRINCIPLE",
+   "verdict": "MEASURABLE; OUR OPTIMIZER DOES NOT CONSUME IT",
+   "what_the_data_shows": "Measured after the fact: our 150 lineups shared their exact build with 40.2 field entries on average (max 455); the field median entry shared with 42. Lineups containing the most popular players were the most duplicated. Our optimizer has no duplication term (D-06; showdown_portfolio.py:18-29).",
+   "our_frozen_number": null,
+   "their_stated_number": null,
+   "cite": [
+    "nfl/postgame/showdown_tb_dal_2026W5/TB_DAL_2026W5_STANDINGS.json ownership[] (DK %Drafted, 150-max 196438543) -- ANSWER KEY ONLY",
+    "nfl/tools/showdown_portfolio.py:18-29"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": [
+    "CAPABILITY_GAP"
+   ]
+  },
+  {
+   "id": "C08",
+   "source": "A",
+   "timestamp": "12:03-12:18",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "FIELD_CONSTRUCTION",
+   "claim": "If Tampa is competitive, TB 5-1 and 4-2 constructions are very low owned (natural leverage)",
+   "classification": "OWNERSHIP_FORECAST",
+   "verdict": "VERIFIED (ownership part); conditional part is OPINION",
+   "what_the_data_shows": "Actual field team split (TB-DAL players, 150-max): 1-5 22.0%, 2-4 35.4%, 3-3 29.4%, 4-2 11.5%, 5-1 1.7%. TB-heavy builds were indeed low-owned. Our pregame BLEND field forecast had 4-2 at 4.2% and 5-1 at 0.0% (too low). Our worlds put TB-heavy (4-2 or 5-1) optimal in 20.8% of worlds; our entered portfolio was 29.3% 4-2 and 5.3% 5-1.",
+   "our_frozen_number": "optimal split 4-2 19.1%, 5-1 1.8%",
+   "their_stated_number": null,
+   "cite": [
+    "nfl/postgame/raw/showdown_tb_dal_2026W5/DK_STANDINGS_*.csv.gz (owner upload 2026-10-09T13:17Z) -- ANSWER KEY ONLY",
+    "OFFICIAL/SHOWDOWN_TB_DAL_SHADOW_BOARD_BLEND.json team_split_away_home",
+    "OFFICIAL_ELIGIBILITY_FIX_R1/SHOWDOWN_TB_DAL_CANDIDATES.csv (5,387 candidates) scored in the 2,000 frozen worlds"
+   ],
+   "hindsight_note": "HINDSIGHT: field top 1% was 3-3 in 58%, 4-2 in 18%.",
+   "secondary_tags": []
+  },
+  {
+   "id": "C09",
+   "source": "A",
+   "timestamp": "16:07-16:29",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "OWNERSHIP_FORECAST",
+   "claim": "CPT ownership: Pickens ~7-8%; Dak, Javonte, Lamb, Daniels the other popular captains",
+   "classification": "OWNERSHIP_FORECAST",
+   "verdict": "PARTLY CONTRADICTED",
+   "what_the_data_shows": "Actual CPT: Lamb 17.1, Dak 16.4, Javonte 15.1, Pickens 12.0, Daniels 10.2. The set of popular captains named is right. Pickens ~7-8% was too low (actual 12.0). Our forecasts: BLEND Pickens 3.9, FC_ONLY 15.2, FC-proportional 9.3.",
+   "our_frozen_number": null,
+   "their_stated_number": "Pickens ~7-8%",
+   "cite": [
+    "nfl/postgame/showdown_tb_dal_2026W5/TB_DAL_2026W5_STANDINGS.json ownership[] (DK %Drafted, 150-max 196438543) -- ANSWER KEY ONLY",
+    "OFFICIAL/SHOWDOWN_TB_DAL_SHADOW_BOARD_BLEND.json (23:22Z), _FC_ONLY.json (23:23Z), research/ownership/predictions/SC_OWN_ROTATION_2_TB_DAL_2026W5_OFFICIAL.json (sealed 23:30Z)"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": []
+  },
+  {
+   "id": "C10",
+   "source": "A",
+   "timestamp": "16:29-17:40",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "OPINION_WITH_DATA",
+   "claim": "Tampa defence looks good on paper but faced weak offenses; small sample",
+   "classification": "OPINION",
+   "verdict": "PARTLY VERIFIED",
+   "what_the_data_shows": "TB defence weeks 1-4: EPA/play allowed -0.059, 6th best of 32 (\"good on paper\" holds by EPA). Points allowed 33, 23, 23, 17 (24.0/game against a league mean of 23.1 ppg), so by points it is not good. Opponent offences by EPA/play rank: CIN 10, CLE 17, MIN 27, GB 26, so mostly weak. Our engine has NO opponent adjustment of any kind (football_points.py docstring: \"OWN-OFFENCE centre ... no opponent adjustment (NOT_MODELLED by owner instruction, item 9)\").",
+   "our_frozen_number": null,
+   "their_stated_number": null,
+   "cite": [
+    "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz (nflverse, retrieved 2026-10-07T16:59Z, weeks 1-4, pre-kickoff)",
+    "nfl/sim/football_points.py:11-17"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": [
+    "VERIFIED_FACT (numbers)",
+    "CAPABILITY_GAP"
+   ]
+  },
+  {
+   "id": "C11",
+   "source": "A",
+   "timestamp": "20:46-21:38",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "USAGE_FACT",
+   "claim": "Nobody vultures Javonte Williams goal-line work: 13 carries inside the 10 and 11 inside the 5, tied for league lead with Henry; 5 rush TD + 1 rec TD",
+   "classification": "VERIFIED_FACT",
+   "verdict": "VERIFIED with one correction",
+   "what_the_data_shows": "Javonte Williams weeks 1-4: 13 carries inside the 10 and 11 inside the 5; 5 rush TD + 1 rec TD (pbp; nflverse weekly agrees). Inside-5: tied for the league lead with D. Henry (11). Inside-10: NOT tied with Henry. Henry leads with 17; Williams is tied 2nd (13) with Swift and Pollard. Vulturing: other DAL carries inside the 5 = 1 (Prescott); inside the 10 = 3 (Prescott 2, Turpin 1). Our engine computes gl_carry_share (proj_v1.py:338-339) but never consumes it; TD allocation uses inside-20 red-zone intensity (proj_v1.py:663-681) and fixed rush_td_share (showdown_draws.py:111; game.py:489-490).",
+   "our_frozen_number": "Javonte P(anytime TD) 0.679, P(2+ TD) 0.295, mean TD 1.09",
+   "their_stated_number": null,
+   "cite": [
+    "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz (nflverse, retrieved 2026-10-07T16:59Z, weeks 1-4, pre-kickoff)",
+    "nfl/postgame/raw/showdown_tb_dal_2026W5/NFLVERSE_STATS_PLAYER_WEEK_2026.8304933b6ee2bc2e.csv (captured 2026-10-09 post-kickoff; weeks 1-4 rows used only as a cross-check)",
+    "nfl/tools/proj_v1.py:338-339,663-681",
+    "nfl/warehouse/player_game.py:161-164"
+   ],
+   "hindsight_note": "HINDSIGHT: Javonte 1 rush TD (1-yd run).",
+   "secondary_tags": [
+    "CONTRADICTED_BY_DATA (inside-10 tie)"
+   ]
+  },
+  {
+   "id": "C12",
+   "source": "A",
+   "timestamp": "22:10-22:21",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "THEIR_PORTFOLIO",
+   "claim": "Their portfolio: Javonte their highest-exposed captain (~23%), 46% overall",
+   "classification": "THEIR_MODEL_OUTPUT",
+   "verdict": "DESCRIPTIVE ONLY",
+   "what_the_data_shows": "Their portfolio exposure. Ours for comparison (150-max, R1): Javonte CPT 21.3%, rostered 50.0% (at cap).",
+   "our_frozen_number": "CPT 21.3%, rostered 50%",
+   "their_stated_number": "CPT ~23%, 46% overall",
+   "cite": [
+    "OFFICIAL_ELIGIBILITY_FIX_R1/SHOWDOWN_TB_DAL_CPT_EXPOSURES.csv"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": []
+  },
+  {
+   "id": "C13",
+   "source": "A",
+   "timestamp": "24:49-25:20",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "SIM_QUERY_CAPABILITY",
+   "claim": "Conditional query: best combo if Dallas wins by 10+ (Dallas +10, Goodson 10+ rush yds, Daniels under 2 pass TD)",
+   "classification": "CAPABILITY",
+   "verdict": "OUR WORLDS CAN ANSWER IT; NO TOOL EXPOSES IT",
+   "what_the_data_shows": "Conditional/joint queries over worlds are computable from our per-world stat lines. Demonstration: P(DAL by 10+ AND Goodson 10+ rush yds AND Daniels < 2 pass TD) = 26.8% (535/2000). Betting use is out of scope. See SIMULATION_QUERY_CAPABILITY_SPEC (being implemented by another agent).",
+   "our_frozen_number": "0.2675",
+   "their_stated_number": null,
+   "cite": [
+    "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SHOWDOWN_TB_DAL_2026W5_WORLDS.npz + _DRAWS.json (frozen 23:08Z, before kickoff 00:15Z)"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": [
+    "NOT a betting input"
+   ]
+  },
+  {
+   "id": "C14",
+   "source": "A",
+   "timestamp": "25:56-27:41",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "USAGE_FACT_AND_HYPOTHESIS",
+   "claim": "Goodson ($2K FLEX): 16 snaps last game, 6 carries vs BAL, 3 vs HOU; short rest + big favourite => more backfield split; they are 3x the field",
+   "classification": "VERIFIED_FACT",
+   "verdict": "VERIFIED (facts); hypothesis NOT_VERIFIABLE_HERE",
+   "what_the_data_shows": "Goodson FLEX $2,000 (verified). Snaps: 11 (15%) week 3, 16 (21%) week 4. Carries: 6 vs BAL (wk 3), 3 vs HOU (wk 4); 0 in weeks 1-2. \"Short rest + big favourite -> more split\" is a hypothesis with no data here. Our frozen projection: 4.92 carries, 20.1 rush yds, P(10+ rush yds) 64%. \"3x the field\" is their exposure, not checkable.",
+   "our_frozen_number": "4.92 carries; FLEX optimal 18.6%",
+   "their_stated_number": null,
+   "cite": [
+    "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz (nflverse, retrieved 2026-10-07T16:59Z, weeks 1-4, pre-kickoff)",
+    "nfl/postgame/raw/showdown_atl_no_2026W4/SNAP_COUNTS_2026.125e7bfba67b6b13.csv.gz (retrieved 2026-10-06T15:09Z, weeks 1-4)",
+    "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/DKEntries_TB_DAL_SHOWDOWN_2026W5.5d559e413e680cae.csv",
+    "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SHOWDOWN_TB_DAL_2026W5_WORLDS.npz + _DRAWS.json (frozen 23:08Z, before kickoff 00:15Z)"
+   ],
+   "hindsight_note": "HINDSIGHT: Goodson recorded no stats (0.0 DK); actual FLEX ownership 8.8%.",
+   "secondary_tags": [
+    "OPINION (hypothesis)"
+   ]
+  },
+  {
+   "id": "C15",
+   "source": "A",
+   "timestamp": "28:13-28:32",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "JOINT_EVENT",
+   "claim": "P(Javonte and Goodson both score a TD) ~13% in their sims",
+   "classification": "THEIR_MODEL_OUTPUT",
+   "verdict": "AGREE",
+   "what_the_data_shows": "Our worlds: P(Javonte TD AND Goodson TD) = 15.0% (300/2000); the independence product is 15.1%, so in our engine the two backs' TD events are uncorrelated (r = -0.004). Theirs ~13%.",
+   "our_frozen_number": "0.150",
+   "their_stated_number": "~0.13",
+   "cite": [
+    "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SHOWDOWN_TB_DAL_2026W5_WORLDS.npz + _DRAWS.json (frozen 23:08Z, before kickoff 00:15Z)"
+   ],
+   "hindsight_note": "HINDSIGHT: Goodson did not score.",
+   "secondary_tags": []
+  },
+  {
+   "id": "C16",
+   "source": "A",
+   "timestamp": "28:47-29:30",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "THEIR_PORTFOLIO",
+   "claim": "Their exposures: Dak 65% FLEX/21% CPT; Javonte ~70%; Daniels 57%/15%; Lamb 12% CPT; most negatively leveraged = Lamb",
+   "classification": "THEIR_MODEL_OUTPUT",
+   "verdict": "DESCRIPTIVE ONLY",
+   "what_the_data_shows": "Their exposures. Ours (150-max R1): Dak rostered 50% / CPT 12.0%; Javonte 50%; Daniels 48.7% / 7.3%; Lamb CPT 22.0%. They called Lamb most negatively leveraged; our sealed BLEND forecast and our optimal frequency were level on Lamb CPT (36.8 vs 37.3).",
+   "our_frozen_number": "Lamb CPT 22.0%",
+   "their_stated_number": "Lamb CPT 12%",
+   "cite": [
+    "OFFICIAL_ELIGIBILITY_FIX_R1/SHOWDOWN_TB_DAL_EXPOSURES.csv",
+    "OFFICIAL/SHOWDOWN_TB_DAL_SHADOW_BOARD_BLEND.json (23:22Z), _FC_ONLY.json (23:23Z), research/ownership/predictions/SC_OWN_ROTATION_2_TB_DAL_2026W5_OFFICIAL.json (sealed 23:30Z)"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": []
+  },
+  {
+   "id": "C17",
+   "source": "A",
+   "timestamp": "31:15-31:59",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "USAGE_FACT",
+   "claim": "Aubrey rarely captain; they are under field at FLEX (25%); Aubrey pricier than a typical kicker; double-digit DK in 3 of 4 weeks",
+   "classification": "VERIFIED_FACT",
+   "verdict": "VERIFIED",
+   "what_the_data_shows": "Aubrey DK by week (pbp, DK kicker rules as in nfl/product/dk_scoring.py; missed FG = 0): 2, 16, 11, 12, so double digits in 3 of 4. FLEX $5,400 vs the other kicker (McLaughlin) $5,000. Field FLEX ownership 30.3% (answer key), so their 25% was under the field. Aubrey CPT field 1.9%.",
+   "our_frozen_number": "Aubrey mean 9.3 (projection); optimal FLEX 27.8%, CPT 2.2%",
+   "their_stated_number": null,
+   "cite": [
+    "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz (nflverse, retrieved 2026-10-07T16:59Z, weeks 1-4, pre-kickoff)",
+    "nfl/postgame/raw/showdown_tb_dal_2026W5/NFLVERSE_STATS_PLAYER_WEEK_2026.8304933b6ee2bc2e.csv (captured 2026-10-09 post-kickoff; weeks 1-4 rows used only as a cross-check)",
+    "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/DKEntries_TB_DAL_SHOWDOWN_2026W5.5d559e413e680cae.csv",
+    "nfl/postgame/showdown_tb_dal_2026W5/TB_DAL_2026W5_STANDINGS.json ownership[] (DK %Drafted, 150-max 196438543) -- ANSWER KEY ONLY"
+   ],
+   "hindsight_note": "HINDSIGHT: Aubrey 5.0 DK.",
+   "secondary_tags": []
+  },
+  {
+   "id": "C18",
+   "source": "A",
+   "timestamp": "33:27-35:18",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "CAPTAIN_CONDITIONAL_REASONING",
+   "claim": "Dallas DST captain needs a low-event game where nobody explodes; if one skill player goes off, a DST captain cannot be optimal",
+   "classification": "PRINCIPLE",
+   "verdict": "CONSISTENT WITH OUR WORLDS (model property, not a fact)",
+   "what_the_data_shows": "In our worlds a DST is the optimal captain in 23/2000 worlds (1.15%). In those worlds the mean game total is 31.7 (vs 50.1 otherwise) and the best skill-player score is 21.5 DK (vs 32.7). Cowboys DST CPT optimal in 0.15% of worlds. Our worlds reproduce the argued conditional structure.",
+   "our_frozen_number": "P(DST optimal CPT) 0.0115",
+   "their_stated_number": null,
+   "cite": [
+    "OFFICIAL_ELIGIBILITY_FIX_R1/SHOWDOWN_TB_DAL_CANDIDATES.csv (5,387 candidates) scored in the 2,000 frozen worlds"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": []
+  },
+  {
+   "id": "C19",
+   "source": "A",
+   "timestamp": "36:03-37:41",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "FIELD_CONSTRUCTION",
+   "claim": "Many winning-build candidates are DAL 5-1/4-2; TB 4-2 low owned, TB 5-1 nearly unowned; most-duped lineups are Dallas-heavy",
+   "classification": "OWNERSHIP_FORECAST",
+   "verdict": "VERIFIED",
+   "what_the_data_shows": "Field team split (TB-DAL): 1-5 22.0%, 2-4 35.4%, 3-3 29.4%, 4-2 11.5%, 5-1 1.7%. Of the 100 most-duplicated field lineups: 2-4 42, 1-5 33, 3-3 23, 4-2 2, 5-1 0. Dallas-heavy duplication is verified. Their \"many winning-build candidates are DAL 5-1/4-2\" is THEIR model output. Ours: DAL-heavy (1-5 or 2-4) optimal in 42.8% of worlds.",
+   "our_frozen_number": "optimal split 1-5 11.6%, 2-4 31.2%",
+   "their_stated_number": null,
+   "cite": [
+    "nfl/postgame/raw/showdown_tb_dal_2026W5/DK_STANDINGS_*.csv.gz (owner upload 2026-10-09T13:17Z) -- ANSWER KEY ONLY",
+    "OFFICIAL_ELIGIBILITY_FIX_R1/SHOWDOWN_TB_DAL_CANDIDATES.csv (5,387 candidates) scored in the 2,000 frozen worlds"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": [
+    "VERIFIED_FACT (field)"
+   ]
+  },
+  {
+   "id": "C20",
+   "source": "A",
+   "timestamp": "39:20-39:41",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "PRINCIPLE",
+   "claim": "Optimal lineups matter little: few hit the optimum; even with the right captain you must get the rest right",
+   "classification": "PRINCIPLE",
+   "verdict": "CONSISTENT; OUR OBJECTIVE IS BUILT ON THE OPPOSITE PREMISE",
+   "what_the_data_shows": "Our objective counts worlds in which a lineup reaches >= 0.9x the world optimum (showdown_portfolio.py:736-741). Measured: the hindsight optimum (136.99) was in no candidate pool; the actual winner (136.59) was shared by 18 entries. Whether near-optimal coverage tracks finishing rank is untested: we have no rank-vs-proxy study.",
+   "our_frozen_number": null,
+   "their_stated_number": null,
+   "cite": [
+    "nfl/tools/showdown_portfolio.py:736-741",
+    "TB_DAL_POSTGAME_REPORT.md D",
+    "TB_DAL_2026W5_FIELD_STUDY.json"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": [
+    "RESEARCH_GAP"
+   ]
+  },
+  {
+   "id": "C21",
+   "source": "A",
+   "timestamp": "39:52-41:19",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "LEVERAGE",
+   "claim": "Leverage board: positive FLEX Goodson, Dak, Cowboys DST, Javonte, Gainwell, Daniels, Flournoy (34% exp vs 30% own); negative Lamb, Aubrey, Irving; \"you cannot be very negatively leveraged if you are irrelevant\"",
+   "classification": "THEIR_MODEL_OUTPUT",
+   "verdict": "MIXED; ONE OWNERSHIP NUMBER VERIFIED",
+   "what_the_data_shows": "Flournoy field FLEX ownership actual 29.1% (their ~30%: verified). Leverage signs are their model's. Ours, optimal FLEX minus BLEND forecast: Goodson +14.1, Dak +10.5, Cowboys DST +4.3, Javonte -6.8, Daniels +4.7, Flournoy -23.9, Gainwell -15.7; Lamb -3.7, Aubrey -19.4, Irving +9.5. Against their board, ours disagrees on Javonte, Flournoy, Gainwell and Irving.",
+   "our_frozen_number": null,
+   "their_stated_number": null,
+   "cite": [
+    "OFFICIAL_ELIGIBILITY_FIX_R1/SHOWDOWN_TB_DAL_CANDIDATES.csv (5,387 candidates) scored in the 2,000 frozen worlds",
+    "OFFICIAL/SHOWDOWN_TB_DAL_SHADOW_BOARD_BLEND.json (23:22Z), _FC_ONLY.json (23:23Z), research/ownership/predictions/SC_OWN_ROTATION_2_TB_DAL_2026W5_OFFICIAL.json (sealed 23:30Z)",
+    "nfl/postgame/showdown_tb_dal_2026W5/TB_DAL_2026W5_STANDINGS.json ownership[] (DK %Drafted, 150-max 196438543) -- ANSWER KEY ONLY"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": [
+    "OWNERSHIP_FORECAST (Flournoy 30%)"
+   ]
+  },
+  {
+   "id": "C22",
+   "source": "A",
+   "timestamp": "41:45-42:00",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "CORRELATION_CLAIM",
+   "claim": "Correlation barely matters here: if a team can score six TDs everyone can coexist",
+   "classification": "OPINION",
+   "verdict": "CONTRADICTED_BY_MEASUREMENT for QB-receiver pairs; consistent for RB-RB",
+   "what_the_data_shows": "Measured 2000-2026 same-club DK correlations (block bootstrap by game): QB1~WR1 +0.42 [0.39, 0.46], QB1~TE1 +0.37, WR1~WR2 +0.17 [0.13, 0.22], RB1~RB2 0.00 [-0.04, 0.05]. Our TB@DAL worlds: Dak-Lamb +0.46, Dak-Pickens +0.34, Daniels-Egbuka +0.36, Lamb-Pickens +0.02. Correlation is material for QB stacks. Our worlds under-state WR1~WR2 (0.02 vs 0.17 measured), which is a possible engine gap.",
+   "our_frozen_number": "Dak-Lamb 0.46; Lamb-Pickens 0.02",
+   "their_stated_number": null,
+   "cite": [
+    "nfl/sim/PAIR_CORRELATIONS.json same_club",
+    "OFFICIAL_ELIGIBILITY_FIX_R1/SHOWDOWN_TB_DAL_CORRELATION.csv",
+    "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SHOWDOWN_TB_DAL_2026W5_WORLDS.npz + _DRAWS.json (frozen 23:08Z, before kickoff 00:15Z)"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": [
+    "CONTRADICTED_BY_DATA"
+   ]
+  },
+  {
+   "id": "C23",
+   "source": "A",
+   "timestamp": "45:17-46:11",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "USAGE_FACT",
+   "claim": "Flournoy $3,800: ~75% of snaps every week, 23 targets in 4 games; low share but high volume",
+   "classification": "VERIFIED_FACT",
+   "verdict": "VERIFIED (approximately)",
+   "what_the_data_shows": "Flournoy $3,800 (verified). Offensive snap share 71%, 76%, 66%, 74% (about 75%, with week 3 lower). Targets 4, 6, 8, 5 = 23 in 4 games (verified exactly; nflverse weekly agrees).",
+   "our_frozen_number": "projected 3.29 targets, 5.4 DK (target share well below his 23/4 = 5.75 per game)",
+   "their_stated_number": null,
+   "cite": [
+    "nfl/postgame/raw/showdown_atl_no_2026W4/SNAP_COUNTS_2026.125e7bfba67b6b13.csv.gz (retrieved 2026-10-06T15:09Z, weeks 1-4)",
+    "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz (nflverse, retrieved 2026-10-07T16:59Z, weeks 1-4, pre-kickoff)",
+    "nfl/postgame/raw/showdown_tb_dal_2026W5/NFLVERSE_STATS_PLAYER_WEEK_2026.8304933b6ee2bc2e.csv (captured 2026-10-09 post-kickoff; weeks 1-4 rows used only as a cross-check)",
+    "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/DKEntries_TB_DAL_SHOWDOWN_2026W5.5d559e413e680cae.csv"
+   ],
+   "hindsight_note": "HINDSIGHT: 4 targets, 90 yds, 12.0 DK.",
+   "secondary_tags": []
+  },
+  {
+   "id": "C24",
+   "source": "A",
+   "timestamp": "46:33-46:40",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "FIELD_CONSTRUCTION",
+   "claim": "Field will take big DAL weapons and fill with cheap TB players",
+   "classification": "OWNERSHIP_FORECAST",
+   "verdict": "VERIFIED (broadly)",
+   "what_the_data_shows": "Field 150-max: 91% of entries rostered at least 2 of {Lamb, Dak, Javonte, Pickens} (38% had 3). TB FLEX slots averaged $5,823 against $8,002 for DAL. 52.5% of TB FLEX slots cost <= $5,000. But the most-rostered TB player was Daniels ($8,600, 45.3%).",
+   "our_frozen_number": null,
+   "their_stated_number": null,
+   "cite": [
+    "nfl/postgame/raw/showdown_tb_dal_2026W5/DK_STANDINGS_*.csv.gz (owner upload 2026-10-09T13:17Z) -- ANSWER KEY ONLY"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": []
+  },
+  {
+   "id": "C25",
+   "source": "A",
+   "timestamp": "47:06-47:54",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "USAGE_FACT",
+   "claim": "Egbuka $8,200: no game above 11 DK all season",
+   "classification": "CONTRADICTED_BY_DATA",
+   "verdict": "APPROXIMATELY TRUE; LITERALLY FALSE BY 0.3",
+   "what_the_data_shows": "Egbuka DK by week (pbp; nflverse PPR agrees): 11.3, 10.3, 11.2, 3.3. Two games are slightly above 11. FLEX $8,200 verified. Our frozen projection 12.0 DK; P(100+ rec yds) 9.2%.",
+   "our_frozen_number": "mean 12.0 DK",
+   "their_stated_number": null,
+   "cite": [
+    "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz (nflverse, retrieved 2026-10-07T16:59Z, weeks 1-4, pre-kickoff)",
+    "nfl/postgame/raw/showdown_tb_dal_2026W5/NFLVERSE_STATS_PLAYER_WEEK_2026.8304933b6ee2bc2e.csv (captured 2026-10-09 post-kickoff; weeks 1-4 rows used only as a cross-check)",
+    "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/DKEntries_TB_DAL_SHOWDOWN_2026W5.5d559e413e680cae.csv"
+   ],
+   "hindsight_note": "HINDSIGHT: 17.2 DK (jet-sweep TD).",
+   "secondary_tags": []
+  },
+  {
+   "id": "C26",
+   "source": "A",
+   "timestamp": "48:03-48:27",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "USAGE_FACT",
+   "claim": "Dallas defence allowed 30 (HOU), 34 (BAL), 20 (WAS), 28 (NYG)",
+   "classification": "VERIFIED_FACT",
+   "verdict": "VERIFIED EXACTLY",
+   "what_the_data_shows": "DAL points allowed: wk1 @NYG 28, wk2 WAS 20, wk3 BAL 34, wk4 @HOU 30 (mean 28.0). DAL defensive EPA/play allowed +0.201, 32nd of 32. Our engine does not use it: the scoring centre is own-offence only (football_points.py:11-17), so TB's expected points (20.7) carry no adjustment for facing the league's worst defence by EPA.",
+   "our_frozen_number": "TB expected 20.68 pts (own-offence centre)",
+   "their_stated_number": null,
+   "cite": [
+    "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz (nflverse, retrieved 2026-10-07T16:59Z, weeks 1-4, pre-kickoff)",
+    "nfl/sim/football_points.py:11-17",
+    "OFFICIAL DRAWS scoring_centre"
+   ],
+   "hindsight_note": "HINDSIGHT: TB scored 24.",
+   "secondary_tags": [
+    "CAPABILITY_GAP"
+   ]
+  },
+  {
+   "id": "C27",
+   "source": "A",
+   "timestamp": "52:04-52:21",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "USAGE_FACT",
+   "claim": "TB targets last week: Otton 6, Godwin 6, Egbuka 4, Hurst 3, C. Johnson 2, Tez Johnson 2, Gainwell 2, Irving 0",
+   "classification": "VERIFIED_FACT",
+   "verdict": "VERIFIED with one discrepancy",
+   "what_the_data_shows": "TB week 4 targets (pbp; nflverse weekly agrees): Godwin 7 (claim 6), Otton 6, Egbuka 4, Hurst 3, K. Johnson 2 (the \"C. Johnson\" in the transcript is almost certainly Kameron Johnson), Tez Johnson 2, Gainwell 2, Irving 0.",
+   "our_frozen_number": null,
+   "their_stated_number": null,
+   "cite": [
+    "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz (nflverse, retrieved 2026-10-07T16:59Z, weeks 1-4, pre-kickoff)",
+    "nfl/postgame/raw/showdown_tb_dal_2026W5/NFLVERSE_STATS_PLAYER_WEEK_2026.8304933b6ee2bc2e.csv (captured 2026-10-09 post-kickoff; weeks 1-4 rows used only as a cross-check)"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": [
+    "CONTRADICTED_BY_DATA (Godwin 7 not 6)"
+   ]
+  },
+  {
+   "id": "C28",
+   "source": "A",
+   "timestamp": "53:18-53:49",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "QB_DEPENDENCY_HYPOTHESIS",
+   "claim": "Daniels' \"checkdown\" is running, reducing RB targets (Irving)",
+   "classification": "NOT_VERIFIABLE_HERE",
+   "verdict": "DATA-CONSISTENT ANECDOTE (n = 1 start)",
+   "what_the_data_shows": "Irving targets 7, 4, 4 under Mayfield (wks 1-3), then 0 under Daniels (wk 4); Daniels had 8 carries (6 scrambles). One start cannot separate a QB effect from game script. Our engine has no QB argument in target allocation (D-02); our frozen Irving projection was 4.01 targets with P(0 targets) 2.7%.",
+   "our_frozen_number": "Irving 4.01 targets",
+   "their_stated_number": null,
+   "cite": [
+    "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz (nflverse, retrieved 2026-10-07T16:59Z, weeks 1-4, pre-kickoff)",
+    "TB_DAL_DEFECT_REGISTER.json D-02"
+   ],
+   "hindsight_note": "HINDSIGHT: Irving 3 targets, 1 rec TD in week 5.",
+   "secondary_tags": [
+    "OPINION (hypothesis)"
+   ]
+  },
+  {
+   "id": "C29",
+   "source": "A",
+   "timestamp": "54:17-55:31",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "SIM_STATISTIC",
+   "claim": "Irving P(TD) ~41-43% in their sims; 2+ TD ~10%",
+   "classification": "THEIR_MODEL_OUTPUT",
+   "verdict": "AGREE",
+   "what_the_data_shows": "Our worlds: Irving P(anytime TD) 42.7%, P(2+ TD) 11.6%.",
+   "our_frozen_number": "0.427 / 0.116",
+   "their_stated_number": "~0.41-0.43 / ~0.10",
+   "cite": [
+    "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SHOWDOWN_TB_DAL_2026W5_WORLDS.npz + _DRAWS.json (frozen 23:08Z, before kickoff 00:15Z)"
+   ],
+   "hindsight_note": "HINDSIGHT: Irving scored 2 TD (34.5 DK).",
+   "secondary_tags": []
+  },
+  {
+   "id": "C30",
+   "source": "A",
+   "timestamp": "57:51-58:20",
+   "phase": "PRELOCK_A_MORNING",
+   "extraction_kind": "SIM_STATISTIC",
+   "claim": "Tampa wins 26% of their sims (8.5-point underdog)",
+   "classification": "THEIR_MODEL_OUTPUT",
+   "verdict": "WE WERE LOWER ON TB",
+   "what_the_data_shows": "Our worlds: P(TB win) 19.2% (DAL 80.8%); mean margin DAL +10.4. Theirs 26% (8.5-pt underdog). Our scoring centre is own-offence (no opponent adjustment, no market). One game cannot grade win probability.",
+   "our_frozen_number": "0.192",
+   "their_stated_number": "0.26",
+   "cite": [
+    "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SHOWDOWN_TB_DAL_2026W5_WORLDS.npz + _DRAWS.json (frozen 23:08Z, before kickoff 00:15Z)"
+   ],
+   "hindsight_note": "HINDSIGHT: TB won 24-16; the exact scoreline region occurred in 2.2% of our worlds.",
+   "secondary_tags": []
+  },
+  {
+   "id": "C31",
+   "source": "B",
+   "timestamp": "3:36-4:00",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "AVAILABILITY_FACT",
+   "claim": "Joey Porter Jr. out (illness); Dallas has many defensive inactives",
+   "classification": "VERIFIED_FACT",
+   "verdict": "VERIFIED AT SECONDARY TIER",
+   "what_the_data_shows": "Joey Porter Jr. is on the captured DAL inactive list (along with Cobie Durant, DeMarvion Overshown, James Houston and others), but the source is a SECONDARY RotoWire screenshot, not an official NFL document; \"illness\" is not in our data. Our DST draws depend only on opponent points (dst.py docstring; game.py:318-324), so defensive inactives do not move them.",
+   "our_frozen_number": null,
+   "their_stated_number": null,
+   "cite": [
+    "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/ROTOWIRE_INACTIVES_TB_DAL_2026W5.json (SECONDARY, RotoWire screenshot, received 23:06Z)",
+    "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SCENARIO.json official_inactives",
+    "nfl/sim/dst.py:1-30",
+    "nfl/sim/game.py:318-324"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": [
+    "CAPABILITY_GAP"
+   ]
+  },
+  {
+   "id": "C32",
+   "source": "B",
+   "timestamp": "4:25-5:27",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "OPINION",
+   "claim": "Quadrant reasoning: DAL offence moves the ball and DAL defence is bad (near certain); TB defence solid; TB offence unknown",
+   "classification": "OPINION",
+   "verdict": "NOT TESTABLE AS STATED",
+   "what_the_data_shows": "Partly checkable: DAL offence 30.5 ppg (wk 1-4), DAL defence EPA allowed rank 32/32, TB defence rank 6/32. \"TB offence unknown\" reflects the QB change (Daniels: 1 start).",
+   "our_frozen_number": null,
+   "their_stated_number": null,
+   "cite": [
+    "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz (nflverse, retrieved 2026-10-07T16:59Z, weeks 1-4, pre-kickoff)"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": []
+  },
+  {
+   "id": "C33",
+   "source": "B",
+   "timestamp": "7:11-7:38",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "FIELD_CONSTRUCTION",
+   "claim": "Most-duped lineups slant DAL 4-2/5-1; any TB lean is naturally leveraged",
+   "classification": "OWNERSHIP_FORECAST",
+   "verdict": "VERIFIED",
+   "what_the_data_shows": "See C19: the most-duplicated actual lineups slant DAL (TB-DAL 2-4 or 1-5 in 75 of the top 100). TB-leaning builds (4-2, 5-1) were 13.2% of field entries.",
+   "our_frozen_number": null,
+   "their_stated_number": null,
+   "cite": [
+    "nfl/postgame/raw/showdown_tb_dal_2026W5/DK_STANDINGS_*.csv.gz (owner upload 2026-10-09T13:17Z) -- ANSWER KEY ONLY"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": []
+  },
+  {
+   "id": "C34",
+   "source": "B",
+   "timestamp": "8:52-9:20",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "SIM_STATISTIC",
+   "claim": "P(DAL wins by 20+) 23%; P(TB wins) 24%",
+   "classification": "THEIR_MODEL_OUTPUT",
+   "verdict": "AGREE on DAL 20+; WE WERE LOWER on TB win",
+   "what_the_data_shows": "Our worlds: P(DAL by 20+) 21.8%, P(TB win) 19.2%.",
+   "our_frozen_number": "0.218 / 0.192",
+   "their_stated_number": "0.23 / 0.24",
+   "cite": [
+    "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SHOWDOWN_TB_DAL_2026W5_WORLDS.npz + _DRAWS.json (frozen 23:08Z, before kickoff 00:15Z)"
+   ],
+   "hindsight_note": "HINDSIGHT: TB won by 8.",
+   "secondary_tags": []
+  },
+  {
+   "id": "C35",
+   "source": "B",
+   "timestamp": "9:58-10:34",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "THEIR_PORTFOLIO",
+   "claim": "Their sims gave ~8% Daniels captain; presenter would accept 15%",
+   "classification": "THEIR_MODEL_OUTPUT",
+   "verdict": "DESCRIPTIVE ONLY",
+   "what_the_data_shows": "Theirs: Daniels CPT ~8% (sims). Ours: Daniels optimal CPT 3.1%, our CPT exposure 7.3% (150-max) / 20% (20-max). Field actual (answer key) 10.2%.",
+   "our_frozen_number": "opt CPT 3.1%",
+   "their_stated_number": "~8%",
+   "cite": [
+    "OFFICIAL_ELIGIBILITY_FIX_R1/SHOWDOWN_TB_DAL_CANDIDATES.csv (5,387 candidates) scored in the 2,000 frozen worlds",
+    "nfl/postgame/showdown_tb_dal_2026W5/TB_DAL_2026W5_STANDINGS.json ownership[] (DK %Drafted, 150-max 196438543) -- ANSWER KEY ONLY"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": []
+  },
+  {
+   "id": "C36",
+   "source": "B",
+   "timestamp": "10:34-11:27",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "QB_RUSHING",
+   "claim": "Daniels $8,600, mobile; rushing (8 rushes for 45 yds last game per later context) gives a path to ~25 DK without a receiver stack",
+   "classification": "VERIFIED_FACT",
+   "verdict": "SALARY VERIFIED; RUSHING YARDS CORRECTED",
+   "what_the_data_shows": "Daniels FLEX $8,600 (verified). Week 4 (his only start before this game): 8 carries (6 scrambles) for 55 yds (pbp; nflverse weekly 55), not 45. Week 3 relief: 1 carry. Our engine projected 3.33 carries / 19.4 rush yds from a generic QB cohort prior (D-03).",
+   "our_frozen_number": "3.33 carries, 19.4 rush yds, P(50+) 10.2%",
+   "their_stated_number": null,
+   "cite": [
+    "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz (nflverse, retrieved 2026-10-07T16:59Z, weeks 1-4, pre-kickoff)",
+    "nfl/postgame/raw/showdown_tb_dal_2026W5/NFLVERSE_STATS_PLAYER_WEEK_2026.8304933b6ee2bc2e.csv (captured 2026-10-09 post-kickoff; weeks 1-4 rows used only as a cross-check)",
+    "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/DKEntries_TB_DAL_SHOWDOWN_2026W5.5d559e413e680cae.csv",
+    "TB_DAL_DEFECT_REGISTER.json D-03",
+    "docs/QB_REGIME_ROOT_CAUSE_2026-10-08.md"
+   ],
+   "hindsight_note": "HINDSIGHT: 7 carries, 23 yds.",
+   "secondary_tags": [
+    "CONTRADICTED_BY_DATA (45 vs 55 yds)"
+   ]
+  },
+  {
+   "id": "C37",
+   "source": "B",
+   "timestamp": "11:48-12:10",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "QB_DEPENDENCY_HYPOTHESIS",
+   "claim": "Daniels' rushing came at the expense of Irving checkdowns (0 targets)",
+   "classification": "NOT_VERIFIABLE_HERE",
+   "verdict": "SAME AS C28 (n = 1)",
+   "what_the_data_shows": "See C28. The data are consistent with the claim but one start cannot establish it.",
+   "our_frozen_number": null,
+   "their_stated_number": null,
+   "cite": [
+    "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz (nflverse, retrieved 2026-10-07T16:59Z, weeks 1-4, pre-kickoff)"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": []
+  },
+  {
+   "id": "C38",
+   "source": "B",
+   "timestamp": "12:23-12:41",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "SIM_STATISTIC",
+   "claim": "P(Daniels 50+ rush yards) 38% in their sims",
+   "classification": "THEIR_MODEL_OUTPUT",
+   "verdict": "MATERIAL DISAGREEMENT",
+   "what_the_data_shows": "Our worlds: P(Daniels 50+ rush yds) 10.2% (p90 50.5 yds; P(45.5+) 12.6%). Theirs 38%. Pregame evidence (8 carries/55 yds in his one start) leans toward theirs. This is defect D-03 (QB rushing from a cohort prior).",
+   "our_frozen_number": "0.102",
+   "their_stated_number": "0.38",
+   "cite": [
+    "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SHOWDOWN_TB_DAL_2026W5_WORLDS.npz + _DRAWS.json (frozen 23:08Z, before kickoff 00:15Z)",
+    "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz (nflverse, retrieved 2026-10-07T16:59Z, weeks 1-4, pre-kickoff)"
+   ],
+   "hindsight_note": "HINDSIGHT: 23 rush yds (under 50); that does not settle which number was better.",
+   "secondary_tags": []
+  },
+  {
+   "id": "C39",
+   "source": "B",
+   "timestamp": "14:40-15:09",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "THEIR_PORTFOLIO",
+   "claim": "Their FLEX: with the field on Irving, over on Javonte, way over on Pickens (factory-setting sims)",
+   "classification": "THEIR_MODEL_OUTPUT",
+   "verdict": "DESCRIPTIVE ONLY",
+   "what_the_data_shows": "Their FLEX exposures. Ours (150-max R1): Irving 50%, Javonte 50%, Pickens 30%. Field actual: Irving 24.0%, Javonte 37.0%, Pickens 28.3%.",
+   "our_frozen_number": null,
+   "their_stated_number": null,
+   "cite": [
+    "OFFICIAL_ELIGIBILITY_FIX_R1/SHOWDOWN_TB_DAL_EXPOSURES.csv",
+    "nfl/postgame/showdown_tb_dal_2026W5/TB_DAL_2026W5_STANDINGS.json ownership[] (DK %Drafted, 150-max 196438543) -- ANSWER KEY ONLY"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": []
+  },
+  {
+   "id": "C40",
+   "source": "B",
+   "timestamp": "16:00-16:52",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "OWNERSHIP_FORECAST_AND_USAGE",
+   "claim": "Flournoy 6th-highest owned FLEX; Goodson nearly unowned (they 10%); Goodson 9 carries/11 opportunities over two competitive games",
+   "classification": "OWNERSHIP_FORECAST",
+   "verdict": "FLOURNOY VERIFIED; GOODSON \"nearly unowned\" CONTRADICTED; USAGE VERIFIED",
+   "what_the_data_shows": "Actual FLEX: Flournoy 29.1%, exactly 6th-highest (verified). Goodson 8.8% FLEX / 0.2% CPT, which is low but not \"nearly unowned\" (their 10% was about field). Goodson weeks 3-4: 9 carries + 2 targets = 11 opportunities (verified). Our BLEND forecast for Goodson: 4.5% FLEX.",
+   "our_frozen_number": "Goodson BLEND FLEX 4.5%; optimal FLEX 18.6%",
+   "their_stated_number": null,
+   "cite": [
+    "nfl/postgame/showdown_tb_dal_2026W5/TB_DAL_2026W5_STANDINGS.json ownership[] (DK %Drafted, 150-max 196438543) -- ANSWER KEY ONLY",
+    "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz (nflverse, retrieved 2026-10-07T16:59Z, weeks 1-4, pre-kickoff)",
+    "OFFICIAL/SHOWDOWN_TB_DAL_SHADOW_BOARD_BLEND.json (23:22Z), _FC_ONLY.json (23:23Z), research/ownership/predictions/SC_OWN_ROTATION_2_TB_DAL_2026W5_OFFICIAL.json (sealed 23:30Z)"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": []
+  },
+  {
+   "id": "C41",
+   "source": "B",
+   "timestamp": "17:43-18:11",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "MARKET_AND_PROJECTION",
+   "claim": "Daniels props 183.5 pass yds, 45.5 rush yds, 1+ TD -262; their projection 18.4 (4th highest); $800 cheaper than Pickens",
+   "classification": "THEIR_MODEL_OUTPUT",
+   "verdict": "RECORD ONLY (market content excluded)",
+   "what_the_data_shows": "Sportsbook props are prohibited model inputs here and are recorded only as a capability. Their projection 18.4 vs ours 14.0 (FC 12.1). Price gap VERIFIED: Daniels $8,600 vs Pickens $9,400 = $800.",
+   "our_frozen_number": "Daniels 13.99 DK",
+   "their_stated_number": "18.4",
+   "cite": [
+    "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/DKEntries_TB_DAL_SHOWDOWN_2026W5.5d559e413e680cae.csv",
+    "OFFICIAL/SHOWDOWN_TB_DAL_PROJECTIONS.csv"
+   ],
+   "hindsight_note": "HINDSIGHT: 13.86 DK.",
+   "secondary_tags": [
+    "MARKET_CONTENT_NOT_USED"
+   ]
+  },
+  {
+   "id": "C42",
+   "source": "B",
+   "timestamp": "19:07-19:40",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "REGRESSION_ARGUMENT",
+   "claim": "Pickens: healthy targets, clear role, touchdowns will regress up",
+   "classification": "OPINION",
+   "verdict": "PARTLY SUPPORTED BY OPPORTUNITY DATA",
+   "what_the_data_shows": "Pickens weeks 1-4: 28 targets, 0 TD; red-zone targets 3 of DAL's 22 (Lamb 6, Flournoy 5, Ferguson 4). Zero TDs on 28 targets is below expectation, but his red-zone role is small, so \"regress up\" is only partly supported. Our opportunity-based TD expectation was 0.38 per game.",
+   "our_frozen_number": "mean TD 0.381",
+   "their_stated_number": null,
+   "cite": [
+    "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz (nflverse, retrieved 2026-10-07T16:59Z, weeks 1-4, pre-kickoff)",
+    "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SHOWDOWN_TB_DAL_2026W5_WORLDS.npz + _DRAWS.json (frozen 23:08Z, before kickoff 00:15Z)"
+   ],
+   "hindsight_note": "HINDSIGHT: 1 TD.",
+   "secondary_tags": []
+  },
+  {
+   "id": "C43",
+   "source": "B",
+   "timestamp": "21:57-22:05",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "OWNERSHIP_FORECAST",
+   "claim": "CPT ownership: Dak, Pickens, Javonte, Lamb 12-20% each",
+   "classification": "OWNERSHIP_FORECAST",
+   "verdict": "VERIFIED",
+   "what_the_data_shows": "Actual CPT: Dak 16.4, Pickens 12.0, Javonte 15.1, Lamb 17.1. All four sit in 12-20%. Our sealed BLEND had Dak 33.7 and Lamb 37.3 (about 2x too high), Javonte 9.9 and Pickens 3.9 (too low).",
+   "our_frozen_number": null,
+   "their_stated_number": null,
+   "cite": [
+    "nfl/postgame/showdown_tb_dal_2026W5/TB_DAL_2026W5_STANDINGS.json ownership[] (DK %Drafted, 150-max 196438543) -- ANSWER KEY ONLY",
+    "OFFICIAL/SHOWDOWN_TB_DAL_SHADOW_BOARD_BLEND.json (23:22Z), _FC_ONLY.json (23:23Z), research/ownership/predictions/SC_OWN_ROTATION_2_TB_DAL_2026W5_OFFICIAL.json (sealed 23:30Z)"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": []
+  },
+  {
+   "id": "C44",
+   "source": "B",
+   "timestamp": "22:40-23:06",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "OWNERSHIP_FORECAST",
+   "claim": "Pickens projected to out-own Lamb at CPT; they are >2x the field on Pickens CPT",
+   "classification": "OWNERSHIP_FORECAST",
+   "verdict": "CONTRADICTED_BY_ACTUAL",
+   "what_the_data_shows": "Lamb out-owned Pickens at CPT: 17.1% vs 12.0% (150-max); 17.6 vs 11.1 and 17.8 vs 10.4 in the 20-max contests.",
+   "our_frozen_number": null,
+   "their_stated_number": null,
+   "cite": [
+    "nfl/postgame/showdown_tb_dal_2026W5/TB_DAL_2026W5_STANDINGS.json ownership[] (DK %Drafted, 150-max 196438543) -- ANSWER KEY ONLY",
+    "TB_DAL_2026W5_FIELD_STUDY.json"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": [
+    "CONTRADICTED_BY_DATA"
+   ]
+  },
+  {
+   "id": "C45",
+   "source": "B",
+   "timestamp": "23:14-23:29",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "PORTFOLIO_RULE",
+   "claim": "With 20 lineups include a couple of TB captains (Irving or Daniels) unless sure of a rout",
+   "classification": "PRINCIPLE",
+   "verdict": "TESTABLE ONLY ACROSS MANY SLATES",
+   "what_the_data_shows": "Our 20-max portfolios had 50% TB captains (Irving 4, Daniels 4, Otton 1, Buccaneers 1 of 20); the 150-max had 27% TB captains. The rule was satisfied without being coded. Our optimizer has no rule of this kind; captain diversity arises only from world coverage plus the 30% captain cap.",
+   "our_frozen_number": null,
+   "their_stated_number": null,
+   "cite": [
+    "OFFICIAL_ELIGIBILITY_FIX_R1/SHOWDOWN_TB_DAL_CPT_EXPOSURES.csv",
+    "nfl/tools/showdown_to_portfolio.py:136-138"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": []
+  },
+  {
+   "id": "C46",
+   "source": "B",
+   "timestamp": "24:11-25:49",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "CAPTAIN_CONDITIONAL_REASONING",
+   "claim": "A TB pass catcher is optimal CPT only if TDs are scarce and drives stall; PPR spreads points to receivers",
+   "classification": "PRINCIPLE",
+   "verdict": "PARTLY CONSISTENT WITH OUR WORLDS",
+   "what_the_data_shows": "A TB pass catcher is the optimal CPT in 12.9% of our worlds. In those worlds TB throws more (38.8 vs 34.0 attempts) and the best skill score elsewhere is lower (28.6 vs 33.2 DK), but the game total is unchanged (50.5 vs 49.8). That supports \"nobody else explodes\" but not \"TDs scarce, drives stall\".",
+   "our_frozen_number": "P(TB pass-catcher optimal CPT) 0.129",
+   "their_stated_number": null,
+   "cite": [
+    "OFFICIAL_ELIGIBILITY_FIX_R1/SHOWDOWN_TB_DAL_CANDIDATES.csv (5,387 candidates) scored in the 2,000 frozen worlds"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": []
+  },
+  {
+   "id": "C47",
+   "source": "B",
+   "timestamp": "26:26-26:53",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "CAPTAIN_CONDITIONAL_REASONING",
+   "claim": "Salary path: a non-top scorer can be optimal CPT by enabling the right FLEX combination (Olave Monday)",
+   "classification": "PRINCIPLE",
+   "verdict": "CONSISTENT WITH OUR WORLDS",
+   "what_the_data_shows": "In 24.6% of our worlds the optimal lineup's captain is NOT the world's top DK scorer.",
+   "our_frozen_number": "0.246",
+   "their_stated_number": null,
+   "cite": [
+    "OFFICIAL_ELIGIBILITY_FIX_R1/SHOWDOWN_TB_DAL_CANDIDATES.csv (5,387 candidates) scored in the 2,000 frozen worlds"
+   ],
+   "hindsight_note": "HINDSIGHT: the hindsight optimum used Irving (34.5) as CPT, who was the top scorer; the \"Olave Monday\" reference is to ATL@NO and was not re-checked here.",
+   "secondary_tags": []
+  },
+  {
+   "id": "C48",
+   "source": "B",
+   "timestamp": "27:14-29:17",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "CAPTAIN_ARITHMETIC",
+   "claim": "CPT 1.5x arithmetic: an elite scorer's bonus cannot be overcome at FLEX",
+   "classification": "PRINCIPLE",
+   "verdict": "TRUE BY CONSTRUCTION",
+   "what_the_data_shows": "CPT scores 1.5x FLEX points at 1.5x salary (DK rule; DRAWS CPT_RULE). Arithmetic identity, encoded in our scorer.",
+   "our_frozen_number": null,
+   "their_stated_number": null,
+   "cite": [
+    "OFFICIAL/SHOWDOWN_TB_DAL_2026W5_DRAWS.json CPT_RULE",
+    "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/DKEntries_TB_DAL_SHOWDOWN_2026W5.5d559e413e680cae.csv"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": []
+  },
+  {
+   "id": "C49",
+   "source": "B",
+   "timestamp": "29:58-30:22",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "THEIR_PORTFOLIO",
+   "claim": "Otton captain 5.3% exposure vs ~2% field",
+   "classification": "THEIR_MODEL_OUTPUT",
+   "verdict": "DESCRIPTIVE ONLY",
+   "what_the_data_shows": "Theirs: Otton CPT 5.3% vs ~2% field. Field actual CPT 2.3% (their field estimate held). Ours: Otton CPT 3.3% (150-max), optimal 7.5%.",
+   "our_frozen_number": null,
+   "their_stated_number": null,
+   "cite": [
+    "nfl/postgame/showdown_tb_dal_2026W5/TB_DAL_2026W5_STANDINGS.json ownership[] (DK %Drafted, 150-max 196438543) -- ANSWER KEY ONLY",
+    "OFFICIAL_ELIGIBILITY_FIX_R1/SHOWDOWN_TB_DAL_CANDIDATES.csv (5,387 candidates) scored in the 2,000 frozen worlds"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": [
+    "OWNERSHIP_FORECAST (~2%)"
+   ]
+  },
+  {
+   "id": "C50",
+   "source": "B",
+   "timestamp": "31:10-33:52",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "QB_DEPENDENCY_AND_SIM",
+   "claim": "Egbuka FLEX ownership ~15% (they 11%); 100+ rec yds 3.5%; first TD 3.5%; low Daniels passing volume suppresses all TB receivers",
+   "classification": "THEIR_MODEL_OUTPUT",
+   "verdict": "OWNERSHIP VERIFIED; SIM DISAGREES; DEPENDENCY CONFIRMED IN OUR WORLDS",
+   "what_the_data_shows": "Egbuka actual FLEX 14.4% (their ~15%: verified). Our P(Egbuka 100+ rec yds) 9.2% vs their 3.5%; driven by our TB pass-volume centre (Daniels 34.6 att vs 27 in his one start; D-02). Inside our worlds, Egbuka DK correlates +0.35 with Daniels attempts; conditional on Daniels <= 27 attempts, P(100+) = 1.6%, close to theirs. First-TD probability is not measurable (no event order in our worlds).",
+   "our_frozen_number": "P(100+) 0.092; |att<=27: 0.016",
+   "their_stated_number": "0.035",
+   "cite": [
+    "nfl/postgame/showdown_tb_dal_2026W5/TB_DAL_2026W5_STANDINGS.json ownership[] (DK %Drafted, 150-max 196438543) -- ANSWER KEY ONLY",
+    "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SHOWDOWN_TB_DAL_2026W5_WORLDS.npz + _DRAWS.json (frozen 23:08Z, before kickoff 00:15Z)",
+    "TB_DAL_DEFECT_REGISTER.json D-02"
+   ],
+   "hindsight_note": "HINDSIGHT: 38 rec yds; Daniels 25 attempts.",
+   "secondary_tags": []
+  },
+  {
+   "id": "C51",
+   "source": "B",
+   "timestamp": "37:00-38:32",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "CORRELATION_CLAIM",
+   "claim": "11 of 150 of their lineups pair Javonte and Goodson: in favourable scripts a backfield shares MORE total carries rather than cannibalising",
+   "classification": "OPINION",
+   "verdict": "NOT SUPPORTED IN AGGREGATE; THE CONDITIONAL VERSION IS UNTESTED",
+   "what_the_data_shows": "Measured RB1~RB2 same-club DK correlation is 0.00 [-0.04, 0.05]; our worlds give Javonte-Goodson -0.03 (DK) and -0.04 (carries). Script-conditional co-movement has not been measured. In our engine, TD allocation does not follow per-world carries (rush_td_share is fixed, game.py:489-490), so a world with more Goodson carries does not raise his TD chance. That is a modelling simplification.",
+   "our_frozen_number": "corr DK -0.034",
+   "their_stated_number": null,
+   "cite": [
+    "nfl/sim/PAIR_CORRELATIONS.json RB1~RB2",
+    "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SHOWDOWN_TB_DAL_2026W5_WORLDS.npz + _DRAWS.json (frozen 23:08Z, before kickoff 00:15Z)",
+    "nfl/sim/game.py:481-490"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": [
+    "CAPABILITY_GAP"
+   ]
+  },
+  {
+   "id": "C52",
+   "source": "B",
+   "timestamp": "39:35-39:48",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "JOINT_EVENT",
+   "claim": "P(Javonte and Goodson both TD) 13.9% vs a prediction-market 6.8%",
+   "classification": "THEIR_MODEL_OUTPUT",
+   "verdict": "AGREE (prediction-market figure excluded)",
+   "what_the_data_shows": "Ours 15.0%; theirs 13.9%. The prediction-market price is betting content and is recorded only.",
+   "our_frozen_number": "0.150",
+   "their_stated_number": "0.139",
+   "cite": [
+    "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SHOWDOWN_TB_DAL_2026W5_WORLDS.npz + _DRAWS.json (frozen 23:08Z, before kickoff 00:15Z)"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": [
+    "MARKET_CONTENT_NOT_USED"
+   ]
+  },
+  {
+   "id": "C53",
+   "source": "B",
+   "timestamp": "40:15-42:35",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "QB_DEPENDENCY_HYPOTHESIS",
+   "claim": "Unknown QB spreads targets (max 6 last week) so cheap receivers are viable; backup QBs may favour secondary receivers they practise with (speculative); Hurst 1 target fewer than Egbuka on ~25 fewer snaps",
+   "classification": "NOT_VERIFIABLE_HERE",
+   "verdict": "PARTLY CONTRADICTED; MECHANISM SPECULATIVE",
+   "what_the_data_shows": "TB week 4 maximum targets was 7 (Godwin), not 6. Hurst had 3 targets vs Egbuka 4 (1 fewer: verified) on 25 snaps vs 59 (34 fewer, not ~25; Hurst himself played 25). Backup-QB familiarity is speculation; nothing in the repo measures it.",
+   "our_frozen_number": null,
+   "their_stated_number": null,
+   "cite": [
+    "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz (nflverse, retrieved 2026-10-07T16:59Z, weeks 1-4, pre-kickoff)",
+    "nfl/postgame/raw/showdown_atl_no_2026W4/SNAP_COUNTS_2026.125e7bfba67b6b13.csv.gz (retrieved 2026-10-06T15:09Z, weeks 1-4)"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": [
+    "CONTRADICTED_BY_DATA (max 7)"
+   ]
+  },
+  {
+   "id": "C54",
+   "source": "B",
+   "timestamp": "43:52-44:00",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "SIM_STATISTIC",
+   "claim": "P(Daniels < 15 pass attempts) 1.9%",
+   "classification": "THEIR_MODEL_OUTPUT",
+   "verdict": "BOTH TINY; OURS SMALLER",
+   "what_the_data_shows": "Our worlds: P(Daniels < 15 pass attempts) 0.25% (5/2000); mean 34.6 attempts.",
+   "our_frozen_number": "0.0025",
+   "their_stated_number": "0.019",
+   "cite": [
+    "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SHOWDOWN_TB_DAL_2026W5_WORLDS.npz + _DRAWS.json (frozen 23:08Z, before kickoff 00:15Z)"
+   ],
+   "hindsight_note": "HINDSIGHT: 25 attempts.",
+   "secondary_tags": []
+  },
+  {
+   "id": "C55",
+   "source": "B",
+   "timestamp": "44:08-45:09",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "LEVERAGE",
+   "claim": "CPT leverage: Dak most positive, Javonte and Pickens positive, Lamb most negative",
+   "classification": "THEIR_MODEL_OUTPUT",
+   "verdict": "OUR ENGINE DISAGREES ON LAMB AND DAK",
+   "what_the_data_shows": "Our CPT optimal minus sealed BLEND forecast: Dak -20.2 (BLEND forecast 33.7% far above our 13.5% optimal), Javonte +1.6, Pickens -1.5, Lamb -0.5. Against the FC-proportional baseline: Lamb +25.3 (most positive), Dak +1.8, Javonte +1.8, Pickens -6.9. Their board had Lamb most negative.",
+   "our_frozen_number": null,
+   "their_stated_number": null,
+   "cite": [
+    "OFFICIAL_ELIGIBILITY_FIX_R1/SHOWDOWN_TB_DAL_CANDIDATES.csv (5,387 candidates) scored in the 2,000 frozen worlds",
+    "OFFICIAL/SHOWDOWN_TB_DAL_SHADOW_BOARD_BLEND.json (23:22Z), _FC_ONLY.json (23:23Z), research/ownership/predictions/SC_OWN_ROTATION_2_TB_DAL_2026W5_OFFICIAL.json (sealed 23:30Z)"
+   ],
+   "hindsight_note": "HINDSIGHT: against actual CPT ownership, Lamb +19.7, Pickens -9.6, Dak -2.9.",
+   "secondary_tags": []
+  },
+  {
+   "id": "C56",
+   "source": "B",
+   "timestamp": "45:39-45:43",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "SIM_STATISTIC",
+   "claim": "P(Goodson first TD) 4.1%",
+   "classification": "NOT_VERIFIABLE_HERE",
+   "verdict": "NOT MEASURABLE IN OUR WORLDS",
+   "what_the_data_shows": "Our worlds carry per-game TD counts with no ordering, so \"first TD\" cannot be computed. Goodson P(any TD) 22.2%.",
+   "our_frozen_number": "not computable",
+   "their_stated_number": "0.041",
+   "cite": [
+    "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SHOWDOWN_TB_DAL_2026W5_WORLDS.npz + _DRAWS.json (frozen 23:08Z, before kickoff 00:15Z)"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": [
+    "CAPABILITY_GAP"
+   ]
+  },
+  {
+   "id": "C57",
+   "source": "B",
+   "timestamp": "48:25-49:40",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "DUPLICATION_FORECAST",
+   "claim": "Most-duped lineup (79 dupes in their projection): Dak, Aubrey, Lamb, Cowboys DST, Daniels, Flournoy, about 50K; most-duped lineups sit at/near the cap and \"make sense\"",
+   "classification": "OWNERSHIP_FORECAST",
+   "verdict": "LINEUP FOUND; LEVEL HIGHER THAN THEIR FORECAST; CAP CLUSTERING VERIFIED",
+   "what_the_data_shows": "The six-player set {Dak, Aubrey, Lamb, Cowboys DST, Daniels, Flournoy} appears in the 150-max 352 times across captains. With Dak as CPT ($50,000 exactly, the only arrangement at \"about 50K\"): 295 copies, the 29th most-duplicated lineup. Daniels CPT ($49,100) 36; Aubrey CPT 8; Flournoy CPT 7; Cowboys CPT 6; Lamb CPT would cost $50,700 (illegal). In the 20-max contests the Dak-CPT version had 144 and 124 copies (ranks 7 and 9). Their figure (79) does not name a contest. If it was the 150-max, actual was about 3.7x higher. Cap clustering is verified: the 25 most-duplicated lineups all cost $49,500-$50,000; mean other-copies per entry is 112 at $50,000 and 124 at $49,500-49,900, against 9.8 below $48,000.",
+   "our_frozen_number": null,
+   "their_stated_number": "79 dupes",
+   "cite": [
+    "nfl/postgame/raw/showdown_tb_dal_2026W5/DK_STANDINGS_*.csv.gz (owner upload 2026-10-09T13:17Z) -- ANSWER KEY ONLY",
+    "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/DKEntries_TB_DAL_SHOWDOWN_2026W5.5d559e413e680cae.csv"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": [
+    "VERIFIED_FACT (field)"
+   ]
+  },
+  {
+   "id": "C58",
+   "source": "B",
+   "timestamp": "55:46-56:40",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "PROCESS_MANUAL_OVERRIDE",
+   "claim": "To play Tampa you must assume they outperform projection (\"mentally boosting\")",
+   "classification": "OPINION",
+   "verdict": "PROHIBITED PROCESS HERE",
+   "what_the_data_shows": "Manual boosting is not allowed in our system (no silent constants). The legitimate analogue is a declared scenario-conditional portfolio arm frozen before lock.",
+   "our_frozen_number": null,
+   "their_stated_number": null,
+   "cite": [
+    "CLAUDE.md governing rule 2"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": []
+  },
+  {
+   "id": "C59",
+   "source": "B",
+   "timestamp": "56:46-57:18",
+   "phase": "PRELOCK_B_AFTER_INACTIVES",
+   "extraction_kind": "PROCESS",
+   "claim": "Sims updated after inactives; in NFL usually nothing further to update",
+   "classification": "PRINCIPLE",
+   "verdict": "CONSISTENT WITH OUR PROCESS",
+   "what_the_data_shows": "Our OFFICIAL run used the post-inactives roster (inactives received 23:06Z, worlds written 23:08Z, kickoff 00:15Z).",
+   "our_frozen_number": null,
+   "their_stated_number": null,
+   "cite": [
+    "OFFICIAL/SCENARIO.json",
+    "nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/ROTOWIRE_INACTIVES_TB_DAL_2026W5.json (SECONDARY, RotoWire screenshot, received 23:06Z)"
+   ],
+   "hindsight_note": null,
+   "secondary_tags": []
+  },
+  {
+   "id": "C60",
+   "source": "B",
+   "timestamp": "58:26-end",
+   "phase": "POSTKICKOFF",
+   "extraction_kind": "POSTKICKOFF_EXCLUDED",
+   "claim": "IN-GAME: coin toss, live sims re-simulating after plays, Javonte TD, Pickens catches",
+   "classification": "POSTKICKOFF_EXCLUDED",
+   "verdict": "EXCLUDED",
+   "what_the_data_shows": "In-game content (B 58:26 onward) is excluded from every prelock comparison.",
+   "our_frozen_number": null,
+   "their_stated_number": null,
+   "cite": [],
+   "hindsight_note": null,
+   "secondary_tags": []
+  }
+ ]
+}
