@@ -1,4 +1,4 @@
-# Week 5 Classic (Sunday 1:00 ET, 8 games): decision board, refreshed Friday 2026-10-09 ~19:55Z
+# Week 5 Classic (Sunday 1:00 ET, 8 games): decision board, refreshed Friday 2026-10-09 ~19:45Z
 
 **Readiness: NOT READY to produce entered Classic portfolios.** Three things are missing:
 - the DraftKings salary file;
