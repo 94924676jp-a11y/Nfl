@@ -143,18 +143,37 @@ def _position_scoped_ranks(players):
     # AN ABSENT PLAYER HOLDS NO RANK (2026-10-09, engine dependency audit). He was ranked with everyone else, so the
     # healthy replacement of an OUT starter was numbered 2 at his position and capped at DEPTH_RANK_2 (SECONDARY):
     # Kamara on ATL@NO, Braelon Allen / Wicks / Ertz on the W4 Early slate. Absent rows get no projection anyway.
+    # A TIE IS BROKEN BY EVIDENCE, NEVER BY AN IDENTIFIER (2026-10-09, W5-G13). The supplied depth_rank for a back or
+    # receiver is the MINIMUM of his usage-history rank and his captured-chart rank (classic_slate_state._depth_ranks),
+    # so the chart WR1 and the usage WR1 both arrive at rank 1. Sorting (rank, dk_id) then let the DK id decide which
+    # of them took the DEPTH_RANK_1 ceiling and which was capped at SECONDARY -- and the same football facts gave a
+    # different projection under DK ids than under research ids. The order is now: rank; the chart rank that produced
+    # it (the club's current statement first: in 2026 W2-W4 the chart's man led the room in 28 of 47 tied rooms, usage
+    # history's in 11, id order's in 18); usage rank; the observed 2026 share; only then the id, as a last resort that
+    # is reached only when no evidence separates them. A state that does not record depth_chart_rank (older states,
+    # showdown) derives it: a rank below the player's usage rank can only have come from the chart.
     buckets = {}
     for dk_id, row in players.items():
         r = row.get('depth_rank')
         if (row.get('current_availability') or {}).get('status') in AV.ABSENT_STATUSES:
             continue
         if isinstance(r, int):
-            buckets.setdefault((row.get('team'), row.get('position')), []).append((r, dk_id))
+            buckets.setdefault((row.get('team'), row.get('position')), []).append((_evidence_order_key(row, dk_id), dk_id))
     scoped = {}
     for key, rows in buckets.items():
-        for i, (_r, dk_id) in enumerate(sorted(rows), start=1):
+        for i, (_k, dk_id) in enumerate(sorted(rows), start=1):
             scoped[dk_id] = i
     return scoped
+
+
+def _evidence_order_key(row, dk_id):
+    r, u = row.get('depth_rank'), row.get('depth_usage_rank')
+    c = row.get('depth_chart_rank') if 'depth_chart_rank' in row else (
+        r if (isinstance(u, int) and r < u) else None)
+    o = ((row.get('observed_2026') or {}).get('combined') or {})
+    share = o.get('rush_share') if row.get('position') == 'RB' else o.get('target_share')
+    return (r, c if isinstance(c, int) else 99, u if isinstance(u, int) else 99,
+            -(share if isinstance(share, (int, float)) else 0.0), str(dk_id))
 
 
 def assign(players, panel=None):

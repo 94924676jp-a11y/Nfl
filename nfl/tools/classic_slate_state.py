@@ -68,9 +68,18 @@ def _qb_rank(pos, team, gsis, qb_chart, depth, out_gsis=()):
     """Quarterbacks: rank on the captured chart AMONG QUARTERBACKS NOT REPORTED OUT -- a reported-out
     starter takes no snap, so he vacates the rank rather than holding it. Absent from a chart that
     covers his club: below everyone it lists. Everyone else: the validated usage-history rank."""
+    return _depth_ranks(pos, team, gsis, qb_chart, depth, out_gsis)[0]
+
+
+def _depth_ranks(pos, team, gsis, qb_chart, depth, out_gsis=()):
+    """(depth_rank, chart_rank_used). The second element is the captured-chart rank that entered the
+    minimum below (None when the chart did not count), recorded so a TIE in depth_rank can be broken by
+    evidence downstream (role_state._position_scoped_ranks) rather than by an identifier: two room-mates
+    reach rank 1 when one is chart WR1 and the other usage WR1 (2026 W5: Chase/Higgins, Jefferson/Addison)."""
     if pos == 'QB' and team in qb_chart:
         order = [g for g in qb_chart[team]['order'] if g not in out_gsis]
-        return (order.index(gsis) + 1) if gsis in order else len(order) + 1
+        r = (order.index(gsis) + 1) if gsis in order else len(order) + 1
+        return r, r
     usage = (depth.get(gsis) or {}).get('pregame_rank') if gsis else None
     chart = None
     if gsis and team in qb_chart and pos in qb_chart[team].get('by_pos', {}):
@@ -93,7 +102,7 @@ def _qb_rank(pos, team, gsis, qb_chart, depth, out_gsis=()):
     if usage is None and isinstance(chart, int) and chart > NO_USAGE_CHART_LIFT_LIMIT.get(pos, 0):
         chart = None
     ranks = [r for r in (usage, chart) if isinstance(r, int)]
-    return min(ranks) if ranks else None
+    return (min(ranks) if ranks else None), chart
 
 
 #: a packet-named starter carries its packet's provenance, never a stronger one
@@ -349,7 +358,8 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
                          ('IDENTITY_UNRESOLVED_NOT_PROJECTED' if dk_id in unresolved_ids else rec)),
             'gsis_id': gsis,
             'observed_2026': (obs.get(gsis) or {}) if gsis else {},
-            'depth_rank': _qb_rank(pos, team, gsis, qb_chart, depth, out_gsis),
+            'depth_rank': _depth_ranks(pos, team, gsis, qb_chart, depth, out_gsis)[0],
+            'depth_chart_rank': _depth_ranks(pos, team, gsis, qb_chart, depth, out_gsis)[1],
             'depth_detail': ((depth.get(gsis) or {}) if gsis else {}),
             'depth_source': (('DEPTH_CHART_CAPTURED ' + qb_chart[team]['capture_id'])
                              if pos == 'QB' and team in qb_chart else
