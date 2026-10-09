@@ -1,0 +1,671 @@
+{
+ "ARTIFACT": "SHOWDOWN_FIELD_STUDY",
+ "standings": "nfl/postgame/showdown_tb_dal_2026W5/TB_DAL_2026W5_STANDINGS.json",
+ "contests": {
+  "196438543": {
+   "ownership": {
+    "BLEND": {
+     "written_utc": "2026-10-08T23:22:52.227164+00:00",
+     "CPT": {
+      "mae": 1.828,
+      "rmse": 4.559,
+      "spearman": 0.826,
+      "n_players": 44
+     },
+     "FLEX": {
+      "mae": 4.278,
+      "rmse": 7.676,
+      "spearman": 0.752,
+      "n_players": 50
+     }
+    },
+    "FC_ONLY": {
+     "written_utc": "2026-10-08T23:23:18.190563+00:00",
+     "CPT": {
+      "mae": 1.557,
+      "rmse": 4.196,
+      "spearman": 0.703,
+      "n_players": 44
+     },
+     "FLEX": {
+      "mae": 6.576,
+      "rmse": 11.969,
+      "spearman": 0.726,
+      "n_players": 50
+     }
+    },
+    "BASELINE_FC_PROPORTIONAL": {
+     "definition": "share proportional to FC FLEX projection; no parameter fitted",
+     "CPT": {
+      "mae": 1.093,
+      "rmse": 1.953,
+      "spearman": 0.931,
+      "n_players": 42
+     },
+     "FLEX": {
+      "mae": 2.876,
+      "rmse": 5.153,
+      "spearman": 0.824,
+      "n_players": 49
+     }
+    }
+   },
+   "duplication_forecast": {
+    "BLEND": {
+     "n_lineups": 150,
+     "pred_mean": 197.6,
+     "pred_median": 0.0,
+     "actual_mean": 36.4,
+     "actual_median": 11.0,
+     "spearman": 0.254,
+     "median_log_ratio_pred_over_actual": -0.693,
+     "NOTE": "predicted for the OFFICIAL sealed lineups; actual = copies held by non-owner entries"
+    },
+    "FC_ONLY": {
+     "n_lineups": 150,
+     "pred_mean": 58.4,
+     "pred_median": 0.0,
+     "actual_mean": 36.4,
+     "actual_median": 11.0,
+     "spearman": -0.209,
+     "median_log_ratio_pred_over_actual": -2.079,
+     "NOTE": "predicted for the OFFICIAL sealed lineups; actual = copies held by non-owner entries"
+    }
+   },
+   "structure": {
+    "field": {
+     "n": 236900,
+     "mean_salary": 49142,
+     "share_salary_le_48000": 0.104,
+     "away_count_share": {
+      "1": 0.22,
+      "2": 0.354,
+      "3": 0.294,
+      "4": 0.115,
+      "5": 0.017
+     },
+     "captains": [
+      [
+       "CeeDee Lamb",
+       17.1
+      ],
+      [
+       "Dak Prescott",
+       16.4
+      ],
+      [
+       "Javonte Williams",
+       15.1
+      ],
+      [
+       "George Pickens",
+       12.1
+      ],
+      [
+       "Jalon Daniels",
+       10.2
+      ],
+      [
+       "Bucky Irving",
+       5.5
+      ],
+      [
+       "Jake Ferguson",
+       4.3
+      ],
+      [
+       "Ryan Flournoy",
+       3.5
+      ]
+     ],
+     "both_qbs": 0.406,
+     "has_k": 0.455,
+     "has_dst": 0.258,
+     "copies_held_by_other_entries": {
+      "median": 42.0,
+      "mean": 82.7,
+      "share_unique": 0.041
+     }
+    },
+    "field_top_1pct": {
+     "n": 2403,
+     "mean_salary": 49457,
+     "share_salary_le_48000": 0.035,
+     "away_count_share": {
+      "1": 0.014,
+      "2": 0.206,
+      "3": 0.576,
+      "4": 0.184,
+      "5": 0.02
+     },
+     "captains": [
+      [
+       "Bucky Irving",
+       49.1
+      ],
+      [
+       "George Pickens",
+       48.8
+      ],
+      [
+       "Dak Prescott",
+       1.3
+      ],
+      [
+       "Emeka Egbuka",
+       0.7
+      ]
+     ],
+     "both_qbs": 0.544,
+     "has_k": 0.276,
+     "has_dst": 0.164,
+     "copies_held_by_other_entries": {
+      "median": 61.0,
+      "mean": 98.1,
+      "share_unique": 0.011
+     }
+    },
+    "ours": {
+     "n": 150,
+     "mean_salary": 48470,
+     "share_salary_le_48000": 0.187,
+     "away_count_share": {
+      "1": 0.073,
+      "2": 0.227,
+      "3": 0.353,
+      "4": 0.293,
+      "5": 0.053
+     },
+     "captains": [
+      [
+       "CeeDee Lamb",
+       22.0
+      ],
+      [
+       "Javonte Williams",
+       21.3
+      ],
+      [
+       "Dak Prescott",
+       12.0
+      ],
+      [
+       "Bucky Irving",
+       7.3
+      ],
+      [
+       "Jalon Daniels",
+       7.3
+      ],
+      [
+       "Emeka Egbuka",
+       5.3
+      ],
+      [
+       "Buccaneers",
+       5.3
+      ],
+      [
+       "George Pickens",
+       4.0
+      ]
+     ],
+     "both_qbs": 0.16,
+     "has_k": 0.56,
+     "has_dst": 0.253,
+     "copies_held_by_other_entries": {
+      "median": 13.5,
+      "mean": 39.2,
+      "share_unique": 0.187
+     }
+    },
+    "field_distinct_lineups": 23645,
+    "winning_score": 136.59,
+    "winning_lineup_copies": 18
+   }
+  },
+  "196438555": {
+   "ownership": {
+    "BLEND": {
+     "written_utc": "2026-10-08T23:22:52.227164+00:00",
+     "CPT": {
+      "mae": 1.945,
+      "rmse": 4.562,
+      "spearman": 0.777,
+      "n_players": 38
+     },
+     "FLEX": {
+      "mae": 4.08,
+      "rmse": 7.113,
+      "spearman": 0.827,
+      "n_players": 46
+     }
+    },
+    "FC_ONLY": {
+     "written_utc": "2026-10-08T23:23:18.190563+00:00",
+     "CPT": {
+      "mae": 1.685,
+      "rmse": 4.189,
+      "spearman": 0.586,
+      "n_players": 38
+     },
+     "FLEX": {
+      "mae": 6.783,
+      "rmse": 12.097,
+      "spearman": 0.811,
+      "n_players": 46
+     }
+    },
+    "BASELINE_FC_PROPORTIONAL": {
+     "definition": "share proportional to FC FLEX projection; no parameter fitted",
+     "CPT": {
+      "mae": 1.294,
+      "rmse": 2.133,
+      "spearman": 0.889,
+      "n_players": 37
+     },
+     "FLEX": {
+      "mae": 2.91,
+      "rmse": 5.178,
+      "spearman": 0.871,
+      "n_players": 46
+     }
+    }
+   },
+   "duplication_forecast": {
+    "BLEND": {
+     "n_lineups": 20,
+     "pred_mean": 81.9,
+     "pred_median": 0.0,
+     "actual_mean": 10.1,
+     "actual_median": 3.5,
+     "spearman": 0.235,
+     "median_log_ratio_pred_over_actual": 0.0,
+     "NOTE": "predicted for the OFFICIAL sealed lineups; actual = copies held by non-owner entries"
+    },
+    "FC_ONLY": {
+     "n_lineups": 20,
+     "pred_mean": 0.0,
+     "pred_median": 0.0,
+     "actual_mean": 10.1,
+     "actual_median": 3.5,
+     "spearman": -0.406,
+     "median_log_ratio_pred_over_actual": -1.445,
+     "NOTE": "predicted for the OFFICIAL sealed lineups; actual = copies held by non-owner entries"
+    }
+   },
+   "structure": {
+    "field": {
+     "n": 47310,
+     "mean_salary": 49313,
+     "share_salary_le_48000": 0.065,
+     "away_count_share": {
+      "1": 0.227,
+      "2": 0.372,
+      "3": 0.286,
+      "4": 0.099,
+      "5": 0.016
+     },
+     "captains": [
+      [
+       "Dak Prescott",
+       18.3
+      ],
+      [
+       "CeeDee Lamb",
+       17.6
+      ],
+      [
+       "Javonte Williams",
+       14.4
+      ],
+      [
+       "George Pickens",
+       11.1
+      ],
+      [
+       "Jalon Daniels",
+       9.0
+      ],
+      [
+       "Bucky Irving",
+       5.3
+      ],
+      [
+       "Jake Ferguson",
+       4.3
+      ],
+      [
+       "Cowboys",
+       3.6
+      ]
+     ],
+     "both_qbs": 0.385,
+     "has_k": 0.467,
+     "has_dst": 0.248,
+     "copies_held_by_other_entries": {
+      "median": 12.0,
+      "mean": 38.7,
+      "share_unique": 0.102
+     }
+    },
+    "field_top_1pct": {
+     "n": 475,
+     "mean_salary": 49530,
+     "share_salary_le_48000": 0.015,
+     "away_count_share": {
+      "1": 0.011,
+      "2": 0.171,
+      "3": 0.691,
+      "4": 0.107,
+      "5": 0.021
+     },
+     "captains": [
+      [
+       "George Pickens",
+       57.3
+      ],
+      [
+       "Bucky Irving",
+       39.2
+      ],
+      [
+       "Dak Prescott",
+       3.2
+      ],
+      [
+       "Emeka Egbuka",
+       0.4
+      ]
+     ],
+     "both_qbs": 0.606,
+     "has_k": 0.183,
+     "has_dst": 0.107,
+     "copies_held_by_other_entries": {
+      "median": 19.0,
+      "mean": 44.4,
+      "share_unique": 0.057
+     }
+    },
+    "ours": {
+     "n": 20,
+     "mean_salary": 48125,
+     "share_salary_le_48000": 0.25,
+     "away_count_share": {
+      "1": 0.05,
+      "2": 0.25,
+      "3": 0.35,
+      "4": 0.35
+     },
+     "captains": [
+      [
+       "CeeDee Lamb",
+       30.0
+      ],
+      [
+       "Bucky Irving",
+       20.0
+      ],
+      [
+       "Jalon Daniels",
+       20.0
+      ],
+      [
+       "Javonte Williams",
+       10.0
+      ],
+      [
+       "Dak Prescott",
+       10.0
+      ],
+      [
+       "Cade Otton",
+       5.0
+      ],
+      [
+       "Buccaneers",
+       5.0
+      ]
+     ],
+     "both_qbs": 0.15,
+     "has_k": 0.65,
+     "has_dst": 0.2,
+     "copies_held_by_other_entries": {
+      "median": 8.5,
+      "mean": 13.6,
+      "share_unique": 0.25
+     }
+    },
+    "field_distinct_lineups": 9968,
+    "winning_score": 136.59,
+    "winning_lineup_copies": 2
+   }
+  },
+  "196438556": {
+   "ownership": {
+    "BLEND": {
+     "written_utc": "2026-10-08T23:22:52.227164+00:00",
+     "CPT": {
+      "mae": 2.144,
+      "rmse": 4.842,
+      "spearman": 0.803,
+      "n_players": 35
+     },
+     "FLEX": {
+      "mae": 3.73,
+      "rmse": 6.705,
+      "spearman": 0.773,
+      "n_players": 50
+     }
+    },
+    "FC_ONLY": {
+     "written_utc": "2026-10-08T23:23:18.190563+00:00",
+     "CPT": {
+      "mae": 1.892,
+      "rmse": 4.568,
+      "spearman": 0.631,
+      "n_players": 35
+     },
+     "FLEX": {
+      "mae": 6.226,
+      "rmse": 11.684,
+      "spearman": 0.763,
+      "n_players": 50
+     }
+    },
+    "BASELINE_FC_PROPORTIONAL": {
+     "definition": "share proportional to FC FLEX projection; no parameter fitted",
+     "CPT": {
+      "mae": 1.29,
+      "rmse": 2.076,
+      "spearman": 0.917,
+      "n_players": 35
+     },
+     "FLEX": {
+      "mae": 2.478,
+      "rmse": 4.764,
+      "spearman": 0.827,
+      "n_players": 50
+     }
+    }
+   },
+   "duplication_forecast": {
+    "BLEND": {
+     "n_lineups": 20,
+     "pred_mean": 81.9,
+     "pred_median": 0.0,
+     "actual_mean": 12.2,
+     "actual_median": 6.0,
+     "spearman": 0.198,
+     "median_log_ratio_pred_over_actual": 0.0,
+     "NOTE": "predicted for the OFFICIAL sealed lineups; actual = copies held by non-owner entries"
+    },
+    "FC_ONLY": {
+     "n_lineups": 20,
+     "pred_mean": 0.0,
+     "pred_median": 0.0,
+     "actual_mean": 12.2,
+     "actual_median": 6.0,
+     "spearman": -0.272,
+     "median_log_ratio_pred_over_actual": -1.946,
+     "NOTE": "predicted for the OFFICIAL sealed lineups; actual = copies held by non-owner entries"
+    }
+   },
+   "structure": {
+    "field": {
+     "n": 47205,
+     "mean_salary": 49309,
+     "share_salary_le_48000": 0.065,
+     "away_count_share": {
+      "1": 0.229,
+      "2": 0.374,
+      "3": 0.281,
+      "4": 0.099,
+      "5": 0.018
+     },
+     "captains": [
+      [
+       "CeeDee Lamb",
+       17.8
+      ],
+      [
+       "Dak Prescott",
+       17.1
+      ],
+      [
+       "Javonte Williams",
+       14.7
+      ],
+      [
+       "George Pickens",
+       10.4
+      ],
+      [
+       "Jalon Daniels",
+       8.5
+      ],
+      [
+       "Bucky Irving",
+       5.4
+      ],
+      [
+       "Jake Ferguson",
+       4.8
+      ],
+      [
+       "Cowboys",
+       4.2
+      ]
+     ],
+     "both_qbs": 0.349,
+     "has_k": 0.485,
+     "has_dst": 0.252,
+     "copies_held_by_other_entries": {
+      "median": 12.0,
+      "mean": 37.3,
+      "share_unique": 0.101
+     }
+    },
+    "field_top_1pct": {
+     "n": 475,
+     "mean_salary": 49485,
+     "share_salary_le_48000": 0.034,
+     "away_count_share": {
+      "1": 0.004,
+      "2": 0.139,
+      "3": 0.598,
+      "4": 0.229,
+      "5": 0.029
+     },
+     "captains": [
+      [
+       "George Pickens",
+       52.4
+      ],
+      [
+       "Bucky Irving",
+       42.7
+      ],
+      [
+       "Dak Prescott",
+       3.2
+      ],
+      [
+       "Emeka Egbuka",
+       0.8
+      ],
+      [
+       "Ryan Flournoy",
+       0.6
+      ],
+      [
+       "Tez Johnson",
+       0.2
+      ]
+     ],
+     "both_qbs": 0.545,
+     "has_k": 0.269,
+     "has_dst": 0.149,
+     "copies_held_by_other_entries": {
+      "median": 8.0,
+      "mean": 23.8,
+      "share_unique": 0.078
+     }
+    },
+    "ours": {
+     "n": 20,
+     "mean_salary": 48125,
+     "share_salary_le_48000": 0.25,
+     "away_count_share": {
+      "1": 0.05,
+      "2": 0.25,
+      "3": 0.35,
+      "4": 0.35
+     },
+     "captains": [
+      [
+       "CeeDee Lamb",
+       30.0
+      ],
+      [
+       "Bucky Irving",
+       20.0
+      ],
+      [
+       "Jalon Daniels",
+       20.0
+      ],
+      [
+       "Javonte Williams",
+       10.0
+      ],
+      [
+       "Dak Prescott",
+       10.0
+      ],
+      [
+       "Cade Otton",
+       5.0
+      ],
+      [
+       "Buccaneers",
+       5.0
+      ]
+     ],
+     "both_qbs": 0.15,
+     "has_k": 0.65,
+     "has_dst": 0.2,
+     "copies_held_by_other_entries": {
+      "median": 11.0,
+      "mean": 14.7,
+      "share_unique": 0.3
+     }
+    },
+    "field_distinct_lineups": 9914,
+    "winning_score": 135.09,
+    "winning_lineup_copies": 1
+   }
+  }
+ },
+ "PREGAME_POSTGAME_SEPARATION": "forecasts read from prelock files (mtimes recorded); standings are the answer key only"
+}
