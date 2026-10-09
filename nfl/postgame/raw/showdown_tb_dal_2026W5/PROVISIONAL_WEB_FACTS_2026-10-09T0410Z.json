@@ -1,0 +1,27 @@
+{
+ "ARTIFACT": "PROVISIONAL_POSTGAME_FACTS",
+ "STATUS": "PROVISIONAL -- web-search summaries of news recaps, NOT an official box score. Never used to compute DK points. Superseded by nflverse play-by-play once it carries game 2026_05_TB_DAL.",
+ "captured_at_utc": "2026-10-09T04:10Z",
+ "method": "Claude WebSearch (server-side). Page fetches of espn.com / nfl.com / pro-football-reference.com failed DNS from this session; the container proxy returns 403 for them. Only facts reported consistently by two or more independent outlets are listed as CORROBORATED.",
+ "CORROBORATED": {
+  "final_score": {"TB": 24, "DAL": 16, "sources": ["espn.com/nfl/recap/_/gameId/401872980", "nfl.com what-we-learned", "nbcsports.com PFT", "dallascowboys.com game recap"]},
+  "line_score": {"TB": [0, 7, 17, 0], "DAL": [7, 3, 0, 6], "sources": ["ESPN line score (via search)", "halftime DAL 10-7 (fox4news, CBS, nfl.com video of Aubrey 41-yd FG for 10-7 before half)"]},
+  "Jalon Daniels": {"pass": "19/25, 189 yds, 1 TD, 0 INT", "started": true, "sources": ["nbcsports player news", "ESPN", "PFF"]},
+  "Bucky Irving": {"rush": "21 car, 165 yds, long 72", "total_TD": 2, "detail_single_source": "1 rush TD + 1 five-yard receiving TD (PFF)", "sources": ["ESPN", "nbcsports", "PFF"]},
+  "Dak Prescott": {"pass": "316 yds, 1 TD, 2 INT", "detail": "13-yd TD to George Pickens in Q4; 2nd INT off a tipped pass in the final two minutes", "sources": ["ESPN recap", "fox4news", "dallasnews"]},
+  "Emeka Egbuka": {"rush_TD": "14-yd jet sweep, 3rd quarter", "sources": ["PFF", "ESPN", "rotowire headline"]},
+  "Tez Johnson": {"rec": "64-yd reception in the 3rd quarter", "sources": ["PFF", "bucsnation"]},
+  "Brandon Aubrey": {"FG": "41 yds made, end of 1st half", "sources": ["nfl.com video", "dallascowboys.com video"]},
+  "TB_team_rushing_yards": {"value": 241, "sources": ["PFF"], "note": "single outlet; listed here for context only"}
+ },
+ "CONFLICTING_OR_SINGLE_SOURCE (not used)": {
+  "Daniels rushing": "7 car 23 yds (NBC only)",
+  "Prescott completions": "24/42 (one summary); other summaries quote mid-game snapshots 6/15 and 9/20",
+  "Egbuka receiving": "6-9-38 (B/R) vs 5-7-36 (CBS in-game)",
+  "Otton receiving": "3-4-25 (CBS) vs 2-14 (earlier snapshot)",
+  "Godwin receiving": "3-3-37 (two summaries) -- consistent but both may be the same feed",
+  "Javonte Williams": "2-yd rush TD in Q1 (VAVEL log; dallasnews caption); full line unknown",
+  "CeeDee Lamb": "no final line found",
+  "kickers": "McLaughlin played (dallasnews caption); FG/XP totals unknown. Score arithmetic implies DAL failed one PAT/2-pt try -- UNVERIFIED"
+ }
+}
