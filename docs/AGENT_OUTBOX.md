@@ -4152,3 +4152,21 @@ It settles:
 
 Run with it: `python3.12 nfl/postgame/showdown_postgame.py nfl/postgame/showdown_tb_dal_2026W5/POSTGAME_CONFIG.json <pbp> --history <file>`.
 Until then, every contest-financial field is UNKNOWN.
+
+## 2026-10-09 14:00Z: Week 5 Classic (Sunday 1:00 ET, 8 games) -- DK DKEntries export needed
+
+**Needed for:** our own projections and every upload this week. `classic_slate_pipeline.py` reads the slate from the
+owner's DKEntries export: DK player ids, contest ids and fees, and Game Info kickoffs.
+
+**What arrived:** `draftkings_NFL_2026-week-5_players.csv` (sha256 `9da4b100…`). It is a Fantasy Cruncher export:
+- it has FC, My, Floor, Ceiling and Exp columns;
+- it has no DK ids and no kickoff times.
+
+It is preserved CONTEXT ONLY in `nfl/dfs/salaries/raw/classic_early_2026W5/`. The research boards are built from it plus
+nflverse captures, in `nfl/dfs/salaries/classic_early_2026W5/`.
+
+**Requested:** the DraftKings "Export to CSV" of the owner's Week 5 Classic entries (Early slate). That is the same
+file as `DKEntries_EARLY_ONLY_2026W4.csv` was for week 4.
+
+**Later on Sunday:** official inactives at about 11:30 ET, and confirmed starting QBs for CHI, MIN and WAS from a team
+source.
