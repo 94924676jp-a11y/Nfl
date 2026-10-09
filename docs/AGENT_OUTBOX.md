@@ -4170,3 +4170,23 @@ file as `DKEntries_EARLY_ONLY_2026W4.csv` was for week 4.
 
 **Later on Sunday:** official inactives at about 11:30 ET, and confirmed starting QBs for CHI, MIN and WAS from a team
 source.
+
+## 2026-10-09 15:45Z: Week 5 Classic -- CORRECTION to the 14:00Z entry: the DK file is needed for pricing and upload, not for projections
+
+The 14:00Z entry said the DKEntries export was "needed for our own projections". **That was wrong.**
+- The football layers needed only a player universe.
+- The one coupling was `classic_slate_state.py:216` reading the pool from the entries file.
+- That coupling is now separated: `early_only.pool` finds the pool header in DKSalaries or DKEntries alike, and
+  `nfl/tools/research_universe.py` builds a non-uploadable universe from the official roster capture.
+- Our Week 5 projections are built from that universe: 266 players, 2,000 worlds, sanity PASS
+  (`nfl/dfs/salaries/classic_early_2026W5/research_projection/`).
+
+**Still requested from the owner, unchanged:** the Week 5 Classic file from DraftKings.
+- **DKEntries.csv** is required to assign and upload lineups (`nfl/opt/classic_portfolio.py:373`,
+  `nfl/tools/classic_upload_verify.py:137`).
+- **DKSalaries.csv** alone is enough to price and optimise.
+
+**For the other agent (network):**
+1. The CHI starting QB from a team source (Williams vs Bagent; see W5-G15).
+2. The Friday injury designations for the 16 slate clubs, if the 21:30Z capture fails.
+3. Kaytron Allen (WAS): waived or not. He is still ACT in the official week 5 roster capture.
