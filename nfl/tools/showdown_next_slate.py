@@ -532,6 +532,15 @@ def final_verify(cfg, cfg_path, hashes, ver, L, P, sd, pre, env, prop_seal_ok, r
             blockers.append(f'BLOCKED_PLAYERS {b["BLOCKED"]}')
     else:
         blockers.append('FINAL_BOARD_ABSENT')
+    # ROSTER ELIGIBILITY (owner directive 2026-10-08): every uploaded player needs positive roster evidence. Fail closed.
+    from nfl.tools import showdown_run_guards as G
+    _ld = lambda k, d: json.loads((_REPO / cfg[k]).read_text()) if cfg.get(k) else d  # noqa: E731
+    eb, erep = G.upload_roster_eligibility(up, _REPO / cfg['export'],
+                                           (_REPO / cfg['roster_capture']) if cfg.get('roster_capture') else None,
+                                           int(cfg.get('season') or cfg['tag'].rsplit('_', 1)[-1][:4]),
+                                           int(cfg.get('week') or cfg['tag'].rsplit('W', 1)[-1]), _ld('official_inactives', []),
+                                           _ld('transactions', {}), _ld('elevations', []))
+    blockers += eb
     if cfg.get('rehearsal'):
         blockers.append('REHEARSAL_NOT_LIVE (kickoff and scenario are rehearsal values; never READY)')
     elif not ver.get('starters_confirmed'):

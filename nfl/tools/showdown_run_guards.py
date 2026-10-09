@@ -326,7 +326,51 @@ DISCLOSED_LIMITATION_PREFIXES = ('FOOTBALL_MODEL_INCOMPLETE_QB_ENVIRONMENT',)
 DATA_PREFIXES = ('STARTERS_NOT_CONFIRMED', 'INACTIVES_NOT_OFFICIALLY', 'INPUTS_CHANGED', 'REHEARSAL_NOT_LIVE')
 SUBSTITUTION_PREFIXES = ('SCENARIO_STATE_MISMATCH',)     # the starter-state guard on the built state
 ELIGIBILITY_PREFIXES = ('VERIFIER_VIOLATIONS', 'UNCLASSIFIED_PLAYERS', 'BLOCKED_PLAYERS', 'FINAL_BOARD_ABSENT',
-                        'UPLOAD_NOT_REPRODUCED')
+                        'UPLOAD_NOT_REPRODUCED', 'ROSTER_INELIGIBLE_IN_UPLOAD', 'ROSTER_ELIGIBILITY_UNVERIFIED')
+
+
+def upload_roster_eligibility(upload_csv, export, roster_capture, season, week, inactives=(), transactions=None,
+                              elevations=()):
+    """Release gate (owner directive 2026-10-08, TB@DAL): every player in the upload needs POSITIVE roster evidence.
+
+    Uses nfl.tools.roster_eligibility.classify (ACT, or DEV with an elevation record; everything else blocked by name).
+    Returns (blockers, report). Fails closed: no roster capture, or a capture with no rows for this week, is
+    ROSTER_ELIGIBILITY_UNVERIFIED -- silence is never eligibility. It reads the upload; it never edits a lineup.
+    """
+    import csv as _csv
+    from nfl.tools import roster_eligibility as E
+    if not roster_capture or not pathlib.Path(roster_capture).is_file():
+        return ([f'ROSTER_ELIGIBILITY_UNVERIFIED (no roster capture: {roster_capture})'],
+                {'status': 'UNVERIFIED', 'reason': 'NO_ROSTER_CAPTURE'})
+    rows = E.roster_rows(roster_capture, season, week)
+    if not rows:
+        return ([f'ROSTER_ELIGIBILITY_UNVERIFIED (roster capture has no rows for {season} week {week})'],
+                {'status': 'UNVERIFIED', 'reason': 'EMPTY_ROSTER_WEEK'})
+    pool = E.dk_pool(export)
+    res = E.classify(pool, rows, inactives or (), transactions or {}, elevations or ())
+    by_id = {i: k for k, v in pool.items() for i in v['ids']}
+    bad, n_lineups, unknown_ids = {}, 0, set()
+    for r in list(_csv.reader(open(upload_csv, encoding='utf-8-sig')))[1:]:
+        if not r or not r[0].strip().isdigit():
+            continue
+        ids = [x.strip().rsplit('(', 1)[-1].rstrip(')') for x in r[4:10]]
+        hit = False
+        for i in ids:
+            k = by_id.get(i)
+            if k is None:
+                unknown_ids.add(i)
+                hit = True
+            elif not res[k]['eligible']:
+                bad.setdefault(f'{k[0]}|{k[1]}', res[k]['reason'])
+                hit = True
+        n_lineups += hit
+    blockers = []
+    if bad or unknown_ids:
+        blockers.append(f'ROSTER_INELIGIBLE_IN_UPLOAD {n_lineups} lineup(s): '
+                        f'{sorted(bad.items())[:8]}{" unknown ids " + str(sorted(unknown_ids)[:4]) if unknown_ids else ""}')
+    return blockers, {'status': 'FAIL' if blockers else 'PASS', 'lineups_with_ineligible': n_lineups,
+                      'ineligible_players': bad, 'unknown_ids': sorted(unknown_ids),
+                      'blocked_in_pool': sorted(f'{n}|{c}' for (n, c), v in res.items() if not v['eligible'])}
 
 
 def release_classification(blockers, football_model, accounting, substitution_checked=True):

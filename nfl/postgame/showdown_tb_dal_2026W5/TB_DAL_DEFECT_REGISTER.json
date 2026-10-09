@@ -1,0 +1,182 @@
+{
+ "ARTIFACT": "TB_DAL_DEFECT_REGISTER",
+ "game": "2026_05_TB_DAL",
+ "classes": [
+  "CONFIRMED_CORRECTNESS_DEFECT",
+  "MISSING_FOOTBALL_DEPENDENCY",
+  "WEAK_STATISTICAL_MODEL",
+  "INCOMPLETE_DATA",
+  "UNVALIDATED_ASSUMPTION",
+  "DFS_OPTIMIZATION_WEAKNESS",
+  "OPERATIONAL_DEFECT",
+  "UNEXPLAINED_DISCREPANCY"
+ ],
+ "defects": [
+  {
+   "id": "D-01",
+   "class": "WEAK_STATISTICAL_MODEL",
+   "severity": "HIGH",
+   "title": "Lower tail of star-player DK distributions ~10x too thin",
+   "evidence": {
+    "empirical": "2021-2025 WR prior-mean>=20: P(<5)=0.0657 [0.0401,0.0949] (70 player-seasons, cluster bootstrap)",
+    "ours": "Lamb P(<5)=0.0045 (TB@DAL), Olave 0.005 (ATL@NO); 15-20 band real 0.104 vs Irving 0.020, J.Williams 0.015",
+    "artifact": "nfl/research/tail_calibration/STAR_DUD_RATE_2021_2025.json"
+   },
+   "affected": [
+    "nfl/tools/showdown_draws.py",
+    "nfl/tools/classic_slate_run.py (efficiency_worlds, anchor_means)",
+    "nfl/sim/game.py"
+   ],
+   "consequence": "optimizer over-trusts stars: Lamb at the 50% player cap in every contest; captain 45/190",
+   "next": "P2-3 below: player-level game-to-game volatility (share and efficiency) drawn per world; acceptance = tail PIT on held-out 2025 replay within predeclared margin"
+  },
+  {
+   "id": "D-02",
+   "class": "MISSING_FOOTBALL_DEPENDENCY",
+   "severity": "HIGH",
+   "title": "Team pass volume and pass rate are QB-independent",
+   "evidence": {
+    "daniels_starts": "W4 27 att, pass rate 0.49; W5 25 att, 0.41; Mayfield W1-3 0.60-0.67",
+    "ours": "34.6 Daniels attempts (PIT 0.11)"
+   },
+   "affected": [
+    "nfl/tools/proj_v1.py team_volume",
+    "nfl/sim/football_points.py expected_points"
+   ],
+   "next": "G step 3"
+  },
+  {
+   "id": "D-03",
+   "class": "MISSING_FOOTBALL_DEPENDENCY",
+   "severity": "MEDIUM",
+   "title": "QB rushing from generic cohort prior, starts pooled with relief",
+   "evidence": {
+    "daniels": "W4 8 car (6 scr), W5 7 car (5 scr); ours 3.33"
+   },
+   "affected": [
+    "nfl/tools/proj_v1.py _combine"
+   ],
+   "next": "G step 2"
+  },
+  {
+   "id": "D-04",
+   "class": "UNVALIDATED_ASSUMPTION",
+   "severity": "MEDIUM",
+   "title": "Target shares pooled by target count; no between-game share volatility",
+   "evidence": {
+    "lamb_weekly_share": [
+     0.267,
+     0.29,
+     0.2,
+     0.488,
+     0.119
+    ],
+    "pickens_weekly_share": [
+     0.2,
+     0.258,
+     0.275,
+     0.07,
+     0.31
+    ],
+    "ours": {
+     "lamb": 0.314,
+     "pickens": 0.163
+    }
+   },
+   "affected": [
+    "nfl/tools/proj_v1.py target_share _combine"
+   ],
+   "next": "measure share volatility by role over 2021-2025; include in D-01 repair"
+  },
+  {
+   "id": "D-05",
+   "class": "CONFIRMED_CORRECTNESS_DEFECT",
+   "severity": "HIGH",
+   "title": "Published worlds violate NFL accounting",
+   "evidence": {
+    "artifact": "nfl/dfs/salaries/showdown_tb_dal/WORLD_ACCOUNTING_OFFICIAL.json",
+    "PASS_YDS_EQ_REC_YDS": "TB 1997/2000, DAL 1928/2000",
+    "YDS_WITHOUT_CATCH": "1496/2000 worlds",
+    "REC_TD_WITHOUT_CATCH": "558/2000",
+    "INT_LE_OPP_TAKEAWAYS": "DAL 543, TB 409",
+    "POINTS_GE_6_PER_TD": "~65/club"
+   },
+   "affected": [
+    "nfl/tools/classic_slate_run.py efficiency_worlds",
+    "DST anchor step"
+   ],
+   "next": "F (isolated repair arm in progress)"
+  },
+  {
+   "id": "D-06",
+   "class": "DFS_OPTIMIZATION_WEAKNESS",
+   "severity": "HIGH",
+   "title": "No ownership/field/payout model; objective is a 0.9x-optimum hit proxy",
+   "affected": [
+    "nfl/tools/showdown_portfolio.py"
+   ],
+   "next": "P2: field simulation from captured DK ownership (needs standings exports)"
+  },
+  {
+   "id": "D-07",
+   "class": "DFS_OPTIMIZATION_WEAKNESS",
+   "severity": "MEDIUM",
+   "title": "Two 20-max contests receive identical portfolios",
+   "affected": [
+    "nfl/tools/showdown_portfolio.py"
+   ]
+  },
+  {
+   "id": "D-08",
+   "class": "OPERATIONAL_DEFECT",
+   "severity": "CRITICAL",
+   "status": "RELEASE_GATE_WIRED (final_verify) -- SELECTION NOT YET CONSUMING IT",
+   "title": "Ineligible players selectable (silence read as eligibility)",
+   "evidence": {
+    "root_cause": "showdown_slate_state.py:33 maps unnamed -> UNKNOWN_ACTIVE_STATE; roster status column never read",
+    "gate": "nfl/tools/roster_eligibility.py",
+    "test": "nfl/tests/test_roster_eligibility.py 16/16",
+    "release_gate": "showdown_run_guards.upload_roster_eligibility; test_release_roster_eligibility 12/12"
+   },
+   "next": "P0 remaining: feed the gate's blocked list into the build so the optimizer cannot select them (matched regression: runner output must equal OFFICIAL_ELIGIBILITY_FIX_R1 byte for byte); every slate config must carry roster_capture (and transactions / elevations when relayed) or the release fails closed as UNVERIFIED"
+  },
+  {
+   "id": "D-09",
+   "class": "OPERATIONAL_DEFECT",
+   "severity": "MEDIUM",
+   "title": "Research build relaxation (player cap 75->98) not disclosed prelock",
+   "evidence": {
+    "artifact": "prelock_research_sensitivity/REDIST audit relaxation_log level 2"
+   },
+   "next": "any portfolio summary must print its relaxation level; add to fc_benchmark/sensitivity tools"
+  },
+  {
+   "id": "D-10",
+   "class": "INCOMPLETE_DATA",
+   "severity": "MEDIUM",
+   "title": "Accepted entries and contest results not captured",
+   "next": "DK entry-history/standings per slate (authenticated; owner or other agent)"
+  },
+  {
+   "id": "D-11",
+   "class": "UNEXPLAINED_DISCREPANCY",
+   "severity": "MEDIUM",
+   "title": "Lamb 28.3 projected vs 2.9 (FC 22.1)",
+   "evidence": {
+    "in_game": "injury, returned Q4 6:19",
+    "efficiency_factor_rec_yards": 1.4095
+   },
+   "next": "decompose our-vs-FC gap into volume and efficiency for all WR1s across slates"
+  },
+  {
+   "id": "D-12",
+   "class": "UNVALIDATED_ASSUMPTION",
+   "severity": "MEDIUM",
+   "title": "Does disagreement with FC predict our error?",
+   "evidence": {
+    "this_game": "FC closer on 7 of 10 disagreements >=2 pts"
+   },
+   "next": "longitudinal ledger nfl/postgame/SHOWDOWN_PLAYER_GRADING_LEDGER.jsonl; test after >=8 slates, clustered by game"
+  }
+ ]
+}
