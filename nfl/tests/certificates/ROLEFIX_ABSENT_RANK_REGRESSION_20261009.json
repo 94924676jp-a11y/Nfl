@@ -1,0 +1,84 @@
+{
+ "ARTIFACT": "ROLEFIX_ABSENT_RANK_REGRESSION_RECORD",
+ "change": "nfl/tools/role_state.py _position_scoped_ranks: an absent player holds no depth rank",
+ "run_identity": {
+  "head_commit": "bf3e802f5c73d8b3cfdfd54d9adf3914ea138d21",
+  "tested_diff_sha256": "a688575c0be08d311c2ce76bbe94939fd88a9a300bd2061e12fe5f269dcd2337",
+  "untracked_test_sha256": "7b7b11465a29e7d9a97a3d3cf4d1ecee8dd7ef15122ed901811eb31f883c9b9d",
+  "pid": "3408",
+  "started_utc": "Fri Oct  9 14:42:59 2026",
+  "log": "/tmp/claude-0/-home-user-mlb-prop-system-v7/8de98087-4781-5a10-ae09-ef74590f8116/scratchpad/rolefix_suite.log",
+  "timeout_s": 7000,
+  "modules": 41
+ },
+ "tested_tree_verified_after_run": {
+  "head": "bf3e802f5c73d8b3cfdfd54d9adf3914ea138d21",
+  "role_state_diff_sha256": "a688575c0be08d311c2ce76bbe94939fd88a9a300bd2061e12fe5f269dcd2337",
+  "untracked_test_sha256": "7b7b11465a29e7d9a97a3d3cf4d1ecee8dd7ef15122ed901811eb31f883c9b9d",
+  "MATCH": true,
+  "NOTE": "the only other working-tree change after the run was nfl/dfs/salaries/DK_WEEK3_PROJECTION_SOURCE_LEDGER.json, a known suite side effect, restored with git checkout"
+ },
+ "result": {
+  "modules": 41,
+  "completed": 41,
+  "timed_out": 0,
+  "pass": 35,
+  "fail": 6,
+  "log": "nfl/tests/certificates/SUITE_LOG_ROLEFIX_ABSENT_RANK_20261009.txt",
+  "NOTE": "the run finished inside its 7000 s limit; no module timed out. test_depth_chart_vintage_selection ran far longer than its history (about 30 min against 5-6) and passed"
+ },
+ "failures_vs_baseline": {
+  "test_classic_slate_state": {
+   "now": "1 failing of 25",
+   "baseline": "1 failing (base-72ac4292 52-module run)",
+   "verdict": "IDENTICAL, pre-existing (week-4 games are now played, so the warehouse holds no unplayed W4 game)"
+  },
+  "test_football_only_arm": {
+   "now": "4 failing",
+   "baseline": "4 failing",
+   "verdict": "IDENTICAL, pre-existing"
+  },
+  "test_role_depth_adversarial": {
+   "now": "1 failing of 22",
+   "baseline": "1 failing",
+   "verdict": "IDENTICAL, pre-existing"
+  },
+  "test_v1_draw_artifact": {
+   "now": "3 failing of 116",
+   "baseline": "3 failing in full-suite runs 1790447613, 1790456387, 1790460794",
+   "verdict": "IDENTICAL, pre-existing"
+  },
+  "test_v1_rushing_a1": {
+   "now": "3 failing of 148",
+   "baseline": "3 failing in runs 1790456387, 1790460794, 1790797960",
+   "verdict": "IDENTICAL, pre-existing"
+  },
+  "test_v1_projection": {
+   "now": "1 failing of 16 (NYJ zero-interception plausibility check)",
+   "baseline": "0 failing in run 1790638463",
+   "controlled_check": "re-run on bf3e802f WITHOUT the fix in a private worktree: the same check fails identically (15 ok, 1 failing)",
+   "verdict": "NOT CAUSED BY THE FIX. Data-dependent: the check asserts the Jets have zero interceptions, and the warehouse has moved since it was written. Recorded, not loosened."
+  }
+ },
+ "new_test": {
+  "module": "nfl/tests/test_role_state_absent_rank.py",
+  "functions": 7,
+  "checks": 34,
+  "failing": 0,
+  "without_fix": "5 passed, 29 failed (the test detects the defect)",
+  "covers": [
+   "QB",
+   "RB",
+   "WR",
+   "TE",
+   "every AV.ABSENT_STATUSES value",
+   "two absences in one room",
+   "QB+RB+TE absent at one club with a TE absent at another",
+   "DOUBTFUL and UNKNOWN keep their rank",
+   "no-absence no-op",
+   "real states: Kamara ATL@NO, Braelon Allen W4 Early"
+  ],
+  "NOTE": "the 41-suite run tested the earlier 2-function version (sha 7b7b1146); the committed 7-function version is a superset, run 34/34 under run_suite.py on the same tree"
+ },
+ "verdict": "COMMIT: no new failure, and every failing module matches the accepted baseline"
+}

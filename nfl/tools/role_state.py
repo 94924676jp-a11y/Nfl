@@ -140,9 +140,14 @@ def _position_scoped_ranks(players):
     The ordering in the source is real information; only its scope was wrong. So it is preserved and
     re-indexed within each club and position.
     """
+    # AN ABSENT PLAYER HOLDS NO RANK (2026-10-09, engine dependency audit). He was ranked with everyone else, so the
+    # healthy replacement of an OUT starter was numbered 2 at his position and capped at DEPTH_RANK_2 (SECONDARY):
+    # Kamara on ATL@NO, Braelon Allen / Wicks / Ertz on the W4 Early slate. Absent rows get no projection anyway.
     buckets = {}
     for dk_id, row in players.items():
         r = row.get('depth_rank')
+        if (row.get('current_availability') or {}).get('status') in AV.ABSENT_STATUSES:
+            continue
         if isinstance(r, int):
             buckets.setdefault((row.get('team'), row.get('position')), []).append((r, dk_id))
     scoped = {}
