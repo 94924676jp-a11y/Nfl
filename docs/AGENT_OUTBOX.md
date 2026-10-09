@@ -4133,3 +4133,22 @@ the one that was accepted.
 
 **Rules.** Saved content-addressed under `nfl/dfs/salaries/raw/showdown_tb_dal_2026W5/`, nothing overwritten. Results
 are graded against predictions made before the game, and are never used to change those predictions after the fact.
+
+## 2026-10-09 05:00Z: UPDATE to the TB@DAL postgame request (game data is no longer needed)
+
+**Resolved here.** nflverse play-by-play carried game `2026_05_TB_DAL` by 04:34Z. The final (TB 24, DAL 16), every player's
+stat line and DK points are graded in `nfl/postgame/showdown_tb_dal_2026W5/TB_DAL_2026W5_POSTGAME.json`. Items 2 and 3
+of the 04:05Z request are withdrawn.
+
+**Still needed, and only an authenticated DraftKings account can produce it:** the **DK contest entry-history export**
+(the same `Entry_Key, Contest_Key, Points, Place, Contest_Entries, Entry_Fee, Winnings_*` file supplied for ATL@NO), or the
+contest standings CSVs, for contests `196438543`, `196438555`, `196438556`.
+
+It settles:
+1. which of the six frozen portfolios DraftKings actually held. Identification is by per-entry points, tested on ATL@NO
+   at 172 of 172.
+2. the real points, place, fees, winnings and net for all 190 entries.
+3. field ownership and duplication, from the standings.
+
+Run with it: `python3.12 nfl/postgame/showdown_postgame.py nfl/postgame/showdown_tb_dal_2026W5/POSTGAME_CONFIG.json <pbp> --history <file>`.
+Until then, every contest-financial field is UNKNOWN.
