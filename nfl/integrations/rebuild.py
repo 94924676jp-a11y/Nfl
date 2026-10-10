@@ -134,9 +134,11 @@ def reference_components(state_path, rows, repo=_REPO):
     else:
         inj_cut, inj_basis = st['as_of'], 'RECONSTRUCTED: lawful at the reference as-of in today\'s manifest'
     uni = None
-    for cand in (sp.parent.parent / f"RESEARCH_UNIVERSE_{st['slate_id']}.json",
-                 sp.parent.parent.parent / f"RESEARCH_UNIVERSE_{st['slate_id']}.json",
-                 sp.parent / f"RESEARCH_UNIVERSE_{st['slate_id']}.json"):
+    # The build's OWN universe record first: a parent directory can hold an older build's record (found
+    # 2026-10-10, when the planner compared the roster rebuild against Friday's universe and reported a false change).
+    for cand in (sp.parent / f"RESEARCH_UNIVERSE_{st['slate_id']}.json",
+                 sp.parent.parent / f"RESEARCH_UNIVERSE_{st['slate_id']}.json",
+                 sp.parent.parent.parent / f"RESEARCH_UNIVERSE_{st['slate_id']}.json"):
         if cand.exists():
             uni = json.loads(cand.read_text()).get('evidence', {}).get('sources')
             break

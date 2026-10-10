@@ -184,3 +184,111 @@ def test_status_page_renders_from_json_alone():
     h = MO.render_html(st)
     check('<title>Integration Status</title>' in h and 'prefers-color-scheme: dark' in h, 'page contract')
     check('c<script>' not in h and 'c&lt;script&gt;' in h, 'external text is escaped')
+
+
+def _roster_env(rows_old, rows_new):
+    from nfl.integrations import raw_slice as RS
+    d = pathlib.Path(tempfile.mkdtemp(prefix='slice_test_'))
+    raw, full = d / 'raw', d / 'full'
+    raw.mkdir(); full.mkdir()
+    hdr = 'season,team,position,status,full_name,gsis_id,week\n'
+    old = hdr + ''.join(rows_old)
+    (raw / f'{RS.STEM}.{"0" * 16}.slate16.csv.gz').write_bytes(gzip.compress(old.encode()))
+    new = hdr + ''.join(rows_new)
+    sha = hashlib.sha256(new.encode()).hexdigest()
+    (full / f'weekly_rosters.{sha[:16]}.csv').write_text(new)
+    man = d / 'manifest.jsonl'
+    man.write_text(json.dumps({'source': 'weekly_rosters', 'state': 'PASS', 'capture_id': '20261010T074137Z',
+                               'value': {'sha256': sha}}) + '\n')
+    return RS, raw, full, man, sha
+
+
+def test_roster_slice_refresh_keeps_slate_clubs_and_supersedes_the_old_slice():
+    old = ['2026,WAS,RB,ACT,Kaytron Allen,00-1,5\n', '2026,MIA,WR,ACT,X,00-2,5\n']
+    new = ['2026,MIA,RB,ACT,Kaytron Allen,00-1,5\n', '2026,MIA,WR,ACT,X,00-2,5\n', '2026,DAL,QB,ACT,Y,00-3,5\n']
+    RS, raw, full, man, sha = _roster_env(old, new)
+    o = RS.refresh(raw, manifest=man, full_dir=full, now='T')
+    check(o.code == 'RAW_SLICE_REFRESHED', f'refreshed: {o.code} {o.detail}')
+    cur = list(raw.glob(f'{RS.STEM}.*.csv.gz'))
+    check(len(cur) == 1 and sha[:16] in cur[0].name, 'exactly one slice, named by the full file sha')
+    text = gzip.decompress(cur[0].read_bytes()).decode()
+    check('MIA,RB,ACT,Kaytron Allen' in text and 'DAL' not in text, 'kept the slate clubs only, with the move')
+    check(len(list((raw / 'superseded').glob('*.csv.gz'))) == 1, 'the old slice is kept under superseded/')
+    pv = json.loads((raw / 'PROVENANCE.json').read_text())
+    check(pv['slice_refreshes'][-1]['full_file_sha256'] == sha, 'provenance records the source sha')
+    o2 = RS.refresh(raw, manifest=man, full_dir=full)
+    check(o2.code == 'RAW_SLICE_UNCHANGED', f'a second refresh is a no-op: {o2.code}')
+
+
+def test_roster_slice_refuses_a_full_file_that_does_not_match_its_manifest_row():
+    RS, raw, full, man, sha = _roster_env(['2026,WAS,RB,ACT,A,00-1,5\n'], ['2026,WAS,RB,ACT,A,00-1,5\n'])
+    p = next(full.glob('*.csv'))
+    p.write_text(p.read_text() + 'tampered\n')
+    o = RS.refresh(raw, manifest=man, full_dir=full)
+    check(o.code == 'RAW_SLICE_FULL_FILE_SHA_MISMATCH', f'tampered full file refused: {o.code}')
+
+
+def _synthetic_dk(mutate=None):
+    """A DKSalaries file built from the real W5 research universe, so identities map exactly."""
+    from nfl.tools import research_universe as RU
+    u = RU.build('2026W5', _REPO / 'nfl/dfs/salaries/raw/classic_early_2026W5').value
+    rp = {'QB': 'QB', 'RB': 'RB/FLEX', 'WR': 'WR/FLEX', 'TE': 'TE/FLEX', 'DST': 'DST'}
+    lines = ['Position,Name + ID,Name,ID,Roster Position,Salary,Game Info,TeamAbbrev,AvgPointsPerGame']
+    for i, r in enumerate(u):
+        rec = {'pos': r['dk_pos'], 'name': r['dk_name'], 'id': str(40000000 + i), 'rp': rp[r['dk_pos']],
+               'sal': '4000', 'game': f"{r['away']}@{r['home']} {r['kickoff']}", 'team': r['team']}
+        if mutate:
+            rec = mutate(rec)
+            if rec is None:
+                continue
+        lines.append(f"{rec['pos']},{rec['name']} ({rec['id']}),{rec['name']},{rec['id']},{rec['rp']},{rec['sal']},"
+                     f"{rec['game']},{rec['team']},0")
+    return '\n'.join(lines) + '\n'
+
+
+def _pool_check(text):
+    from nfl.integrations import dk_pool_check as PC
+    d, kw = _env()
+    IB.ingest_file(_drop(d, 'DKSalaries.csv', text), **kw)
+    st = json.loads((_REPO / 'nfl/dfs/salaries/classic_early_2026W5/research_projection/'
+                     'rebuild_2026-10-10_designations/STATE.json').read_text())
+    return PC.check('2026W5', raw_dir=_REPO / 'nfl/dfs/salaries/raw/classic_early_2026W5', state=st,
+                    inbox_rows=IB.ledger_rows(kw['ledger']))
+
+
+def test_dk_pool_check_passes_a_clean_pool_and_blocks_out_players():
+    o = _pool_check(_synthetic_dk())
+    check(o.code == 'DK_POOL_CHECK_PASSED', f'clean synthetic pool passes: {o.code} {o.detail}')
+    up = {p['dk_name']: p for p in o.value}
+    check(up['Breece Hall']['upload'] == 'BLOCKED' and 'NOT_PLAYING_OUT' in up['Breece Hall']['reasons'],
+          'an Out player is blocked from upload')
+    check(up['Garrett Wilson']['upload'] == 'ELIGIBLE_PENDING_INACTIVES', 'others wait on inactives, never plain eligible')
+
+
+def test_dk_pool_check_names_each_failure():
+    def extra_game(r):
+        return dict(r, game='DAL@NYG 10/11/2026 01:00PM ET') if r['name'] == 'Garrett Wilson' else r
+    o = _pool_check(_synthetic_dk(extra_game))
+    check(o.code == 'DK_POOL_CHECK_FAILED' and not o.evidence['checks']['GAMES_MATCH_SLATE']['pass'],
+          'a game outside the slate fails GAMES_MATCH_SLATE')
+    def renamed(r):
+        return dict(r, name='Garrett Wilsonn') if r['name'] == 'Garrett Wilson' else r
+    o = _pool_check(_synthetic_dk(renamed))
+    um = o.evidence['checks']['IDENTITY_MAPPED']['unmatched']
+    check(o.code == 'DK_POOL_CHECK_FAILED' and um and um[0]['dk_name'] == 'Garrett Wilsonn',
+          'an unmatched name is listed, never fuzzy-matched')
+    def bad_pos(r):
+        return dict(r, rp='FLEX') if r['name'] == 'Garrett Wilson' else r
+    o = _pool_check(_synthetic_dk(bad_pos))
+    check(not o.evidence['checks']['POSITIONS_LEGAL']['pass'], 'an illegal roster position fails POSITIONS_LEGAL')
+
+
+def test_reference_reads_the_builds_own_universe_record_before_a_parents():
+    d = pathlib.Path(tempfile.mkdtemp(prefix='ref_test_'))
+    (d / 'build').mkdir()
+    st = {'as_of': '2026-10-10T15:00:00Z', 'slate_id': 'T', 'export': 'RESEARCH_UNIVERSE', 'depth': {'qb_chart': {}}}
+    (d / 'build' / 'STATE.json').write_text(json.dumps(st))
+    (d / 'RESEARCH_UNIVERSE_T.json').write_text(json.dumps({'evidence': {'sources': {'roster': {'sha256': 'old'}}}}))
+    (d / 'build' / 'RESEARCH_UNIVERSE_T.json').write_text(json.dumps({'evidence': {'sources': {'roster': {'sha256': 'own'}}}}))
+    ref = RB.reference_components(d / 'build' / 'STATE.json', [])
+    check(ref['raw_dir_sources']['roster']['sha256'] == 'own', f"own record preferred: {ref['raw_dir_sources']}")

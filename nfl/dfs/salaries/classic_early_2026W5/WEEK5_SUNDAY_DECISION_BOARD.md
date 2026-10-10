@@ -1,5 +1,9 @@
 # Week 5 Classic (Sunday 1:00 ET, 8 games): decision board, refreshed Saturday 2026-10-10 07:45Z on the Friday designations
 
+**Superseded for planning by `WEEK5_SATURDAY_DECISION_BOARD.md` (2026-10-10 ~15:15Z):** injury scenarios for every
+consequential Questionable starter, the CHI quarterback comparison, the redistribution and roster audits, and the
+inactives plan. The projection of record is now `research_projection/rebuild_2026-10-10_roster/`.
+
 **Readiness: NOT READY to produce entered Classic portfolios.** Two things are missing:
 - the DraftKings salary file (none in `nfl/dfs/inbox/drop/` at 07:45Z);
 - the Sunday inactives, about 90 minutes before kickoff. Until then, a Questionable player is **unresolved, not

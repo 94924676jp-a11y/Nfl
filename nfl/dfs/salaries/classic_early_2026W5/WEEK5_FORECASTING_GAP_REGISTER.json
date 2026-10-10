@@ -1,6 +1,6 @@
 {
  "ARTIFACT": "WEEK5_FORECASTING_GAP_REGISTER",
- "as_of_utc": "2026-10-09",
+ "as_of_utc": "2026-10-10T15:15:00Z",
  "items": [
   {
    "id": "W5-G1",
@@ -186,6 +186,22 @@
    "class": "RESEARCH_RESULT",
    "status": "opponent adjustment FAILS preregistered bar (nfl/research/opponent_adjustment)",
    "finding": "unplanned: own-team baseline over-reacts to club history (held-out slopes 0.59-0.67)"
+  },
+  {
+   "id": "W5-G22",
+   "class": "ENGINE_DEFECT",
+   "status": "OPEN; not repaired (unvalidated before Sunday)",
+   "finding": "When a running back is absent, his carries are redistributed to every carrier at his club, including the quarterback. Measured 2026-10-10: Shough +2.11 carries (Kamara out), Maye +1.13 (Stevenson out), C. Williams +1.53 (Monangai Out), Geno Smith +2.06 (Hall Out). An RB absence does not create QB designed runs.",
+   "effect": "QB DK points lean high by roughly 1-2 in RB-out cases",
+   "evidence": "research_projection/scenarios_2026-10-10/SCENARIO_ANALYSIS.json; saturday_audit/REDISTRIBUTION_AUDIT.json"
+  },
+  {
+   "id": "W5-G23",
+   "class": "DATA_FRESHNESS",
+   "status": "MITIGATED by nfl/integrations/raw_slice.py; root cause INT-G1 open",
+   "finding": "The research universe read a Thursday roster slice. On 2026-10-10 it still had Kaytron Allen on WAS (waived W03, now MIA ACT) and lacked Pierre Strong (GB, DEV to ACT) and Bryce Oliver (HOU).",
+   "effect": "max 1.09 DK points; identity and club wrong for 3 players until refreshed",
+   "evidence": "saturday_audit/ROSTER_AUDIT.json; research_projection/rebuild_2026-10-10_roster/COMPARE_TO_DESIGNATIONS_BUILD.json"
   }
  ],
  "engine_dependency_audit_2026-10-09": {

@@ -4222,3 +4222,15 @@ Need: the current text of each clause, with its URL, the retrieval time, and a q
 4. **Fantasy Cruncher Terms.** The robots and scrapers clause, and whether the CSV exports need a paid plan.
 
 None of this is a request to fetch the pages' data. Read the terms only.
+
+## OUT-045 — Sunday 2026-10-11 official inactives for the eight 1:00 ET games, at 15:30Z
+
+Need, for CHI@GB, CIN@MIA, LV@NE, MIN@NO, CLE@NYJ, IND@PIT, HOU@TEN and NYG@WAS: each club's official inactive list
+as published at or after 15:30Z (club site or league release), with URL, retrieval time and the names verbatim. These
+are relayed evidence (tier OFFICIAL_TEAM_RELEASE_CITED or OWNER_RELAYED), never OFFICIAL_CAPTURED.
+
+Most consequential, in order: Caleb Williams (CHI QB), Ashton Jeanty (LV RB), Ja'Marr Chase and Tee Higgins (CIN),
+Justin Jefferson (MIN), Terry McLaurin (WAS), Carnell Tate (TEN), Alvin Kamara (NO), Rhamondre Stevenson (NE).
+The scenario for each outcome is precomputed (`nfl/dfs/salaries/classic_early_2026W5/WEEK5_SATURDAY_DECISION_BOARD.md`).
+
+Also, if visible: the date of Kaytron Allen's waiver by WAS and signing by MIA (roster codes W03, then ACT with MIA).
