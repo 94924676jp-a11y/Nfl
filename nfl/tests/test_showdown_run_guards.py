@@ -15,6 +15,14 @@ from nfl.tools import availability as AV  # noqa: E402
 from nfl.tools import showdown_run_guards as G  # noqa: E402
 
 PASSED = FAILED = 0
+BLOCKED = 0
+
+
+def _blocked(label, why):
+    """A check that could not run: counted as BLOCKED by run_suite, never as a pass."""
+    global BLOCKED
+    BLOCKED += 1
+    print(f'  BLOCKED {label} -- {why}')
 R = _REPO / 'nfl/dfs/salaries/raw/showdown_tb_dal_2026W5'
 D = _REPO / 'nfl/dfs/salaries/showdown_tb_dal'
 ABS = tuple(AV.ABSENT_STATUSES) + ('OUT',)
@@ -163,12 +171,19 @@ def test_football_model_completeness():
     check(G.football_model_status(st('Q2'), panel, 4.0)['status'] == 'INCOMPLETE_QB_ENVIRONMENT',
           'a starter whose club environment is another QB\'s is INCOMPLETE (QB change not modelled)')
     from nfl.tools import player_prior as PP, proj_v1 as PV
-    real = PP.load_panel().value
+    po = PP.load_panel()
+    if po.state.value != 'PASS':
+        # 2026-10-10: a missing git-ignored usage panel raised TypeError here; it is an environment gap, named
+        # (nfl/tools/test_env_check.py says what is missing and how to rebuild it), never a result
+        return _blocked('real TB@DAL states', f'usage panel {po.state.value}[{po.code}]')
+    real = po.value
     for scen, want in (('PRECOMPUTE_TBQB_DANIELS_R7', 'INCOMPLETE_QB_ENVIRONMENT'), ('PRECOMPUTE_TBQB_MAYFIELD_R4', 'COMPLETE_FOR_STARTERS')):
         p = D / scen / 'SHOWDOWN_TB_DAL_2026W5_STATE.json'
-        if p.is_file():
-            got = G.football_model_status(json.loads(p.read_text()), real, PV.TEAM_VOLUME_PRIOR_GAMES)['status']
-            check(got == want, f'{scen}: {got}')
+        if not p.is_file():
+            _blocked(scen, f'{p.relative_to(_REPO)} absent')    # was a silent skip
+            continue
+        got = G.football_model_status(json.loads(p.read_text()), real, PV.TEAM_VOLUME_PRIOR_GAMES)['status']
+        check(got == want, f'{scen}: {got}')
 
 
 if __name__ == '__main__':

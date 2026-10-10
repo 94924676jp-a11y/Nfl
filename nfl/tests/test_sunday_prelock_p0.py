@@ -29,11 +29,26 @@ def check(ok, msg):
     print('  ok  ' if ok else '  FAIL', msg)
 
 
+BLOCKED = 0
+
+
+def _blocked(label, why):
+    """A check that could not run, counted apart and never as a pass (nfl/tests/run_suite.py BLOCKED FUNCTIONS).
+    Before 2026-10-10 a missing git-ignored input made these functions raise TypeError (a refused state build
+    subscripted as if it had passed); a fresh worktree then looked like a regression. Run
+    `python3.12 nfl/tools/test_env_check.py` to see what is missing and how to reproduce it."""
+    global BLOCKED
+    BLOCKED += 1
+    print(f'  BLOCKED {label} -- {why}')
+
+
 def _state(with_packet):
+    """The 2026W5 research-universe state, or None (with the refusal recorded) when the environment lacks an input."""
     if with_packet not in _CACHE:
         u = RU.build('2026W5', RAW)
         pk = SE.load(PKT).value if with_packet else None
-        _CACHE[with_packet] = CS.build('2026W5', as_of=AS_OF, research_universe=u, evidence_packet=pk).value['players']
+        o = CS.build('2026W5', as_of=AS_OF, research_universe=u, evidence_packet=pk)
+        _CACHE[with_packet] = (o.value['players'] if o.state.value == 'PASS' else None, f'{o.state.value}[{o.code}]')
     return _CACHE[with_packet]
 
 
@@ -43,7 +58,9 @@ def _row(P, name, team):
 
 
 def test_admitted_starter_defeats_the_chart_without_inactivating_the_incumbent():
-    before, after = _state(False), _state(True)
+    (before, why), (after, _) = _state(False), _state(True)
+    if before is None or after is None:
+        return _blocked('admitted starter', f'state build refused: {why} (environment, not a result)')
     w0, b0 = _row(before, 'Caleb Williams', 'CHI'), _row(before, 'Tyson Bagent', 'CHI')
     check(w0['depth_rank'] == 1 and b0['depth_rank'] == 2, 'before: the chart starts Williams (the defect case)')
     w1, b1 = _row(after, 'Caleb Williams', 'CHI'), _row(after, 'Tyson Bagent', 'CHI')
@@ -72,17 +89,22 @@ def test_a_transferred_player_carries_no_other_clubs_usage():
     a0 = _row(before_guard, 'Kaytron Allen', 'MIA')
     check(a0['depth_usage_rank'] == 3 and (a0['observed_2026'] or {}).get('club') == 'WAS',
           'before: MIA row ranked by WAS usage (the defect case, frozen build)')
-    a1 = _row(_state(True), 'Kaytron Allen', 'MIA')
+    P, why = _state(True)
+    if P is None:
+        return _blocked('transfer guard', f'state build refused: {why} (environment, not a result)')
+    a1 = _row(P, 'Kaytron Allen', 'MIA')
     check(a1['club_transfer'] and a1['club_transfer']['usage_club'] == 'WAS', 'after: the transfer is recorded')
     check(a1['depth_usage_rank'] is None and a1['observed_2026'] == {} and a1['depth_detail'] == {},
           'after: no WAS usage rank, observed share or depth detail at MIA')
-    others = [p for p in _state(True).values() if p.get('club_transfer')]
+    others = [p for p in P.values() if p.get("club_transfer")]
     check([p['name'] for p in others] == ['Kaytron Allen'], f'only the transferred player is touched: {[p["name"] for p in others]}')
 
 
 
 def test_the_state_keeps_the_secondary_injury():
-    P = _state(True)
+    P, why = _state(True)
+    if P is None:
+        return _blocked('secondary injury', f'state build refused: {why} (environment, not a result)')
     j, k = _row(P, 'Ashton Jeanty', 'LV'), _row(P, 'Keenan Allen', 'IND')
     check(j['current_availability']['injury'] == 'Ankle' and j['current_availability']['injury_secondary'] == 'Foot',
           f"Jeanty Ankle + Foot: {j['current_availability']['injury']}, {j['current_availability']['injury_secondary']}")
