@@ -4249,3 +4249,23 @@ captured bytes or text, URL, retrieval time and sha256.
 
 Sunday: OUT-045 stands (16 club lists at or after 15:30Z). Paste format and commands are in
 `docs/sunday_executor/SUNDAY_INACTIVES_EXECUTOR_AUDIT_2026-10-10.md` §4.
+
+## OUT-047 — before Sunday lock: five DK names our roster capture does not hold, and the CHI starter conflict
+
+1. **Five DK Early Only pool players appear in no weekly roster capture** we hold, for any week of 2026. The newest full
+   capture on disk is `weekly_rosters` from 20261010T074137Z. Need each player's current club, status (ACT/RES/DEV/…) and
+   gsis_id from a fresh weekly-roster or transactions pull, with capture id and sha256:
+   - Audric Estime (MIN RB, $4,000)
+   - Mitch Tinsley (CIN WR, $3,300)
+   - River Cracraft (WAS WR, $3,000)
+   - Scotty Miller (CHI WR, $3,000)
+   - Drew Ogletree (IND TE, $2,500)
+
+   Until then each is upload-BLOCKED as IDENTITY_UNMAPPED, and the pool check fails on them by rule
+   (`classic_audit_2026-10-10/DK_POOL_CHECK.json`). Also verify Tim Patrick (NYJ): our week-5 capture says RES, while the
+   owner's newest Fantasy Cruncher export projects him at 5.5.
+2. **CHI quarterback.** The owner's newest Fantasy Cruncher export (ingested 2026-10-10) lists Caleb Williams as QB1 at 23.5
+   and Tyson Bagent at 0.0. The previous FC export had Bagent at 13.1. Our projection starts Bagent from the Bears release
+   relayed by the owner (packet `2026W5-owner-20261010-chi-starter`). FC is a discovery signal, not evidence. Need: any
+   Bears or league statement after 2026-10-09 that changes the starter (URL, time, verbatim text), or a capture of the
+   2026-10-09 release (OUT-046 item 1) confirming it still stands.
