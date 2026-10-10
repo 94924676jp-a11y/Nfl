@@ -285,14 +285,18 @@ def build_status(slate_id, *, raw_dir, reference_state, now=None, rows=None, inb
         missing.append({'what': 'Files in the drop folder not yet ingested', 'status': 'WAITING', 'files': waiting})
     approvals = [dict(d, kind='INTEGRATION') for d in MX.OWNER_DECISIONS]
     approvals += [
-        {'id': 'SUN-1', 'kind': 'SLATE', 'question': 'Who starts at QB for CHI (Caleb Williams DNP)?',
-         'why': 'No official designation captured; the board carries a Bagent scenario.',
-         'ref': 'nfl/dfs/salaries/classic_early_2026W5/WEEK5_SUNDAY_DECISION_BOARD.md'},
+        {'id': 'SUN-1', 'kind': 'SLATE', 'question': 'Apply the proj_v1 current-club share patch (W5-G24)?',
+         'why': 'A transferred player still gets old-club carry share in the allocator (Kaytron Allen ~0.10 DK); '
+                'editing proj_v1 breaks the recorded SC-APPEAR-1 replay pin, so it is your call.',
+         'ref': 'docs/sunday_executor/proj_v1_current_club_shares.PROPOSED.patch'},
         {'id': 'SUN-2', 'kind': 'MODEL', 'question': 'DST mean: follow simulated events or the projection anchor?',
          'why': 'Decision 2 follow-up; the bounded fix is built and disabled.',
          'ref': 'nfl/research/dst_scoring/'},
-        {'id': 'SUN-3', 'kind': 'FILE', 'question': 'Drop DKSalaries.csv for the Sunday Early classic slate '
-                                                     '(and DKEntries.csv once entered).',
+        {'id': 'SUN-4', 'kind': 'FILE', 'question': 'Paste the 16 official inactive lists at or after 15:30Z Sunday.',
+         'why': 'No automated executor is verified for the window; the coverage gate blocks until all 16 clubs are in.',
+         'ref': 'docs/sunday_executor/SUNDAY_INACTIVES_EXECUTOR_AUDIT_2026-10-10.md'},
+        {'id': 'SUN-3', 'kind': 'FILE', 'question': 'Drop DKSalaries.csv for the Sunday EARLY ONLY 8-game Classic '
+                                                     'slate (not the main slate); DKEntries only once entered.',
          'why': 'DK ids and salaries come only from the owner\'s manual export.', 'ref': 'nfl/dfs/inbox/drop/'},
     ]
     return {

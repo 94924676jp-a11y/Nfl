@@ -79,3 +79,11 @@ def test_a_transferred_player_carries_no_other_clubs_usage():
     others = [p for p in _state(True).values() if p.get('club_transfer')]
     check([p['name'] for p in others] == ['Kaytron Allen'], f'only the transferred player is touched: {[p["name"] for p in others]}')
 
+
+
+def test_the_state_keeps_the_secondary_injury():
+    P = _state(True)
+    j, k = _row(P, 'Ashton Jeanty', 'LV'), _row(P, 'Keenan Allen', 'IND')
+    check(j['current_availability']['injury'] == 'Ankle' and j['current_availability']['injury_secondary'] == 'Foot',
+          f"Jeanty Ankle + Foot: {j['current_availability']['injury']}, {j['current_availability']['injury_secondary']}")
+    check(k['current_availability']['injury_secondary'] == 'Groin', 'Keenan Allen keeps Groin behind the rest day')

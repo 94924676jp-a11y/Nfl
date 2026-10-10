@@ -1,6 +1,6 @@
 {
  "ARTIFACT": "WEEK5_FORECASTING_GAP_REGISTER",
- "as_of_utc": "2026-10-10T15:15:00Z",
+ "as_of_utc": "2026-10-10T19:00:00Z",
  "items": [
   {
    "id": "W5-G1",
@@ -202,6 +202,28 @@
    "finding": "The research universe read a Thursday roster slice. On 2026-10-10 it still had Kaytron Allen on WAS (waived W03, now MIA ACT) and lacked Pierre Strong (GB, DEV to ACT) and Bryce Oliver (HOU).",
    "effect": "max 1.09 DK points; identity and club wrong for 3 players until refreshed",
    "evidence": "saturday_audit/ROSTER_AUDIT.json; research_projection/rebuild_2026-10-10_roster/COMPARE_TO_DESIGNATIONS_BUILD.json"
+  },
+  {
+   "id": "W5-G24",
+   "class": "ENGINE_DEFECT",
+   "status": "OPEN; fix PROPOSED (docs/sunday_executor/proj_v1_current_club_shares.PROPOSED.patch), owner approval needed because editing proj_v1 breaks the SC-APPEAR-1 replay pin",
+   "finding": "proj_v1.current_season_shares divides a player's 2026 counts by his CURRENT club's team totals, including weeks he played for another club, contrary to its own docstring. Kaytron Allen's WAS carries become a 0.185 MIA carry share.",
+   "effect": "with the state-level transfer guard in place: about 0.10 DK on Allen (0.70 vs 0.60 with the patch); any future transfer would carry old-club volume",
+   "evidence": "research_projection/rebuild_2026-10-10_prelock (Allen basis.carry_share current_value 0.1846); runs/w5_prelock_2026-10-10/WITH_PROJ_V1_PATCH"
+  },
+  {
+   "id": "W5-G25",
+   "class": "OPERATIONS",
+   "status": "OPEN; automated route needs OD-1/OD-4; manual fallback rehearsed",
+   "finding": "No automated executor is verified for the 10-11 final inactives: main's T-90 schedule is week 1 (last run 2026-09-15), the periodic capture runs every 4-6 h, and no in-window inactives capture has succeeded since week 1 (W2/W3 DEFERRED no rows, W4 none).",
+   "evidence": "docs/sunday_executor/SUNDAY_INACTIVES_EXECUTOR_AUDIT_2026-10-10.md"
+  },
+  {
+   "id": "W5-G26",
+   "class": "OPERATIONS",
+   "status": "FIXED 2026-10-10 (fd25431f)",
+   "finding": "sunday_paste.py read only the production state path, which a research-universe slate never writes; the Sunday fallback would have failed. Now takes --state and records per-club receipt times; inactives_coverage.py gates all 16 clubs.",
+   "evidence": "rehearsal 2026W5-REHEARSAL-20261010"
   }
  ],
  "engine_dependency_audit_2026-10-09": {

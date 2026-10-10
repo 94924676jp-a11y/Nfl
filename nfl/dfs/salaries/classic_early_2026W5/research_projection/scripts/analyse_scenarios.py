@@ -96,6 +96,45 @@ def compare(base, scen, club, subj_names):
             'movers': sorted(movers, key=lambda m: -abs(m['delta']))}
 
 
+ABSENT = ('REPORTED_OUT_UNVERIFIED', 'REPORTED_INACTIVE_OFFICIAL_RELEASE_CITED', 'REPORTED_INACTIVE_HIGH_CONFIDENCE',
+          'CONFIRMED_INACTIVE')
+
+
+def propagation(sd, scen, names, club, base_team, qb_starts=None):
+    """Each absent player through state -> role -> projection -> worlds, plus team and starter checks."""
+    pj, st, S, F, keys, dk, meta, pts, dr = scen
+    roles = json.loads((sd / 'ROLE_STATE.json').read_text())['states']
+    rows, ok = [], True
+    for nm in names:
+        k = next(k for k, p in st['players'].items() if p['name'] == nm)
+        p, r, q = st['players'][k], roles.get(k, {}), pj.get(k, {})
+        rec = {'name': nm, 'state_status': p['current_availability']['status'],
+               'role_state': r.get('state'), 'role_band': r.get('role_band'),
+               'projection_state': q.get('projection_state'), 'dk_points': q.get('dk_points'),
+               'in_worlds': wkey(p) in keys}
+        rec['pass'] = (rec['state_status'] in ABSENT and rec['role_state'] == 'NOT_PLAYING'
+                       and str(rec['projection_state']).startswith('NOT_PLAYING') and not rec['dk_points']
+                       and not rec['in_worlds'])
+        ok &= rec['pass']
+        rows.append(rec)
+    team = club_summary(pj, S, F, keys, dk, meta, pts, club)
+    tol = {'pass_att': 1.5, 'carries': 1.5, 'targets': 1.5}
+    recon = {f: {'base': base_team[f], 'scenario': team[f], 'pass': abs(team[f] - base_team[f]) <= t}
+             for f, t in tol.items()}
+    idx = {kk: i for i, kk in enumerate(keys)}
+    qbs = sorted(((r['name'], round(float(S[idx[wkey(r)], :, F['pass_att']].mean()), 2)) for r in pj.values()
+                  if r['team'] == club and r['position'] == 'QB' and wkey(r) in idx), key=lambda x: -x[1])
+    starters = [q for q in qbs if q[1] >= 15]
+    single = len(starters) == 1 and (qb_starts is None or starters[0][0] == qb_starts)
+    arm = dr.get('market_arm')
+    out = {'absent_players': rows, 'team_reconciliation_vs_base': recon,
+           'qb_pass_attempts': qbs, 'single_starter_workload': single,
+           'market_arm': arm, 'forbidden_source_check': 'PASS' if arm == 'FOOTBALL_ONLY' else f'CHECK: {arm}',
+           'optimizer_stage': 'BLOCKED_NO_DK_POOL (research-universe ids are never uploadable; no portfolio stage reads them)'}
+    out['pass'] = ok and all(v['pass'] for v in recon.values()) and single and arm == 'FOOTBALL_ONLY'
+    return out
+
+
 def main():
     sd, wd, out = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2]), pathlib.Path(sys.argv[3])
     spec = json.loads((sd / 'SPEC.json').read_text())
@@ -109,9 +148,11 @@ def main():
         ro = json.loads((d / 'RUN_OUTCOME.json').read_text())
         sc = load(d, wd / s['label'])
         names = s['out']
-        club = next(r['team'] for r in base[0].values() if r['name'] == names[0])
+        club = next(r['team'] for r in base[0].values() if r['name'] == (names[0] if names else s.get('qb_starts')))
         r = compare(base, sc, club, set(names) | ({s['qb_starts']} if s.get('qb_starts') else set()))
-        r.update(run=f"{ro['state']}[{ro['code']}] {ro['detail']}", out=names, qb_starts=s.get('qb_starts'), why=s['why'])
+        r.update(run=f"{ro['state']}[{ro['code']}] {ro['detail']}", out=names, qb_starts=s.get('qb_starts'), why=s['why'],
+                 receipt=ro.get('receipt'))
+        r['propagation'] = propagation(d, sc, names, club, r['team_active_case'], s.get('qb_starts'))
         res['scenarios'][s['label']] = r
     out.write_text(json.dumps(res, indent=1) + '\n')
     for lab, r in res['scenarios'].items():

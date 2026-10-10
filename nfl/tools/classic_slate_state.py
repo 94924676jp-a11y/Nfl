@@ -381,6 +381,8 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
                 'status': status, 'tier': tier, 'designation': designation if ir is not None else None,
                 'practice_status': (ir or {}).get('practice_status'),
                 'injury': (ir or {}).get('report_primary_injury'),
+                # the secondary body part is part of the record (Jeanty: Ankle, Foot; Keenan Allen: rest, Groin)
+                'injury_secondary': (ir or {}).get('report_secondary_injury') or None,
                 'resolution': resolution,
                 'IS_NOT': ('a game-day inactive decision unless the status is CONFIRMED_INACTIVE, '
                            'which requires a captured official document'),
