@@ -98,17 +98,28 @@ def current_components(slate_id, as_of, raw_dir, rows, inbox_rows, repo=_REPO):
 
 
 def dk_pool_for_slate(slate_id, inbox_rows):
-    """The newest ingested CLASSIC DK salary file whose kickoffs include the slate's kickoff, or None."""
+    """The newest ingested CLASSIC DK pool whose kickoffs include the slate's kickoff, or None.
+
+    The pool may arrive in a DKSalaries file or in the pool block DK writes beside a DKEntries export
+    (early_only.pool reads either, finding the header by its own cells). Only the pool is taken from an
+    entries file; `carrier` says which file supplied it.
+    """
     from nfl.dfs.salaries import early_only as EO
     kick = EO.SLATES.get(slate_id, {}).get('kickoff')
     best = None
     for r in inbox_rows:
+        if r.get('state') != 'PASS':
+            continue
         s = r.get('summary') or {}
-        if (r.get('kind') == 'DK_SALARIES' and r.get('state') == 'PASS' and s.get('game_type') == 'CLASSIC'
-                and kick in (s.get('kickoffs') or [])):
+        if r.get('kind') == 'DK_ENTRIES':
+            s = s.get('pool') or {}
+        elif r.get('kind') != 'DK_SALARIES':
+            continue
+        if s.get('game_type') == 'CLASSIC' and kick in (s.get('kickoffs') or []):
             if best is None or r['ingested_at'] > best['ingested_at']:
                 best = r
-    return {'sha256': best['sha256'], 'blob': best['blob'], 'original_name': best['original_name']} if best else None
+    return ({'sha256': best['sha256'], 'blob': best['blob'], 'original_name': best['original_name'],
+             'carrier': best['kind']} if best else None)
 
 
 def reference_components(state_path, rows, repo=_REPO):
@@ -265,8 +276,11 @@ def execute(slate_id, *, as_of, raw_dir, out, n_sims=2000, inbox_rows=None, ledg
         if lo.state.value != 'PASS':
             return lo
         pk = lo.value
-    st = (CS.build(slate_id, as_of=as_of, research_universe=universe, evidence_packet=pk) if universe is not None
-          else CS.build(slate_id, as_of=as_of, evidence_packet=pk))
+    # write=False in both arms: a rebuild lives only in its own --out directory. Priced on a DK pool, the
+    # state builder would otherwise also write the PRODUCTION state path, which the portfolio stages read;
+    # promoting a rebuild there is a separate, deliberate step, never a side effect of rebuilding.
+    st = (CS.build(slate_id, as_of=as_of, research_universe=universe, evidence_packet=pk, write=False)
+          if universe is not None else CS.build(slate_id, as_of=as_of, evidence_packet=pk, write=False))
     if st.state.value != 'PASS':
         (out / 'STATE_REFUSAL.json').write_text(json.dumps({'code': st.code, 'detail': st.detail,
                                                             'evidence': st.evidence}, indent=1, default=str))
@@ -286,6 +300,7 @@ def execute(slate_id, *, as_of, raw_dir, out, n_sims=2000, inbox_rows=None, ledg
         out_rel = str(out)
     rec = {'spec_version': SPEC_VERSION, 'slate_id': slate_id, 'as_of': as_of, 'state': o.state.value,
            'code': o.code, 'out': out_rel, 'n_sims': n_sims, 'pool': 'DK_SALARIES' if pool else 'RESEARCH_UNIVERSE',
+           'pool_ref': pool,
            'components': dict(comp, evidence_packet=({'path': str(evidence_packet), 'sha256': pk['_sha256']}
                                                       if pk else None)),
            'built_at': dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')}

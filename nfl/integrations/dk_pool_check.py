@@ -14,9 +14,20 @@ Checks, each a named result:
   SALARIES_PARSE           every salary is a positive integer
   IDS_UNIQUE               no DK id twice (the inbox already refuses a duplicate; repeated here as a guard)
   IDENTITY_MAPPED          every non-DST DK player maps to exactly one research-universe player by
-                           normalised name + club; the unmatched are listed, never guessed. A DK row whose
-                           name exists only on ANOTHER club (a transfer DK has not caught up with, or the
-                           reverse) is IDENTITY_TEAM_CONFLICT and fails the pool: SUN_INVALID_DK_POOL
+                           normalised name + club, then by a declared alias, then by stripping a declared
+                           generational suffix (the production resolver's own rule, proj_v1.py
+                           resolve_slate_identities: 'Aaron Jones Sr.' is the roster's 'Aaron Jones'). The
+                           unmatched are listed, never guessed. A DK row whose name exists only on ANOTHER
+                           club (a transfer DK has not caught up with, or the reverse) is
+                           IDENTITY_TEAM_CONFLICT and fails the pool: SUN_INVALID_DK_POOL. A name the
+                           week's roster capture does not hold at all is IDENTITY_UNMAPPED and fails it.
+                           EXPLAINED BY THE ROSTER, NOT IDENTITY FAILURES: DK prices players our universe
+                           rightly leaves out. Each is blocked from upload with the roster's own reason and
+                           does not fail the pool:
+                             NOT_ON_ACTIVE_ROSTER     the week's row is RES/DEV/EXE/CUT/... (status kept)
+                             NON_SKILL_POSITION       active, but a long snapper or other non-skill role
+                             ABSENT_FROM_WEEK_ROSTER  on this club in an earlier week, no row this week:
+                                                      status UNKNOWN, never read as inactive
   UPLOAD_ELIGIBILITY       per player: BLOCKED when the state says he is not playing (Out), when the roster audit
                            marks his history unresolved, or when his identity is unmapped. Everyone else is
                            ELIGIBLE_PENDING_INACTIVES, never simply eligible, until the official inactives arrive.
@@ -36,6 +47,32 @@ if str(_REPO) not in sys.path:
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 
 LEGAL = {'QB': {'QB'}, 'RB': {'RB/FLEX'}, 'WR': {'WR/FLEX'}, 'TE': {'TE/FLEX'}, 'DST': {'DST'}}
+#: Declared, copied from proj_v1.resolve_slate_identities (that module is hash-pinned and is not edited):
+#: stripping a known generational suffix is the same name, not a similarity search.
+SUFFIXES = (' jr', ' sr', ' ii', ' iii', ' iv', ' v')
+SKILL = {'QB', 'RB', 'FB', 'WR', 'TE'}
+FAILS_POOL = {'IDENTITY_TEAM_CONFLICT', 'IDENTITY_AMBIGUOUS', 'IDENTITY_UNMAPPED'}
+
+
+def _strip_suffix(n):
+    for suf in SUFFIXES:
+        if n.endswith(suf):
+            return n[: -len(suf)].strip()
+    return n
+
+
+def _week_roster(universe_evidence, week):
+    """{(stripped normalised name, club): [rows]} from the roster capture the universe itself read."""
+    import csv
+    import gzip
+    from nfl.tools.sim_query import norm_name
+    f = ((universe_evidence.get('sources') or {}).get('roster') or {}).get('file')
+    out = collections.defaultdict(list)
+    if not f:
+        return out
+    for r in csv.DictReader(gzip.open(_REPO / f, 'rt')):
+        out[(_strip_suffix(norm_name(r['full_name'])), r['team'])].append(r)
+    return out
 
 
 def check(slate_id, *, raw_dir, state, inbox_rows=None, roster_audit=None) -> Outcome:
@@ -72,27 +109,63 @@ def check(slate_id, *, raw_dir, state, inbox_rows=None, roster_audit=None) -> Ou
     u = RU.build(slate_id, raw_dir)
     if u.state.value != 'PASS':
         return u
+    try:
+        from nfl.tools.availability import NAME_ALIASES
+    except Exception:
+        NAME_ALIASES = {}
     uk = collections.defaultdict(list)
+    uk_stripped = collections.defaultdict(list)
     by_name = collections.defaultdict(set)
     for r in u.value:
         if r['dk_pos'] != 'DST':
             uk[(norm_name(r['dk_name']), r['team'])].append(r)
-            by_name[norm_name(r['dk_name'])].add(r['team'])
+            uk_stripped[(_strip_suffix(norm_name(r['dk_name'])), r['team'])].append(r)
+            by_name[_strip_suffix(norm_name(r['dk_name']))].add(r['team'])
+    week = u.evidence.get('week')
+    roster = _week_roster(u.evidence, week)
     by_state = {(norm_name(p['name']), p['team']): p for p in state['players'].values()}
     unresolved = {(norm_name(x['name']), x['team']) for x in ((roster_audit or {}).get('unresolved') or [])}
     players, unmatched = [], []
+    explained, how_matched = [], collections.Counter()
     for r in rows:
         key = (norm_name(r['dk_name']), r['team'])
         reasons = []
         if r['dk_pos'] != 'DST':
-            m = uk.get(key, [])
-            if len(m) != 1:
-                other = sorted(by_name.get(key[0], set()) - {r['team']})
-                code = ('IDENTITY_TEAM_CONFLICT' if not m and other else
-                        'IDENTITY_UNMAPPED' if not m else 'IDENTITY_AMBIGUOUS')
+            m, how = uk.get(key, []), 'EXACT_NAME'
+            alias = NAME_ALIASES.get((r['dk_name'], r['team']))
+            if not m and alias:
+                m, how = uk.get((norm_name(alias), r['team']), []), 'DECLARED_ALIAS'
+            if not m:
+                m, how = uk_stripped.get((_strip_suffix(key[0]), r['team']), []), 'SUFFIX_NORMALISED'
+            if len(m) == 1:
+                how_matched[how] += 1
+                key = (norm_name(m[0]['dk_name']), m[0]['team'])
+            else:
+                sk = (_strip_suffix(key[0]), r['team'])
+                wk = [x for x in roster.get(sk, []) if str(x.get('week')) == str(week)]
+                earlier = [x for x in roster.get(sk, []) if str(x.get('week')) != str(week)]
+                other = sorted(by_name.get(sk[0], set()) - {r['team']})
+                if m:
+                    code = 'IDENTITY_AMBIGUOUS'
+                elif other:
+                    code = 'IDENTITY_TEAM_CONFLICT'
+                elif wk and wk[-1].get('status') != 'ACT':
+                    code = 'NOT_ON_ACTIVE_ROSTER'
+                elif wk and wk[-1].get('position') not in SKILL:
+                    code = 'NON_SKILL_POSITION'
+                elif not wk and earlier:
+                    code = 'ABSENT_FROM_WEEK_ROSTER'
+                else:
+                    code = 'IDENTITY_UNMAPPED'
                 reasons.append(code)
-                unmatched.append({'dk_name': r['dk_name'], 'team': r['team'], 'pos': r['dk_pos'], 'n_matches': len(m),
-                                  'code': code, 'roster_club': other or None})
+                rec = {'dk_name': r['dk_name'], 'team': r['team'], 'pos': r['dk_pos'], 'salary': r['salary'],
+                       'n_matches': len(m), 'code': code, 'roster_club': other or None,
+                       'week_roster_status': wk[-1].get('status') if wk else None,
+                       'week_roster_position': wk[-1].get('position') if wk else None,
+                       'last_seen': (max(earlier, key=lambda x: int(x['week'])).get('status') + ' week '
+                                     + max(earlier, key=lambda x: int(x['week']))['week']) if earlier and not wk
+                                    else None}
+                (unmatched if code in FAILS_POOL else explained).append(rec)
             st = (by_state.get(key) or {}).get('current_availability') or {}
             if st.get('designation') == 'OUT' or 'INACTIVE' in str(st.get('status')):
                 reasons.append('NOT_PLAYING_OUT')
@@ -101,7 +174,9 @@ def check(slate_id, *, raw_dir, state, inbox_rows=None, roster_audit=None) -> Ou
         players.append({'dk_id': r['dk_id'], 'dk_name': r['dk_name'], 'team': r['team'], 'pos': r['dk_pos'],
                         'salary': r['salary'],
                         'upload': 'BLOCKED' if reasons else 'ELIGIBLE_PENDING_INACTIVES', 'reasons': reasons})
-    res['IDENTITY_MAPPED'] = {'pass': not unmatched, 'unmatched': unmatched}
+    res['IDENTITY_MAPPED'] = {'pass': not unmatched, 'unmatched': unmatched, 'matched_by': dict(how_matched),
+                              'explained_by_roster': explained,
+                              'explained_counts': dict(collections.Counter(x['code'] for x in explained))}
     counts = collections.Counter(x['upload'] for x in players)
     passed = all(v if isinstance(v, bool) else v['pass'] for v in res.values())
     ev = dict(checks=res, dk_file=pool_ref, n_rows=len(rows), upload_counts=dict(counts), players=players,

@@ -16,6 +16,10 @@ RECOGNISED KINDS (the signatures are the files' own columns):
                          read from the roster positions (`CPT` means Showdown).
   DK_ENTRIES             first row carries `Entry ID, Contest Name, Contest ID, Entry Fee`.
                          ACCOUNT_PRIVATE: the owner's entries and fees. Read only, never re-uploaded.
+                         DK writes the contest's whole player pool beside the entries (the same columns
+                         as DKSalaries, at column 15). When that block is present it is summarised
+                         exactly as a DKSalaries file is (`summary.pool`) and may supply the slate's
+                         pool; the entry lineups never do, because they name only nine players each.
   DK_CONTEST_STANDINGS   first row carries `Rank, EntryId, EntryName, Points, Lineup` and the
                          ownership block `Player, Roster Position, %Drafted, FPTS`. POSTLOCK ONLY:
                          realised ownership is never available before lock and is labelled so.
@@ -45,7 +49,7 @@ if str(_REPO) not in sys.path:
 
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 
-SPEC_VERSION = 'inbox-1'
+SPEC_VERSION = 'inbox-2'   # 2: a DKEntries file's pool block is summarised (summary.pool)
 DROP = _REPO / 'nfl' / 'dfs' / 'inbox' / 'drop'
 STORE = _REPO / 'nfl' / 'dfs' / 'inbox' / 'store'
 LEDGER = _REPO / 'nfl' / 'dfs' / 'inbox' / 'INBOX_LEDGER.jsonl'
@@ -159,9 +163,17 @@ def _dk_entries_summary(rows):
         return Outcome.blocked('INBOX_DK_ENTRIES_EMPTY', 'the entries header parsed and no entry rows follow it',
                                cause=Cause.DATA)
     has_pool = any(_has_run(_cells(r), DK_POOL_COLS) is not None for r in rows[:12])
-    return Outcome.ok('INBOX_SUMMARY', value={
-        'n_entries': len(ent), 'n_contests': len({e.get('Contest ID') for e in ent}),
-        'contest_ids': sorted({e.get('Contest ID') for e in ent}), 'carries_player_pool': has_pool})
+    out = {'n_entries': len(ent), 'n_contests': len({e.get('Contest ID') for e in ent}),
+           'contest_ids': sorted({e.get('Contest ID') for e in ent}), 'carries_player_pool': has_pool}
+    if has_pool:
+        # The pool block is judged by the same rules as a DKSalaries file. A block that fails them is
+        # recorded as refused, never as "no pool": the entries themselves are still ingested.
+        ps = _dk_salaries_summary(rows)
+        if ps.state.value == 'PASS':
+            out['pool'] = ps.value
+        else:
+            out['pool_refused'] = {'code': ps.code, 'detail': ps.detail}
+    return Outcome.ok('INBOX_SUMMARY', value=out)
 
 
 def _standings_summary(rows, original_name):

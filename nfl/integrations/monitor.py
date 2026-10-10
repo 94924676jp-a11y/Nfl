@@ -114,8 +114,12 @@ def connections(rows, now, inbox_rows, slate_id):
             lr = max(ks, key=lambda r: r['ingested_at']) if ks else None
             status = 'MANUAL_FILE_PRESENT' if lr else 'AWAITING_OWNER_EXPORT'
             if m['inbox_kind'] == 'DK_SALARIES':
-                status = 'MANUAL_FILE_PRESENT' if RB.dk_pool_for_slate(slate_id, inbox_rows) else (
+                pref = RB.dk_pool_for_slate(slate_id, inbox_rows)
+                status = 'MANUAL_FILE_PRESENT' if pref else (
                     'AWAITING_OWNER_EXPORT' if not lr else 'PRESENT_BUT_NOT_THIS_SLATE')
+                if pref:
+                    # the pool may be the block inside a DKEntries export; name the file that supplied it
+                    lr = next(r for r in inbox_rows if r.get('sha256') == pref['sha256'] and r.get('state') == 'PASS')
             out.append({'id': m['id'], 'capability': m['capability'], 'provider': m['provider'],
                         'access': m['access'], 'status': status,
                         'last_success_utc': lr['ingested_at'] if lr else None,

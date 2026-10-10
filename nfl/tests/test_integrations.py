@@ -326,3 +326,42 @@ def test_inactives_coverage_requires_every_club_inside_its_window():
     o = IC.judge(st, reh)
     check(o.code == 'SUN_INACTIVES_COVERAGE_INCOMPLETE' and all(r['verdict'] == 'REHEARSAL_NOT_EVIDENCE'
                                                                 for r in o.evidence['clubs']), 'a rehearsal certifies nothing')
+
+
+def test_a_dkentries_pool_block_supplies_the_pool_and_the_lineups_never_do():
+    from nfl.integrations import rebuild as RBD
+    d, kw = _env()
+    pad = ',' * 14
+    ent_pool = ('Entry ID,Contest Name,Contest ID,Entry Fee,QB,RB,RB,WR,WR,WR,TE,FLEX,DST,,Instructions\n'
+                '4400001,NFL $5 (Early Only),190001,$5,Caleb Williams (1001),,,,,,,,,,1. Column A\n'
+                + pad + 'Position,Name + ID,Name,ID,Roster Position,Salary,Game Info,TeamAbbrev,AvgPointsPerGame\n'
+                + ''.join(pad + ln + '\n' for ln in SAL.splitlines()[1:]))
+    o = IB.ingest_file(_drop(d, 'DKEntries.csv', ent_pool), **kw)
+    s = o.value['summary']
+    check(o.value['kind'] == 'DK_ENTRIES' and o.value['privacy'] == 'ACCOUNT_PRIVATE', 'still entries, still private')
+    check(s['carries_player_pool'] and s['pool']['n_players'] == 3 and s['pool']['game_type'] == 'CLASSIC',
+          f"the pool block is summarised as a salary file is: {s.get('pool')}")
+    ref = RBD.dk_pool_for_slate('2026W5', IB.ledger_rows(kw['ledger']))
+    check(ref and ref['carrier'] == 'DK_ENTRIES' and ref['sha256'] == o.value['sha256'], f'the pool is found: {ref}')
+    d2, kw2 = _env()
+    IB.ingest_file(_drop(d2, 'x.csv', ENT), **kw2)
+    check(RBD.dk_pool_for_slate('2026W5', IB.ledger_rows(kw2['ledger'])) is None,
+          'an entries file with no pool block supplies no pool: lineups are never a pool')
+
+
+def test_dk_pool_check_separates_roster_exclusions_from_identity_failures():
+    def suffixed(r):
+        return dict(r, name='Garrett Wilson Jr.') if r['name'] == 'Garrett Wilson' else r
+    text = _synthetic_dk(suffixed)
+    # A.J. Brown is on NE's week-5 roster as RES (reserve) in the capture the universe reads; DK prices him anyway.
+    text += 'WR,A.J. Brown (49999001),A.J. Brown,49999001,WR/FLEX,5000,LV@NE 10/11/2026 01:00PM ET,NE,0\n'
+    o = _pool_check(text)
+    im = o.evidence['checks']['IDENTITY_MAPPED']
+    up = {p['dk_name']: p for p in o.evidence['players']}
+    check(o.code == 'DK_POOL_CHECK_PASSED' and im['matched_by'].get('SUFFIX_NORMALISED', 0) >= 1,
+          f"a declared generational suffix is the same name, as in the production resolver: {o.code} {im['matched_by']}")
+    check(up['Garrett Wilson Jr.']['upload'] == 'ELIGIBLE_PENDING_INACTIVES', 'the suffixed player is the same player')
+    ex = {x['dk_name']: x for x in im['explained_by_roster']}
+    check(ex.get('A.J. Brown', {}).get('code') == 'NOT_ON_ACTIVE_ROSTER' and ex['A.J. Brown']['week_roster_status'] == 'RES'
+          and up['A.J. Brown']['upload'] == 'BLOCKED',
+          f"a reserve-list player is blocked with the roster's reason and does not fail the pool: {ex.get('A.J. Brown')}")
