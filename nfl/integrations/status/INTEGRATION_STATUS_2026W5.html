@@ -20,10 +20,10 @@ th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;le
 code{font-size:13px}
 </style></head><body><main>
 <h1>Integration status: 2026W5</h1>
-<p class="sub">Generated 2026-10-09T20:25:02Z from the capture manifest and the inbox ledger. Reference build as of 2026-10-09T20:13:49Z. READ_ONLY_RESEARCH and ACCOUNT_DATA_READ only. No login, entry, upload, wager or payment.</p>
+<p class="sub">Generated 2026-10-10T07:47:42Z from the capture manifest and the inbox ledger. Reference build as of 2026-10-10T07:44:19Z. READ_ONLY_RESEARCH and ACCOUNT_DATA_READ only. No login, entry, upload, wager or payment.</p>
 <div class="grid">
-<div class="card"><div class="k ok">6</div><div class="l">sources connected or present</div></div>
-<div class="card"><div class="k warn">6</div><div class="l">need attention</div></div>
+<div class="card"><div class="k ok">4</div><div class="l">sources connected or present</div></div>
+<div class="card"><div class="k warn">8</div><div class="l">need attention</div></div>
 <div class="card"><div class="k">7</div><div class="l">owner decisions</div></div>
 <div class="card"><div class="k ok">No</div><div class="l">rebuild needed</div></div>
 </div>
@@ -37,26 +37,27 @@ code{font-size:13px}
 <tr><td>SUN-3</td><td>Drop DKSalaries.csv for the Sunday Early classic slate (and DKEntries.csv once entered).</td><td>DK ids and salaries come only from the owner&#x27;s manual export.</td><td>nfl/dfs/inbox/drop/</td></tr>
 </table></div>
 <h2>Missing information</h2><div class="card"><ul>
+<li><span class="s warn">STALE</span> Official injury report page</li>
 <li><span class="s info">DEFERRED_NOT_PUBLISHED</span> Official game-day inactives — expected: published about 90 minutes before kickoff</li>
+<li><span class="s warn">STALE</span> ESPN injuries JSON</li>
 <li><span class="s bad">BLOCKED</span> Transactions (signings, IR, elevations)</li>
 <li><span class="s warn">STALE</span> Play-by-play and player game stats</li>
 <li><span class="s warn">AWAITING_OWNER_EXPORT</span> DK player ids and salaries</li>
 <li><span class="s warn">AWAITING_OWNER_EXPORT</span> Owner&#x27;s entries (entry ids, contests, fees)</li>
 <li><span class="s warn">AWAITING_OWNER_EXPORT</span> FC projections (benchmark only)</li>
 <li><span class="s warn">AWAITING_OWNER_EXPORT</span> Contest standings and realised ownership</li>
-<li><span class="s info">NOT_YET_IN_CAPTURE</span> Game designations (Friday report) in the captured injury file — nflverse refreshes injuries daily at 07:00 UTC; Friday designations arrive Saturday at the earliest.</li>
 <li><span class="s ">UNKNOWN_NO_DK_SALARIES</span> Missing players: No DK salary export for this slate has been dropped. Missing-player counts are UNKNOWN, not zero. Projections run on the research universe meanwhile.</li>
 </ul></div>
 <h2>Connections</h2><div class="card wrap"><table><tr><th>Capability</th><th>Provider</th><th>Route class</th><th>Decision</th><th>Status</th><th>Last success (UTC)</th><th>Last content change</th><th>Age h</th></tr>
-<tr><td>Schedule and kickoff times</td><td>nflverse</td><td>FULLY_AUTOMATED</td><td></td><td><span class="s ok">CONNECTED</span></td><td>2026-10-09T19:21:03Z</td><td>2026-10-09T19:21:03Z</td><td>1.1</td></tr>
-<tr><td>Weekly rosters (status ACT/RES/DEV)</td><td>nflverse</td><td>FULLY_AUTOMATED</td><td></td><td><span class="s ok">CONNECTED</span></td><td>2026-10-09T19:21:03Z</td><td>2026-10-09T19:21:03Z</td><td>1.1</td></tr>
-<tr><td>Depth charts</td><td>nflverse (ESPN-sourced since 2025)</td><td>FULLY_AUTOMATED</td><td></td><td><span class="s ok">CONNECTED</span></td><td>2026-10-09T19:21:03Z</td><td>2026-10-09T19:21:03Z</td><td>1.1</td></tr>
-<tr><td>Injury report (practice participation, game designation)</td><td>nflverse</td><td>FULLY_AUTOMATED</td><td></td><td><span class="s ok">CONNECTED</span></td><td>2026-10-09T19:21:03Z</td><td>2026-10-09T19:21:03Z</td><td>1.1</td></tr>
-<tr><td>Official injury report page</td><td>NFL.com</td><td>PROHIBITED_OR_UNSUPPORTED</td><td>OD-1</td><td><span class="s ok">CONNECTED</span></td><td>2026-10-09T15:27:11Z</td><td>2026-10-09T15:27:11Z</td><td>5.0</td></tr>
-<tr><td>Official game-day inactives</td><td>NFL.com</td><td>PROHIBITED_OR_UNSUPPORTED</td><td>OD-1</td><td><span class="s info">DEFERRED_NOT_PUBLISHED</span></td><td>2026-09-17T23:41:00Z</td><td>2026-09-17T23:41:00Z</td><td>524.7</td></tr>
-<tr><td>ESPN injuries JSON</td><td>ESPN (undocumented API)</td><td>PROHIBITED_OR_UNSUPPORTED</td><td>OD-2</td><td><span class="s ok">CONNECTED</span></td><td>2026-10-09T15:27:11Z</td><td>2026-10-09T15:27:11Z</td><td>5.0</td></tr>
+<tr><td>Schedule and kickoff times</td><td>nflverse</td><td>FULLY_AUTOMATED</td><td></td><td><span class="s ok">CONNECTED</span></td><td>2026-10-10T07:41:37Z</td><td>2026-10-10T07:41:37Z</td><td>0.1</td></tr>
+<tr><td>Weekly rosters (status ACT/RES/DEV)</td><td>nflverse</td><td>FULLY_AUTOMATED</td><td></td><td><span class="s ok">CONNECTED</span></td><td>2026-10-10T07:41:37Z</td><td>2026-10-10T07:41:37Z</td><td>0.1</td></tr>
+<tr><td>Depth charts</td><td>nflverse (ESPN-sourced since 2025)</td><td>FULLY_AUTOMATED</td><td></td><td><span class="s ok">CONNECTED</span></td><td>2026-10-10T07:41:37Z</td><td>2026-10-10T07:41:37Z</td><td>0.1</td></tr>
+<tr><td>Injury report (practice participation, game designation)</td><td>nflverse</td><td>FULLY_AUTOMATED</td><td></td><td><span class="s ok">CONNECTED</span></td><td>2026-10-10T07:41:37Z</td><td>2026-10-10T07:41:37Z</td><td>0.1</td></tr>
+<tr><td>Official injury report page</td><td>NFL.com</td><td>PROHIBITED_OR_UNSUPPORTED</td><td>OD-1</td><td><span class="s warn">STALE</span></td><td>2026-10-09T15:27:11Z</td><td>2026-10-09T15:27:11Z</td><td>16.3</td></tr>
+<tr><td>Official game-day inactives</td><td>NFL.com</td><td>PROHIBITED_OR_UNSUPPORTED</td><td>OD-1</td><td><span class="s info">DEFERRED_NOT_PUBLISHED</span></td><td>2026-09-17T23:41:00Z</td><td>2026-09-17T23:41:00Z</td><td>536.1</td></tr>
+<tr><td>ESPN injuries JSON</td><td>ESPN (undocumented API)</td><td>PROHIBITED_OR_UNSUPPORTED</td><td>OD-2</td><td><span class="s warn">STALE</span></td><td>2026-10-09T15:27:11Z</td><td>2026-10-09T15:27:11Z</td><td>16.3</td></tr>
 <tr><td>Transactions (signings, IR, elevations)</td><td>nflverse rosters (derived)</td><td>FULLY_AUTOMATED</td><td></td><td><span class="s bad">BLOCKED</span></td><td></td><td></td><td></td></tr>
-<tr><td>Play-by-play and player game stats</td><td>nflverse (NFL GSIS)</td><td>FULLY_AUTOMATED</td><td></td><td><span class="s warn">STALE</span></td><td>2026-09-17T19:00:50Z</td><td>2026-09-17T19:00:50Z</td><td>529.4</td></tr>
+<tr><td>Play-by-play and player game stats</td><td>nflverse (NFL GSIS)</td><td>FULLY_AUTOMATED</td><td></td><td><span class="s warn">STALE</span></td><td>2026-09-17T19:00:50Z</td><td>2026-09-17T19:00:50Z</td><td>540.8</td></tr>
 <tr><td>Snap counts</td><td>nflverse (Pro Football Reference-sourced)</td><td>FULLY_AUTOMATED</td><td></td><td><span class="s info">WATCH_ONLY</span></td><td></td><td></td><td></td></tr>
 <tr><td>Route participation / charting</td><td>nflverse (FTN, CC-BY-SA)</td><td>PROHIBITED_OR_UNSUPPORTED</td><td></td><td><span class="s info">WATCH_ONLY</span></td><td></td><td></td><td></td></tr>
 <tr><td>DK player ids and salaries</td><td>DraftKings</td><td>MANUAL_EXPORT</td><td></td><td><span class="s warn">AWAITING_OWNER_EXPORT</span></td><td></td><td></td><td></td></tr>
@@ -65,9 +66,9 @@ code{font-size:13px}
 <tr><td>Contest standings and realised ownership</td><td>DraftKings</td><td>MANUAL_EXPORT</td><td></td><td><span class="s warn">AWAITING_OWNER_EXPORT</span></td><td></td><td></td><td></td></tr>
 </table></div>
 <h2>Quarterbacks</h2><div class="card wrap"><table><tr><th>Club</th><th>Projected QB1</th><th>Newest chart QB1 / QB2</th><th>Injury report</th><th>Flags</th></tr>
-<tr><td>CHI</td><td>Caleb Williams</td><td>Caleb Williams / Tyson Bagent</td><td>Caleb Williams: Did Not Participate In Practice</td><td><span class="s ">QB_MISSED_PRACTICE</span></td></tr>
+<tr><td>CHI</td><td>Caleb Williams</td><td>Caleb Williams / Tyson Bagent</td><td>Caleb Williams: Limited Participation in Practice / Questionable</td><td><span class="s ">QB_GAME_DESIGNATION_FILED</span></td></tr>
 <tr><td>CIN</td><td>Joe Burrow</td><td>Joe Burrow / Joe Flacco</td><td>none filed</td><td>—</td></tr>
-<tr><td>CLE</td><td>Deshaun Watson</td><td>Deshaun Watson / Shedeur Sanders</td><td>Dillon Gabriel: Full Participation in Practice</td><td>—</td></tr>
+<tr><td>CLE</td><td>Deshaun Watson</td><td>Deshaun Watson / Shedeur Sanders</td><td>Dillon Gabriel: Full Participation in Practice / Out</td><td><span class="s ">QB_GAME_DESIGNATION_FILED</span></td></tr>
 <tr><td>GB</td><td>Jordan Love</td><td>Jordan Love / Tyrod Taylor</td><td>none filed</td><td>—</td></tr>
 <tr><td>HOU</td><td>C.J. Stroud</td><td>C.J. Stroud / Davis Mills</td><td>none filed</td><td>—</td></tr>
 <tr><td>IND</td><td>Daniel Jones</td><td>Daniel Jones / Anthony Richardson</td><td>none filed</td><td>—</td></tr>
@@ -80,7 +81,7 @@ code{font-size:13px}
 <tr><td>NYJ</td><td>Geno Smith</td><td>Geno Smith / Cade Klubnik</td><td>none filed</td><td>—</td></tr>
 <tr><td>PIT</td><td>Aaron Rodgers</td><td>Aaron Rodgers / Mason Rudolph</td><td>none filed</td><td>—</td></tr>
 <tr><td>TEN</td><td>Cam Ward</td><td>Cam Ward / Mitchell Trubisky</td><td>none filed</td><td>—</td></tr>
-<tr><td>WAS</td><td>Jayden Daniels</td><td>Jayden Daniels / Marcus Mariota</td><td>Marcus Mariota: Did Not Participate In Practice; Jayden Daniels: Full Participation in Practice</td><td><span class="s ">QB_MISSED_PRACTICE</span></td></tr>
+<tr><td>WAS</td><td>Jayden Daniels</td><td>Jayden Daniels / Marcus Mariota</td><td>Marcus Mariota: Did Not Participate In Practice / Out; Jayden Daniels: Full Participation in Practice</td><td><span class="s ">QB_GAME_DESIGNATION_FILED</span> <span class="s ">QB_MISSED_PRACTICE</span></td></tr>
 </table></div>
 <h2>Rebuild</h2><div class="card"><p><span class="s ">NO_CHANGE</span> every consumed input matches the reference: [&#x27;depth_charts&#x27;, &#x27;injuries&#x27;, &#x27;official_inactives&#x27;, &#x27;raw_dir&#x27;, &#x27;dk_pool&#x27;]</p><ul>
 </ul></div>

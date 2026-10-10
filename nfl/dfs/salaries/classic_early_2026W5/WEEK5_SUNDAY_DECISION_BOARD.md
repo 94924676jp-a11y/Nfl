@@ -1,13 +1,76 @@
-# Week 5 Classic (Sunday 1:00 ET, 8 games): decision board, refreshed Friday 2026-10-09 ~19:45Z; checked 21:31Z
+# Week 5 Classic (Sunday 1:00 ET, 8 games): decision board, refreshed Saturday 2026-10-10 07:45Z on the Friday designations
 
-**Readiness: NOT READY to produce entered Classic portfolios.** Three things are missing:
-- the DraftKings salary file (none in `nfl/dfs/inbox/drop/` at 21:31Z);
-- the official Friday designations. They are still not in the nflverse injury file at 21:30Z (byte-identical to the
-  08:16Z capture). nflverse refreshes injuries daily at 07:00 UTC, so they cannot arrive there before **Saturday
-  07:00Z**. The NFL.com page is unreachable from this executor. Until they arrive, every player is undesignated, and
-  undesignated is not inactive;
-- a starter decision for CHI (see A1). No designation for Caleb Williams has been captured. Chart QB1 is still
-  Williams (QB2 Bagent), and his practice line is DNP.
+**Readiness: NOT READY to produce entered Classic portfolios.** Two things are missing:
+- the DraftKings salary file (none in `nfl/dfs/inbox/drop/` at 07:45Z);
+- the Sunday inactives, about 90 minutes before kickoff. Until then, a Questionable player is **unresolved, not
+  inactive**.
+
+## Saturday 07:45Z: the Friday designations are in, and the projection is rebuilt on them
+
+**Source.** nflverse injuries capture `20261010T074137Z` (`injuries.b440d6d8b06300da`), with game designations for all
+16 slate clubs: 51 Out, 2 Doubtful, 56 Questionable, all positions. **Rebuild:**
+`research_projection/rebuild_2026-10-10_designations/`, as of 07:44:19Z, 251 players × 2,000 worlds, football sanity
+PASS. Its comparison with Friday's rebuild is in `COMPARE_TO_2026-10-09_REBUILD.json`. The depth charts and rosters
+also refreshed.
+
+**Ruled Out, now projected at zero** (Friday projection in brackets):
+
+| Club | Players |
+|---|---|
+| NYJ | Breece Hall (15.00), Adonai Mitchell (8.09) |
+| WAS | Stefon Diggs (11.53) |
+| MIA | Caleb Douglas (9.63) |
+| PIT | Michael Pittman (7.97) |
+| CHI | Kyle Monangai (7.61) |
+| NE | Mack Hollins (7.06) |
+| LV | Jalen Nailor (5.18) |
+| GB | Chris Brooks (1.25) |
+| IND | Ashton Dulin (1.05) |
+
+**Replacements that moved up:**
+
+| Player | Club | Change | Move |
+|---|---|---|---|
+| Braelon Allen | NYJ | +5.84 (4.72 → 10.57) | to RB1 |
+| Isaiah Davis | NYJ | +4.94 | |
+| Antonio Williams | WAS | +3.86 (to 7.96) | |
+| Isaiah Williams | NYJ | +3.86 | |
+| Roman Wilson | PIT | +3.61 | |
+| Garrett Wilson | NYJ | +3.59 (to 19.59) | |
+| Roschon Johnson | CHI | +3.36 | |
+| D'Andre Swift | CHI | +2.89 (to 19.74) | |
+| Chris Bell | MIA | +2.45 | |
+| Treylon Burks | WAS | +2.30 | |
+| Terry McLaurin | WAS | +1.92 (to 15.45) | |
+
+64 players moved by 0.25 points or more, or changed state; the summed absolute change is 149.3 points.
+
+**Questionable (17 skill players).** The engine projects every one of them as playing. The tag carries no discount, so
+each number is conditional on him being active. Those with the most at stake:
+
+| Player | Club | Friday practice | Projection | Scenario on this board |
+|---|---|---|---|---|
+| Caleb Williams | CHI | Limited | 23.31 | Bagent scenario (A1) |
+| Ashton Jeanty | LV | **DNP** | 19.65 | **none** |
+| Ja'Marr Chase | CIN | Full | 18.70 | Chase-out scenario |
+| Tee Higgins | CIN | Full | 16.77 | |
+| Justin Jefferson | MIN | Limited | 16.55 | |
+| Terry McLaurin | WAS | Limited | 15.45 | McLaurin-out scenario |
+| Carnell Tate | TEN | Limited | 14.98 | |
+| Alvin Kamara | NO | Limited | 14.29 | |
+| Rhamondre Stevenson | NE | Limited | 13.47 | |
+
+The scenario runs in §2 were made before the designations, so read their deltas as approximate.
+
+**CHI (W5-G15).** Caleb Williams is **Questionable** after a limited Friday practice; he is not ruled out. The chart
+still has Williams QB1 and Bagent QB2, and the engine starts Williams. The Bagent scenario stays the alternative until
+the inactives.
+
+**Roster.** Kaytron Allen (WAS RB) reads CUT in the Friday 19:21Z roster and ACT again in the Saturday roster. The
+player list carries him as ACT. Four practice-squad players were cut; they were already excluded.
+
+**The rest of this board** (§1–§8, written Friday) predates the designations. Where a number below disagrees with this
+section, this section is current.
 
 **Refresh log, Friday evening.**
 - **~20:13Z rebuild on newly synced captures** (`research_projection/rebuild_2026-10-09/`; see
@@ -23,7 +86,7 @@
 - **21:30Z check.** Injuries, rosters and depth charts are unchanged; only the schedule file changed, and the
   projection does not read it. The rebuild planner reports NO_CHANGE, so the boards were not rebuilt.
 
-Our independent projections exist (266 players, 2,000 worlds), but **eleven player numbers are unreliable** (§3) and the
+Friday's projections (266 players, 2,000 worlds) had **eleven player numbers flagged unreliable** (§3) and the
 simulated worlds carry five known unrepaired defects (§6). Nothing here recommends a lineup or a wager. FC is a
 benchmark only.
 
