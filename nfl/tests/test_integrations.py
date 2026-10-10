@@ -292,3 +292,37 @@ def test_reference_reads_the_builds_own_universe_record_before_a_parents():
     (d / 'build' / 'RESEARCH_UNIVERSE_T.json').write_text(json.dumps({'evidence': {'sources': {'roster': {'sha256': 'own'}}}}))
     ref = RB.reference_components(d / 'build' / 'STATE.json', [])
     check(ref['raw_dir_sources']['roster']['sha256'] == 'own', f"own record preferred: {ref['raw_dir_sources']}")
+
+
+def test_dk_pool_check_names_a_cross_team_identity_conflict():
+    def stale_team(r):
+        return dict(r, team='WAS', game='NYG@WAS 10/11/2026 01:00PM ET') if r['name'] == 'Kaytron Allen' else r
+    o = _pool_check(_synthetic_dk(stale_team))
+    um = {u['dk_name']: u for u in o.evidence['checks']['IDENTITY_MAPPED']['unmatched']}
+    check(o.code == 'DK_POOL_CHECK_FAILED' and um.get('Kaytron Allen', {}).get('code') == 'IDENTITY_TEAM_CONFLICT'
+          and um['Kaytron Allen']['roster_club'] == ['MIA'],
+          f"a DK row on WAS for a MIA player is IDENTITY_TEAM_CONFLICT and fails the pool: {um.get('Kaytron Allen')}")
+
+
+def test_inactives_coverage_requires_every_club_inside_its_window():
+    from nfl.integrations import inactives_coverage as IC
+    st = {'kickoff': '10/11/2026 01:00PM ET', 'games': {'G1': {'away': 'CHI', 'home': 'GB'}, 'G2': {'away': 'CIN', 'home': 'MIA'}}}
+    ok_t, early_t = '2026-10-11T15:31:00Z', '2026-10-11T15:00:00Z'
+    full = {'source': 'OWNER_RELAYED', 'packet_id': 'p', 'clubs_with_full_list': ['CHI', 'GB', 'CIN', 'MIA'],
+            'club_lists': {c: {'received_at': ok_t, 'source': 's', 'n_names': 5} for c in ('CHI', 'GB', 'CIN', 'MIA')}}
+    o = IC.judge(st, full)
+    check(o.code == 'SUN_INACTIVES_COVERAGE_COMPLETE', f'all four clubs in window: {o.code}')
+    check(o.evidence['window_opens_utc'].startswith('2026-10-11T15:30'), f"window opens 15:30Z: {o.evidence['window_opens_utc']}")
+    stale = json.loads(json.dumps(full)); stale['club_lists']['GB']['received_at'] = early_t
+    v = {r['club']: r['verdict'] for r in IC.judge(st, stale).evidence['clubs']}
+    check(v['GB'] == 'STALE_BEFORE_WINDOW', 'a list taken before the window is stale, not final')
+    miss = json.loads(json.dumps(full)); miss['clubs_with_full_list'].remove('MIA'); del miss['club_lists']['MIA']
+    o = IC.judge(st, miss)
+    check(o.code == 'SUN_INACTIVES_COVERAGE_INCOMPLETE' and 'MIA=MISSING' in o.detail, 'a missing list is never everyone active')
+    untimed = json.loads(json.dumps(full)); del untimed['club_lists']['CIN']
+    check({r['club']: r['verdict'] for r in IC.judge(st, untimed).evidence['clubs']}['CIN'] == 'RECEIPT_TIME_UNKNOWN',
+          'a list with no receipt time cannot be judged')
+    reh = dict(full, source='REHEARSAL')
+    o = IC.judge(st, reh)
+    check(o.code == 'SUN_INACTIVES_COVERAGE_INCOMPLETE' and all(r['verdict'] == 'REHEARSAL_NOT_EVIDENCE'
+                                                                for r in o.evidence['clubs']), 'a rehearsal certifies nothing')

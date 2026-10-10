@@ -198,7 +198,13 @@ def latest_ledger_build(slate_id, ledger=None):
     return rows[-1] if rows else None
 
 
-def plan(slate_id, *, as_of, raw_dir, reference_state, rows=None, inbox_rows=None, repo=_REPO) -> Outcome:
+def _packet_sha(path):
+    import hashlib
+    return hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest() if path else None
+
+
+def plan(slate_id, *, as_of, raw_dir, reference_state, rows=None, inbox_rows=None, repo=_REPO,
+         evidence_packet=None) -> Outcome:
     rows = rows if rows is not None else manifest_rows()
     if inbox_rows is None:
         from nfl.integrations import inbox as IB
@@ -208,6 +214,12 @@ def plan(slate_id, *, as_of, raw_dir, reference_state, rows=None, inbox_rows=Non
     ref = reference_components(reference_state, rows, repo)
     cur = current_components(slate_id, as_of, raw_dir, rows, inbox_rows, repo)
     changes, same, unc = compare(ref, cur)
+    ref_pk = (json.loads(pathlib.Path(reference_state).read_text()).get('official_inactives') or {}).get('packet_sha256')
+    cur_pk = _packet_sha(evidence_packet)
+    if ref_pk != cur_pk:
+        changes.append({'component': 'evidence_packet', 'reference': ref_pk, 'current': cur_pk})
+    else:
+        same.append('evidence_packet')
     ev = dict(spec_version=SPEC_VERSION, as_of=as_of, reference_state=str(reference_state),
               reference=ref, current=cur, unchanged=same, uncomparable=unc, changes=changes)
     if changes:
@@ -220,7 +232,8 @@ def plan(slate_id, *, as_of, raw_dir, reference_state, rows=None, inbox_rows=Non
     return Outcome.ok('NO_CHANGE', value=same, detail=f'every consumed input matches the reference: {same}', **ev)
 
 
-def execute(slate_id, *, as_of, raw_dir, out, n_sims=2000, inbox_rows=None, ledger=None) -> Outcome:
+def execute(slate_id, *, as_of, raw_dir, out, n_sims=2000, inbox_rows=None, ledger=None,
+            evidence_packet=None) -> Outcome:
     out = pathlib.Path(out).resolve()          # the engine prints paths relative to the repository root
     t = dt.datetime.fromisoformat(str(as_of).replace('Z', '+00:00'))
     if t > dt.datetime.now(dt.timezone.utc):
@@ -245,8 +258,15 @@ def execute(slate_id, *, as_of, raw_dir, out, n_sims=2000, inbox_rows=None, ledg
             return universe
         (out / f'RESEARCH_UNIVERSE_{slate_id}.json').write_text(json.dumps(
             {'evidence': universe.evidence, 'rows': universe.value}, indent=1, default=str) + '\n')
-    st = (CS.build(slate_id, as_of=as_of, research_universe=universe) if universe is not None
-          else CS.build(slate_id, as_of=as_of))
+    pk = None
+    if evidence_packet:
+        from nfl.tools import sunday_evidence as SE
+        lo = SE.load(evidence_packet)
+        if lo.state.value != 'PASS':
+            return lo
+        pk = lo.value
+    st = (CS.build(slate_id, as_of=as_of, research_universe=universe, evidence_packet=pk) if universe is not None
+          else CS.build(slate_id, as_of=as_of, evidence_packet=pk))
     if st.state.value != 'PASS':
         (out / 'STATE_REFUSAL.json').write_text(json.dumps({'code': st.code, 'detail': st.detail,
                                                             'evidence': st.evidence}, indent=1, default=str))
@@ -266,7 +286,8 @@ def execute(slate_id, *, as_of, raw_dir, out, n_sims=2000, inbox_rows=None, ledg
         out_rel = str(out)
     rec = {'spec_version': SPEC_VERSION, 'slate_id': slate_id, 'as_of': as_of, 'state': o.state.value,
            'code': o.code, 'out': out_rel, 'n_sims': n_sims, 'pool': 'DK_SALARIES' if pool else 'RESEARCH_UNIVERSE',
-           'components': comp,
+           'components': dict(comp, evidence_packet=({'path': str(evidence_packet), 'sha256': pk['_sha256']}
+                                                      if pk else None)),
            'built_at': dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')}
     lp = pathlib.Path(ledger or LEDGER)
     with open(lp, 'a') as fh:
@@ -284,8 +305,10 @@ def main(argv=None) -> int:
     ap.add_argument('--out')
     ap.add_argument('--sims', type=int, default=2000)
     ap.add_argument('--json')
+    ap.add_argument('--evidence-packet', help='a Sunday evidence packet (nfl/tools/sunday_evidence.py)')
     a = ap.parse_args(argv)
-    p = plan(a.slate_id, as_of=a.as_of, raw_dir=a.raw_dir, reference_state=a.reference_state)
+    p = plan(a.slate_id, as_of=a.as_of, raw_dir=a.raw_dir, reference_state=a.reference_state,
+             evidence_packet=a.evidence_packet)
     print(f'{p.state.value}[{p.code}] {p.detail}')
     if a.json:
         pathlib.Path(a.json).write_text(json.dumps({'code': p.code, 'detail': p.detail, 'evidence': p.evidence},
@@ -298,7 +321,8 @@ def main(argv=None) -> int:
     if not a.out:
         print('REFUSED: --execute needs --out NEW_EMPTY_DIR')
         return 2
-    o = execute(a.slate_id, as_of=a.as_of, raw_dir=a.raw_dir, out=a.out, n_sims=a.sims)
+    o = execute(a.slate_id, as_of=a.as_of, raw_dir=a.raw_dir, out=a.out, n_sims=a.sims,
+                evidence_packet=a.evidence_packet)
     print(f'{o.state.value}[{o.code}] {o.detail}')
     return 0 if o.state.value == 'PASS' else 2
 

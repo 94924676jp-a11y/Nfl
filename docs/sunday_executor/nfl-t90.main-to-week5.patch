@@ -1,0 +1,76 @@
+--- /tmp/claude-0/-home-user-mlb-prop-system-v7/8de98087-4781-5a10-ae09-ef74590f8116/scratchpad/main_nfl-t90.yml	2026-10-10 18:09:19.415900085 +0000
++++ docs/sunday_executor/nfl-t90.WEEK5.PROPOSED.yml	2026-10-10 18:15:33.520662726 +0000
+@@ -1,8 +1,8 @@
+ name: NFL T-90 anchored capture
+ 
+ # GENERATED FILE -- do not hand-edit.
+-#   nfl/tools/gen_t90_schedule.py --season 2026 --week 1 --write
+-#   schedule identity: SCHED-2a2924d4966fbd3d
++#   nfl/tools/gen_t90_schedule.py --season 2026 --week 5 --write
++#   schedule identity: SCHED-d577f05fff8d8ca9
+ #
+ # That identity is a digest over the (game, window) pairs themselves, not over
+ # the snapshot file they were read from. A re-captured schedule with unchanged
+@@ -13,7 +13,7 @@
+ # capture window there. None is a round-number cadence. That is what makes this
+ # event-anchored and the `*/30` baseline in nfl-capture.yml not.
+ #
+-# 6 distinct windows, 16 games, 16 cron entries, 5-minute step inside each window.
++# 7 distinct windows, 15 games, 18 cron entries, 5-minute step inside each window.
+ #
+ # WHAT THIS DOES NOT CLAIM. GitHub may delay or drop a scheduled run; no cron
+ # arrangement prevents that. This raises the chances inside an 80-minute window
+@@ -25,28 +25,31 @@
+ 
+ on:
+   schedule:
+-    # 2026-09-09 22:50Z -> 00:10Z  (1 game: 2026_01_NE_SEA)
+-    - cron: '50,55 22 9 9 *'
+-    - cron: '*/5 23 9 9 *'
+-    - cron: '0,5,10 0 10 9 *'
+-    # 2026-09-10 23:05Z -> 00:25Z  (1 game: 2026_01_SF_LA)
+-    - cron: '5,10,15,20,25,30,35,40,45,50,55 23 10 9 *'
+-    - cron: '0,5,10,15,20,25 0 11 9 *'
+-    # 2026-09-13 15:30Z -> 16:50Z  (8 games: 2026_01_ATL_PIT, 2026_01_BAL_IND, 2026_01_BUF_HOU, 2026_01_CHI_CAR, 2026_01_CLE_JAX, 2026_01_NO_DET, 2026_01_NYJ_TEN, 2026_01_TB_CIN)
+-    - cron: '30,35,40,45,50,55 15 13 9 *'
+-    - cron: '0,5,10,15,20,25,30,35,40,45,50 16 13 9 *'
+-    # 2026-09-13 18:55Z -> 20:15Z  (4 games: 2026_01_ARI_LAC, 2026_01_GB_MIN, 2026_01_MIA_LV, 2026_01_WAS_PHI)
+-    - cron: '55 18 13 9 *'
+-    - cron: '*/5 19 13 9 *'
+-    - cron: '0,5,10,15 20 13 9 *'
+-    # 2026-09-13 22:50Z -> 00:10Z  (1 game: 2026_01_DAL_NYG)
+-    - cron: '50,55 22 13 9 *'
+-    - cron: '*/5 23 13 9 *'
+-    - cron: '0,5,10 0 14 9 *'
+-    # 2026-09-14 22:45Z -> 00:05Z  (1 game: 2026_01_DEN_KC)
+-    - cron: '45,50,55 22 14 9 *'
+-    - cron: '*/5 23 14 9 *'
+-    - cron: '0,5 0 15 9 *'
++    # 2026-10-08 22:45Z -> 00:05Z  (1 game: 2026_05_TB_DAL)
++    - cron: '45,50,55 22 8 10 *'
++    - cron: '*/5 23 8 10 *'
++    - cron: '0,5 0 9 10 *'
++    # 2026-10-11 12:00Z -> 13:20Z  (1 game: 2026_05_PHI_JAX)
++    - cron: '*/5 12 11 10 *'
++    - cron: '0,5,10,15,20 13 11 10 *'
++    # 2026-10-11 15:30Z -> 16:50Z  (8 games: 2026_05_CHI_GB, 2026_05_CIN_MIA, 2026_05_CLE_NYJ, 2026_05_HOU_TEN, 2026_05_IND_PIT, 2026_05_LV_NE, 2026_05_MIN_NO, 2026_05_NYG_WAS)
++    - cron: '30,35,40,45,50,55 15 11 10 *'
++    - cron: '0,5,10,15,20,25,30,35,40,45,50 16 11 10 *'
++    # 2026-10-11 18:35Z -> 19:55Z  (1 game: 2026_05_DEN_LAC)
++    - cron: '35,40,45,50,55 18 11 10 *'
++    - cron: '*/5 19 11 10 *'
++    # 2026-10-11 18:55Z -> 20:15Z  (2 games: 2026_05_DET_ARI, 2026_05_SF_SEA)
++    - cron: '55 18 11 10 *'
++    - cron: '*/5 19 11 10 *'
++    - cron: '0,5,10,15 20 11 10 *'
++    # 2026-10-11 22:50Z -> 00:10Z  (1 game: 2026_05_BAL_ATL)
++    - cron: '50,55 22 11 10 *'
++    - cron: '*/5 23 11 10 *'
++    - cron: '0,5,10 0 12 10 *'
++    # 2026-10-12 22:45Z -> 00:05Z  (1 game: 2026_05_BUF_LA)
++    - cron: '45,50,55 22 12 10 *'
++    - cron: '*/5 23 12 10 *'
++    - cron: '0,5 0 13 10 *'
+   workflow_dispatch:
+ 
+ permissions:

@@ -325,6 +325,16 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
         dk_id, nm, team, pos = r['dk_id'], r['dk_name'], r['team'], r['dk_pos']
         rec = ids.get(dk_id) or {}
         gsis = None if pos == 'DST' else (rec.get('gsis_id') or None)
+        # A PLAYER WHO CHANGED CLUBS CARRIES NO OTHER CLUB'S USAGE. His observed shares and usage-history
+        # rank were measured in another club's offence, so neither may rank or allocate him here; only his
+        # current club's chart does (under the no-usage chart limit). Found 2026-10-10: Kaytron Allen,
+        # waived by WAS 10-08 and claimed by MIA 10-09, was ranked MIA RB3 by his WAS usage.
+        transfer = None
+        if gsis:
+            oc, dc = (obs.get(gsis) or {}).get('club'), (depth.get(gsis) or {}).get('club')
+            if (oc and oc != team) or (dc and dc != team):
+                transfer = {'usage_club': oc or dc, 'current_club': team,
+                            'RULE': 'other-club usage is not carried; rank from the current club chart only'}
         ir = by_gsis.get(gsis) if gsis else None
         report = ((ir or {}).get('report_status') or '').strip().lower()
         designation = _REPORT_TO_DESIGNATION.get(report)
@@ -357,15 +367,16 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
             'identity': (SS.DST_IDENTITY if pos == 'DST' else
                          ('IDENTITY_UNRESOLVED_NOT_PROJECTED' if dk_id in unresolved_ids else rec)),
             'gsis_id': gsis,
-            'observed_2026': (obs.get(gsis) or {}) if gsis else {},
-            'depth_rank': _depth_ranks(pos, team, gsis, qb_chart, depth, out_gsis)[0],
-            'depth_chart_rank': _depth_ranks(pos, team, gsis, qb_chart, depth, out_gsis)[1],
-            'depth_detail': ((depth.get(gsis) or {}) if gsis else {}),
+            'observed_2026': (obs.get(gsis) or {}) if gsis and not transfer else {},
+            'depth_rank': _depth_ranks(pos, team, gsis, qb_chart, {} if transfer else depth, out_gsis)[0],
+            'depth_chart_rank': _depth_ranks(pos, team, gsis, qb_chart, {} if transfer else depth, out_gsis)[1],
+            'depth_detail': ((depth.get(gsis) or {}) if gsis and not transfer else {}),
+            'club_transfer': transfer,
             'depth_source': (('DEPTH_CHART_CAPTURED ' + qb_chart[team]['capture_id'])
                              if pos == 'QB' and team in qb_chart else
                              'MIN(PREGAME_USAGE_HISTORY, DEPTH_CHART_CAPTURED)' if pos in ('RB', 'WR', 'TE')
                              else 'PREGAME_USAGE_HISTORY'),
-            'depth_usage_rank': ((depth.get(gsis) or {}).get('pregame_rank') if gsis else None),
+            'depth_usage_rank': ((depth.get(gsis) or {}).get('pregame_rank') if gsis and not transfer else None),
             'current_availability': {
                 'status': status, 'tier': tier, 'designation': designation if ir is not None else None,
                 'practice_status': (ir or {}).get('practice_status'),

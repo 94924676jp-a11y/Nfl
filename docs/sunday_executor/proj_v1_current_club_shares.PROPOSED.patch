@@ -1,0 +1,16 @@
+diff --git a/nfl/tools/proj_v1.py b/nfl/tools/proj_v1.py
+index 9be3b7ed..5a28e959 100644
+--- a/nfl/tools/proj_v1.py
++++ b/nfl/tools/proj_v1.py
+@@ -317,6 +317,11 @@ def current_season_shares(panel, gsis, club, pos):
+         t = tm.get(wk)
+         if not t:
+             continue
++        # A WEEK PLAYED FOR ANOTHER CLUB IS NOT A SHARE OF THIS ONE. Found 2026-10-10: Kaytron Allen's 12
++        # WAS carries were divided by MIA's rushing totals after MIA claimed him, carrying a Washington
++        # workload into Miami's allocation. His own efficiency still travels through his prior.
++        if w.get('team') and w['team'] != club:
++            continue
+         n += 1
+         for f in ('targets', 'carries', 'pass_attempts', 'rz_targets', 'rz_carries',
+                   'gl_carries', 'receptions', 'rec_yards', 'rush_yards', 'pass_yards',

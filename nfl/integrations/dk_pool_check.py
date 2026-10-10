@@ -14,7 +14,9 @@ Checks, each a named result:
   SALARIES_PARSE           every salary is a positive integer
   IDS_UNIQUE               no DK id twice (the inbox already refuses a duplicate; repeated here as a guard)
   IDENTITY_MAPPED          every non-DST DK player maps to exactly one research-universe player by
-                           normalised name + club; the unmatched are listed, never guessed
+                           normalised name + club; the unmatched are listed, never guessed. A DK row whose
+                           name exists only on ANOTHER club (a transfer DK has not caught up with, or the
+                           reverse) is IDENTITY_TEAM_CONFLICT and fails the pool: SUN_INVALID_DK_POOL
   UPLOAD_ELIGIBILITY       per player: BLOCKED when the state says he is not playing (Out), when the roster audit
                            marks his history unresolved, or when his identity is unmapped. Everyone else is
                            ELIGIBLE_PENDING_INACTIVES, never simply eligible, until the official inactives arrive.
@@ -71,9 +73,11 @@ def check(slate_id, *, raw_dir, state, inbox_rows=None, roster_audit=None) -> Ou
     if u.state.value != 'PASS':
         return u
     uk = collections.defaultdict(list)
+    by_name = collections.defaultdict(set)
     for r in u.value:
         if r['dk_pos'] != 'DST':
             uk[(norm_name(r['dk_name']), r['team'])].append(r)
+            by_name[norm_name(r['dk_name'])].add(r['team'])
     by_state = {(norm_name(p['name']), p['team']): p for p in state['players'].values()}
     unresolved = {(norm_name(x['name']), x['team']) for x in ((roster_audit or {}).get('unresolved') or [])}
     players, unmatched = [], []
@@ -83,8 +87,12 @@ def check(slate_id, *, raw_dir, state, inbox_rows=None, roster_audit=None) -> Ou
         if r['dk_pos'] != 'DST':
             m = uk.get(key, [])
             if len(m) != 1:
-                reasons.append('IDENTITY_UNMAPPED' if not m else 'IDENTITY_AMBIGUOUS')
-                unmatched.append({'dk_name': r['dk_name'], 'team': r['team'], 'pos': r['dk_pos'], 'n_matches': len(m)})
+                other = sorted(by_name.get(key[0], set()) - {r['team']})
+                code = ('IDENTITY_TEAM_CONFLICT' if not m and other else
+                        'IDENTITY_UNMAPPED' if not m else 'IDENTITY_AMBIGUOUS')
+                reasons.append(code)
+                unmatched.append({'dk_name': r['dk_name'], 'team': r['team'], 'pos': r['dk_pos'], 'n_matches': len(m),
+                                  'code': code, 'roster_club': other or None})
             st = (by_state.get(key) or {}).get('current_availability') or {}
             if st.get('designation') == 'OUT' or 'INACTIVE' in str(st.get('status')):
                 reasons.append('NOT_PLAYING_OUT')

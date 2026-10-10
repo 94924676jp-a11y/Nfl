@@ -250,7 +250,8 @@ def designations_filed(rows, state, now):
     return out
 
 
-def build_status(slate_id, *, raw_dir, reference_state, now=None, rows=None, inbox_rows=None, drop=None):
+def build_status(slate_id, *, raw_dir, reference_state, now=None, rows=None, inbox_rows=None, drop=None,
+                 evidence_packet=None):
     now = now or dt.datetime.now(dt.timezone.utc).replace(microsecond=0)
     rows = rows if rows is not None else RB.manifest_rows()
     inbox_rows = inbox_rows if inbox_rows is not None else IB.ledger_rows()
@@ -260,7 +261,7 @@ def build_status(slate_id, *, raw_dir, reference_state, now=None, rows=None, inb
     des = designations_filed(rows, state, now)
     mp = missing_players(slate_id, raw_dir, inbox_rows)
     pl = RB.plan(slate_id, as_of=_iso(now), raw_dir=raw_dir, reference_state=reference_state, rows=rows,
-                 inbox_rows=inbox_rows)
+                 inbox_rows=inbox_rows, evidence_packet=evidence_packet)
     drop = pathlib.Path(drop or IB.DROP)
     ingested = {r['sha256'] for r in inbox_rows}
     import hashlib
@@ -458,8 +459,10 @@ def main(argv=None) -> int:
     ap.add_argument('--reference-state', required=True, help="a build's STATE.json, or `auto` for the newest "
                                                                "build in the rebuild ledger")
     ap.add_argument('--out', default=str(_REPO / 'nfl' / 'integrations' / 'status'))
+    ap.add_argument('--evidence-packet', help='the evidence packet the projection of record was built with')
     a = ap.parse_args(argv)
-    st = build_status(a.slate_id, raw_dir=a.raw_dir, reference_state=resolve_reference(a.slate_id, a.reference_state))
+    st = build_status(a.slate_id, raw_dir=a.raw_dir, reference_state=resolve_reference(a.slate_id, a.reference_state),
+                      evidence_packet=a.evidence_packet)
     od = pathlib.Path(a.out)
     export_datasets(st, od / 'datasets')
     od.mkdir(parents=True, exist_ok=True)

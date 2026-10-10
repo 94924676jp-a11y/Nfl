@@ -4234,3 +4234,18 @@ Justin Jefferson (MIN), Terry McLaurin (WAS), Carnell Tate (TEN), Alvin Kamara (
 The scenario for each outcome is precomputed (`nfl/dfs/salaries/classic_early_2026W5/WEEK5_SATURDAY_DECISION_BOARD.md`).
 
 Also, if visible: the date of Kaytron Allen's waiver by WAS and signing by MIA (roster codes W03, then ACT with MIA).
+
+## OUT-046 — capture three club pages this executor cannot reach (DNS ENOTFOUND), and the 16 Sunday lists
+
+The owner's independent review cites these pages, and the projection now relies on the first two. Need, for each: the
+captured bytes or text, URL, retrieval time and sha256.
+1. Bears 2026-10-09: https://www.chicagobears.com/news/injury-update-bears-rb-kyle-monangai-ruled-out-qb-caleb-williams-questionable-for-packers-game
+   ("Johnson announced Tyson Bagent will start"). Admitted today as OWNER_RELAYED, cited OFFICIAL_RELEASE (packet
+   `2026W5-owner-20261010-chi-starter`). A capture lets it be recorded as a document rather than a relay.
+2. Dolphins 2026-10-09: https://www.miamidolphins.com/news/dolphins-claim-allen-off-waivers (Kaytron Allen claimed from
+   WAS). Recorded in `nfl/dfs/salaries/classic_early_2026W5/transactions/TRANSACTIONS_2026W5.json`.
+3. Raiders 2026-10-09 injury report (Jeanty: Ankle/Foot, FP/LP/DNP, Questionable) versus the NFL summary article that
+   says hamstring. Keep both; the conflict is recorded, not merged.
+
+Sunday: OUT-045 stands (16 club lists at or after 15:30Z). Paste format and commands are in
+`docs/sunday_executor/SUNDAY_INACTIVES_EXECUTOR_AUDIT_2026-10-10.md` §4.

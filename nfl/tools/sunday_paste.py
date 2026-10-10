@@ -60,8 +60,10 @@ def parse(text):
     return out
 
 
-def build(slate, text, packet_path, received_at):
-    state = json.loads((OUT_DIR / f'DK_{slate}_EARLY_STATE.json').read_text())
+def build(slate, text, packet_path, received_at, state_path=None):
+    # The production state path exists only for a slate with a DK file. A research-universe slate (2026 W5:
+    # no DK file yet) never writes it, so the fallback must be able to read the state it is applied to.
+    state = json.loads(pathlib.Path(state_path or (OUT_DIR / f'DK_{slate}_EARLY_STATE.json')).read_text())
     pool = [{'dk_id': k, 'dk_name': v['name'], 'team': v['team'], 'dk_pos': v['position']} for k, v in state['players'].items()]
     clubs = parse(text)
     slate_clubs = {v['team'] for v in state['players'].values()}
@@ -110,6 +112,11 @@ def build(slate, text, packet_path, received_at):
     pk['players'] = sorted(keep.values(), key=lambda x: (x['team'], x['name']))
     pk['off_pool'] = off_pool
     pk['clubs_with_full_list'] = sorted(set(pk.get('clubs_with_full_list') or []) | set(clubs))
+    # per-club receipt, so a coverage check can tell a list taken before the publication window from one after
+    cl = dict(pk.get('club_lists') or {})
+    for club, v in clubs.items():
+        cl[club] = {'received_at': received_at, 'source': v['source'], 'n_names': len(v['names'])}
+    pk['club_lists'] = cl
     pk['source_detail'] = (pk.get('source_detail') or '') + f" | {received_at}: game-day inactives for {sorted(clubs)} " \
                                                             f"from {sorted({v['source'] for v in clubs.values()})}"
     lo_tmp = pathlib.Path(packet_path).with_suffix('.candidate.json')
@@ -130,9 +137,10 @@ def main() -> int:
     ap.add_argument('slate_id')
     ap.add_argument('paste')
     ap.add_argument('--packet', default=str(OUT_DIR / 'evidence/2026W4_SUNDAY_OWNER.json'))
+    ap.add_argument('--state', help='the state the packet is applied to (default: the production state path)')
     a = ap.parse_args()
     now = dt.datetime.now(dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
-    pk, res, missing = build(a.slate_id, pathlib.Path(a.paste).read_text(), a.packet, now)
+    pk, res, missing = build(a.slate_id, pathlib.Path(a.paste).read_text(), a.packet, now, state_path=a.state)
     ina = [x for x in pk['players'] if x['status'] == 'INACTIVE']
     act = [x for x in pk['players'] if x['status'] == 'ACTIVE']
     print(f'PASS[PASTE_APPLIED] {len(ina)} DK-pool inactives, {len(act)} cleared Questionables, '

@@ -1,0 +1,103 @@
+{
+ "artifact": "SLATE_TRANSACTIONS",
+ "slate_id": "2026W5",
+ "written_at_utc": "2026-10-10T18:50:00Z",
+ "RULE": "A transaction moves a player's CURRENT club from its effective date. Weeks played before it stay attributed to the old club (the panel records the club per week). No usage, rank or share measured at the old club is carried to the new one (classic_slate_state club_transfer guard; proj_v1.current_season_shares). Eligibility at the new club is NOT inferred from the transaction: it is resolved only by that club's game-day inactives.",
+ "transactions": [
+  {
+   "player": "Kaytron Allen",
+   "gsis_id": "00-0041096",
+   "position": "RB",
+   "events": [
+    {
+     "type": "WAIVED",
+     "club": "WAS",
+     "effective_date": "2026-10-08",
+     "evidence": [
+      {
+       "tier": "ROSTER_CAPTURE",
+       "detail": "nflverse weekly roster, week 5: WAS status CUT, status_description W03",
+       "capture_id": "20261009T192103Z",
+       "full_file_sha256_prefix": "7d4b399e4f2b8a92"
+      },
+      {
+       "tier": "SECONDARY_DISCOVERY",
+       "detail": "reports of the WAS waiver on 2026-10-08 (Field Level Media, Yardbarker, RotoBaller)",
+       "url": "https://wmbdradio.com/2026/10/08/commanders-waive-rookie-rb-kaytron-allen/"
+      }
+     ]
+    },
+    {
+     "type": "CLAIMED_OFF_WAIVERS",
+     "club": "MIA",
+     "from_club": "WAS",
+     "effective_date": "2026-10-09",
+     "evidence": [
+      {
+       "tier": "ROSTER_CAPTURE",
+       "detail": "nflverse weekly roster, week 5: MIA status ACT (A01)",
+       "capture_id": "20261010T074137Z",
+       "full_file_sha256_prefix": "8729b73ef500cdf9"
+      },
+      {
+       "tier": "OWNER_RELAYED_OFFICIAL_CLUB_RELEASE",
+       "detail": "Dolphins announcement cited by the independent review bundle (not fetched here: DNS ENOTFOUND)",
+       "url": "https://www.miamidolphins.com/news/dolphins-claim-allen-off-waivers",
+       "content_sha256_per_reviewer": "270a7ef6ae9525b1b06e02415730f879680c8e25e716d314ebf51090ba352c9c"
+      },
+      {
+       "tier": "OWNER_RELAYED",
+       "detail": "NFL waiver log cited by the review: WAS waiver 10-08, assignment to MIA 10-09",
+       "url": "https://www.nfl.com/transactions/league/waivers/2026/10"
+      },
+      {
+       "tier": "SECONDARY_DISCOVERY",
+       "detail": "PFT, Pro Football Rumors, RotoWire report the claim on 2026-10-09",
+       "url": "https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/dolphins-claim-rb-kaytron-allen-off-waivers"
+      }
+     ]
+    }
+   ],
+   "current_club_for_slate": "MIA",
+   "historical_attribution": "2026 weeks 1-4 remain WAS",
+   "eligibility_at_new_club": "UNRESOLVED until MIA game-day inactives",
+   "dk_pool_rule": "a DK row placing him on WAS is IDENTITY_TEAM_CONFLICT and blocks the pool"
+  },
+  {
+   "player": "Pierre Strong",
+   "position": "RB",
+   "club": "GB",
+   "events": [
+    {
+     "type": "ROSTER_STATUS_DEV_TO_ACT",
+     "effective_date": "between 2026-10-09T01:36Z and 19:21Z (captures)",
+     "evidence": [
+      {
+       "tier": "ROSTER_CAPTURE",
+       "capture_id": "20261009T192103Z"
+      }
+     ]
+    }
+   ],
+   "eligibility": "UNRESOLVED until GB inactives"
+  },
+  {
+   "player": "Bryce Oliver",
+   "position": "WR",
+   "club": "HOU",
+   "events": [
+    {
+     "type": "ADDED_TO_ACTIVE_ROSTER",
+     "effective_date": "between 2026-10-09T01:36Z and 19:21Z (captures)",
+     "evidence": [
+      {
+       "tier": "ROSTER_CAPTURE",
+       "capture_id": "20261009T192103Z"
+      }
+     ]
+    }
+   ],
+   "eligibility": "UNRESOLVED until HOU inactives"
+  }
+ ]
+}
