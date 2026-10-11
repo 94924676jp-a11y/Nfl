@@ -238,6 +238,57 @@ def _emit(rec: dict, echo: str = '') -> None:
 
 
 
+#: TREE GUARD (task #45 P0-1, 2026-10-11). A test that writes into the repository is not measuring the product,
+#: it is changing it. Measured that day: run directly, test_slate_to_portfolio rewrote three TRACKED files
+#: (nfl/dfs/salaries/DK_UPLOAD_GENERATED.csv, SLATE_STATUS_BOARD.json, SLATE_STATUS_BOARD.md), and nothing in
+#: this runner noticed, because the mode-boundary check judges the tree once, at the start. The guard below
+#: snapshots every path git reports as modified, added, deleted or untracked-and-not-ignored, with its content
+#: digest, before the first module and after every module, and names the module that changed one. A change
+#: FAILS the run (TREE_WRITTEN). Ignored paths (derived caches) are out of its reach, and that is said here
+#: rather than implied. The runner's own progress files are the only exclusion, and they are named, not
+#: matched by pattern.
+def tree_snapshot(root=None) -> dict:
+    """{repo-relative path: sha256 | 'ABSENT'} over git's dirty and untracked-not-ignored paths."""
+    root = root or ROOT
+    r = subprocess.run(['git', 'status', '--porcelain=v1', '-z', '--untracked-files=all'],
+                       cwd=root, capture_output=True)
+    if r.returncode != 0:
+        return {'<git status failed>': r.stderr.decode(errors='replace')[-200:]}
+    out, parts, i = {}, r.stdout.split(b'\0'), 0
+    while i < len(parts):
+        e = parts[i]
+        i += 1
+        if len(e) < 4:
+            continue
+        xy, path = e[:2].decode(), e[3:].decode()
+        if 'R' in xy or 'C' in xy:      # a rename carries its source path as the next entry
+            i += 1
+        p = os.path.join(root, path)
+        try:
+            with open(p, 'rb') as fh:
+                out[path] = hashlib.sha256(fh.read()).hexdigest()
+        except FileNotFoundError:
+            out[path] = 'ABSENT'
+        except IsADirectoryError:
+            out[path] = 'DIRECTORY'
+        except OSError as ex:
+            out[path] = f'UNREADABLE:{ex.__class__.__name__}'
+    return out
+
+
+def tree_diff(before: dict, after: dict, exclude=()) -> list:
+    """Paths that appeared, disappeared or changed content between two snapshots, minus `exclude`."""
+    ex = set(exclude)
+    return sorted(k for k in set(before) | set(after)
+                  if k not in ex and before.get(k, 'CLEAN') != after.get(k, 'CLEAN'))
+
+
+def _runner_owned_paths():
+    """The runner's own progress files: the one exclusion, by exact path."""
+    return [os.path.relpath(os.path.abspath(p), ROOT)
+            for p in (PROGRESS_PATH, PROGRESS_PATH + '.nested.jsonl')]
+
+
 def main(argv=None):
     argv = argv if argv is not None else sys.argv[1:]
     verbose = '-v' in argv
@@ -358,6 +409,19 @@ def main(argv=None):
     if watch:
         watch_state = _watch_digests()
         print(f'WATCHING {len(watch)} path(s) after every module: ' + ', '.join(watch))
+    tree_state = tree_snapshot()
+    tree_exclude = _runner_owned_paths()
+
+    def _tree_check(after_module):
+        nonlocal tree_state
+        now = tree_snapshot()
+        changed = tree_diff(tree_state, now, tree_exclude)
+        if changed:
+            problems.append(f'TREE_WRITTEN {after_module}: wrote {len(changed)} repository path(s) outside a '
+                            f'temporary root: ' + ', '.join(changed[:12]) + (' ...' if len(changed) > 12 else ''))
+            print(f'    TREE_WRITTEN: {after_module} changed ' + ', '.join(changed[:6]), flush=True)
+            _emit({'phase': 'tree_written', 'after_module': after_module, 'paths': changed})
+        tree_state = now
     # OWNER RULE 2 (2026-10-02): every positive control a test records (nfl/tests/_controls)
     # is stamped with THIS run's id, in this process and in own-process children, so the
     # validation at the end of the run counts only controls that ran in it.
@@ -386,6 +450,7 @@ def main(argv=None):
         # each module_done covers the branches that `continue`, so no exit path skips the check.
         if i > 1:
             _watch_check(files[i - 2])
+            _tree_check(files[i - 2])
         _emit({'phase': 'module_start', 'i': i, 'module': f},
               f'[{i}/{len(files)}] {f}')
         own = requires_own_process(f)
@@ -420,6 +485,11 @@ def main(argv=None):
             n_check_fail += sub_fail
             n_check_ok += max(sub_checks - sub_fail, 0)
             n_raise += sub_raise
+            # THE CHILD'S TEST FUNCTIONS COUNT AS EXECUTED HERE TOO (2026-10-11). They were not added to n_fn, so a
+            # run of one own-process module -- 8 checks executed, or 8 failing -- printed "SUITE NOT_EXECUTED ...
+            # nothing ran", and a TREE_WRITTEN or a failing check in it could never read as FAIL.
+            mf = re.search(r'test functions (\d+)', out)
+            n_fn += int(mf.group(1)) if mf else 0
             if sub_zero:
                 n_fn_zero += sub_zero
                 zero_fns.append(f'{f}::<own-process child reported {sub_zero} zero-check function(s)>')
@@ -569,6 +639,7 @@ def main(argv=None):
               f'{bad} failing')
     if files:
         _watch_check(files[-1])
+        _tree_check(files[-1])
     if watch:
         print(f'\nWATCH REPORT: {len(watch_events)} change(s) to watched paths during the run')
         for ev in watch_events:
@@ -630,7 +701,8 @@ def main(argv=None):
            + len(n_not_executed)
            + sum(p.startswith('VACUOUS') for p in problems)
            + sum(p.startswith('DETECTORS UNVALIDATED') for p in problems)
-           + sum(p.startswith('MODE_BOUNDARY_VIOLATED') for p in problems))
+           + sum(p.startswith('MODE_BOUNDARY_VIOLATED') for p in problems)
+           + sum(p.startswith('TREE_WRITTEN') for p in problems))
     # OWNER RULE 1 (2026-10-02). A run that executed nothing has not passed. Before this, an
     # `--only` pattern matching no module printed SUITE PASS on 0 modules and 0 checks, and the
     # log holds three such runs. NOT_EXECUTED is its own verdict with its own exit code (3), so

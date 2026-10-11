@@ -23,6 +23,13 @@ if str(_REPO) not in sys.path:
 from nfl.tools import availability as AV  # noqa: E402
 from nfl.tools import slate_to_portfolio as SP  # noqa: E402
 
+# OUTPUTS GO TO A TEMPORARY ROOT, NEVER THE REPOSITORY (task #45 P0-1, 2026-10-11). Run directly, this module
+# rewrote three TRACKED files -- nfl/dfs/salaries/DK_UPLOAD_GENERATED.csv, SLATE_STATUS_BOARD.json and .md.
+# The file names are kept, because the checks below read them.
+import tempfile as _tempfile  # noqa: E402
+_TMP = pathlib.Path(_tempfile.mkdtemp(prefix='slate_to_portfolio_test_'))
+SP.OUT_BOARD, SP.OUT_MD, SP.OUT_CSV = (_TMP / SP.OUT_BOARD.name, _TMP / SP.OUT_MD.name, _TMP / SP.OUT_CSV.name)
+
 ENTRIES = _REPO / 'nfl/dfs/salaries/raw/DKEntries_EARLY_ONLY_2026W3_62.csv'
 OWNER = _REPO / 'nfl/dfs/salaries/raw/OWNER_PLACEHOLDERS_FC_48_2026W3.csv'
 OWNER_SHA = '13ce2da14da94f961f8288f46faabeea016394290594338ca77124297f216e53'
