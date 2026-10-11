@@ -1,0 +1,880 @@
+{
+ "ARTIFACT": "WORLD_ACCOUNTING_CHECK",
+ "spec_version": "world-accounting-1",
+ "scenario_dir": "/tmp/claude-0/-home-user-mlb-prop-system-v7/8de98087-4781-5a10-ae09-ef74590f8116/scratchpad/audit/wac_1608Z",
+ "files": {
+  "worlds": "W5FINAL_WORLDS.npz",
+  "draws": "W5FINAL_DRAWS.json"
+ },
+ "n_worlds": 2000,
+ "stage": "PUBLISHED (after efficiency_worlds and the DST anchor step)",
+ "lateral_or_non_qb_pass_events_represented": false,
+ "VIOLATED": {
+  "GB:PASS_YDS_EQ_REC_YDS": 1915,
+  "GB:PASS_TD_EQ_REC_TD": 4,
+  "GB:POINTS_GE_6_PER_TD": 58,
+  "CHI:PASS_YDS_EQ_REC_YDS": 1941,
+  "CHI:PASS_TD_EQ_REC_TD": 10,
+  "CHI:POINTS_GE_6_PER_TD": 76,
+  "MIA:PASS_YDS_EQ_REC_YDS": 1996,
+  "MIA:PASS_TD_EQ_REC_TD": 1,
+  "MIA:POINTS_GE_6_PER_TD": 61,
+  "CIN:PASS_YDS_EQ_REC_YDS": 1919,
+  "CIN:PASS_TD_EQ_REC_TD": 4,
+  "CIN:POINTS_GE_6_PER_TD": 66,
+  "NYJ:PASS_YDS_EQ_REC_YDS": 1913,
+  "NYJ:PASS_TD_EQ_REC_TD": 5,
+  "NYJ:POINTS_GE_6_PER_TD": 54,
+  "CLE:PASS_YDS_EQ_REC_YDS": 1911,
+  "CLE:PASS_TD_EQ_REC_TD": 1,
+  "CLE:POINTS_GE_6_PER_TD": 65,
+  "TEN:PASS_YDS_EQ_REC_YDS": 1897,
+  "TEN:POINTS_GE_6_PER_TD": 77,
+  "HOU:PASS_YDS_EQ_REC_YDS": 1885,
+  "HOU:PASS_TD_EQ_REC_TD": 5,
+  "HOU:POINTS_GE_6_PER_TD": 69,
+  "PIT:PASS_YDS_EQ_REC_YDS": 1784,
+  "PIT:POINTS_GE_6_PER_TD": 78,
+  "IND:PASS_YDS_EQ_REC_YDS": 1881,
+  "IND:PASS_TD_EQ_REC_TD": 3,
+  "IND:POINTS_GE_6_PER_TD": 59,
+  "NE:PASS_YDS_EQ_REC_YDS": 1917,
+  "NE:PASS_TD_EQ_REC_TD": 6,
+  "NE:POINTS_GE_6_PER_TD": 57,
+  "LV:PASS_YDS_EQ_REC_YDS": 1854,
+  "LV:PASS_TD_EQ_REC_TD": 4,
+  "LV:POINTS_GE_6_PER_TD": 77,
+  "NO:PASS_YDS_EQ_REC_YDS": 1902,
+  "NO:PASS_TD_EQ_REC_TD": 5,
+  "NO:POINTS_GE_6_PER_TD": 60,
+  "MIN:PASS_YDS_EQ_REC_YDS": 1905,
+  "MIN:PASS_TD_EQ_REC_TD": 3,
+  "MIN:POINTS_GE_6_PER_TD": 69,
+  "WAS:PASS_YDS_EQ_REC_YDS": 1827,
+  "WAS:PASS_TD_EQ_REC_TD": 19,
+  "WAS:POINTS_GE_6_PER_TD": 66,
+  "NYG:PASS_YDS_EQ_REC_YDS": 1834,
+  "NYG:PASS_TD_EQ_REC_TD": 6,
+  "NYG:POINTS_GE_6_PER_TD": 76,
+  "YDS_WITHOUT_CATCH": 2000,
+  "REC_TD_WITHOUT_CATCH": 1809
+ },
+ "checks": {
+  "GB:PASS_YDS_EQ_REC_YDS": {
+   "violations": 1915,
+   "of": 2000,
+   "first": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "detail": "gross passing minus receiving yards",
+   "legitimate_exception_available": "NONE_REPRESENTED",
+   "mean_diff": -14.279,
+   "max_abs_diff": 108.1,
+   "tolerance": 1.2
+  },
+  "GB:PASS_TD_EQ_REC_TD": {
+   "violations": 4,
+   "of": 2000,
+   "first": [
+    50,
+    733,
+    1079,
+    1739
+   ],
+   "detail": "passing TDs vs receiving TDs",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "GB:TARGETS_LE_ATTEMPTS": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "club targets vs club pass attempts",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "GB:POINTS_GE_6_PER_TD": {
+   "violations": 58,
+   "of": 2000,
+   "first": [
+    15,
+    19,
+    144,
+    174,
+    206
+   ],
+   "detail": "published club points vs 6 x offensive TDs in the same world",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "CHI:PASS_YDS_EQ_REC_YDS": {
+   "violations": 1941,
+   "of": 2000,
+   "first": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "detail": "gross passing minus receiving yards",
+   "legitimate_exception_available": "NONE_REPRESENTED",
+   "mean_diff": -20.849,
+   "max_abs_diff": 113.0,
+   "tolerance": 1.15
+  },
+  "CHI:PASS_TD_EQ_REC_TD": {
+   "violations": 10,
+   "of": 2000,
+   "first": [
+    149,
+    605,
+    614,
+    673,
+    706
+   ],
+   "detail": "passing TDs vs receiving TDs",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "CHI:TARGETS_LE_ATTEMPTS": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "club targets vs club pass attempts",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "CHI:POINTS_GE_6_PER_TD": {
+   "violations": 76,
+   "of": 2000,
+   "first": [
+    8,
+    38,
+    57,
+    86,
+    87
+   ],
+   "detail": "published club points vs 6 x offensive TDs in the same world",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "MIA:PASS_YDS_EQ_REC_YDS": {
+   "violations": 1996,
+   "of": 2000,
+   "first": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "detail": "gross passing minus receiving yards",
+   "legitimate_exception_available": "NONE_REPRESENTED",
+   "mean_diff": 41.471,
+   "max_abs_diff": 181.3,
+   "tolerance": 1.1
+  },
+  "MIA:PASS_TD_EQ_REC_TD": {
+   "violations": 1,
+   "of": 2000,
+   "first": [
+    957
+   ],
+   "detail": "passing TDs vs receiving TDs",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "MIA:TARGETS_LE_ATTEMPTS": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "club targets vs club pass attempts",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "MIA:POINTS_GE_6_PER_TD": {
+   "violations": 61,
+   "of": 2000,
+   "first": [
+    47,
+    57,
+    67,
+    87,
+    110
+   ],
+   "detail": "published club points vs 6 x offensive TDs in the same world",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "CIN:PASS_YDS_EQ_REC_YDS": {
+   "violations": 1919,
+   "of": 2000,
+   "first": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "detail": "gross passing minus receiving yards",
+   "legitimate_exception_available": "NONE_REPRESENTED",
+   "mean_diff": -6.056,
+   "max_abs_diff": 108.2,
+   "tolerance": 1.1
+  },
+  "CIN:PASS_TD_EQ_REC_TD": {
+   "violations": 4,
+   "of": 2000,
+   "first": [
+    620,
+    833,
+    964,
+    1953
+   ],
+   "detail": "passing TDs vs receiving TDs",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "CIN:TARGETS_LE_ATTEMPTS": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "club targets vs club pass attempts",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "CIN:POINTS_GE_6_PER_TD": {
+   "violations": 66,
+   "of": 2000,
+   "first": [
+    22,
+    28,
+    51,
+    106,
+    166
+   ],
+   "detail": "published club points vs 6 x offensive TDs in the same world",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "NYJ:PASS_YDS_EQ_REC_YDS": {
+   "violations": 1913,
+   "of": 2000,
+   "first": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "detail": "gross passing minus receiving yards",
+   "legitimate_exception_available": "NONE_REPRESENTED",
+   "mean_diff": 16.765,
+   "max_abs_diff": 120.0,
+   "tolerance": 1.15
+  },
+  "NYJ:PASS_TD_EQ_REC_TD": {
+   "violations": 5,
+   "of": 2000,
+   "first": [
+    108,
+    230,
+    1374,
+    1426,
+    1689
+   ],
+   "detail": "passing TDs vs receiving TDs",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "NYJ:TARGETS_LE_ATTEMPTS": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "club targets vs club pass attempts",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "NYJ:POINTS_GE_6_PER_TD": {
+   "violations": 54,
+   "of": 2000,
+   "first": [
+    4,
+    21,
+    39,
+    56,
+    77
+   ],
+   "detail": "published club points vs 6 x offensive TDs in the same world",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "CLE:PASS_YDS_EQ_REC_YDS": {
+   "violations": 1911,
+   "of": 2000,
+   "first": [
+    0,
+    2,
+    3,
+    4,
+    5
+   ],
+   "detail": "gross passing minus receiving yards",
+   "legitimate_exception_available": "NONE_REPRESENTED",
+   "mean_diff": -3.014,
+   "max_abs_diff": 97.7,
+   "tolerance": 1.05
+  },
+  "CLE:PASS_TD_EQ_REC_TD": {
+   "violations": 1,
+   "of": 2000,
+   "first": [
+    168
+   ],
+   "detail": "passing TDs vs receiving TDs",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "CLE:TARGETS_LE_ATTEMPTS": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "club targets vs club pass attempts",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "CLE:POINTS_GE_6_PER_TD": {
+   "violations": 65,
+   "of": 2000,
+   "first": [
+    36,
+    138,
+    155,
+    184,
+    190
+   ],
+   "detail": "published club points vs 6 x offensive TDs in the same world",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "TEN:PASS_YDS_EQ_REC_YDS": {
+   "violations": 1897,
+   "of": 2000,
+   "first": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "detail": "gross passing minus receiving yards",
+   "legitimate_exception_available": "NONE_REPRESENTED",
+   "mean_diff": 4.686,
+   "max_abs_diff": 79.2,
+   "tolerance": 1.0
+  },
+  "TEN:PASS_TD_EQ_REC_TD": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "passing TDs vs receiving TDs",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "TEN:TARGETS_LE_ATTEMPTS": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "club targets vs club pass attempts",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "TEN:POINTS_GE_6_PER_TD": {
+   "violations": 77,
+   "of": 2000,
+   "first": [
+    3,
+    24,
+    40,
+    46,
+    49
+   ],
+   "detail": "published club points vs 6 x offensive TDs in the same world",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "HOU:PASS_YDS_EQ_REC_YDS": {
+   "violations": 1885,
+   "of": 2000,
+   "first": [
+    0,
+    2,
+    3,
+    4,
+    5
+   ],
+   "detail": "gross passing minus receiving yards",
+   "legitimate_exception_available": "NONE_REPRESENTED",
+   "mean_diff": 0.18,
+   "max_abs_diff": 92.0,
+   "tolerance": 1.25
+  },
+  "HOU:PASS_TD_EQ_REC_TD": {
+   "violations": 5,
+   "of": 2000,
+   "first": [
+    109,
+    533,
+    747,
+    878,
+    1474
+   ],
+   "detail": "passing TDs vs receiving TDs",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "HOU:TARGETS_LE_ATTEMPTS": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "club targets vs club pass attempts",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "HOU:POINTS_GE_6_PER_TD": {
+   "violations": 69,
+   "of": 2000,
+   "first": [
+    11,
+    22,
+    26,
+    27,
+    36
+   ],
+   "detail": "published club points vs 6 x offensive TDs in the same world",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "PIT:PASS_YDS_EQ_REC_YDS": {
+   "violations": 1784,
+   "of": 2000,
+   "first": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "detail": "gross passing minus receiving yards",
+   "legitimate_exception_available": "NONE_REPRESENTED",
+   "mean_diff": -3.156,
+   "max_abs_diff": 42.7,
+   "tolerance": 0.95
+  },
+  "PIT:PASS_TD_EQ_REC_TD": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "passing TDs vs receiving TDs",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "PIT:TARGETS_LE_ATTEMPTS": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "club targets vs club pass attempts",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "PIT:POINTS_GE_6_PER_TD": {
+   "violations": 78,
+   "of": 2000,
+   "first": [
+    26,
+    35,
+    38,
+    40,
+    79
+   ],
+   "detail": "published club points vs 6 x offensive TDs in the same world",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "IND:PASS_YDS_EQ_REC_YDS": {
+   "violations": 1881,
+   "of": 2000,
+   "first": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "detail": "gross passing minus receiving yards",
+   "legitimate_exception_available": "NONE_REPRESENTED",
+   "mean_diff": 4.129,
+   "max_abs_diff": 69.8,
+   "tolerance": 1.1
+  },
+  "IND:PASS_TD_EQ_REC_TD": {
+   "violations": 3,
+   "of": 2000,
+   "first": [
+    759,
+    865,
+    1399
+   ],
+   "detail": "passing TDs vs receiving TDs",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "IND:TARGETS_LE_ATTEMPTS": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "club targets vs club pass attempts",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "IND:POINTS_GE_6_PER_TD": {
+   "violations": 59,
+   "of": 2000,
+   "first": [
+    51,
+    54,
+    102,
+    118,
+    120
+   ],
+   "detail": "published club points vs 6 x offensive TDs in the same world",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "NE:PASS_YDS_EQ_REC_YDS": {
+   "violations": 1917,
+   "of": 2000,
+   "first": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "detail": "gross passing minus receiving yards",
+   "legitimate_exception_available": "NONE_REPRESENTED",
+   "mean_diff": 16.666,
+   "max_abs_diff": 116.7,
+   "tolerance": 1.05
+  },
+  "NE:PASS_TD_EQ_REC_TD": {
+   "violations": 6,
+   "of": 2000,
+   "first": [
+    10,
+    373,
+    975,
+    1191,
+    1251
+   ],
+   "detail": "passing TDs vs receiving TDs",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "NE:TARGETS_LE_ATTEMPTS": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "club targets vs club pass attempts",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "NE:POINTS_GE_6_PER_TD": {
+   "violations": 57,
+   "of": 2000,
+   "first": [
+    47,
+    107,
+    164,
+    242,
+    275
+   ],
+   "detail": "published club points vs 6 x offensive TDs in the same world",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "LV:PASS_YDS_EQ_REC_YDS": {
+   "violations": 1854,
+   "of": 2000,
+   "first": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "detail": "gross passing minus receiving yards",
+   "legitimate_exception_available": "NONE_REPRESENTED",
+   "mean_diff": 5.861,
+   "max_abs_diff": 137.2,
+   "tolerance": 1.15
+  },
+  "LV:PASS_TD_EQ_REC_TD": {
+   "violations": 4,
+   "of": 2000,
+   "first": [
+    185,
+    207,
+    1953,
+    1962
+   ],
+   "detail": "passing TDs vs receiving TDs",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "LV:TARGETS_LE_ATTEMPTS": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "club targets vs club pass attempts",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "LV:POINTS_GE_6_PER_TD": {
+   "violations": 77,
+   "of": 2000,
+   "first": [
+    33,
+    44,
+    99,
+    123,
+    150
+   ],
+   "detail": "published club points vs 6 x offensive TDs in the same world",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "NO:PASS_YDS_EQ_REC_YDS": {
+   "violations": 1902,
+   "of": 2000,
+   "first": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "detail": "gross passing minus receiving yards",
+   "legitimate_exception_available": "NONE_REPRESENTED",
+   "mean_diff": -5.935,
+   "max_abs_diff": 110.8,
+   "tolerance": 1.45
+  },
+  "NO:PASS_TD_EQ_REC_TD": {
+   "violations": 5,
+   "of": 2000,
+   "first": [
+    231,
+    951,
+    1027,
+    1451,
+    1569
+   ],
+   "detail": "passing TDs vs receiving TDs",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "NO:TARGETS_LE_ATTEMPTS": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "club targets vs club pass attempts",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "NO:POINTS_GE_6_PER_TD": {
+   "violations": 60,
+   "of": 2000,
+   "first": [
+    15,
+    17,
+    91,
+    156,
+    185
+   ],
+   "detail": "published club points vs 6 x offensive TDs in the same world",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "MIN:PASS_YDS_EQ_REC_YDS": {
+   "violations": 1905,
+   "of": 2000,
+   "first": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "detail": "gross passing minus receiving yards",
+   "legitimate_exception_available": "NONE_REPRESENTED",
+   "mean_diff": -7.569,
+   "max_abs_diff": 91.6,
+   "tolerance": 1.1
+  },
+  "MIN:PASS_TD_EQ_REC_TD": {
+   "violations": 3,
+   "of": 2000,
+   "first": [
+    473,
+    718,
+    1002
+   ],
+   "detail": "passing TDs vs receiving TDs",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "MIN:TARGETS_LE_ATTEMPTS": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "club targets vs club pass attempts",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "MIN:POINTS_GE_6_PER_TD": {
+   "violations": 69,
+   "of": 2000,
+   "first": [
+    49,
+    74,
+    76,
+    102,
+    134
+   ],
+   "detail": "published club points vs 6 x offensive TDs in the same world",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "WAS:PASS_YDS_EQ_REC_YDS": {
+   "violations": 1827,
+   "of": 2000,
+   "first": [
+    0,
+    1,
+    2,
+    3,
+    5
+   ],
+   "detail": "gross passing minus receiving yards",
+   "legitimate_exception_available": "NONE_REPRESENTED",
+   "mean_diff": -1.688,
+   "max_abs_diff": 91.1,
+   "tolerance": 1.15
+  },
+  "WAS:PASS_TD_EQ_REC_TD": {
+   "violations": 19,
+   "of": 2000,
+   "first": [
+    21,
+    155,
+    165,
+    174,
+    258
+   ],
+   "detail": "passing TDs vs receiving TDs",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "WAS:TARGETS_LE_ATTEMPTS": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "club targets vs club pass attempts",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "WAS:POINTS_GE_6_PER_TD": {
+   "violations": 66,
+   "of": 2000,
+   "first": [
+    0,
+    63,
+    74,
+    104,
+    126
+   ],
+   "detail": "published club points vs 6 x offensive TDs in the same world",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "NYG:PASS_YDS_EQ_REC_YDS": {
+   "violations": 1834,
+   "of": 2000,
+   "first": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "detail": "gross passing minus receiving yards",
+   "legitimate_exception_available": "NONE_REPRESENTED",
+   "mean_diff": -7.599,
+   "max_abs_diff": 71.8,
+   "tolerance": 1.15
+  },
+  "NYG:PASS_TD_EQ_REC_TD": {
+   "violations": 6,
+   "of": 2000,
+   "first": [
+    167,
+    591,
+    875,
+    885,
+    1107
+   ],
+   "detail": "passing TDs vs receiving TDs",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "NYG:TARGETS_LE_ATTEMPTS": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "club targets vs club pass attempts",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "NYG:POINTS_GE_6_PER_TD": {
+   "violations": 76,
+   "of": 2000,
+   "first": [
+    14,
+    29,
+    89,
+    113,
+    154
+   ],
+   "detail": "published club points vs 6 x offensive TDs in the same world",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "REC_LE_TARGETS": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "any player with receptions > targets (per world)",
+   "legitimate_exception_available": "NONE_REPRESENTED"
+  },
+  "YDS_WITHOUT_CATCH": {
+   "violations": 2000,
+   "of": 2000,
+   "first": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "detail": "any player with receiving yards and no reception (per world)",
+   "legitimate_exception_available": "NONE_REPRESENTED",
+   "player_world_cells": 25755
+  },
+  "REC_TD_WITHOUT_CATCH": {
+   "violations": 1809,
+   "of": 2000,
+   "first": [
+    0,
+    1,
+    3,
+    4,
+    5
+   ],
+   "detail": "any player with a receiving TD and no reception (per world)",
+   "legitimate_exception_available": "NONE_REPRESENTED",
+   "player_world_cells": 4704
+  },
+  "INT_LE_ATTEMPTS": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "any passer with more interceptions than attempts (per world)",
+   "legitimate_exception_available": "NOT_APPLICABLE"
+  },
+  "INACTIVE_NO_EVENTS": {
+   "violations": 0,
+   "of": 2000,
+   "first": [],
+   "detail": "0 ordinary-OUT players carried in the worlds",
+   "legitimate_exception_available": "NOT_APPLICABLE",
+   "out_players_in_worlds": []
+  },
+  "DK_FROM_PUBLISHED": {
+   "players": 362,
+   "violations": 0,
+   "of": 724000,
+   "bonus_line_storage_rounding_cells": 27,
+   "first": [],
+   "detail": "player-world cells whose scored DK is not reproduced by the published stat line within 0.06 points and half a yard-storage unit"
+  }
+ },
+ "READING": "a violation is a published world that breaks an ordinary-event law with no represented exception. It is a correctness finding about the incumbent, not a gate (no gate is changed)."
+}
