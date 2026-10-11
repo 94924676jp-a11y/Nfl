@@ -334,8 +334,14 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
     # packet absences feed the depth logic too: the next healthy player moves up behind them
     out_gsis |= {(ids.get(dk) or {}).get('gsis_id') for dk, v in pres.items()
                  if v['status'] in AV.ABSENT_STATUSES and (ids.get(dk) or {}).get('gsis_id')}
+    # OWNER RULING 2026-10-11 (modified): a roster snapshot alone never zeroes a player. When the slate declares
+    # `roster_reserve_corroboration`, only players it names (each with time-appropriate evidence of an unavailable
+    # status) AND whose captured roster status is RES / EXE / CUT are absent; everyone else stays as the incumbent
+    # had him (and remains blocked at upload by the roster-eligibility gate).
+    corroborated = files.get('roster_reserve_corroboration')
     reserve_gsis = {g for g, st_ in roster_status.items()
-                    if st_ in AV.ROSTER_STATUSES_NOT_ACTIVE and g not in activation_reported}
+                    if st_ in AV.ROSTER_STATUSES_NOT_ACTIVE and g not in activation_reported
+                    and (corroborated is None or g in corroborated)}
     out_gsis |= reserve_gsis
     for r in pool_rows:
         dk_id, nm, team, pos = r['dk_id'], r['dk_name'], r['team'], r['dk_pos']

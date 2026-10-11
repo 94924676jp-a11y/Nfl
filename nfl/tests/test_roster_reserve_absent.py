@@ -40,10 +40,17 @@ def test_02_reserve_players_absent_on_w5_pool():
     o = CS.build('2026W5', as_of=AS_OF, write=False)
     check(o.state.value == 'PASS', f'W5 state builds: {o.state.value} {o.code}')
     P = o.value['players']
-    for nm, tm in (('Josh Jacobs', 'GB'), ("De'Von Achane", 'MIA'), ('Travis Etienne Jr.', 'NO'), ('Josh Oliver', 'MIN')):
+    for nm, tm in (('Josh Oliver', 'MIN'), ('A.J. Brown', 'NE'), ('Jeremy McNichols', 'WAS')):
         a = _row(P, nm, tm)['current_availability']
         check(a['status'] == AV.NOT_ON_ACTIVE_ROSTER_CAPTURED and a['tier'] == AV.TIER_ROSTER_STATUS,
-              f'{nm} ({a.get("roster_status_captured")}) is NOT_ON_ACTIVE_ROSTER_CAPTURED')
+              f'{nm} ({a.get("roster_status_captured")}, corroborated) is NOT_ON_ACTIVE_ROSTER_CAPTURED')
+    # a roster snapshot alone never zeroes a player (owner ruling, modified)
+    for nm, tm in (('Josh Jacobs', 'GB'), ("De'Von Achane", 'MIA'), ('Travis Etienne Jr.', 'NO')):
+        a = _row(P, nm, tm)['current_availability']
+        check(a['status'] == AV.UNKNOWN_ACTIVE_STATE and a['roster_status_captured'] in AV.ROSTER_STATUSES_NOT_ACTIVE,
+              f'{nm} ({a.get("roster_status_captured")}, uncorroborated) stays UNKNOWN_ACTIVE_STATE')
+    n = sum(1 for v in P.values() if v['current_availability']['status'] == AV.NOT_ON_ACTIVE_ROSTER_CAPTURED)
+    check(n == 5, f'exactly the 5 corroborated players are absent on roster grounds ({n})')
     for nm, tm in (('Tim Patrick', 'NYJ'), ('Ben Yurosek', 'MIN')):
         a = _row(P, nm, tm)['current_availability']
         check(a['status'] == AV.UNKNOWN_ACTIVE_STATE and a['roster_activation_reported'],

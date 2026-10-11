@@ -523,7 +523,7 @@ def build(slate_id: str, *, write: bool = True) -> Outcome:
                         'td': {kk: _f(vv, 3) for kk, vv in (r.get('td') or {}).items() if kk in ('rec_td', 'rush_td', 'pass_td')},
                         'role_band': r.get('role_band'), 'distribution': dist,
                         'change_from_previous_run': (_f((dist or {}).get('dk_mean', 0) - prev_proj[k])
-                                                     if k in prev_proj and dist else None)},
+                                                     if prev_proj.get(k) is not None and dist else None)},
                     'uncertainty': {'role_confidence': r.get('prior_confidence'), 'prior_tier': r.get('prior_tier'),
                                     'availability_confidence': av.get('tier'),
                                     'sample_games_2026': mu.get('games', 0), 'conflicts': conflicts},

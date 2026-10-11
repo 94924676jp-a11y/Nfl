@@ -94,6 +94,15 @@ SLATES = {
                'transactions': 'nfl/dfs/salaries/classic_early_2026W5/transactions/TRANSACTIONS_2026W5.json',
                # RES in the 10-10 07:41Z roster capture (unchanged at 10-11 13:13Z); activation reported Saturday
                # only through the ESPN injury feed (capture 20261011T131306Z), not yet in any roster capture.
+               # Owner ruling 2026-10-11 (modified): only these five are zeroed. Each is RES in the roster capture AND
+               # listed 'Injured Reserve' in the ESPN injury feed capture 20261011T131306Z (feed 13:13:03Z). The other
+               # 44 RES/EXE/CUT players have no current corroboration and stay unresolved.
+               'roster_reserve_corroboration': {
+                   '00-0035249': "Josh Oliver (MIN): ESPN 'Injured Reserve' 2026-09-30T00:26Z",
+                   '00-0035676': "A.J. Brown (NE): ESPN 'Injured Reserve' 2026-10-07T18:07Z",
+                   '00-0034419': "Braxton Berrios (NYG): ESPN 'Injured Reserve' 2026-10-07T23:25Z",
+                   '00-0040164': "Jaylin Lane (WAS): ESPN 'Injured Reserve' 2026-10-06T23:14Z",
+                   '00-0033955': "Jeremy McNichols (WAS): ESPN 'Injured Reserve' 2026-10-11T01:00Z, ruled out"},
                'roster_activation_reported': {
                    '00-0033375': 'Tim Patrick (NYJ): "The Jets activated Patrick (groin) from injured reserve '
                                  'Saturday" -- ESPN feed 2026-10-11T00:24Z',
