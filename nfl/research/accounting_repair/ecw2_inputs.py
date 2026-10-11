@@ -132,6 +132,10 @@ def main() -> int:
                              'measured_by': 'ecw2_inputs.py'},
            'benchmark_receiving_yards_cv_gt2_catches': {'n_player_seasons': len(cvs),
                                                          'median_cv': round(statistics.median(cvs), 4) if cvs else None,
+                                                         'games_per_player_season': sorted(len(v) for v in
+                                                                                           by_player.values()
+                                                                                           if len(v) >= 6 and
+                                                                                           statistics.mean(v) > 0),
                                                          'definition': 'within player-season SD/mean of single-game '
                                                                        'receiving yards, games with > 2 catches, '
                                                                        'player-seasons with >= 6 such games'}}
