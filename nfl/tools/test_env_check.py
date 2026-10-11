@@ -16,10 +16,11 @@ WHAT IS CHECKED, and how each input is reproduced:
                            equal the PASS row of nfl/vintage_manifest.jsonl that names it. These are scheduled-capture
                            outputs (nflverse public data); the committed manifest is their provenance.
                            REPRODUCE: re-run the capture that produced them, or copy from a checkout that has them
-                           and let this tool verify every hash; an unverifiable file is MISMATCH, never OK.
+                           and let this tool verify every hash; a file no manifest row names is UNVERIFIABLE,
+                           never OK, and makes the environment INCOMPLETE (no provenance, no completeness).
   python packages          numpy and pandas importable (rebuild_derived.sh installs them into PYLIB).
 
-Exit 0 COMPLETE; 2 INCOMPLETE (anything MISSING or MISMATCH). Read-only: it writes nothing but --json.
+Exit 0 COMPLETE; 2 INCOMPLETE (anything MISSING, MISMATCH or UNVERIFIABLE). Read-only: writes nothing but --json.
 """
 from __future__ import annotations
 
@@ -31,7 +32,7 @@ import re
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-SPEC_VERSION = 'test-env-check-1'
+SPEC_VERSION = 'test-env-check-2'
 
 
 def _sha(p):
@@ -116,7 +117,7 @@ def packages():
 def check(root=ROOT):
     d, gen = derived(root)
     rows = d + vintage_raw(root) + packages()
-    bad = [r for r in rows if r['state'] in ('MISSING', 'MISMATCH')]
+    bad = [r for r in rows if r['state'] in ('MISSING', 'MISMATCH', 'UNVERIFIABLE')]
     return {'ARTIFACT': 'TEST_ENVIRONMENT_CHECK', 'spec_version': SPEC_VERSION, 'root': str(root),
             'derived_manifest_generation': gen, 'verdict': 'INCOMPLETE' if bad else 'COMPLETE',
             'n_inputs': len(rows), 'n_missing': sum(r['state'] == 'MISSING' for r in rows),

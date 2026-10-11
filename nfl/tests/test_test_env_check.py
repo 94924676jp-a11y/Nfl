@@ -88,6 +88,8 @@ def test_04_a_raw_file_with_no_manifest_row_is_unverifiable_not_ok():
     s = _states(TE.check(d))
     raw = [v for k, v in s.items() if k.startswith('nfl_vintage/raw/')]
     check('a raw file whose hash no manifest row records is UNVERIFIABLE, never OK', raw == ['UNVERIFIABLE'], str(s))
+    check('  and an input without provenance makes the environment INCOMPLETE', TE.check(d)['verdict'] == 'INCOMPLETE',
+          TE.check(d)['verdict'])
 
 
 def test_zz_every_check_passed():

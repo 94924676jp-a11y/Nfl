@@ -90,29 +90,40 @@ def decide(payload: dict) -> dict | None:
             f'or do it in the right mode.')}}
 
 
+def _record_guard_failure(arg, rule: str, e: BaseException) -> None:
+    """A git_guard that could not load or run leaves a would-deny record, written without importing it, so the
+    failure is visible in the report log and never reads as "nothing to report" (Phase 1 fail-closed review)."""
+    import datetime as _dt
+    try:
+        log = pathlib.Path(os.environ.get('NFL_GUARD_REPORT_LOG')
+                           or ROOT / 'coordination' / 'runs' / 'guard_reports' / 'git_guard.jsonl')
+        log.parent.mkdir(parents=True, exist_ok=True)
+        with open(log, 'a') as fh:
+            fh.write(json.dumps({
+                'at': _dt.datetime.now(_dt.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ'), 'spec': 'mode-guard-fallback-1',
+                'tool': arg.get('tool_name') if isinstance(arg, dict) else None, 'would_decision': 'DENY',
+                'enforcement': 'UNKNOWN_GUARD_NOT_RUN',
+                'findings': [{'rule': rule, 'protected': True, 'detail': f'{type(e).__name__}: {e}'}]}) + '\n')
+    except OSError:
+        pass
+
+
 def _git_guard(fn: str, arg):
     """Phase 1 N2 (owner approval 2026-10-10): coordination/git_guard.py, REPORT-ONLY. It records every git/PR
     operation it classifies and returns a decision only once the owner has approved enforcement, so while it is
     REPORT_ONLY this hook's output is exactly what it was before. A broken git_guard never changes the mode
-    decision below; it says so on stderr."""
+    decision; it says so on stderr and in the report log (GUARD_IMPORT_FAILED vs GUARD_ERROR)."""
     try:
         from coordination import git_guard as G
+    except Exception as e:  # noqa: BLE001
+        print(f'git_guard: NOT_EXECUTED import {type(e).__name__}: {e}', file=sys.stderr)
+        _record_guard_failure(arg, 'GUARD_IMPORT_FAILED', e)
+        return None
+    try:
         return getattr(G, fn)(arg)
     except Exception as e:  # noqa: BLE001
         print(f'git_guard: NOT_EXECUTED {type(e).__name__}: {e}', file=sys.stderr)
-        # a guard that cannot run leaves a would-deny record, written without importing it, so the failure is
-        # visible in the report log and never reads as "nothing to report" (Phase 1 fail-closed review)
-        try:
-            log = pathlib.Path(os.environ.get('NFL_GUARD_REPORT_LOG')
-                               or ROOT / 'coordination' / 'runs' / 'guard_reports' / 'git_guard.jsonl')
-            log.parent.mkdir(parents=True, exist_ok=True)
-            with open(log, 'a') as fh:
-                fh.write(json.dumps({'tool': (arg or {}).get('tool_name') if isinstance(arg, dict) else None,
-                                     'would_decision': 'DENY', 'enforcement': 'UNKNOWN_GUARD_NOT_LOADED',
-                                     'findings': [{'rule': 'GUARD_IMPORT_FAILED', 'protected': True,
-                                                   'detail': f'{type(e).__name__}: {e}'}]}) + '\n')
-        except OSError:
-            pass
+        _record_guard_failure(arg, 'GUARD_ERROR', e)
         return None
 
 
@@ -124,16 +135,21 @@ def main() -> int:
         _git_guard('observe_invalid', raw)     # recorded as a fail-closed would-deny; no decision while REPORT_ONLY
         return 0
     try:
-        d = decide(payload)
+        d = decide(payload) if isinstance(payload, dict) else None
     except Exception as e:  # noqa: BLE001
         # a guard that crashes must not silently allow: say so on stderr, deny nothing, and let the
         # retrospective check catch it. (exit 2 would block every tool call on a broken guard.)
         print(f'mode_guard: NOT_EXECUTED {type(e).__name__}: {e}', file=sys.stderr)
         d = None
+    if d:
+        # the mode guard's own decision is printed FIRST and git_guard is not consulted for a call that is denied
+        # anyway, so a slow or failing git_guard can never delay or lose an existing deny (Phase 1 review, item 3)
+        print(json.dumps(d))
+        sys.stdout.flush()
+        return 0
     g = _git_guard('observe', payload)
-    out = d or g
-    if out:
-        print(json.dumps(out))
+    if g:
+        print(json.dumps(g))
     return 0
 
 

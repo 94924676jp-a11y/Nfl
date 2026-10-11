@@ -68,7 +68,13 @@ def main(transcript, base_guard, out):
     from coordination import git_guard as GG
     new = load(ROOT / 'coordination' / 'mode_guard.py', 'mode_guard_new')
     old = load(base_guard, 'mode_guard_old')
+    # The base copy lives outside the worktree, so its own ROOT (parents[1] of its file) is wrong and every path
+    # would resolve outside "the repository": it would never deny anything and the comparison would be vacuous.
+    # Found 2026-10-11; every identity result before this line was made with that defect and is superseded.
+    old.ROOT = new.ROOT
+    assert old.ROOT == ROOT, (old.ROOT, ROOT)
     rows, flagged, differ = [], [], []
+    denied_old = denied_new = 0
     by_tool = collections.Counter()
     t0 = time.time()
     for p in calls(transcript):
@@ -77,17 +83,22 @@ def main(transcript, base_guard, out):
         if prot:
             flagged.append({'tool': p['tool_name'], 'summary': GG._summary(p), 'findings': prot})
         o, n = hook_stdout(old, p), hook_stdout(new, p)
+        denied_old += '"deny"' in o[1]
+        denied_new += '"deny"' in n[1]
         if o != n:
             differ.append({'tool': p['tool_name'], 'summary': GG._summary(p), 'old': o, 'new': n})
         rows.append(1)
     res = {'transcript': str(transcript), 'n_calls': len(rows), 'by_tool': dict(by_tool),
            'n_protected_flagged': len(flagged), 'flagged': flagged,
            'n_hook_stdout_differs_old_vs_new': len(differ), 'differ': differ[:50],
+           'n_denied_by_base_mode_guard': denied_old, 'n_denied_by_phase1_mode_guard': denied_new,
+           'IDENTITY_IS_INFORMATIVE': denied_old > 0,
            'seconds': round(time.time() - t0, 1),
            'per_call_ms': round(1000 * (time.time() - t0) / max(1, len(rows)) / 2, 2)}
     pathlib.Path(out).write_text(json.dumps(res, indent=1) + '\n')
     print(f"{res['n_calls']} real calls {res['by_tool']}; protected-flagged {len(flagged)}; "
-          f"hook stdout differs old vs new: {len(differ)}; {res['per_call_ms']} ms/call/guard")
+          f"hook stdout differs old vs new: {len(differ)}; denied base/new {denied_old}/{denied_new}; "
+          f"{res['per_call_ms']} ms/call/guard")
 
 
 if __name__ == '__main__':
