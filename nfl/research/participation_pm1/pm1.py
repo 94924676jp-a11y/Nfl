@@ -224,10 +224,16 @@ def _logistic_calibration(ps, ys):
     """(intercept, slope) of logit(P(y=1)) = a + b * logit(p), Newton-Raphson."""
     xs = [_logit(p) for p in ps]
     a, b = 0.0, 1.0
+
+    def sig(z):                      # numerically stable; identical to 1/(1+e^-z) wherever that does not overflow
+        if z >= 0:
+            return 1 / (1 + math.exp(-z))
+        e = math.exp(z)
+        return e / (1 + e)
     for _ in range(50):
         ga = gb = haa = hab = hbb = 0.0
         for x, y in zip(xs, ys):
-            m = 1 / (1 + math.exp(-(a + b * x)))
+            m = sig(a + b * x)
             w = m * (1 - m)
             ga += y - m
             gb += (y - m) * x
@@ -238,6 +244,9 @@ def _logistic_calibration(ps, ys):
         if det <= 1e-12:
             break
         da, db = (hbb * ga - hab * gb) / det, (haa * gb - hab * ga) / det
+        step = max(abs(da), abs(db))
+        if step > 5:                 # damp a divergent Newton step (a near-separated bootstrap replicate)
+            da, db = da * 5 / step, db * 5 / step
         a, b = a + da, b + db
         if abs(da) + abs(db) < 1e-9:
             break
