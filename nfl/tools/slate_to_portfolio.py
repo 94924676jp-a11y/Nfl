@@ -332,7 +332,10 @@ def s8_validate(chosen, players, absent, entries):
                       f'{len(chosen)} lineups, every check clean')
 
 
-def s9_emit_csv(chosen, entries, players, out=OUT_CSV):
+def s9_emit_csv(chosen, entries, players, out=None):
+    # Resolved at call time, not bound at import: a default of OUT_CSV froze the path when the module loaded, so a
+    # caller that redirected OUT_CSV (the test, to a temporary root) still wrote the tracked repository file.
+    out = OUT_CSV if out is None else out
     rows = [list(DK_HEADER)]
     for e, c in zip(entries, chosen):
         by_pos = collections.defaultdict(list)
@@ -354,7 +357,7 @@ def s9_emit_csv(chosen, entries, players, out=OUT_CSV):
                     + cells)
     with out.open('w', newline='', encoding='utf-8') as fh:
         csv.writer(fh).writerows(rows)
-    return Outcome.ok('CSV_WRITTEN', str(out.relative_to(_REPO)),
+    return Outcome.ok('CSV_WRITTEN', str(out.relative_to(_REPO) if out.is_relative_to(_REPO) else out),
                       f'{len(rows) - 1} entry rows',
                       sha256=hashlib.sha256(out.read_bytes()).hexdigest())
 
