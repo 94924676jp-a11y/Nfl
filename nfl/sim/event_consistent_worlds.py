@@ -375,8 +375,8 @@ def _build(art, rows_by_key, int_rate, seed, anchor, kicker_inputs, incumbent_se
                 cv_t = min(cv_t, cv_raw)
                 if cv_raw > 0:
                     club_w = np.where(live, 1.0 + (club_w - 1.0) * (cv_t / cv_raw), club_w)
-                acc['club_factor_spread'] = {'cv_raw': round(cv_raw, 5), 'cv_target': round(cv_t, 5),
-                                             'mean_catches': round(m_c, 3)}
+                acc.update({'club_factor_cv_raw': round(cv_raw, 5), 'club_factor_cv_target': round(cv_t, 5),
+                            'club_mean_catches': round(m_c, 3)})   # scalars: the slate's per-game account keeps these
             rng_c = _rng(seed, c, 'catch_shape')
         for k, y, r in zip(recs, cv_ry, cv_rc):
             tg, rc, ry = S[k][:, _I['targets']], S[k][:, _I['receptions']], S[k][:, _I['rec_yards']]
