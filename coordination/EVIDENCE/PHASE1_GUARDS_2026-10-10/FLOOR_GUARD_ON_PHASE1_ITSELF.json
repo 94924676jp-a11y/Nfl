@@ -1,0 +1,202 @@
+{
+ "ARTIFACT": "FLOOR_GUARD_REPORT",
+ "spec_version": "floor-guard-2",
+ "enforcement": "REPORT_ONLY",
+ "repo": "/home/user/nfl-phase1",
+ "base": "0c5bf600",
+ "head": "WORKTREE",
+ "base_sha": "0c5bf600f3f20750d6eb84299edffe7ea09a3b21",
+ "merge_base_sha": "0c5bf600f3f20750d6eb84299edffe7ea09a3b21",
+ "head_sha": null,
+ "n_files_changed": 40,
+ "n_findings": 13,
+ "n_info": 6,
+ "by_rule": {
+  "GOVERNANCE_OR_SAFEGUARD_CHANGED": 4,
+  "BROAD_EXCEPT_PASS_ADDED": 1,
+  "SUPPRESSION_ADDED": 7,
+  "SKIP_ADDED": 3,
+  "TEST_EARLY_RETURN": 4
+ },
+ "verdict": "FINDINGS",
+ "findings": [
+  {
+   "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+   "severity": "high",
+   "path": ".claude/settings.json",
+   "detail": "an owner-authority or approval file, or a safeguard itself, changed",
+   "evidence": {
+    "status": "M"
+   },
+   "authorization": "NONE_RECORDED"
+  },
+  {
+   "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+   "severity": "high",
+   "path": "coordination/git_guard.py",
+   "detail": "an owner-authority or approval file, or a safeguard itself, changed",
+   "evidence": {
+    "status": "A"
+   },
+   "authorization": "NONE_RECORDED"
+  },
+  {
+   "rule": "BROAD_EXCEPT_PASS_ADDED",
+   "severity": "medium",
+   "path": "coordination/git_guard.py",
+   "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)",
+   "evidence": {},
+   "authorization": "NONE_RECORDED"
+  },
+  {
+   "rule": "SUPPRESSION_ADDED",
+   "severity": "info",
+   "path": "coordination/git_guard.py",
+   "detail": "6 new lint/type/coverage suppression(s)",
+   "evidence": {},
+   "authorization": "NONE_RECORDED"
+  },
+  {
+   "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+   "severity": "high",
+   "path": "coordination/mode_guard.py",
+   "detail": "an owner-authority or approval file, or a safeguard itself, changed",
+   "evidence": {
+    "status": "M"
+   },
+   "authorization": "NONE_RECORDED"
+  },
+  {
+   "rule": "SUPPRESSION_ADDED",
+   "severity": "info",
+   "path": "coordination/mode_guard.py",
+   "detail": "2 new lint/type/coverage suppression(s)",
+   "evidence": {},
+   "authorization": "NONE_RECORDED"
+  },
+  {
+   "rule": "SUPPRESSION_ADDED",
+   "severity": "medium",
+   "path": "nfl/tests/test_floor_guard.py",
+   "detail": "5 new lint/type/coverage suppression(s)",
+   "evidence": {},
+   "authorization": "NONE_RECORDED"
+  },
+  {
+   "rule": "SKIP_ADDED",
+   "severity": "info",
+   "path": "nfl/tests/test_git_guard.py",
+   "detail": "1 skip path(s) added (new module)",
+   "evidence": {
+    "lines": [
+     "BLOCKED += 1"
+    ]
+   },
+   "authorization": "NONE_RECORDED"
+  },
+  {
+   "rule": "SUPPRESSION_ADDED",
+   "severity": "medium",
+   "path": "nfl/tests/test_git_guard.py",
+   "detail": "2 new lint/type/coverage suppression(s)",
+   "evidence": {},
+   "authorization": "NONE_RECORDED"
+  },
+  {
+   "rule": "TEST_EARLY_RETURN",
+   "severity": "high",
+   "path": "nfl/tests/test_showdown_run_guards.py",
+   "detail": "test_football_model_completeness now returns before its checks have run",
+   "evidence": {},
+   "authorization": "NONE_RECORDED"
+  },
+  {
+   "rule": "SKIP_ADDED",
+   "severity": "high",
+   "path": "nfl/tests/test_showdown_run_guards.py",
+   "detail": "3 skip path(s) added",
+   "evidence": {
+    "lines": [
+     "BLOCKED += 1",
+     "return _blocked('real TB@DAL states', f'usage panel {po.state.value}[{po.code}]')",
+     "_blocked(scen, f'{p.relative_to(_REPO)} absent')    # was a silent skip"
+    ]
+   },
+   "authorization": "NONE_RECORDED"
+  },
+  {
+   "rule": "TEST_EARLY_RETURN",
+   "severity": "high",
+   "path": "nfl/tests/test_sunday_prelock_p0.py",
+   "detail": "test_admitted_starter_defeats_the_chart_without_inactivating_the_incumbent now returns before its checks have run",
+   "evidence": {},
+   "authorization": "NONE_RECORDED"
+  },
+  {
+   "rule": "TEST_EARLY_RETURN",
+   "severity": "high",
+   "path": "nfl/tests/test_sunday_prelock_p0.py",
+   "detail": "test_a_transferred_player_carries_no_other_clubs_usage now returns before its checks have run",
+   "evidence": {},
+   "authorization": "NONE_RECORDED"
+  },
+  {
+   "rule": "TEST_EARLY_RETURN",
+   "severity": "high",
+   "path": "nfl/tests/test_sunday_prelock_p0.py",
+   "detail": "test_the_state_keeps_the_secondary_injury now returns before its checks have run",
+   "evidence": {},
+   "authorization": "NONE_RECORDED"
+  },
+  {
+   "rule": "SKIP_ADDED",
+   "severity": "high",
+   "path": "nfl/tests/test_sunday_prelock_p0.py",
+   "detail": "4 skip path(s) added",
+   "evidence": {
+    "lines": [
+     "BLOCKED += 1",
+     "return _blocked('admitted starter', f'state build refused: {why} (environment, not a result)')",
+     "return _blocked('transfer guard', f'state build refused: {why} (environment, not a result)')",
+     "return _blocked('secondary injury', f'state build refused: {why} (environment, not a result)')"
+    ]
+   },
+   "authorization": "NONE_RECORDED"
+  },
+  {
+   "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+   "severity": "high",
+   "path": "nfl/tools/floor_guard.py",
+   "detail": "an owner-authority or approval file, or a safeguard itself, changed",
+   "evidence": {
+    "status": "A"
+   },
+   "authorization": "NONE_RECORDED"
+  },
+  {
+   "rule": "SUPPRESSION_ADDED",
+   "severity": "info",
+   "path": "nfl/tools/floor_guard.py",
+   "detail": "4 new lint/type/coverage suppression(s)",
+   "evidence": {},
+   "authorization": "NONE_RECORDED"
+  },
+  {
+   "rule": "SUPPRESSION_ADDED",
+   "severity": "info",
+   "path": "coordination/EVIDENCE/PHASE1_GUARDS_2026-10-10/coverage_review/fg_fixtures.py",
+   "detail": "3 new lint/type/coverage suppression(s)",
+   "evidence": {},
+   "authorization": "NONE_RECORDED"
+  },
+  {
+   "rule": "SUPPRESSION_ADDED",
+   "severity": "info",
+   "path": "coordination/EVIDENCE/PHASE1_GUARDS_2026-10-10/coverage_review/gg_fixtures.py",
+   "detail": "1 new lint/type/coverage suppression(s)",
+   "evidence": {},
+   "authorization": "NONE_RECORDED"
+  }
+ ],
+ "NOT_A_VERDICT_ON_THE_CHANGE": "a finding says the bar may have moved; an owner record can authorize it"
+}

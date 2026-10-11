@@ -1,0 +1,118 @@
+{
+ "ARTIFACT": "TEST_ENVIRONMENT_CHECK",
+ "spec_version": "test-env-check-2",
+ "root": "/home/user/nfl-phase1",
+ "derived_manifest_generation": 2,
+ "verdict": "COMPLETE",
+ "n_inputs": 17,
+ "n_missing": 0,
+ "n_mismatch": 0,
+ "n_unverifiable": 0,
+ "inputs": [
+  {
+   "input": "nfl/derived/DST_RATES.json",
+   "state": "OK",
+   "sha256": "7a11e7fdd0dba6d79502a09ac82d073964df28b3266204372cb89e55bbe6b325",
+   "expected": "7a11e7fdd0dba6d79502a09ac82d073964df28b3266204372cb89e55bbe6b325",
+   "reproduce": "bash nfl/tools/rebuild_derived.sh"
+  },
+  {
+   "input": "nfl/derived/FORWARD_CHAIN.json",
+   "state": "OK",
+   "sha256": "535239f6655c9c1bfee2cd0a63fe101b0d7e1dab47673fc8e20c209d25d11c5d",
+   "expected": "535239f6655c9c1bfee2cd0a63fe101b0d7e1dab47673fc8e20c209d25d11c5d",
+   "reproduce": "bash nfl/tools/rebuild_derived.sh"
+  },
+  {
+   "input": "nfl/derived/KICKER_RATES.json",
+   "state": "OK",
+   "sha256": "1a1afd7abdc1ccc19bd64ff63712986521ae8a1cde15b4e939f512cb513a6661",
+   "expected": "1a1afd7abdc1ccc19bd64ff63712986521ae8a1cde15b4e939f512cb513a6661",
+   "reproduce": "bash nfl/tools/rebuild_derived.sh"
+  },
+  {
+   "input": "nfl/derived/KICKER_WORLD.json",
+   "state": "OK",
+   "sha256": "9b745db12a4f20034ab96d5dd304cd70f2cc4a5942f3d4694a994d239a892f87",
+   "expected": "9b745db12a4f20034ab96d5dd304cd70f2cc4a5942f3d4694a994d239a892f87",
+   "reproduce": "bash nfl/tools/rebuild_derived.sh"
+  },
+  {
+   "input": "nfl/derived/TD_RATES.json",
+   "state": "OK",
+   "sha256": "e0a9659f563820698274486f9fd43d7c3410b42c78e5233f32f2788afad53cf7",
+   "expected": "e0a9659f563820698274486f9fd43d7c3410b42c78e5233f32f2788afad53cf7",
+   "reproduce": "bash nfl/tools/rebuild_derived.sh"
+  },
+  {
+   "input": "nfl/derived/USAGE_HISTORY_2021_2026.json",
+   "state": "OK",
+   "sha256": "f2fec8b6edd3e2392b3d8ed85067db764b74088a1a5d2fef5e5e3c0870646484",
+   "expected": "f2fec8b6edd3e2392b3d8ed85067db764b74088a1a5d2fef5e5e3c0870646484",
+   "reproduce": "bash nfl/tools/rebuild_derived.sh"
+  },
+  {
+   "input": "nfl_vintage/raw/depth_charts.09be43a6e8b166ad.csv",
+   "state": "OK",
+   "sha256": "09be43a6e8b166ad6a8deccc9caa3a1ecc0773cbdfbd927842e80ff36c0f8e9c",
+   "manifest_row": true
+  },
+  {
+   "input": "nfl_vintage/raw/depth_charts.6c693e1040a9608c.csv",
+   "state": "OK",
+   "sha256": "6c693e1040a9608c592e86e82a6792d388a6faf8e28b8478fc28a1cc3f14ec86",
+   "manifest_row": true
+  },
+  {
+   "input": "nfl_vintage/raw/depth_charts.779f5b89c5c9dec4.csv",
+   "state": "OK",
+   "sha256": "779f5b89c5c9dec4e000e8595eda21169b9fa66d568dca6122450219aa4eea17",
+   "manifest_row": true
+  },
+  {
+   "input": "nfl_vintage/raw/depth_charts.c96ae6673e2eb8f9.csv",
+   "state": "OK",
+   "sha256": "c96ae6673e2eb8f99ee9eb866dfc96e99466ce4baf7c3f349eb0764aacd75e9b",
+   "manifest_row": true
+  },
+  {
+   "input": "nfl_vintage/raw/depth_charts.f0d38b65a6ab0439.csv",
+   "state": "OK",
+   "sha256": "f0d38b65a6ab043944f39b24d25096846cc4db2417fbf069a48ebd9c97df268d",
+   "manifest_row": true
+  },
+  {
+   "input": "nfl_vintage/raw/weekly_rosters.7d4b399e4f2b8a92.csv",
+   "state": "OK",
+   "sha256": "7d4b399e4f2b8a92dcaf340e7032899725f013a38e78b741f54dfa9ed1543dbd",
+   "manifest_row": true
+  },
+  {
+   "input": "nfl_vintage/raw/weekly_rosters.8729b73ef500cdf9.csv",
+   "state": "OK",
+   "sha256": "8729b73ef500cdf90776a6155a30bacaefa8e378993abbe37ea7f11f488e33d7",
+   "manifest_row": true
+  },
+  {
+   "input": "nfl_vintage/raw/weekly_rosters.dba8eeff1f9c0878.csv",
+   "state": "OK",
+   "sha256": "dba8eeff1f9c087857d541f1eee7dab22912cd32fe240ffccc50341cd7863f2f",
+   "manifest_row": true
+  },
+  {
+   "input": "nfl_vintage/raw/weekly_rosters.efd424c87b892728.csv",
+   "state": "OK",
+   "sha256": "efd424c87b892728302823042cff89f6a269213cfe2217d32c25f5404b1ab62c",
+   "manifest_row": true
+  },
+  {
+   "input": "python:numpy",
+   "state": "OK"
+  },
+  {
+   "input": "python:pandas",
+   "state": "OK"
+  }
+ ],
+ "READING": "a suite result from an INCOMPLETE environment measures missing data, not the code"
+}

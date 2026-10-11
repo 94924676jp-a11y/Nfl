@@ -1,0 +1,307 @@
+[
+ {
+  "case": "F01_assert_removed",
+  "should_report": true,
+  "what": "CHECKS_REDUCED: an assert deleted from an existing test",
+  "reported": true,
+  "findings": [
+   {
+    "rule": "CHECKS_REDUCED",
+    "severity": "high",
+    "path": "nfl/tests/test_math.py",
+    "detail": "test_add: 2 -> 1 checks"
+   },
+   {
+    "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+    "severity": "medium",
+    "path": "nfl/tests/test_math.py",
+    "detail": "test_add: 1 comparison(s) removed, loosened or altered (operator, number or tripwire condition)"
+   }
+  ],
+  "outcome": "TP"
+ },
+ {
+  "case": "F02_isclose_tol_loosened",
+  "should_report": true,
+  "what": "tolerance keyword abs_tol loosened 1e-9 -> 1e-3",
+  "reported": true,
+  "findings": [
+   {
+    "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+    "severity": "high",
+    "path": "nfl/tests/test_math.py",
+    "detail": "test_ratio: isclose(abs_tol=): 1e-09 -> 0.001 (test tolerance)"
+   },
+   {
+    "rule": "THRESHOLD_LOOSENED",
+    "severity": "high",
+    "path": "nfl/tests/test_math.py",
+    "detail": "isclose(abs_tol=): 1e-09 -> 0.001 at a call site"
+   }
+  ],
+  "outcome": "TP"
+ },
+ {
+  "case": "F03_pytest_skip_decorator",
+  "should_report": true,
+  "what": "SKIP_ADDED: @pytest.mark.skip on an existing test",
+  "reported": true,
+  "findings": [
+   {
+    "rule": "SKIP_ADDED",
+    "severity": "high",
+    "path": "nfl/tests/test_math.py",
+    "detail": "2 skip path(s) added"
+   }
+  ],
+  "outcome": "TP"
+ },
+ {
+  "case": "F04_module_threshold_loosened",
+  "should_report": true,
+  "what": "THRESHOLD_LOOSENED: MAX_ERROR 0.01 -> 0.05 in production",
+  "reported": true,
+  "findings": [
+   {
+    "rule": "THRESHOLD_LOOSENED",
+    "severity": "high",
+    "path": "nfl/production/calc.py",
+    "detail": "MAX_ERROR: 0.01 -> 0.05"
+   },
+   {
+    "rule": "THRESHOLD_LOOSENED",
+    "severity": "high",
+    "path": "nfl/production/calc.py",
+    "detail": "MAX_ERROR: 0.01 -> 0.05 where it is compared with err"
+   }
+  ],
+  "outcome": "TP"
+ },
+ {
+  "case": "F05_json_passed_flipped",
+  "should_report": true,
+  "what": "RESULT flip: \"passed\": false -> true and n_failed zeroed",
+  "reported": true,
+  "findings": [
+   {
+    "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+    "severity": "high",
+    "path": "results/summary.json",
+    "detail": "passed: false -> true"
+   },
+   {
+    "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+    "severity": "high",
+    "path": "results/summary.json",
+    "detail": "n_failed: 2 -> 0"
+   }
+  ],
+  "outcome": "TP"
+ },
+ {
+  "case": "F06_test_file_deleted",
+  "should_report": true,
+  "what": "TEST_FILE_DELETED: a collected test module removed",
+  "reported": true,
+  "findings": [
+   {
+    "rule": "TEST_FILE_DELETED",
+    "severity": "high",
+    "path": "nfl/tests/test_old.py",
+    "detail": "a test module the runner collected was deleted"
+   }
+  ],
+  "outcome": "TP"
+ },
+ {
+  "case": "F07_test_body_emptied",
+  "should_report": true,
+  "what": "TEST_BODY_EMPTIED: body replaced by a docstring and pass",
+  "reported": true,
+  "findings": [
+   {
+    "rule": "CHECKS_REDUCED",
+    "severity": "high",
+    "path": "nfl/tests/test_math.py",
+    "detail": "test_answer: 1 -> 0 checks"
+   },
+   {
+    "rule": "TEST_BODY_EMPTIED",
+    "severity": "high",
+    "path": "nfl/tests/test_math.py",
+    "detail": "test_answer now does nothing"
+   },
+   {
+    "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+    "severity": "medium",
+    "path": "nfl/tests/test_math.py",
+    "detail": "test_answer: 1 comparison(s) removed, loosened or altered (operator, number or tripwire condition)"
+   }
+  ],
+  "outcome": "TP"
+ },
+ {
+  "case": "F08_pyproject_deselect",
+  "should_report": true,
+  "what": "pytest configuration: addopts --deselect an existing test",
+  "reported": true,
+  "findings": [
+   {
+    "rule": "VERIFICATION_MACHINERY_CHANGED",
+    "severity": "high",
+    "path": "pyproject.toml",
+    "detail": "test collection or pytest options changed"
+   }
+  ],
+  "outcome": "TP"
+ },
+ {
+  "case": "F09_check_helper_no_failure",
+  "should_report": true,
+  "what": "the module's check() helper no longer counts a failure",
+  "reported": true,
+  "findings": [
+   {
+    "rule": "CHECKS_REDUCED",
+    "severity": "high",
+    "path": "nfl/tests/test_checks.py",
+    "detail": "the module's check() helper no longer records a failure (1 -> 0): every check through it passes"
+   }
+  ],
+  "outcome": "TP"
+ },
+ {
+  "case": "F10_markdown_row_fail_to_pass",
+  "should_report": true,
+  "what": "text result row: | test_ratio | FAIL | -> PASS",
+  "reported": true,
+  "findings": [
+   {
+    "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+    "severity": "high",
+    "path": "results/RESULTS.md",
+    "detail": "a recorded failure was rewritten as a success"
+   }
+  ],
+  "outcome": "TP"
+ },
+ {
+  "case": "F11_vacuous_self_compare",
+  "should_report": true,
+  "what": "CONSTANT_TRUE_CHECK_ADDED: assert result == result",
+  "reported": true,
+  "findings": [
+   {
+    "rule": "CONSTANT_TRUE_CHECK_ADDED",
+    "severity": "medium",
+    "path": "nfl/tests/test_math.py",
+    "detail": "test_answer: 1 check(s) whose condition is true whatever the code does"
+   },
+   {
+    "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+    "severity": "medium",
+    "path": "nfl/tests/test_math.py",
+    "detail": "test_answer: 1 comparison(s) removed, loosened or altered (operator, number or tripwire condition)"
+   }
+  ],
+  "outcome": "TP"
+ },
+ {
+  "case": "F12_ledger_line_rewritten",
+  "should_report": true,
+  "what": "APPEND_ONLY_LOG_REWRITTEN: an old ledger row FAIL -> PASS",
+  "reported": true,
+  "findings": [
+   {
+    "rule": "APPEND_ONLY_LOG_REWRITTEN",
+    "severity": "high",
+    "path": "nfl/research/run_ledger.jsonl",
+    "detail": "1 existing line(s) removed or changed in an append-only file"
+   },
+   {
+    "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+    "severity": "high",
+    "path": "nfl/research/run_ledger.jsonl",
+    "detail": "1.state: \"FAIL\" -> \"PASS\""
+   }
+  ],
+  "outcome": "TP"
+ },
+ {
+  "case": "N01_new_test_added",
+  "should_report": false,
+  "what": "a new test function appended",
+  "reported": false,
+  "findings": [],
+  "outcome": "TN"
+ },
+ {
+  "case": "N02_refactor_production",
+  "should_report": false,
+  "what": "local rename inside a production function, no bar touched",
+  "reported": false,
+  "findings": [],
+  "outcome": "TN"
+ },
+ {
+  "case": "N03_rename_identical_body",
+  "should_report": false,
+  "what": "test renamed, body byte-identical (spec: not a removal)",
+  "reported": false,
+  "findings": [],
+  "outcome": "TN"
+ },
+ {
+  "case": "N04_tolerance_tightened",
+  "should_report": false,
+  "what": "abs_tol tightened 1e-9 -> 1e-12 (spec: stricter is info)",
+  "reported": false,
+  "findings": [
+   {
+    "rule": "THRESHOLD_TIGHTENED",
+    "severity": "info",
+    "path": "nfl/tests/test_math.py",
+    "detail": "test_ratio: isclose(abs_tol=): 1e-09 -> 1e-12 (test tolerance)"
+   },
+   {
+    "rule": "THRESHOLD_TIGHTENED",
+    "severity": "info",
+    "path": "nfl/tests/test_math.py",
+    "detail": "isclose(abs_tol=): 1e-09 -> 1e-12 at a call site"
+   }
+  ],
+  "outcome": "TN"
+ },
+ {
+  "case": "N05_readme_prose",
+  "should_report": false,
+  "what": "README prose edit",
+  "reported": false,
+  "findings": [],
+  "outcome": "TN"
+ },
+ {
+  "case": "N06_ledger_append",
+  "should_report": false,
+  "what": "a new line appended to the append-only ledger",
+  "reported": false,
+  "findings": [],
+  "outcome": "TN"
+ },
+ {
+  "case": "N07_worker_count",
+  "should_report": false,
+  "what": "WORKERS 4 -> 8 (spec: NON_BAR, not judged)",
+  "reported": false,
+  "findings": [],
+  "outcome": "TN"
+ },
+ {
+  "case": "N08_test_moved_module",
+  "should_report": false,
+  "what": "test_other moved verbatim into test_math.py (spec: a move is not a removal)",
+  "reported": false,
+  "findings": [],
+  "outcome": "TN"
+ }
+]

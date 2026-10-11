@@ -1,0 +1,2880 @@
+[
+ {
+  "idx": 0,
+  "pos": 481,
+  "sha": "7311a0dfa9a0070a01d4fadef378dce727584734",
+  "subject": "Gate migration: one football fact, read from canonical state, and it crosses the artifact boundary",
+  "n_files": 8,
+  "reported": [
+   {
+    "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+    "severity": "high",
+    "path": "nfl/production/review/gate.py",
+    "detail": "an owner-authority or approval file, or a safeguard itself, changed",
+    "evidence": {
+     "status": "M"
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 1,
+  "pos": 482,
+  "sha": "7dadfeef444b4751d135eb10a842edf3ecc82970",
+  "subject": "Audit migration: football truth from PregameSlateState, and OUT means out",
+  "n_files": 4,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 2,
+  "pos": 483,
+  "sha": "5edfc6b595a4d7477f54b9edaa39fe7cfec23c69",
+  "subject": "Board change log: decide an availability cause by membership, not by substring",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 3,
+  "pos": 484,
+  "sha": "a62d8b822a02293f5b4248715979c9cfe3200c37",
+  "subject": "Availability semantics: absence from an incomplete negative list is not affirmative evidence",
+  "n_files": 13,
+  "reported": [
+   {
+    "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+    "severity": "medium",
+    "path": "nfl/tests/test_canonical_state.py",
+    "detail": "test_inactive_handling_is_equivalent: 1 comparison(s) removed, loosened or altered (operator, number or tripwire condition)",
+    "evidence": {
+     "gone": [
+      [
+       "cmp",
+       "('Eq',)",
+       "()"
+      ]
+     ]
+    },
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+    "severity": "medium",
+    "path": "nfl/tests/test_canonical_state.py",
+    "detail": "test_availability_is_unknown_when_no_inactive_list_is_given: 1 comparison(s) removed, loosened or altered (operator, number or tripwire condition)",
+    "evidence": {
+     "gone": [
+      [
+       "cmp",
+       "('Is',)",
+       "()"
+      ]
+     ]
+    },
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "TEST_FUNCTION_REMOVED",
+    "severity": "high",
+    "path": "nfl/tests/test_dossier_migration.py",
+    "detail": "test_not_on_inactive_list_is_not_active_in_canonical_state was removed, renamed or shadowed",
+    "evidence": {
+     "n_checks_before": 0
+    },
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "TEST_FUNCTION_REMOVED",
+    "severity": "high",
+    "path": "nfl/tests/test_player_review.py",
+    "detail": "test_availability_with_a_board_is_declared_both_ways was removed, renamed or shadowed",
+    "evidence": {
+     "n_checks_before": 0
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 4,
+  "pos": 485,
+  "sha": "b7de2d797b6e850809e49d7098499a7362098971",
+  "subject": "Canonical state slice 2: the dossier consumes PlayerState and stops making its own football truth",
+  "n_files": 7,
+  "reported": [
+   {
+    "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+    "severity": "medium",
+    "path": "nfl/tests/test_canonical_state.py",
+    "detail": "test_the_seeded_registry_is_only_what_the_chain_reads: 1 comparison(s) removed, loosened or altered (operator, number or tripwire condition)",
+    "evidence": {
+     "gone": [
+      [
+       "cmp",
+       "('Eq',)",
+       "(18.0,)"
+      ]
+     ]
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 5,
+  "pos": 486,
+  "sha": "f43c30e1dc68e8be7552d693ec2661f5c6ac2146",
+  "subject": "Canonical state slice 1: FeatureRegistry v0, PregameSlateState v0, equivalence proven",
+  "n_files": 7,
+  "reported": [
+   {
+    "rule": "TEST_FUNCTION_REMOVED",
+    "severity": "high",
+    "path": "nfl/tests/test_classic_optimizer.py",
+    "detail": "test_shared_world_objectives_refuse_without_worlds was removed, renamed or shadowed",
+    "evidence": {
+     "n_checks_before": 0
+    },
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "TEST_FUNCTION_REMOVED",
+    "severity": "high",
+    "path": "nfl/tests/test_classic_optimizer.py",
+    "detail": "test_shared_world_objectives_reorder_the_pool was removed, renamed or shadowed",
+    "evidence": {
+     "n_checks_before": 0
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "info",
+    "path": "nfl/production/state/slate_state.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ]
+ },
+ {
+  "idx": 6,
+  "pos": 487,
+  "sha": "324387b4f839e6209236b5308d851f1a73a9557c",
+  "subject": "Diagnosis only: prove the summed simulation objectives are not valid lineup objectives",
+  "n_files": 3,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 7,
+  "pos": 488,
+  "sha": "6ace06d55f1b1f2d1c057aab878809794e41b6f9",
+  "subject": "Run byproducts: vintage blobs, seal ledger, and the Thursday dress-rehearsal artifacts",
+  "n_files": 14,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 8,
+  "pos": 489,
+  "sha": "969d8181d395ad891cf1457f10a28e0dea7ac944",
+  "subject": "Classic optimizer: freeze fe25d98 as the baseline, prove equivalence, fix a 500x group regression",
+  "n_files": 8,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 9,
+  "pos": 490,
+  "sha": "fe25d9883ea913ba6449003a3ae71b35a368e5d4",
+  "subject": "Priority A: DraftKings Classic optimizer, gated. Plus the workflow skeleton",
+  "n_files": 8,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 10,
+  "pos": 491,
+  "sha": "fd48686f1a176b111817afba34bc37418aca9965",
+  "subject": "Priority 2 and 5: the slate board and the projection change log",
+  "n_files": 7,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 11,
+  "pos": 492,
+  "sha": "34de39af12fe2776970178364b527ce5938e8b94",
+  "subject": "Serial priority 1-3: team volume, audit reads attribution, refusal fallback",
+  "n_files": 9,
+  "reported": [
+   {
+    "rule": "SKIP_ADDED",
+    "severity": "high",
+    "path": "nfl/tests/test_current_season_opportunity.py",
+    "detail": "1 skip path(s) added",
+    "evidence": {
+     "lines": [
+      "verified_current_season=Outcome.blocked("
+     ]
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 12,
+  "pos": 493,
+  "sha": "9b506f84be7a6affb1171cb15fd16932787b7bcb",
+  "subject": "Thursday readiness audit: failure register, coverage matrix, readiness board",
+  "n_files": 3,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 13,
+  "pos": 494,
+  "sha": "e880753a06a0e726846e679b3a7f739122a9c5eb",
+  "subject": "Stage 6 consumes the current season, under estimated weights",
+  "n_files": 181,
+  "reported": [
+   {
+    "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+    "severity": "high",
+    "path": "nfl/production/review/gate.py",
+    "detail": "an owner-authority or approval file, or a safeguard itself, changed",
+    "evidence": {
+     "status": "M"
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "info",
+    "path": "nfl/production/run_forecast.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ]
+ },
+ {
+  "idx": 14,
+  "pos": 495,
+  "sha": "18c920d33a3d96298a893067040071a952e6aded",
+  "subject": "Wire the player-review gate into forecasting and optimization",
+  "n_files": 174,
+  "reported": [
+   {
+    "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+    "severity": "high",
+    "path": "nfl/production/review/gate.py",
+    "detail": "an owner-authority or approval file, or a safeguard itself, changed",
+    "evidence": {
+     "status": "A"
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 15,
+  "pos": 496,
+  "sha": "4cbf04e4431eb6b8a1bc216c054fee6776d08a72",
+  "subject": "Player-by-player evidence review becomes a mandatory pipeline stage",
+  "n_files": 169,
+  "reported": [
+   {
+    "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+    "severity": "medium",
+    "path": "nfl/tests/test_depth_role_contamination.py",
+    "detail": "test_kr_depth_cannot_become_rb_depth: 2 comparison(s) removed, loosened or altered (operator, number or tripwire condition)",
+    "evidence": {
+     "gone": [
+      [
+       "cmp",
+       "('In',)",
+       "()"
+      ],
+      [
+       "cmp",
+       "('Is',)",
+       "()"
+      ]
+     ]
+    },
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+    "severity": "medium",
+    "path": "nfl/tests/test_depth_role_contamination.py",
+    "detail": "test_singletary_kr3_does_not_become_rb3: 1 comparison(s) removed, loosened or altered (operator, number or tripwire condition)",
+    "evidence": {
+     "gone": [
+      [
+       "cmp",
+       "('Is',)",
+       "()"
+      ]
+     ]
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 16,
+  "pos": 497,
+  "sha": "14850ddea12b15a848a0d66653d07cfedf1f7862",
+  "subject": "Phase 1: typed depth roles, and I retract my own KR2 root cause",
+  "n_files": 6,
+  "reported": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "medium",
+    "path": "nfl/tests/test_depth_role_contamination.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 17,
+  "pos": 498,
+  "sha": "7db3decdba98aaaeeea85c2c54032bf805d796cd",
+  "subject": "Final portfolio: Tracy excluded at selection, core exposure cap raised to 16",
+  "n_files": 4,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 18,
+  "pos": 499,
+  "sha": "a51f62dd0de4af2ad7942b0871997d661dcdcd16",
+  "subject": "Final selection on a scale-invariant objective, with the role-defect caps applied",
+  "n_files": 3,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 19,
+  "pos": 500,
+  "sha": "c182e6848444c09ba45f229c9b3ebec1bb7d8e71",
+  "subject": "NYG backfield inversion: KR2 read as RB2, mechanism identified not patched",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 20,
+  "pos": 501,
+  "sha": "fdd7fd8aa0fd0c479434c329770d77b6674740d4",
+  "subject": "External diagnostic: the level is wrong, the ordering mostly is not, and the objective was the amplifier",
+  "n_files": 5,
+  "reported": [
+   {
+    "rule": "BROAD_EXCEPT_PASS_ADDED",
+    "severity": "medium",
+    "path": "nfl/research/diagnostics/fc_diagnostic.py",
+    "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 21,
+  "pos": 502,
+  "sha": "7f209d6fa0261086112c791debd016dd3a5185c0",
+  "subject": "Pre-lock lineup-pool cleanup: Najee excluded, two more cold-start players found",
+  "n_files": 3,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 22,
+  "pos": 503,
+  "sha": "f6c9e85feff4d66b78c3bb004ce545d362d1cc63",
+  "subject": "Twenty GPP lineups from the post-inactives worlds, and a market comparison that fails the model",
+  "n_files": 6,
+  "reported": [
+   {
+    "rule": "BROAD_EXCEPT_PASS_ADDED",
+    "severity": "medium",
+    "path": "nfl/market/eval_hardrock.py",
+    "detail": "2 new broad exception swallow(s) (an error silenced is a failure hidden)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 23,
+  "pos": 504,
+  "sha": "5321db5a139193c8915ab3bbfad94a156eae574e",
+  "subject": "POST-INACTIVES rebuild: new draws with the 13 removed upstream of allocation",
+  "n_files": 7,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 24,
+  "pos": 505,
+  "sha": "f3ab30d7f7c8f6832e47e6b771b2f4f5061da5f3",
+  "subject": "Post-inactives refresh: the board could not absorb the news, and says so",
+  "n_files": 6,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 25,
+  "pos": 506,
+  "sha": "260ef7884c239558194afa8236b32cbf63b199da",
+  "subject": "Per-entity verdicts with declared rollups, and one Showdown research fixture",
+  "n_files": 7,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 26,
+  "pos": 507,
+  "sha": "b2fadfdd5d8617d6fd929fc37c986dee04fd6090",
+  "subject": "Revision 3: correct four verdict-engine false greens and the Block XV estimator",
+  "n_files": 15,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 27,
+  "pos": 508,
+  "sha": "4bf829c37898a69f009e5a2f160517773e52be03",
+  "subject": "The chain reads the real draws, and a seventh false green of my own",
+  "n_files": 9,
+  "reported": [
+   {
+    "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+    "severity": "high",
+    "path": "nfl/research/mnf/run_nyg_la/9f2e3d1ae24fc05b/run_status.json",
+    "detail": "accounting_verdicts[6].state: \"FAIL\" -> \"PASS\"",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+    "severity": "high",
+    "path": "nfl/research/mnf/run_nyg_la/9f2e3d1ae24fc05b/run_status.json",
+    "detail": "code_identity.source_scope_clean: false -> true",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "info",
+    "path": "nfl/production/universe/run_chain.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ]
+ },
+ {
+  "idx": 28,
+  "pos": 509,
+  "sha": "dc0402b1ea9020f16751843a2496df91623e5749",
+  "subject": "Six false greens, closed: a gate must test the property it is named for",
+  "n_files": 17,
+  "reported": [
+   {
+    "rule": "TEST_FUNCTION_REMOVED",
+    "severity": "high",
+    "path": "nfl/tests/test_participation.py",
+    "detail": "test_the_tolerance_belongs_to_the_allocator_and_is_recorded was removed, renamed or shadowed",
+    "evidence": {
+     "n_checks_before": 0
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 29,
+  "pos": 510,
+  "sha": "dd2ca76403102240d82af9de8c7be30fba5e6de5",
+  "subject": "The chain runner: every layer's refusal becomes one machine verdict",
+  "n_files": 4,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 30,
+  "pos": 511,
+  "sha": "0cbe590509a18a3a117eaed1627557bad00b7298",
+  "subject": "The widest lawful corpus, and a composition that conserves what it divides",
+  "n_files": 3,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 31,
+  "pos": 512,
+  "sha": "6c4f5ea854daaceb38ec1a8aa889d80413ff4554",
+  "subject": "Participation before opportunity, on a budget the game itself fixes",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 32,
+  "pos": 513,
+  "sha": "f2266fde6beefa963f96d3f74be6374c624400c7",
+  "subject": "The candidate role-state engine: a position no longer implies a workload",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 33,
+  "pos": 514,
+  "sha": "df36d7fd57fa46b3d9b55bc6fc42ec3dd46ace11",
+  "subject": "P0-C minimum: the machine verdict, with no-edge separated from not-ready",
+  "n_files": 2,
+  "reported": [],
+  "info": [
+   {
+    "rule": "SKIP_ADDED",
+    "severity": "info",
+    "path": "nfl/tests/test_product_verdict.py",
+    "detail": "2 skip path(s) added (new module)",
+    "evidence": {
+     "lines": [
+      "g['INACTIVE_APPLICATION'] = Outcome.blocked(",
+      "(Outcome.blocked('STUCK', 'because', cause=Cause.DATA), V.BLOCKED),"
+     ]
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ]
+ },
+ {
+  "idx": 34,
+  "pos": 515,
+  "sha": "77cf7b66f4cc3defd4b00b8f6685ba5e78a3c1a2",
+  "subject": "P0-B corrections: independent club gates, and absent inactive evidence is not a PASS",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 35,
+  "pos": 516,
+  "sha": "d8e08622305d72e8198f08fbccce68e283059906",
+  "subject": "P0-B: the point-in-time player universe, and coverage per club and per layer",
+  "n_files": 4,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 36,
+  "pos": 517,
+  "sha": "2fece8a0a57cb6d583eeb57181a93f420c889091",
+  "subject": "The harness must refuse a module whose checks it cannot count",
+  "n_files": 7,
+  "reported": [
+   {
+    "rule": "VERIFICATION_MACHINERY_CHANGED",
+    "severity": "high",
+    "path": "nfl/tests/run_suite.py",
+    "detail": "the machinery that decides what counts as proof changed",
+    "evidence": {
+     "status": "M"
+    },
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+    "severity": "medium",
+    "path": "nfl/tests/test_draw_stream_determinism.py",
+    "detail": "test_zz_every_check_passed: 1 comparison(s) removed, loosened or altered (operator, number or tripwire condition)",
+    "evidence": {
+     "gone": [
+      [
+       "tripwire",
+       "Name('_F', Load())"
+      ]
+     ]
+    },
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "BROAD_EXCEPT_PASS_ADDED",
+    "severity": "medium",
+    "path": "nfl/tests/test_suite_harness_tally.py",
+    "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "medium",
+    "path": "nfl/tests/test_suite_harness_tally.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 37,
+  "pos": 518,
+  "sha": "e27a24f3f5e7b65f763ae34222aed9f6195790c8",
+  "subject": "Scopes are cumulative: invalid football blocks DFS even when DK bytes exist",
+  "n_files": 3,
+  "reported": [
+   {
+    "rule": "TEST_FUNCTION_REMOVED",
+    "severity": "high",
+    "path": "nfl/tests/test_artifact_contracts.py",
+    "detail": "test_scope_separates_football_from_the_dfs_transform was removed, renamed or shadowed",
+    "evidence": {
+     "n_checks_before": 0
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 38,
+  "pos": 519,
+  "sha": "45c78d00e59900b566907325946a034af3eadd7b",
+  "subject": "P0-A: a stage may not return PASS while its own output is incomplete",
+  "n_files": 5,
+  "reported": [],
+  "info": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "info",
+    "path": "nfl/production/contracts/__init__.py",
+    "detail": "2 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "info",
+    "path": "nfl/production/contracts/validate.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ]
+ },
+ {
+  "idx": 39,
+  "pos": 520,
+  "sha": "8137c4b2fc8824f084335d2711c67896b69af01b",
+  "subject": "Session issue log: every defect, gap and misreport from 2026-09-20",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 40,
+  "pos": 521,
+  "sha": "fd3a5495c3d2508db37eaf152e17bc463e23adb8",
+  "subject": "KC backfield diagnosis: a cold start beats a measured 0.41 carry share",
+  "n_files": 4,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 41,
+  "pos": 522,
+  "sha": "6f48f60ae3a56a5d696c0b918749d3a79a2d5100",
+  "subject": "IND@KC POSTINACTIVES_CURRENT: 13 exclusions applied, board re-run, props re-scored on the frozen 22:52Z lines",
+  "n_files": 12,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 42,
+  "pos": 523,
+  "sha": "b50ca0a193aa29a548cd98ef165150b8f5f47df5",
+  "subject": "An unresolved DraftKings salary row is not a missing forecast",
+  "n_files": 4,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 43,
+  "pos": 524,
+  "sha": "6966915aa06490654e0dd3cefcf050169f8e5b90",
+  "subject": "IND@KC pre-inactives Showdown board, with the role assumption named",
+  "n_files": 7,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 44,
+  "pos": 525,
+  "sha": "a8423abe671cb8a600f79d89b1e21b2edca690ca",
+  "subject": "Week 2 postgame grading pipeline: two truths joined, never mixed",
+  "n_files": 15,
+  "reported": [],
+  "info": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "info",
+    "path": "nfl/postgame/run_week2.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ]
+ },
+ {
+  "idx": 45,
+  "pos": 526,
+  "sha": "3c682cae12b65637b50c72127544011ef95bc273",
+  "subject": "Fix de-vig key names; stop certifying an unchecked inactive board; slate-parameterise the package writer",
+  "n_files": 4,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 46,
+  "pos": 527,
+  "sha": "cc4181c796d8cdfd11ad84be4368f6e5423bb05b",
+  "subject": "Post-inactives Hard Rock board becomes the comparator; 04:52Z kept for chronology",
+  "n_files": 4,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 47,
+  "pos": 528,
+  "sha": "f3b88b24e5659a1afea456bf5a030d21f31cb89f",
+  "subject": "The post-inactives package builder: one self-describing file for a reviewer",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 48,
+  "pos": 529,
+  "sha": "ec8270cc42e5f9215904c0642ea511a2ce862f15",
+  "subject": "Official inactives supersede the screenshots: 98 declarations, 96 resolved",
+  "n_files": 9,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 49,
+  "pos": 530,
+  "sha": "ad81c0e44f3b15411b4fba6cef0d7d3c6c3b5160",
+  "subject": "Fresh capture 20260920T160750Z; the post-inactives board could not be run here",
+  "n_files": 8,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 50,
+  "pos": 531,
+  "sha": "d67243ac30260cb16f81a576f542a89ef000a72e",
+  "subject": "Inactives window: RB_WR_TE_PLAYER_DISTRIBUTIONS_STILL_UNAVAILABLE, tested",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 51,
+  "pos": 532,
+  "sha": "f87463d9548583102f6a118fafa71ca206113433",
+  "subject": "Capture the refreshed snap_counts_2026: 32 of 32 clubs, DEN-KC recovered",
+  "n_files": 3,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 52,
+  "pos": 533,
+  "sha": "22e1908d35716f94be0b712545e24e2a3a3e03e2",
+  "subject": "Early Only pre-lock verdict: STOP, and the blocker was not the one on the list",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 53,
+  "pos": 534,
+  "sha": "da8dc4dcc67be5c4ed51e73bdfb8ab8288d67fa0",
+  "subject": "SUN-5 part 1 and FIX-ROSTER-GLOB: two stores, one clock, no globs",
+  "n_files": 6,
+  "reported": [
+   {
+    "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+    "severity": "medium",
+    "path": "nfl/tests/test_current_season_panel.py",
+    "detail": "test_B_the_clock_is_enforced_by_moving_it: 1 comparison(s) removed, loosened or altered (operator, number or tripwire condition)",
+    "evidence": {
+     "gone": [
+      [
+       "cmp",
+       "('Eq',)",
+       "(0.0,)"
+      ]
+     ]
+    },
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "medium",
+    "path": "nfl/tests/test_roster_vintage_selection.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 54,
+  "pos": 535,
+  "sha": "41e94f89c2027f81c64ff5b9ea795732a6daa38c",
+  "subject": "The real Early Only production run: eight games, bytes verified, sealing refused",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 55,
+  "pos": 536,
+  "sha": "3a5f6776c78e4e688f08fd619d726a8be4cf83a4",
+  "subject": "Classic GPP research: gap analysis, and the provenance collision under it",
+  "n_files": 3,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 56,
+  "pos": 537,
+  "sha": "0d5f81b9cac9841f20d71d3b2608aea79ba7d9db",
+  "subject": "DK-4: build the fixture from the vintage manifest, and verify declared bytes",
+  "n_files": 7,
+  "reported": [
+   {
+    "rule": "TEST_FUNCTION_REMOVED",
+    "severity": "high",
+    "path": "nfl/tests/test_capture_validation_provenance.py",
+    "detail": "test_driver_supplies_a_placeholder_hash was removed, renamed or shadowed",
+    "evidence": {
+     "n_checks_before": 0
+    },
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "TEST_FUNCTION_REMOVED",
+    "severity": "high",
+    "path": "nfl/tests/test_capture_validation_provenance.py",
+    "detail": "test_a_pass_says_what_it_did_not_check was removed, renamed or shadowed",
+    "evidence": {
+     "n_checks_before": 0
+    },
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "TEST_FUNCTION_REMOVED",
+    "severity": "high",
+    "path": "nfl/tests/test_capture_validation_provenance.py",
+    "detail": "test_both_callers_now_refuse_and_for_different_reasons was removed, renamed or shadowed",
+    "evidence": {
+     "n_checks_before": 0
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 57,
+  "pos": 538,
+  "sha": "b8689aa1e62137d0db9eaf55dee291bdea91848d",
+  "subject": "DK-3: capture_validation now requires the sources its own layers read",
+  "n_files": 6,
+  "reported": [
+   {
+    "rule": "TEST_FUNCTION_REMOVED",
+    "severity": "high",
+    "path": "nfl/tests/test_capture_validation_provenance.py",
+    "detail": "test_capture_validation_has_no_required_source_check was removed, renamed or shadowed",
+    "evidence": {
+     "n_checks_before": 0
+    },
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "TEST_FUNCTION_REMOVED",
+    "severity": "high",
+    "path": "nfl/tests/test_capture_validation_provenance.py",
+    "detail": "test_the_two_outcomes_differ_only_by_the_caller was removed, renamed or shadowed",
+    "evidence": {
+     "n_checks_before": 0
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 58,
+  "pos": 539,
+  "sha": "1cbe36d25c92b6cb7f0c5b4699a61e331d416b1f",
+  "subject": "Ingest the owner-delivered Hard Rock Early Only board as comparator evidence",
+  "n_files": 8,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 59,
+  "pos": 540,
+  "sha": "5322b9209b16d34c62be36a30648bea113116ca2",
+  "subject": "capture_validation passes on a placeholder hash, and my audit missed it",
+  "n_files": 6,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 60,
+  "pos": 541,
+  "sha": "629e91ac4abf3c7f826351a199ebe1904679c409",
+  "subject": "Audit whether Week-2 projections exist for the 256-player Early Only universe",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 61,
+  "pos": 542,
+  "sha": "7e50eecf53243c1ca39c83d0ba600e38591fe591",
+  "subject": "Ingest capture-prod: 13.5 hours of fresher injury, depth and roster evidence",
+  "n_files": 74,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 62,
+  "pos": 543,
+  "sha": "0da8d43d8a71e1f26d4e5b6d447a5c7349e560a3",
+  "subject": "Preserve the Early Only files and resolve the slate from DraftKings' own export",
+  "n_files": 5,
+  "reported": [
+   {
+    "rule": "BROAD_EXCEPT_PASS_ADDED",
+    "severity": "medium",
+    "path": "nfl/dfs/salaries/early_projection_audit.py",
+    "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "info",
+    "path": "nfl/dfs/salaries/early_projection_audit.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ]
+ },
+ {
+  "idx": 63,
+  "pos": 544,
+  "sha": "01566246b8c0601f12d91d36c0ccce998069648e",
+  "subject": "Ingest the DK Week-2 salaries as a price list, with the projection columns walled off",
+  "n_files": 19,
+  "reported": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "medium",
+    "path": "nfl/tests/test_dk_salary_universe.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+    "severity": "medium",
+    "path": "nfl/tests/test_p7_data_plane.py",
+    "detail": "test_e2_the_registry_does_not_yet_declare_every_stored_source: 1 comparison(s) removed, loosened or altered (operator, number or tripwire condition)",
+    "evidence": {
+     "gone": [
+      [
+       "cmp",
+       "('Eq',)",
+       "()"
+      ]
+     ]
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 64,
+  "pos": 545,
+  "sha": "effdd6e53c1f94179f6d8ac43949183f2a6604a4",
+  "subject": "Readiness: add the attributed suite state and the freeze I broke",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 65,
+  "pos": 546,
+  "sha": "5ea58c55ef621b5d0ef3bb69dbb542558e93138b",
+  "subject": "Suite at HEAD, attributed: 22 newly introduced, 17 of them mine, 5 escalated",
+  "n_files": 9,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 66,
+  "pos": 547,
+  "sha": "1a4eb45d0d475ff86b652134b677ee89e98e70a2",
+  "subject": "OUT-027 and OUT-028: the injury reports that are missing, and the prices that are not",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 67,
+  "pos": 548,
+  "sha": "ef3a6312d09c05c364207f8cc350cd44da8cf4cc",
+  "subject": "Sunday readiness: the whole slate refuses, and the refusals are right",
+  "n_files": 10,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 68,
+  "pos": 549,
+  "sha": "5413e65070c803478d9a50a5c02c6df479ea6092",
+  "subject": "The rehearsal wrote its result somewhere else, and a Sunday runbook",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 69,
+  "pos": 550,
+  "sha": "04f9069420c1b2d0138c955a86319957b0832839",
+  "subject": "No club had a kicker, because the resolver counted roster rows instead of kickers",
+  "n_files": 3,
+  "reported": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "medium",
+    "path": "nfl/tests/test_kicker_resolution.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 70,
+  "pos": 551,
+  "sha": "f9148b0f9382bb448ca6d35b874971860d2eb2d1",
+  "subject": "The T-90 windows for tomorrow's slate did not exist, and two engine layers had no owner",
+  "n_files": 4,
+  "reported": [
+   {
+    "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+    "severity": "high",
+    "path": ".github/workflows/nfl-t90.yml",
+    "detail": "an owner-authority or approval file, or a safeguard itself, changed",
+    "evidence": {
+     "status": "M"
+    },
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "medium",
+    "path": "nfl/tests/test_engine_layer_ownership.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+    "severity": "medium",
+    "path": "nfl/tests/test_t90_workflow.py",
+    "detail": "test_F_the_generator_refuses_rather_than_emitting_an_empty_cron: 1 comparison(s) removed, loosened or altered (operator, number or tripwire condition)",
+    "evidence": {
+     "gone": [
+      [
+       "cmp",
+       "('Is',)",
+       "(1.0, 2026.0)"
+      ]
+     ]
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 71,
+  "pos": 552,
+  "sha": "d4a4bef0f284c623a39eea3feba88aac5424ef7a",
+  "subject": "P7: the three things a threshold question needed and the board did not carry",
+  "n_files": 2,
+  "reported": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "medium",
+    "path": "nfl/tests/test_distribution_completeness.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 72,
+  "pos": 553,
+  "sha": "e824e7e7ed794b350dabd9c9e8eb916ed2a9e4d7",
+  "subject": "P1: a freshness number that names the tree it was measured in",
+  "n_files": 2,
+  "reported": [
+   {
+    "rule": "BROAD_EXCEPT_PASS_ADDED",
+    "severity": "medium",
+    "path": "nfl/production/capture_freshness.py",
+    "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "medium",
+    "path": "nfl/tests/test_capture_freshness.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "info",
+    "path": "nfl/production/capture_freshness.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ]
+ },
+ {
+  "idx": 73,
+  "pos": 554,
+  "sha": "d3cbfa6920a383ae6211136b0d7ad55083d6162d",
+  "subject": "DISC-3: the horizon runs on the evidence, not on the reading",
+  "n_files": 10,
+  "reported": [
+   {
+    "rule": "TEST_FUNCTION_REMOVED",
+    "severity": "high",
+    "path": "nfl/tests/test_discovery.py",
+    "detail": "test_a_gap_claim_past_its_horizon_is_surfaced was removed, renamed or shadowed",
+    "evidence": {
+     "n_checks_before": 6
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 74,
+  "pos": 555,
+  "sha": "8b8555b1d25f586b1cb896be34a659ad463603f7",
+  "subject": "Ingest capture-prod: the capture was never dead, I was reading the wrong tree",
+  "n_files": 523,
+  "reported": [
+   {
+    "rule": "APPEND_ONLY_LOG_REWRITTEN",
+    "severity": "high",
+    "path": "nfl/vintage_manifest.jsonl",
+    "detail": "1 existing line(s) removed or changed in an append-only file",
+    "evidence": {
+     "example": "{\"capture_id\": \"20260917T234100Z\", \"code\": \"CAPTURED\", \"source\": \"official_inactives\", \"state\": \"PASS\", \"value\": {\"blob\": \"nfl/vintage/official_inactives.6dafcf"
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 75,
+  "pos": 556,
+  "sha": "9052d0cd67a5f9ae292c29574e357d66f68c6ba0",
+  "subject": "DFS-FS1: the prediction-time dependence baseline, and cross-team is not there",
+  "n_files": 13,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 76,
+  "pos": 557,
+  "sha": "06bc006856aa5e1c9860ad7450d7715c284f1902",
+  "subject": "Adjudicate the full-slate DFS packet: reproduce, disagree, and reconcile",
+  "n_files": 19,
+  "reported": [
+   {
+    "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+    "severity": "high",
+    "path": "SYSTEM_STATE.json",
+    "detail": "measured.git.is_clean: false -> true",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+    "severity": "high",
+    "path": "SYSTEM_STATE.json",
+    "detail": "measured.git.worktree.source_scope_clean: false -> true",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+    "severity": "high",
+    "path": "nfl/AGENT_STATE.json",
+    "detail": "git.worktree.source_scope_clean: false -> true",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+    "severity": "high",
+    "path": "nfl/AGENT_STATE.json",
+    "detail": "git.is_clean: false -> true",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 77,
+  "pos": 558,
+  "sha": "e6eeed533b97488fb6a178b2ff1d71d1b5aaa672",
+  "subject": "Correct two suite figures quoted in dc7ceed's message",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 78,
+  "pos": 559,
+  "sha": "dc7ceed3934ecf37656b52f108f0499440b4c490",
+  "subject": "CONTINUOUS_DISCOVERY: the inspection is executable, and it found something",
+  "n_files": 15,
+  "reported": [],
+  "info": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "info",
+    "path": "nfl/tools/discovery.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ]
+ },
+ {
+  "idx": 79,
+  "pos": 560,
+  "sha": "20468a56f6e269ddd93a814e563f5cf0104f5643",
+  "subject": "P9: OAS1 Week 2 is fitted, and the selection selected nothing",
+  "n_files": 15,
+  "reported": [
+   {
+    "rule": "TEST_FUNCTION_REMOVED",
+    "severity": "high",
+    "path": "nfl/tests/test_oas1_amendment_a1.py",
+    "detail": "test_G_the_candidate_is_still_not_fitted was removed, renamed or shadowed",
+    "evidence": {
+     "n_checks_before": 2
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 80,
+  "pos": 561,
+  "sha": "4bb940dbb2092d0f9f938134d5c99caf087e150f",
+  "subject": "P8: Contract 4 was already reconciled; what was missing was the check",
+  "n_files": 11,
+  "reported": [
+   {
+    "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+    "severity": "high",
+    "path": "SYSTEM_STATE.json",
+    "detail": "measured.git.is_clean: false -> true",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+    "severity": "high",
+    "path": "SYSTEM_STATE.json",
+    "detail": "measured.git.worktree.source_scope_clean: false -> true",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+    "severity": "high",
+    "path": "nfl/AGENT_STATE.json",
+    "detail": "git.worktree.source_scope_clean: false -> true",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+    "severity": "high",
+    "path": "nfl/AGENT_STATE.json",
+    "detail": "git.is_clean: false -> true",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 81,
+  "pos": 562,
+  "sha": "9bb56108f5be0ca830d95202e8113d127ebab4a4",
+  "subject": "P7: SYSTEM_STATE.json is generated and CURRENT_STATE.md derives from it",
+  "n_files": 12,
+  "reported": [
+   {
+    "rule": "BROAD_EXCEPT_PASS_ADDED",
+    "severity": "medium",
+    "path": "nfl/tools/system_state.py",
+    "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "info",
+    "path": "nfl/tools/system_state.py",
+    "detail": "5 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ]
+ },
+ {
+  "idx": 82,
+  "pos": 563,
+  "sha": "44ff8ededa57c836330897a662f541fd0dc98705",
+  "subject": "P6: the dependency DAG stops being a specification",
+  "n_files": 12,
+  "reported": [
+   {
+    "rule": "BROAD_EXCEPT_PASS_ADDED",
+    "severity": "medium",
+    "path": "nfl/production/pipeline.py",
+    "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "BROAD_EXCEPT_PASS_ADDED",
+    "severity": "medium",
+    "path": "nfl/tools/agent_state.py",
+    "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "info",
+    "path": "nfl/production/pipeline.py",
+    "detail": "2 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "info",
+    "path": "nfl/production/run_forecast.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "info",
+    "path": "nfl/tools/agent_state.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ]
+ },
+ {
+  "idx": 83,
+  "pos": 564,
+  "sha": "7d46f395f588ff8b94e07dc9921185f58a2b1c2d",
+  "subject": "Suite attributed: seven new failures, one cause, and it was my own guard",
+  "n_files": 7,
+  "reported": [
+   {
+    "rule": "SKIP_ADDED",
+    "severity": "high",
+    "path": "nfl/tests/test_participant_class.py",
+    "detail": "1 skip path(s) added",
+    "evidence": {
+     "lines": [
+      "BLOCKED += 1"
+     ]
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 84,
+  "pos": 565,
+  "sha": "3270829ca46e46f44285c5ae81952c31921bdda5",
+  "subject": "A2 falsified: the work does not stay in the room, and not proportionally",
+  "n_files": 10,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 85,
+  "pos": 566,
+  "sha": "5e602b4ccd28f3144bdc00554bd1007947158067",
+  "subject": "Automatic Scientist v0: A1 identified, measured, falsified, and blocking",
+  "n_files": 11,
+  "reported": [
+   {
+    "rule": "BROAD_EXCEPT_PASS_ADDED",
+    "severity": "medium",
+    "path": "nfl/production/adjustment_registry.py",
+    "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "info",
+    "path": "nfl/production/adjustment_registry.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "info",
+    "path": "nfl/production/assumptions/registry.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ]
+ },
+ {
+  "idx": 86,
+  "pos": 567,
+  "sha": "eb6d445a584a805de57ca7c988bb6f553365b669",
+  "subject": "GAME_OFFENSE_COUPLING measured, and the review's premise does not survive it",
+  "n_files": 5,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 87,
+  "pos": 568,
+  "sha": "815a4023e06f2d37942d7f18f0dd51ed8cc3942a",
+  "subject": "CS2 stage 2: current non-QB role state, fitted out of sample, and it wins",
+  "n_files": 10,
+  "reported": [
+   {
+    "rule": "TEST_FUNCTION_REMOVED",
+    "severity": "high",
+    "path": "nfl/tests/test_postgame_harness.py",
+    "detail": "test_I_the_real_det_buf_block_is_registered_and_still_awaiting was removed, renamed or shadowed",
+    "evidence": {
+     "n_checks_before": 3
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 88,
+  "pos": 569,
+  "sha": "c39da9a89c23f7c83c1224a288b67db644a1f581",
+  "subject": "Site legality enters the DP; kickers get names; the kicker finding inverts",
+  "n_files": 18,
+  "reported": [
+   {
+    "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+    "severity": "medium",
+    "path": "nfl/tests/test_dfs_showdown_research.py",
+    "detail": "test_B_optimal_frequency_is_not_the_mean_ranking: 1 comparison(s) removed, loosened or altered (operator, number or tripwire condition)",
+    "evidence": {
+     "gone": [
+      [
+       "cmp",
+       "('Lt',)",
+       "()"
+      ]
+     ]
+    },
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "TEST_FUNCTION_REMOVED",
+    "severity": "high",
+    "path": "nfl/tests/test_dfs_showdown_research.py",
+    "detail": "test_E_an_unresolvable_player_stops_the_report was removed, renamed or shadowed",
+    "evidence": {
+     "n_checks_before": 4
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 89,
+  "pos": 570,
+  "sha": "0b558b033237bb9b1203c813b98d38536c0a4fac",
+  "subject": "DET 31 @ BUF 41, graded: the model was low almost everywhere",
+  "n_files": 14,
+  "reported": [
+   {
+    "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+    "severity": "high",
+    "path": "nfl/research/dfs/DET_BUF_2026W2/POSTGAME_OUTCOME/POSTGAME_REVIEW.md",
+    "detail": "a recorded failure row was deleted",
+    "evidence": {
+     "before": "| 3 Buffalo role-defect review | (needs phase 2 output) | NOT_EXECUTED |",
+     "after": ""
+    },
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+    "severity": "high",
+    "path": "nfl/research/dfs/DET_BUF_2026W2/POSTGAME_OUTCOME/POSTGAME_REVIEW.md",
+    "detail": "a recorded failure row was deleted",
+    "evidence": {
+     "before": "| 8 captain research review | (needs phase 6/7 output) | NOT_EXECUTED |",
+     "after": ""
+    },
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+    "severity": "high",
+    "path": "nfl/research/dfs/DET_BUF_2026W2/POSTGAME_OUTCOME/POSTGAME_REVIEW.md",
+    "detail": "a recorded failure row was deleted",
+    "evidence": {
+     "before": "| 9 cheap-punt review | (needs phase 6/7 output) | NOT_EXECUTED |",
+     "after": ""
+    },
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+    "severity": "high",
+    "path": "nfl/research/dfs/DET_BUF_2026W2/POSTGAME_OUTCOME/POSTGAME_REVIEW.md",
+    "detail": "a recorded failure row was deleted",
+    "evidence": {
+     "before": "| 11 game environment and correlation | (needs phase 2 output) | NOT_EXECUTED |",
+     "after": ""
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 90,
+  "pos": 571,
+  "sha": "0b4b2c19dffdb690c0c1eda47c5f5d5df9256390",
+  "subject": "Amendment A1: two axes that cannot change a score come out of the search",
+  "n_files": 5,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 91,
+  "pos": 572,
+  "sha": "7090e591bb74bd1611c4ef26d73d1354f3d06060",
+  "subject": "CS2 stage 1: the non-QB usage CS1 never carried, measured and not estimated",
+  "n_files": 3,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 92,
+  "pos": 573,
+  "sha": "931e5687feb588b4333c58614d28b7591e48842e",
+  "subject": "A starter may not be absent more often than his backup, and now something says so",
+  "n_files": 10,
+  "reported": [],
+  "info": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "info",
+    "path": "nfl/postgame/ingest_outcome.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ]
+ },
+ {
+  "idx": 93,
+  "pos": 574,
+  "sha": "1725a64c1979ab50d96a0458caa5cad2f25cf1d2",
+  "subject": "The postgame harness is built, tested, and refuses: there is no outcome yet",
+  "n_files": 14,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 94,
+  "pos": 575,
+  "sha": "e050090a78021d249b65fbc286b753f283752b7a",
+  "subject": "A commit is claimed by reading git, never by a command appearing to work",
+  "n_files": 3,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 95,
+  "pos": 576,
+  "sha": "c9d94ba0d81a0f4638ee077579f806f6e3d3700e",
+  "subject": "An artifact is claimed by verifying the file, never by printing a path",
+  "n_files": 11,
+  "reported": [],
+  "info": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "info",
+    "path": "sportsplatform/governance/artifact_claim.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ]
+ },
+ {
+  "idx": 96,
+  "pos": 577,
+  "sha": "7d5c23a509c10fb7127a00f99e9771a5e8a6a0b5",
+  "subject": "The v1 dual board never existed: a pipe killed the write and I reported it as written",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 97,
+  "pos": 578,
+  "sha": "88f9ce8ee3a5700b1450e2fc89338d04c82c8f28",
+  "subject": "FanDuel rules corrected against the official source; the gate did its job",
+  "n_files": 7,
+  "reported": [
+   {
+    "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+    "severity": "medium",
+    "path": "nfl/tests/test_dfs_scoring_adapters.py",
+    "detail": "test_A_quarterback: 2 comparison(s) removed, loosened or altered (operator, number or tripwire condition)",
+    "evidence": {
+     "gone": [
+      [
+       "cmp",
+       "('Lt',)",
+       "(0.0, 0.0, 1e-09, 3.0)"
+      ],
+      [
+       "cmp",
+       "('Lt',)",
+       "(0.0, 1e-09, 25.0)"
+      ]
+     ]
+    },
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+    "severity": "medium",
+    "path": "nfl/tests/test_dfs_scoring_adapters.py",
+    "detail": "test_B_running_back: 2 comparison(s) removed, loosened or altered (operator, number or tripwire condition)",
+    "evidence": {
+     "gone": [
+      [
+       "cmp",
+       "('Lt',)",
+       "(0.0, 0.0, 1e-09, 5.5)"
+      ],
+      [
+       "cmp",
+       "('Lt',)",
+       "(0.0, 1e-09, 22.5)"
+      ]
+     ]
+    },
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+    "severity": "medium",
+    "path": "nfl/tests/test_dfs_scoring_adapters.py",
+    "detail": "test_C_wide_receiver: 2 comparison(s) removed, loosened or altered (operator, number or tripwire condition)",
+    "evidence": {
+     "gone": [
+      [
+       "cmp",
+       "('Eq',)",
+       "(0.0, 0.0, 7.0)"
+      ],
+      [
+       "cmp",
+       "('Lt',)",
+       "(0.0, 1e-09, 20.0)"
+      ]
+     ]
+    },
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "TEST_FUNCTION_REMOVED",
+    "severity": "high",
+    "path": "nfl/tests/test_dfs_scoring_adapters.py",
+    "detail": "test_J_fanduel_rules_are_not_treated_as_verified was removed, renamed or shadowed",
+    "evidence": {
+     "n_checks_before": 8
+    },
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+    "severity": "medium",
+    "path": "nfl/tests/test_dfs_scoring_adapters.py",
+    "detail": "test_K_legality_is_enforced_per_site: 1 comparison(s) removed, loosened or altered (operator, number or tripwire condition)",
+    "evidence": {
+     "gone": [
+      [
+       "call",
+       "assert_lineup_legal",
+       "(3.0, 3.0, 6.0, 12000.0)"
+      ]
+     ]
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 98,
+  "pos": 579,
+  "sha": "54244e302b70604798d1b2152c351d06aed008c8",
+  "subject": "FanDuel scoring as a second adapter over the same football worlds",
+  "n_files": 9,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 99,
+  "pos": 580,
+  "sha": "fb2636cef2a814b4824fd19ad51ad3d866e24c48",
+  "subject": "Showdown DFS: measure the worlds instead of ranking the means",
+  "n_files": 18,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 100,
+  "pos": 581,
+  "sha": "edf25634c9df199908bfbe135372ac38f502c8c8",
+  "subject": "The optimizer amplified a defect we had already written down",
+  "n_files": 8,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 101,
+  "pos": 582,
+  "sha": "34e8977cde02ce2d4ccacc27e524c5c2cd07a396",
+  "subject": "Pre-kickoff projection export for DET @ BUF, from frozen artifacts only",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 102,
+  "pos": 583,
+  "sha": "1ad9d57eb8e5b22aee3ab91f8fcf0cc9c155d56a",
+  "subject": "Official inactives ingested; Skyler Bell hard-zeroed in every draw",
+  "n_files": 23,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 103,
+  "pos": 584,
+  "sha": "23b5d975c220ab6d3551f19b117c8059eba60f43",
+  "subject": "Pre-kickoff evidence refresh: the official list is unreachable, and one inactive still has targets",
+  "n_files": 6,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 104,
+  "pos": 585,
+  "sha": "20679fb8aae3f5d4167ceb315a5479afed72057d",
+  "subject": "Gates get stable names, and readiness stops being one bit",
+  "n_files": 3,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 105,
+  "pos": 586,
+  "sha": "2f5f07ce931f4ff3a152ee946c7b22157c5d545b",
+  "subject": "Ownership audit: nothing on the production path applies any of the nine adjustments",
+  "n_files": 4,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 106,
+  "pos": 587,
+  "sha": "8a78324d893fc5a2589c3dfd2b241037ed2dd7ba",
+  "subject": "Gate table at this HEAD: ten research-fit gates YES, two downstream gates still NO",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 107,
+  "pos": 588,
+  "sha": "b60bcf7d7e40b3fd6bf595065a00f0ab59412de7",
+  "subject": "Two holes in the registry I found by running the claim instead of writing it down",
+  "n_files": 3,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 108,
+  "pos": 589,
+  "sha": "df5fd882fd8447124fb51fd0931fe80321c26ff3",
+  "subject": "Strongest-baseline deltas, frozen: the rush result does not improve by changing comparator",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 109,
+  "pos": 590,
+  "sha": "0660579c031c8a4b6e611ebe6795d594af6b7f62",
+  "subject": "Adjustment ownership in code: a second application is refused, not logged",
+  "n_files": 10,
+  "reported": [],
+  "info": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "info",
+    "path": "nfl/research/oas1/fit_week2.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ]
+ },
+ {
+  "idx": 110,
+  "pos": 591,
+  "sha": "e1820e989d631c1843fa0ebe530955c5e077a84d",
+  "subject": "BUF allocation diagnostic: the RB1 is absent more often than his backup, and CS1 is QB-only",
+  "n_files": 3,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 111,
+  "pos": 592,
+  "sha": "308830644a1514325a53ee1180865d2891789898",
+  "subject": "First prospective market comparison: DET @ BUF, sealed model against a frozen Hard Rock snapshot",
+  "n_files": 20,
+  "reported": [],
+  "info": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "info",
+    "path": "nfl/research/oas1/chain.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ]
+ },
+ {
+  "idx": 112,
+  "pos": 593,
+  "sha": "150c62a1a275e0a63c6bf81b01884470de9885a5",
+  "subject": "Gate 5: the OAS1 pre-registration, committed BEFORE any Week-2 candidate is fit",
+  "n_files": 4,
+  "reported": [
+   {
+    "rule": "BROAD_EXCEPT_PASS_ADDED",
+    "severity": "medium",
+    "path": "nfl/tests/test_oas1_gate345.py",
+    "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 113,
+  "pos": 594,
+  "sha": "7e26125fa2cafb556607bfdef5199d8bd8b07134",
+  "subject": "OAS1 tranche 1: three gates closed, three still NO, and four corrections to the guidance",
+  "n_files": 13,
+  "reported": [
+   {
+    "rule": "TEST_FUNCTION_REMOVED",
+    "severity": "high",
+    "path": "nfl/tests/test_qb_yard_atoms.py",
+    "detail": "test_B_the_change_is_additive_against_HEAD was removed, renamed or shadowed",
+    "evidence": {
+     "n_checks_before": 6
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "info",
+    "path": "nfl/ingest/pbp_capture.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ]
+ },
+ {
+  "idx": 114,
+  "pos": 595,
+  "sha": "638af4f60febc2f4baff2447972f2f9f9b7a32e2",
+  "subject": "QY1: deal the catches, not their sum -- and three gates that were agreeing with their caller",
+  "n_files": 14,
+  "reported": [],
+  "info": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "info",
+    "path": "nfl/production/run_forecast.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ]
+ },
+ {
+  "idx": 115,
+  "pos": 596,
+  "sha": "137a257837a522be059292a92dc4a313eb2fefad",
+  "subject": "Support kinds for all 54 emitted arrays, and two errors the corpus caught",
+  "n_files": 4,
+  "reported": [
+   {
+    "rule": "BROAD_EXCEPT_PASS_ADDED",
+    "severity": "medium",
+    "path": "nfl/tests/test_support_kinds.py",
+    "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "medium",
+    "path": "nfl/tests/test_support_kinds.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 116,
+  "pos": 597,
+  "sha": "89d913f78010686b97cda81870a79680cb47ee00",
+  "subject": "Evaluator consolidation: CRPS by import, and a row-axis bug the test caught",
+  "n_files": 2,
+  "reported": [],
+  "info": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "info",
+    "path": "nfl/production/evaluator.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ]
+ },
+ {
+  "idx": 117,
+  "pos": 598,
+  "sha": "fec3e4e741161e2d157c3ee7047f1452e888426b",
+  "subject": "Coherence certificate: hash at the guard, verify at the seal, refuse on change",
+  "n_files": 3,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 118,
+  "pos": 599,
+  "sha": "29574f3638d0c570cbdc87734b52968a596930e7",
+  "subject": "CURRENT_SEASON_INPUT_FRESHNESS: scoped, fail-closed, HARD",
+  "n_files": 3,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 119,
+  "pos": 600,
+  "sha": "d7bcec44c58de4829a1bf12f4efa08fa30d17c19",
+  "subject": "Six pre-registrations: freshness scope, evaluator canon, guard-to-publish, Contract 4 final spec, signed QB-yard deal, OAS1",
+  "n_files": 13,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 120,
+  "pos": 601,
+  "sha": "340d581b1921714d0950c13e68af80c4fba72f77",
+  "subject": "Contract 4 threshold corrected to 19/20, and a duplicate evaluator I built",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 121,
+  "pos": 602,
+  "sha": "9886b871088593159ef6ba0a440966533b071b88",
+  "subject": "CS1 applied: Josh Allen's zero-dropback mass rises elevenfold, 0.0039 -> 0.0440",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 122,
+  "pos": 603,
+  "sha": "b62a71ff90805141e808557111ee0ada013f7eb8",
+  "subject": "CS1's verdict never reached the Outcome, so the board recorded NOT_REACHED",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 123,
+  "pos": 604,
+  "sha": "2d43e006c8f4ad3b73b30e61eb1d1f9c52c6470e",
+  "subject": "CS1: the current-season input refresh, additive and clock-enforced",
+  "n_files": 6,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 124,
+  "pos": 605,
+  "sha": "887f4f2c005ce5b687ede8297f5b5f2fd1d269d1",
+  "subject": "A governed evaluator: proper scores, coverage, sharpness, baseline comparison",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 125,
+  "pos": 606,
+  "sha": "14a52572018c0cdb9226953ce231effd15449208",
+  "subject": "Contract 3 is unattainable for an integer quantile, and it is not noise",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 126,
+  "pos": 607,
+  "sha": "dea3179288e1de1de7219072492c896189056f94",
+  "subject": "A hard freshness assertion, and the defect label that named one of two causes",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 127,
+  "pos": 608,
+  "sha": "1678c7c09e007ca6bb6d89bc244de810ee13d0d0",
+  "subject": "SBS pre-registration: a week-2 game is not a season opener",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 128,
+  "pos": 609,
+  "sha": "2b6ebb046da233c90d2fe8adba8be768d32f46b9",
+  "subject": "Confirming suite at the final HEAD, and the full QBSEM return",
+  "n_files": 5,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 129,
+  "pos": 610,
+  "sha": "b279e496da13376320c815b07575d80be6946723",
+  "subject": "Both new modules get the re-raising tripwire, or they cannot trip",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 130,
+  "pos": 611,
+  "sha": "5368f78322e2f49ffa38103a8a5650fed2199b35",
+  "subject": "Record the joint competing-risk successor as a research note, not a gate",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 131,
+  "pos": 612,
+  "sha": "4b6f08b180f0fa28bb34c50e0ec651fb26e65889",
+  "subject": "Contract 3 on QBSEM: chosen null, and the p90 hypothesis is confirmed but moot",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 132,
+  "pos": 613,
+  "sha": "98d2f61a7b9bbd8b36a1add7667fc103aefcb86d",
+  "subject": "Kickers are modelled and never published, and two of my calls were wrong",
+  "n_files": 3,
+  "reported": [
+   {
+    "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+    "severity": "medium",
+    "path": "nfl/tests/test_publication_semantics.py",
+    "detail": "test_D_the_contract_is_exercised_on_every_position: 1 comparison(s) removed, loosened or altered (operator, number or tripwire condition)",
+    "evidence": {
+     "gone": [
+      [
+       "cmp",
+       "('NotIn',)",
+       "()"
+      ]
+     ]
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 133,
+  "pos": 614,
+  "sha": "c154cc6317d52a80f8c81d29382e283934d4d15b",
+  "subject": "QBSEM cell replay, the seven pre-registration gates, and the DK column",
+  "n_files": 3,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 134,
+  "pos": 615,
+  "sha": "9c7a4158a732b2eddb3ff5dd199d6e667cc6699d",
+  "subject": "QBSEM: gate 1 fails, the board is not sealed, and the fallback is the defect",
+  "n_files": 3,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 135,
+  "pos": 616,
+  "sha": "4f7af0512b8e65101ea75661af46749f5f902dbb",
+  "subject": "QBSEM acceptance item 6: every cell feature is known before kickoff",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 136,
+  "pos": 617,
+  "sha": "21e24d463c3608f18494a9232fbb3a610628a104",
+  "subject": "One publication semantic, asserted on all 112 sealed boards",
+  "n_files": 1,
+  "reported": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "medium",
+    "path": "nfl/tests/test_publication_semantics.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 137,
+  "pos": 618,
+  "sha": "43bb6737d99ccd7c618713a3c10913c424f6f24c",
+  "subject": "QBSEM's allocator name was on every call site and none of the guards",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 138,
+  "pos": 619,
+  "sha": "6bd08c721dd3e111c319a19a8d7da6e54834ffaa",
+  "subject": "QBSEM: the non-starter relief rate is conditioned on the starter cell",
+  "n_files": 4,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 139,
+  "pos": 620,
+  "sha": "feb645cf9b62ac820915965e537800619af2abc2",
+  "subject": "QBSEM pre-registration: the defect is in the room's reliever rate",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 140,
+  "pos": 621,
+  "sha": "ce81ba4c280176d1151d831fc0eda4545bab305e",
+  "subject": "BLOCKING: the board mixes two publication semantics across positions",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 141,
+  "pos": 622,
+  "sha": "7c804d23e76628d7a5c52ce943160927fd9461fb",
+  "subject": "REST2 fails G1 and G6 and is withdrawn; the limitation is accepted",
+  "n_files": 3,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 142,
+  "pos": 623,
+  "sha": "30e963ba6afa067756a229a32bfbf6ba9be8595e",
+  "subject": "REST2 pre-registration: the interaction, with a BIC bar fix B would have failed",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 143,
+  "pos": 624,
+  "sha": "6d7e58fe178fc34af9dd5e55f7e434a825a0b768",
+  "subject": "Fix B fails its first gate and is withdrawn; the defect is unresolved",
+  "n_files": 3,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 144,
+  "pos": 625,
+  "sha": "47b8172b55d1c62566df096f10daf00a08d89dd3",
+  "subject": "REST pre-registration: measured first, and two more claims withdrawn",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 145,
+  "pos": 626,
+  "sha": "880122588fdcdf10bb16f3578f8ee72db5275856",
+  "subject": "The week-1 rows help R8, and my reason for saying they hurt was wrong",
+  "n_files": 5,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 146,
+  "pos": 627,
+  "sha": "91db769d070a870b5dfce9bd3336d4f91721f347",
+  "subject": "The 982 agreeing cells are a repair working, and they are not SC2",
+  "n_files": 3,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 147,
+  "pos": 628,
+  "sha": "471885468d69b28de270b29c15c7455d5aee439b",
+  "subject": "A1 isolated: one player's eligibility, and the allocators do the rest",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 148,
+  "pos": 629,
+  "sha": "13cdf05bf0ac320fa41a847a6bb7a944730cd3d4",
+  "subject": "Scope the fatal halt to the two sites that were not already fatal",
+  "n_files": 3,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 149,
+  "pos": 630,
+  "sha": "16d3c4536251a8fe4221ea70fa162ea85cd6d70a",
+  "subject": "SC2 closes the C3 coupling gap; the fifth arm exposes a worse one",
+  "n_files": 10,
+  "reported": [],
+  "info": [
+   {
+    "rule": "SKIP_ADDED",
+    "severity": "info",
+    "path": "nfl/tests/test_sc2_interception_reservation.py",
+    "detail": "5 skip path(s) added (new module)",
+    "evidence": {
+     "lines": [
+      "BLOCKED += 1",
+      "blocked('SC2_MEASUREMENT_ABSENT',",
+      "blocked('W1_FRAME_UNAVAILABLE',",
+      "blocked('W1_FRAME_NO_WEEK_ONE', 'the frame holds no week-1 row.')",
+      "blocked('W1_PANEL_UNAVAILABLE',"
+     ]
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ]
+ },
+ {
+  "idx": 150,
+  "pos": 631,
+  "sha": "ad97b81e7679060005578645138c8f423eae0c18",
+  "subject": "SC2 section 3: the measurement withdraws SC2-B and picks SC2-A",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 151,
+  "pos": 632,
+  "sha": "030b61575c8b14ac016ba364e6b6354ae052edd5",
+  "subject": "C3 was never dropped: its second half refused and nothing said so",
+  "n_files": 8,
+  "reported": [],
+  "info": [
+   {
+    "rule": "SKIP_ADDED",
+    "severity": "info",
+    "path": "nfl/tests/test_c3_credit_halt_transport.py",
+    "detail": "4 skip path(s) added (new module)",
+    "evidence": {
+     "lines": [
+      "BLOCKED += 1",
+      "blocked('C3_NO_SEALED_RUN',",
+      "blocked('C3_NO_REFUSED_RUN',",
+      "blocked('C3_NO_POST_REPAIR_RUN',"
+     ]
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ]
+ },
+ {
+  "idx": 152,
+  "pos": 633,
+  "sha": "1e6bb84259cbfbb0c7e7b2bf782e37037520ab68",
+  "subject": "The Thursday board at 8,000 draws, and the DK check that lagged the engine",
+  "n_files": 12,
+  "reported": [
+   {
+    "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+    "severity": "high",
+    "path": "nfl/research/live/2026_02_DET_BUF/pre_inactives_V1_CANDIDATE_R9_W1P_GA/117a78668a0b7a0e/run_status.json",
+    "detail": "code_identity.source_scope_clean: false -> true",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 153,
+  "pos": 634,
+  "sha": "caca59f4567a6a4905ba97bd90cc2db3b74438c0",
+  "subject": "Contract 2 fails too, and the reason is an error I had just finished diagnosing",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 154,
+  "pos": 635,
+  "sha": "b390fa02f8f55fc6322cf6bafe999127e057f5e2",
+  "subject": "Contract 2, written before it is run; contract 1 preserved as a failure",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 155,
+  "pos": 636,
+  "sha": "106737929b020329536165de54862e00125eacf5",
+  "subject": "Priority C: named carries now own named yards, and the total closes exactly",
+  "n_files": 11,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 156,
+  "pos": 637,
+  "sha": "32a61be2d0a52c8db3c5eaff3306f392e035d033",
+  "subject": "Cook's week-1 log matches ours exactly, and exposes a second defect",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 157,
+  "pos": 638,
+  "sha": "db5bdb226a64d5e0411639dcb6ed7d22cd2d7f3c",
+  "subject": "Wire A1 and A2: the previous game is 2026 week 1 and a player listed Out is off the board",
+  "n_files": 16,
+  "reported": [],
+  "info": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "info",
+    "path": "nfl/production/run_forecast.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ]
+ },
+ {
+  "idx": 158,
+  "pos": 639,
+  "sha": "9d3b9b2ff79523c6c3407f16f0612383c035d76c",
+  "subject": "A1 and A2: the current-state feed, graded by authority, and a 2026 panel",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 159,
+  "pos": 640,
+  "sha": "0417af6adf9599d3e90e3c14636e554d8bfd514b",
+  "subject": "The injury join: root cause is two transformations, and the evidence exists",
+  "n_files": 5,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 160,
+  "pos": 641,
+  "sha": "f07fd5d18e0cc81ff9f3a0352d337a33942a2663",
+  "subject": "The Thursday return: what was asked, what was done, what was not",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 161,
+  "pos": 642,
+  "sha": "6c49c16d0929a89cc489903f71f49974ad5cbcf0",
+  "subject": "An external universe file found three players we should not have been paying",
+  "n_files": 14,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 162,
+  "pos": 643,
+  "sha": "a488cee705627fc65670d6f90a58bf9885a8af54",
+  "subject": "The draw-count criterion does not clear, and the criterion is why",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 163,
+  "pos": 644,
+  "sha": "5d0d1b80c3b1f49489abec332e707f04fcf1fa28",
+  "subject": "The same seed was producing different draws, and a seal could not be conserved",
+  "n_files": 28,
+  "reported": [
+   {
+    "rule": "TEST_FUNCTION_REMOVED",
+    "severity": "high",
+    "path": "nfl/tests/test_football_engine_r4.py",
+    "detail": "test_A_rushing_conversion_refuses_and_names_the_decisions was removed, renamed or shadowed",
+    "evidence": {
+     "n_checks_before": 7
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ },
+ {
+  "idx": 164,
+  "pos": 645,
+  "sha": "af9ef9e1cdd8247397626ca392830d109ba9fe4f",
+  "subject": "Report what the draw count buys on the numbers a reader actually reads",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 165,
+  "pos": 646,
+  "sha": "814174f4a4a2c1372c3787b4a18859352f108c23",
+  "subject": "Flag the quantiles the predeclared criterion cannot reach, without excusing them",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 166,
+  "pos": 647,
+  "sha": "e6362fc32a74f28fbb7296e269f391e52a0735c5",
+  "subject": "Name what the gadget allocation does not do: it deals carries, not yards",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 167,
+  "pos": 648,
+  "sha": "32acb2011a1e05d8ef4d18ad6525503a75be4f09",
+  "subject": "Measure Monte Carlo error by batch means, against the criterion written first",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 168,
+  "pos": 649,
+  "sha": "4e376f8bc84f9b79e5e8836c5fad167292608f88",
+  "subject": "Trace Gibbs and Cook from the team budget to the yard, and predeclare the draw count",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 169,
+  "pos": 650,
+  "sha": "d350b7ba84b274e3e2037f171281dea249aebe53",
+  "subject": "Give the rushing mass to the players who actually take it",
+  "n_files": 13,
+  "reported": [],
+  "info": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "info",
+    "path": "nfl/production/run_forecast.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ]
+ },
+ {
+  "idx": 170,
+  "pos": 651,
+  "sha": "45f0ff4cab46ff9011b3760a88d0a69bcbc8aee3",
+  "subject": "The board is one sealed forecast again, not a seal plus a script",
+  "n_files": 18,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 171,
+  "pos": 652,
+  "sha": "7528413ca656a63d4843bc384c0e44d58e0e8aff",
+  "subject": "The per-carry control was estimated on league survivors; it no longer is",
+  "n_files": 5,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 172,
+  "pos": 653,
+  "sha": "793faddd679b52967bd05d586399fe48a6885fba",
+  "subject": "P3-P6: rushing yards, kicker, DraftKings, and a complete DET-BUF board",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 173,
+  "pos": 654,
+  "sha": "2b41eef36f78cee708bc306b42a2cbb3b60a7b65",
+  "subject": "Owner adjudicates the three rushing-conversion decisions; control now defined",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 174,
+  "pos": 655,
+  "sha": "8efd8bbf4dad811253d860c642f291593d03fea3",
+  "subject": "Priority 2 closed: the missing carry mass was QB scrambles, not missing",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 175,
+  "pos": 656,
+  "sha": "c1fdaf21802eca6af0bb895f3f06d2866e8b4d9c",
+  "subject": "Target conservation fixed causally; carry containment fixed, equality not yet",
+  "n_files": 2,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 176,
+  "pos": 657,
+  "sha": "e2e93f4bbe221ccb160f5e01eb0526834a6da427",
+  "subject": "Withdrawing the conservation \"correction\": I misaligned the rows, not the engine",
+  "n_files": 0,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 177,
+  "pos": 658,
+  "sha": "1d4a3a2d403fbf6613ced9ae5e6318263067ec15",
+  "subject": "A kicker built from our own history, and a conservation claim I have to withdraw",
+  "n_files": 1,
+  "reported": [],
+  "info": []
+ },
+ {
+  "idx": 178,
+  "pos": 659,
+  "sha": "940182d01c8a38e4f72ad3a781a4b2063fce847f",
+  "subject": "R9_W1P: 30 players, and QB passing yards reconcile with receiving yards exactly",
+  "n_files": 5,
+  "reported": [
+   {
+    "rule": "BROAD_EXCEPT_PASS_ADDED",
+    "severity": "medium",
+    "path": "nfl/production/nonqb/panel_2026w1.py",
+    "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": [
+   {
+    "rule": "SUPPRESSION_ADDED",
+    "severity": "info",
+    "path": "nfl/production/nonqb/panel_2026w1.py",
+    "detail": "1 new lint/type/coverage suppression(s)",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   }
+  ]
+ },
+ {
+  "idx": 179,
+  "pos": 660,
+  "sha": "54c782f2bcf02bfb8cf08f914e49fb10a9c54707",
+  "subject": "UNKNOWN was quietly becoming \"definitely excluded\", and my own test hid it",
+  "n_files": 2,
+  "reported": [
+   {
+    "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+    "severity": "medium",
+    "path": "nfl/tests/test_participant_class.py",
+    "detail": "test_a_no_practice_squad_player_competes_without_an_elevation: 3 comparison(s) removed, loosened or altered (operator, number or tripwire condition)",
+    "evidence": {
+     "gone": [
+      [
+       "cmp",
+       "('Gt',)",
+       "(0.0,)"
+      ],
+      [
+       "cmp",
+       "('Gt',)",
+       "(100.0,)"
+      ],
+      [
+       "cmp",
+       "('Lt',)",
+       "(0.05,)"
+      ]
+     ]
+    },
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+    "severity": "medium",
+    "path": "nfl/tests/test_participant_class.py",
+    "detail": "test_b_no_reserve_or_released_player_competes: 1 comparison(s) removed, loosened or altered (operator, number or tripwire condition)",
+    "evidence": {
+     "gone": [
+      [
+       "cmp",
+       "('Lt',)",
+       "(0.1,)"
+      ]
+     ]
+    },
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+    "severity": "medium",
+    "path": "nfl/tests/test_participant_class.py",
+    "detail": "test_c_secondary_participants_stay_available: 1 comparison(s) removed, loosened or altered (operator, number or tripwire condition)",
+    "evidence": {
+     "gone": [
+      [
+       "cmp",
+       "('Gt',)",
+       "(0.5,)"
+      ]
+     ]
+    },
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+    "severity": "medium",
+    "path": "nfl/tests/test_participant_class.py",
+    "detail": "test_d_a_week_one_inactive_is_not_a_week_two_exclusion: 1 comparison(s) removed, loosened or altered (operator, number or tripwire condition)",
+    "evidence": {
+     "gone": [
+      [
+       "cmp",
+       "('Gt',)",
+       "(0.5,)"
+      ]
+     ]
+    },
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "TEST_EARLY_RETURN",
+    "severity": "high",
+    "path": "nfl/tests/test_participant_class.py",
+    "detail": "test_f_unknown_is_neither_active_nor_excluded now returns before its checks have run",
+    "evidence": {},
+    "authorization": "NONE_RECORDED"
+   },
+   {
+    "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+    "severity": "medium",
+    "path": "nfl/tests/test_participant_class.py",
+    "detail": "test_f_unknown_is_neither_active_nor_excluded: 4 comparison(s) removed, loosened or altered (operator, number or tripwire condition)",
+    "evidence": {
+     "gone": [
+      [
+       "cmp",
+       "('Lt', 'Lt')",
+       "()"
+      ],
+      [
+       "cmp",
+       "('Lt',)",
+       "(0.95,)"
+      ],
+      [
+       "cmp",
+       "('Gt',)",
+       "(0.05,)"
+      ],
+      [
+       "cmp",
+       "('IsNot',)",
+       "()"
+      ]
+     ]
+    },
+    "authorization": "NONE_RECORDED"
+   }
+  ],
+  "info": []
+ }
+]

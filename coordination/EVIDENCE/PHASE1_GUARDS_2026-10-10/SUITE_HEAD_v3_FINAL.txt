@@ -1,0 +1,42 @@
+mode: BUILD  boundary CLEAN
+suite: 14 module(s), order EXPLICIT --modules (14 of a full suite; NOT a suite result)
+[1/14] nfl/tests/test_mode_boundaries.py
+[1/14] nfl/tests/test_mode_boundaries.py  8 fn, 38 check(s), 0 failing
+[2/14] nfl/tests/test_detectors_have_controls.py
+[2/14] nfl/tests/test_detectors_have_controls.py  6 fn, 15 check(s), 0 failing
+[3/14] nfl/tests/test_guard_census_is_not_stale.py
+[3/14] nfl/tests/test_guard_census_is_not_stale.py  9 fn, 12 check(s), 2 failing
+[4/14] nfl/tests/test_load_bearing_guards_untested.py
+[4/14] nfl/tests/test_load_bearing_guards_untested.py  5 fn, 21 check(s), 0 failing
+[5/14] nfl/tests/test_uncalled_governance_guards.py
+[5/14] nfl/tests/test_uncalled_governance_guards.py  4 fn, 12 check(s), 1 failing
+[6/14] nfl/tests/test_orchestrator.py
+[6/14] nfl/tests/test_orchestrator.py  28 fn, 276 check(s), 0 failing
+[7/14] nfl/tests/test_integrations.py
+[7/14] nfl/tests/test_integrations.py  20 fn, 69 check(s), 0 failing
+[8/14] nfl/tests/test_sunday_prelock_p0.py
+[8/14] nfl/tests/test_sunday_prelock_p0.py  4 fn, 11 check(s), 0 failing
+[9/14] nfl/tests/test_showdown_run_guards.py
+[9/14] nfl/tests/test_showdown_run_guards.py  4 fn, 33 check(s), 0 failing
+[10/14] nfl/tests/test_classic_upload_verify.py
+[10/14] nfl/tests/test_classic_upload_verify.py  4 fn, 16 check(s), 0 failing
+[11/14] nfl/tests/test_classic_finalize.py
+[11/14] nfl/tests/test_classic_finalize.py  7 fn, 17 check(s), 0 failing
+[12/14] nfl/tests/test_floor_guard.py
+[12/14] nfl/tests/test_floor_guard.py  9 fn, 97 check(s), 0 failing
+[13/14] nfl/tests/test_git_guard.py
+[13/14] nfl/tests/test_git_guard.py  14 fn, 183 check(s), 0 failing
+[14/14] nfl/tests/test_test_env_check.py
+[14/14] nfl/tests/test_test_env_check.py  5 fn, 7 check(s), 0 failing
+
+modules 14  test functions 127  checks 810  FAILING CHECKS 3  RAISED 0  ZERO-CHECK FUNCTIONS 0  BLOCKED FUNCTIONS 0  UNRECOGNISED TALLIES 0
+
+CHECKS nfl/tests/test_guard_census_is_not_stale.py: 2 failing check(s)
+    FAIL no row has drifted  assert_graded_row.callers_prod: committed 1 but code says 3; assert_graded_row.callers_prod_external: committed 1 but code says 3; assert_graded_row.callers_test: committed 1 but code says 2; assert_graded_row.caller_modules: committed ['nfl/postgame/grade_projections.py'] but code says ['nfl/postgame/auto_postgame.py', 'nfl/postgame/grade_projections.py', 'nfl/postgame/showdown_postgame.py']; assert_graded_row.caller_modules_excluding_cli_demo: committed ['nfl/postgame/grade_projections.py'] but code says ['nfl/postgame/auto_postgame.py', 'nfl/postgame/grade_projections.py', 'nfl/postgame/showdown_postgame.py']; assert_graded_row.caller_entry_points: committed {'nfl/postgame/grade_projections.py': {'has_main': True, 'referenced_outside_python': False}} but code says {'nfl/postgame/auto_postgame.py': {'has_main': True, 'referenced_outside_python': False}, 'nfl/postgame/grade_projections.py': {'has_main': True, 'referenced_outside_python': False}, 'nfl/postgame/showdown_postgame.py': {'has_main': True, 'referenced_outside_python': True}} (+9 more) -- regenerate with: python3.12 nfl/tools/guard_reachability.py --json > nfl/research/audit/GUARD_REACHABILITY.json
+    FAIL the committed census is byte-current with the generator  the file is 113620 bytes, a fresh census is 114458 -- regenerate with: python3.12 nfl/tools/guard_reachability.py --json > nfl/research/audit/GUARD_REACHABILITY.json
+
+CHECKS nfl/tests/test_uncalled_governance_guards.py: 1 failing check(s)
+    FAIL the old one still has no caller -- NO_PROD_CALLER
+detectors: 266 listed, NOT_IN_THIS_RUN 256, VALIDATED 10  -> PARTIAL_RUN_CLEAN
+SUITE FAIL
+EXIT 1

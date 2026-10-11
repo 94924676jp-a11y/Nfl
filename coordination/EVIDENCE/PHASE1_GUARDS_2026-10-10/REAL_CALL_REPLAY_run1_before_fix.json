@@ -1,0 +1,411 @@
+{
+ "transcript": "/root/.claude/projects/-home-user-mlb-prop-system-v7/8de98087-4781-5a10-ae09-ef74590f8116.jsonl",
+ "n_calls": 2122,
+ "by_tool": {
+  "Bash": 2012,
+  "Write": 97,
+  "Edit": 13
+ },
+ "n_protected_flagged": 30,
+ "flagged": [
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl; ls coordination/EVIDENCE | head; python3.12 -c \"\nimport json;q=json.load(open('coordination/RESEARCH_QUEUE.json'));print(type(q), list(q)[:10] if isinstance(q,dict) else len(q));\nitems=q.get('items') or q.get('queue') or q\nprint(json.dumps(items[-1] if isinstance(items,list) else ",
+   "findings": [
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file coordination/AUTOMATION_POLICY.json"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl; mkdir -p nfl/postgame/showdown_atl_no_2026W4/evidence; python3.12 - <<'EOF'\nimport json, hashlib, pathlib, datetime, subprocess\nR = pathlib.Path('/home/user/nfl')\nout = R / 'nfl/postgame/showdown_atl_no_2026W4/evidence/DEFECT_DUPE_UNDERESTIMATE.json'\nassert not out.exists(), 'EVID",
+   "findings": [
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file owner-approved"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl; python3.12 - <<'PY'\nimport pathlib\np = pathlib.Path('docs/NFL_GAP_AUDIT_RECONCILIATION_2026-10-07.md'); s = p.read_text()\nsec = \"\"\"**Certificate #2 \u2014 the authoritative result for this report.**\n`nfl/tests/certificates/SUITE_CERTIFICATE_20261007T083657Z-18364.json`:\n\n- **Commit and",
+   "findings": [
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file approved"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('nfl/tools/showdown_next_slate.py'); s=p.read_text()\nold=\"\"\"        'nfl/warehouse/sources.py speed cache of capture-file measurements, keyed on path|size|mtime|datatype; it '\n        'holds no scenario input and a miss measures",
+   "findings": [
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file approved"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('/home/user/nfl/nfl/warehouse/sources.py'); s=p.read_text()\na=\"from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402\\n\"\nassert s.count(a)==1\ns=s.replace(a,a+\"from nfl.warehouse import point_in_time as PIT  #",
+   "findings": [
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file PIT_UNAUTHORIZED_READ"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl && git add nfl/__init__.py nfl/warehouse/sources.py nfl/tests/test_point_in_time.py && git commit -q -m \"Point-in-time backstop armed by importing nfl; warehouse.sources selection through admit()\n\nFound by the sealed ATL@NO derived rebuild: kicker_model selects play-by-play through",
+   "findings": [
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file manifest-authorized"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl && T=nfl/dfs/salaries/showdown_tb_dal && python3.12 /tmp/claude-0/-home-user-mlb-prop-system-v7/8de98087-4781-5a10-ae09-ef74590f8116/scratchpad/keydiff.py $T/PRECOMPUTE_TBQB_DANIELS_R9 $T/PRECOMPUTE_TBQB_DANIELS_R10 > /tmp/claude-0/-home-user-mlb-prop-system-v7/8de98087-4781-5a10-a",
+   "findings": [
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file OWNER-APPROVED"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/p0work/nfl-tiefix && git add nfl/tools/classic_slate_state.py nfl/tools/role_state.py nfl/tests/test_role_state_tie_order.py && git commit -q -F - <<'EOF'\nrole_state: a tied depth rank is broken by football evidence, never by the player id (W5-G13)\n\nclassic_slate_state gives a back/rec",
+   "findings": [
+    {
+     "rule": "VERIFY_BYPASS",
+     "protected": true,
+     "detail": "git commit -n (-n is --no-verify)"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl && PYTHONPATH=/home/user/p0work/pylib timeout 600 python3.12 nfl/tools/sync_captures.py 2>&1 | tail -4; git status --short | wc -l; timeout 60 gh api -X POST \"repos/94924676jp-a11y/nfl/actions/workflows/nfl-capture.yml/dispatches\" -f ref=main 2>&1 | head -3; echo \"dispatch rc=$?\"; ",
+   "findings": [
+    {
+     "rule": "WORKFLOW_DISPATCH",
+     "protected": true,
+     "detail": "gh api POST repos/94924676jp-a11y/nfl/actions/workflows/nfl-capture.yml/dispatches"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl && python3.12 - <<'EOF'\np='nfl/integrations/monitor.py'; s=open(p).read()\nold=\"\"\"            rs = sorted(by.get(src, []), key=lambda r: str(r.get('capture_id')))\n            last = rs[-1] if rs else None\"\"\"\nnew=\"\"\"            rs = sorted(by.get(src, []), key=lambda r: str(r.get('ca",
+   "findings": [
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file {_e(c.get(\"owner_decision\")"
+    },
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file owner_decision"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl && cat >> nfl/integrations/matrix.py <<'EOF'\n\n\ndef to_markdown():\n    \"\"\"The matrix as Markdown tables, one per access class. Generated, so the document cannot drift.\"\"\"\n    out = []\n    for a, rs in by_access().items():\n        out.append(f'### {a.replace(\"_\", \" \").title()} ({len(",
+   "findings": [
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file owner_decision"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl && python3.12 - <<'EOF'\nimport sys; sys.path.insert(0,'.')\nfrom nfl.integrations import matrix as M\nhead = r'''# Integration feasibility audit: DraftKings, Fantasy Cruncher, NFL data providers (2026-10-09)\n\n**Question.** For each service, is there an authorised API, an official exp",
+   "findings": [
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file authorised"
+    },
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file Authorised"
+    },
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file Approved"
+    },
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file M.OWNER_DECISIONS"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl && python3.12 - <<'EOF'\np='nfl/integrations/monitor.py'; s=open(p).read()\nold=\"\"\"def main(argv=None) -> int:\"\"\"\nnew=\"\"\"def export_datasets(st, out_dir):\n    \\\"\\\"\\\"Flat row tables for the published status page, one file per table. Returns {name: path}.\\\"\\\"\\\"\n    od = pathlib.Path(ou",
+   "findings": [
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file owner_decision"
+    },
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file owner_approvals"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl && python3.12 - <<'EOF'\nimport csv,gzip,json\nrows=[json.loads(l) for l in open('nfl/vintage_manifest.jsonl')]\nb=[r for r in rows if r.get('source')=='schedules' and r.get('state')=='PASS'][-1]['value']['blob']\nfor g in csv.DictReader(gzip.open(b,'rt')):\n    if g['season']=='2026' a",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "writes safeguard .github/workflows/nfl-t90.yml"
+    },
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "writes safeguard .github/workflows/nfl-status.yml"
+    },
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "writes safeguard .github/workflows/nfl-availability.yml"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl && mkdir -p docs/sunday_executor && cp .github/workflows/nfl-t90.yml docs/sunday_executor/nfl-t90.WEEK5.PROPOSED.yml && git checkout -- .github/workflows/nfl-t90.yml && diff -u /tmp/claude-0/-home-user-mlb-prop-system-v7/8de98087-4781-5a10-ae09-ef74590f8116/scratchpad/main_nfl-t90.",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "writes safeguard .github/workflows/nfl-t90.yml"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl && python3.12 - <<'EOF'\nimport json\np='nfl/dfs/salaries/classic_early_2026W5/WEEK5_FORECASTING_GAP_REGISTER.json'\nd=json.load(open(p))\nd['items'] += [\n {'id':'W5-G24','class':'ENGINE_DEFECT','status':'OPEN; fix PROPOSED (docs/sunday_executor/proj_v1_current_club_shares.PROPOSED.pat",
+   "findings": [
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file approval"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('nfl/dfs/salaries/classic_early_2026W5/classic_audit_2026-10-10/CLASSIC_READINESS_AUDIT_2026-10-10.md')\ns=p.read_text()\nold=\"| Portfolio strategy independently validated |\"\nnew=\"| Two 20-entry contests get distinct portfolios | ",
+   "findings": [
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file approval"
+    },
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file approved"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl && sed -n 1,80p coordination/AUTONOMY_SETUP.md; echo ======; python3.12 -c \"\nimport json;d=json.load(open('coordination/AUTOMATION_POLICY.json'));print(json.dumps(d,indent=1)[:3000])\"",
+   "findings": [
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file coordination/AUTOMATION_POLICY.json"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl && python3.12 -c \"\nimport json;d=json.load(open('coordination/AUTOMATION_POLICY.json'))\nfor k in d:\n  if k not in ('_read_me','limit_notes','limits'): print(k,':',json.dumps(d[k])[:400])\n\"; echo =====; python3.12 -c \"\nimport json;d=json.load(open('coordination/MODE_POLICY.json'));p",
+   "findings": [
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file coordination/AUTOMATION_POLICY.json"
+    },
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file coordination/MODE_POLICY.json"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/wshobson/agents && cat plugins/review-agent-governance/hooks/hooks.json | head -30; grep -rn \"review-approved\" plugins/review-agent-governance --include=*.sh --include=*.md | head -4; grep -rn \"no policy file\" plugins/review-agent-governance | head -2; grep -n \"np.random.choice\" plugin",
+   "findings": [
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file review-approved"
+    }
+   ]
+  },
+  {
+   "tool": "Write",
+   "summary": "/home/user/nfl-phase1/nfl/tools/floor_guard.py",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Edit",
+   "summary": "/home/user/nfl-phase1/nfl/tools/floor_guard.py",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('nfl/tools/floor_guard.py'); s=p.read_text()\nold=\"SUPPRESS_LINE = re.compile(r'(#\\\\s*noqa|#\\\\s*type:\\\\s*ignore|#\\\\s*pragma:\\\\s*no\\\\s*cover|#\\\\s*nosec)')\"\nassert old in s\nnew=old+\"\"\"\n#: DECLARED EXEMPTION (not tuning): `# ",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Edit",
+   "summary": "/home/user/nfl-phase1/nfl/tools/floor_guard.py",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Edit",
+   "summary": "/home/user/nfl-phase1/nfl/tools/floor_guard.py",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('nfl/tools/floor_guard.py'); s=p.read_text()\nold=\"\"\"                    if a['numbers'] != b['numbers'] and a['n_checks'] >= b['n_checks']:\n                        out.append(_f('TEST_COMPARISON_NUMBER_CHANGED', 'medium',",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && ls coordination/runs | head; git ls-files coordination/runs | head -3; python3.12 -c \"\nimport json;print(json.load(open('coordination/AUTOMATION_POLICY.json'))['branch_policy'])\"",
+   "findings": [
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file coordination/AUTOMATION_POLICY.json"
+    }
+   ]
+  },
+  {
+   "tool": "Write",
+   "summary": "/home/user/nfl-phase1/coordination/git_guard.py",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "writes safeguard coordination/git_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('coordination/mode_guard.py'); s=p.read_text()\nold='''def main() -> int:\n    try:\n        payload = json.load(sys.stdin)\n    except Exception:  # noqa: BLE001\n        return 0\n    try:\n        d = decide(payload)\n    exce",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "writes safeguard coordination/mode_guard.py"
+    },
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file approval"
+    },
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "writes safeguard coordination/git_guard.py"
+    },
+    {
+     "rule": "SELF_APPROVAL",
+     "protected": true,
+     "detail": "writes approval or owner-authority file approved"
+    },
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "writes safeguard .claude/settings.json"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "mkdir -p /home/user/nfl-phase1/coordination/EVIDENCE/PHASE1_GUARDS_2026-10-10 && cat > /home/user/nfl-phase1/coordination/EVIDENCE/PHASE1_GUARDS_2026-10-10/replay_real_tool_calls.py <<'EOF'\n#!/usr/bin/env python3.12\n\"\"\"Replay every real tool call recorded in a session transcript through git_guard, a",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "writes safeguard coordination/mode_guard.py"
+    }
+   ]
+  }
+ ],
+ "n_hook_stdout_differs_old_vs_new": 0,
+ "differ": [],
+ "seconds": 23.6,
+ "per_call_ms": 5.55
+}

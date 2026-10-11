@@ -1,0 +1,58 @@
+[
+ {
+  "case": "X1_ok_helper_never_fails",
+  "should_report": true,
+  "what": "module-local ok() helper stops counting failures (helper named ok, not check)",
+  "findings": [
+   {
+    "rule": "CHECKS_REDUCED",
+    "severity": "high",
+    "path": "nfl/tests/test_okmod.py",
+    "detail": "the module's ok() helper no longer records a failure (1 -> 0): every check through it passes"
+   }
+  ],
+  "outcome": "TP"
+ },
+ {
+  "case": "X2_ok_call_deleted",
+  "should_report": true,
+  "what": "an ok(flag, msg) check with no comparison deleted from a test",
+  "findings": [
+   {
+    "rule": "CHECKS_REDUCED",
+    "severity": "high",
+    "path": "nfl/tests/test_okmod.py",
+    "detail": "test_flags: 2 -> 1 checks"
+   }
+  ],
+  "outcome": "TP"
+ },
+ {
+  "case": "X3_eq_loosened_masked",
+  "should_report": true,
+  "what": "Eq check loosened to a subset test while another Eq check is added (Task 1 638af4f6)",
+  "findings": [],
+  "outcome": "MISS"
+ },
+ {
+  "case": "X4_exclusion_set_widened",
+  "should_report": true,
+  "what": "equivalence test: declared-difference set widened (out of spec text; Task 1 a62d8b82)",
+  "findings": [],
+  "outcome": "MISS"
+ },
+ {
+  "case": "X5_json_list_insert_shift",
+  "should_report": false,
+  "what": "a new PASS verdict inserted before an unchanged FAIL (Task 1 4bf829c3 index shift)",
+  "findings": [],
+  "outcome": "TN"
+ },
+ {
+  "case": "X6_or_zero_operand",
+  "should_report": false,
+  "what": "assert share > 0.5 -> assert (share or 0) > 0.5: same operator and bound (Task 1 54c782f2)",
+  "findings": [],
+  "outcome": "TN"
+ }
+]
