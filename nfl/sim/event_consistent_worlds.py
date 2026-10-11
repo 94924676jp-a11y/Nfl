@@ -261,8 +261,13 @@ def _band(points):
     return dst_mod.CONDITIONING_BANDS[-1]
 
 
+#: ECW-2 (PREREG_ECW2.md, 6d775337): D2 defensive points out of the drawn remainder, D1 overtime, D4 catch yards from the
+#: measured catch shape. version=1 is ECW-1 exactly as evaluated on 2026-10-09.
+ECW2_INPUTS = _REPO / 'nfl/research/accounting_repair/ECW2_INPUTS.json'
+
+
 def build(art: dict, rows_by_key: dict, int_rate: float, seed: int, *, club_pass_anchor: str = ANCHOR_QB,
-          kicker_inputs: dict = None, incumbent_seed: int = None) -> Outcome:
+          kicker_inputs: dict = None, incumbent_seed: int = None, version: int = 1) -> Outcome:
     """Event-consistent published worlds from the SAME inputs the incumbent published step takes.
 
     art          showdown_draws.build(...).value: stat_draws, STAT_FIELDS, world_points, club_scoring_worlds,
@@ -275,14 +280,17 @@ def build(art: dict, rows_by_key: dict, int_rate: float, seed: int, *, club_pass
     """
     try:
         return Outcome.ok('EVENT_WORLDS_BUILT', _build(art, rows_by_key, float(int_rate), seed, club_pass_anchor,
-                                                       kicker_inputs, incumbent_seed),
-                          f'{ARM}: event-consistent published worlds ({club_pass_anchor})')
+                                                       kicker_inputs, incumbent_seed, version),
+                          f'{ARM} v{version}: event-consistent published worlds ({club_pass_anchor})')
     except _Refuse as e:
         return Outcome.fail(e.code, e.detail, **e.ev)
 
 
-def _build(art, rows_by_key, int_rate, seed, anchor, kicker_inputs, incumbent_seed):
+def _build(art, rows_by_key, int_rate, seed, anchor, kicker_inputs, incumbent_seed, version=1):
     import numpy as np
+    if version not in (1, 2):
+        raise _Refuse('EVENT_WORLDS_VERSION_UNKNOWN', f'version {version!r}')
+    v2 = json.loads(ECW2_INPUTS.read_text()) if version == 2 else None
     if anchor not in ANCHORS:
         raise _Refuse('EVENT_WORLDS_ANCHOR_UNKNOWN', f'{anchor!r} is not one of {ANCHORS}')
     if tuple(art.get('STAT_FIELDS') or ()) != STAT_FIELDS:
@@ -322,6 +330,7 @@ def _build(art, rows_by_key, int_rate, seed, anchor, kicker_inputs, incumbent_se
     INC = {k: np.asarray(v, dtype=float) for k, v in inc_worlds.items()}
 
     out_lines = {k: np.zeros((n, len(WORLD_FIELDS))) for k in keys}
+    club_meta = {}
     account = {'anchor': anchor, 'clubs': {}, 'NOT_REPRESENTED': NOT_REPRESENTED}
     events = {c: {f: [0.0] * n for f in EVENT_FIELDS} for c in clubs}
 
@@ -344,22 +353,58 @@ def _build(art, rows_by_key, int_rate, seed, anchor, kicker_inputs, incumbent_se
         U = np.zeros(n)
         u = {}
         ypc_src = {}
+        ypc_of = {}
+        if v2:
+            # D4: one club efficiency factor per world (teammates share it), and each catch's yards drawn from the
+            # measured catch-shape distribution, so a receiver's dispersion is football's, not the raw simulator's
+            shape = v2['catch_shape']['quantiles_201']
+            ctg = sum(S[k][:, _I['targets']] for k in recs) if recs else np.zeros(n)
+            cry = sum(S[k][:, _I['rec_yards']] for k in recs) if recs else np.zeros(n)
+            c_ypt = np.where(ctg > 0, cry / np.where(ctg > 0, ctg, 1.0), 0.0)
+            club_w = c_ypt / c_ypt[ctg > 0].mean() if (ctg > 0).any() and c_ypt[ctg > 0].mean() > 0 else np.ones(n)
+            rng_c = _rng(seed, c, 'catch_shape')
         for k, y, r in zip(recs, cv_ry, cv_rc):
             tg, rc, ry = S[k][:, _I['targets']], S[k][:, _I['receptions']], S[k][:, _I['rec_yards']]
             ypc = _ratio(y, r)
             ypc_src[k] = 'PLAYER' if ypc is not None else 'CLUB_FALLBACK'
             ypc = ypc if ypc is not None else club_ypc
-            ypt_sim = ry.sum() / tg.sum() if tg.sum() > 0 else 0.0
-            if ypt_sim > 0:
-                g = np.where(tg > 0, ry / np.where(tg > 0, tg, 1.0), 0.0) / ypt_sim
+            ypc_of[k] = ypc
+            if v2:
+                draws_ = np.array([sum(shape[int(rng_c.random() * 200)] for _ in range(int(x))) for x in rc])
+                u[k] = ypc * club_w * draws_
             else:
-                g = np.ones(n)
-            u[k] = rc * ypc * g
+                ypt_sim = ry.sum() / tg.sum() if tg.sum() > 0 else 0.0
+                if ypt_sim > 0:
+                    g = np.where(tg > 0, ry / np.where(tg > 0, tg, 1.0), 0.0) / ypt_sim
+                else:
+                    g = np.ones(n)
+                u[k] = rc * ypc * g
             U += u[k]
         if anchor == ANCHOR_QB:
             target = float(sum(INC[q][:, _I['pass_yards']].mean() for q in qbs))
         else:
             target = float(sum(INC[k][:, _I['rec_yards']].mean() for k in recs))
+        if v2:
+            # PREREG_ECW2 amendment A1: the QB anchor fixes club passing yards for the PROJECTED receiver mix; the mix
+            # the worlds actually throw to moves it. r_mix = yards per target at the worlds' expected target mix over
+            # yards per target at the projection's mix, each receiver at his projected catch rate and yards per catch.
+            # With no participation the two mixes agree up to Monte Carlo noise in mean targets, so r_mix ~ 1.
+            def _ypt(tg_by):
+                num = den = 0.0
+                for k in recs:
+                    rr = rows_by_key[k]
+                    t_ = tg_by[k]
+                    cr_ = _ratio(rr.get('receptions'), rr.get('targets'))
+                    yp_ = ypc_of.get(k)
+                    if t_ > 0 and cr_ is not None and yp_ is not None:
+                        num += t_ * cr_ * yp_
+                    den += t_
+                return num / den if den > 0 else None
+            base_ = _ypt({k: float(rows_by_key[k].get('targets') or 0.0) for k in recs})
+            world_ = _ypt({k: float(S[k][:, _I['targets']].mean()) for k in recs})
+            r_mix = (world_ / base_) if base_ and world_ else 1.0
+            target *= r_mix
+            acc['receiver_mix_factor'] = round(r_mix, 5)
         if U.mean() <= 0:
             raise _Refuse('EVENT_WORLDS_NO_CATCH_YARDS', f'{c}: simulated catch yards have zero mean', club=c)
         F = target / U.mean()
@@ -375,6 +420,18 @@ def _build(art, rows_by_key, int_rate, seed, anchor, kicker_inputs, incumbent_se
         Y = F * U
         # ---- 3. QB yards = sum of receivers' yards, shared by attempts
         A = np.array([S[q][:, _I['pass_att']] for q in qbs])        # [q, w]
+        if v2:
+            # every target has a thrower: attempts the raw simulator left in its unallocated bucket are credited to the
+            # club's QBs (to the one with the most attempts that world, else the first), so targets <= attempts holds
+            ctg2 = sum(S[k][:, _I['targets']] for k in recs) if recs else np.zeros(n)
+            deficit = np.maximum(0.0, ctg2 - A.sum(0))
+            if deficit.any():
+                lead = np.argmax(A, axis=0)
+                for w in np.nonzero(deficit)[0]:
+                    A[lead[w], w] += deficit[w]
+                acc['attempts_credited_from_unallocated'] = float(deficit.sum())
+                for i_q, q in enumerate(qbs):
+                    S[q][:, _I['pass_att']] = A[i_q]
         At = A.sum(0)
         no_passer = int(((Y > 0) & (At <= 0)).sum())
         for i, q in enumerate(qbs):
@@ -452,7 +509,12 @@ def _build(art, rows_by_key, int_rate, seed, anchor, kicker_inputs, incumbent_se
                 k_int = int(At[w])
             ints_c[w] = k_int
             if k_int:
-                for q, g_ in zip(qbs, _split_count(k_int, [float(A[i, w]) for i in range(len(qbs))], rng_i)):
+                if v2:
+                    # one at a time against each QB's attempts: no passer throws more interceptions than passes
+                    got, _un = _place(k_int, [int(A[i, w]) for i in range(len(qbs))], [1.0] * len(qbs), rng_i)
+                else:
+                    got = _split_count(k_int, [float(A[i, w]) for i in range(len(qbs))], rng_i)
+                for q, g_ in zip(qbs, got):
                     out_lines[q][w, len(STAT_FIELDS)] = g_
         acc.update({'int_target_mean': round(want, 4), 'opp_takeaways_mean': round(float(take.mean()), 4),
                     'int_share_of_opp_takeaways_q': round(q_raw, 5), 'q_capped_at_1': bool(q_raw > 1.0),
@@ -462,7 +524,9 @@ def _build(art, rows_by_key, int_rate, seed, anchor, kicker_inputs, incumbent_se
             events[c]['pass_td'][w] = float(sum(out_lines[q][w, _I['pass_td']] for q in qbs))
             events[c]['rush_td'][w] = float(sum(out_lines[k][w, _I['rush_td']] for k in mem))
             events[c]['off_td'][w] = events[c]['pass_td'][w] + events[c]['rush_td'][w]
+        acc['catch_yards'] = 'ECW2_CATCH_SHAPE_X_CLUB_FACTOR' if v2 else 'ECW1_PER_PLAYER_RAW_RATIO'
         account['clubs'][c] = acc
+        club_meta[c] = {'mem': mem, 'qbs': qbs, 'recs': recs, 'ypc': ypc_of, 'A': A}
 
     # ---- 6. kicking events, club points as event sums, DST from components
     kick_key = {}
@@ -476,7 +540,9 @@ def _build(art, rows_by_key, int_rate, seed, anchor, kicker_inputs, incumbent_se
         rk = _rng(seed, c, 'kicker')
         dks = []
         for w in range(n):
-            dk, d = kicker_line(raw_pts[c][w], events[c]['off_td'][w], mix, rates, rk)
+            comp_w = dcomp[dst_key[c]][w]
+            own_def = (POINTS_PER['td'] * float(comp_w[2]) + POINTS_PER['safety'] * float(comp_w[3])) if v2 else 0.0
+            dk, d = kicker_line(raw_pts[c][w] - own_def, events[c]['off_td'][w], mix, rates, rk)
             dks.append(float(dk))
             for f in ('xp_att', 'xp_made', 'tp_att', 'tp_made', 'fg_made', 'fg_0_39_made', 'fg_40_49_made',
                       'fg_50_plus_made'):
@@ -489,6 +555,60 @@ def _build(art, rows_by_key, int_rate, seed, anchor, kicker_inputs, incumbent_se
                               + POINTS_PER['tp'] * e['tp_made'][w] + POINTS_PER['fg'] * e['fg_made'][w]
                               + POINTS_PER['safety'] * e['safety'][w])
         kdk[c] = dks
+    if v2:
+        ot = v2['overtime']['p']
+        p_fg = ot.get('FG', 0.0) + sum(v for k_, v in ot.items() if k_.startswith('OTHER'))
+        p_td, home_p = ot.get('TD', 0.0), v2['overtime']['home_share_of_ot_wins']
+        rng_ot = _rng(seed, 'overtime')
+        ot_count = collections.Counter()
+        for w in range(n):
+            if events[home]['points'][w] != events[away]['points'][w]:
+                continue
+            u_ = rng_ot.random()
+            if u_ >= p_fg + p_td:
+                ot_count['TIE'] += 1
+                continue
+            win = home if rng_ot.random() < home_p else away
+            if u_ < p_fg:
+                events[win]['points'][w] += 3.0
+                events[win]['fg_made'][w] += 1.0
+                if win in kdk:
+                    kdk[win][w] += 3.0
+                ot_count['FG'] += 1
+                continue
+            cm = club_meta[win]
+            rr = {k: rows_by_key[k] for k in cm['mem']}
+            rec_w = [float((rr[k].get('td') or {}).get('rec_td') or 0.0) for k in cm['recs']]
+            rush_w = [float((rr[k].get('td') or {}).get('rush_td') or 0.0) for k in cm['mem']]
+            p_pass = sum(rec_w) / (sum(rec_w) + sum(rush_w)) if sum(rec_w) + sum(rush_w) > 0 else 0.5
+            if cm['recs'] and sum(rec_w) > 0 and rng_ot.random() < p_pass:
+                k = cm['recs'][_split_count(1, rec_w, rng_ot).index(1)]
+                yd = cm['ypc'].get(k) or 0.0
+                q = cm['qbs'][int(np.argmax(cm['A'][:, w]))] if cm['A'][:, w].sum() > 0 else cm['qbs'][0]
+                for f, v_ in (('targets', 1), ('receptions', 1), ('rec_yards', yd), ('rec_td', 1)):
+                    out_lines[k][w, _I[f]] += v_
+                for f, v_ in (('pass_att', 1), ('pass_yards', yd), ('pass_td', 1)):
+                    out_lines[q][w, _I[f]] += v_
+                events[win]['pass_td'][w] += 1.0
+                ot_count['TD_PASS'] += 1
+            elif sum(rush_w) > 0:
+                k = cm['mem'][_split_count(1, rush_w, rng_ot).index(1)]
+                rw = rows_by_key[k]
+                ypr = _ratio((rw.get('conditional_volume') or {}).get('rush_yards'),
+                             (rw.get('conditional_volume') or {}).get('carries')) or 0.0
+                for f, v_ in (('carries', 1), ('rush_yards', ypr), ('rush_td', 1)):
+                    out_lines[k][w, _I[f]] += v_
+                events[win]['rush_td'][w] += 1.0
+                ot_count['TD_RUSH'] += 1
+            else:
+                events[win]['points'][w] += 3.0
+                ot_count['FG_NO_TD_CARRIER'] += 1
+                continue
+            events[win]['off_td'][w] += 1.0
+            events[win]['points'][w] += 6.0        # an overtime touchdown ends the game: no try
+        account['overtime'] = {'tied_worlds_resolved': dict(ot_count), 'inputs': 'ECW2_INPUTS.json overtime',
+                               'p_fg_including_other': round(p_fg, 5), 'p_td': p_td, 'home_share': home_p}
+    account['version'] = version
     draws = {}
     for k in keys:
         draws[k] = [float(CR.dk_from_stats(*row)) for row in out_lines[k].tolist()]

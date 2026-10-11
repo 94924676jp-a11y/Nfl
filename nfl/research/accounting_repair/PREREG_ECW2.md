@@ -52,3 +52,28 @@ These are checked on every build, not on outcomes:
 
 - Any change to section 1 after the first prospective week is graded.
 - Any use of a 2026 week-6-or-later outcome in building either arm.
+
+## Amendment A1 (2026-10-11, about 19:40 UTC, before any ECW-2 evaluation)
+
+Found on the first CORRECTED_V1 replay of the 2026-10-11 slate, before any ECW-2 world was evaluated.
+
+### D7: the QB anchor fixed the QB's mean whatever his receivers did
+
+- On the replay, McLaurin played a mean 0.82 of his role, and Daniels' passing yards moved 187.86 → 187.98.
+- **Change.** The QB anchor's club passing yards are multiplied by r_mix. r_mix is the club's yards per target at
+  the worlds' expected target mix, divided by the same quantity at the projection's target mix.
+  - Each receiver enters at his projected catch rate and yards per catch.
+  - With no participation change, r_mix is 1 up to Monte Carlo noise in mean targets.
+- The QB still sets the level, so a different quarterback still moves his receivers. The mix his targets go to
+  now moves him.
+
+### Accounting: two violations remained on the replay, and both are repaired
+
+| violation | world | cause | repair |
+|---|---|---|---|
+| one passer with more interceptions than attempts | NO, world 1798 | — | interceptions are placed one at a time against each QB's attempts |
+| club targets above club attempts | WAS, world 1243; present in the incumbent too | the raw simulator's unallocated QB attempts | those attempts are credited to the club's QB with the most attempts that world |
+
+### Unchanged
+
+Section 1's other changes and the acceptance and evaluation sections are unchanged.
