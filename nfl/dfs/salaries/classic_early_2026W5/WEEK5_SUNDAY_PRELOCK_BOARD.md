@@ -247,3 +247,13 @@ Martin-Robinson (TEN), Colbie Young (CIN; covered in the joint CIN state).
   - structurally valid;
   - eligibility verified against all 16 clubs' inactive lists (the inactives come from team sites and outlets relaying them, not an official capture);
   - forecast and simulations NOT certified: world accounting fails on 30,281 of 32,000 club-worlds, the QB change does not propagate (W5-G18), and the depth bias (L4) is unresolved.
+
+## Release-state classification (owner ruling 2026-10-11 ~16:40Z, applied retroactively to today's files)
+
+| File | sha256 | Release state |
+|---|---|---|
+| 16:03Z | `20264e84…` | `STALE_FORECAST`: built before the complete 16-club inactive evidence |
+| 16:17Z | `cce6dfb5…` | `CURRENT_BUT_UNCERTIFIED`: 16-club evidence incorporated; world accounting fails, QB propagation (W5-G18) and depth bias (L4) remain |
+| 16:32Z (selected by the owner) | `d4572fb9…` | `SELECTION_ONLY_OVERRIDE`: McLaurin excluded at selection (`classic_portfolio.py:364-366, 386-391`, `--exclude`). His full-role projection (15.3 DK, 9.2 targets) and the 16:08Z worlds were reused unchanged; WAS teammates and Daniels were not re-forecast. Under the owner-accepted limited-snap news, its forecast is `STALE_FORECAST` for that scenario. |
+
+**Where the bypass occurred.** `--exclude` removes DK ids from the candidate pools only. It does not touch state, `proj_v1` allocation or `classic_slate_run` worlds. The engine has no availability status between ACTIVE and INACTIVE (`availability.py` vocabulary), so a snap-limited player cannot reach the allocator at all.
