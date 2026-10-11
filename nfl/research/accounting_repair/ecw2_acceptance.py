@@ -6,7 +6,10 @@
   accounting   nfl/tools/world_accounting_check on the arm's STATE, DRAWS and WORLDS: 0 violations required
   ties         share of game-worlds whose two club scores are equal: <= 0.6% (twice the historical 0.29%)
   receivers    median over receivers with mean > 2 catches of (simulated single-game receiving-yards CV / 0.451, the
-               2021-2025 benchmark in ECW2_INPUTS.json): within [0.85, 1.15]
+               2021-2025 benchmark in ECW2_INPUTS.json): within [0.85, 1.15]. PREREG_ECW3 C2: the benchmark is the CV
+               over games with > 2 catches, so the simulated CV is taken over the worlds where he has > 2 catches; that
+               like-for-like ratio decides. The all-worlds ratio ECW-2 used is still printed, labelled, and decides
+               nothing.
 """
 from __future__ import annotations
 
@@ -41,19 +44,25 @@ def evaluate(arm_dir, slate='2026W5') -> dict:
     F = {f: i for i, f in enumerate(M['fields'])}
     bench = json.loads((_REPO / 'nfl/research/accounting_repair/ECW2_INPUTS.json').read_text())[
         'benchmark_receiving_yards_cv_gt2_catches']['median_cv']
-    ratios = []
+    ratios, ratios_all = [], []
     for i, k in enumerate(M['keys']):
         rec = S[i, :, F['receptions']].astype(float)
         if rec.mean() <= 2:
             continue
         y = S[i, :, F['rec_yards']].astype(float) / M['yard_scale']
         if y.mean() > 0:
-            ratios.append(float(y.std() / y.mean()) / bench)
+            ratios_all.append(float(y.std() / y.mean()) / bench)
+        yc = y[rec > 2]
+        if len(yc) >= 2 and yc.mean() > 0:
+            ratios.append(float(yc.std() / yc.mean()) / bench)
     med = statistics.median(ratios) if ratios else None
+    med_all = statistics.median(ratios_all) if ratios_all else None
     out = {'accounting_violations': wac, 'accounting_ok': wac == {},
            'tie_share_by_game': [round(x, 4) for x in ties], 'tie_share_max': round(max(ties), 4),
            'ties_ok': max(ties) <= TIE_MAX,
            'receivers_n': len(ratios), 'receiver_cv_ratio_median': round(med, 4) if med is not None else None,
+           'receiver_cv_ratio_median_all_worlds_ecw2_measure': round(med_all, 4) if med_all is not None else None,
+           'receiver_cv_measure': 'PREREG_ECW3 C2: worlds with > 2 catches',
            'receivers_ok': med is not None and CV_BAND[0] <= med <= CV_BAND[1], 'benchmark_cv': bench}
     out['ALL_OK'] = out['accounting_ok'] and out['ties_ok'] and out['receivers_ok']
     return out
