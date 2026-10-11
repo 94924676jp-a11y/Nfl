@@ -1,0 +1,21 @@
+{
+ "ARTIFACT": "SIMD9_DECISION",
+ "prereg": "PREREG_SIMD9.md section 3",
+ "recorded_utc": "2026-10-11T20:10Z (before SIMD9_HOLDOUT.json was computed)",
+ "fit": "SIMD9_FIT.json (2021-2023)",
+ "H1": {
+  "rule": "high-share bands' R_targets 95% interval lies below the pooled 1.205",
+  "band_0.18-0.25": {"R": 1.1967, "ci95": [1.1202, 1.2816], "below_1.205": false},
+  "band_0.25-1.01": {"R": 1.1212, "ci95": [1.0199, 1.2254], "below_1.205": false},
+  "verdict": "REJECTED",
+  "change": "NONE: the simulator's target share draw is not changed"
+ },
+ "H2": {
+  "rule": "a band's R_catches 95% interval below 1",
+  "holds_in": ["0.00-0.10 (R 0.9162, ci95 [0.878, 0.9555])"],
+  "not_in": ["0.10-0.18", "0.18-0.25", "0.25-1.01 (intervals include 1)"],
+  "verdict": "HOLDS ONLY IN THE LOWEST-SHARE BAND, which is outside the receiver benchmark population",
+  "change": "NONE (section 3: a less-than-binomial catch draw needs its own model; declared open)"
+ },
+ "diagnostic_after_decision": "the same statistic on the ECW-3 control worlds: R_targets 1.150 / 1.189 / 1.188 and R_catches 0.959 / 0.987 / 1.004 in bands 0.10-0.18 / 0.18-0.25 / >= 0.25, i.e. inside the fit intervals; see ECW3_ACCEPTANCE_MEASURE.md"
+}

@@ -1,0 +1,87 @@
+{
+ "ARTIFACT": "SIMD9_HOLDOUT",
+ "prereg": "PREREG_SIMD9.md",
+ "seasons": [
+  2024,
+  2025
+ ],
+ "bootstrap": {
+  "B": 2000,
+  "seed": 20261011,
+  "block": "club-season",
+  "n_blocks": 64
+ },
+ "pooled": {
+  "R_targets": 1.0415,
+  "R_catches": 0.9009,
+  "n_bar": 31.597,
+  "n_units": 8529
+ },
+ "bands": {
+  "0.00-0.10": {
+   "n_units": 3822,
+   "n_bar": 32.089,
+   "R_targets": 0.7676,
+   "R_targets_ci95": [
+    0.7177,
+    0.8139
+   ],
+   "concentration": null,
+   "state": "UNDER_DISPERSED",
+   "R_catches": 0.8638,
+   "R_catches_ci95": [
+    0.8236,
+    0.9059
+   ]
+  },
+  "0.10-0.18": {
+   "n_units": 2782,
+   "n_bar": 31.063,
+   "R_targets": 1.142,
+   "R_targets_ci95": [
+    1.0779,
+    1.214
+   ],
+   "concentration": 210.65,
+   "state": "OVER_DISPERSED",
+   "R_catches": 0.8854,
+   "R_catches_ci95": [
+    0.83,
+    0.9435
+   ]
+  },
+  "0.18-0.25": {
+   "n_units": 1282,
+   "n_bar": 31.395,
+   "R_targets": 1.15,
+   "R_targets_ci95": [
+    1.0573,
+    1.2541
+   ],
+   "concentration": 201.63,
+   "state": "OVER_DISPERSED",
+   "R_catches": 0.946,
+   "R_catches_ci95": [
+    0.8714,
+    1.0284
+   ]
+  },
+  "0.25-1.01": {
+   "n_units": 643,
+   "n_bar": 31.383,
+   "R_targets": 1.1283,
+   "R_targets_ci95": [
+    0.9712,
+    1.3033
+   ],
+   "concentration": 235.9,
+   "state": "OVER_DISPERSED",
+   "R_catches": 0.9075,
+   "R_catches_ci95": [
+    0.8068,
+    1.0073
+   ]
+  }
+ },
+ "NOTE": "season-mean shares and catch rates: within-season role drift inflates every ratio (upper bounds)"
+}
