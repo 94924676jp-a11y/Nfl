@@ -1,0 +1,431 @@
+{
+ "transcript": "/root/.claude/projects/-home-user-mlb-prop-system-v7/8de98087-4781-5a10-ae09-ef74590f8116.jsonl",
+ "n_calls": 2314,
+ "by_tool": {
+  "Bash": 2193,
+  "Write": 107,
+  "Edit": 14
+ },
+ "n_protected_flagged": 37,
+ "flagged": [
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl && PYTHONPATH=/home/user/p0work/pylib timeout 600 python3.12 nfl/tools/sync_captures.py 2>&1 | tail -4; git status --short | wc -l; timeout 60 gh api -X POST \"repos/94924676jp-a11y/nfl/actions/workflows/nfl-capture.yml/dispatches\" -f ref=main 2>&1 | head -3; echo \"dispatch rc=$?\"; ",
+   "findings": [
+    {
+     "rule": "WORKFLOW_DISPATCH",
+     "protected": true,
+     "detail": "gh api POST repos/94924676jp-a11y/nfl/actions/workflows/nfl-capture.yml/dispatches"
+    }
+   ]
+  },
+  {
+   "tool": "Write",
+   "summary": "/home/user/nfl-phase1/nfl/tools/floor_guard.py",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "Write writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Edit",
+   "summary": "/home/user/nfl-phase1/nfl/tools/floor_guard.py",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "Edit writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('nfl/tools/floor_guard.py'); s=p.read_text()\nold=\"SUPPRESS_LINE = re.compile(r'(#\\\\s*noqa|#\\\\s*type:\\\\s*ignore|#\\\\s*pragma:\\\\s*no\\\\s*cover|#\\\\s*nosec)')\"\nassert old in s\nnew=old+\"\"\"\n#: DECLARED EXEMPTION (not tuning): `# ",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Edit",
+   "summary": "/home/user/nfl-phase1/nfl/tools/floor_guard.py",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "Edit writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Edit",
+   "summary": "/home/user/nfl-phase1/nfl/tools/floor_guard.py",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "Edit writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('nfl/tools/floor_guard.py'); s=p.read_text()\nold=\"\"\"                    if a['numbers'] != b['numbers'] and a['n_checks'] >= b['n_checks']:\n                        out.append(_f('TEST_COMPARISON_NUMBER_CHANGED', 'medium',",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Write",
+   "summary": "/home/user/nfl-phase1/coordination/git_guard.py",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "Write writes safeguard coordination/git_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('coordination/mode_guard.py'); s=p.read_text()\nold='''def main() -> int:\n    try:\n        payload = json.load(sys.stdin)\n    except Exception:  # noqa: BLE001\n        return 0\n    try:\n        d = decide(payload)\n    exce",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes a Claude Code settings file (hook registration): /home/user/nfl-phase1/.claude/settings.json"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('coordination/git_guard.py'); s=p.read_text()\nold='''def _write_targets(tool, ti, cwd):\n    \"\"\"Repository-relative paths a tool call writes. Reuses mode_guard's own Bash write parser.\"\"\"\n    from coordination import mode_",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard coordination/git_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('coordination/git_guard.py'); s=p.read_text()\nold='''    out = [m.group('p') for rx in _PY_WRITES for m in rx.finditer(text)]\n    for m in _PY_PATH_VAR.finditer(text):\n        var, path = m.group(1), m.group('p')'''\nnew='",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard coordination/git_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('coordination/git_guard.py'); s=p.read_text()\nold=\"\"\"            if verb == 'chmod' and operands:\n                operands = operands[1:]                       # the first operand is the mode\"\"\"\nnew=\"\"\"            if verb",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard coordination/git_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('coordination/git_guard.py'); s=p.read_text()\nold='''    from coordination import mode_guard as MG\n    paths = list(MG.targets(tool, ti, cwd))\n    if tool == 'Bash':\n        cmd = ti.get('command') or ''\n        for raw i",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard coordination/git_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('nfl/tools/floor_guard.py'); s=p.read_text()\nold=\"\"\"FROZEN = ('nfl/tests/certificates/*', '*SEAL*.json', '*FREEZE*.json', '*FREEZE*.md', '*/SHA256SUMS',\n          'nfl/vintage/*', '*/baseline_*/*', 'nfl/dfs/salaries/class",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('nfl/tools/floor_guard.py'); s=p.read_text()\nold=\"\"\"        elif before is not None and after is not None and not after.startswith(before):\n            out.append(_f('APPEND_ONLY_LOG_REWRITTEN', 'high', old,\n             ",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('coordination/mode_guard.py'); s=p.read_text()\nold='''    try:\n        from coordination import git_guard as G\n        return getattr(G, fn)(arg)\n    except Exception as e:  # noqa: BLE001\n        print(f'git_guard: NOT_E",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard coordination/mode_guard.py"
+    },
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard coordination/git_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('coordination/mode_guard.py'); s=p.read_text()\nstart=s.index('def _git_guard(fn: str, arg):'); end=s.index(\"if __name__ == '__main__':\")\nnew='''def _record_guard_failure(arg, rule: str, e: BaseException) -> None:\n    \"\"\"A",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard coordination/mode_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Write",
+   "summary": "/home/user/nfl-phase1/coordination/git_guard.py",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "Write writes safeguard coordination/git_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('coordination/git_guard.py'); s=p.read_text()\nold=\"\"\"    env, a, _ = _strip_prefix(c.argv, c.env)\n    if not a:\n        return out\n    verb, args, cwd\"\"\"\nnew=\"\"\"    env, a, _ = _strip_prefix(c.argv, c.env)\n    if not a:\n ",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard coordination/git_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Write",
+   "summary": "/home/user/nfl-phase1/nfl/tools/floor_guard.py",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "Write writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "python3.12 - <<'EOF'\nimport json\nT='/root/.claude/projects/-home-user-mlb-prop-system-v7/8de98087-4781-5a10-ae09-ef74590f8116.jsonl'\nlast=None\nfor ln in open(T):\n    try: d=json.loads(ln)\n    except: continue\n    m=d.get('message') or {}\n    c=m.get('content')\n    if isinstance(c,list):\n        for ",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('nfl/tools/floor_guard.py'); s=p.read_text()\nstart=s.index('#: DECLARED: names that are capacity or plumbing')\nend=s.index('TOL_KEYWORDS = ')\nnew='''#: DECLARED: names that are capacity or plumbing, not a bar a result has",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('nfl/tools/floor_guard.py'); s=p.read_text()\nold=\"\"\"        v = _num(n, names) if not isinstance(n, ast.Name) else None\n\"\"\"\nnew=\"\"\"        v = _num(n, names)                            # a Name folds only when it is bound",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && cat .claude/settings.json && python3.12 - <<'EOF'\nimport json,pathlib,re\np=pathlib.Path('.claude/settings.json'); s=p.read_text()\nold='\"Edit|Write|MultiEdit|NotebookEdit|Bash|mcp__github__.*\"'\nassert s.count(old)==1\ns=s.replace(old,'\"Edit|Write|MultiEdit|NotebookEdit|Bash",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes a Claude Code settings file (hook registration): /home/user/nfl-phase1/.claude/settings.json"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('coordination/git_guard.py'); s=p.read_text()\nold=\"\"\"        for t in targets:\n            if isinstance(t, ast.Name):\n                if v is not None:\n                    names[t.id] = v\n                else:\n          ",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard coordination/git_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('coordination/mode_guard.py'); s=p.read_text()\nold=\"\"\"def main() -> int:\n    raw = sys.stdin.read()\n\"\"\"\nnew=\"\"\"def _read_stdin() -> str:\n    \\\"\\\"\\\"The hook payload as text. Bytes that are not UTF-8 are replaced, never fat",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard coordination/mode_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('coordination/git_guard.py'); s=p.read_text()\nold=\"\"\"        else:\n            pos.append(t)\n        i += 1\n    if any(re.match(r'(?i)^remote\\\\.[^=]+\\\\.mirror\"\"\"\nassert s.count(old)==1, s.count(old)\ns=s.replace(old,\"\"\"   ",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard coordination/git_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('coordination/git_guard.py'); s=p.read_text()\ndef rep(old,new):\n    global s\n    assert s.count(old)==1,(s.count(old),old[:60]); s=s.replace(old,new)\nrep(\"\"\"    if hooks_cfg:\n        f.append(_finding('HOOK_PATH_CHANGE', ",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard coordination/git_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && grep -n \"looser'\" nfl/tools/floor_guard.py | head -3; python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('nfl/tools/floor_guard.py'); s=p.read_text()\nold=\"\"\"        moved_to = {m for m, consts in ctx.get('constants_after', {}).items()\n                    if m != path for ",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('nfl/tools/floor_guard.py'); s=p.read_text()\ndef rep(old,new):\n    global s\n    assert s.count(old)==1,(s.count(old),old[:70]); s=s.replace(old,new)\n# class methods analysed (Class.method) but never mistaken for a rename ",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('nfl/tools/floor_guard.py'); s=p.read_text()\nold=\"\"\"def _f(rule, severity, path, detail, **ev):\n    return {'rule': rule, 'severity': severity, 'path': path, 'detail': detail, 'evidence': ev,\n            'authorization': ",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('nfl/tools/floor_guard.py'); s=p.read_text()\nold=\"\"\"        flips = _json_result_flips(before, after) if path.endswith('.json') else \\\\\"\"\"\nnew=\"\"\"        if path.endswith('.json') and (_json_parses(before) != _json_parses",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('nfl/tools/floor_guard.py'); s=p.read_text()\nold=\"\"\"    stack = list(fn.body)\n    while stack:\"\"\"\nnew=\"\"\"    nested = (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda, ast.ClassDef)\n    stack = [b for b in fn.body if no",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('nfl/tools/floor_guard.py'); s=p.read_text()\nold=\"\"\"        if JSON_FAIL_KEYS.search(key) and nb > la.get(path, 0):\"\"\"\nnew=\"\"\"        if JSON_FAIL_LIST_KEYS.match(key) and nb > la.get(path, 0):\"\"\"\nassert s.count(old)==1; ",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('nfl/tools/floor_guard.py'); s=p.read_text()\nold=\"\"\"    if st == 'T':\n        st = 'M'                                      # a type change (file <-> symlink) is a modification\"\"\"\nnew=\"\"\"    type_changed = st == 'T'\n    i",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('nfl/tools/floor_guard.py'); s=p.read_text()\ndef rep(old,new):\n    global s\n    assert s.count(old)==1,(s.count(old),old[:70]); s=s.replace(old,new)\nrep(\"\"\"    return any((isinstance(s, ast.AugAssign) and isinstance(s.tar",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  },
+  {
+   "tool": "Bash",
+   "summary": "cd /home/user/nfl-phase1 && python3.12 - <<'EOF'\nimport pathlib\np=pathlib.Path('nfl/tools/floor_guard.py'); s=p.read_text()\ndef rep(old,new):\n    global s\n    assert s.count(old)==1,(s.count(old),old[:70]); s=s.replace(old,new)\nrep('''def _helpers(src):''','''def _helpers(src, names=()):''')\nrep('''",
+   "findings": [
+    {
+     "rule": "SAFEGUARD_MODIFIED",
+     "protected": true,
+     "detail": "python writes safeguard nfl/tools/floor_guard.py"
+    }
+   ]
+  }
+ ],
+ "n_hook_stdout_differs_old_vs_new": 0,
+ "differ": [],
+ "n_denied_by_base_mode_guard": 1,
+ "n_denied_by_phase1_mode_guard": 1,
+ "IDENTITY_IS_INFORMATIVE": true,
+ "seconds": 3.8,
+ "per_call_ms": 0.81
+}

@@ -292,6 +292,10 @@ def _nums_in(node, names):
         if v is not None:
             out.append(round(float(v), 12))
             return
+        if isinstance(n, ast.BoolOp) and isinstance(n.op, ast.Or) and isinstance(n.values[-1], ast.Constant):
+            for v in n.values[:-1]:
+                walk(v)                               # `x or 0`: the 0 is a default, not a bound
+            return
         if isinstance(n, ast.Call):
             walk(n.func)
             for a in n.args:
@@ -405,12 +409,48 @@ def _is_vacuous(expr, local, names):
     return False
 
 
-def _check_conditions(fn):
+def _records_failure(node):
+    """Does a function body record a failure: a FAIL-like counter incremented, a raise, or an assert?"""
+    return any((isinstance(s, ast.AugAssign) and isinstance(s.target, ast.Name) and _FAIL_COUNTER.search(s.target.id))
+               or isinstance(s, (ast.Raise, ast.Assert)) for s in ast.walk(node))
+
+
+_FAIL_COUNTER = re.compile(r'FAIL|^_?F$|^_?N_?F$', re.I)
+
+
+def module_check_helpers(tree):
+    """{name: index of the condition parameter} for the module's own check helpers, found by what they do rather
+    than by name: a module-level function, not a test, that records a failure and decides it on a parameter
+    (`def ok(cond, what): if cond: PASSED += 1 else: FAILED += 1`)."""
+    out = {}
+    for node in tree.body:
+        if not isinstance(node, ast.FunctionDef) or node.name.startswith('test') or not _records_failure(node):
+            continue
+        params = [a.arg for a in node.args.posonlyargs + node.args.args]
+        used = None
+        for s in ast.walk(node):
+            test = s.test if isinstance(s, (ast.If, ast.Assert, ast.IfExp)) else None
+            if test is not None:
+                ids = [n.id for n in ast.walk(test) if isinstance(n, ast.Name) and n.id in params]
+                if ids:
+                    used = params.index(ids[0])
+                    break
+        if used is not None:
+            out[node.name] = used
+    return out
+
+
+def _check_conditions(fn, helpers=None):
     """[(kind, condition expr or None, node)] for every check in a test function."""
     out = []
+    helpers = helpers or {}
     for sub in ast.walk(fn):
         if isinstance(sub, ast.Assert):
             out.append(('assert', sub.test, sub))
+        elif isinstance(sub, ast.Call) and isinstance(sub.func, ast.Name) and sub.func.id in helpers \
+                and sub.func.id not in CHECK_CALLS:
+            i = helpers[sub.func.id]
+            out.append((sub.func.id, sub.args[i] if len(sub.args) > i else None, sub))
         elif isinstance(sub, ast.Call):
             name = _callee(sub)
             if name in CHECK_CALLS:
@@ -524,8 +564,8 @@ def _local_truths(fn, names):
     return out
 
 
-def _test_facts(fn, names):
-    conds = _check_conditions(fn)
+def _test_facts(fn, names, helpers=None):
+    conds = _check_conditions(fn, helpers)
     local = _local_truths(fn, names)
     sigs, tols, details = _signatures(fn, names)
     body = [b for b in fn.body if not (isinstance(b, ast.Expr) and isinstance(b.value, ast.Constant))]
@@ -538,13 +578,14 @@ def _test_facts(fn, names):
         early += 1
     return {'n_checks': len(conds), 'vacuous': sum(_is_vacuous(c[1], local, names) for c in conds),
             'sigs': sigs, 'tols': tols, 'details': details, 'early_return': early,
+            'cmp_text': collections.Counter(ast.unparse(x) for x in _walk_own(fn) if isinstance(x, ast.Compare)),
             'trivial': (not body) or all(isinstance(b, ast.Pass) or (isinstance(b, ast.Expr) and
                                                                      isinstance(b.value, ast.Constant)) for b in body),
             'body': ast.dump(ast.Module(body=fn.body, type_ignores=[]), annotate_fields=False),
             'numbers': sorted(x for s in sigs for x in (s[2] if s[0] in ('cmp', 'call') else ()))}
 
 
-def _tests_in(src):
+def _tests_in(src, helpers=None):
     """{test function name: facts} for the tests nfl/tests/run_suite.py actually runs: module-level callables whose
     name starts with `test_` (run_suite.py: `n.startswith('test_') and callable(...)`). A method in a class or a
     function named `testx` is never run; a name rebound or deleted at module level after its def
@@ -553,15 +594,16 @@ def _tests_in(src):
     if tree is None:
         return None
     names = _module_numbers(tree)
+    helpers = module_check_helpers(tree) if helpers is None else helpers
     out = {}
     for node in tree.body:
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name.startswith('test_'):
-            out[node.name] = _test_facts(node, names)
+            out[node.name] = _test_facts(node, names, helpers)
         elif isinstance(node, ast.ClassDef):
             # not run by this repository's runner, but judged for weakening (a pytest or unittest run would use them)
             for m in node.body:
                 if isinstance(m, (ast.FunctionDef, ast.AsyncFunctionDef)) and m.name.startswith('test'):
-                    out[f'{node.name}.{m.name}'] = _test_facts(m, names)
+                    out[f'{node.name}.{m.name}'] = _test_facts(m, names, helpers)
         elif isinstance(node, (ast.Assign, ast.AnnAssign, ast.AugAssign)):
             targets = node.targets if isinstance(node, ast.Assign) else [node.target]
             for t in targets:
@@ -574,14 +616,16 @@ def _tests_in(src):
     return out
 
 
-def _helpers(src):
+def _helpers(src, names=()):
     """{helper name: (fingerprint, n failure increments)} for the module's own check()/observe() helpers."""
     tree = _parse(src)
     out = {}
     if tree is None:
         return out
+    found = module_check_helpers(tree)
     for node in tree.body:
-        if isinstance(node, ast.FunctionDef) and node.name in ('check', 'observe', '_check', 'expect'):
+        if isinstance(node, ast.FunctionDef) and (node.name in ('check', 'observe', '_check', 'expect')
+                                                  or node.name in found or node.name in names):
             incs = sum(1 for s in ast.walk(node) if isinstance(s, ast.AugAssign) and isinstance(s.target, ast.Name)
                        and re.search(r'FAIL', s.target.id, re.I))
             raises = sum(1 for s in ast.walk(node) if isinstance(s, ast.Raise))
@@ -597,7 +641,8 @@ def _skips(src):
         return 0
     n = 0
     for s in ast.walk(tree):
-        if isinstance(s, ast.Call) and _callee(s) in SKIP_NAMES:
+        if isinstance(s, ast.Call) and _callee(s) in SKIP_NAMES and not (
+                _callee(s) in ('blocked', '_blocked') and not isinstance(s.func, ast.Name)):
             n += 1
         elif isinstance(s, ast.Raise) and s.exc is not None and 'SkipTest' in ast.dump(s.exc):
             n += 1
@@ -956,6 +1001,12 @@ def _json_result_flips(before, after):
         return sum(1 for k, v in leaves.items() if isinstance(v, str) and len(v) < 80 and _fails(v))
     n_fail_before, n_fail_after = n_failing(bl), n_failing(al)
     out = []
+
+    def parent(path):
+        return re.sub(r'(\[\d+\])[^\[]*$', '', path) if re.search(r'\[\d+\]', path) else None
+
+    def fails_under(leaves, par):
+        return sum(1 for k, v in leaves.items() if k.startswith(par + '[') and isinstance(v, str) and _fails(v))
     lb, la = _json_lists(b), _json_lists(a)
     for path, nb in lb.items():
         key = re.split(r'[.\[]', path)[-1].rstrip(']')
@@ -977,6 +1028,9 @@ def _json_result_flips(before, after):
                 if n_fail_after < n_fail_before:          # a renamed schema keeps its failures elsewhere
                     out.append((path, bv, None))
             elif isinstance(av, str) and not _fails(av) and _passes(av):
+                par = parent(path)
+                if par is not None and fails_under(al, par) >= fails_under(bl, par):
+                    continue                          # inside a list: the failure moved position, it is still there
                 out.append((path, bv, av))
     return out
 
@@ -1019,6 +1073,10 @@ def _weaker_row(b, a):
     return False
 
 
+def before_text(repo, base, path):
+    return _show(repo, base, path)
+
+
 def judge_file(repo, base, head, st, old, new, ctx=None):
     out = []
     ctx = ctx or {}
@@ -1036,7 +1094,14 @@ def judge_file(repo, base, head, st, old, new, ctx=None):
                           f'{st} change could not be read (submodule, unreadable path or object)')
 
     # ---- the runner's collection: a test module it ran before and does not run now
+    moved_whole = False
     if _collected(old) and st != 'A' and (st == 'D' or not _collected(new)):
+        tb_ = _tests_in(before_text(repo, base, old)) or {}
+        elsewhere = {n: t for m, tests in ctx.get('tests_after', {}).items() if m != old and _collected(m)
+                     for n, t in tests.items()}
+        moved_whole = bool(tb_) and all(n in elsewhere and elsewhere[n]['n_checks'] >= t['n_checks']
+                                        and elsewhere[n]['vacuous'] <= t['vacuous'] for n, t in tb_.items())
+    if _collected(old) and st != 'A' and (st == 'D' or not _collected(new)) and not moved_whole:
         out.append(_f('TEST_FILE_DELETED', 'high', old,
                       'a test module the runner collected was deleted' if st == 'D' else
                       f'a test module was moved out of the runner\'s collection ({new}); it no longer runs'))
@@ -1193,8 +1258,12 @@ def judge_file(repo, base, head, st, old, new, ctx=None):
 
 def _judge_tests(path, st, before, after, ctx):
     out = []
-    tb = _tests_in(before) if before else {}
-    ta = _tests_in(after)
+    # one helper set for both sides (review 3: a counter renamed _F -> FAILED made the helper visible on one side
+    # only, so checks that had always been there read as new early returns and new constant checks)
+    hb_tree, ha_tree = (_parse(before) if before else None), _parse(after)
+    shared = {**(module_check_helpers(hb_tree) if hb_tree else {}), **(module_check_helpers(ha_tree) if ha_tree else {})}
+    tb = _tests_in(before, shared) if before else {}
+    ta = _tests_in(after, shared)
     if ta is None:
         return [_f('TEST_MODULE_UNPARSEABLE', 'high', path, 'the test module no longer parses')]
     if tb is None:
@@ -1224,6 +1293,9 @@ def _judge_tests(path, st, before, after, ctx):
                           f'{name}: {a["vacuous"] - b["vacuous"]} check(s) whose condition is true whatever the code '
                           f'does', n_before=b['vacuous'], n_after=a['vacuous']))
         gone, new_sigs = b['sigs'] - a['sigs'], a['sigs'] - b['sigs']
+        if b['cmp_text'] == a['cmp_text']:
+            # same comparisons, word for word: a module constant moved, not the test (tripwires are still judged)
+            gone = collections.Counter({k: v for k, v in gone.items() if k[0] != 'cmp'})
         tightened = 0
         for g in list(gone):
             for ns in list(new_sigs):
@@ -1252,7 +1324,7 @@ def _judge_tests(path, st, before, after, ctx):
                     out[-1]['rule'] = 'TEST_COMPARISON_NUMBER_CHANGED'
             else:
                 out.append(_f('TEST_COMPARISON_NUMBER_CHANGED', 'medium', path, f'{name}: tolerance {kw}={vb} removed'))
-    hb, ha = _helpers(before or ''), _helpers(after)
+    hb, ha = _helpers(before or '', shared), _helpers(after, shared)
     for h in sorted(set(hb) & set(ha)):
         if ha[h][1] < hb[h][1]:
             out.append(_f('CHECKS_REDUCED', 'high', path, f'the module\'s {h}() helper no longer records a failure '

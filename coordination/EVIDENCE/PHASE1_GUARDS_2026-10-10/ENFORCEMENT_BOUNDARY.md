@@ -29,7 +29,7 @@ or rulesets on GitHub. **Measured 2026-10-11: none exists.** `gh api repos/94924
 | Python run inline (`-c`, heredoc), incl. `subprocess.run([...])` and `os.system` | Yes, when its paths and argv are constants or foldable | test 10 (`subprocess.run(['git','push','--force',...])`) |
 | Edit / Write / MultiEdit / NotebookEdit | Yes (path; MultiEdit `edits[]` bodies) | tests 1, 10 |
 | GitHub MCP tools of any server whose name contains `github` | Yes (matcher `mcp__.*github.*`) | test 8 |
-| `python3.12 some_tool.py` that writes or pushes by itself | **No** (the script body is not in the tool call) | documented residual |
+| `python3.12 some_tool.py` that writes or pushes by itself | **No** (the script body is not in the tool call) | **observed in this session**: the patch scripts run as `python3.12 <scratch>/gg_patch3.py` and `fg_patch3.py` rewrote the guards and were not flagged, while the same edits made inline were (`REAL_CALL_REPLAY_FINAL.json`) |
 | A path computed at run time (`$VAR`, sys.argv, network) | **No** | documented residual |
 | `git apply` / `patch` of a file that does not exist when the hook runs | **No** (would also fail to apply) | review fixture write-27 |
 | Effects that depend on history (`git merge`, `git reset --hard`, `git stash pop`, `git pull`) | **No** | documented residual |

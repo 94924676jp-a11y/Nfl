@@ -577,6 +577,68 @@ def test_08_second_review_regressions_in_sample():
     check('a result JSON parseable on one side only exits 2', rc == 2, f'rc={rc} {out[:160]}')
 
 
+OK_MODULE = """\
+PASSED = FAILED = 0
+
+
+def ok(cond, what):
+    global PASSED, FAILED
+    if cond:
+        PASSED += 1
+    else:
+        FAILED += 1
+
+
+def test_a():
+    ok(1 + 1 == 2, 'adds')
+    ok(2 * 2 == 4, 'multiplies')
+"""
+
+
+def test_09_third_review_regressions_in_sample():
+    """Third independent review (coordination/EVIDENCE/PHASE1_GUARDS_2026-10-10/coverage_review_3/): held-out on
+    ca7a85af (history precision 78/84, fixtures 12/12 with 1/8 false positives); the fixes for its findings are
+    IN-SAMPLE regressions here."""
+    print('\n9. third independent review (IN-SAMPLE regressions)')
+    cases = [
+        ('a check through an ok() helper deleted -> CHECKS_REDUCED',
+         {'nfl/tests/test_ok.py': OK_MODULE.replace("    ok(2 * 2 == 4, 'multiplies')\n", '')}, 'CHECKS_REDUCED'),
+        ('the ok() helper no longer records a failure -> CHECKS_REDUCED',
+         {'nfl/tests/test_ok.py': OK_MODULE.replace('    else:\n        FAILED += 1\n', '')}, 'CHECKS_REDUCED'),
+        ('a JSON list gains an entry and the FAIL shifts position -> no finding',
+         {'nfl/results/RUN_RESULT.json': '{"verdicts": ["PASS", "PASS", "FAIL"]}\n'}, None),
+        ('`(x or 0) > 0.5` replacing `x > 0.5` -> no finding',
+         {'nfl/tests/test_ok.py': OK_MODULE + "\n\ndef test_b():\n    x = 0.9\n    assert (x or 0) > 0.5\n"}, None),
+        ('a test module moved whole into a new module -> no TEST_FILE_DELETED',
+         {'nfl/tests/test_ok.py': None, 'nfl/tests/test_ok_moved.py': OK_MODULE}, None),
+    ]
+    base_extra = {'nfl/tests/test_ok.py': OK_MODULE + "\n\ndef test_b():\n    x = 0.9\n    assert x > 0.5\n",
+                  'nfl/results/RUN_RESULT.json': '{"verdicts": ["PASS", "FAIL"]}\n'}
+    for label, change, rule in cases:
+        d = _review_repo()
+        for rel, text in base_extra.items():
+            (d / rel).parent.mkdir(parents=True, exist_ok=True)
+            (d / rel).write_text(text)
+        _git(d, 'add', '-A')
+        _git(d, 'commit', '-q', '-m', 'base extra')
+        for rel, text in change.items():
+            if text is None:
+                (d / rel).unlink()
+            else:
+                (d / rel).parent.mkdir(parents=True, exist_ok=True)
+                (d / rel).write_text(text)
+        _git(d, 'add', '-A')
+        _git(d, 'commit', '-q', '-m', 'change')
+        found = [(x['rule'], x['detail']) for x in FG.run(d, 'HEAD~1', 'HEAD')['findings']
+                 if x['severity'] in ('high', 'medium')]
+        rules = {r for r, _ in found}
+        if rule:
+            check(label, rule in rules, str(found))
+        else:
+            check(label, not (rules & {'RESULT_STATUS_FLIPPED_TO_PASS', 'TEST_COMPARISON_NUMBER_CHANGED',
+                                       'TEST_FILE_DELETED'}), str(found))
+
+
 def test_zz_every_check_passed():
     if FAILED:
         raise AssertionError(f'{FAILED} check(s) failed in this module')

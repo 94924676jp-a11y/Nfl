@@ -16,6 +16,10 @@ until the owner says so. Ordered by expected value per unit of risk.
 | P2-7 | **Defect-cycle ledger with an independent verifier** | This phase: two harness defects found only by re-measurement (the base mode_guard ROOT defect that made an identity claim vacuous; the replay crash on redirect-only commands). | Every claimed fix carries reproduce -> root cause -> test -> independent verify rows; scored by the fraction of claims with all four. | compatible | medium |
 | P2-8 | **Continuous historical evaluation** (owner's future priority) | No standing job measures projection calibration, ownership error, field assumptions or realised portfolio results week over week. | Weekly CRPS / calibration / ownership MAE with predeclared margins, graded on locked pregame artifacts only. | compatible (research, read-only on production) | large |
 
+| P2-9 | **Allowlist and exclusion-set widening** as a floor-guard rule | Review 3: `5ea58c55` adds an entry to `ownership_audit.DISPOSITIONS` that clears an audit finding; `a62d8b82` widens an equivalence test's declared differences and drops a hash axis; neither is in the Phase 1 spec, so neither is reported. | A new rule scored on a new held-out window (precision floor predeclared before looking). | compatible (report-only) | small |
+| P2-10 | **Operand-aware comparison signatures** | Review 3 X3 / `638af4f6`: an exact equality replaced by a subset check is masked when the same test gains new `==` checks, because comparisons are matched as (operator, numbers). | Detects X3 without new false positives on the two graded windows. | compatible | small |
+| P2-11 | **Fourth independent review before any enforcement** | Every number after review 3's fixes is in-sample. | Held-out detection and precision on the final code, on a window nobody has inspected (commits 661-840). | compatible | agent time |
+
 ## Not proposed, and why
 
 - **Marketplace skills or plugins**: the tooling evaluation found no capability that the repository lacks and

@@ -1181,8 +1181,20 @@
     {
      "rule": "CHECK_HELPER_CHANGED",
      "severity": "medium",
+     "path": "nfl/tests/test_gate_enforcement.py",
+     "detail": "the module's raises() helper was removed or replaced"
+    },
+    {
+     "rule": "CHECK_HELPER_CHANGED",
+     "severity": "medium",
      "path": "nfl/tests/test_join_completeness.py",
      "detail": "the module's check() helper changed"
+    },
+    {
+     "rule": "CHECK_HELPER_CHANGED",
+     "severity": "medium",
+     "path": "nfl/tests/test_join_completeness.py",
+     "detail": "the module's raises() helper was removed or replaced"
     }
    ]
   },
@@ -2079,6 +2091,12 @@
      "severity": "high",
      "path": "nfl/production/review/gate.py",
      "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    },
+    {
+     "rule": "CHECKS_REDUCED",
+     "severity": "high",
+     "path": "nfl/tests/test_conservation_integrity.py",
+     "detail": "test_the_gate_advertises_only_what_has_a_producer: 10 -> 9 checks"
     },
     {
      "rule": "TEST_COMPARISON_NUMBER_CHANGED",

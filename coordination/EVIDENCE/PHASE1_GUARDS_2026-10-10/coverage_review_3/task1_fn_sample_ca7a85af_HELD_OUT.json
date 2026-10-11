@@ -1,0 +1,287 @@
+{
+ "sample_rule": "every 5th unflagged commit in list order starting with the first (unflagged index 0,5,...,130)",
+ "n_unflagged": 134,
+ "n_sampled": 27,
+ "n_false_negative": 1,
+ "sample": [
+  {
+   "idx": 1,
+   "pos": 482,
+   "sha": "7dadfeef444b4751d135eb10a842edf3ecc82970",
+   "subject": "Audit migration: football truth from PregameSlateState, and OUT means out",
+   "info": [],
+   "fn": false,
+   "read": "diff read; additions-only or production refactor/tightening, nothing the spec names"
+  },
+  {
+   "idx": 9,
+   "pos": 490,
+   "sha": "fe25d9883ea913ba6449003a3ae71b35a368e5d4",
+   "subject": "Priority A: DraftKings Classic optimizer, gated. Plus the workflow skeleton",
+   "info": [],
+   "fn": false,
+   "read": "diff read; additions-only or production refactor/tightening, nothing the spec names"
+  },
+  {
+   "idx": 19,
+   "pos": 500,
+   "sha": "c182e6848444c09ba45f229c9b3ebec1bb7d8e71",
+   "subject": "NYG backfield inversion: KR2 read as RB2, mechanism identified not patched",
+   "info": [],
+   "fn": false,
+   "read": "diff read; additions-only or production refactor/tightening, nothing the spec names"
+  },
+  {
+   "idx": 26,
+   "pos": 507,
+   "sha": "b2fadfdd5d8617d6fd929fc37c986dee04fd6090",
+   "subject": "Revision 3: correct four verdict-engine false greens and the Block XV estimator",
+   "info": [],
+   "fn": false,
+   "read": "diff read; additions-only or production refactor/tightening, nothing the spec names"
+  },
+  {
+   "idx": 33,
+   "pos": 514,
+   "sha": "df36d7fd57fa46b3d9b55bc6fc42ec3dd46ace11",
+   "subject": "P0-C minimum: the machine verdict, with no-edge separated from not-ready",
+   "info": [
+    {
+     "rule": "SKIP_ADDED",
+     "severity": "info",
+     "path": "nfl/tests/test_product_verdict.py",
+     "detail": "2 skip path(s) added (new module)",
+     "evidence": {
+      "lines": [
+       "g['INACTIVE_APPLICATION'] = Outcome.blocked(",
+       "(Outcome.blocked('STUCK', 'because', cause=Cause.DATA), V.BLOCKED),"
+      ]
+     },
+     "authorization": "NONE_RECORDED"
+    }
+   ],
+   "fn": false,
+   "read": "diff read; additions-only or production refactor/tightening, nothing the spec names"
+  },
+  {
+   "idx": 40,
+   "pos": 521,
+   "sha": "fd3a5495c3d2508db37eaf152e17bc463e23adb8",
+   "subject": "KC backfield diagnosis: a cold start beats a measured 0.41 carry share",
+   "info": [],
+   "fn": false,
+   "read": "diff read; additions-only or production refactor/tightening, nothing the spec names"
+  },
+  {
+   "idx": 45,
+   "pos": 526,
+   "sha": "3c682cae12b65637b50c72127544011ef95bc273",
+   "subject": "Fix de-vig key names; stop certifying an unchecked inactive board; slate-parameterise the package writer",
+   "info": [],
+   "fn": false,
+   "read": "diff read; additions-only or production refactor/tightening, nothing the spec names"
+  },
+  {
+   "idx": 50,
+   "pos": 531,
+   "sha": "d67243ac30260cb16f81a576f542a89ef000a72e",
+   "subject": "Inactives window: RB_WR_TE_PLAYER_DISTRIBUTIONS_STILL_UNAVAILABLE, tested",
+   "info": [],
+   "fn": false,
+   "read": "diff read; additions-only or production refactor/tightening, nothing the spec names"
+  },
+  {
+   "idx": 58,
+   "pos": 539,
+   "sha": "1cbe36d25c92b6cb7f0c5b4699a61e331d416b1f",
+   "subject": "Ingest the owner-delivered Hard Rock Early Only board as comparator evidence",
+   "info": [],
+   "fn": false,
+   "read": "diff read; additions-only or production refactor/tightening, nothing the spec names"
+  },
+  {
+   "idx": 65,
+   "pos": 546,
+   "sha": "5ea58c55ef621b5d0ef3bb69dbb542558e93138b",
+   "subject": "Suite at HEAD, attributed: 22 newly introduced, 17 of them mine, 5 escalated",
+   "info": [],
+   "fn": false,
+   "out_of_spec": "nfl/production/ownership_audit.py adds a DISPOSITIONS entry that clears an OWNERSHIP_AUDIT_UNREVIEWED_SITE finding for capture_freshness.py (an allowlist entry silencing an audit). Not in the spec categories; recorded as an observation, not an FN.",
+   "read": "nfl/production/ownership_audit.py adds a DISPOSITIONS entry that clears an OWNERSHIP_AUDIT_UNREVIEWED_SITE finding for capture_freshness.py (an allowlist entry silencing an audit). Not in the spec categories; recorded as an observation, not an FN."
+  },
+  {
+   "idx": 77,
+   "pos": 558,
+   "sha": "e6eeed533b97488fb6a178b2ff1d71d1b5aaa672",
+   "subject": "Correct two suite figures quoted in dc7ceed's message",
+   "info": [],
+   "fn": false,
+   "read": "diff read; additions-only or production refactor/tightening, nothing the spec names"
+  },
+  {
+   "idx": 91,
+   "pos": 572,
+   "sha": "7090e591bb74bd1611c4ef26d73d1354f3d06060",
+   "subject": "CS2 stage 1: the non-QB usage CS1 never carried, measured and not estimated",
+   "info": [],
+   "fn": false,
+   "read": "diff read; additions-only or production refactor/tightening, nothing the spec names"
+  },
+  {
+   "idx": 96,
+   "pos": 577,
+   "sha": "7d5c23a509c10fb7127a00f99e9771a5e8a6a0b5",
+   "subject": "The v1 dual board never existed: a pipe killed the write and I reported it as written",
+   "info": [],
+   "fn": false,
+   "read": "diff read; additions-only or production refactor/tightening, nothing the spec names"
+  },
+  {
+   "idx": 102,
+   "pos": 583,
+   "sha": "1ad9d57eb8e5b22aee3ab91f8fcf0cc9c155d56a",
+   "subject": "Official inactives ingested; Skyler Bell hard-zeroed in every draw",
+   "info": [],
+   "fn": false,
+   "read": "diff read; additions-only or production refactor/tightening, nothing the spec names"
+  },
+  {
+   "idx": 107,
+   "pos": 588,
+   "sha": "b60bcf7d7e40b3fd6bf595065a00f0ab59412de7",
+   "subject": "Two holes in the registry I found by running the claim instead of writing it down",
+   "info": [],
+   "fn": false,
+   "read": "diff read; additions-only or production refactor/tightening, nothing the spec names"
+  },
+  {
+   "idx": 114,
+   "pos": 595,
+   "sha": "638af4f60febc2f4baff2447972f2f9f9b7a32e2",
+   "subject": "QY1: deal the catches, not their sum -- and three gates that were agreeing with their caller",
+   "info": [
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "info",
+     "path": "nfl/production/run_forecast.py",
+     "detail": "1 new lint/type/coverage suppression(s)",
+     "evidence": {},
+     "authorization": "NONE_RECORDED"
+    }
+   ],
+   "fn": true,
+   "path": "nfl/tests/test_support_kinds.py",
+   "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+   "why": "test_D: check(... .get('defect') == 'QB_YARDS_CONTINUOUS_SHARE') for every k became check(bool(names) and set(names) <= KNOWN) (Eq -> subset, looser). Masked: the same function gained new `== 'QB_YARDS_CONTINUOUS_SHARE'` checks, so the multiset of ('cmp', ('Eq',), ()) signatures did not shrink. Reproduced as supplementary probe X3.",
+   "read": "test_D: check(... .get('defect') == 'QB_YARDS_CONTINUOUS_SHARE') for every k became check(bool(names) and set(names) <= KNOWN) (Eq -> subset, looser). Masked: the same function gained new `== 'QB_YARDS_CONTINUOUS_SHARE'` checks, so the multiset of ('cmp', ('Eq',), ()) signatures did not shrink. Reproduced as supplementary probe X3."
+  },
+  {
+   "idx": 120,
+   "pos": 601,
+   "sha": "340d581b1921714d0950c13e68af80c4fba72f77",
+   "subject": "Contract 4 threshold corrected to 19/20, and a duplicate evaluator I built",
+   "info": [],
+   "fn": false,
+   "read": "diff read; additions-only or production refactor/tightening, nothing the spec names"
+  },
+  {
+   "idx": 125,
+   "pos": 606,
+   "sha": "14a52572018c0cdb9226953ce231effd15449208",
+   "subject": "Contract 3 is unattainable for an integer quantile, and it is not noise",
+   "info": [],
+   "fn": false,
+   "read": "diff read; additions-only or production refactor/tightening, nothing the spec names"
+  },
+  {
+   "idx": 130,
+   "pos": 611,
+   "sha": "5368f78322e2f49ffa38103a8a5650fed2199b35",
+   "subject": "Record the joint competing-risk successor as a research note, not a gate",
+   "info": [],
+   "fn": false,
+   "read": "diff read; additions-only or production refactor/tightening, nothing the spec names"
+  },
+  {
+   "idx": 137,
+   "pos": 618,
+   "sha": "43bb6737d99ccd7c618713a3c10913c424f6f24c",
+   "subject": "QBSEM's allocator name was on every call site and none of the guards",
+   "info": [],
+   "fn": false,
+   "read": "diff read; additions-only or production refactor/tightening, nothing the spec names"
+  },
+  {
+   "idx": 142,
+   "pos": 623,
+   "sha": "30e963ba6afa067756a229a32bfbf6ba9be8595e",
+   "subject": "REST2 pre-registration: the interaction, with a BIC bar fix B would have failed",
+   "info": [],
+   "fn": false,
+   "read": "diff read; additions-only or production refactor/tightening, nothing the spec names"
+  },
+  {
+   "idx": 147,
+   "pos": 628,
+   "sha": "471885468d69b28de270b29c15c7455d5aee439b",
+   "subject": "A1 isolated: one player's eligibility, and the allocators do the rest",
+   "info": [],
+   "fn": false,
+   "read": "diff read; additions-only or production refactor/tightening, nothing the spec names"
+  },
+  {
+   "idx": 153,
+   "pos": 634,
+   "sha": "caca59f4567a6a4905ba97bd90cc2db3b74438c0",
+   "subject": "Contract 2 fails too, and the reason is an error I had just finished diagnosing",
+   "info": [],
+   "fn": false,
+   "read": "diff read; additions-only or production refactor/tightening, nothing the spec names"
+  },
+  {
+   "idx": 158,
+   "pos": 639,
+   "sha": "9d3b9b2ff79523c6c3407f16f0612383c035d76c",
+   "subject": "A1 and A2: the current-state feed, graded by authority, and a 2026 panel",
+   "info": [],
+   "fn": false,
+   "read": "diff read; additions-only or production refactor/tightening, nothing the spec names"
+  },
+  {
+   "idx": 164,
+   "pos": 645,
+   "sha": "af9ef9e1cdd8247397626ca392830d109ba9fe4f",
+   "subject": "Report what the draw count buys on the numbers a reader actually reads",
+   "info": [],
+   "fn": false,
+   "read": "diff read; additions-only or production refactor/tightening, nothing the spec names"
+  },
+  {
+   "idx": 169,
+   "pos": 650,
+   "sha": "d350b7ba84b274e3e2037f171281dea249aebe53",
+   "subject": "Give the rushing mass to the players who actually take it",
+   "info": [
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "info",
+     "path": "nfl/production/run_forecast.py",
+     "detail": "1 new lint/type/coverage suppression(s)",
+     "evidence": {},
+     "authorization": "NONE_RECORDED"
+    }
+   ],
+   "fn": false,
+   "read": "diff read; additions-only or production refactor/tightening, nothing the spec names"
+  },
+  {
+   "idx": 174,
+   "pos": 655,
+   "sha": "8efd8bbf4dad811253d860c642f291593d03fea3",
+   "subject": "Priority 2 closed: the missing carry mass was QB scrambles, not missing",
+   "info": [],
+   "fn": false,
+   "read": "diff read; additions-only or production refactor/tightening, nothing the spec names"
+  }
+ ]
+}
