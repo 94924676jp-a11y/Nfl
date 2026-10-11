@@ -132,13 +132,25 @@ def verify(rows, pool, entries, out_ids) -> Outcome:
                             detail=f'{len(body)} rows, {len(own)} owner entries, 0 violations', **ev)
 
 
-def run(slate_id: str) -> Outcome:
+def upload_paths(slate_id: str, tag: str = '') -> tuple:
+    """(upload CSV, verify record) for the production build, or for a tagged sensitivity build under sensitivity/.
+
+    A TAGGED FILE IS VERIFIED BY THE SAME CODE (task #45, 2026-10-11). The verifier was hard-wired to the production
+    file name, so the McLaurin-excluded file the owner uploaded that day could only be checked by a scratch script
+    outside the repository."""
+    if tag:
+        sd = OUT_DIR / 'sensitivity'
+        return (sd / f'DK_{slate_id}_EARLY_UPLOAD.{tag}.csv', sd / f'DK_{slate_id}_EARLY_UPLOAD_VERIFY.{tag}.json')
+    return OUT_DIR / f'DK_{slate_id}_EARLY_UPLOAD.csv', OUT_DIR / f'DK_{slate_id}_EARLY_UPLOAD_VERIFY.json'
+
+
+def run(slate_id: str, tag: str = '', write: bool = True) -> Outcome:
     f = EO.slate_files(slate_id)
     po, eo = EO.pool(f['entries_blob'], f['entries_sha']), EO.entries(f['entries_blob'], f['entries_sha'])
     for o in (po, eo):
         if o.state.value != 'PASS':
             return o
-    up = OUT_DIR / f'DK_{slate_id}_EARLY_UPLOAD.csv'
+    up, vpath = upload_paths(slate_id, tag)
     if not up.exists():
         return Outcome.blocked('UPLOAD_VERIFY_NO_FILE', f'{up.name} does not exist (no full legal portfolio was built)',
                                cause=Cause.NOT_EXECUTED)
@@ -162,19 +174,23 @@ def run(slate_id: str) -> Outcome:
         rb, rrep = ['ROSTER_ELIGIBILITY_UNVERIFIED (slate declares no roster_capture)'], {'status': 'UNVERIFIED'}
     if rb and o.state.value == 'PASS':
         o = Outcome.fail('UPLOAD_VERIFY_ROSTER_ELIGIBILITY', '; '.join(rb), cause=Cause.DATA, **(o.evidence or {}))
-    doc = {'ARTIFACT': 'CLASSIC_UPLOAD_VERIFY', 'slate_id': slate_id,
+    doc = {'ARTIFACT': 'CLASSIC_UPLOAD_VERIFY', 'slate_id': slate_id, 'tag': tag or None,
+           'upload_path': str(up.relative_to(_REPO)) if up.is_relative_to(_REPO) else str(up),
            'upload_sha256': hashlib.sha256(up.read_bytes()).hexdigest(),
            'entries_sha256': f['entries_sha'], 'state': o.state.value, 'code': o.code, 'detail': o.detail,
            **{k: (o.evidence or {}).get(k) for k in ('per_contest', 'cross_contest_identical_lineups',
                                                       'violations')}, 'roster_eligibility': rrep}
-    (OUT_DIR / f'DK_{slate_id}_EARLY_UPLOAD_VERIFY.json').write_text(json.dumps(doc, indent=1))
+    if write:
+        vpath.write_text(json.dumps(doc, indent=1))
     return o
 
 
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument('slate_id')
-    o = run(ap.parse_args().slate_id)
+    ap.add_argument('--tag', default='', help='verify the tagged sensitivity build under nfl/dfs/salaries/sensitivity/')
+    a = ap.parse_args()
+    o = run(a.slate_id, tag=a.tag)
     print(f'{o.state.value}[{o.code}] {o.detail}')
     print(json.dumps({k: (o.evidence or {}).get(k) for k in ('per_contest', 'cross_contest_identical_lineups')},
                      indent=1))

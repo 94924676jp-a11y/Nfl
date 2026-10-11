@@ -426,6 +426,8 @@ def build(slate_id: str, *, seed: int = 20261004, write: bool = True, exclude=()
     doc = {
         'ARTIFACT': 'CLASSIC_PORTFOLIOS', 'spec_version': SPEC_VERSION, 'slate_id': slate_id,
         'built_at_utc': dt.datetime.now(dt.timezone.utc).isoformat(),
+        # the candidate seed, so a release record can name it (task #45 clause 7); it was not recorded before
+        'seed': seed,
         'inputs': {k: str(v.relative_to(_REPO)) for k, v in _paths(slate_id).items() if k != 'out'},
         'inputs_sha256': {k: hashlib.sha256(v.read_bytes()).hexdigest()
                           for k, v in _paths(slate_id).items() if k != 'out'},
