@@ -223,11 +223,19 @@ def evaluate(slate_id: str, *, tag: str = '', latest_packet=None, out_dir=None, 
 
     # EVIDENCE THE ENGINE CANNOT REPRESENT, recorded by the packet as not modelled (interim convention until the
     # participation schema exists: the resolution note carries "NOT MODELLED").
+    # Structured first: a packet item's participation expectation other than FULL (sunday_evidence.py) that no
+    # participation model consumed (the projection row carries no 'participation_model'). The note-text convention
+    # of 2026-10-11 ("NOT MODELLED") is kept for packets written before the field existed.
     unmod = []
+    prows = json.loads(P['proj'].read_text()).get('rows') or {}
     for k, p in (J['state'].get('players') or {}).items():
-        note = (((p.get('current_availability') or {}).get('resolution') or {}).get('note') or '')
-        if 'NOT MODELLED' in note.upper():
-            unmod.append({'dk_id': k, 'name': p.get('name'), 'team': p.get('team'), 'note': note[:240]})
+        res = ((p.get('current_availability') or {}).get('resolution') or {})
+        note, pt = res.get('note') or '', res.get('participation') or {}
+        limited = pt.get('expectation') not in (None, 'FULL')
+        modelled = bool((prows.get(k) or {}).get('participation_model'))
+        if (limited and not modelled) or 'NOT MODELLED' in note.upper():
+            unmod.append({'dk_id': k, 'name': p.get('name'), 'team': p.get('team'),
+                          'participation': pt or None, 'note': note[:240]})
     rec['evidence']['unmodelled'] = unmod
     if unmod:
         uncert.append(f'UNMODELLED_EVIDENCE {len(unmod)} player(s): '
@@ -255,6 +263,17 @@ def evaluate(slate_id: str, *, tag: str = '', latest_packet=None, out_dir=None, 
     rec['open_forecast_defects'] = OPEN_FORECAST_DEFECTS
     if OPEN_FORECAST_DEFECTS:
         uncert.append(f'OPEN_FORECAST_DEFECTS {len(OPEN_FORECAST_DEFECTS)}: ' + ', '.join(OPEN_FORECAST_DEFECTS))
+
+    # ORCHESTRATION: was this built inside one ledgered pipeline run, or by hand (2026-10-11: every W5 build was hand-run
+    # and no run ledger exists)? The draws and the portfolio must carry the same run id as the ledger.
+    led_p = pathlib.Path(out_dir or OUT_DIR) / f'DK_{slate_id}_EARLY_RUN_LEDGER.json'
+    led = json.loads(led_p.read_text()) if led_p.exists() else {}
+    rid = {'ledger': led.get('run_id'), 'draws': dr.get('run_id'), 'portfolios': po.get('run_id')}
+    orchestrated = bool(rid['ledger']) and rid['ledger'] == rid['draws'] == rid['portfolios']
+    rec['orchestration'] = {'run_ids': rid, 'orchestrated': orchestrated}
+    if not orchestrated:
+        uncert.append('NOT_ORCHESTRATED the draws and portfolio do not share one ledgered pipeline run id '
+                      f'(ledger {rid["ledger"]}, draws {rid["draws"]}, portfolios {rid["portfolios"]})')
 
     # SEEDS AND LOCK.
     rec['seeds'] = {'draws_per_game': {g: v.get('seed') for g, v in (dr.get('per_game') or {}).items()},

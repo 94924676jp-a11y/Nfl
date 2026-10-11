@@ -17,6 +17,8 @@ whose refusal is recorded and does not touch a lineup.
                    built IN PARALLEL with two tagged reproducibility builds (reproA, reproB) that the
                    audit compares byte for byte; a stale pair reads STALE, never PASS
   5 verify         independent upload verifier
+  5b release       release record (classic_release.py): hash chain, evidence currency, world accounting, contest
+                   overlap, open defects -> one of the owner's five release states, written beside the upload
   6 book           rebuilt with exposures (the seal time stands if the worlds are unchanged)
   7 board          owner board and exposure reasoning
   8 fc             FantasyCruncher comparison, clean process, EXTERNAL_COMPARISON_ONLY
@@ -29,6 +31,15 @@ whose refusal is recorded and does not touch a lineup.
 
 --evidence-packet (sunday_evidence.py) is passed to the state and prelock stages. A REHEARSAL packet
 runs the whole chain and can never finalize.
+
+TASK #45 (2026-10-11), the governed entry point:
+  * LOCK CHECK before anything runs: a fresh timezone-aware clock against the slate's declared kickoff. A run that
+    cannot finish before lock (declared runtime estimate, below) is REFUSED, never started and abandoned.
+  * RUN ID: one per run, passed to every stage as NFL_CLASSIC_RUN_ID and written into the ledger; the release record
+    names a portfolio built outside a ledgered run as NOT_ORCHESTRATED.
+  * THE LEDGER IS WRITTEN AFTER EVERY STAGE, so a run that dies leaves a readable record of where it stopped.
+  * THE SNAPSHOT NOW KEEPS THE WORLDS AND THE RELEASE RECORD. On 2026-10-11 the 16:08Z rebuild overwrote the 16:03Z
+    build's draws and worlds in place, so that build's chain can no longer be re-verified.
 """
 from __future__ import annotations
 
@@ -45,8 +56,12 @@ import sys
 _REPO = pathlib.Path(__file__).resolve().parents[2]
 OUT_DIR = _REPO / 'nfl/dfs/salaries'
 PY = 'python3.12'
-SNAP = ('STATE.json', 'PROJ.json', 'DRAWS.json', 'RESEARCH_BOOK.json', 'PORTFOLIOS.json', 'UPLOAD.csv',
-        'PROP_DIAGNOSTIC.json', 'OWNER_BOARD.json', 'SEAL.json')
+SNAP = ('STATE.json', 'PROJ.json', 'DRAWS.json', 'WORLDS.npz', 'RESEARCH_BOOK.json', 'PORTFOLIOS.json', 'UPLOAD.csv',
+        'UPLOAD_VERIFY.json', 'RELEASE.json', 'PROP_DIAGNOSTIC.json', 'OWNER_BOARD.json', 'SEAL.json')
+#: DECLARED runtime estimate for the stages up to the release record, measured 2026-10-11 on the W5 Early Only slate
+#: (hand-run: state 16:05:35Z -> portfolios 16:17:29Z = 11.9 min) plus the verifier and release record (~0.2 min),
+#: rounded up to 15 min. A run is refused when now + this would reach the earliest kickoff.
+RUNTIME_ESTIMATE_MIN = 15.0
 DOWNSTREAM_ONLY = {'fc', 'props'}
 #: refusals recorded without stopping the run: the comparisons, and the two post-run verdicts
 NON_STOPPING = DOWNSTREAM_ONLY | {'prelock', 'finalize'}
@@ -68,6 +83,7 @@ def stages(slate, as_of, inactives, page, packet=None):
             # a list of commands is one stage run in parallel; the FIRST is the production build
             ('portfolios', [port, port + ['--tag', 'reproA'], port + ['--tag', 'reproB']]),
             ('verify', [PY, 'nfl/tools/classic_upload_verify.py', slate]),
+            ('release', [PY, 'nfl/tools/classic_release.py', slate] + (['--latest-packet', packet] if packet else [])),
             ('book_with_exposures', [PY, 'nfl/tools/classic_research_book.py', slate]),
             ('board', [PY, 'nfl/tools/classic_owner_board.py', slate]),
             ('fc', [PY, 'nfl/tools/classic_fc_compare.py', slate]),
@@ -114,9 +130,108 @@ def _exec(cmd):
     return rc, parts[0]['result'], err, parts
 
 
-def run(slate, as_of, inactives, page, dry=False, packet=None):
+def lock_check(slate, now=None, estimate_min=None):
+    """None when the run can finish before the slate's kickoff; otherwise the refusal, with both clocks named."""
+    from zoneinfo import ZoneInfo
+    from nfl.dfs.salaries import early_only as EO
+    from nfl.tools.classic_research_book import kickoff_utc
+    now = now or dt.datetime.now(dt.timezone.utc)
+    est = RUNTIME_ESTIMATE_MIN if estimate_min is None else estimate_min
+    try:
+        ko = dt.datetime.fromisoformat(kickoff_utc(EO.slate_files(slate)['kickoff']))
+    except Exception as e:  # noqa: BLE001
+        return {'code': 'LOCK_UNKNOWN', 'why': f'no declared kickoff for {slate}: {type(e).__name__}: {e}'}
+    rec = {'now_utc': now.isoformat(), 'now_et': now.astimezone(ZoneInfo('America/New_York')).isoformat(),
+           'kickoff_utc': ko.isoformat(), 'runtime_estimate_min': est,
+           'minutes_to_lock': round((ko - now).total_seconds() / 60, 1)}
+    if now >= ko:
+        return {'code': 'AFTER_LOCK', 'why': 'the slate has locked; a production rebuild is refused', **rec}
+    if now + dt.timedelta(minutes=est) >= ko:
+        return {'code': 'WOULD_NOT_FINISH_BEFORE_LOCK',
+                'why': f'{rec["minutes_to_lock"]} min to lock against a {est} min runtime estimate', **rec}
+    return None
+
+
+def _pid_alive(pid) -> bool:
+    import os
+    try:
+        os.kill(int(pid), 0)
+        return True
+    except (OSError, ValueError, TypeError):
+        return False
+
+
+def acquire_run_lock(slate, run_id):
+    """(ok, detail). One Classic build per slate at a time; a lock left by a dead process is recovered, and the run it
+    belonged to is marked CRASHED_OR_KILLED in its ledger rather than left reading RUNNING."""
+    import os
+    lp = OUT_DIR / f'DK_{slate}_EARLY_RUN.lock'
+    if lp.exists():
+        try:
+            held = json.loads(lp.read_text())
+        except (OSError, ValueError):
+            held = {}
+        if _pid_alive(held.get('pid')):
+            return False, {'code': 'RUN_IN_PROGRESS', 'held_by': held}
+        lg = OUT_DIR / f'DK_{slate}_EARLY_RUN_LEDGER.json'
+        if lg.exists():
+            try:
+                old = json.loads(lg.read_text())
+                if old.get('run_id') == held.get('run_id') and old.get('STATE') == 'RUNNING':
+                    old['STATE'] = 'CRASHED_OR_KILLED'
+                    old['recovered_by'] = run_id
+                    lg.write_text(json.dumps(old, indent=1))
+            except (OSError, ValueError):
+                pass
+        recovered = held
+    else:
+        recovered = None
+    lp.write_text(json.dumps({'pid': os.getpid(), 'run_id': run_id,
+                              'since_utc': dt.datetime.now(dt.timezone.utc).isoformat()}))
+    return True, {'code': 'LOCK_ACQUIRED', 'recovered_stale_lock': recovered}
+
+
+def release_run_lock(slate, run_id):
+    lp = OUT_DIR / f'DK_{slate}_EARLY_RUN.lock'
+    try:
+        if json.loads(lp.read_text()).get('run_id') == run_id:
+            lp.unlink()
+    except (OSError, ValueError):
+        pass
+
+
+def run(slate, as_of, inactives, page, dry=False, packet=None, now=None):
+    if dry:
+        return _run(slate, as_of, inactives, page, dry=True, packet=packet, now=now)
+    import uuid
+    started = now or dt.datetime.now(dt.timezone.utc)
+    run_id = f'{slate}-{started.strftime("%Y%m%dT%H%M%SZ")}-{uuid.uuid4().hex[:8]}'
+    lk = lock_check(slate, now=now)
+    if lk is not None:
+        ledger = {'ARTIFACT': 'CLASSIC_PIPELINE_RUN', 'slate_id': slate, 'run_id': run_id, 'STATE': 'REFUSED_' + lk['code'],
+                  'lock': lk, 'started_utc': started.isoformat(), 'stages': [], 'FINAL': 'NOT_REACHED'}
+        (OUT_DIR / f'DK_{slate}_EARLY_RUN_LEDGER.json').write_text(json.dumps(ledger, indent=1))
+        return ledger
+    ok, det = acquire_run_lock(slate, run_id)
+    if not ok:
+        # another build of this slate is running: refuse, and do not touch its ledger
+        return {'ARTIFACT': 'CLASSIC_PIPELINE_RUN', 'slate_id': slate, 'run_id': run_id, 'STATE': 'REFUSED_RUN_IN_PROGRESS',
+                'run_lock': det, 'stages': [], 'FINAL': 'NOT_REACHED'}
+    try:
+        return _run(slate, as_of, inactives, page, dry=False, packet=packet, now=now, run_id=run_id, run_lock=det)
+    finally:
+        release_run_lock(slate, run_id)
+
+
+def _run(slate, as_of, inactives, page, dry=False, packet=None, now=None, run_id=None, run_lock=None):
+    import os
+    lk = lock_check(slate, now=now)
+    run_id = run_id or f'{slate}-DRY'
+    os.environ['NFL_CLASSIC_RUN_ID'] = run_id
     snap, kept = (OUT_DIR / "runs" / slate / "DRY_RUN_NO_SNAPSHOT", []) if dry else snapshot(slate)
-    ledger = {'ARTIFACT': 'CLASSIC_PIPELINE_RUN', 'slate_id': slate, 'as_of': as_of, 'inactives_file': inactives,
+    ledger = {'ARTIFACT': 'CLASSIC_PIPELINE_RUN', 'slate_id': slate, 'run_id': run_id, 'lock': lk or 'BEFORE_LOCK',
+              'run_lock': run_lock,
+              'as_of': as_of, 'inactives_file': inactives,
               'evidence_packet': packet,
               'evidence_packet_sha256': (hashlib.sha256(pathlib.Path(packet).read_bytes()).hexdigest()
                                          if packet and pathlib.Path(packet).exists() else None),
@@ -133,6 +248,7 @@ def run(slate, as_of, inactives, page, dry=False, packet=None):
         if parts:
             rec['parallel'] = parts
         ledger['stages'].append(rec)
+        (OUT_DIR / f'DK_{slate}_EARLY_RUN_LEDGER.json').write_text(json.dumps(ledger, indent=1))
         if rc != 0 and name not in NON_STOPPING:
             ledger['STATE'] = f'STOPPED_AT_{name.upper()}'
             break

@@ -10,7 +10,9 @@ A packet is a JSON file:
       "complete_clubs": ["CHI", ...],          # OFFICIAL_CAPTURED only: clubs whose FULL list is held
       "players": [
         {"name": "Zay Flowers", "team": "BAL", "status": "ACTIVE" | "INACTIVE",
-         "cited": "OFFICIAL_RELEASE" | "AGGREGATOR" | "SECONDHAND", "note": "..."}
+         "cited": "OFFICIAL_RELEASE" | "AGGREGATOR" | "SECONDHAND", "note": "...",
+         "participation": {"expectation": "LIMITED" | "GAME_TIME_DECISION" | "FULL",     # ACTIVE items only
+                           "detail": "what was reported", "quote": "the words, verbatim"}}
       ],
       "starters": {"CHI": "Tyson Bagent",                                    # bare name = SECONDHAND
                    "TB": {"name": "Jalon Daniels", "cited": "OFFICIAL_RELEASE", "note": "...",
@@ -34,6 +36,13 @@ club; a typo is a refusal naming the row, never a silently dropped item.
 
 ABSENCE IS NOT ACTIVE. Only an OFFICIAL_CAPTURED packet listing a club as complete makes the club's
 unlisted players ACTIVE_NOT_ON_INACTIVE_LIST. A partial or relayed list resolves only the names on it.
+
+ACTIVE IS NOT FULL WORKLOAD (task #45, owner ruling 2026-10-11). On 2026-10-11 reporting said McLaurin would play
+with limited snaps; the schema had no field for it, so the restriction reached the state only as the note text
+"Restriction NOT MODELLED". An ACTIVE item may now carry a structured `participation` expectation. It is evidence about
+workload, not a probability: nothing here converts "limited" into a snap share. Until a measured participation model
+consumes it, the release record names every such player as UNMODELLED_EVIDENCE, so no file built without modelling it
+can be certified (nfl/tools/classic_release.py).
 """
 from __future__ import annotations
 
@@ -46,6 +55,8 @@ from nfl.tools import availability as AV
 from sportsplatform.governance.outcome import Cause, Outcome
 
 SOURCES = ('OWNER_RELAYED', 'OFFICIAL_CAPTURED', 'REHEARSAL')
+#: workload expectations an ACTIVE item may carry. Words for what was reported, never a snap share.
+PARTICIPATION_EXPECTATIONS = ('LIMITED', 'GAME_TIME_DECISION', 'FULL')
 CITED_TIER = {'OFFICIAL_RELEASE': AV.TIER_OFFICIAL_RELEASE_CITED, 'AGGREGATOR': AV.TIER_AGGREGATOR_REPORTED,
               'SECONDHAND': AV.TIER_EXTERNAL_SECONDHAND}
 #: (tier, claim) -> availability status. Each pairing respects availability.STATUS_REQUIRES_TIER.
@@ -94,6 +105,16 @@ def load(path) -> Outcome:
             bad.append(f'players[{i}]: name and team are required')
         if x.get('cited') and x['cited'] not in CITED_TIER:
             bad.append(f"players[{i}] {x.get('name')}: cited {x['cited']!r} not in {sorted(CITED_TIER)}")
+        pt = x.get('participation')
+        if pt is not None:
+            if x.get('status') != 'ACTIVE':
+                bad.append(f"players[{i}] {x.get('name')}: participation applies to an ACTIVE item only")
+            elif not isinstance(pt, dict) or pt.get('expectation') not in PARTICIPATION_EXPECTATIONS:
+                bad.append(f"players[{i}] {x.get('name')}: participation.expectation must be one of "
+                           f"{PARTICIPATION_EXPECTATIONS}")
+            elif pt['expectation'] != 'FULL' and not (pt.get('detail') or pt.get('quote')):
+                bad.append(f"players[{i}] {x.get('name')}: a {pt['expectation']} expectation needs the detail or quote "
+                           f"it came from")
     for club, v in (pk.get('starters') or {}).items():
         if isinstance(v, dict) and (not v.get('name') or (v.get('cited') and v['cited'] not in STARTER_STATE_FOR)):
             bad.append(f"starters[{club}]: needs a name, and cited in {sorted(STARTER_STATE_FOR)}")
@@ -132,7 +153,8 @@ def resolve(pk, pool_rows) -> Outcome:
         tier = tier_of(pk, x)
         res[r['dk_id']] = {'claim': x['status'], 'tier': tier, 'status': STATUS_FOR[(tier, x['status'])],
                            'packet_id': pk['packet_id'], 'source': pk['source'],
-                           'received_at': x.get('received_at') or pk['received_at'], 'note': x.get('note')}
+                           'received_at': x.get('received_at') or pk['received_at'], 'note': x.get('note'),
+                           'participation': x.get('participation')}
     starters = {}
     for club, sv in (pk.get('starters') or {}).items():
         nm = sv['name'] if isinstance(sv, dict) else sv

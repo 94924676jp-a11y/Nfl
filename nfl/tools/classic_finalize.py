@@ -119,9 +119,10 @@ def gates(slate, out_dir=OUT_DIR):
     f = lambda n: out_dir / f'DK_{slate}_EARLY_{n}'  # noqa: E731
     st, port, seal = _j(f('STATE.json')), _j(f('PORTFOLIOS.json')), _j(f('SEAL.json'))
     ver, aud, pre = _j(f('UPLOAD_VERIFY.json')), _j(f('AUDIT.json')), _j(f('PRELOCK.json'))
+    rel = _j(f('RELEASE.json'))
     g = {}
     missing = [n for n, v in (('STATE', st), ('PORTFOLIOS', port), ('SEAL', seal), ('UPLOAD_VERIFY', ver),
-                              ('AUDIT', aud), ('PRELOCK', pre)) if v is None] + \
+                              ('AUDIT', aud), ('PRELOCK', pre), ('RELEASE', rel)) if v is None] + \
               [n for n in ('UPLOAD.csv', 'PROJ.json', 'WORLDS.npz') if not f(n).exists()]
     if missing:
         return {'ARTIFACTS_PRESENT': {'ok': False, 'why': f'missing {missing}'}}, st, port
@@ -148,6 +149,11 @@ def gates(slate, out_dir=OUT_DIR):
     g['PRELOCK'] = {'ok': pre.get('state') == 'PASS' and pre.get('code') == 'NO_RERUN_REQUIRED'
                     and str(pre.get('checked_at_utc', '')) >= str(st.get('built_at_utc', '~')),
                     'verdict': f"{pre.get('state')}[{pre.get('code')}]"}
+    # THE RELEASE RECORD (task #45): it must describe THIS upload and must not be BLOCKED. Its state is carried into
+    # the manifest, so a final file can never be presented without what classic_release.py says it is.
+    g['RELEASE_RECORD'] = {'ok': rel.get('release_state') not in (None, 'BLOCKED')
+                           and (rel.get('sha256') or {}).get('upload') == _sha(f('UPLOAD.csv')),
+                           'release_state': rel.get('release_state'), 'forecast_state': rel.get('forecast_state')}
     g['FILLED'] = {'ok': all(c['FILLED'] and len(c['lineups']) == c['n_entries'] for c in port['contests'])
                    and {c['profile'] for c in port['contests']} == set(PROFILE_FILE),
                    'per_contest': {c['profile']: f"{len(c['lineups'])}/{c['n_entries']}" for c in port['contests']}}
@@ -194,6 +200,8 @@ def finalize(slate, out_dir=OUT_DIR) -> Outcome:
     for n, txt in files.items():
         (out_dir / f'DK_{slate}_EARLY_{n}').write_bytes(raw if n == UPLOAD_FILE else txt.encode('utf-8'))
     man.update({'STATE': FINAL_EVIDENCE_STATES[g['EVIDENCE']['state']],
+                'release_state': g['RELEASE_RECORD']['release_state'],
+                'forecast_state': g['RELEASE_RECORD']['forecast_state'],
                 'evidence': {k: (st.get('official_inactives') or {}).get(k)
                              for k in ('STATE', 'packet_id', 'packet_sha256', 'source', 'received_at', 'starters')},
                 'files': {n: _sha(out_dir / f'DK_{slate}_EARLY_{n}') for n in files},

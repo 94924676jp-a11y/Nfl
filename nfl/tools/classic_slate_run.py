@@ -292,6 +292,7 @@ def run(slate_id: str, *, n_sims: int = 2000, player_mean_anchor: str = ANCHOR_E
               'raw_gap_abs_max': max((abs(x) for x in raw_gap.values()), default=None)}
     doc = {
         'ARTIFACT': 'CLASSIC_SLATE_DRAWS', 'slate_id': slate_id, 'season': state['season'],
+        'run_id': __import__('os').environ.get('NFL_CLASSIC_RUN_ID'),   # None when run by hand (task #45)
         'week': state['week'], 'n_sims': n_sims, 'n_players': len(merged),
         'market_arm': 'FOOTBALL_ONLY', 'volume_centre': sim_game.VOLUME_CENTRE_PROJECTION,
         'CROSS_GAME_DEPENDENCE': 'NONE: games are simulated independently and merged on one world index',

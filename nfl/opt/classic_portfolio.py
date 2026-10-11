@@ -263,37 +263,57 @@ def verify_lineup(lu, meta):
 
 
 def select(cands, ids, M, meta, n, prof):
+    chosen, S_, T = select_group(cands, ids, M, meta, [n], prof)
+    return chosen[0], S_, T
+
+
+def select_group(cands, ids, M, meta, sizes, prof):
+    """Greedy selection for one or more contests that share a candidate pool and a profile.
+
+    CONTESTS ARE NOT COPIES OF EACH OTHER (owner contract 2026-10-11, clause 6). With two contests of one profile the
+    old loop called select() twice on the same cached candidates with the same deterministic rule, so 196461815 and
+    196461816 received the SAME 20 lineups. Here the contests pick in turn, round-robin in the order given, each by its
+    OWN marginal gain against its OWN chosen set and exposure counts, and a lineup taken by one contest is not
+    available to another. Each contest is still scored as its own portfolio (the bar T is the pool's). The first contest
+    picks first in every round, a declared order effect. With one contest this is exactly the previous select().
+    """
     col = {dk: i for i, dk in enumerate(ids)}
     S_ = np.stack([M[[col[d] for d in c]].sum(0) for c in cands])          # candidates x worlds
     T = np.quantile(S_, 1 - prof['q'], axis=0)                             # per-world bar
-    best = np.full(M.shape[1], -np.inf)
-    chosen, expo = [], collections.Counter()
-    for _ in range(n):
-        top, top_gain = None, -1.0
-        for j, c in enumerate(cands):
-            if j in chosen:
+    taken = set()
+    st = [{'n': n, 'best': np.full(M.shape[1], -np.inf), 'chosen': [], 'expo': collections.Counter(), 'done': False}
+          for n in sizes]
+    while not all(c['done'] or len(c['chosen']) >= c['n'] for c in st):
+        for c in st:
+            if c['done'] or len(c['chosen']) >= c['n']:
                 continue
-            k = len(chosen) + 1
-            ok = True
-            for d in c:
-                cap = (prof['qb_exposure_cap'] if meta[d]['pos'] == 'QB' else
-                       prof['dst_exposure_cap'] if meta[d]['pos'] == 'DST' else prof['exposure_cap'])
-                if (expo[d] + 1) > max(1, int(cap * n + 1e-9)):
-                    ok = False
-                    break
-            if not ok or any(len(c & cands[i]) > prof['max_shared'] for i in chosen):
+            n, chosen, expo, best = c['n'], c['chosen'], c['expo'], c['best']
+            top, top_gain = None, -1.0
+            for j, cand in enumerate(cands):
+                if j in taken:
+                    continue
+                ok = True
+                for d in cand:
+                    cap = (prof['qb_exposure_cap'] if meta[d]['pos'] == 'QB' else
+                           prof['dst_exposure_cap'] if meta[d]['pos'] == 'DST' else prof['exposure_cap'])
+                    if (expo[d] + 1) > max(1, int(cap * n + 1e-9)):
+                        ok = False
+                        break
+                if not ok or any(len(cand & cands[i]) > prof['max_shared'] for i in chosen):
+                    continue
+                gain = float(np.maximum(np.maximum(best, S_[j]) - T, 0).mean()
+                             - np.maximum(best - T, 0).mean()) if chosen else float(np.maximum(S_[j] - T, 0).mean())
+                gain += 1e-6 * float(S_[j].mean())                          # tie-break on mean
+                if gain > top_gain:
+                    top, top_gain = j, gain
+            if top is None:
+                c['done'] = True
                 continue
-            gain = float(np.maximum(np.maximum(best, S_[j]) - T, 0).mean()
-                         - np.maximum(best - T, 0).mean()) if chosen else float(np.maximum(S_[j] - T, 0).mean())
-            gain += 1e-6 * float(S_[j].mean())                              # tie-break on mean
-            if gain > top_gain:
-                top, top_gain = j, gain
-        if top is None:
-            break
-        chosen.append(top)
-        best = np.maximum(best, S_[top])
-        expo.update(cands[top])
-    return chosen, S_, T
+            chosen.append(top)
+            taken.add(top)
+            c['best'] = np.maximum(best, S_[top])
+            expo.update(cands[top])
+    return [c['chosen'] for c in st], S_, T
 
 
 def slot_assign(lu, meta):
@@ -393,18 +413,29 @@ def build(slate_id: str, *, seed: int = 20261004, write: bool = True, exclude=()
             idx_ = [i for i in idx_ if i not in drop]
         pools[kind] = (idx_, exc_)
     cand_cache = {}
-    out_contests, all_ok = [], True
+    # contests of one profile are selected TOGETHER so they cannot receive the same lineups (select_group)
+    by_profile = collections.defaultdict(list)
     for c in contests:
-        prof = PROFILES[c['profile']]
-        idx, excluded = pools[prof['pool']]
+        by_profile[c['profile']].append(c)
+    picks = {}
+    for pname, group in by_profile.items():
+        prof = PROFILES[pname]
+        idx, _excluded = pools[prof['pool']]
         key = prof['pool']
         if key not in cand_cache:
             src = PROFILES['MAX150' if key == 'STANDARD' else 'MAX20']
             cand_cache[key] = candidates(ids, M, meta, idx, src['n_worlds_for_candidates'], src['blend'],
                                          seed + (0 if key == 'STANDARD' else 1))
-        cands = cand_cache[key]
+        got, S_g, T_g = select_group(cand_cache[key], ids, M, meta, [len(c['entry_ids']) for c in group], prof)
+        for c, ch in zip(group, got):
+            picks[c['contest_id']] = (ch, S_g, T_g)
+    out_contests, all_ok = [], True
+    for c in contests:
+        prof = PROFILES[c['profile']]
+        idx, excluded = pools[prof['pool']]
+        cands = cand_cache[prof['pool']]
         n = len(c['entry_ids'])
-        chosen, S_, T = select(cands, ids, M, meta, n, prof)
+        chosen, S_, T = picks[c['contest_id']]
         lus = [cands[j] for j in chosen]
         bad = {i: verify_lineup(lu, meta) for i, lu in enumerate(lus)}
         bad = {i: v for i, v in bad.items() if v}
@@ -428,6 +459,8 @@ def build(slate_id: str, *, seed: int = 20261004, write: bool = True, exclude=()
         'built_at_utc': dt.datetime.now(dt.timezone.utc).isoformat(),
         # the candidate seed, so a release record can name it (task #45 clause 7); it was not recorded before
         'seed': seed,
+        # the governed run that built it (classic_slate_pipeline sets it); None means it was run by hand
+        'run_id': __import__('os').environ.get('NFL_CLASSIC_RUN_ID'),
         'inputs': {k: str(v.relative_to(_REPO)) for k, v in _paths(slate_id).items() if k != 'out'},
         'inputs_sha256': {k: hashlib.sha256(v.read_bytes()).hexdigest()
                           for k, v in _paths(slate_id).items() if k != 'out'},
