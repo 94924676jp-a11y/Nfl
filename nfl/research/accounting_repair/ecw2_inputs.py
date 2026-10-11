@@ -9,6 +9,8 @@
                reception (player-seasons with >= 20 receptions), on a 201-point quantile grid. Scale-free, so any
                player's catch yards are his projected yards-per-catch times draws from this shape. Feeds ECW-D4
                (receiver dispersion: the raw simulator's per-world yards-per-target ratio widened every receiver).
+  club_game_ypt the spread of a club's receiving yards per target across its games (club-games with >= 15 targets),
+               each over that club-season's mean of the same ratio. Feeds ECW-3 C1 (club factor spread).
   benchmark    the historical coefficient of variation of single-game receiving yards for receivers with > 2 catches,
                the number ECW-D4 compared against (median 0.53 per the 2026-10-09 evaluation), recomputed here.
 """
@@ -39,6 +41,7 @@ def main() -> int:
     games = {}
     catches = collections.defaultdict(list)            # (season, player) -> yards per reception
     game_rec = collections.defaultdict(lambda: [0, 0.0])  # (game, player) -> [receptions, yards]
+    club_game = collections.defaultdict(lambda: [0, 0.0])  # (season, club, game) -> [targets, receiving yards]
     for s in SEASONS:
         for r in _pbp(s):
             if r.get('season_type') != 'REG':
@@ -55,6 +58,14 @@ def main() -> int:
             elif q and int(float(q)) >= 5:
                 g['ot'] = True
             g['final_home'], g['final_away'] = th, ta
+            if r.get('pass_attempt') == '1' and r.get('receiver_player_id') and r.get('posteam'):
+                cg = club_game[(s, r['posteam'], r['game_id'])]
+                cg[0] += 1
+                if r.get('complete_pass') == '1':
+                    try:
+                        cg[1] += float(r.get('receiving_yards') or r.get('yards_gained') or 0)
+                    except ValueError:
+                        pass
             if r.get('complete_pass') == '1' and r.get('receiver_player_id'):
                 try:
                     y = float(r.get('receiving_yards') or r.get('yards_gained') or 0)
@@ -87,6 +98,15 @@ def main() -> int:
                 ratios += [y / m for y in ys]
     ratios.sort()
     grid = [round(ratios[min(len(ratios) - 1, int(i / 200 * (len(ratios) - 1)))], 5) for i in range(201)]
+    cs = collections.defaultdict(list)
+    for (s_, club, _g), (t, y) in club_game.items():
+        if t >= 15:
+            cs[(s_, club)].append(y / t)
+    rel = []
+    for v in cs.values():
+        m = statistics.mean(v)
+        if m > 0:
+            rel += [x / m for x in v]
     cvs = []
     by_player = collections.defaultdict(list)
     for (gid, p), (n, y) in game_rec.items():
@@ -105,6 +125,11 @@ def main() -> int:
                                                                                     if len(v) >= 20),
                            'mean': round(statistics.mean(ratios), 5), 'cv': round(statistics.pstdev(ratios), 5),
                            'quantiles_201': grid},
+           'club_game_ypt': {'cv_relative_to_club_season_mean': round(statistics.pstdev(rel), 4) if rel else None,
+                             'n_club_games': len(rel),
+                             'definition': 'club-game receiving yards per target (targets >= 15) over that club-season '
+                                           'mean, 2021-2025 REG',
+                             'measured_by': 'ecw2_inputs.py'},
            'benchmark_receiving_yards_cv_gt2_catches': {'n_player_seasons': len(cvs),
                                                          'median_cv': round(statistics.median(cvs), 4) if cvs else None,
                                                          'definition': 'within player-season SD/mean of single-game '
@@ -113,6 +138,7 @@ def main() -> int:
     (HERE / 'ECW2_INPUTS.json').write_text(json.dumps(doc, indent=1) + '\n')
     print(json.dumps({k: v for k, v in doc['overtime'].items()}))
     print({k: v for k, v in doc['catch_shape'].items() if k != 'quantiles_201'})
+    print(doc['club_game_ypt'])
     print(doc['benchmark_receiving_yards_cv_gt2_catches'])
     return 0
 

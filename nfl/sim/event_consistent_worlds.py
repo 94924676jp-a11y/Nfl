@@ -262,7 +262,8 @@ def _band(points):
 
 
 #: ECW-2 (PREREG_ECW2.md, 6d775337): D2 defensive points out of the drawn remainder, D1 overtime, D4 catch yards from the
-#: measured catch shape. version=1 is ECW-1 exactly as evaluated on 2026-10-09.
+#: measured catch shape. version=1 is ECW-1 exactly as evaluated on 2026-10-09. version=3 is ECW-2 plus PREREG_ECW3 C1
+#: (the club efficiency factor rescaled to the measured club-game spread net of catch-level noise).
 ECW2_INPUTS = _REPO / 'nfl/research/accounting_repair/ECW2_INPUTS.json'
 
 
@@ -288,9 +289,9 @@ def build(art: dict, rows_by_key: dict, int_rate: float, seed: int, *, club_pass
 
 def _build(art, rows_by_key, int_rate, seed, anchor, kicker_inputs, incumbent_seed, version=1):
     import numpy as np
-    if version not in (1, 2):
+    if version not in (1, 2, 3):
         raise _Refuse('EVENT_WORLDS_VERSION_UNKNOWN', f'version {version!r}')
-    v2 = json.loads(ECW2_INPUTS.read_text()) if version == 2 else None
+    v2 = json.loads(ECW2_INPUTS.read_text()) if version >= 2 else None
     if anchor not in ANCHORS:
         raise _Refuse('EVENT_WORLDS_ANCHOR_UNKNOWN', f'{anchor!r} is not one of {ANCHORS}')
     if tuple(art.get('STAT_FIELDS') or ()) != STAT_FIELDS:
@@ -362,6 +363,20 @@ def _build(art, rows_by_key, int_rate, seed, anchor, kicker_inputs, incumbent_se
             cry = sum(S[k][:, _I['rec_yards']] for k in recs) if recs else np.zeros(n)
             c_ypt = np.where(ctg > 0, cry / np.where(ctg > 0, ctg, 1.0), 0.0)
             club_w = c_ypt / c_ypt[ctg > 0].mean() if (ctg > 0).any() and c_ypt[ctg > 0].mean() > 0 else np.ones(n)
+            if version >= 3:
+                # PREREG_ECW3 C1: history's club-game yards-per-target spread already contains catch-level noise, which
+                # the catch-shape draws below add again; only the remainder belongs in the shared club factor.
+                live = ctg > 0
+                cv_raw = float(club_w[live].std()) if live.any() else 0.0
+                m_c = float(sum(S[k][:, _I['receptions']] for k in recs).mean()) if recs else 0.0
+                cv_club = v2['club_game_ypt']['cv_relative_to_club_season_mean']
+                cv_catch = v2['catch_shape']['cv']
+                cv_t = (max(0.0, cv_club ** 2 - cv_catch ** 2 / m_c) ** 0.5) if m_c > 0 else 0.0
+                cv_t = min(cv_t, cv_raw)
+                if cv_raw > 0:
+                    club_w = np.where(live, 1.0 + (club_w - 1.0) * (cv_t / cv_raw), club_w)
+                acc['club_factor_spread'] = {'cv_raw': round(cv_raw, 5), 'cv_target': round(cv_t, 5),
+                                             'mean_catches': round(m_c, 3)}
             rng_c = _rng(seed, c, 'catch_shape')
         for k, y, r in zip(recs, cv_ry, cv_rc):
             tg, rc, ry = S[k][:, _I['targets']], S[k][:, _I['receptions']], S[k][:, _I['rec_yards']]
