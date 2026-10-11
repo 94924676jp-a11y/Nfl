@@ -233,3 +233,17 @@ Martin-Robinson (TEN), Colbie Young (CIN; covered in the joint CIN state).
 - **Current artifacts (pre-inactives draft):** state 15:00Z on the owner's DK pool (`DKEntries_64.csv`, sha `f2bc2d72…`), projection/worlds 15:02Z (400 × 2,000, sanity PASS), book 15:03Z (accounting PASS), portfolios 15:11Z, upload verify PASS 190/190. Hashes: `prelock_2026-10-11/PREGAME_FREEZE_MANIFEST_1542Z.json`.
 - **Corrections in force:** W5 slate declarations; roster-reserve rule narrowed to 5 corroborated players (owner ruling, modified); research-book None guard.
 - **Release label:** structurally valid; eligibility verified to available evidence; forecast and simulations NOT certified. Not uploaded.
+
+## Owner release decision, 2026-10-11 ~16:35Z (appended)
+
+- **Selected:** the McLaurin-excluded portfolio, `sensitivity/DK_2026W5_EARLY_UPLOAD.NO_MCLAURIN_1623Z.csv`, sha256 `d4572fb9856fe14bafbbf1bdb27bc7310dc56250b96012edd8a9c23dcae9d985`.
+- **Upload:** the owner uploads it to DraftKings himself. This system has no acknowledgement from DraftKings.
+- **Owner's reason:** a hamstring injury with a reported snap limit is a downside risk despite the good matchup.
+- **Evidence:** `prelock_2026-10-11/MCLAURIN_PORTFOLIO_COMPARISON_1633Z.txt`. The alternative is ahead only if McLaurin is limited (break-even about 75–85% of his modelled role). This was a risk-control choice, not a demonstrated gain in expected value.
+- **Not selected, kept:**
+  - the 16:17Z production file (`cce6dfb5…`);
+  - the 16:03Z file (`20264e84…`).
+- **Release label:**
+  - structurally valid;
+  - eligibility verified against all 16 clubs' inactive lists (the inactives come from team sites and outlets relaying them, not an official capture);
+  - forecast and simulations NOT certified: world accounting fails on 30,281 of 32,000 club-worlds, the QB change does not propagate (W5-G18), and the depth bias (L4) is unresolved.
