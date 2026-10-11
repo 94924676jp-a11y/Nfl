@@ -35,7 +35,8 @@ def _sha(p):
     return hashlib.sha256(p.read_bytes()).hexdigest()
 
 
-def _world(td, oi_state='APPLIED_OWNER_RELAYED', prelock='NO_RERUN_REQUIRED', repro='PASS', lists=('A', 'H')):
+def _world(td, oi_state='APPLIED_OWNER_RELAYED', prelock='NO_RERUN_REQUIRED', repro='PASS', lists=('A', 'H'),
+           release='CURRENT_BUT_UNCERTIFIED'):
     d = pathlib.Path(td)
     w = lambda n, v: (d / f'DK_T_EARLY_{n}').write_text(v if isinstance(v, str) else json.dumps(v))  # noqa: E731
     F.EARLY_ONLY_GAMES['T'] = frozenset({('A', 'H')})
@@ -62,6 +63,9 @@ def _world(td, oi_state='APPLIED_OWNER_RELAYED', prelock='NO_RERUN_REQUIRED', re
                      'reproducibility': {'state': repro}})
     w('PRELOCK.json', {'state': 'PASS' if prelock == 'NO_RERUN_REQUIRED' else 'FAIL', 'code': prelock,
                        'checked_at_utc': '2026-10-04T14:56:00+00:00'})
+    if release is not None:
+        w('RELEASE.json', {'release_state': release, 'forecast_state': release,
+                           'sha256': {'upload': _sha(d / 'DK_T_EARLY_UPLOAD.csv')}})
     return d
 
 
@@ -102,6 +106,26 @@ def test_03_each_chain_gate_refuses():
     (d / 'DK_T_EARLY_UPLOAD.csv').write_text(HEAD + '\n')
     check('positive control: upload edited after verification -> refused',
           'UPLOAD_VERIFIED' in F.finalize('T', d).evidence['failed'])
+
+
+def test_03a_the_release_record_gates_finalize():
+    d = _world(tempfile.mkdtemp())
+    F.finalize('T', d)
+    man = json.loads((d / 'DK_T_EARLY_FINAL_MANIFEST.json').read_text())
+    check('the final manifest carries the release state classic_release.py computed',
+          man.get('release_state') == 'CURRENT_BUT_UNCERTIFIED', man.get('release_state'))
+    d = _world(tempfile.mkdtemp(), release='BLOCKED')
+    check('positive control: a BLOCKED release record -> refused', 'RELEASE_RECORD' in F.finalize('T', d).evidence['failed'])
+    d = _world(tempfile.mkdtemp(), release=None)
+    o = F.finalize('T', d)
+    check('positive control: no release record -> refused as a missing artifact',
+          o.code == 'FINAL_NOT_POPULATED' and 'ARTIFACTS_PRESENT' in o.evidence['failed'], o.evidence)
+    d = _world(tempfile.mkdtemp())
+    r = json.loads((d / 'DK_T_EARLY_RELEASE.json').read_text())
+    r['sha256']['upload'] = '0' * 64
+    (d / 'DK_T_EARLY_RELEASE.json').write_text(json.dumps(r))
+    check('positive control: a release record for a different upload -> refused',
+          'RELEASE_RECORD' in F.finalize('T', d).evidence['failed'])
 
 
 def test_03b_a_club_without_its_list_refuses():

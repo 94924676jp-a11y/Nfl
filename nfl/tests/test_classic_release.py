@@ -96,6 +96,7 @@ def test_02_the_1617Z_build_is_current_but_uncertified():
           r['equal_size_contest_overlap'])
     check('open forecast defects keep it from being certified', 'OPEN_FORECAST_DEFECTS 4' in u, u[-200:])
     check('it was built before lock', r['lock']['portfolio_built_before_lock'] is True, r['lock'])
+    check('it was hand-run, outside the governed pipeline (no ledger, no run id)', 'NOT_ORCHESTRATED' in u, u[:300])
 
 
 def test_03_the_1632Z_override_is_selection_only_and_its_forecast_stale():
@@ -139,8 +140,9 @@ def _synthetic(td: pathlib.Path, slate='2099W1'):
     pathlib.Path(f'{b}_PROJ.json').write_text(json.dumps({'rows': {}}))
     sh = lambda p: hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()  # noqa: E731
     s_state, s_proj = sh(f'{b}_STATE.json'), sh(f'{b}_PROJ.json')
+    pathlib.Path(f'{b}_RUN_LEDGER.json').write_text(json.dumps({'run_id': 'RUN-1'}))
     pathlib.Path(f'{b}_DRAWS.json').write_text(json.dumps({'state_sha256': s_state, 'projection_sha256': s_proj,
-                                                           'per_game': {'G': {'seed': 7}}}))
+                                                           'per_game': {'G': {'seed': 7}}, 'run_id': 'RUN-1'}))
     meta = json.dumps({'projection_sha256': s_proj}).encode()
     with open(f'{b}_WORLDS.npz', 'wb') as fh:
         np.savez_compressed(fh, stats=np.zeros((1, 1, 1), dtype=np.int16), points=np.zeros((1, 1, 2)),
@@ -154,7 +156,7 @@ def _synthetic(td: pathlib.Path, slate='2099W1'):
                                                           'kickoff_utc': '2099-01-01T18:00:00+00:00'}))
     pathlib.Path(f'{b}_PORTFOLIOS.json').write_text(json.dumps({
         'inputs_sha256': {'state': s_state, 'proj': s_proj, 'draws': s_draws}, 'research_book_sha256': s_book,
-        'built_at_utc': '2099-01-01T17:00:00+00:00', 'seed': 11, 'sensitivity': None,
+        'built_at_utc': '2099-01-01T17:00:00+00:00', 'seed': 11, 'sensitivity': None, 'run_id': 'RUN-1',
         'contests': [{'contest_id': 'C1', 'n_entries': 2}, {'contest_id': 'C2', 'n_entries': 2}]}))
     pathlib.Path(f'{b}_UPLOAD.csv').write_text('Entry ID\n1\n')
     pathlib.Path(f'{b}_UPLOAD_VERIFY.json').write_text(json.dumps({
@@ -252,6 +254,14 @@ def test_06_each_requirement_fails_alone():
             cases.append(('an exclusion run is SELECTION_ONLY_OVERRIDE with a stale forecast, never certified',
                           r['release_state'] == R.SELECTION_ONLY_OVERRIDE and r['forecast_state'] == R.STALE_FORECAST,
                           (r['release_state'], r['forecast_state'])))
+            # g2) built by hand: the portfolio carries no run id
+            p['sensitivity'] = None
+            p['run_id'] = None
+            pf.write_text(json.dumps(p))
+            r = R.evaluate(slate, latest_packet=pk, out_dir=d, now=NOW)
+            cases.append(('a portfolio built outside the ledgered run cannot be certified (NOT_ORCHESTRATED)',
+                          r['release_state'] == R.CURRENT_BUT_UNCERTIFIED
+                          and any('NOT_ORCHESTRATED' in x for x in r['reasons']['uncertified']), r['reasons']))
             # h) a missing artifact
             pathlib.Path(f'{b}_WORLDS.npz').unlink()
             r = R.evaluate(slate, latest_packet=pk, out_dir=d, now=NOW)

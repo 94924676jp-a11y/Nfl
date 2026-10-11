@@ -27,7 +27,7 @@ def check(label, ok, detail=''):
 
 def test_01_the_order_is_the_owners():
     names = [n for n, _ in PL.stages('S', '2026-10-04T15:40:00Z', 'i.json', 'p.html')]
-    want = ['state', 'run', 'book', 'portfolios', 'verify', 'book_with_exposures', 'board', 'fc', 'props', 'audit', 'prelock', 'changes', 'finalize', 'page']
+    want = ['state', 'run', 'book', 'portfolios', 'verify', 'release', 'book_with_exposures', 'board', 'fc', 'props', 'audit', 'prelock', 'changes', 'finalize', 'page']
     check('stages run in the declared lock-critical order', names == want, names)
     check('  lineups come only after the research book', names.index('portfolios') > names.index('book'))
     check('  Hard Rock is compared only after the projection, book, seal and lineups exist',
@@ -70,6 +70,38 @@ def test_03_change_causes_come_from_the_two_states():
     check('negative control: no change in his own evidence -> reallocation, said plainly',
           CL._cause(a, dict(a)).startswith('reallocation inside the club'))
     check('  a player new to the slate is named as new', CL._cause(None, a) == 'new to the slate')
+
+
+def test_04_the_lock_check_reads_a_clock_and_refuses_a_run_that_cannot_finish():
+    import datetime as dt
+    import json
+    import tempfile
+    utc = dt.timezone.utc
+    check('60 min before the 2026W5 lock with a 15 min estimate: allowed',
+          PL.lock_check('2026W5', now=dt.datetime(2026, 10, 11, 16, 0, tzinfo=utc)) is None)
+    lk = PL.lock_check('2026W5', now=dt.datetime(2026, 10, 11, 16, 50, tzinfo=utc))
+    check('10 min before lock: refused WOULD_NOT_FINISH_BEFORE_LOCK, with both clocks named',
+          lk and lk['code'] == 'WOULD_NOT_FINISH_BEFORE_LOCK' and lk['kickoff_utc'].startswith('2026-10-11T17:00')
+          and lk['now_et'].startswith('2026-10-11T12:50'), lk)
+    lk = PL.lock_check('2026W5', now=dt.datetime(2026, 10, 11, 17, 5, tzinfo=utc))
+    check('after lock: refused AFTER_LOCK', lk and lk['code'] == 'AFTER_LOCK', lk)
+    lk = PL.lock_check('NOPE', now=dt.datetime(2026, 10, 11, 16, 0, tzinfo=utc))
+    check('a slate with no declared kickoff: refused LOCK_UNKNOWN, never assumed open', lk and lk['code'] == 'LOCK_UNKNOWN', lk)
+    real = PL.OUT_DIR
+    try:
+        PL.OUT_DIR = __import__('pathlib').Path(tempfile.mkdtemp())
+        led = PL.run('2026W5', 'T', None, '/dev/null', now=dt.datetime(2026, 10, 11, 16, 50, tzinfo=utc))
+        check('a refused run executes no stage and says why in its ledger',
+              led['STATE'] == 'REFUSED_WOULD_NOT_FINISH_BEFORE_LOCK' and led['stages'] == []
+              and json.loads((PL.OUT_DIR / 'DK_2026W5_EARLY_RUN_LEDGER.json').read_text())['run_id'] == led['run_id'],
+              led.get('STATE'))
+        check('  and it took no snapshot', not (PL.OUT_DIR / 'runs').exists())
+    finally:
+        PL.OUT_DIR = real
+    check('the snapshot now keeps the worlds and the release record (the 16:03Z chain was lost without them)',
+          'WORLDS.npz' in PL.SNAP and 'RELEASE.json' in PL.SNAP and 'UPLOAD_VERIFY.json' in PL.SNAP)
+    rel = dict(PL.stages('S', 'T', None, 'p.html', 'pk.json'))['release']
+    check('the release stage receives the latest evidence packet', rel[-2:] == ['--latest-packet', 'pk.json'], rel)
 
 
 def test_zz_every_check_passed():
