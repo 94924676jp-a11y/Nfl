@@ -52,7 +52,16 @@ if str(_REPO) not in sys.path:
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 
 SPEC_VERSION = 'classic-release-1'
-OUT_DIR = _REPO / 'nfl/dfs/salaries'
+def _out_dir():
+    import importlib.util as _u
+    _s = _u.spec_from_file_location('classic_paths', _REPO / 'nfl/tools/classic_paths.py')
+    _m = _u.module_from_spec(_s)
+    _s.loader.exec_module(_m)
+    return _m.out_dir()
+
+
+#: nfl/dfs/salaries, or a declared arm's folder under nfl/dfs/salaries/arms/ (NFL_CLASSIC_OUT_DIR; classic_paths.py)
+OUT_DIR = _out_dir()
 
 CURRENT_AND_CERTIFIED = 'CURRENT_AND_CERTIFIED'
 CURRENT_BUT_UNCERTIFIED = 'CURRENT_BUT_UNCERTIFIED'
@@ -74,6 +83,22 @@ OPEN_FORECAST_DEFECTS = {
                             '(showdown_draws._shares, :103)',
     'L4_DEPTH_SURVIVORSHIP': 'the depth and appearance table counts only players on 2026 rosters, understating backups '
                              '(proj_v1.depth_shares via player_prior.position_index)',
+}
+
+#: WHAT THE CORRECTED_V1 ARM CHANGES IN THAT REGISTER (owner decision E2: it runs beside the incumbent). It replaces two
+#: entries with narrower ones -- it does not close them, because neither replacement has prospective evidence yet:
+#:   NO_PARTICIPATION_STATE -> PARTICIPATION_PM3_UNVALIDATED (PM-1 P(no play) held-out PASS; PM-3 phi prospective only;
+#:                             role band mapped, not measured; RESOLVED_ACTIVE P(no play) = 0 declared)
+#:   APPEARANCE_NOT_DRAWN   -> APPEARANCE_NOT_DRAWN_FOR_UNDESIGNATED_DEPTH (drawn per world for report players only)
+#: and adds COHERENT_WORLDS_PREDICTIVE_UNVALIDATED (the event-consistent worlds' predecessor SC-COH-1 failed its
+#: predictive bars; structural laws now hold by construction). W5-G18 and L4 are unchanged in this arm.
+CORRECTED_ARM_DEFECTS = {
+    **{k: v for k, v in OPEN_FORECAST_DEFECTS.items() if k not in ('NO_PARTICIPATION_STATE', 'APPEARANCE_NOT_DRAWN')},
+    'PARTICIPATION_PM3_UNVALIDATED': 'per-world participation from PM-1/PM-3 (nfl/research/participation_pm1): P(no play) '
+                                     'validated held-out, phi prospective only, role band mapped from the projection',
+    'APPEARANCE_NOT_DRAWN_FOR_UNDESIGNATED_DEPTH': 'players not on the injury report keep p_plays folded into mean shares',
+    'COHERENT_WORLDS_PREDICTIVE_UNVALIDATED': 'event-consistent worlds hold the box-score laws by construction; their '
+                                              'predecessor failed its predictive bars (PRODUCTION_CHANGE_DECISION_BOARD C3)',
 }
 
 #: Equal-size contests may share at most this many identical lineups (owner contract clause 6: the two 20-max contests
@@ -228,11 +253,13 @@ def evaluate(slate_id: str, *, tag: str = '', latest_packet=None, out_dir=None, 
     # of 2026-10-11 ("NOT MODELLED") is kept for packets written before the field existed.
     unmod = []
     prows = json.loads(P['proj'].read_text()).get('rows') or {}
+    arm_name = dr.get('arm') or 'INCUMBENT'
+    arm_modelled = {v.get('dk_id') for v in ((dr.get('participation') or {}).get('designated') or {}).values()}
     for k, p in (J['state'].get('players') or {}).items():
         res = ((p.get('current_availability') or {}).get('resolution') or {})
         note, pt = res.get('note') or '', res.get('participation') or {}
         limited = pt.get('expectation') not in (None, 'FULL')
-        modelled = bool((prows.get(k) or {}).get('participation_model'))
+        modelled = bool((prows.get(k) or {}).get('participation_model')) or k in arm_modelled
         if (limited and not modelled) or 'NOT MODELLED' in note.upper():
             unmod.append({'dk_id': k, 'name': p.get('name'), 'team': p.get('team'),
                           'participation': pt or None, 'note': note[:240]})
@@ -260,9 +287,11 @@ def evaluate(slate_id: str, *, tag: str = '', latest_packet=None, out_dir=None, 
             uncert.append(f"CONTESTS_SHARE_LINEUPS {s['contests'][0]} and {s['contests'][1]} ({s['size']} entries "
                           f"each) share {s['shared_lineups']} identical lineup(s)")
 
-    rec['open_forecast_defects'] = OPEN_FORECAST_DEFECTS
-    if OPEN_FORECAST_DEFECTS:
-        uncert.append(f'OPEN_FORECAST_DEFECTS {len(OPEN_FORECAST_DEFECTS)}: ' + ', '.join(OPEN_FORECAST_DEFECTS))
+    defects = CORRECTED_ARM_DEFECTS if arm_name == 'CORRECTED_V1' else OPEN_FORECAST_DEFECTS
+    rec['arm'] = arm_name
+    rec['open_forecast_defects'] = defects
+    if defects:
+        uncert.append(f'OPEN_FORECAST_DEFECTS {len(defects)}: ' + ', '.join(defects))
 
     # ORCHESTRATION: was this built inside one ledgered pipeline run, or by hand (2026-10-11: every W5 build was hand-run
     # and no run ledger exists)? The draws and the portfolio must carry the same run id as the ledger.

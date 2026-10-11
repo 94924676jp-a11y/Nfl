@@ -91,6 +91,9 @@ SLATES = {
                'entries_sha': 'f2bc2d72d22b0d35fc684cd8dc709a7312c77903ad5fc0cedc8ce959207c822c',
                'salary_blob': None,
                'roster_capture': 'nfl/vintage/weekly_rosters.8729b73ef500cdf9.raw.csv.gz',
+               # QBCTX-DB1 starter-conditioned dropbacks, consumed ONLY by the CORRECTED_V1 arm (task #45); the
+               # incumbent never reads it. Cutoff 2026-10-11, starters from WEEK5_QB_REGIME_BOARD.json.
+               'qbctx_db1_forecasts': 'nfl/research/qb_regime/QBCTX_W5_2026_FORECASTS.json',
                'transactions': 'nfl/dfs/salaries/classic_early_2026W5/transactions/TRANSACTIONS_2026W5.json',
                # RES in the 10-10 07:41Z roster capture (unchanged at 10-11 13:13Z); activation reported Saturday
                # only through the ESPN injury feed (capture 20261011T131306Z), not yet in any roster capture.

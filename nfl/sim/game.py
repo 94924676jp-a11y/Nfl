@@ -347,6 +347,12 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
                       + model.share_v['per_margin_point'] * own_margin
                       + rng.gauss(0, model.share_v['residual_sd']))
             plays = max(1.0, plays)
+            # PARTICIPATION (task #45 P1-3; CORRECTED_V1 arm only, nfl/sim/participation.py). A limited position leader
+            # moves his club's pass rate by the measured association, scaled by the share of his role he did not play
+            # in THIS world. Absent from the game spec, nothing here runs and the incumbent is unchanged.
+            _part = (game.get('participation') or {}).get(c['club'])
+            if _part and _part.get('pass_rate_shift'):
+                pshare += _part['pass_rate_shift'][si % len(_part['pass_rate_shift'])]
             pshare = min(0.95, max(0.05, pshare))
             pa = max(0, int(round(plays * pshare)))
             ra = max(0, int(round(plays * (1.0 - pshare))))
@@ -367,6 +373,11 @@ def simulate_game(model: Model, game, n_sims: int = 2000, seed: int = 23,
             # (under USAGE_FIRST both are overwritten below by the sum of player yards)
 
             ps = c['players']
+            if _part and _part.get('entries'):
+                # the club's shares IN THIS WORLD: each designated player keeps phi of his role, the rest goes to his
+                # teammates by the engine's own absent-player reallocation; phi = 0 is exactly zero opportunity
+                from nfl.sim import participation as _PART
+                ps = _PART.effective_shares(ps, _part['entries'], si)
             qb_ix = [i for i, p in enumerate(ps) if p['position'] == 'QB']
             rec_ix = [i for i, p in enumerate(ps) if p['position'] != 'QB']
 

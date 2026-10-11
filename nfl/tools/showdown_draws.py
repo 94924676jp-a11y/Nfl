@@ -205,7 +205,8 @@ def kicker_world_draws(club, scoring_worlds, rng) -> Outcome:
 
 
 def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED,
-          volume_centre: str = None, n_calib: int = None) -> Outcome:
+          volume_centre: str = None, n_calib: int = None, participation: dict = None,
+          volume_delta: dict = None) -> Outcome:
     proj = json.loads(pathlib.Path(proj_path).read_text())
     state = json.loads(pathlib.Path(state_path).read_text())
     rows = list(proj['rows'].values())
@@ -248,6 +249,34 @@ def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED,
             'club': club, 'players': players,
             'dst_id': (S.player_key(dst['name'], club) if dst else None),
         })
+        # PARTICIPATION (task #45 P1-3, CORRECTED_V1 arm only). `participation[club]` carries, per designated player
+        # key, his per-world phi and the club's shares from the projection re-run with him absent; the redistribution
+        # weights and the per-world pass-rate shift are built here, against THIS list's order.
+        pc = (participation or {}).get(club)
+        if pc:
+            from nfl.sim import participation as PART
+            idx_of = {p['id']: i for i, p in enumerate(players)}
+            entries, shift, acct = [], [0.0] * n_sims, {}
+            for key, v in pc.items():
+                if key not in idx_of:
+                    return Outcome.fail('PARTICIPATION_PLAYER_NOT_IN_CLUB_SHARES', f'{key} is not in {club} shares',
+                                        club=club)
+                k = idx_of[key]
+                red = PART.redistribution(players, v['absent_shares'], k)
+                entries.append({'idx': k, 'phi': v['phi'], 'red': red})
+                lead = PART.leader_pass_rate(PART.load(), players, k)
+                if lead is not None:
+                    r = random.Random(f'{seed}|{club}|{key}|pass_rate')
+                    for w in range(n_sims):
+                        shift[w] += (1.0 - v['phi'][w]) * r.gauss(lead[0], lead[1])
+                acct[key] = {'leader_pass_rate_change': lead,
+                             'redistribution_targets': {players[i]['id']: round(x, 4)
+                                                        for i, x in enumerate(red['target_share'] or []) if x > 0.005},
+                             'redistribution_carries': {players[i]['id']: round(x, 4)
+                                                        for i, x in enumerate(red['carry_share'] or []) if x > 0.005}}
+            spec.setdefault('participation', {})[club] = {'entries': entries, 'pass_rate_shift': shift,
+                                                          'expected_pass_rate_shift': sum(shift) / n_sims,
+                                                          'account': acct}
 
     # DECLARED ARM, NOT A SWAP (owner ruling 2026-10-02). Default: the incumbent simulator with its
     # own volume regression. 'projection': the simulator is centred on the projection's
@@ -266,6 +295,25 @@ def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED,
                 return Outcome.fail('VOLUME_CENTRE_PROJECTION_ABSENT',
                                     f'{club}: team_volume lacks proj_pass_attempts/'
                                     f'proj_rush_attempts/proj_targets', club=club)
+            # QB-CONDITIONED VOLUME (CORRECTED_V1 arm, QBCTX-DB1): the starter's shrunk dropbacks deviation, converted
+            # to pass attempts by the club's own ratio; plays held, so rush attempts give way (declared)
+            vd = (volume_delta or {}).get(club)
+            if vd and vd.get('pass_attempts'):
+                c0 = centre[club]
+                d = float(vd['pass_attempts'])
+                ratio = (c0['pass_attempts'] + d) / c0['pass_attempts'] if c0['pass_attempts'] > 0 else 1.0
+                centre[club] = {'pass_attempts': c0['pass_attempts'] + d, 'rush_attempts': max(0.0, c0['rush_attempts'] - d),
+                                'targets': c0['targets'] * ratio}
+            # the centre moves with the EXPECTED participation shift (plays held, pass share moved), so the
+            # calibration does not pull the club back to a pass rate its limited leader would not have
+            ps_ = ((spec.get('participation') or {}).get(club) or {}).get('expected_pass_rate_shift')
+            if ps_:
+                c0 = centre[club]
+                plays_ = c0['pass_attempts'] + c0['rush_attempts']
+                d = plays_ * ps_
+                ratio = (c0['pass_attempts'] + d) / c0['pass_attempts'] if c0['pass_attempts'] > 0 else 1.0
+                centre[club] = {'pass_attempts': c0['pass_attempts'] + d, 'rush_attempts': c0['rush_attempts'] - d,
+                                'targets': c0['targets'] * ratio}
         o = sim_game.simulate_game_centred(model, spec, centre, n_sims=n_sims, seed=seed, n_calib=n_calib)
     elif volume_centre in (None, sim_game.VOLUME_CENTRE_INCUMBENT):
         o = sim_game.simulate_game(model, spec, n_sims=n_sims, seed=seed, retain_stats=True)
@@ -347,6 +395,9 @@ def build(proj_path, state_path, *, n_sims: int = N_SIMS, seed: int = SEED,
                               'MEANING': 'the simulator drew its own club volume from its '
                                          'measured regression on implied points'}),
         'kickers': kickers,
+        'participation_account': {c: {'expected_pass_rate_shift': v['expected_pass_rate_shift'], 'players': v['account']}
+                                  for c, v in (spec.get('participation') or {}).items()} or None,
+        'volume_delta_applied': volume_delta or None,
         # Per-world football, carried through only when the simulator retained it (the projection-
         # centred arm always does). Large; a caller that does not need it may drop it.
         'stat_draws': o.value.get('stat_draws'), 'STAT_FIELDS': o.value.get('STAT_FIELDS'),

@@ -38,7 +38,16 @@ from nfl.dfs.salaries import early_only as EO  # noqa: E402
 from nfl.tools import availability as AV  # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 
-OUT_DIR = _REPO / 'nfl/dfs/salaries'
+def _out_dir():
+    import importlib.util as _u
+    _s = _u.spec_from_file_location('classic_paths', _REPO / 'nfl/tools/classic_paths.py')
+    _m = _u.module_from_spec(_s)
+    _s.loader.exec_module(_m)
+    return _m.out_dir()
+
+
+#: nfl/dfs/salaries, or a declared arm's folder under nfl/dfs/salaries/arms/ (NFL_CLASSIC_OUT_DIR; classic_paths.py)
+OUT_DIR = _out_dir()
 HEADER = ['Entry ID', 'Contest Name', 'Contest ID', 'Entry Fee',
           'QB', 'RB', 'RB', 'WR', 'WR', 'WR', 'TE', 'FLEX', 'DST']
 SLOT_POS = {'QB': {'QB'}, 'RB': {'RB'}, 'WR': {'WR'}, 'TE': {'TE'}, 'DST': {'DST'}}

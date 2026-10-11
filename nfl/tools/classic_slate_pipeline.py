@@ -54,7 +54,16 @@ import subprocess
 import sys
 
 _REPO = pathlib.Path(__file__).resolve().parents[2]
-OUT_DIR = _REPO / 'nfl/dfs/salaries'
+def _out_dir():
+    import importlib.util as _u
+    _s = _u.spec_from_file_location('classic_paths', _REPO / 'nfl/tools/classic_paths.py')
+    _m = _u.module_from_spec(_s)
+    _s.loader.exec_module(_m)
+    return _m.out_dir()
+
+
+#: nfl/dfs/salaries, or a declared arm's folder under nfl/dfs/salaries/arms/ (NFL_CLASSIC_OUT_DIR; classic_paths.py)
+OUT_DIR = _out_dir()
 PY = 'python3.12'
 SNAP = ('STATE.json', 'PROJ.json', 'DRAWS.json', 'WORLDS.npz', 'RESEARCH_BOOK.json', 'PORTFOLIOS.json', 'UPLOAD.csv',
         'UPLOAD_VERIFY.json', 'RELEASE.json', 'PROP_DIAGNOSTIC.json', 'OWNER_BOARD.json', 'SEAL.json')

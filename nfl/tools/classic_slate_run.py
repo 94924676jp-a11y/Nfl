@@ -27,6 +27,7 @@ It fits nothing, fetches nothing, and never reads the FantasyCruncher file or a 
 from __future__ import annotations
 
 import argparse
+import collections
 import hashlib
 import json
 import pathlib
@@ -39,7 +40,16 @@ if str(_REPO) not in sys.path:
 
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 
-OUT_DIR = _REPO / 'nfl/dfs/salaries'
+def _out_dir():
+    import importlib.util as _u
+    _s = _u.spec_from_file_location('classic_paths', _REPO / 'nfl/tools/classic_paths.py')
+    _m = _u.module_from_spec(_s)
+    _s.loader.exec_module(_m)
+    return _m.out_dir()
+
+
+#: nfl/dfs/salaries, or a declared arm's folder under nfl/dfs/salaries/arms/ (NFL_CLASSIC_OUT_DIR; classic_paths.py)
+OUT_DIR = _out_dir()
 SEED = 20261004
 
 
@@ -192,10 +202,133 @@ def load_worlds(path):
     return z['stats'], z['points'], json.loads(bytes(z['meta']).decode())
 
 
-def run(slate_id: str, *, n_sims: int = 2000, player_mean_anchor: str = ANCHOR_EFFICIENCY) -> Outcome:
+#: The declared corrected arm (owner decision E2: it runs beside the incumbent, the owner chooses). Selected by
+#: NFL_CLASSIC_ARM=CORRECTED_V1 with NFL_CLASSIC_OUT_DIR under nfl/dfs/salaries/arms/ (classic_paths.py).
+ARM_INCUMBENT = 'INCUMBENT'
+ARM_CORRECTED = 'CORRECTED_V1'
+#: the CORRECTED_V1 arm's world builder: ECW-3 (nfl/research/accounting_repair/PREREG_ECW3.md)
+ECW_VERSION = 3
+
+
+def participation_inputs(state: dict, proj: dict, P: dict, n_sims: int, seed: int):
+    """(by_club, account) for the CORRECTED_V1 arm: each designated player's per-world phi and the club shares the
+    projection engine gives when he is absent.
+
+    VARIANTS, NOT ONE PER PLAYER. Clubs are allocated independently, so variant j removes the j-th designated player
+    of EVERY club at once; max(designated per club) projection re-runs give every player his own absent pattern. Each
+    variant is role_state -> proj_v1 on a temporary copy of the state, written to a temporary directory."""
+    import copy
+    import random as _r
+    from nfl.sim import participation as PART
+    from nfl.tools import availability as AV, proj_v1 as PV, role_state as RS, showdown_draws as SD
+    tables = PART.load()
+    rows = proj['rows']
+    designated = collections.defaultdict(list)
+    for dk, pl in state['players'].items():
+        if pl['current_availability']['status'] in AV.ABSENT_STATUSES:
+            continue
+        r = rows.get(dk) or {}
+        if r.get('projection_state') not in ('PROJECTED', 'PROJECTED_COLD_START'):
+            continue
+        u = PART.classify(pl, r)
+        if u is not None:
+            designated[pl['team']].append((dk, u))
+    n_slots = max((len(v) for v in designated.values()), default=0)
+    # the variants are kept beside the arm's other artifacts, so the release record and the tests can hash them
+    td = P['state'].parent / f"{P['state'].name.replace('_STATE.json', '')}_PARTICIPATION_VARIANTS"
+    td.mkdir(parents=True, exist_ok=True)
+    saved = (RS.POST, RS.OUT, PV.POST, PV.OUT, PV.ROLE)
+    variant_rows = []
+    try:
+        for j in range(n_slots):
+            st = copy.deepcopy(state)
+            for club, lst in designated.items():
+                if j < len(lst):
+                    st['players'][lst[j][0]]['current_availability']['status'] = AV.PARTICIPATION_VARIANT_ABSENT
+            sp, rp, pp = td / f'V{j}_STATE.json', td / f'V{j}_ROLE.json', td / f'V{j}_PROJ.json'
+            sp.write_text(json.dumps(st))
+            RS.POST, RS.OUT = sp, rp
+            o = RS.run()
+            if o.state.value != 'PASS':
+                raise RuntimeError(f'variant {j} role state: {o.code} {o.detail}')
+            PV.POST, PV.OUT, PV.ROLE = sp, pp, rp
+            if PV.main() != 0:
+                raise RuntimeError(f'variant {j} projection refused')
+            variant_rows.append(json.loads(pp.read_text())['rows'])
+    finally:
+        RS.POST, RS.OUT, PV.POST, PV.OUT, PV.ROLE = saved
+    by_club, account = {}, {}
+    for club, lst in designated.items():
+        for j, (dk, u) in enumerate(lst):
+            sp = PART.spec(u, tables)
+            rng = _r.Random(f'{seed}|participation|{dk}')
+            phi = PART.draw_phi(sp, n_sims, rng)
+            key = SD.S.player_key(state['players'][dk]['name'], club)
+            absent = SD._shares(list(variant_rows[j].values()), club)
+            by_club.setdefault(club, {})[key] = {'phi': phi, 'absent_shares': absent}
+            srt = sorted(phi)
+            account[key] = {'dk_id': dk, 'variant': j, 'unit': u, 'p_no_participation': sp['p_no_participation'],
+                            'p_no_participation_basis': sp['p_no_participation_basis'], 'phi_basis': sp['phi_basis'],
+                            'worlds_phi_zero': sum(1 for x in phi if x <= 0), 'phi_mean': round(sum(phi) / n_sims, 4),
+                            'phi_p10_p50_p90': [round(srt[int(q * (n_sims - 1))], 4) for q in (0.1, 0.5, 0.9)],
+                            'LIMITATIONS': sp['LIMITATIONS']}
+    variants = {f'V{j}': {'removed': {c: lst[j][0] for c, lst in designated.items() if j < len(lst)},
+                          'proj_sha256': hashlib.sha256((td / f'V{j}_PROJ.json').read_bytes()).hexdigest(),
+                          'path': str((td / f'V{j}_PROJ.json').relative_to(_REPO))} for j in range(n_slots)}
+    return by_club, {'n_variants': n_slots, 'variants': variants, 'designated': account,
+                     'SOURCES': {'p_no_participation': 'PM1_TABLE.json', 'phi': 'PM3_PHI.json',
+                                 'pass_rate': 'REDISTRIBUTION_STUDY.json (association, leaders only)'}}
+
+
+def qb_volume_inputs(slate_id: str, state: dict, proj: dict):
+    """({club: {'pass_attempts': delta}}, account): the registered QBCTX-DB1 dropbacks deviation for each club's
+    starter, when the slate declares a forecast file (early_only 'qbctx_db1_forecasts').
+
+    A forecast is used only when its starter is the state's rank-1 quarterback for that club (by GSIS id); otherwise
+    the club gets no delta and the reason is recorded. QBCTX-DB1 is registered and prospective only (its verdict is
+    NOT_YET_EVALUABLE until 40 QB-change games are graded); using it here is the CORRECTED_V1 arm, beside the
+    incumbent, never production."""
+    from nfl.dfs.salaries import early_only as EO
+    f = EO.slate_files(slate_id).get('qbctx_db1_forecasts')
+    if not f:
+        return {}, {'state': 'NOT_DECLARED', 'why': 'the slate declares no QBCTX-DB1 forecast file'}
+    fp = _REPO / f
+    doc = json.loads(fp.read_text())
+    starters = {}
+    for v in state['players'].values():
+        if v.get('position') == 'QB' and v.get('depth_rank') == 1:
+            starters[v['team']] = v.get('gsis_id')
+    out, acct = {}, {}
+    for club, row in (doc.get('clubs') or {}).items():
+        tv = (proj.get('team_volume') or {}).get(club) or {}
+        dev = ((row.get('qb_deviation') or {}).get('dropbacks') or {}).get('delta_applied')
+        if starters.get(club) != row.get('starter_gsis_id'):
+            acct[club] = {'applied': False, 'why': f"forecast starter {row.get('starter_gsis_id')} is not the state's "
+                                                   f"rank-1 QB {starters.get(club)}"}
+            continue
+        if dev is None or not tv.get('proj_dropbacks'):
+            acct[club] = {'applied': False, 'why': 'no dropbacks deviation or no projected dropbacks'}
+            continue
+        d = float(dev) * float(tv['proj_pass_attempts']) / float(tv['proj_dropbacks'])
+        out[club] = {'pass_attempts': d}
+        acct[club] = {'applied': True, 'starter': row.get('starter'), 'subset': row.get('subset'),
+                      'dropbacks_delta': round(float(dev), 4), 'pass_attempts_delta': round(d, 4)}
+    return out, {'state': 'APPLIED', 'source': f, 'source_sha256': hashlib.sha256(fp.read_bytes()).hexdigest(),
+                 'cutoff': doc.get('cutoff'), 'clubs': acct}
+
+
+def run(slate_id: str, *, n_sims: int = 2000, player_mean_anchor: str = ANCHOR_EFFICIENCY, arm: str = None) -> Outcome:
     from nfl.tools import proj_v1 as PV, role_state as RS, showdown_draws as SD, football_sanity as FS
     from nfl.tools import availability as AV
     from nfl.sim import game as sim_game
+    import os as _os
+    arm = arm or _os.environ.get('NFL_CLASSIC_ARM') or ARM_INCUMBENT
+    if arm not in (ARM_INCUMBENT, ARM_CORRECTED):
+        return Outcome.fail('CLASSIC_RUN_ARM_UNKNOWN', f'{arm!r} is not a declared arm')
+    if arm == ARM_CORRECTED and OUT_DIR == _REPO / 'nfl/dfs/salaries':
+        return Outcome.fail('CLASSIC_RUN_CORRECTED_ARM_IN_PRODUCTION_DIR',
+                            'the corrected arm runs beside the incumbent, in its own folder (NFL_CLASSIC_OUT_DIR under '
+                            'nfl/dfs/salaries/arms/); it never writes the production files')
     P = paths(slate_id)
     if not P['state'].exists():
         return Outcome.blocked('CLASSIC_RUN_NO_STATE', f'{P["state"].name} not built', cause=Cause.DATA)
@@ -224,9 +357,25 @@ def run(slate_id: str, *, n_sims: int = 2000, player_mean_anchor: str = ANCHOR_E
     clubs = sorted({c for g in state['games'].values() for c in (g['away'], g['home'])})
     sane = FS.assess(proj, absent=absent, clubs=clubs, units=('DST',))
 
+    part_by_club, part_account = {}, None
+    # NFL_CLASSIC_PARTICIPATION_CONTROL=1: the corrected arm WITHOUT participation, a declared control used only to
+    # isolate what participation itself changes (integration tests, owner comparisons). Recorded in the artifact.
+    control = _os.environ.get('NFL_CLASSIC_PARTICIPATION_CONTROL') == '1'
+    if arm == ARM_CORRECTED and control:
+        part_account = {'CONTROL': 'participation disabled by NFL_CLASSIC_PARTICIPATION_CONTROL=1'}
+    elif arm == ARM_CORRECTED:
+        try:
+            part_by_club, part_account = participation_inputs(state, proj, P, n_sims, SEED)
+        except (RuntimeError, OSError, ValueError, KeyError) as e:
+            return Outcome.fail('CLASSIC_RUN_PARTICIPATION_REFUSED', f'{type(e).__name__}: {e}')
+
+    qb_delta, qb_account = ({}, None)
+    if arm == ARM_CORRECTED:
+        qb_delta, qb_account = qb_volume_inputs(slate_id, state, proj)
+
     # 4. JOINT DRAWS, one game at a time, merged on a single world index.
     merged, per_game, td = {}, {}, pathlib.Path(tempfile.mkdtemp(prefix='classic_draws_'))
-    stats_all, game_worlds = {}, {}
+    stats_all, game_worlds, coherent_worlds = {}, {}, {}
     for i, (gid, g) in enumerate(sorted(state['games'].items())):
         away, home = g['away'], g['home']
         sl = {'game_id': gid, 'away': away, 'home': home, 'week': state['week'], 'season': state['season'],
@@ -240,11 +389,26 @@ def run(slate_id: str, *, n_sims: int = 2000, player_mean_anchor: str = ANCHOR_E
         # outside 3 SE: measured 2026W4 GB@TB, GB rush attempts gap 0.92 vs tolerance 0.87 at 1,000;
         # -0.03 at 2,000. Precision is raised; the reconciliation gate is unchanged.
         o = SD.build(str(P['proj']), str(sp), n_sims=n_sims, seed=SEED + i,
-                     volume_centre=sim_game.VOLUME_CENTRE_PROJECTION, n_calib=n_sims)
+                     volume_centre=sim_game.VOLUME_CENTRE_PROJECTION, n_calib=n_sims,
+                     participation={c: part_by_club[c] for c in (away, home) if c in part_by_club} or None,
+                     volume_delta={c: qb_delta[c] for c in (away, home) if c in qb_delta} or None)
         if o.state.value != 'PASS':
             per_game[gid] = {'state': o.state.value, 'code': o.code, 'detail': o.detail}
             continue
         art = o.value
+        if arm == ARM_CORRECTED:
+            # BOX-SCORE-COHERENT WORLDS (task #45 P1-5): receiving yards are caught yards, QB passing yards are the sum
+            # of his receivers' yards, every TD sits on a catch or a carry, INTs are opposing takeaways, club points are
+            # event sums (nfl/sim/event_consistent_worlds.py). Replaces efficiency_worlds for this arm only.
+            from nfl.sim import event_consistent_worlds as ECW
+            rows_by_key_g = {SD.S.player_key(r['name'], r['team']): r for r in proj['rows'].values()}
+            eo = ECW.build(art, rows_by_key_g, float(proj['int_rate']), SEED + i, incumbent_seed=SEED + 99, version=ECW_VERSION)
+            if eo.state.value != 'PASS':
+                per_game[gid] = {'state': eo.state.value, 'code': eo.code, 'detail': eo.detail}
+                continue
+            ev = eo.value
+            art = {**art, 'draws': ev['draws'], 'stat_draws': None, 'world_points': ev['world_points'],
+                   '_coherent_stat_worlds': ev['stat_worlds'], '_coherent_account': ev['account']}
         per_game[gid] = {'state': 'PASS', 'n_players': art['n_players'], 'seed': SEED + i,
                          'scoring_centre': art['scoring_centre'], 'market_arm': art['market_arm'],
                          'identities': art['identities_verified_by_the_simulator']}
@@ -252,10 +416,16 @@ def run(slate_id: str, *, n_sims: int = 2000, player_mean_anchor: str = ANCHOR_E
             if k in merged:
                 return Outcome.fail('CLASSIC_RUN_DRAW_KEY_COLLISION', f'{k} drawn in two games')
             merged[k] = v
-        if tuple(art.get('STAT_FIELDS') or ()) != STAT_FIELDS or not art.get('stat_draws'):
+        if arm == ARM_CORRECTED:
+            coherent_worlds.update(art['_coherent_stat_worlds'])
+            per_game[gid]['coherent_account'] = {c: {k: v for k, v in a.items() if not isinstance(v, (list, dict))}
+                                                 for c, a in (art['_coherent_account'].get('clubs') or {}).items()}
+            per_game[gid]['participation'] = art.get('participation_account')
+        elif tuple(art.get('STAT_FIELDS') or ()) != STAT_FIELDS or not art.get('stat_draws'):
             return Outcome.fail('CLASSIC_RUN_NO_STAT_WORLDS',
                                 f'{gid}: the simulator returned no per-world stat lines in {STAT_FIELDS}')
-        stats_all.update(art['stat_draws'])
+        else:
+            stats_all.update(art['stat_draws'])
         game_worlds[gid] = {'world_points': art.get('world_points'), 'club_worlds': art.get('club_worlds')}
     refused = {g: v for g, v in per_game.items() if v['state'] != 'PASS'}
     # UNCONDITIONAL dk_points: the simulator's shares are the projection's unconditional volumes,
@@ -268,7 +438,15 @@ def run(slate_id: str, *, n_sims: int = 2000, player_mean_anchor: str = ANCHOR_E
         if k in targets and v:
             raw_gap[k] = round(sum(v) / len(v) - targets[k], 3)
     stat_worlds = None
-    if player_mean_anchor == ANCHOR_EFFICIENCY:
+    if arm == ARM_CORRECTED:
+        # the coherent worlds ARE the published worlds; no per-player rescale is applied after them (a rescale is what
+        # broke passing = receiving yards in the incumbent)
+        stat_worlds = coherent_worlds
+        resid = {k: round(sum(v) / len(v) - targets[k], 3) for k, v in merged.items() if k in targets and v}
+        anchor = {'mode': 'EVENT_CONSISTENT_NO_RESCALE', 'residual_gap_vs_projection': resid,
+                  'residual_gap_abs_max': max((abs(x) for x in resid.values()), default=None),
+                  'raw_gap_sim_minus_projection': raw_gap}
+    elif player_mean_anchor == ANCHOR_EFFICIENCY:
         rows_by_key = {SD.S.player_key(r['name'], r['team']): r for r in proj['rows'].values()}
         dk_new, stat_worlds, eff = efficiency_worlds(stats_all, rows_by_key, float(proj['int_rate']), SEED + 99)
         skill = set(dk_new)
@@ -287,11 +465,13 @@ def run(slate_id: str, *, n_sims: int = 2000, player_mean_anchor: str = ANCHOR_E
         anchor = {'n_anchored': 0, 'NOTE': 'draws left as simulated'}
     else:
         return Outcome.fail('CLASSIC_RUN_ANCHOR_UNKNOWN', f'{player_mean_anchor!r} is not a declared anchor')
-    anchor = {'mode': player_mean_anchor, **anchor,
-              'raw_gap_sim_minus_projection': raw_gap,
-              'raw_gap_abs_max': max((abs(x) for x in raw_gap.values()), default=None)}
+    if arm != ARM_CORRECTED:
+        anchor = {'mode': player_mean_anchor, **anchor,
+                  'raw_gap_sim_minus_projection': raw_gap,
+                  'raw_gap_abs_max': max((abs(x) for x in raw_gap.values()), default=None)}
     doc = {
-        'ARTIFACT': 'CLASSIC_SLATE_DRAWS', 'slate_id': slate_id, 'season': state['season'],
+        'ARTIFACT': 'CLASSIC_SLATE_DRAWS', 'slate_id': slate_id, 'season': state['season'], 'arm': arm,
+        'participation': part_account, 'qb_conditioned_volume': qb_account,
         'run_id': __import__('os').environ.get('NFL_CLASSIC_RUN_ID'),   # None when run by hand (task #45)
         'week': state['week'], 'n_sims': n_sims, 'n_players': len(merged),
         'market_arm': 'FOOTBALL_ONLY', 'volume_centre': sim_game.VOLUME_CENTRE_PROJECTION,

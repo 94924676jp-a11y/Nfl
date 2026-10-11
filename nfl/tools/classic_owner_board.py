@@ -30,7 +30,16 @@ from nfl.tools import showdown_to_portfolio as S  # noqa: E402
 from nfl.tools import availability as AV  # noqa: E402
 from sportsplatform.governance.outcome import Outcome  # noqa: E402
 
-OUT_DIR = _REPO / 'nfl/dfs/salaries'
+def _out_dir():
+    import importlib.util as _u
+    _s = _u.spec_from_file_location('classic_paths', _REPO / 'nfl/tools/classic_paths.py')
+    _m = _u.module_from_spec(_s)
+    _s.loader.exec_module(_m)
+    return _m.out_dir()
+
+
+#: nfl/dfs/salaries, or a declared arm's folder under nfl/dfs/salaries/arms/ (NFL_CLASSIC_OUT_DIR; classic_paths.py)
+OUT_DIR = _out_dir()
 HARD_ROCK = 'NOT_CAPTURED: no Hard Rock week-4 board in this checkout (requested in docs/AGENT_OUTBOX.md)'
 ABSENT = AV.ABSENT_STATUSES   # one definition of 'not playing', including relayed and unverified absences
 

@@ -48,7 +48,16 @@ from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 
 SPEC_VERSION = 'classic-slate-state-1'
 STATE_LABEL = 'CLASSIC_PREGAME / OFFICIAL_INJURY_REPORT_CAPTURED / NO_GAME_DAY_INACTIVE_DOCUMENT'
-OUT_DIR = _REPO / 'nfl/dfs/salaries'
+def _out_dir():
+    import importlib.util as _u
+    _s = _u.spec_from_file_location('classic_paths', _REPO / 'nfl/tools/classic_paths.py')
+    _m = _u.module_from_spec(_s)
+    _s.loader.exec_module(_m)
+    return _m.out_dir()
+
+
+#: nfl/dfs/salaries, or a declared arm's folder under nfl/dfs/salaries/arms/ (NFL_CLASSIC_OUT_DIR; classic_paths.py)
+OUT_DIR = _out_dir()
 
 _REPORT_TO_DESIGNATION = {'out': 'OUT', 'doubtful': 'DOUBTFUL', 'questionable': 'QUESTIONABLE', '': 'NO_DESIGNATION'}
 

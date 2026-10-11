@@ -44,7 +44,16 @@ if str(_REPO) not in sys.path:
 
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 
-OUT_DIR = _REPO / 'nfl/dfs/salaries'
+def _out_dir():
+    import importlib.util as _u
+    _s = _u.spec_from_file_location('classic_paths', _REPO / 'nfl/tools/classic_paths.py')
+    _m = _u.module_from_spec(_s)
+    _s.loader.exec_module(_m)
+    return _m.out_dir()
+
+
+#: nfl/dfs/salaries, or a declared arm's folder under nfl/dfs/salaries/arms/ (NFL_CLASSIC_OUT_DIR; classic_paths.py)
+OUT_DIR = _out_dir()
 FINAL_EVIDENCE_STATES = {'APPLIED': 'FINAL_POST_INACTIVES_OFFICIAL_CAPTURED',
                          'APPLIED_OWNER_RELAYED': 'FINAL_POST_INACTIVES_OWNER_RELAYED_NOT_OFFICIAL'}
 PROFILE_FILE = {'MAX150': 'FINAL_150_MAX_POST_INACTIVES.csv', 'MAX20': 'FINAL_20_MAX_POST_INACTIVES.csv',
