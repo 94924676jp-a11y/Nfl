@@ -226,3 +226,10 @@ Martin-Robinson (TEN), Colbie Young (CIN; covered in the joint CIN state).
 3. **At 15:30Z Sunday:** the 16 official club inactive lists, through the paste route
    (`docs/sunday_executor/…AUDIT… §4`), or the networked agent's captures (OUT-045). The gate must PASS before any
    game-day label changes.
+
+## Sunday status, 2026-10-11 15:42Z (appended)
+
+- **Inactive coverage: 0 / 16 clubs** — `SUN_INACTIVES_COVERAGE_INCOMPLETE` (`prelock_2026-10-11/INACTIVES_COVERAGE_1541Z.json`). T-90 deployed to `main` (`77590da4`, owner-authorized) and dispatched 14:54Z and 15:31Z; both captures `SOURCE_HAS_NO_ROWS_YET`. No owner paste received yet. A missing list is never "everyone active".
+- **Current artifacts (pre-inactives draft):** state 15:00Z on the owner's DK pool (`DKEntries_64.csv`, sha `f2bc2d72…`), projection/worlds 15:02Z (400 × 2,000, sanity PASS), book 15:03Z (accounting PASS), portfolios 15:11Z, upload verify PASS 190/190. Hashes: `prelock_2026-10-11/PREGAME_FREEZE_MANIFEST_1542Z.json`.
+- **Corrections in force:** W5 slate declarations; roster-reserve rule narrowed to 5 corroborated players (owner ruling, modified); research-book None guard.
+- **Release label:** structurally valid; eligibility verified to available evidence; forecast and simulations NOT certified. Not uploaded.
