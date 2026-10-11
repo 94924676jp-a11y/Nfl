@@ -1,0 +1,4307 @@
+[
+ {
+  "id": "FD01",
+  "clause": "tests: module deleted",
+  "mv": [],
+  "expect": [
+   "TEST_FILE_DELETED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "TEST_FILE_DELETED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high TEST_FILE_DELETED nfl/tests/test_mod.py: a test module the runner collected was deleted"
+  ],
+  "outcome": "detected",
+  "seconds": 0.019,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FD01"
+ },
+ {
+  "id": "FD02",
+  "clause": "tests: moved out of collection (subdir)",
+  "mv": [
+   [
+    "nfl/tests/test_mod.py",
+    "nfl/tests/legacy/test_mod.py"
+   ]
+  ],
+  "expect": [
+   "TEST_FILE_DELETED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/legacy/test_mod.py",
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "TEST_FILE_DELETED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high TEST_FILE_DELETED nfl/tests/test_mod.py: a test module was moved out of the runner's collection (nfl/tests/legacy/test_mod.py); it no longer runs"
+  ],
+  "outcome": "detected",
+  "seconds": 0.029,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FD02"
+ },
+ {
+  "id": "FD03",
+  "clause": "tests: renamed out of glob (_test_)",
+  "mv": [
+   [
+    "nfl/tests/test_mod.py",
+    "nfl/tests/_test_mod.py"
+   ]
+  ],
+  "expect": [
+   "TEST_FILE_DELETED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/_test_mod.py",
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "TEST_FILE_DELETED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high TEST_FILE_DELETED nfl/tests/test_mod.py: a test module was moved out of the runner's collection (nfl/tests/_test_mod.py); it no longer runs"
+  ],
+  "outcome": "detected",
+  "seconds": 0.022,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FD03"
+ },
+ {
+  "id": "FD04",
+  "clause": "tests: renamed .bak",
+  "mv": [
+   [
+    "nfl/tests/test_mod.py",
+    "nfl/tests/test_mod.py.bak"
+   ]
+  ],
+  "expect": [
+   "TEST_FILE_DELETED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py",
+   "nfl/tests/test_mod.py.bak"
+  ],
+  "observed_counted_rules": [
+   "TEST_FILE_DELETED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high TEST_FILE_DELETED nfl/tests/test_mod.py: a test module was moved out of the runner's collection (nfl/tests/test_mod.py.bak); it no longer runs"
+  ],
+  "outcome": "detected",
+  "seconds": 0.019,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FD04"
+ },
+ {
+  "id": "FD05",
+  "clause": "tests: sportsplatform module deleted",
+  "mv": [],
+  "expect": [
+   "TEST_FILE_DELETED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "sportsplatform/core/test_core.py"
+  ],
+  "observed_counted_rules": [
+   "TEST_FILE_DELETED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high TEST_FILE_DELETED sportsplatform/core/test_core.py: a test module the runner collected was deleted"
+  ],
+  "outcome": "detected",
+  "seconds": 0.015,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FD05"
+ },
+ {
+  "id": "FR01",
+  "clause": "tests: function removed",
+  "mv": [],
+  "expect": [
+   "TEST_FUNCTION_REMOVED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "TEST_FUNCTION_REMOVED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high TEST_FUNCTION_REMOVED nfl/tests/test_mod.py: test_beta was removed, renamed or shadowed"
+  ],
+  "outcome": "detected",
+  "seconds": 0.026,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FR01"
+ },
+ {
+  "id": "FR02",
+  "clause": "tests: shadowed by assignment",
+  "mv": [],
+  "expect": [
+   "TEST_FUNCTION_REMOVED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "TEST_FUNCTION_REMOVED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high TEST_FUNCTION_REMOVED nfl/tests/test_mod.py: test_beta was removed, renamed or shadowed"
+  ],
+  "outcome": "detected",
+  "seconds": 0.036,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FR02"
+ },
+ {
+  "id": "FR03",
+  "clause": "tests: del",
+  "mv": [],
+  "expect": [
+   "TEST_FUNCTION_REMOVED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "TEST_FUNCTION_REMOVED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high TEST_FUNCTION_REMOVED nfl/tests/test_mod.py: test_beta was removed, renamed or shadowed"
+  ],
+  "outcome": "detected",
+  "seconds": 0.035,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FR03"
+ },
+ {
+  "id": "FR04",
+  "clause": "tests: renamed _test_ (not collected)",
+  "mv": [],
+  "expect": [
+   "TEST_FUNCTION_REMOVED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "TEST_FUNCTION_REMOVED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high TEST_FUNCTION_REMOVED nfl/tests/test_mod.py: test_beta was removed, renamed or shadowed"
+  ],
+  "outcome": "detected",
+  "seconds": 0.03,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FR04"
+ },
+ {
+  "id": "FR05",
+  "clause": "tests: renamed testbeta (runner collects test_ only)",
+  "mv": [],
+  "expect": [
+   "TEST_FUNCTION_REMOVED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "run_suite.py:468 runs names starting test_",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "MISSED",
+  "seconds": 0.034,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FR05"
+ },
+ {
+  "id": "FR06",
+  "clause": "tests: moved into a class the runner does not run",
+  "mv": [],
+  "expect": [
+   "TEST_FUNCTION_REMOVED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "run_suite runs module-level test_ callables only",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "MISSED",
+  "seconds": 0.035,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FR06"
+ },
+ {
+  "id": "FR07",
+  "clause": "tests: shadowed by a later empty def",
+  "mv": [],
+  "expect": [
+   "TEST_FUNCTION_REMOVED",
+   "TEST_BODY_EMPTIED",
+   "CHECKS_REDUCED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "CHECKS_REDUCED",
+   "TEST_BODY_EMPTIED",
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high CHECKS_REDUCED nfl/tests/test_mod.py: test_beta: 1 -> 0 checks",
+   "high TEST_BODY_EMPTIED nfl/tests/test_mod.py: test_beta now does nothing",
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_mod.py: test_beta: 1 comparison(s) removed or altered (operator, number or tripwire condition)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.042,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FR07"
+ },
+ {
+  "id": "FC01",
+  "clause": "tests: assert removed",
+  "mv": [],
+  "expect": [
+   "CHECKS_REDUCED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "CHECKS_REDUCED",
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high CHECKS_REDUCED nfl/tests/test_mod.py: test_alpha: 3 -> 2 checks",
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_mod.py: test_alpha: 1 comparison(s) removed or altered (operator, number or tripwire condition)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.035,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FC01"
+ },
+ {
+  "id": "FC02",
+  "clause": "tests: assert -> print",
+  "mv": [],
+  "expect": [
+   "CHECKS_REDUCED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "CHECKS_REDUCED",
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high CHECKS_REDUCED nfl/tests/test_mod.py: test_alpha: 3 -> 2 checks",
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_mod.py: test_alpha: 1 comparison(s) removed or altered (operator, number or tripwire condition)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.036,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FC02"
+ },
+ {
+  "id": "FC03",
+  "clause": "tests: assert commented out",
+  "mv": [],
+  "expect": [
+   "CHECKS_REDUCED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "CHECKS_REDUCED",
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high CHECKS_REDUCED nfl/tests/test_mod.py: test_alpha: 3 -> 2 checks",
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_mod.py: test_alpha: 1 comparison(s) removed or altered (operator, number or tripwire condition)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.03,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FC03"
+ },
+ {
+  "id": "FC04",
+  "clause": "tests: check() helper stops counting",
+  "mv": [],
+  "expect": [
+   "CHECKS_REDUCED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_helper.py"
+  ],
+  "observed_counted_rules": [
+   "CHECKS_REDUCED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high CHECKS_REDUCED nfl/tests/test_helper.py: the module's check() helper no longer records a failure (1 -> 0): every check through it passes"
+  ],
+  "outcome": "detected",
+  "seconds": 0.023,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FC04"
+ },
+ {
+  "id": "FC05",
+  "clause": "tests: assert -> if-print",
+  "mv": [],
+  "expect": [
+   "CHECKS_REDUCED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "CHECKS_REDUCED",
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high CHECKS_REDUCED nfl/tests/test_mod.py: test_alpha: 3 -> 2 checks",
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_mod.py: test_alpha: 1 comparison(s) removed or altered (operator, number or tripwire condition)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.032,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FC05"
+ },
+ {
+  "id": "FC06",
+  "clause": "tests: pytest.raises removed",
+  "mv": [],
+  "expect": [
+   "CHECKS_REDUCED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "pytest.raises is a check; CHECK_CALLS does not list it",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "MISSED",
+  "seconds": 0.027,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FC06"
+ },
+ {
+  "id": "FC07",
+  "clause": "tests: unittest assert removed",
+  "mv": [],
+  "expect": [
+   "CHECKS_REDUCED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_ut.py"
+  ],
+  "observed_counted_rules": [
+   "CHECKS_REDUCED",
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high CHECKS_REDUCED nfl/tests/test_ut.py: EngineTest.test_f: 2 -> 1 checks",
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_ut.py: EngineTest.test_f: 1 comparison(s) removed or altered (operator, number or tripwire condition)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.022,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FC07"
+ },
+ {
+  "id": "FC08",
+  "clause": "tests: numpy assert removed",
+  "mv": [],
+  "expect": [
+   "CHECKS_REDUCED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_np.py"
+  ],
+  "observed_counted_rules": [
+   "CHECKS_REDUCED",
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high CHECKS_REDUCED nfl/tests/test_np.py: test_arrays: 2 -> 1 checks",
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_np.py: test_arrays: 1 comparison(s) removed or altered (operator, number or tripwire condition)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.023,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FC08"
+ },
+ {
+  "id": "FC09",
+  "clause": "tests: check() helper made to always pass",
+  "mv": [],
+  "expect": [
+   "CHECKS_REDUCED",
+   "CHECK_HELPER_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_helper.py"
+  ],
+  "observed_counted_rules": [
+   "CHECK_HELPER_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium CHECK_HELPER_CHANGED nfl/tests/test_helper.py: the module's check() helper changed"
+  ],
+  "outcome": "detected",
+  "seconds": 0.022,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FC09"
+ },
+ {
+  "id": "FE01",
+  "clause": "tests: body -> pass",
+  "mv": [],
+  "expect": [
+   "TEST_BODY_EMPTIED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "CHECKS_REDUCED",
+   "TEST_BODY_EMPTIED",
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high CHECKS_REDUCED nfl/tests/test_mod.py: test_beta: 1 -> 0 checks",
+   "high TEST_BODY_EMPTIED nfl/tests/test_mod.py: test_beta now does nothing",
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_mod.py: test_beta: 1 comparison(s) removed or altered (operator, number or tripwire condition)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.026,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FE01"
+ },
+ {
+  "id": "FE02",
+  "clause": "tests: body -> docstring",
+  "mv": [],
+  "expect": [
+   "TEST_BODY_EMPTIED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "CHECKS_REDUCED",
+   "TEST_BODY_EMPTIED",
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high CHECKS_REDUCED nfl/tests/test_mod.py: test_beta: 1 -> 0 checks",
+   "high TEST_BODY_EMPTIED nfl/tests/test_mod.py: test_beta now does nothing",
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_mod.py: test_beta: 1 comparison(s) removed or altered (operator, number or tripwire condition)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.026,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FE02"
+ },
+ {
+  "id": "FE03",
+  "clause": "tests: body -> ...",
+  "mv": [],
+  "expect": [
+   "TEST_BODY_EMPTIED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "CHECKS_REDUCED",
+   "TEST_BODY_EMPTIED",
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high CHECKS_REDUCED nfl/tests/test_mod.py: test_beta: 1 -> 0 checks",
+   "high TEST_BODY_EMPTIED nfl/tests/test_mod.py: test_beta now does nothing",
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_mod.py: test_beta: 1 comparison(s) removed or altered (operator, number or tripwire condition)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.025,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FE03"
+ },
+ {
+  "id": "FE04",
+  "clause": "tests: early return",
+  "mv": [],
+  "expect": [
+   "TEST_EARLY_RETURN"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "TEST_EARLY_RETURN"
+  ],
+  "observed_info": [],
+  "details": [
+   "high TEST_EARLY_RETURN nfl/tests/test_mod.py: test_alpha now returns before its checks have run"
+  ],
+  "outcome": "detected",
+  "seconds": 0.025,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FE04"
+ },
+ {
+  "id": "FE05",
+  "clause": "tests: if True: return",
+  "mv": [],
+  "expect": [
+   "TEST_EARLY_RETURN"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "TEST_EARLY_RETURN"
+  ],
+  "observed_info": [],
+  "details": [
+   "high TEST_EARLY_RETURN nfl/tests/test_mod.py: test_alpha now returns before its checks have run"
+  ],
+  "outcome": "detected",
+  "seconds": 0.032,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FE05"
+ },
+ {
+  "id": "FE06",
+  "clause": "tests: env-gated return",
+  "mv": [],
+  "expect": [
+   "TEST_EARLY_RETURN"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "TEST_EARLY_RETURN"
+  ],
+  "observed_info": [],
+  "details": [
+   "high TEST_EARLY_RETURN nfl/tests/test_mod.py: test_alpha now returns before its checks have run"
+  ],
+  "outcome": "detected",
+  "seconds": 0.027,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FE06"
+ },
+ {
+  "id": "FV01",
+  "clause": "tests: assert True",
+  "mv": [],
+  "expect": [
+   "CONSTANT_TRUE_CHECK_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "CONSTANT_TRUE_CHECK_ADDED",
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium CONSTANT_TRUE_CHECK_ADDED nfl/tests/test_mod.py: test_alpha: 1 check(s) whose condition is true whatever the code does",
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_mod.py: test_alpha: 1 comparison(s) removed or altered (operator, number or tripwire condition)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.029,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FV01"
+ },
+ {
+  "id": "FV02",
+  "clause": "tests: or True",
+  "mv": [],
+  "expect": [
+   "CONSTANT_TRUE_CHECK_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "CONSTANT_TRUE_CHECK_ADDED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium CONSTANT_TRUE_CHECK_ADDED nfl/tests/test_mod.py: test_alpha: 1 check(s) whose condition is true whatever the code does"
+  ],
+  "outcome": "detected",
+  "seconds": 0.027,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FV02"
+ },
+ {
+  "id": "FV03",
+  "clause": "tests: len(x) >= 0",
+  "mv": [],
+  "expect": [
+   "CONSTANT_TRUE_CHECK_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "CONSTANT_TRUE_CHECK_ADDED",
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium CONSTANT_TRUE_CHECK_ADDED nfl/tests/test_mod.py: test_alpha: 1 check(s) whose condition is true whatever the code does",
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_mod.py: test_alpha: 1 comparison(s) removed or altered (operator, number or tripwire condition)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.026,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FV03"
+ },
+ {
+  "id": "FV04",
+  "clause": "tests: x == x",
+  "mv": [],
+  "expect": [
+   "CONSTANT_TRUE_CHECK_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "CONSTANT_TRUE_CHECK_ADDED",
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium CONSTANT_TRUE_CHECK_ADDED nfl/tests/test_mod.py: test_alpha: 1 check(s) whose condition is true whatever the code does",
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_mod.py: test_alpha: 1 comparison(s) removed or altered (operator, number or tripwire condition)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.027,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FV04"
+ },
+ {
+  "id": "FV05",
+  "clause": "tests: check('a', True)",
+  "mv": [],
+  "expect": [
+   "CONSTANT_TRUE_CHECK_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_helper.py"
+  ],
+  "observed_counted_rules": [
+   "CONSTANT_TRUE_CHECK_ADDED",
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium CONSTANT_TRUE_CHECK_ADDED nfl/tests/test_helper.py: test_one: 1 check(s) whose condition is true whatever the code does",
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_helper.py: test_one: 1 comparison(s) removed or altered (operator, number or tripwire condition)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.019,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FV05"
+ },
+ {
+  "id": "FV06",
+  "clause": "tests: name bound to True",
+  "mv": [],
+  "expect": [
+   "CONSTANT_TRUE_CHECK_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "CONSTANT_TRUE_CHECK_ADDED",
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium CONSTANT_TRUE_CHECK_ADDED nfl/tests/test_mod.py: test_alpha: 1 check(s) whose condition is true whatever the code does",
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_mod.py: test_alpha: 1 comparison(s) removed or altered (operator, number or tripwire condition)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.025,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FV06"
+ },
+ {
+  "id": "FV07",
+  "clause": "tests: assert (cond, msg) tuple",
+  "mv": [],
+  "expect": [
+   "CONSTANT_TRUE_CHECK_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "a parenthesised assert with a message is always true",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "MISSED",
+  "seconds": 0.029,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FV07"
+ },
+ {
+  "id": "FV08",
+  "clause": "tests: or \"str\"",
+  "mv": [],
+  "expect": [
+   "CONSTANT_TRUE_CHECK_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "CONSTANT_TRUE_CHECK_ADDED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium CONSTANT_TRUE_CHECK_ADDED nfl/tests/test_mod.py: test_alpha: 1 check(s) whose condition is true whatever the code does"
+  ],
+  "outcome": "detected",
+  "seconds": 0.028,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FV08"
+ },
+ {
+  "id": "FV09",
+  "clause": "tests: abs() >= 0",
+  "mv": [],
+  "expect": [
+   "CONSTANT_TRUE_CHECK_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "CONSTANT_TRUE_CHECK_ADDED",
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium CONSTANT_TRUE_CHECK_ADDED nfl/tests/test_mod.py: test_beta: 1 check(s) whose condition is true whatever the code does",
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_mod.py: test_beta: 1 comparison(s) removed or altered (operator, number or tripwire condition)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.028,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FV09"
+ },
+ {
+  "id": "FV10",
+  "clause": "tests: assert 1",
+  "mv": [],
+  "expect": [
+   "CONSTANT_TRUE_CHECK_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "CONSTANT_TRUE_CHECK_ADDED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium CONSTANT_TRUE_CHECK_ADDED nfl/tests/test_mod.py: test_alpha: 1 check(s) whose condition is true whatever the code does"
+  ],
+  "outcome": "detected",
+  "seconds": 0.033,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FV10"
+ },
+ {
+  "id": "FN01",
+  "clause": "tests: bound loosened",
+  "mv": [],
+  "expect": [
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_mod.py: test_beta: 1 comparison(s) removed or altered (operator, number or tripwire condition)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.034,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FN01"
+ },
+ {
+  "id": "FN02",
+  "clause": "tests: < -> <=",
+  "mv": [],
+  "expect": [
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_mod.py: test_beta: 1 comparison(s) removed or altered (operator, number or tripwire condition)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.027,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FN02"
+ },
+ {
+  "id": "FN03",
+  "clause": "tests: rel_tol loosened",
+  "mv": [],
+  "expect": [
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "TEST_COMPARISON_NUMBER_CHANGED",
+   "THRESHOLD_LOOSENED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_mod.py: test_gamma: isclose(rel_tol=): 1e-09 -> 0.001 (test tolerance)",
+   "high THRESHOLD_LOOSENED nfl/tests/test_mod.py: isclose(rel_tol=): 1e-09 -> 0.001 at a call site"
+  ],
+  "outcome": "detected",
+  "seconds": 0.027,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FN03"
+ },
+ {
+  "id": "FN04",
+  "clause": "tests: approx rel loosened",
+  "mv": [],
+  "expect": [
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "TEST_COMPARISON_NUMBER_CHANGED",
+   "THRESHOLD_LOOSENED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_mod.py: test_delta: 1 comparison(s) removed or altered (operator, number or tripwire condition)",
+   "high TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_mod.py: test_delta: approx(rel=): 1e-06 -> 0.01 (test tolerance)",
+   "high THRESHOLD_LOOSENED nfl/tests/test_mod.py: approx(rel=): 1e-06 -> 0.01 at a call site"
+  ],
+  "outcome": "detected",
+  "seconds": 0.03,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FN04"
+ },
+ {
+  "id": "FN05",
+  "clause": "tests: places loosened",
+  "mv": [],
+  "expect": [
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_ut.py"
+  ],
+  "observed_counted_rules": [
+   "TEST_COMPARISON_NUMBER_CHANGED",
+   "THRESHOLD_LOOSENED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_ut.py: EngineTest.test_f: assertAlmostEqual(places=): 7 -> 2 (test tolerance)",
+   "high THRESHOLD_LOOSENED nfl/tests/test_ut.py: assertAlmostEqual(places=): 7 -> 2 at a call site"
+  ],
+  "outcome": "detected",
+  "seconds": 0.021,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FN05"
+ },
+ {
+  "id": "FN06",
+  "clause": "tests: tripwire loosened",
+  "mv": [],
+  "expect": [
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_mod.py: test_tripwire: 2 comparison(s) removed or altered (operator, number or tripwire condition)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.028,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FN06"
+ },
+ {
+  "id": "FN07",
+  "clause": "tests: tolerance keyword removed",
+  "mv": [],
+  "expect": [
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_mod.py: test_gamma: tolerance rel_tol=1e-09 removed"
+  ],
+  "outcome": "detected",
+  "seconds": 0.025,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FN07"
+ },
+ {
+  "id": "FN08",
+  "clause": "tests: bound scaled",
+  "mv": [],
+  "expect": [
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_mod.py: test_beta: 1 comparison(s) removed or altered (operator, number or tripwire condition)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.029,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FN08"
+ },
+ {
+  "id": "FN09",
+  "clause": "tests: numpy rtol loosened",
+  "mv": [],
+  "expect": [
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_np.py"
+  ],
+  "observed_counted_rules": [
+   "TEST_COMPARISON_NUMBER_CHANGED",
+   "THRESHOLD_LOOSENED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_np.py: test_arrays: assert_allclose(rtol=): 1e-07 -> 0.01 (test tolerance)",
+   "high THRESHOLD_LOOSENED nfl/tests/test_np.py: assert_allclose(rtol=): 1e-07 -> 0.01 at a call site"
+  ],
+  "outcome": "detected",
+  "seconds": 0.025,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FN09"
+ },
+ {
+  "id": "FN10",
+  "clause": "tests: == -> in range",
+  "mv": [],
+  "expect": [
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_mod.py: test_alpha: 1 comparison(s) removed or altered (operator, number or tripwire condition)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.028,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FN10"
+ },
+ {
+  "id": "FS01",
+  "clause": "skips: mark.skip",
+  "mv": [],
+  "expect": [
+   "SKIP_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "SKIP_ADDED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high SKIP_ADDED nfl/tests/test_mod.py: 2 skip path(s) added"
+  ],
+  "outcome": "detected",
+  "seconds": 0.027,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FS01"
+ },
+ {
+  "id": "FS02",
+  "clause": "skips: pytest.skip()",
+  "mv": [],
+  "expect": [
+   "SKIP_ADDED",
+   "TEST_EARLY_RETURN"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "SKIP_ADDED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high SKIP_ADDED nfl/tests/test_mod.py: 1 skip path(s) added"
+  ],
+  "outcome": "detected",
+  "seconds": 0.029,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FS02"
+ },
+ {
+  "id": "FS03",
+  "clause": "skips: unittest.skip",
+  "mv": [],
+  "expect": [
+   "SKIP_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_ut.py"
+  ],
+  "observed_counted_rules": [
+   "SKIP_ADDED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high SKIP_ADDED nfl/tests/test_ut.py: 2 skip path(s) added"
+  ],
+  "outcome": "detected",
+  "seconds": 0.022,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FS03"
+ },
+ {
+  "id": "FS04",
+  "clause": "skips: xfail",
+  "mv": [],
+  "expect": [
+   "SKIP_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "SKIP_ADDED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high SKIP_ADDED nfl/tests/test_mod.py: 1 skip path(s) added"
+  ],
+  "outcome": "detected",
+  "seconds": 0.025,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FS04"
+ },
+ {
+  "id": "FS05",
+  "clause": "skips: raise SkipTest",
+  "mv": [],
+  "expect": [
+   "SKIP_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_ut.py"
+  ],
+  "observed_counted_rules": [
+   "SKIP_ADDED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high SKIP_ADDED nfl/tests/test_ut.py: 2 skip path(s) added"
+  ],
+  "outcome": "detected",
+  "seconds": 0.023,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FS05"
+ },
+ {
+  "id": "FS06",
+  "clause": "skips: mark.skipif",
+  "mv": [],
+  "expect": [
+   "SKIP_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "pytest spelling is lowercase skipif",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "MISSED",
+  "seconds": 0.023,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FS06"
+ },
+ {
+  "id": "FS07",
+  "clause": "skips: pytestmark = mark.skip (attribute)",
+  "mv": [],
+  "expect": [
+   "SKIP_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "MISSED",
+  "seconds": 0.027,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FS07"
+ },
+ {
+  "id": "FS08",
+  "clause": "skips: pytestmark = mark.skip(...)",
+  "mv": [],
+  "expect": [
+   "SKIP_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "SKIP_ADDED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high SKIP_ADDED nfl/tests/test_mod.py: 1 skip path(s) added"
+  ],
+  "outcome": "detected",
+  "seconds": 0.031,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FS08"
+ },
+ {
+  "id": "FS09",
+  "clause": "skips: BLOCKED counter",
+  "mv": [],
+  "expect": [
+   "SKIP_ADDED",
+   "TEST_EARLY_RETURN"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_helper.py"
+  ],
+  "observed_counted_rules": [
+   "SKIP_ADDED",
+   "TEST_EARLY_RETURN"
+  ],
+  "observed_info": [],
+  "details": [
+   "high TEST_EARLY_RETURN nfl/tests/test_helper.py: test_one now returns before its checks have run",
+   "high SKIP_ADDED nfl/tests/test_helper.py: 1 skip path(s) added"
+  ],
+  "outcome": "detected",
+  "seconds": 0.024,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FS09"
+ },
+ {
+  "id": "FS10",
+  "clause": "skips: importorskip",
+  "mv": [],
+  "expect": [
+   "SKIP_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "SKIP_ADDED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high SKIP_ADDED nfl/tests/test_mod.py: 1 skip path(s) added"
+  ],
+  "outcome": "detected",
+  "seconds": 0.027,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FS10"
+ },
+ {
+  "id": "FS11",
+  "clause": "skips: self.skipTest",
+  "mv": [],
+  "expect": [
+   "SKIP_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_ut.py"
+  ],
+  "observed_counted_rules": [
+   "SKIP_ADDED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high SKIP_ADDED nfl/tests/test_ut.py: 1 skip path(s) added"
+  ],
+  "outcome": "detected",
+  "seconds": 0.021,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FS11"
+ },
+ {
+  "id": "FS12",
+  "clause": "skips: skipif on a condition",
+  "mv": [],
+  "expect": [
+   "SKIP_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "MISSED",
+  "seconds": 0.032,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FS12"
+ },
+ {
+  "id": "FT01",
+  "clause": "thresholds: module TOL loosened",
+  "mv": [],
+  "expect": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high THRESHOLD_LOOSENED nfl/sim/engine.py: TOL: 1e-06 -> 0.001",
+   "high THRESHOLD_LOOSENED nfl/sim/engine.py: TOL: 1e-06 -> 0.001 where it is compared with err"
+  ],
+  "outcome": "detected",
+  "seconds": 0.02,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FT01"
+ },
+ {
+  "id": "FT02",
+  "clause": "thresholds: MIN_ lowered",
+  "mv": [],
+  "expect": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high THRESHOLD_LOOSENED nfl/sim/engine.py: MIN_SAMPLES: 300 -> 100"
+  ],
+  "outcome": "detected",
+  "seconds": 0.024,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FT02"
+ },
+ {
+  "id": "FT03",
+  "clause": "thresholds: class attr",
+  "mv": [],
+  "expect": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high THRESHOLD_LOOSENED nfl/sim/engine.py: MAX_ERROR: 0.05 -> 0.5"
+  ],
+  "outcome": "detected",
+  "seconds": 0.023,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FT03"
+ },
+ {
+  "id": "FT04",
+  "clause": "thresholds: dict entry",
+  "mv": [],
+  "expect": [
+   "THRESHOLD_LOOSENED",
+   "THRESHOLD_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [
+   "THRESHOLD_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium THRESHOLD_CHANGED nfl/sim/engine.py: THRESHOLDS[brier]: 0.25 -> 0.3"
+  ],
+  "outcome": "detected",
+  "seconds": 0.021,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FT04"
+ },
+ {
+  "id": "FT05",
+  "clause": "thresholds: argument default",
+  "mv": [],
+  "expect": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high THRESHOLD_LOOSENED nfl/sim/engine.py: gate(tol): 1e-06 -> 0.001"
+  ],
+  "outcome": "detected",
+  "seconds": 0.023,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FT05"
+ },
+ {
+  "id": "FT06",
+  "clause": "thresholds: call-site keyword (non-test)",
+  "mv": [],
+  "expect": [
+   "THRESHOLD_LOOSENED",
+   "THRESHOLD_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/check.py"
+  ],
+  "observed_counted_rules": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high THRESHOLD_LOOSENED nfl/sim/check.py: allclose(atol=): 1e-08 -> 0.0001 at a call site"
+  ],
+  "outcome": "detected",
+  "seconds": 0.019,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FT06"
+ },
+ {
+  "id": "FT07",
+  "clause": "thresholds: use-site scaling",
+  "mv": [],
+  "expect": [
+   "THRESHOLD_LOOSENED",
+   "THRESHOLD_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high THRESHOLD_LOOSENED nfl/sim/engine.py: TOL: 1e-06 -> 0.001 where it is compared with err"
+  ],
+  "outcome": "detected",
+  "seconds": 0.019,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FT07"
+ },
+ {
+  "id": "FT08",
+  "clause": "thresholds: JSON config",
+  "mv": [],
+  "expect": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/config/gates.json"
+  ],
+  "observed_counted_rules": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high THRESHOLD_LOOSENED nfl/config/gates.json: min_games: 300 -> 100 (JSON configuration)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.018,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FT08"
+ },
+ {
+  "id": "FT09",
+  "clause": "thresholds: ALPHA",
+  "mv": [],
+  "expect": [
+   "THRESHOLD_LOOSENED",
+   "THRESHOLD_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [
+   "THRESHOLD_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium THRESHOLD_CHANGED nfl/sim/engine.py: ALPHA: 0.05 -> 0.1"
+  ],
+  "outcome": "detected",
+  "seconds": 0.021,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FT09"
+ },
+ {
+  "id": "FT10",
+  "clause": "thresholds: override from test (assign)",
+  "mv": [],
+  "expect": [
+   "THRESHOLD_LOOSENED",
+   "THRESHOLD_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high THRESHOLD_LOOSENED nfl/tests/test_mod.py: nfl.sim.engine.TOL: 1e-06 -> 0.5 (overridden from a test module)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.032,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FT10"
+ },
+ {
+  "id": "FT11",
+  "clause": "thresholds: override from test (monkeypatch)",
+  "mv": [],
+  "expect": [
+   "THRESHOLD_LOOSENED",
+   "THRESHOLD_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high THRESHOLD_LOOSENED nfl/tests/test_mod.py: nfl.sim.engine.TOL: 1e-06 -> 0.5 (overridden from a test module)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.028,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FT11"
+ },
+ {
+  "id": "FT12",
+  "clause": "thresholds: removed",
+  "mv": [],
+  "expect": [
+   "THRESHOLD_REMOVED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [
+   "THRESHOLD_REMOVED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium THRESHOLD_REMOVED nfl/sim/engine.py: MIN_N = 300 no longer defined"
+  ],
+  "outcome": "detected",
+  "seconds": 0.022,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FT12"
+ },
+ {
+  "id": "FT13",
+  "clause": "thresholds: SE_MULTIPLE",
+  "mv": [],
+  "expect": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high THRESHOLD_LOOSENED nfl/sim/engine.py: SE_MULTIPLE: 2.0 -> 3.0"
+  ],
+  "outcome": "detected",
+  "seconds": 0.022,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FT13"
+ },
+ {
+  "id": "FT14",
+  "clause": "thresholds: tuple assignment",
+  "mv": [],
+  "expect": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high THRESHOLD_LOOSENED nfl/sim/engine.py: HI_TOL: 0.02 -> 0.2"
+  ],
+  "outcome": "detected",
+  "seconds": 0.023,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FT14"
+ },
+ {
+  "id": "FT15",
+  "clause": "thresholds: annotated",
+  "mv": [],
+  "expect": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high THRESHOLD_LOOSENED nfl/sim/engine.py: TOL: 1e-06 -> 0.001",
+   "high THRESHOLD_LOOSENED nfl/sim/engine.py: TOL: 1e-06 -> 0.001 where it is compared with err"
+  ],
+  "outcome": "detected",
+  "seconds": 0.022,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FT15"
+ },
+ {
+  "id": "FT16",
+  "clause": "thresholds: augmented",
+  "mv": [],
+  "expect": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high THRESHOLD_LOOSENED nfl/sim/engine.py: TOL: 1e-06 -> 0.001",
+   "high THRESHOLD_LOOSENED nfl/sim/engine.py: TOL: 1e-06 -> 0.001 where it is compared with err"
+  ],
+  "outcome": "detected",
+  "seconds": 0.022,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FT16"
+ },
+ {
+  "id": "FT17",
+  "clause": "thresholds: CUTOFF name",
+  "mv": [],
+  "expect": [
+   "THRESHOLD_LOOSENED",
+   "THRESHOLD_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "p-value cutoff used in significant()",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "MISSED",
+  "seconds": 0.02,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FT17"
+ },
+ {
+  "id": "FT18",
+  "clause": "thresholds: UPPER_BOUND name",
+  "mv": [],
+  "expect": [
+   "THRESHOLD_LOOSENED",
+   "THRESHOLD_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "MISSED",
+  "seconds": 0.028,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FT18"
+ },
+ {
+  "id": "FT19",
+  "clause": "thresholds: float(\"...\") literal",
+  "mv": [],
+  "expect": [
+   "THRESHOLD_LOOSENED",
+   "THRESHOLD_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "MISSED",
+  "seconds": 0.021,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FT19"
+ },
+ {
+  "id": "FT20",
+  "clause": "thresholds: JSON nested \"max\"",
+  "mv": [],
+  "expect": [
+   "THRESHOLD_LOOSENED",
+   "THRESHOLD_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/config/gates.json"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "MISSED",
+  "seconds": 0.018,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FT20"
+ },
+ {
+  "id": "FT21",
+  "clause": "thresholds: JSON tolerance",
+  "mv": [],
+  "expect": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/config/model_config.json"
+  ],
+  "observed_counted_rules": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high THRESHOLD_LOOSENED nfl/config/model_config.json: tolerance: 1e-06 -> 0.001 (JSON configuration)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.018,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FT21"
+ },
+ {
+  "id": "FT22",
+  "clause": "thresholds: constant inlined looser",
+  "mv": [],
+  "expect": [
+   "THRESHOLD_LOOSENED",
+   "THRESHOLD_CHANGED",
+   "THRESHOLD_REMOVED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "MISSED",
+  "seconds": 0.02,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FT22"
+ },
+ {
+  "id": "FT23",
+  "clause": "thresholds: local variable in function",
+  "mv": [],
+  "expect": [
+   "THRESHOLD_LOOSENED",
+   "THRESHOLD_CHANGED"
+  ],
+  "kind": "ambig",
+  "likelihood": "medium",
+  "note": "spec lists module/class/default/keyword/use-site; a local is not named",
+  "changed_paths": [
+   "nfl/sim/q.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "MISSED",
+  "seconds": 0.019,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FT23"
+ },
+ {
+  "id": "FT24",
+  "clause": "thresholds: max_ in JSON",
+  "mv": [],
+  "expect": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/config/gates.json"
+  ],
+  "observed_counted_rules": [
+   "THRESHOLD_LOOSENED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high THRESHOLD_LOOSENED nfl/config/gates.json: max_brier: 0.25 -> 0.4 (JSON configuration)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.017,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FT24"
+ },
+ {
+  "id": "FRS01",
+  "clause": "results: passed false->true",
+  "mv": [],
+  "expect": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/results/suite_result.json"
+  ],
+  "observed_counted_rules": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "observed_info": [],
+  "details": [
+   "high RESULT_STATUS_FLIPPED_TO_PASS nfl/results/suite_result.json: passed: false -> true"
+  ],
+  "outcome": "detected",
+  "seconds": 0.019,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FRS01"
+ },
+ {
+  "id": "FRS02",
+  "clause": "results: n_failed zeroed",
+  "mv": [],
+  "expect": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/results/suite_result.json"
+  ],
+  "observed_counted_rules": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "observed_info": [],
+  "details": [
+   "high RESULT_STATUS_FLIPPED_TO_PASS nfl/results/suite_result.json: n_failed: 3 -> 0"
+  ],
+  "outcome": "detected",
+  "seconds": 0.021,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FRS02"
+ },
+ {
+  "id": "FRS03",
+  "clause": "results: status FAIL->PASS",
+  "mv": [],
+  "expect": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/results/suite_result.json"
+  ],
+  "observed_counted_rules": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "observed_info": [],
+  "details": [
+   "high RESULT_STATUS_FLIPPED_TO_PASS nfl/results/suite_result.json: status: \"FAIL\" -> \"PASS\""
+  ],
+  "outcome": "detected",
+  "seconds": 0.019,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FRS03"
+ },
+ {
+  "id": "FRS04",
+  "clause": "results: failure entries deleted",
+  "mv": [],
+  "expect": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/results/suite_result.json"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "MISSED",
+  "seconds": 0.018,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FRS04"
+ },
+ {
+  "id": "FRS05",
+  "clause": "results: md row FAIL->PASS",
+  "mv": [],
+  "expect": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/results/SUITE_RESULTS.md"
+  ],
+  "observed_counted_rules": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "observed_info": [],
+  "details": [
+   "high RESULT_STATUS_FLIPPED_TO_PASS nfl/results/SUITE_RESULTS.md: a recorded failure was rewritten as a success"
+  ],
+  "outcome": "detected",
+  "seconds": 0.017,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FRS05"
+ },
+ {
+  "id": "FRS06",
+  "clause": "results: NOT VERIFIED->VERIFIED",
+  "mv": [],
+  "expect": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/results/SUITE_RESULTS.md"
+  ],
+  "observed_counted_rules": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "observed_info": [],
+  "details": [
+   "high RESULT_STATUS_FLIPPED_TO_PASS nfl/results/SUITE_RESULTS.md: a recorded failure row was deleted"
+  ],
+  "outcome": "detected",
+  "seconds": 0.019,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FRS06"
+ },
+ {
+  "id": "FRS07",
+  "clause": "results: failure row deleted",
+  "mv": [],
+  "expect": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/results/SUITE_RESULTS.md"
+  ],
+  "observed_counted_rules": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "observed_info": [],
+  "details": [
+   "high RESULT_STATUS_FLIPPED_TO_PASS nfl/results/SUITE_RESULTS.md: a recorded failure row was deleted"
+  ],
+  "outcome": "detected",
+  "seconds": 0.021,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FRS07"
+ },
+ {
+  "id": "FRS08",
+  "clause": "results: emoji",
+  "mv": [],
+  "expect": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/results/SUITE_RESULTS.md"
+  ],
+  "observed_counted_rules": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "observed_info": [],
+  "details": [
+   "high RESULT_STATUS_FLIPPED_TO_PASS nfl/results/SUITE_RESULTS.md: a recorded failure was rewritten as a success"
+  ],
+  "outcome": "detected",
+  "seconds": 0.017,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FRS08"
+ },
+ {
+  "id": "FRS09",
+  "clause": "results: renamed doc flipped",
+  "mv": [
+   [
+    "nfl/results/SUITE_RESULTS.md",
+    "nfl/results/SUITE_RESULTS_v2.md"
+   ]
+  ],
+  "expect": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/results/SUITE_RESULTS.md",
+   "nfl/results/SUITE_RESULTS_v2.md"
+  ],
+  "observed_counted_rules": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "observed_info": [],
+  "details": [
+   "high RESULT_STATUS_FLIPPED_TO_PASS nfl/results/SUITE_RESULTS_v2.md: a recorded failure was rewritten as a success"
+  ],
+  "outcome": "detected",
+  "seconds": 0.016,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FRS09"
+ },
+ {
+  "id": "FRS10",
+  "clause": "results: verdict BLOCKED->READY",
+  "mv": [],
+  "expect": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/results/suite_result.json"
+  ],
+  "observed_counted_rules": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "observed_info": [],
+  "details": [
+   "high RESULT_STATUS_FLIPPED_TO_PASS nfl/results/suite_result.json: verdict: \"BLOCKED\" -> \"READY\""
+  ],
+  "outcome": "detected",
+  "seconds": 0.021,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FRS10"
+ },
+ {
+  "id": "FRS11",
+  "clause": "results: ok false->true",
+  "mv": [],
+  "expect": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/results/suite_result.json"
+  ],
+  "observed_counted_rules": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "observed_info": [],
+  "details": [
+   "high RESULT_STATUS_FLIPPED_TO_PASS nfl/results/suite_result.json: ok: false -> true"
+  ],
+  "outcome": "detected",
+  "seconds": 0.021,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FRS11"
+ },
+ {
+  "id": "FRS12",
+  "clause": "results: CSV FAIL->PASS",
+  "mv": [],
+  "expect": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/results/grid.csv"
+  ],
+  "observed_counted_rules": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "observed_info": [],
+  "details": [
+   "high RESULT_STATUS_FLIPPED_TO_PASS nfl/results/grid.csv: a recorded failure was rewritten as a success"
+  ],
+  "outcome": "detected",
+  "seconds": 0.017,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FRS12"
+ },
+ {
+  "id": "FRS13",
+  "clause": "results: status key removed",
+  "mv": [],
+  "expect": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/results/suite_result.json"
+  ],
+  "observed_counted_rules": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "observed_info": [],
+  "details": [
+   "high RESULT_STATUS_FLIPPED_TO_PASS nfl/results/suite_result.json: status: \"FAIL\" -> (removed)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.016,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FRS13"
+ },
+ {
+  "id": "FRS14",
+  "clause": "results: errors key removed",
+  "mv": [],
+  "expect": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/results/suite_result.json"
+  ],
+  "observed_counted_rules": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "observed_info": [],
+  "details": [
+   "high RESULT_STATUS_FLIPPED_TO_PASS nfl/results/suite_result.json: errors: 2 -> (removed)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.019,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FRS14"
+ },
+ {
+  "id": "FRS15",
+  "clause": "results: md Status FAILED->PASSED",
+  "mv": [],
+  "expect": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/results/SUITE_RESULTS.md"
+  ],
+  "observed_counted_rules": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "observed_info": [],
+  "details": [
+   "high RESULT_STATUS_FLIPPED_TO_PASS nfl/results/SUITE_RESULTS.md: a recorded failure was rewritten as a success"
+  ],
+  "outcome": "detected",
+  "seconds": 0.018,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FRS15"
+ },
+ {
+  "id": "FRS16",
+  "clause": "results: nested per-test status",
+  "mv": [],
+  "expect": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/results/suite_result.json"
+  ],
+  "observed_counted_rules": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "observed_info": [],
+  "details": [
+   "high RESULT_STATUS_FLIPPED_TO_PASS nfl/results/suite_result.json: tests.test_calibration: \"FAIL\" -> \"PASS\""
+  ],
+  "outcome": "detected",
+  "seconds": 0.021,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FRS16"
+ },
+ {
+  "id": "FRS17",
+  "clause": "results: text failed->ok lowercase",
+  "mv": [],
+  "expect": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/results/run.txt"
+  ],
+  "observed_counted_rules": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "observed_info": [],
+  "details": [
+   "high RESULT_STATUS_FLIPPED_TO_PASS nfl/results/run.txt: a recorded failure was rewritten as a success"
+  ],
+  "outcome": "detected",
+  "seconds": 0.021,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FRS17"
+ },
+ {
+  "id": "FRS18",
+  "clause": "results: failing test entry deleted from list of names",
+  "mv": [],
+  "expect": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/results/suite_result.json"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "MISSED",
+  "seconds": 0.02,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FRS18"
+ },
+ {
+  "id": "FP01",
+  "clause": "protected: certificate modified",
+  "mv": [],
+  "expect": [
+   "FROZEN_ARTIFACT_MODIFIED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/certificates/suite_cert.json"
+  ],
+  "observed_counted_rules": [
+   "FROZEN_ARTIFACT_MODIFIED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high FROZEN_ARTIFACT_MODIFIED nfl/tests/certificates/suite_cert.json: a write-once artifact was modified, moved or deleted"
+  ],
+  "outcome": "detected",
+  "seconds": 0.016,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FP01"
+ },
+ {
+  "id": "FP02",
+  "clause": "protected: seal deleted",
+  "mv": [],
+  "expect": [
+   "FROZEN_ARTIFACT_MODIFIED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/model/model_seal.json"
+  ],
+  "observed_counted_rules": [
+   "FROZEN_ARTIFACT_MODIFIED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high FROZEN_ARTIFACT_MODIFIED nfl/model/model_seal.json: a write-once artifact was modified, moved or deleted"
+  ],
+  "outcome": "detected",
+  "seconds": 0.016,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FP02"
+ },
+ {
+  "id": "FP03",
+  "clause": "protected: ledger line changed",
+  "mv": [],
+  "expect": [
+   "APPEND_ONLY_LOG_REWRITTEN"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/bets/tracking_ledger.jsonl"
+  ],
+  "observed_counted_rules": [
+   "APPEND_ONLY_LOG_REWRITTEN"
+  ],
+  "observed_info": [],
+  "details": [
+   "high APPEND_ONLY_LOG_REWRITTEN nfl/bets/tracking_ledger.jsonl: 1 existing line(s) removed or changed in an append-only file"
+  ],
+  "outcome": "detected",
+  "seconds": 0.019,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FP03"
+ },
+ {
+  "id": "FP04",
+  "clause": "protected: ledger truncated",
+  "mv": [],
+  "expect": [
+   "APPEND_ONLY_LOG_REWRITTEN"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/bets/tracking_ledger.jsonl"
+  ],
+  "observed_counted_rules": [
+   "APPEND_ONLY_LOG_REWRITTEN"
+  ],
+  "observed_info": [],
+  "details": [
+   "high APPEND_ONLY_LOG_REWRITTEN nfl/bets/tracking_ledger.jsonl: 1 existing line(s) removed or changed in an append-only file"
+  ],
+  "outcome": "detected",
+  "seconds": 0.019,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FP04"
+ },
+ {
+  "id": "FP05",
+  "clause": "protected: ledger deleted",
+  "mv": [],
+  "expect": [
+   "APPEND_ONLY_LOG_REWRITTEN"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/bets/tracking_ledger.jsonl"
+  ],
+  "observed_counted_rules": [
+   "APPEND_ONLY_LOG_REWRITTEN"
+  ],
+  "observed_info": [],
+  "details": [
+   "high APPEND_ONLY_LOG_REWRITTEN nfl/bets/tracking_ledger.jsonl: an append-only log was deleted"
+  ],
+  "outcome": "detected",
+  "seconds": 0.017,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FP05"
+ },
+ {
+  "id": "FP06",
+  "clause": "protected: runner modified",
+  "mv": [],
+  "expect": [
+   "VERIFICATION_MACHINERY_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/run_suite.py"
+  ],
+  "observed_counted_rules": [
+   "VERIFICATION_MACHINERY_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high VERIFICATION_MACHINERY_CHANGED nfl/tests/run_suite.py: the machinery that decides what counts as proof changed"
+  ],
+  "outcome": "detected",
+  "seconds": 0.017,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FP06"
+ },
+ {
+  "id": "FP07",
+  "clause": "protected: conftest added",
+  "mv": [],
+  "expect": [
+   "VERIFICATION_MACHINERY_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "conftest.py"
+  ],
+  "observed_counted_rules": [
+   "VERIFICATION_MACHINERY_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high VERIFICATION_MACHINERY_CHANGED conftest.py: the machinery that decides what counts as proof changed (new file)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.021,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FP07"
+ },
+ {
+  "id": "FP08",
+  "clause": "protected: pytest.ini",
+  "mv": [],
+  "expect": [
+   "VERIFICATION_MACHINERY_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "pytest.ini"
+  ],
+  "observed_counted_rules": [
+   "VERIFICATION_MACHINERY_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high VERIFICATION_MACHINERY_CHANGED pytest.ini: the machinery that decides what counts as proof changed"
+  ],
+  "outcome": "detected",
+  "seconds": 0.02,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FP08"
+ },
+ {
+  "id": "FP09",
+  "clause": "protected: pyproject addopts",
+  "mv": [],
+  "expect": [
+   "VERIFICATION_MACHINERY_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "pyproject.toml"
+  ],
+  "observed_counted_rules": [
+   "VERIFICATION_MACHINERY_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high VERIFICATION_MACHINERY_CHANGED pyproject.toml: test collection or pytest options changed"
+  ],
+  "outcome": "detected",
+  "seconds": 0.02,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FP09"
+ },
+ {
+  "id": "FP10",
+  "clause": "protected: detector removed",
+  "mv": [],
+  "expect": [
+   "VERIFICATION_MACHINERY_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/DETECTORS.json"
+  ],
+  "observed_counted_rules": [
+   "VERIFICATION_MACHINERY_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high VERIFICATION_MACHINERY_CHANGED nfl/tests/DETECTORS.json: 1 detector(s) removed: ['D2']"
+  ],
+  "outcome": "detected",
+  "seconds": 0.018,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FP10"
+ },
+ {
+  "id": "FP11",
+  "clause": "protected: OWNER_DECISIONS",
+  "mv": [],
+  "expect": [
+   "GOVERNANCE_OR_SAFEGUARD_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "coordination/OWNER_DECISIONS.md"
+  ],
+  "observed_counted_rules": [
+   "GOVERNANCE_OR_SAFEGUARD_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high GOVERNANCE_OR_SAFEGUARD_CHANGED coordination/OWNER_DECISIONS.md: an owner-authority or approval file, or a safeguard itself, changed"
+  ],
+  "outcome": "detected",
+  "seconds": 0.02,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FP11"
+ },
+ {
+  "id": "FP12",
+  "clause": "protected: settings.json",
+  "mv": [],
+  "expect": [
+   "GOVERNANCE_OR_SAFEGUARD_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   ".claude/settings.json"
+  ],
+  "observed_counted_rules": [
+   "GOVERNANCE_OR_SAFEGUARD_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high GOVERNANCE_OR_SAFEGUARD_CHANGED .claude/settings.json: an owner-authority or approval file, or a safeguard itself, changed"
+  ],
+  "outcome": "detected",
+  "seconds": 0.021,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FP12"
+ },
+ {
+  "id": "FP13",
+  "clause": "protected: CLAUDE.md",
+  "mv": [],
+  "expect": [
+   "GOVERNANCE_OR_SAFEGUARD_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "CLAUDE.md"
+  ],
+  "observed_counted_rules": [
+   "GOVERNANCE_OR_SAFEGUARD_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high GOVERNANCE_OR_SAFEGUARD_CHANGED CLAUDE.md: an owner-authority or approval file, or a safeguard itself, changed"
+  ],
+  "outcome": "detected",
+  "seconds": 0.024,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FP13"
+ },
+ {
+  "id": "FP14",
+  "clause": "protected: *.approved added",
+  "mv": [],
+  "expect": [
+   "GOVERNANCE_OR_SAFEGUARD_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/production/release.approved"
+  ],
+  "observed_counted_rules": [
+   "GOVERNANCE_OR_SAFEGUARD_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high GOVERNANCE_OR_SAFEGUARD_CHANGED nfl/production/release.approved: an owner-authority or approval file, or a safeguard itself, changed"
+  ],
+  "outcome": "detected",
+  "seconds": 0.017,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FP14"
+ },
+ {
+  "id": "FP15",
+  "clause": "protected: setup.cfg pytest",
+  "mv": [],
+  "expect": [
+   "VERIFICATION_MACHINERY_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "setup.cfg"
+  ],
+  "observed_counted_rules": [
+   "VERIFICATION_MACHINERY_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high VERIFICATION_MACHINERY_CHANGED setup.cfg: test collection or pytest options changed"
+  ],
+  "outcome": "detected",
+  "seconds": 0.017,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FP15"
+ },
+ {
+  "id": "FP16",
+  "clause": "protected: FREEZE case-insensitive",
+  "mv": [],
+  "expect": [
+   "FROZEN_ARTIFACT_MODIFIED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/model/Model_FREEZE.json"
+  ],
+  "observed_counted_rules": [
+   "FROZEN_ARTIFACT_MODIFIED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high FROZEN_ARTIFACT_MODIFIED nfl/model/Model_FREEZE.json: a write-once artifact was modified, moved or deleted"
+  ],
+  "outcome": "detected",
+  "seconds": 0.018,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FP16"
+ },
+ {
+  "id": "FP17",
+  "clause": "protected: run receipt",
+  "mv": [],
+  "expect": [
+   "FROZEN_ARTIFACT_MODIFIED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/production/runs/run_receipt_0910.json"
+  ],
+  "observed_counted_rules": [
+   "FROZEN_ARTIFACT_MODIFIED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high FROZEN_ARTIFACT_MODIFIED nfl/production/runs/run_receipt_0910.json: a write-once artifact was modified, moved or deleted"
+  ],
+  "outcome": "detected",
+  "seconds": 0.022,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FP17"
+ },
+ {
+  "id": "FP18",
+  "clause": "protected: vintage",
+  "mv": [],
+  "expect": [
+   "FROZEN_ARTIFACT_MODIFIED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/vintage/w1.csv"
+  ],
+  "observed_counted_rules": [
+   "FROZEN_ARTIFACT_MODIFIED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high FROZEN_ARTIFACT_MODIFIED nfl/vintage/w1.csv: a write-once artifact was modified, moved or deleted"
+  ],
+  "outcome": "detected",
+  "seconds": 0.018,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FP18"
+ },
+ {
+  "id": "FP19",
+  "clause": "protected: nested conftest added",
+  "mv": [],
+  "expect": [
+   "VERIFICATION_MACHINERY_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/conftest.py"
+  ],
+  "observed_counted_rules": [
+   "VERIFICATION_MACHINERY_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high VERIFICATION_MACHINERY_CHANGED nfl/tests/conftest.py: the machinery that decides what counts as proof changed (new file)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.018,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FP19"
+ },
+ {
+  "id": "FP20",
+  "clause": "protected: tox.ini pytest",
+  "mv": [],
+  "expect": [
+   "VERIFICATION_MACHINERY_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "tox.ini"
+  ],
+  "observed_counted_rules": [
+   "VERIFICATION_MACHINERY_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high VERIFICATION_MACHINERY_CHANGED tox.ini: test collection or pytest options changed"
+  ],
+  "outcome": "detected",
+  "seconds": 0.021,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FP20"
+ },
+ {
+  "id": "FP21",
+  "clause": "protected: guard file",
+  "mv": [],
+  "expect": [
+   "GOVERNANCE_OR_SAFEGUARD_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tools/floor_guard.py"
+  ],
+  "observed_counted_rules": [
+   "GOVERNANCE_OR_SAFEGUARD_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high GOVERNANCE_OR_SAFEGUARD_CHANGED nfl/tools/floor_guard.py: an owner-authority or approval file, or a safeguard itself, changed"
+  ],
+  "outcome": "detected",
+  "seconds": 0.022,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FP21"
+ },
+ {
+  "id": "FP22",
+  "clause": "protected: workflow",
+  "mv": [],
+  "expect": [
+   "GOVERNANCE_OR_SAFEGUARD_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   ".github/workflows/ci.yml"
+  ],
+  "observed_counted_rules": [
+   "GOVERNANCE_OR_SAFEGUARD_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high GOVERNANCE_OR_SAFEGUARD_CHANGED .github/workflows/ci.yml: an owner-authority or approval file, or a safeguard itself, changed"
+  ],
+  "outcome": "detected",
+  "seconds": 0.019,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FP22"
+ },
+ {
+  "id": "FP23",
+  "clause": "protected: detector row weakened",
+  "mv": [],
+  "expect": [
+   "VERIFICATION_MACHINERY_CHANGED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/DETECTORS.json"
+  ],
+  "observed_counted_rules": [
+   "VERIFICATION_MACHINERY_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high VERIFICATION_MACHINERY_CHANGED nfl/tests/DETECTORS.json: 1 detector row(s) weakened in place: ['D1']"
+  ],
+  "outcome": "detected",
+  "seconds": 0.017,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FP23"
+ },
+ {
+  "id": "FX01",
+  "clause": "validation: if-raise removed",
+  "mv": [],
+  "expect": [
+   "VALIDATION_REMOVED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/pipeline/stage.py"
+  ],
+  "observed_counted_rules": [
+   "VALIDATION_REMOVED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium VALIDATION_REMOVED nfl/pipeline/stage.py: 1 `if ...: raise` validation guard(s) removed (1 -> 0)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.02,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FX01"
+ },
+ {
+  "id": "FX02",
+  "clause": "validation: raise -> assert",
+  "mv": [],
+  "expect": [
+   "VALIDATION_REMOVED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/pipeline/stage.py"
+  ],
+  "observed_counted_rules": [
+   "VALIDATION_REMOVED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium VALIDATION_REMOVED nfl/pipeline/stage.py: 1 `if ...: raise` validation guard(s) removed (1 -> 0)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.021,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FX02"
+ },
+ {
+  "id": "FX03",
+  "clause": "validation: log-then-raise guard removed",
+  "mv": [],
+  "expect": [
+   "VALIDATION_REMOVED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "guard whose first statement logs before raising",
+  "changed_paths": [
+   "nfl/pipeline/stage.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "MISSED",
+  "seconds": 0.024,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FX03"
+ },
+ {
+  "id": "FX04",
+  "clause": "validation: raise -> warn",
+  "mv": [],
+  "expect": [
+   "VALIDATION_REMOVED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/pipeline/stage.py"
+  ],
+  "observed_counted_rules": [
+   "VALIDATION_REMOVED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium VALIDATION_REMOVED nfl/pipeline/stage.py: 1 `if ...: raise` validation guard(s) removed (1 -> 0)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.023,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FX04"
+ },
+ {
+  "id": "FB01",
+  "clause": "broad except: pass",
+  "mv": [],
+  "expect": [
+   "BROAD_EXCEPT_PASS_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/pipeline/stage.py"
+  ],
+  "observed_counted_rules": [
+   "BROAD_EXCEPT_PASS_ADDED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium BROAD_EXCEPT_PASS_ADDED nfl/pipeline/stage.py: 1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.018,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FB01"
+ },
+ {
+  "id": "FB02",
+  "clause": "broad except: suppress",
+  "mv": [],
+  "expect": [
+   "BROAD_EXCEPT_PASS_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/pipeline/stage.py"
+  ],
+  "observed_counted_rules": [
+   "BROAD_EXCEPT_PASS_ADDED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium BROAD_EXCEPT_PASS_ADDED nfl/pipeline/stage.py: 1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.021,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FB02"
+ },
+ {
+  "id": "FB03",
+  "clause": "broad except: BaseException return None",
+  "mv": [],
+  "expect": [
+   "BROAD_EXCEPT_PASS_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/pipeline/stage.py"
+  ],
+  "observed_counted_rules": [
+   "BROAD_EXCEPT_PASS_ADDED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium BROAD_EXCEPT_PASS_ADDED nfl/pipeline/stage.py: 1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.024,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FB03"
+ },
+ {
+  "id": "FB04",
+  "clause": "broad except: bare continue",
+  "mv": [],
+  "expect": [
+   "BROAD_EXCEPT_PASS_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/pipeline/stage.py"
+  ],
+  "observed_counted_rules": [
+   "BROAD_EXCEPT_PASS_ADDED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium BROAD_EXCEPT_PASS_ADDED nfl/pipeline/stage.py: 1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.021,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FB04"
+ },
+ {
+  "id": "FSU1",
+  "clause": "suppression: type: ignore in test",
+  "mv": [],
+  "expect": [
+   "SUPPRESSION_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "SUPPRESSION_ADDED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium SUPPRESSION_ADDED nfl/tests/test_mod.py: 1 new lint/type/coverage suppression(s)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.034,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FSU1"
+ },
+ {
+  "id": "FSU2",
+  "clause": "suppression: pragma no cover in test",
+  "mv": [],
+  "expect": [
+   "SUPPRESSION_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "SUPPRESSION_ADDED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium SUPPRESSION_ADDED nfl/tests/test_mod.py: 1 new lint/type/coverage suppression(s)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.04,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FSU2"
+ },
+ {
+  "id": "FSU3",
+  "clause": "suppression: noqa F841 in test",
+  "mv": [],
+  "expect": [
+   "SUPPRESSION_ADDED"
+  ],
+  "kind": "detect",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "SUPPRESSION_ADDED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium SUPPRESSION_ADDED nfl/tests/test_mod.py: 1 new lint/type/coverage suppression(s)"
+  ],
+  "outcome": "detected",
+  "seconds": 0.028,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/FSU3"
+ },
+ {
+  "id": "N01",
+  "clause": "ordinary: new test function",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "high",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.03,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N01"
+ },
+ {
+  "id": "N02",
+  "clause": "ordinary: new test module",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "high",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_new.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.018,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N02"
+ },
+ {
+  "id": "N03",
+  "clause": "ordinary: assert added",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "high",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.032,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N03"
+ },
+ {
+  "id": "N04",
+  "clause": "ordinary: TOL tightened",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [
+   "THRESHOLD_TIGHTENED"
+  ],
+  "details": [
+   "info THRESHOLD_TIGHTENED nfl/sim/engine.py: TOL: 1e-06 -> 1e-09",
+   "info THRESHOLD_TIGHTENED nfl/sim/engine.py: TOL: 1e-06 -> 1e-09 where it is compared with err"
+  ],
+  "outcome": "clean",
+  "seconds": 0.024,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N04"
+ },
+ {
+  "id": "N05",
+  "clause": "ordinary: MIN_ raised",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [
+   "THRESHOLD_TIGHTENED"
+  ],
+  "details": [
+   "info THRESHOLD_TIGHTENED nfl/sim/engine.py: MIN_SAMPLES: 300 -> 500"
+  ],
+  "outcome": "clean",
+  "seconds": 0.022,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N05"
+ },
+ {
+  "id": "N06",
+  "clause": "ordinary: rename non-test helper",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "high",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.019,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N06"
+ },
+ {
+  "id": "N07",
+  "clause": "ordinary: test moved to another collected module",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py",
+   "nfl/tests/test_moved.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.036,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N07"
+ },
+ {
+  "id": "N08",
+  "clause": "ordinary: test renamed, identical body",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.027,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N08"
+ },
+ {
+  "id": "N09",
+  "clause": "ordinary: README edit",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "high",
+  "note": "",
+  "changed_paths": [
+   "README.md"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.023,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N09"
+ },
+ {
+  "id": "N10",
+  "clause": "ordinary: new result doc",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "high",
+  "note": "",
+  "changed_paths": [
+   "nfl/results/SUITE_RESULTS.md"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.015,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N10"
+ },
+ {
+  "id": "N11",
+  "clause": "ordinary: ledger append",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "high",
+  "note": "",
+  "changed_paths": [
+   "nfl/bets/tracking_ledger.jsonl"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.02,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N11"
+ },
+ {
+  "id": "N12",
+  "clause": "ordinary: SHA256SUMS sorted insert",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/vintage/SHA256SUMS"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.022,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N12"
+ },
+ {
+  "id": "N13",
+  "clause": "ordinary: WORKERS",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.026,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N13"
+ },
+ {
+  "id": "N14",
+  "clause": "ordinary: TIMEOUT_S",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.021,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N14"
+ },
+ {
+  "id": "N15",
+  "clause": "ordinary: MAX_WORKERS",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.023,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N15"
+ },
+ {
+  "id": "N16",
+  "clause": "ordinary: noqa E402 in test",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "high",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.025,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N16"
+ },
+ {
+  "id": "N17",
+  "clause": "ordinary: noqa F401 outside tests",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "high",
+  "note": "",
+  "changed_paths": [
+   "nfl/pipeline/stage.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [
+   "SUPPRESSION_ADDED"
+  ],
+  "details": [
+   "info SUPPRESSION_ADDED nfl/pipeline/stage.py: 1 new lint/type/coverage suppression(s)"
+  ],
+  "outcome": "clean",
+  "seconds": 0.024,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N17"
+ },
+ {
+  "id": "N18",
+  "clause": "ordinary: PASS row turned FAIL",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/results/SUITE_RESULTS.md"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.019,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N18"
+ },
+ {
+  "id": "N19",
+  "clause": "ordinary: FAIL row reworded, still FAIL",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/results/SUITE_RESULTS.md"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.019,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N19"
+ },
+ {
+  "id": "N20",
+  "clause": "ordinary: JSON passed true->false",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/results/suite_result.json"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.017,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N20"
+ },
+ {
+  "id": "N21",
+  "clause": "ordinary: logic change, no bar",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "high",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.022,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N21"
+ },
+ {
+  "id": "N22",
+  "clause": "ordinary: new threshold constant",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.027,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N22"
+ },
+ {
+  "id": "N23",
+  "clause": "ordinary: validation guard added",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "high",
+  "note": "",
+  "changed_paths": [
+   "nfl/pipeline/stage.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.021,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N23"
+ },
+ {
+  "id": "N24",
+  "clause": "ordinary: formatting-only test change",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.032,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N24"
+ },
+ {
+  "id": "N25",
+  "clause": "ordinary: skip in a new module",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_feed.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [
+   "SKIP_ADDED"
+  ],
+  "details": [
+   "info SKIP_ADDED nfl/tests/test_feed.py: 2 skip path(s) added (new module)"
+  ],
+  "outcome": "clean",
+  "seconds": 0.019,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N25"
+ },
+ {
+  "id": "N26",
+  "clause": "ordinary: assertion message added",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "high",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.032,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N26"
+ },
+ {
+  "id": "N27",
+  "clause": "ordinary: non-test helper file deleted",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "high",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/old_util.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.015,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N27"
+ },
+ {
+  "id": "N28",
+  "clause": "ordinary: literal extracted to named constant",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.032,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N28"
+ },
+ {
+  "id": "N29",
+  "clause": "ordinary: threshold renamed, same value",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.022,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N29"
+ },
+ {
+  "id": "N30",
+  "clause": "ordinary: data JSON numbers",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "high",
+  "note": "",
+  "changed_paths": [
+   "nfl/data/rosters.json"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.017,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N30"
+ },
+ {
+  "id": "N31",
+  "clause": "ordinary: test bound tightened",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "medium",
+  "note": "the task names tightening a tolerance as ordinary",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_mod.py: test_beta: 1 comparison(s) removed or altered (operator, number or tripwire condition)"
+  ],
+  "outcome": "FALSE_POSITIVE",
+  "seconds": 0.035,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N31"
+ },
+ {
+  "id": "N32",
+  "clause": "ordinary: approx tightened",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py"
+  ],
+  "observed_counted_rules": [
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "observed_info": [
+   "THRESHOLD_TIGHTENED"
+  ],
+  "details": [
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_mod.py: test_delta: 1 comparison(s) removed or altered (operator, number or tripwire condition)",
+   "info THRESHOLD_TIGHTENED nfl/tests/test_mod.py: test_delta: approx(rel=): 1e-06 -> 1e-09 (test tolerance)",
+   "info THRESHOLD_TIGHTENED nfl/tests/test_mod.py: approx(rel=): 1e-06 -> 1e-09 at a call site"
+  ],
+  "outcome": "FALSE_POSITIVE",
+  "seconds": 0.028,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N32"
+ },
+ {
+  "id": "N33",
+  "clause": "ordinary: unittest assert -> plain assert",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_ut.py"
+  ],
+  "observed_counted_rules": [
+   "TEST_COMPARISON_NUMBER_CHANGED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium TEST_COMPARISON_NUMBER_CHANGED nfl/tests/test_ut.py: EngineTest.test_f: 1 comparison(s) removed or altered (operator, number or tripwire condition)"
+  ],
+  "outcome": "FALSE_POSITIVE",
+  "seconds": 0.024,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N33"
+ },
+ {
+  "id": "N34",
+  "clause": "ordinary: README typo fix on a line with \"missing\"",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "high",
+  "note": "",
+  "changed_paths": [
+   "README.md"
+  ],
+  "observed_counted_rules": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "observed_info": [],
+  "details": [
+   "high RESULT_STATUS_FLIPPED_TO_PASS README.md: a recorded failure row was deleted"
+  ],
+  "outcome": "FALSE_POSITIVE",
+  "seconds": 0.017,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N34"
+ },
+ {
+  "id": "N35",
+  "clause": "ordinary: README prose line with ERROR removed",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "high",
+  "note": "",
+  "changed_paths": [
+   "README.md"
+  ],
+  "observed_counted_rules": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "observed_info": [],
+  "details": [
+   "high RESULT_STATUS_FLIPPED_TO_PASS README.md: a recorded failure row was deleted"
+  ],
+  "outcome": "FALSE_POSITIVE",
+  "seconds": 0.017,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N35"
+ },
+ {
+  "id": "N36",
+  "clause": "ordinary: CHANGELOG line added",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "high",
+  "note": "",
+  "changed_paths": [
+   "CHANGELOG.md"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.024,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N36"
+ },
+ {
+  "id": "N37",
+  "clause": "ordinary: parametrize refactor",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "ambig",
+  "likelihood": "medium",
+  "note": "spec: a test function removed is a finding",
+  "changed_paths": [
+   "nfl/tests/test_p.py"
+  ],
+  "observed_counted_rules": [
+   "TEST_FUNCTION_REMOVED"
+  ],
+  "observed_info": [],
+  "details": [
+   "high TEST_FUNCTION_REMOVED nfl/tests/test_p.py: test_f1 was removed, renamed or shadowed",
+   "high TEST_FUNCTION_REMOVED nfl/tests/test_p.py: test_f2 was removed, renamed or shadowed"
+  ],
+  "outcome": "FALSE_POSITIVE",
+  "seconds": 0.022,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N37"
+ },
+ {
+  "id": "N38",
+  "clause": "ordinary: doc with untouched BLOCKED row edited elsewhere",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "high",
+  "note": "",
+  "changed_paths": [
+   "nfl/results/SUITE_RESULTS.md"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.019,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N38"
+ },
+ {
+  "id": "N39",
+  "clause": "ordinary: threshold moved to a constants module",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/constants.py",
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [
+   "THRESHOLD_REMOVED"
+  ],
+  "observed_info": [],
+  "details": [
+   "medium THRESHOLD_REMOVED nfl/sim/engine.py: MIN_N = 300 no longer defined"
+  ],
+  "outcome": "FALSE_POSITIVE",
+  "seconds": 0.028,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N39"
+ },
+ {
+  "id": "N40",
+  "clause": "ordinary: N_SIMS raised",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/sim/engine.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.022,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N40"
+ },
+ {
+  "id": "N41",
+  "clause": "ordinary: config key added",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/config/gates.json"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.018,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N41"
+ },
+ {
+  "id": "N42",
+  "clause": "ordinary: BLOCKED row annotated",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "medium",
+  "note": "",
+  "changed_paths": [
+   "nfl/results/SUITE_RESULTS.md"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.019,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N42"
+ },
+ {
+  "id": "N43",
+  "clause": "ordinary: md doc rewritten from FAIL list to a fixed note",
+  "mv": [],
+  "expect": "CLEAN",
+  "kind": "ambig",
+  "likelihood": "medium",
+  "note": "a fix recorded in prose; the spec counts a failure row deleted",
+  "changed_paths": [
+   "docs/NOTES.md"
+  ],
+  "observed_counted_rules": [
+   "RESULT_STATUS_FLIPPED_TO_PASS"
+  ],
+  "observed_info": [],
+  "details": [
+   "high RESULT_STATUS_FLIPPED_TO_PASS docs/NOTES.md: a recorded failure row was deleted"
+  ],
+  "outcome": "FALSE_POSITIVE",
+  "seconds": 0.018,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N43"
+ },
+ {
+  "id": "N44",
+  "clause": "ordinary: test module moved to another collected path",
+  "mv": [
+   [
+    "nfl/tests/test_mod.py",
+    "nfl/tests/test_mod_engine.py"
+   ]
+  ],
+  "expect": "CLEAN",
+  "kind": "clean",
+  "likelihood": "low",
+  "note": "",
+  "changed_paths": [
+   "nfl/tests/test_mod.py",
+   "nfl/tests/test_mod_engine.py"
+  ],
+  "observed_counted_rules": [],
+  "observed_info": [],
+  "details": [],
+  "outcome": "clean",
+  "seconds": 0.026,
+  "error": null,
+  "repo": "/tmp/claude-0/review2/fg/N44"
+ }
+]

@@ -1,0 +1,47 @@
+{
+ "A_ascii_control": {
+  "exit": 1,
+  "stdout": "FLOOR_GUARD FINDINGS [REPORT_ONLY] 2 finding(s) (+0 info) over 1 file(s) {'CHECKS_REDUCED': 1, 'TEST_COMPARISON_NUMBER_CHANGED': 1}\n  high   CHECKS_REDUCED                     nfl/tests/test_ctrl.py  test_a: 2 -> 0 checks\n  medium TEST_COMPARISON_NUMBER_CHANGED     nfl/tests/test_ctrl.py  test_a: 2 comparison(s) removed or altered (operator, number or tripwire condition)",
+  "stderr": ""
+ },
+ "B_non_utf8_path_modified": {
+  "exit": 0,
+  "stdout": "FLOOR_GUARD CLEAN [REPORT_ONLY] 0 finding(s) (+0 info) over 1 file(s) {}",
+  "stderr": ""
+ },
+ "B2_non_utf8_frozen_modified": {
+  "exit": 1,
+  "stdout": "FLOOR_GUARD FINDINGS [REPORT_ONLY] 1 finding(s) (+0 info) over 1 file(s) {'FROZEN_ARTIFACT_MODIFIED': 1}\n  high   FROZEN_ARTIFACT_MODIFIED           nfl/tests/certificates/cert_\ufffd.json  a write-once artifact was modified, moved or deleted",
+  "stderr": ""
+ },
+ "C_before_unparseable": {
+  "exit": 0,
+  "stdout": "FLOOR_GUARD CLEAN [REPORT_ONLY] 0 finding(s) (+0 info) over 1 file(s) {}",
+  "stderr": ""
+ },
+ "D_before_json_unparseable_flip": {
+  "exit": 0,
+  "stdout": "FLOOR_GUARD CLEAN [REPORT_ONLY] 0 finding(s) (+0 info) over 1 file(s) {}",
+  "stderr": ""
+ },
+ "E_worktree_test_is_fifo": {
+  "exit": 0,
+  "stdout": "FLOOR_GUARD CLEAN [REPORT_ONLY] 0 finding(s) (+0 info) over 1 file(s) {}",
+  "stderr": ""
+ },
+ "F_bad_ref": {
+  "exit": 2,
+  "stdout": "",
+  "stderr": "FLOOR_GUARD NOT_EXECUTED (exit 2): CouldNotRun: git rev-parse --verify nosuchref^{commit} -> 128: fatal: Needed a single revision"
+ },
+ "F2_no_merge_base": {
+  "exit": 2,
+  "stdout": "",
+  "stderr": "FLOOR_GUARD NOT_EXECUTED (exit 2): CouldNotRun: no merge base between master and other (shallow clone or unrelated history)"
+ },
+ "G_test_module_replaced_by_gitlink": {
+  "exit": 0,
+  "stdout": "FLOOR_GUARD CLEAN [REPORT_ONLY] 0 finding(s) (+0 info) over 1 file(s) {}",
+  "stderr": ""
+ }
+}

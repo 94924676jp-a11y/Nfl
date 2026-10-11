@@ -97,14 +97,15 @@ FROZEN = ('nfl/tests/certificates/*', '*seal*.json', '*freeze*.json', '*freeze*.
 APPEND_ONLY = ('*ledger*.jsonl', '*_manifest.jsonl', 'coordination/handoff_log.jsonl', '*seal_history*.jsonl',
                '*/sha256sums', 'nfl/vintage/*.jsonl')
 #: result documents where a status flipping toward success is a finding
-RESULT_DOCS = ('*.json', '*.md', '*.txt', '*.csv')
+RESULT_DOCS = ('*.json', '*.md', '*.txt', '*.csv', '*.jsonl')
 #: JSON files whose numbers are configuration (thresholds), not data
 CONFIG_JSON = ('*config*.json', '*threshold*.json', '*policy*.json', '*gates*.json', '*tolerance*.json')
 
 TOL_LOOSER_WHEN_LARGER = re.compile(r'(TOL|TOLERANCE|EPS|EPSILON|MARGIN|SLACK|MAX_|_MAX\b|MAX$|LIMIT|CAP\b|_CAP_|'
                                     r'SE_MULTIPLE|ALLOW|^ABS$|^REL$|DELTA)', re.I)
 TOL_LOOSER_WHEN_SMALLER = re.compile(r'(MIN_|_MIN\b|^MIN$|FLOOR|REQUIRED|AT_LEAST|PLACES|DECIMAL)', re.I)
-THRESHOLD_NAME = re.compile(r'(TOL|TOLERANCE|EPS|EPSILON|MARGIN|SLACK|THRESHOLD|MIN_|_MIN\b|MAX_|_MAX\b|LIMIT|'
+THRESHOLD_NAME = re.compile(r'(CUTOFF|BOUND|^MAX$|^MIN$|^LOWER$|^UPPER$|'
+                            r'TOL|TOLERANCE|EPS|EPSILON|MARGIN|SLACK|THRESHOLD|MIN_|_MIN\b|MAX_|_MAX\b|LIMIT|'
                             r'CAP\b|_CAP_|FLOOR|CEIL|SE_MULTIPLE|ALPHA|LEVEL|BAR\b|_BAR_|MAJORITY|QUOTA|^ABS$|^REL$|'
                             r'PLACES|DECIMAL|DELTA)', re.I)
 #: DECLARED: names that are capacity or plumbing, not a bar a result has to clear (review item 8). Matched against
@@ -132,20 +133,36 @@ SUPPRESS_EXEMPT = re.compile(r'#\s*noqa:\s*(?:(?:E[1-5]\d\d|W[1-6]\d\d)\s*,?\s*)
 #: ... and the same holds for every pure-layout pycodestyle code (E1xx-E5xx indentation, whitespace, blank lines,
 #: line length, import position; W1xx-W6xx). F-codes (unused names), BLE001, bare noqa, type: ignore and
 #: pragma: no cover can hide a result that is computed and never checked, and stay findings in test modules.
-FAIL_WORDS = re.compile(r'\b(NOT[ _]VERIFIED|NOT[ _]READY|NOT[ _]EXECUTED|NOT[ _]PASS(ED)?|FAIL|FAILED|FAILING|'
+FAIL_WORDS = re.compile(r'\b(NOT[ _]VERIFIED|NOT[ _]READY|NOT[ _]EXECUTED|NOT[ _]PASS(ED)?|NOT[ _]ESTABLISHED|'
+                        r'NOT[ _]YET[ _]\w+|NOT[ _]RECONCILED|UNRECONCILED|UNRESOLVED|FAIL|FAILED|FAILING|'
                         r'FAILURE|BLOCKED|UNVERIFIED|VIOLATED|REFUSED|STALE|MISSING|ERROR|BROKEN)\b|[❌✗✘🔴⛔]', re.I)
-PASS_WORDS = re.compile(r'\b(PASS|PASSED|PASSING|READY|VERIFIED|CLEAN|COMPLETE|OK|SUCCESS|GREEN)\b|[✅✓✔🟢]', re.I)
+PASS_WORDS = re.compile(r'\b(PASS|PASSED|PASSING|READY|VERIFIED|CLEAN|COMPLETE|OK|SUCCESS|GREEN|RECONCILED|'
+                        r'RESOLVED)\b|[✅✓✔🟢]', re.I)
+#: a result ROW: a table row, or a short `label: STATUS` / bullet line whose status word is written as a status
+#: (upper case) -- prose that merely mentions "missing" or "error" is not a recorded result (review 2: 19 of 22
+#: history findings of the text rule were prose)
+_TABLE_ROW = re.compile(r'^\s*\|.*\|\s*$')
+_STATUS_LINE = re.compile(r'^\s*(?:[-*+]\s+|\d+[.)]\s+)?[^.!?]{0,100}?(?::|=|—|–|\s-\s|\*\*)\s*[`*]*\s*'
+                          r'(?:[A-Z][A-Z_ ]{1,30}\b|[❌✗✘🔴⛔✅✓✔🟢])')
 CHECK_CALLS = ('check', 'observe', 'assert_guard_is_load_bearing', 'assertTrue', 'assertEqual', 'assertIn',
                'assertFalse', 'assertRaises', 'assertAlmostEqual', 'assertIsNone', 'assertIsNotNone', 'assertLess',
                'assertLessEqual', 'assertGreater', 'assertGreaterEqual', 'assertNotEqual', 'assertNotIn',
                'assertIs', 'assertIsNot', 'assertCountEqual', 'assertRaisesRegex', 'assert_allclose',
-               'assert_array_equal', 'assert_frame_equal', 'assert_series_equal', 'assert_almost_equal')
-SKIP_NAMES = {'skip', 'skipIf', 'skipUnless', 'importorskip', 'xfail', 'skipTest', 'SkipTest', '_blocked',
+               'assert_array_equal', 'assert_frame_equal', 'assert_series_equal', 'assert_almost_equal',
+               'raises', 'warns', 'assertWarns', 'assertLogs', 'assertRaisesRegexp', 'deprecated_call')
+#: unittest asserts that are a single comparison: judged exactly like the plain `assert a <op> b` they spell
+_UNITTEST_CMP = {'assertEqual': ast.Eq, 'assertNotEqual': ast.NotEq, 'assertLess': ast.Lt, 'assertLessEqual': ast.LtE,
+                 'assertGreater': ast.Gt, 'assertGreaterEqual': ast.GtE, 'assertIn': ast.In, 'assertNotIn': ast.NotIn,
+                 'assertIs': ast.Is, 'assertIsNot': ast.IsNot, 'assertAlmostEqual': ast.Eq}
+SKIP_NAMES = {'skip', 'skipIf', 'skipif', 'skipUnless', 'importorskip', 'xfail', 'skipTest', 'SkipTest', '_blocked',
               'blocked'}
 SKIP_COUNTERS = re.compile(r'^(BLOCKED|SKIPPED|blocked_count|N_BLOCKED|N_SKIPPED)$')
 JSON_PASS_KEYS = re.compile(r'(^|_)(passed|pass|ok|success|succeeded|verified|ready|complete|clean|green)$', re.I)
-JSON_FAIL_KEYS = re.compile(r'(^|_)(failed|fail|failures?|errors?|violations?|blocked|stale|missing|refused|'
+JSON_FAIL_KEYS = re.compile(r'(^|_)(failed|fail|failing\w*|failures?|errors?|violations?|blocked|stale|missing|refused|'
                             r'broken|n_fail\w*)$', re.I)
+#: a list that IS the failures (its whole name is the failure noun): `effect_on_failure` describes, it does not list
+JSON_FAIL_LIST_KEYS = re.compile(r'^(n_)?(failures?|failed\w*|failing\w*|errors?|violations?|blocked\w*|missing\w*|'
+                                 r'stale\w*|refused\w*|red\w*)$', re.I)
 JSON_STATUS_KEYS = re.compile(r'(status|verdict|state|result|outcome|grade)$', re.I)
 
 
@@ -185,6 +202,8 @@ def _show(repo, ref, path):
         try:
             if p.is_symlink():
                 return 'SYMLINK -> ' + str(p.readlink())
+            if p.exists() and not p.is_file():
+                raise CouldNotRun(f'{path} in the working tree is not a regular file (FIFO, device or directory)')
             return p.read_bytes().decode('utf-8', 'replace') if p.is_file() else None
         except OSError:
             return None
@@ -203,7 +222,7 @@ def changed_files(repo, base, head):
     """[(status, old_path, new_path)] with renames and copies detected. Status is one of A M D R T C; a copy is
     judged as an addition of the new path. NUL-separated, so a non-ASCII path is never C-quoted."""
     raw = _git_bytes(repo, 'diff', '--name-status', '-z', '-M', '-C', '--no-color', base, *([head] if head else []))
-    parts = raw.decode('utf-8', 'replace').split('\0')
+    parts = raw.decode('utf-8', 'surrogateescape').split('\0')     # round-trips any byte path back to git
     out, i = [], 0
     while i < len(parts) and parts[i]:
         st = parts[i][0]
@@ -214,7 +233,8 @@ def changed_files(repo, base, head):
             out.append((st, parts[i + 1], parts[i + 1]))
             i += 2
     if head is None:
-        for p in _git(repo, 'ls-files', '-z', '--others', '--exclude-standard').split('\0'):
+        for p in _git_bytes(repo, 'ls-files', '-z', '--others', '--exclude-standard').decode(
+                'utf-8', 'surrogateescape').split('\0'):
             if p:
                 out.append(('A', p, p))
     return out
@@ -250,20 +270,35 @@ def _num(node, names=None):
             return names[node.attr]
         if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id in ('float', 'int') \
                 and len(node.args) == 1:
-            return _num(node.args[0], names)
+            a0 = node.args[0]
+            if isinstance(a0, ast.Constant) and isinstance(a0.value, str):
+                try:
+                    return float(a0.value) if node.func.id == 'float' else int(a0.value)
+                except ValueError:
+                    return None
+            return _num(a0, names)
     except (ArithmeticError, TypeError, ValueError):
         return None
     return None
 
 
 def _nums_in(node, names):
-    """Every maximal constant-foldable number inside an expression (negatives and arithmetic folded)."""
+    """Every maximal constant-foldable number inside an expression (negatives and arithmetic folded). Tolerance
+    keyword values (rel=, abs=, places=, ...) are left out: they are judged with their direction separately."""
     out = []
 
     def walk(n):
         v = _num(n, names)                            # a Name folds only when it is bound to a module constant
         if v is not None:
             out.append(round(float(v), 12))
+            return
+        if isinstance(n, ast.Call):
+            walk(n.func)
+            for a in n.args:
+                walk(a)
+            for k in n.keywords:
+                if k.arg not in TOL_KEYWORDS:
+                    walk(k.value)
             return
         for c in ast.iter_child_nodes(n):
             walk(c)
@@ -340,6 +375,8 @@ def _is_vacuous(expr, local, names):
         return False
     if isinstance(expr, ast.Constant):
         return bool(expr.value)
+    if isinstance(expr, ast.Tuple):
+        return bool(expr.elts)                       # assert (cond, 'msg') is a non-empty tuple: always true
     v = _num(expr, names)
     if v is not None:
         return bool(v)
@@ -385,19 +422,38 @@ def _check_conditions(fn):
                 elif name in ('assertEqual', 'assertIs', 'assertAlmostEqual') and len(sub.args) >= 2:
                     cond = ast.Compare(left=sub.args[0], ops=[ast.Eq()], comparators=[sub.args[1]])
                 out.append((name, cond, sub))
-        elif isinstance(sub, ast.If) and any(isinstance(b, ast.Raise) for b in sub.body):
+        elif isinstance(sub, ast.If) and _raises_in(sub.body):
             out.append(('if-raise', ast.UnaryOp(op=ast.Not(), operand=sub.test), sub))
     return out
 
 
+def _cmp_parts(left, op, right, names):
+    """(signature, detail) of one comparison. detail = (op, constant side, constant, other numbers) when exactly one
+    side folds to a number, so that a bound moved one way can be told from a bound moved the other."""
+    lv, rv = _num(left, names), _num(right, names)
+    nums = tuple(sorted(_nums_in(left, names) + _nums_in(right, names)))
+    sig = ('cmp', (op.__name__,), nums)
+    detail = None
+    if (lv is None) != (rv is None):
+        side, const, other = ('right', rv, left) if rv is not None else ('left', lv, right)
+        detail = (op.__name__, side, round(float(const), 12), tuple(sorted(_nums_in(other, names))))
+    return sig, detail
+
+
 def _signatures(fn, names):
-    """Comparisons a test makes, without variable names: (operators, folded numbers); tolerance keywords; numeric
-    arguments of unittest-style asserts; and `if ...: raise` tripwire conditions."""
-    sigs, tols = collections.Counter(), []
-    for sub in ast.walk(fn):
+    """Comparisons a test makes, without variable names: (operators, folded numbers); tolerance keywords; and
+    `if ...: raise` tripwire conditions. A unittest assert that is one comparison has the same signature as the
+    plain assert it spells. Returns (signatures, tolerance keywords, {signature: [direction details]})."""
+    sigs, tols, details = collections.Counter(), [], collections.defaultdict(list)
+    for sub in _walk_own(fn):
         if isinstance(sub, ast.Compare):
-            sigs[('cmp', tuple(type(o).__name__ for o in sub.ops),
-                  tuple(sorted(_nums_in(sub, names))))] += 1
+            if len(sub.ops) == 1:
+                sig, det = _cmp_parts(sub.left, type(sub.ops[0]), sub.comparators[0], names)
+            else:
+                sig, det = ('cmp', tuple(type(o).__name__ for o in sub.ops), tuple(sorted(_nums_in(sub, names)))), None
+            sigs[sig] += 1
+            if det:
+                details[sig].append(det)
         elif isinstance(sub, ast.Call):
             name = _callee(sub)
             for k in sub.keywords:
@@ -405,13 +461,51 @@ def _signatures(fn, names):
                     v = _num(k.value, names)
                     if v is not None:
                         tols.append((name, k.arg, v))
-            if name.startswith('assert') and name not in ('assertTrue', 'assertFalse'):
+            if name in _UNITTEST_CMP and len(sub.args) >= 2:
+                sig, det = _cmp_parts(sub.args[0], _UNITTEST_CMP[name], sub.args[1], names)
+                sigs[sig] += 1
+                if det:
+                    details[sig].append(det)
+            elif name.startswith('assert') and name not in ('assertTrue', 'assertFalse'):
                 ns = [x for a in sub.args for x in _nums_in(a, names)]
                 if ns:
                     sigs[('call', name, tuple(sorted(ns)))] += 1
-        elif isinstance(sub, ast.If) and any(isinstance(b, ast.Raise) for b in sub.body):
+        elif isinstance(sub, ast.If) and _raises_in(sub.body):
             sigs[('tripwire', ast.dump(sub.test, annotate_fields=False)[:400])] += 1
-    return sigs, tols
+    return sigs, tols, details
+
+
+def _walk_own(fn):
+    """ast.walk over a function's own body, not into nested functions, lambdas or classes (their returns and
+    comparisons are theirs, review 2: a nested helper's `return` read as the test returning early)."""
+    nested = (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda, ast.ClassDef)
+    stack = [b for b in fn.body if not isinstance(b, nested)]
+    while stack:
+        n = stack.pop()
+        yield n
+        for c in ast.iter_child_nodes(n):
+            if not isinstance(c, (ast.FunctionDef, ast.AsyncFunctionDef, ast.Lambda, ast.ClassDef)):
+                stack.append(c)
+
+
+def _raises_in(body):
+    """Does a block raise as one of its own statements (`if bad: log(...); raise ...`)?"""
+    return any(isinstance(b, ast.Raise) for b in body)
+
+
+_TIGHTER = {('Lt', 'right'): -1, ('LtE', 'right'): -1, ('Gt', 'right'): 1, ('GtE', 'right'): 1,
+            ('Lt', 'left'): 1, ('LtE', 'left'): 1, ('Gt', 'left'): -1, ('GtE', 'left'): -1}
+
+
+def _bound_direction(db, da):
+    """'tighter' / 'looser' / None for one comparison detail before and after: same operator and side, same other
+    numbers, only the bound moved. `x < N`: a smaller N is tighter; `x > N`: a larger N is tighter."""
+    if not (db and da) or db[0] != da[0] or db[1] != da[1] or db[3] != da[3] or db[2] == da[2]:
+        return None
+    sign = _TIGHTER.get((db[0], db[1]))
+    if sign is None:
+        return None
+    return 'tighter' if (da[2] - db[2]) * sign > 0 else 'looser'
 
 
 def _local_truths(fn, names):
@@ -433,17 +527,17 @@ def _local_truths(fn, names):
 def _test_facts(fn, names):
     conds = _check_conditions(fn)
     local = _local_truths(fn, names)
-    sigs, tols = _signatures(fn, names)
+    sigs, tols, details = _signatures(fn, names)
     body = [b for b in fn.body if not (isinstance(b, ast.Expr) and isinstance(b.value, ast.Constant))]
     last_check = max((c[2].lineno for c in conds), default=0)
     early = 0
-    for sub in ast.walk(fn):
+    for sub in _walk_own(fn):
         if isinstance(sub, ast.Return) and sub.lineno < last_check:
             early += 1
     if not conds and body and isinstance(body[0], ast.Return):
         early += 1
     return {'n_checks': len(conds), 'vacuous': sum(_is_vacuous(c[1], local, names) for c in conds),
-            'sigs': sigs, 'tols': tols, 'early_return': early,
+            'sigs': sigs, 'tols': tols, 'details': details, 'early_return': early,
             'trivial': (not body) or all(isinstance(b, ast.Pass) or (isinstance(b, ast.Expr) and
                                                                      isinstance(b.value, ast.Constant)) for b in body),
             'body': ast.dump(ast.Module(body=fn.body, type_ignores=[]), annotate_fields=False),
@@ -451,18 +545,20 @@ def _test_facts(fn, names):
 
 
 def _tests_in(src):
-    """{test function name: facts} for the module's EFFECTIVE tests: a name rebound or deleted at module level after
-    its def (`test_x = lambda: None`, `del test_x`) is not a test any more."""
+    """{test function name: facts} for the tests nfl/tests/run_suite.py actually runs: module-level callables whose
+    name starts with `test_` (run_suite.py: `n.startswith('test_') and callable(...)`). A method in a class or a
+    function named `testx` is never run; a name rebound or deleted at module level after its def
+    (`test_x = lambda: None`, `del test_x`) is not a test any more."""
     tree = _parse(src)
     if tree is None:
         return None
     names = _module_numbers(tree)
-    out, order = {}, []
+    out = {}
     for node in tree.body:
-        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name.startswith('test'):
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name.startswith('test_'):
             out[node.name] = _test_facts(node, names)
-            order.append(node.name)
         elif isinstance(node, ast.ClassDef):
+            # not run by this repository's runner, but judged for weakening (a pytest or unittest run would use them)
             for m in node.body:
                 if isinstance(m, (ast.FunctionDef, ast.AsyncFunctionDef)) and m.name.startswith('test'):
                     out[f'{node.name}.{m.name}'] = _test_facts(m, names)
@@ -504,6 +600,9 @@ def _skips(src):
         if isinstance(s, ast.Call) and _callee(s) in SKIP_NAMES:
             n += 1
         elif isinstance(s, ast.Raise) and s.exc is not None and 'SkipTest' in ast.dump(s.exc):
+            n += 1
+        elif isinstance(s, ast.Assign) and any(isinstance(t, ast.Name) and t.id == 'pytestmark' for t in s.targets) \
+                and re.search(r"attr='(skip|skipif|xfail)'", ast.dump(s.value)):
             n += 1
         elif isinstance(s, ast.AugAssign) and isinstance(s.target, ast.Name) and SKIP_COUNTERS.match(s.target.id):
             n += 1
@@ -597,7 +696,7 @@ def _threshold_uses(tree, names):
         sides = [(s.left, s.comparators[0], False), (s.comparators[0], s.left, True)]
         for bar, other, flipped in sides:
             bar_names = sorted({n.id for n in ast.walk(bar) if isinstance(n, ast.Name) and _is_bar(n.id)})
-            if not bar_names:
+            if not bar_names and not isinstance(bar, (ast.Constant, ast.UnaryOp, ast.BinOp)):
                 continue
             v = _num(bar, names)
             if v is None:
@@ -731,7 +830,7 @@ def _guard_raises(src):
     tree = _parse(src)
     if tree is None:
         return 0
-    return sum(1 for s in ast.walk(tree) if isinstance(s, ast.If) and s.body and isinstance(s.body[0], ast.Raise))
+    return sum(1 for s in ast.walk(tree) if isinstance(s, ast.If) and _raises_in(s.body))
 
 
 def _suppressions(lines):
@@ -754,27 +853,39 @@ def _passes(line):
     return bool(PASS_WORDS.search(FAIL_WORDS.sub('', line)))
 
 
+_KV_STATUS = re.compile(r'^\s*[\w./:-]+\s*[:=,]\s*(fail|failed|failing|error|ok|pass|passed|success)\s*$', re.I)
+_CSV_MODE = [False]
+
+
+def _is_result_row(line):
+    return bool(_TABLE_ROW.match(line) or _STATUS_LINE.match(line) or _KV_STATUS.match(line)
+                or (_CSV_MODE[0] and ',' in line))
+
+
 def _text_result_flips(before, after):
-    """[(before line, after line or None)] where a recorded failure became a success or disappeared."""
+    """[(before line, after line or None)] where a recorded failure became a success, or a failing TABLE row was
+    deleted. Only result rows count: a table row, or a short `label: STATUS` line; prose does not."""
     b_lines, a_lines = before.splitlines(), after.splitlines()
     a_count = collections.Counter(a_lines)
     a_by_key = collections.defaultdict(list)
     for ln in a_lines:
         a_by_key[_status_key(ln)].append(ln)
+    n_fail_rows_after = sum(1 for ln in a_lines if _is_result_row(ln) and _fails(ln))
+    n_fail_rows_before = sum(1 for ln in b_lines if _is_result_row(ln) and _fails(ln))
     out = []
     removed = collections.Counter(b_lines) - a_count
     for ln, k in removed.items():
-        if not _fails(ln):
+        if not (_fails(ln) and _is_result_row(ln)):
             continue
         key = _status_key(ln)
         cands = a_by_key.get(key) or []
         if any(_fails(c) for c in cands):
             continue                                  # still recorded as a failure (reworded)
-        flipped = [c for c in cands if _passes(c)]
+        flipped = [c for c in cands if _passes(c) and _is_result_row(c)]
         if flipped:
             out.append((ln, flipped[0]))
-        elif key and not cands:
-            out.append((ln, None))                    # the failure row is gone
+        elif key and not cands and (_TABLE_ROW.match(ln) or _CSV_MODE[0]) and n_fail_rows_after < n_fail_rows_before:
+            out.append((ln, None))                    # a failing row is gone and the table has fewer failures
     return out
 
 
@@ -789,13 +900,67 @@ def _json_leaves(doc, path=''):
         yield path, doc
 
 
+def _jsonl_result_flips(before, after):
+    """Row-by-row for a .jsonl whose rows carry an id: each row judged as a JSON result."""
+    def rows(text):
+        out = {}
+        for ln in text.splitlines():
+            try:
+                r = json.loads(ln)
+            except ValueError:
+                return None
+            if not isinstance(r, dict) or 'id' not in r:
+                return None
+            out[str(r['id'])] = r
+        return out
+    rb, ra = rows(before), rows(after)
+    if rb is None or ra is None:
+        return []
+    out = []
+    for k in sorted(set(rb) & set(ra)):
+        if rb[k] != ra[k]:
+            for p, bv, av in _json_result_flips(json.dumps(rb[k]), json.dumps(ra[k])) or []:
+                out.append((f'{k}.{p}', bv, av))
+    return out
+
+
+def _json_parses(text):
+    try:
+        json.loads(text)
+        return True
+    except (ValueError, TypeError):
+        return False
+
+
+def _json_lists(doc, path=''):
+    """{path: length} of every list in a JSON document."""
+    out = {}
+    if isinstance(doc, dict):
+        for k, v in doc.items():
+            out.update(_json_lists(v, f'{path}.{k}' if path else str(k)))
+    elif isinstance(doc, list):
+        out[path] = len(doc)
+        for i, v in enumerate(doc):
+            out.update(_json_lists(v, f'{path}[{i}]'))
+    return out
+
+
 def _json_result_flips(before, after):
     try:
         b, a = json.loads(before), json.loads(after)
     except (ValueError, TypeError):
         return None
     bl, al = dict(_json_leaves(b)), dict(_json_leaves(a))
+
+    def n_failing(leaves):
+        return sum(1 for k, v in leaves.items() if isinstance(v, str) and len(v) < 80 and _fails(v))
+    n_fail_before, n_fail_after = n_failing(bl), n_failing(al)
     out = []
+    lb, la = _json_lists(b), _json_lists(a)
+    for path, nb in lb.items():
+        key = re.split(r'[.\[]', path)[-1].rstrip(']')
+        if JSON_FAIL_LIST_KEYS.match(key) and nb > la.get(path, 0):
+            out.append((path, f'{nb} entries', f'{la.get(path, 0)} entries'))
     for path, bv in bl.items():
         key = re.split(r'[.\[]', path)[-1].rstrip(']')
         av = al.get(path, '__ABSENT__')
@@ -809,16 +974,23 @@ def _json_result_flips(before, after):
             out.append((path, bv, av))
         elif isinstance(bv, str) and (JSON_STATUS_KEYS.search(key) or _fails(bv) and len(bv) < 80) and _fails(bv):
             if av == '__ABSENT__' and JSON_STATUS_KEYS.search(key):
-                out.append((path, bv, None))
+                if n_fail_after < n_fail_before:          # a renamed schema keeps its failures elsewhere
+                    out.append((path, bv, None))
             elif isinstance(av, str) and not _fails(av) and _passes(av):
                 out.append((path, bv, av))
     return out
 
 
 # ------------------------------------------------------------------ rules
+def _safe(text):
+    """Display form of a path or detail: a byte that is not UTF-8 (kept as a surrogate so git gets the real path)
+    is shown as an escape, so the report is always valid UTF-8."""
+    return text.encode('utf-8', 'surrogateescape').decode('utf-8', 'backslashreplace') if isinstance(text, str) else text
+
+
 def _f(rule, severity, path, detail, **ev):
-    return {'rule': rule, 'severity': severity, 'path': path, 'detail': detail, 'evidence': ev,
-            'authorization': 'NONE_RECORDED'}
+    return {'rule': rule, 'severity': severity, 'path': _safe(path), 'detail': _safe(detail),
+            'evidence': {k: _safe(v) for k, v in ev.items()}, 'authorization': 'NONE_RECORDED'}
 
 
 def _detector_rows(text):
@@ -853,11 +1025,15 @@ def judge_file(repo, base, head, st, old, new, ctx=None):
     path = new
     if st == 'C':
         st, old = 'A', new                            # a copy is an addition of the new path
+    type_changed = st == 'T'
     if st == 'T':
         st = 'M'                                      # a type change (file <-> symlink) is a modification
     is_test = _match(path, TEST_FILE) or _match(old, TEST_FILE)
     before = _show(repo, base, old) if st != 'A' else None
     after = _show(repo, head, new) if st != 'D' else None
+    if (st != 'A' and before is None) or (st != 'D' and after is None):
+        raise CouldNotRun(f'{old if before is None else new}: the {"base" if before is None else "head"} side of a '
+                          f'{st} change could not be read (submodule, unreadable path or object)')
 
     # ---- the runner's collection: a test module it ran before and does not run now
     if _collected(old) and st != 'A' and (st == 'D' or not _collected(new)):
@@ -929,6 +1105,10 @@ def judge_file(repo, base, head, st, old, new, ctx=None):
             if cb[name] != ca[name]:
                 out.append(_bar_finding(path, name, cb[name], ca[name]))
         for name in sorted(set(cb) - set(ca)):
+            elsewhere = [m for m, consts in ctx.get('constants_after', {}).items()
+                         if m != path and consts.get(name) == cb[name]]
+            if elsewhere:
+                continue                               # moved to another module with the same value
             if renamed_values[cb[name]] > 0:
                 renamed_values[cb[name]] -= 1          # same value under a new bar name: a rename
                 continue
@@ -947,8 +1127,8 @@ def judge_file(repo, base, head, st, old, new, ctx=None):
             ub, ua = _threshold_uses(tree_b, nb_), _threshold_uses(tree_a, na_)
             for key in sorted(set(ub) & set(ua)):
                 vb, va = sorted(v for v, _ in ub[key]), sorted(v for v, _ in ua[key])
-                if vb != va and len(vb) == len(va):
-                    names = sorted({n for _, ns in ua[key] for n in ns})
+                names = sorted({n for _, ns in ub[key] + ua[key] for n in ns})
+                if vb != va and len(vb) == len(va) and names:      # judged only where a named bar is involved
                     for x, y in zip(vb, va):
                         if x != y:
                             out.append(_bar_finding(path, names[0] if names else 'bar', x, y,
@@ -993,12 +1173,16 @@ def judge_file(repo, base, head, st, old, new, ctx=None):
                 if jb[k] != ja[k] and _is_bar(leaf):
                     out.append(_bar_finding(path, k, jb[k], ja[k], ' (JSON configuration)'))
     if _match(path, RESULT_DOCS) and st in ('M', 'R') and before is not None and not path.endswith('.py'):
-        flips = _json_result_flips(before, after) if path.endswith('.json') else None
+        if path.endswith('.json') and not type_changed and (_json_parses(before) != _json_parses(after)):
+            raise CouldNotRun(f'{path}: only one side parses as JSON, so the recorded result cannot be compared')
+        flips = _json_result_flips(before, after) if path.endswith('.json') and not type_changed else \
+            (_jsonl_result_flips(before, after) if path.endswith('.jsonl') else None)
         if flips is not None:
             for p, bv, av in flips:
                 out.append(_f('RESULT_STATUS_FLIPPED_TO_PASS', 'high', path,
                               f'{p}: {json.dumps(bv)} -> {"(removed)" if av in (None, "__ABSENT__") else json.dumps(av)}'))
         else:
+            _CSV_MODE[0] = path.endswith('.csv')
             for old_ln, new_ln in _text_result_flips(before, after):
                 out.append(_f('RESULT_STATUS_FLIPPED_TO_PASS', 'high', path,
                               'a recorded failure was rewritten as a success' if new_ln is not None else
@@ -1013,13 +1197,15 @@ def _judge_tests(path, st, before, after, ctx):
     ta = _tests_in(after)
     if ta is None:
         return [_f('TEST_MODULE_UNPARSEABLE', 'high', path, 'the test module no longer parses')]
-    tb = tb or {}
+    if tb is None:
+        raise CouldNotRun(f'{path}: the base version does not parse, so its tests cannot be compared')
     moved_in = ctx.get('tests_after', {})            # every test function in every changed module, after
     for name, b in tb.items():
         a = ta.get(name)
         if a is None:
             # a body-identical rename here, or the same test (as strong) in another changed module, is not a removal
-            same_body = [k for k, v in ta.items() if v['body'] == b['body'] and k not in tb]
+            same_body = [k for k, v in ta.items() if v['body'] == b['body'] and k not in tb
+                         and ('.' in k) == ('.' in name)]   # into a class or out of test_* is not a rename
             elsewhere = [m for m, tests in moved_in.items() if m != path and name in tests
                          and tests[name]['n_checks'] >= b['n_checks'] and tests[name]['vacuous'] <= b['vacuous']]
             if same_body or elsewhere:
@@ -1037,11 +1223,24 @@ def _judge_tests(path, st, before, after, ctx):
             out.append(_f('CONSTANT_TRUE_CHECK_ADDED', 'medium', path,
                           f'{name}: {a["vacuous"] - b["vacuous"]} check(s) whose condition is true whatever the code '
                           f'does', n_before=b['vacuous'], n_after=a['vacuous']))
-        gone = b['sigs'] - a['sigs']
+        gone, new_sigs = b['sigs'] - a['sigs'], a['sigs'] - b['sigs']
+        tightened = 0
+        for g in list(gone):
+            for ns in list(new_sigs):
+                d = next((_bound_direction(db, da) for db in b['details'].get(g, ()) for da in a['details'].get(ns, ())
+                          if _bound_direction(db, da)), None)
+                if d == 'tighter':
+                    tightened += 1
+                    gone[g] -= 1
+                    new_sigs[ns] -= 1
+                    gone, new_sigs = +gone, +new_sigs
+                    break
+        if tightened:
+            out.append(_f('TEST_COMPARISON_TIGHTENED', 'info', path, f'{name}: {tightened} bound(s) made stricter'))
         if gone:
             out.append(_f('TEST_COMPARISON_NUMBER_CHANGED', 'medium', path,
-                          f'{name}: {sum(gone.values())} comparison(s) removed or altered (operator, number or '
-                          f'tripwire condition)', gone=[list(map(str, g)) for g in list(gone)[:6]]))
+                          f'{name}: {sum(gone.values())} comparison(s) removed, loosened or altered (operator, number '
+                          f'or tripwire condition)', gone=[list(map(str, g)) for g in list(gone)[:6]]))
         tb_tol = collections.Counter(b['tols'])
         ta_tol = collections.Counter(a['tols'])
         lost, new = tb_tol - ta_tol, ta_tol - tb_tol
@@ -1084,12 +1283,15 @@ def run(repo, base, head='HEAD', worktree=False):
     mb = merge_base(repo, base, head_ref)            # what the change did, not what base gained meanwhile
     findings = []
     files = changed_files(repo, mb, head_ref)
-    ctx = {'tests_after': {}}
+    ctx = {'tests_after': {}, 'constants_after': {}}
     for st, old, new in files:
-        if st != 'D' and new.endswith('.py') and _match(new, TEST_FILE):
-            t = _tests_in(_show(repo, head_ref, new))
-            if t:
-                ctx['tests_after'][new] = t
+        if st != 'D' and new.endswith('.py'):
+            src = _show(repo, head_ref, new)
+            if _match(new, TEST_FILE):
+                t = _tests_in(src)
+                if t:
+                    ctx['tests_after'][new] = t
+            ctx['constants_after'][new] = _constants(src or '')
     for st, old, new in files:
         findings.extend(judge_file(repo, mb, head_ref, st, old, new, ctx))
     counted = [f for f in findings if f['severity'] in ('high', 'medium')]
@@ -1116,7 +1318,7 @@ def main(argv=None):
     try:
         rep = run(a.repo, a.base, a.head, a.worktree)
     except Exception as e:  # noqa: BLE001 -- CouldNotRun or an internal error: never a 0 or a 1
-        print(f'FLOOR_GUARD NOT_EXECUTED (exit 2): {type(e).__name__}: {e}', file=sys.stderr)
+        print(_safe(f'FLOOR_GUARD NOT_EXECUTED (exit 2): {type(e).__name__}: {e}'), file=sys.stderr)
         if a.json:
             pathlib.Path(a.json).write_text(json.dumps({'verdict': 'NOT_EXECUTED', 'why': f'{type(e).__name__}: {e}'})
                                             + '\n')

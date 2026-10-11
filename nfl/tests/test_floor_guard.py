@@ -516,6 +516,67 @@ def test_07_coverage_review_regressions_in_sample():
           f'rc={rc} {out[:200]}')
 
 
+def test_08_second_review_regressions_in_sample():
+    """Second independent review: held-out on 6da1fa53 (119/134 detected, 6/42 false positives, five could-not-read
+    paths that did not exit 2); fixed against it, so IN-SAMPLE now."""
+    print('\n8. second independent review (IN-SAMPLE regressions)')
+    defective = [
+        ([_edit(T_, 'def test_numbers():', '@pytest.mark.skipif(True, reason="x")\ndef test_numbers():'),
+          _edit(T_, 'PASSED = FAILED = 0', 'import pytest\nPASSED = FAILED = 0')], 'SKIP_ADDED'),
+        ([_edit(T_, '    assert ok\n', '    assert (ok, "message")\n')], 'CONSTANT_TRUE_CHECK_ADDED'),
+        ([_edit(T_, 'def test_cap_is_respected():', 'class T:\n  def test_cap_is_respected(self):'),
+          _edit(T_, "    check('salary under cap', 49800 <= 50000)\n", "    check('salary under cap', 49800 <= 50000)\n")],
+         'TEST_FUNCTION_REMOVED'),
+        ([_edit(T_, 'def test_cap_is_respected():', 'def testcap_is_respected():')], 'TEST_FUNCTION_REMOVED'),
+        ([_edit(T_, '    assert total > 0\n', '    assert total > -5\n')], 'TEST_COMPARISON_NUMBER_CHANGED'),
+        ([_edit(EN, '    if err > ACCOUNTING_TOL:', '    if err > 0.5:')], 'THRESHOLD_LOOSENED'),
+        ([_edit('nfl/results/RUN_RESULT.json', '"n_failed": 3', '"n_failed": 3, "failures": []')],
+         None),                                              # setup only: base has no list (not judged)
+    ]
+    for ops, rule in defective:
+        if rule is None:
+            continue
+        d = _review_repo()
+        _review_apply(d, ops)
+        rules = {x['rule'] for x in FG.run(d, 'HEAD~1', 'HEAD')['findings'] if x['severity'] in ('high', 'medium')}
+        check(f'{str(ops[0])[:80]} -> {rule}', rule in rules, str(sorted(rules)))
+    legitimate = [
+        [_edit(T_, '    assert total > 0\n', '    assert total > 5\n')],                      # tightened bound
+        [_edit(T_, 'rel_tol=1e-9', 'rel_tol=1e-12')],                                       # tightened tolerance
+        [_edit('docs/RESULT.md', '| check | result |', 'Fixed a typo; nothing is missing here.\n\n| check | result |')],
+        [('write', 'nfl/sim/constants.py', 'SCALED_TOL = 1e-6 * 10\n'),
+         _edit(EN, 'SCALED_TOL = 1e-6 * 10\n', 'from nfl.sim.constants import SCALED_TOL  # noqa: E402\n')],
+    ]
+    for ops in legitimate:
+        d = _review_repo()
+        _review_apply(d, ops)
+        bad = [(x['rule'], x['detail']) for x in FG.run(d, 'HEAD~1', 'HEAD')['findings']
+               if x['severity'] in ('high', 'medium')]
+        check(f'{str(ops[0])[:80]} -> no finding', not bad, str(bad))
+    # could not read -> exit 2, never 0 or 1
+    d = _review_repo()
+    q = d / 'nfl/tests/test_engine.py'
+    _git(d, 'rm', '-q', '--cached', 'nfl/tests/test_engine.py')
+    q.write_text('def test_x(:\n')
+    _git(d, 'add', '-A')
+    _git(d, 'commit', '-q', '-m', 'broken base')
+    q.write_text('def test_x():\n    assert 1 == 1\n')
+    _git(d, 'add', '-A')
+    _git(d, 'commit', '-q', '-m', 'fixed')
+    rc, out = _cli(d)
+    check('a test module whose base side does not parse exits 2 (not 0)', rc == 2, f'rc={rc} {out[:160]}')
+    d = _review_repo()
+    q = d / 'nfl/results/RUN_RESULT.json'
+    q.write_text('{not json')
+    _git(d, 'add', '-A')
+    _git(d, 'commit', '-q', '-m', 'broken')
+    q.write_text('{"passed": true}')
+    _git(d, 'add', '-A')
+    _git(d, 'commit', '-q', '-m', 'flip')
+    rc, out = _cli(d)
+    check('a result JSON parseable on one side only exits 2', rc == 2, f'rc={rc} {out[:160]}')
+
+
 def test_zz_every_check_passed():
     if FAILED:
         raise AssertionError(f'{FAILED} check(s) failed in this module')

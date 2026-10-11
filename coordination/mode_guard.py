@@ -127,8 +127,18 @@ def _git_guard(fn: str, arg):
         return None
 
 
+def _read_stdin() -> str:
+    """The hook payload as text. Bytes that are not UTF-8 are replaced, never fatal: a traceback here would lose
+    the decision and the fail-closed record alike (Phase 1 review 2)."""
+    try:
+        buf = getattr(sys.stdin, 'buffer', None)
+        return buf.read().decode('utf-8', 'replace') if buf is not None else sys.stdin.read()
+    except Exception as e:  # noqa: BLE001
+        return f'<<unreadable stdin: {type(e).__name__}>>'
+
+
 def main() -> int:
-    raw = sys.stdin.read()
+    raw = _read_stdin()
     try:
         payload = json.loads(raw)
     except Exception:  # noqa: BLE001

@@ -1,0 +1,276 @@
+{
+ "fixtures_through_hook": {
+  "n": 253,
+  "nonempty_stdout_or_nonzero_rc": [],
+  "over_1s_end_to_end": []
+ },
+ "operate_deny_on_guard_write": {
+  "rc": 0,
+  "stdout": "{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"permissionDecision\": \"deny\", \"permissionDecisionReason\": \"MODE_BOUNDARY_VIOLATED: project mode is OPERATE (mode); this write is outside what that mode may touch: coordination/git_guard.py (not_in_may_write None). Change the mode with `python3.12 coordination/mode.py set <MODE> --reason ...` if the work is legitimate, or do it in the right mod",
+  "stderr": "",
+  "seconds": 0.051,
+  "git_guard_records": 0
+ },
+ "malformed": {
+  "non_utf8_stdin": {
+   "rc": 0,
+   "stdout": "",
+   "stderr": "",
+   "seconds": 0.04,
+   "records": [
+    [
+     "GUARD_INPUT_INVALID"
+    ]
+   ],
+   "would": [
+    "DENY"
+   ]
+  },
+  "not_json": {
+   "rc": 0,
+   "stdout": "",
+   "stderr": "",
+   "seconds": 0.038,
+   "records": [
+    [
+     "GUARD_INPUT_INVALID"
+    ]
+   ],
+   "would": [
+    "DENY"
+   ]
+  },
+  "json_list": {
+   "rc": 0,
+   "stdout": "",
+   "stderr": "",
+   "seconds": 0.038,
+   "records": [
+    [
+     "GUARD_INPUT_INVALID"
+    ]
+   ],
+   "would": [
+    "DENY"
+   ]
+  },
+  "tool_input_list": {
+   "rc": 0,
+   "stdout": "",
+   "stderr": "",
+   "seconds": 0.053,
+   "records": [
+    [
+     "GUARD_INPUT_INVALID"
+    ]
+   ],
+   "would": [
+    "DENY"
+   ]
+  },
+  "command_list": {
+   "rc": 0,
+   "stdout": "",
+   "stderr": "",
+   "seconds": 0.05,
+   "records": [
+    [
+     "GUARD_INPUT_INVALID"
+    ]
+   ],
+   "would": [
+    "DENY"
+   ]
+  },
+  "command_int": {
+   "rc": 0,
+   "stdout": "",
+   "stderr": "",
+   "seconds": 0.051,
+   "records": [
+    [
+     "GUARD_INPUT_INVALID"
+    ]
+   ],
+   "would": [
+    "DENY"
+   ]
+  },
+  "cwd_int": {
+   "rc": 0,
+   "stdout": "",
+   "stderr": "",
+   "seconds": 0.05,
+   "records": [
+    [
+     "PROTECTED_PUSH"
+    ]
+   ],
+   "would": [
+    "DENY"
+   ]
+  },
+  "edits_int": {
+   "rc": 0,
+   "stdout": "",
+   "stderr": "",
+   "seconds": 0.052,
+   "records": [
+    [
+     "GUARD_ERROR"
+    ]
+   ],
+   "would": [
+    "DENY"
+   ]
+  },
+  "file_path_int": {
+   "rc": 0,
+   "stdout": "",
+   "stderr": "",
+   "seconds": 0.056,
+   "records": [],
+   "would": []
+  },
+  "deep_json": {
+   "rc": 0,
+   "stdout": "",
+   "stderr": "",
+   "seconds": 0.039,
+   "records": [
+    [
+     "GUARD_INPUT_INVALID"
+    ]
+   ],
+   "would": [
+    "DENY"
+   ]
+  },
+  "lone_surrogate": {
+   "rc": 0,
+   "stdout": "",
+   "stderr": "",
+   "seconds": 0.051,
+   "records": [],
+   "would": []
+  },
+  "nul_in_path": {
+   "rc": 0,
+   "stdout": "",
+   "stderr": "",
+   "seconds": 0.051,
+   "records": [
+    [
+     "GUARD_ERROR"
+    ]
+   ],
+   "would": [
+    "DENY"
+   ]
+  },
+  "oversized_command": {
+   "rc": 0,
+   "stdout": "",
+   "stderr": "",
+   "seconds": 0.055,
+   "records": [
+    [
+     "GUARD_INPUT_INVALID"
+    ]
+   ],
+   "would": [
+    "DENY"
+   ]
+  }
+ },
+ "timing": [
+  {
+   "case": "1MB plain words",
+   "seconds": 0.739,
+   "rules": [],
+   "error": null
+  },
+  {
+   "case": "1MB double-quoted string",
+   "seconds": 0.152,
+   "rules": [],
+   "error": null
+  },
+  {
+   "case": "1MB heredoc to cat",
+   "seconds": 0.021,
+   "rules": [],
+   "error": null
+  },
+  {
+   "case": "500KB python heredoc",
+   "seconds": 1.254,
+   "rules": [],
+   "error": null
+  },
+  {
+   "case": "python long concat (RecursionError?)",
+   "seconds": 0.046,
+   "rules": [],
+   "error": null
+  },
+  {
+   "case": "nested $( x8 in bash -c",
+   "seconds": 0.004,
+   "rules": [],
+   "error": null
+  },
+  {
+   "case": "400 git pushes, distinct cwds",
+   "seconds": 0.029,
+   "rules": [
+    "PROTECTED_PUSH"
+   ],
+   "error": null
+  },
+  {
+   "case": "2000 git applies of a real patch",
+   "seconds": 0.411,
+   "rules": [],
+   "error": null
+  },
+  {
+   "case": "100k '$(' unclosed",
+   "seconds": 0.141,
+   "rules": [],
+   "error": null
+  },
+  {
+   "case": "20k nested quotes in $(",
+   "seconds": 0.105,
+   "rules": [],
+   "error": null
+  }
+ ],
+ "fifo": {
+  "git apply FIFO": {
+   "rc": 0,
+   "stdout": "",
+   "stderr": "",
+   "seconds": 0.055
+  },
+  "gh api --input FIFO": {
+   "rc": 0,
+   "stdout": "",
+   "stderr": "",
+   "seconds": 0.054
+  },
+  "gh api -F @FIFO": {
+   "rc": 0,
+   "stdout": "",
+   "stderr": "",
+   "seconds": 0.057
+  },
+  "patch -i FIFO": {
+   "rc": 0,
+   "stdout": "",
+   "stderr": "",
+   "seconds": 0.063
+  }
+ }
+}

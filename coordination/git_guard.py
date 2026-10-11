@@ -51,6 +51,7 @@ from __future__ import annotations
 import ast
 import datetime as dt
 import fnmatch
+import functools
 import json
 import os
 import pathlib
@@ -104,17 +105,19 @@ def git_dirs(repo=None):
     outside ROOT, so `.git/hooks` relative to ROOT is not where they are."""
     key = str(repo or ROOT)
     if key not in _GITDIRS:
-        dirs = {str(pathlib.Path(key) / '.git')}
+        default = os.path.realpath(pathlib.Path(key) / '.git')
+        dirs = (default, default)
         try:
             r = subprocess.run(['git', '-C', key, 'rev-parse', '--absolute-git-dir', '--git-common-dir'],
                                capture_output=True, text=True, timeout=5)
-            if r.returncode == 0:
-                for ln in r.stdout.split():
-                    p = pathlib.Path(ln)
-                    dirs.add(os.path.realpath(p if p.is_absolute() else pathlib.Path(key) / p))
+            lines = r.stdout.split('\n')
+            if r.returncode == 0 and len(lines) >= 2 and lines[0] and lines[1]:
+                common = pathlib.Path(lines[1])
+                dirs = (os.path.realpath(lines[0]),
+                        os.path.realpath(common if common.is_absolute() else pathlib.Path(key) / common))
         except Exception:  # noqa: BLE001 -- the ROOT/.git default still applies
             pass
-        _GITDIRS[key] = sorted(dirs)
+        _GITDIRS[key] = dirs
     return _GITDIRS[key]
 
 
@@ -126,11 +129,10 @@ RESERVED = {'{', '}', '!', 'then', 'do', 'else', 'elif', 'if', 'while', 'until',
 SHELLS = {'bash', 'sh', 'zsh', 'dash', 'ksh'}
 #: substitutions whose value is this checkout's git layout (a worktree-correct spelling of the hooks dir)
 _KNOWN_SUBS = {
-    'git rev-parse --git-path hooks': lambda: os.path.join(git_dirs()[-1] if git_dirs() else str(ROOT / '.git'),
-                                                           'hooks'),
+    'git rev-parse --git-path hooks': lambda: os.path.join(git_dirs()[1], 'hooks'),
     'git rev-parse --git-dir': lambda: git_dirs()[0],
     'git rev-parse --absolute-git-dir': lambda: git_dirs()[0],
-    'git rev-parse --git-common-dir': lambda: git_dirs()[-1],
+    'git rev-parse --git-common-dir': lambda: git_dirs()[1],
     'git rev-parse --show-toplevel': lambda: str(ROOT),
 }
 
@@ -366,6 +368,7 @@ def parse(cmd, cwd=None, env=None, _depth=0):
         return []
     out, persisted = [], dict(env or {})
     cwds = [cwd]
+    branches = {}                      # {directory: branch checked out by an earlier command in this string}
     toks = lex(cmd)
     cur, redirs, piped, k = [], [], False, 0
 
@@ -381,11 +384,13 @@ def parse(cmd, cwd=None, env=None, _depth=0):
                     if '=' in a and not a.startswith('-'):
                         kk, v = a.split('=', 1)
                         persisted[kk] = v
-            elif argv and argv[0] == 'cd' and len(argv) >= 2 and not argv[1].dynamic:
-                cwds[-1] = _abs(argv[1], cwds[-1]) or cwds[-1]
+            elif argv and argv[0] == 'cd' and len(argv) >= 2:
+                cwds[-1] = _abs(argv[1], cwds[-1]) or UNKNOWN_CWD
             elif argv and argv[0] == 'cd' and len(argv) == 1:
                 cwds[-1] = os.path.expanduser('~')
             c = Cmd(argv, redirs, cwds[-1], persisted, piped)
+            c.branches = dict(branches)
+            _track_branch_switch(c, branches)
             out.append(c)
             for w in argv:
                 for body in w.subs:
@@ -415,6 +420,65 @@ def parse(cmd, cwd=None, env=None, _depth=0):
             k += 1
     flush(False)
     return out
+
+
+#: a cwd that a `cd` made unknowable (a run-time value): pushes from it have no known current branch
+UNKNOWN_CWD = '/nonexistent/cwd-unknown-at-classification'
+
+
+def _git_dir_of(c, a):
+    """The directory a git argv operates in: its -C (relative to the command's cwd), else the cwd."""
+    d, i = c.cwd, 1
+    while i < len(a):
+        t = a[i]
+        if t == '-C' and i + 1 < len(a):
+            d = _abs(a[i + 1], d) or UNKNOWN_CWD
+            i += 2
+        elif t in GIT_GLOBAL_WITH_VALUE:
+            i += 2
+        elif t.startswith('-'):
+            i += 1
+        else:
+            break
+    return d
+
+
+def _git_dir_opt(a):
+    for i, t in enumerate(a):
+        if t == '--git-dir' and i + 1 < len(a):
+            return str(a[i + 1])
+        if t.startswith('--git-dir='):
+            return t.split('=', 1)[1]
+        if not t.startswith('-') and i > 0 and a[i - 1] not in GIT_GLOBAL_WITH_VALUE:
+            return None
+    return None
+
+
+def _track_branch_switch(c, branches):
+    """`git checkout -b X`, `git switch -c X`, `git checkout X`, `git switch X` change the current branch of the
+    directory for every later command in the same string. A switch to a run-time value makes it unknown."""
+    env, a, _ = _strip_prefix(c.argv, c.env)
+    gp = _git_parts(a) if a else None
+    if not gp or gp[1] not in ('checkout', 'switch'):
+        return
+    args = gp[2]
+    if '--' in args:
+        return                                          # a path checkout, not a branch switch
+    d = _git_dir_of(c, a)
+    new = None
+    for i, t in enumerate(args):
+        if t in ('-b', '-B', '-c', '-C', '--orphan', '--create', '--force-create') and i + 1 < len(args):
+            new = args[i + 1]
+            break
+    else:
+        ops = [t for t in args if not t.startswith('-')]
+        if len(ops) == 1 and not (_abs(ops[0], d) and os.path.exists(_abs(ops[0], d) or '')):
+            new = ops[0]
+        elif not ops and any(t in ('-', '@{-1}') for t in args):
+            new = None
+        else:
+            return
+    branches[d] = None if (new is None or getattr(new, 'dynamic', False)) else str(new)
 
 
 def _nested(c, out, depth):
@@ -484,6 +548,7 @@ def _dotted(node):
     return None
 
 
+@functools.lru_cache(maxsize=64)
 def python_analysis(code):
     """{'writes': [path], 'shell': [command string]} for a Python snippet. String-valued variables, Path(...) and
     os.path.join, the `/` operator and constant f-strings are folded; a path that is only known at run time is not
@@ -492,9 +557,17 @@ def python_analysis(code):
         with warnings.catch_warnings():
             warnings.simplefilter('ignore')          # a snippet's own invalid escapes are not this guard's output
             tree = ast.parse(code)
-    except (SyntaxError, ValueError):
+    except (SyntaxError, ValueError, RecursionError, MemoryError):
         return {'writes': [m.group('p') for rx in _PY_WRITES_RX for m in rx.finditer(code)], 'shell': [],
                 'parsed': False}
+    try:
+        return _python_walk(tree)
+    except RecursionError:
+        return {'writes': [m.group('p') for rx in _PY_WRITES_RX for m in rx.finditer(code)], 'shell': [],
+                'parsed': False}
+
+
+def _python_walk(tree):
     names = {}
 
     def ev(node):
@@ -539,6 +612,8 @@ def python_analysis(code):
                     names[t.id] = v
                 else:
                     names.pop(t.id, None)
+                if n.value is not None and _is_path_expr(n.value, names):
+                    names.setdefault('__paths__', set()).add(t.id)
     writes, shell = [], []
     for n in ast.walk(tree):
         if not isinstance(n, ast.Call):
@@ -555,7 +630,10 @@ def python_analysis(code):
             if mode is not None and re.search(r'[wax+]', mode):
                 writes.append(ev(n.func.value))
         elif attr in _PY_WRITE_METHODS and not f.startswith(('os.', 'shutil.')):
-            writes.append(ev(n.func.value))
+            recv = ev(n.func.value)
+            if attr in ('rename', 'replace') and not _is_path_expr(n.func.value, names):
+                continue                                  # str.replace(a, b) is not Path.replace(target)
+            writes.append(recv)
             if attr in ('rename', 'replace', 'symlink_to') and n.args:
                 writes.append(ev(n.args[0]))
         elif f.startswith('os.') and f[3:] in _PY_OS_ONE and n.args:
@@ -584,7 +662,22 @@ def python_analysis(code):
                 v = ev(a0)
                 if v is not None:
                     shell.append(v)
-    return {'writes': [w for w in writes if w], 'shell': shell, 'parsed': True}
+    return {'writes': [w for w in writes if w and _PATHLIKE_PY.match(w)], 'shell': shell, 'parsed': True}
+
+
+#: a written path looks like one (a multi-line string or a code fragment is not a path)
+_PATHLIKE_PY = re.compile(r'^[^\n\r\0]{1,1024}$')
+
+
+def _is_path_expr(node, names):
+    """Is a receiver a pathlib path: Path(...), a name bound to one, or `a / b` of one?"""
+    if isinstance(node, ast.Call):
+        return (_dotted(node.func) or '').split('.')[-1] in ('Path', 'PurePath', 'PosixPath')
+    if isinstance(node, ast.BinOp) and isinstance(node.op, ast.Div):
+        return _is_path_expr(node.left, names)
+    if isinstance(node, ast.Name):
+        return node.id in names.get('__paths__', ())
+    return False
 
 
 def _shquote(s):
@@ -643,7 +736,7 @@ def _git_internal(absp):
     """'hooks' or 'config' when an absolute path is this checkout's (or any repository's) hooks dir or git config."""
     if absp is None:
         return None
-    for d in git_dirs():
+    for d in set(git_dirs()):
         if absp == os.path.join(d, 'hooks') or absp.startswith(os.path.join(d, 'hooks') + os.sep):
             return 'hooks'
         if absp in (os.path.join(d, 'config'), os.path.join(d, 'config.worktree')):
@@ -720,7 +813,7 @@ def _patch_paths(path, cwd):
     """Files a unified diff (git apply / patch) would write, read from the patch file when it exists."""
     a = _abs(path, cwd)
     try:
-        if a and os.path.getsize(a) < 5 << 20:
+        if a and os.path.isfile(a) and os.path.getsize(a) < 5 << 20:
             text = open(a, errors='replace').read()
         else:
             return []
@@ -783,6 +876,17 @@ def command_writes(c):
             add([_abs(os.path.basename(str(ops[0])), cwd)], verb)
         if verb == 'mv':
             add([_abs(x, cwd) for x in (ops if tdir else ops[:-1])], 'mv (source removed)')
+    elif verb == 'find':
+        roots = []
+        for t in args:
+            if str(t).startswith(('-', '(', '!')):
+                break
+            roots.append(t)
+        destructive = '-delete' in args or any(
+            args[i] in ('-exec', '-execdir', '-ok') and i + 1 < len(args) and os.path.basename(str(args[i + 1]))
+            in ('rm', 'shred', 'unlink', 'mv', 'chmod', 'truncate') for i in range(len(args)))
+        if destructive:
+            add([_abs(x, cwd) for x in (roots or ['.'])], 'find')
     elif verb == 'dd':
         add([_abs(x[3:], cwd) for x in args if x.startswith('of=')], verb)
     elif verb == 'sed':
@@ -887,7 +991,29 @@ def _git_worktree_writes(sub, args, cwd):
     return [(p, h) for p, h in out if p]
 
 
-def write_targets(payload):
+_REMOVING = ('rm', 'rmdir', 'mv (source removed)', 'git rm', 'git mv', 'shred')
+
+
+def _protected_inside(absp, rel):
+    """A protected file that removing or moving the directory `absp` would take with it, or None."""
+    if absp is None:
+        return None
+    if rel is not None and rel not in ('', '.'):
+        prefix = rel.rstrip('/') + '/'
+        for q in OWNER_AUTHORITY + tuple(x for x in SAFEGUARDS if '*' not in x) + ('.github/workflows/',):
+            if q.startswith(prefix):
+                return q
+    elif rel in ('', '.'):
+        return 'the repository root'
+    for name in ('settings.json', 'settings.local.json'):
+        if absp.endswith('/.claude') and os.path.exists(os.path.join(absp, name)):
+            return os.path.join(absp, name)
+        if os.path.isfile(os.path.join(absp, '.claude', name)):
+            return os.path.join(absp, '.claude', name)
+    return None
+
+
+def write_targets(payload, cmds=None):
     """[(absolute path, how)] a tool call writes. Edit/Write/MultiEdit/NotebookEdit name their file; a Bash
     command is parsed into simple commands and each one's writes are read from argv and redirections."""
     tool = payload.get('tool_name') or ''
@@ -899,7 +1025,7 @@ def write_targets(payload):
         return [(a, tool)] if a else []
     if tool == 'Bash':
         out = []
-        for c in parse(ti.get('command') or '', cwd):
+        for c in (cmds if cmds is not None else parse(str(ti.get('command') or ''), cwd)):
             out.extend(command_writes(c))
         return out
     return []
@@ -953,11 +1079,14 @@ def _git_parts(argv):
 _BRANCH_CACHE = {}
 
 
-def _current_branch(cwd):
-    key = cwd or str(ROOT)
+def _current_branch(cwd, git_dir=None):
+    key = (cwd or str(ROOT), git_dir)
     if key not in _BRANCH_CACHE:
         try:
-            r = subprocess.run(['git', '-C', key, 'rev-parse', '--abbrev-ref', 'HEAD'],
+            if not os.path.isdir(key[0]):
+                raise FileNotFoundError(key[0])
+            gd = ['--git-dir', _abs(git_dir, key[0]) or git_dir] if git_dir else []
+            r = subprocess.run(['git', '-C', key[0], *gd, 'rev-parse', '--abbrev-ref', 'HEAD'],
                                capture_output=True, text=True, timeout=5)
             b = r.stdout.strip()
             _BRANCH_CACHE[key] = b if r.returncode == 0 and b and b != 'HEAD' else None
@@ -975,15 +1104,19 @@ def _env_config(env):
     return out
 
 
-def _git_findings(env, cfg, sub, args, cwd, pol, via_xargs=False):
+def _git_findings(env, cfg, sub, args, cwd, pol, via_xargs=False, branch_of=None):
     f = []
     allcfg = cfg + _env_config(env)
     hooks_cfg = [c for c in allcfg if c.lower().replace(' ', '').startswith('core.hookspath')]
     if hooks_cfg:
         f.append(_finding('HOOK_PATH_CHANGE', f'git config override {hooks_cfg[0]} bypasses the repository hooks'))
+    if sub == 'commit' and any(re.match(r'(?i)^commit\.gpgsign=(false|0|no|off)$', c.replace(' ', '')) for c in allcfg):
+        f.append(_finding('VERIFY_BYPASS', 'git -c commit.gpgsign=false skips signing'))
     if sub == 'config':
-        ops, _ = _operands(args, short_val='f', long_val=('file', 'type', 'default', 'comment', 'value'))
-        if any(str(a).lower().split('=')[0] == 'core.hookspath' for a in ops):
+        ops, opts = _operands(args, short_val='f', long_val=('file', 'type', 'default', 'comment', 'value'))
+        reading = any(k in ('get', 'get-all', 'get-regexp', 'get-urlmatch', 'list', 'l', 'show-origin', 'show-scope')
+                      for k, _ in opts) or (ops and ops[0] in ('get', 'list'))
+        if not reading and any(str(a).lower().split('=')[0] == 'core.hookspath' for a in ops):
             f.append(_finding('HOOK_PATH_CHANGE', 'git config core.hooksPath changes which hooks run'))
     if sub in ('commit', 'merge', 'push', 'rebase', 'am', 'cherry-pick', 'revert', 'pull', 'switch', 'checkout'):
         i = 0
@@ -1020,11 +1153,16 @@ def _git_findings(env, cfg, sub, args, cwd, pol, via_xargs=False):
         f.append(_finding('CONCEALMENT', f'git sparse-checkout {args[0]} marks every path outside the cone '
                                          f'skip-worktree, hiding it from status'))
     if sub == 'push':
-        f.extend(_push_findings(args, cwd, pol, cfg=allcfg, via_xargs=via_xargs))
+        f.extend(_push_findings(args, cwd, pol, cfg=allcfg, via_xargs=via_xargs, branch_of=branch_of))
     return f
 
 
-def _push_findings(args, cwd, pol, cfg=(), via_xargs=False):
+_CURRENT_BRANCH_SUBS = ('$(git branch --show-current)', '$(git rev-parse --abbrev-ref HEAD)',
+                        '$(git symbolic-ref --short HEAD)', '`git branch --show-current`',
+                        '`git rev-parse --abbrev-ref HEAD`')
+
+
+def _push_findings(args, cwd, pol, cfg=(), via_xargs=False, branch_of=None):
     """Findings for one `git push` argv tail. Options are parsed with their values, abbreviations resolved the
     way git resolves them (unique prefix), and the destination of every refspec computed."""
     pos, force, delete, mirror, dry, repo = [], False, False, False, False, None
@@ -1063,14 +1201,22 @@ def _push_findings(args, cwd, pol, cfg=(), via_xargs=False):
                         i += 1
                     break
         else:
-            pos.append(t)
+            pos.append(args[i])                          # the Word itself: it knows whether it is a run-time value
         i += 1
     if any(re.match(r'(?i)^remote\.[^=]+\.mirror=(true|1|yes|on)?$', c) or c.lower() == 'push.default=matching'
            for c in cfg):
         mirror = True
     refspecs = pos if repo is not None else pos[1:]
+    current = branch_of if branch_of is not None else (lambda: _current_branch(cwd))
     dests = []
     for r in refspecs:
+        if str(r) in _CURRENT_BRANCH_SUBS or str(r).lstrip('+') in _CURRENT_BRANCH_SUBS:
+            force = force or str(r).startswith('+')
+            dests.append(current())
+            continue
+        if getattr(r, 'dynamic', False):
+            dests.append(None)                           # "$BRANCH": known only at run time
+            continue
         if r.startswith('+'):
             force = True
             r = r[1:]
@@ -1080,13 +1226,13 @@ def _push_findings(args, cwd, pol, cfg=(), via_xargs=False):
         elif ':' in r:
             dests.append(r.split(':', 1)[1])
         elif r in ('HEAD', '@'):
-            dests.append(_current_branch(cwd))
+            dests.append(current())
         elif re.search(r'[~^]', r):
             dests.append(None)
         else:
             dests.append(r)
     if not refspecs and not mirror:
-        dests = [_current_branch(cwd)]
+        dests = [current()]
     norm = []
     for d in dests:
         if d is None:
@@ -1094,7 +1240,7 @@ def _push_findings(args, cwd, pol, cfg=(), via_xargs=False):
         elif d.startswith('refs/tags/'):
             continue
         elif d in ('HEAD', '@'):
-            norm.append(_current_branch(cwd))
+            norm.append(current())
         else:
             norm.append(re.sub(r'^(refs/heads/|heads/)', '', d))
     protected, shared = set(pol['protected']), set(pol['shared'])
@@ -1121,9 +1267,10 @@ def _push_findings(args, cwd, pol, cfg=(), via_xargs=False):
     if via_xargs:
         f.append(_finding('PROTECTED_PUSH', 'git push run through xargs: its refspecs arrive on stdin at run time '
                                              '(fail-closed: treated as protected)'))
-    elif (force or delete) and any(d is None for d in norm):
-        f.append(_finding('PROTECTED_PUSH', 'force or delete push whose destination branch cannot be determined '
-                                             '(fail-closed: treated as protected)'))
+    elif any(d is None for d in norm):
+        f.append(_finding('PROTECTED_PUSH', f'{"force or delete " if force or delete else ""}push whose destination '
+                                             f'branch cannot be determined before it runs (fail-closed: treated as '
+                                             f'protected)'))
     if not pol['readable'] and (force or delete):
         f.append(_finding('PROTECTED_PUSH', f'branch policy unreadable ({pol.get("why")}); every force or delete push '
                                              f'is treated as protected'))
@@ -1175,18 +1322,20 @@ def _read_body(path, cwd):
         return '', False
     a = _abs(path, cwd)
     try:
+        if not (a and os.path.isfile(a)):            # a FIFO or device would block the hook; never opened
+            return '', False
         return open(a, errors='replace').read(1 << 20), True
     except (OSError, TypeError):
         return '', False
 
 
-def _gh_findings(argv, cwd, pol):
+def _gh_findings(argv, cwd, pol, stdin=None):
     f = []
     if len(argv) < 2 or os.path.basename(argv[0]) != 'gh':
         return f
     sub = [str(x) for x in argv[1:]]
-    while sub and sub[0] in ('-R', '--repo'):
-        sub = sub[2:]
+    while sub and (sub[0] in ('-R', '--repo', '--hostname') or sub[0].startswith(('--repo=', '-R'))):
+        sub = sub[2:] if sub[0] in ('-R', '--repo', '--hostname') else sub[1:]
     protected, shared = set(pol['protected']), set(pol['shared'])
     if sub[:2] == ['pr', 'merge']:
         f.append(_finding('UNAUTHORIZED_MERGE', 'gh pr merge (merging is the owner\'s)'))
@@ -1202,19 +1351,46 @@ def _gh_findings(argv, cwd, pol):
             f.append(_finding('PROTECTED_PUSH', f'gh repo sync {ops[0]} writes the remote branch '
                                                  f'{br or "DEFAULT (main)"}'))
     if sub[:1] == ['api']:
-        f.extend(_gh_api_findings(sub[1:], cwd, protected, shared))
+        f.extend(_gh_api_findings(sub[1:], cwd, protected, shared, stdin=stdin))
     return f
 
 
-def _gh_api_findings(sub, cwd, protected, shared):
+def _curl_github_findings(a, cwd, pol):
+    """curl to the GitHub REST/GraphQL API: the same endpoint rules as `gh api`."""
+    url = next((str(x) for x in a if 'api.github.com' in str(x)), '')
+    method, data, i = None, [], 1
+    while i < len(a):
+        t = str(a[i])
+        if t in ('-X', '--request') and i + 1 < len(a):
+            method = str(a[i + 1]).upper()
+            i += 1
+        elif t.startswith('-X') and len(t) > 2:
+            method = t[2:].upper()
+        elif t in ('-d', '--data', '--data-raw', '--data-binary', '--json') and i + 1 < len(a):
+            data.append(str(a[i + 1]))
+            i += 1
+        i += 1
+    method = method or ('POST' if data else 'GET')
+    sub = [url, '-X', method]
+    for d in data:
+        try:
+            body = json.loads(d)
+            for k, v in (body.items() if isinstance(body, dict) else []):
+                sub += ['-f', f'{k}={v}']
+        except ValueError:
+            sub += ['-f', f'query={d}']
+    return _gh_api_findings(sub, cwd, set(pol['protected']), set(pol['shared']))
+
+
+def _gh_api_findings(sub, cwd, protected, shared, stdin=None):
     f = []
     endpoint, method, fields, inp = _gh_api_args(sub)
     body, readable = ('', True)
     if inp:
-        body, readable = _read_body(inp, cwd)
+        body, readable = (stdin, True) if inp == '-' and stdin is not None else _read_body(inp, cwd)
     for k, v in list(fields.items()):
         if v.startswith('@'):
-            t, ok = _read_body(v[1:], cwd)
+            t, ok = (stdin, True) if v == '@-' and stdin is not None else _read_body(v[1:], cwd)
             fields[k] = t
             readable = readable and ok
     text = body + '\n' + '\n'.join(f'{k}={v}' for k, v in fields.items())
@@ -1290,7 +1466,7 @@ def _mcp_findings(tool, ti, pol):
     branch = str(ti.get('branch') or ti.get('ref') or '').replace('refs/heads/', '')
     if name in ('merge_pull_request', 'enable_pr_auto_merge'):
         out.append(_finding('UNAUTHORIZED_MERGE', f'{name} (merging is the owner\'s)'))
-    if name == 'pull_request_review_write' and str(ti.get('event', '')).upper() == 'APPROVE':
+    if 'review' in name and 'APPROVE' in str(ti.get('event', '')).upper():
         out.append(_finding('SELF_APPROVAL', 'an agent approving a pull request'))
     if name == 'actions_run_trigger' and str(ti.get('method') or '') not in _ACTIONS_NON_STARTING:
         out.append(_finding('WORKFLOW_DISPATCH', f'actions_run_trigger {ti.get("method")} starts an Actions run'))
@@ -1320,30 +1496,45 @@ def classify(payload):
     cwd = payload.get('cwd')
     pol = policy()
     out = []
+    cmds = None
     if tool == 'Bash':
+        if not isinstance(ti.get('command'), (str, type(None))):
+            return [_finding('GUARD_INPUT_INVALID', f'command is a {type(ti.get("command")).__name__}, not a string; '
+                                                     f'not classified (fail-closed)')]
         cmd = str(ti.get('command') or '')
         if len(cmd.encode('utf-8', 'replace')) > MAX_COMMAND_BYTES:
             return [_finding('GUARD_INPUT_INVALID', f'command of {len(cmd)} chars exceeds {MAX_COMMAND_BYTES} bytes; '
                                                      f'not classified (fail-closed)')]
-        for c in parse(cmd, cwd):
+        cmds = parse(cmd, cwd)
+        for c in cmds:
             env, a, xargs = _strip_prefix(c.argv, c.env)
             if not a:
                 continue
             gp = _git_parts(a)
             if gp:
-                out.extend(_git_findings(env, gp[0], gp[1], gp[2], c.cwd, pol, via_xargs=xargs))
-            out.extend(_gh_findings(a, c.cwd, pol))
+                d, gd = _git_dir_of(c, a), _git_dir_opt(a)
+                branch_of = (lambda d=d, gd=gd, c=c: c.branches[d] if d in c.branches else _current_branch(d, gd))
+                out.extend(_git_findings(env, gp[0], gp[1], gp[2], d, pol, via_xargs=xargs, branch_of=branch_of))
+            stdin = next((b for _, _, b in c.redirs if b), None)
+            stdin = stdin if stdin is not None else next((str(t) for op, t, _ in c.redirs if op == '<<<' and t), None)
+            out.extend(_gh_findings(a, c.cwd, pol, stdin=stdin))
+            if os.path.basename(a[0]) in ('curl', 'wget', 'http', 'https') and any('api.github.com' in str(x) for x in a):
+                out.extend(_curl_github_findings(a, c.cwd, pol))
             if any(str(x).endswith('coordination/mode.py') or str(x) == 'mode.py' for x in a[:2]) and 'set' in a:
                 out.append(_finding('MODE_CHANGE', 'coordination/mode.py set (recorded, not protected)'))
     out.extend(_mcp_findings(tool, ti, pol))
     written = _written_text(ti) + (str(ti.get('command') or '') if tool == 'Bash' else '')
-    for absp, how in write_targets(payload):
+    for absp, how in write_targets(payload, cmds):
         gi = _git_internal(absp)
         rel = None
         try:
             rel = str(pathlib.Path(absp).relative_to(ROOT))
         except ValueError:
             pass
+        held = _protected_inside(absp, rel) if how in _REMOVING else None
+        if held:
+            out.append(_finding('SELF_APPROVAL' if _is_approval_path(held) else 'SAFEGUARD_MODIFIED',
+                                f'{how} removes or moves {absp}, which holds {held}'))
         if gi == 'hooks':
             out.append(_finding('HOOK_PATH_CHANGE', f'{how} writes, removes or changes the hooks directory: {absp}'))
         elif gi == 'config':

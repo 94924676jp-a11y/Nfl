@@ -1,0 +1,2213 @@
+{
+ "n_commits": 180,
+ "n_with_findings": 76,
+ "n_not_executed": 0,
+ "commits": [
+  {
+   "sha": "52c6888f0b",
+   "subject": "Week 3 postmortem, and the readiness gate rebuilt requirement-first",
+   "verdict": "FINDINGS",
+   "n_files": 5,
+   "findings": [
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_product_readiness_gate.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "88bcf80d55",
+   "subject": "Projection guards: V0's five defects become permanent regression tests",
+   "verdict": "FINDINGS",
+   "n_files": 4,
+   "findings": [
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_projection_guards_catch_v0.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "89c919d26f",
+   "subject": "PROJ_V0_UNVALIDATED: first proprietary projection from measured W1-2, plus FC comparison",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "32cdaf94e4",
+   "subject": "Projection-source contract, FC firewall reader, and audit of the 48 placeholder lineups",
+   "verdict": "FINDINGS",
+   "n_files": 10,
+   "findings": [
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_fc_firewall_and_projection_source.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "9d7947e743",
+   "subject": "POST-INACTIVES reconciliation: reported availability, redistribution, semantic PRE->POST diff",
+   "verdict": "FINDINGS",
+   "n_files": 20,
+   "findings": [
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_post_inactives_reconciliation.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "5fbc853ca5",
+   "subject": "DK_WEEK3_TODAY_STATE: observed 2026 weeks 1-2 joined to the frozen universe",
+   "verdict": "FINDINGS",
+   "n_files": 4,
+   "findings": [
+    {
+     "rule": "BROAD_EXCEPT_PASS_ADDED",
+     "severity": "medium",
+     "path": "nfl/tools/observed_2026.py",
+     "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+    }
+   ]
+  },
+  {
+   "sha": "5df7e2be8f",
+   "subject": "T-90 checkpoint: no inactives, and three of my own claims corrected from main",
+   "verdict": "CLEAN",
+   "n_files": 4,
+   "findings": []
+  },
+  {
+   "sha": "3a42a28b11",
+   "subject": "QB layer: it executes, and it is pre-2026 by DATA ABSENCE not by policy",
+   "verdict": "CLEAN",
+   "n_files": 3,
+   "findings": []
+  },
+  {
+   "sha": "6d518a704e",
+   "subject": "Game-by-game, player-by-player study of the frozen slate, from held evidence",
+   "verdict": "CLEAN",
+   "n_files": 3,
+   "findings": []
+  },
+  {
+   "sha": "c06dcad703",
+   "subject": "Correct OUT-034: the ask is a re-probe and a revived watch, not a capture",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "7a8bcc63e3",
+   "subject": "DEF-091: the board refusal names the first non-PASS stage, not the cause",
+   "verdict": "CLEAN",
+   "n_files": 3,
+   "findings": []
+  },
+  {
+   "sha": "0b32872c3c",
+   "subject": "DEF-090: assert_promotable is correct and cannot refuse anything in production",
+   "verdict": "FINDINGS",
+   "n_files": 4,
+   "findings": [
+    {
+     "rule": "BROAD_EXCEPT_PASS_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_assumption_gate_cannot_fire.py",
+     "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+    },
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_assumption_gate_cannot_fire.py",
+     "detail": "2 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "0de9e479ad",
+   "subject": "assert_pregame_untouched is load-bearing; assert_cut_lawful is by design",
+   "verdict": "FINDINGS",
+   "n_files": 4,
+   "findings": [
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_pregame_frozen_guard_is_load_bearing.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "87a4cf154a",
+   "subject": "DEF-088/089: the suite total is not reproducible, and one proof is vacuous",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "7ad007b6ef",
+   "subject": "DEF-087: two checks in the capture-obligations guard could not pass",
+   "verdict": "FINDINGS",
+   "n_files": 2,
+   "findings": [
+    {
+     "rule": "TEST_FUNCTION_REMOVED",
+     "severity": "high",
+     "path": "nfl/tests/test_capture_obligations.py",
+     "detail": "test_I_a_cron_entry_fires_inside_the_next_window was removed, renamed or shadowed"
+    }
+   ]
+  },
+  {
+   "sha": "d6fba0ae0d",
+   "subject": "DEF-086: the deployed T-90 capture cron has matched no game day since 09-15",
+   "verdict": "FINDINGS",
+   "n_files": 3,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": ".github/workflows/nfl-t90.yml",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    }
+   ]
+  },
+  {
+   "sha": "f067eedcd8",
+   "subject": "DEF-085: direct test invocation mutates a tracked board pointer",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "8c7223c52b",
+   "subject": "Two more load-bearing proofs; adopt the one Outcome accessor (DEF-084)",
+   "verdict": "FINDINGS",
+   "n_files": 11,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "nfl/production/review/gate.py",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    },
+    {
+     "rule": "BROAD_EXCEPT_PASS_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_outcome_payload_accessor.py",
+     "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+    },
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_outcome_payload_accessor.py",
+     "detail": "2 new lint/type/coverage suppression(s)"
+    },
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_pit_guard_is_load_bearing.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    },
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_qb_inactive_guard_is_load_bearing.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "d0e7b06b02",
+   "subject": "Prove the leakage guard load-bearing; stop the census going stale (DEF-083)",
+   "verdict": "FINDINGS",
+   "n_files": 5,
+   "findings": [
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_guard_census_is_not_stale.py",
+     "detail": "2 new lint/type/coverage suppression(s)"
+    },
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_leakage_guard_is_load_bearing.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "99484ad4ae",
+   "subject": "Make the frozen baseline comparable by program, not by eye",
+   "verdict": "FINDINGS",
+   "n_files": 3,
+   "findings": [
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_baseline_diff.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "f11e0903ec",
+   "subject": "OUT-033: assign today's official inactives, with the T-90 window stated",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "cae4208aa1",
+   "subject": "Freeze the Week-3 Early Only slate baseline; fix DEF-081 and DEF-082",
+   "verdict": "FINDINGS",
+   "n_files": 10,
+   "findings": [
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_early_slate_window_and_identity_carry.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "e62d630632",
+   "subject": "No credential may enter a committed packet, proven on the disk",
+   "verdict": "CLEAN",
+   "n_files": 4,
+   "findings": []
+  },
+  {
+   "sha": "f2ac053747",
+   "subject": "The live-feature leakage guards, proven rather than read",
+   "verdict": "CLEAN",
+   "n_files": 7,
+   "findings": []
+  },
+  {
+   "sha": "21c8f9e3c1",
+   "subject": "A call inside main() is a demonstration, not a production caller",
+   "verdict": "FINDINGS",
+   "n_files": 3,
+   "findings": [
+    {
+     "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+     "severity": "high",
+     "path": "nfl/research/audit/GUARD_CENSUS.md",
+     "detail": "a recorded failure row was deleted"
+    },
+    {
+     "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+     "severity": "high",
+     "path": "nfl/research/audit/GUARD_CENSUS.md",
+     "detail": "a recorded failure row was deleted"
+    },
+    {
+     "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+     "severity": "high",
+     "path": "nfl/research/audit/GUARD_CENSUS.md",
+     "detail": "a recorded failure row was deleted"
+    }
+   ]
+  },
+  {
+   "sha": "edaf6d8632",
+   "subject": "DEF-080: the ratchet guarding the orphaned-gate finding could not fail",
+   "verdict": "CLEAN",
+   "n_files": 5,
+   "findings": []
+  },
+  {
+   "sha": "c980c94fe5",
+   "subject": "Close the zero-coverage guard population: assert_frame_closes",
+   "verdict": "FINDINGS",
+   "n_files": 4,
+   "findings": [
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_a1_frame_closure_guard.py",
+     "detail": "2 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "4111a9c4c7",
+   "subject": "Three untested guards on an executing path, proven against a bypass",
+   "verdict": "FINDINGS",
+   "n_files": 5,
+   "findings": [
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_team_volume_coupling_guards.py",
+     "detail": "2 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "d46afb62be",
+   "subject": "Separate REACHABLE from INVOKED from OBSERVED, and clear an ANNOTATE guard",
+   "verdict": "FINDINGS",
+   "n_files": 8,
+   "findings": [
+    {
+     "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+     "severity": "high",
+     "path": "nfl/research/audit/GUARD_CENSUS.md",
+     "detail": "a recorded failure row was deleted"
+    },
+    {
+     "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+     "severity": "high",
+     "path": "nfl/research/audit/GUARD_CENSUS.md",
+     "detail": "a recorded failure row was deleted"
+    }
+   ]
+  },
+  {
+   "sha": "2628ba9e4f",
+   "subject": "The lineage inventory could not see a workflow that had run eight times",
+   "verdict": "FINDINGS",
+   "n_files": 6,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": ".github/workflows/agent-orchestrator.yml",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    }
+   ]
+  },
+  {
+   "sha": "8a6762ae64",
+   "subject": "Merge branch 'claude/nfl-greenfield-architecture-stsxmk' of https://github.com/94924676jp-a11y/Nfl into claude/nfl-green",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "50d1322fd3",
+   "subject": "GAP-DEPTH-CHART-PIT was not a new gap, and the recheck read the wrong tree",
+   "verdict": "CLEAN",
+   "n_files": 5,
+   "findings": []
+  },
+  {
+   "sha": "f42bf0e4f8",
+   "subject": "ENG-001: assert the three acceptance criteria nothing asserted",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "01c112e2f9",
+   "subject": "A stale origin/main was making the lineage measurement read the wrong tree",
+   "verdict": "CLEAN",
+   "n_files": 6,
+   "findings": []
+  },
+  {
+   "sha": "762008aa80",
+   "subject": "Correct the lineage measurement, and classify the two publishable guards",
+   "verdict": "FINDINGS",
+   "n_files": 14,
+   "findings": [
+    {
+     "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+     "severity": "high",
+     "path": "nfl/research/audit/GUARD_CENSUS.md",
+     "detail": "a recorded failure row was deleted"
+    },
+    {
+     "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+     "severity": "high",
+     "path": "nfl/research/audit/GUARD_CENSUS.md",
+     "detail": "a recorded failure row was deleted"
+    },
+    {
+     "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+     "severity": "high",
+     "path": "nfl/research/audit/GUARD_CENSUS.md",
+     "detail": "a recorded failure row was deleted"
+    },
+    {
+     "rule": "CHECK_HELPER_CHANGED",
+     "severity": "medium",
+     "path": "nfl/tests/test_board_pass_judgement.py",
+     "detail": "the module's check() helper changed"
+    },
+    {
+     "rule": "TEST_FUNCTION_REMOVED",
+     "severity": "high",
+     "path": "nfl/tests/test_execution_lineage.py",
+     "detail": "test_the_two_checkout_classes_are_both_populated was removed, renamed or shadowed"
+    },
+    {
+     "rule": "TEST_FUNCTION_REMOVED",
+     "severity": "high",
+     "path": "nfl/tests/test_execution_lineage.py",
+     "detail": "test_the_classes_are_disjoint_and_non_empty was removed, renamed or shadowed"
+    },
+    {
+     "rule": "TEST_FUNCTION_REMOVED",
+     "severity": "high",
+     "path": "nfl/tests/test_execution_lineage.py",
+     "detail": "test_classify_covers_every_module_with_one_of_three_labels was removed, renamed or shadowed"
+    },
+    {
+     "rule": "CHECK_HELPER_CHANGED",
+     "severity": "medium",
+     "path": "nfl/tests/test_execution_lineage.py",
+     "detail": "the module's check() helper changed"
+    }
+   ]
+  },
+  {
+   "sha": "0b0f97a440",
+   "subject": "Execution lineage, and a CI layer that confused refusing with broken",
+   "verdict": "FINDINGS",
+   "n_files": 10,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": ".github/workflows/nfl-product-board.yml",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    }
+   ]
+  },
+  {
+   "sha": "fbacd8a2ef",
+   "subject": "Two more census corrections, a hidden identity gate, and a test for the tool",
+   "verdict": "CLEAN",
+   "n_files": 5,
+   "findings": []
+  },
+  {
+   "sha": "e7c2bddd0d",
+   "subject": "A ternary is a branch: the census was accusing a working control",
+   "verdict": "CLEAN",
+   "n_files": 3,
+   "findings": []
+  },
+  {
+   "sha": "85fe9061d1",
+   "subject": "DEF-072: a required gate whose evidence is computed and then discarded",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "6685f46e39",
+   "subject": "The guard census, all columns \u2014 and only 3 of 89 have earned LOAD_BEARING",
+   "verdict": "CLEAN",
+   "n_files": 3,
+   "findings": []
+  },
+  {
+   "sha": "4b3eb2b52d",
+   "subject": "DEF-070: force the SIGPIPE race instead of hoping for it",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "92ac1cd193",
+   "subject": "Test two guards that STOP production and had no test at all",
+   "verdict": "CLEAN",
+   "n_files": 3,
+   "findings": []
+  },
+  {
+   "sha": "11ace953cb",
+   "subject": "The five guards nothing calls: classified, and two of them now evaluated",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "8cbf0a2638",
+   "subject": "Test the two gates' own logic, and record what one of them cannot catch",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "da3df14c13",
+   "subject": "A guard census that measures whether failure stops anything",
+   "verdict": "CLEAN",
+   "n_files": 3,
+   "findings": []
+  },
+  {
+   "sha": "8d59426ec1",
+   "subject": "The baseline's 140 is a distribution, not a number",
+   "verdict": "CLEAN",
+   "n_files": 3,
+   "findings": []
+  },
+  {
+   "sha": "4d84c85645",
+   "subject": "governance: DEF-069, and a gap my own ledger guard exposed",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "f96660566f",
+   "subject": "DEF-066: a missing share prior is a refusal, and the containment is asserted",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "4e1fd310e0",
+   "subject": "DEF-065: prove the refusal by running it, and delete the proof that wasn't one",
+   "verdict": "FINDINGS",
+   "n_files": 3,
+   "findings": [
+    {
+     "rule": "CHECKS_REDUCED",
+     "severity": "high",
+     "path": "nfl/tests/test_publication_gates_can_refuse.py",
+     "detail": "test_the_refusal_is_wired_into_main_not_just_available: 4 -> 2 checks"
+    },
+    {
+     "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+     "severity": "medium",
+     "path": "nfl/tests/test_publication_gates_can_refuse.py",
+     "detail": "test_the_refusal_is_wired_into_main_not_just_available: 3 comparison(s) removed, loosened or altered (operator, number or tripwire condition)"
+    }
+   ]
+  },
+  {
+   "sha": "9b59b849c5",
+   "subject": "Undo the one failure I introduced, and make the guard that caught it stronger",
+   "verdict": "FINDINGS",
+   "n_files": 5,
+   "findings": [
+    {
+     "rule": "BROAD_EXCEPT_PASS_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_orchestrator.py",
+     "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+    },
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_orchestrator.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "84671db33d",
+   "subject": "Record the first complete suite baseline, and one failure that is mine",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "1bc3e595e1",
+   "subject": "postgame/actuals: a blank cell is missing, not a realised zero (DEF-067)",
+   "verdict": "CLEAN",
+   "n_files": 3,
+   "findings": []
+  },
+  {
+   "sha": "8333bc7394",
+   "subject": "governance: DEF-066, the missing/zero collapse inside the model",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "fdecf2f39a",
+   "subject": "dfs/salaries: make the publication gate able to refuse (DEF-065)",
+   "verdict": "CLEAN",
+   "n_files": 4,
+   "findings": []
+  },
+  {
+   "sha": "8ca8cbfc18",
+   "subject": "governance: record DEF-064, amend DEF-060/062/063 with what was measured",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "7b89815a2f",
+   "subject": "showdown/universe: the slate is an argument, and the football travels with it",
+   "verdict": "FINDINGS",
+   "n_files": 3,
+   "findings": [
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_showdown_universe_is_slate_addressable.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "0e345e7959",
+   "subject": "dfs/showdown: move three slates' one-off scripts out of the production namespace",
+   "verdict": "FINDINGS",
+   "n_files": 18,
+   "findings": [
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_showdown_namespace_is_production_only.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "fb95c6470e",
+   "subject": "postgame: 'missing' is a state, 'zero' is an outcome \u2014 as a contract",
+   "verdict": "CLEAN",
+   "n_files": 5,
+   "findings": []
+  },
+  {
+   "sha": "df7a7db875",
+   "subject": "The outcome-join sweep: it corrected me twice and found one real thing",
+   "verdict": "CLEAN",
+   "n_files": 4,
+   "findings": []
+  },
+  {
+   "sha": "cb5d13d744",
+   "subject": "DEF-061 WITHDRAWN: I was wrong, and kickers now grade exactly",
+   "verdict": "FINDINGS",
+   "n_files": 8,
+   "findings": [
+    {
+     "rule": "TEST_FUNCTION_REMOVED",
+     "severity": "high",
+     "path": "nfl/tests/test_kicker_reaches_every_consumer.py",
+     "detail": "test_grading_enumerates_kickers_and_refuses_to_invent_their_actuals was removed, renamed or shadowed"
+    }
+   ]
+  },
+  {
+   "sha": "0be3bd4bab",
+   "subject": "Postgame can grade a second slate, and proving it caught a fake",
+   "verdict": "FINDINGS",
+   "n_files": 5,
+   "findings": [
+    {
+     "rule": "BROAD_EXCEPT_PASS_ADDED",
+     "severity": "medium",
+     "path": "nfl/postgame/outcome.py",
+     "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+    }
+   ]
+  },
+  {
+   "sha": "e471b9155a",
+   "subject": "DEF-062: none of the 35 pinned modules can run a different game",
+   "verdict": "FINDINGS",
+   "n_files": 3,
+   "findings": [
+    {
+     "rule": "BROAD_EXCEPT_PASS_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_no_unmarked_fixture_pin.py",
+     "detail": "4 new broad exception swallow(s) (an error silenced is a failure hidden)"
+    },
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_no_unmarked_fixture_pin.py",
+     "detail": "4 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "7e9ff868b8",
+   "subject": "A seventh broken module, found by correcting my own discriminator",
+   "verdict": "CLEAN",
+   "n_files": 4,
+   "findings": []
+  },
+  {
+   "sha": "828af7c35b",
+   "subject": "DEF-060: the DK universe becomes one contract, and DEF-061 falls out of it",
+   "verdict": "FINDINGS",
+   "n_files": 12,
+   "findings": [
+    {
+     "rule": "BROAD_EXCEPT_PASS_ADDED",
+     "severity": "medium",
+     "path": "nfl/production/board/player_board.py",
+     "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+    },
+    {
+     "rule": "BROAD_EXCEPT_PASS_ADDED",
+     "severity": "medium",
+     "path": "nfl/production/review/dossier.py",
+     "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+    }
+   ]
+  },
+  {
+   "sha": "ff43615db2",
+   "subject": "DEF-060 narrowed from 36 to 6, and the six are not obscure",
+   "verdict": "FINDINGS",
+   "n_files": 3,
+   "findings": [
+    {
+     "rule": "TEST_FUNCTION_REMOVED",
+     "severity": "high",
+     "path": "nfl/tests/test_dfs_universe_completeness.py",
+     "detail": "test_production_manifest_readers_go_through_the_union was removed, renamed or shadowed"
+    },
+    {
+     "rule": "BROAD_EXCEPT_PASS_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_dfs_universe_completeness.py",
+     "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+    },
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_dfs_universe_completeness.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "0f8859d827",
+   "subject": "DEF-060: the DK universe is assembled from one layer, and there are two",
+   "verdict": "FINDINGS",
+   "n_files": 3,
+   "findings": [
+    {
+     "rule": "BROAD_EXCEPT_PASS_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_dfs_universe_completeness.py",
+     "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+    },
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_dfs_universe_completeness.py",
+     "detail": "2 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "15d4ae656c",
+   "subject": "DEF-059: five wiring defects that would have refused the first armed run",
+   "verdict": "FINDINGS",
+   "n_files": 6,
+   "findings": [
+    {
+     "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+     "severity": "medium",
+     "path": "nfl/tests/test_mock_worker.py",
+     "detail": "test_it_writes_a_real_change_for_the_real_ingest: 1 comparison(s) removed, loosened or altered (operator, number or tripwire condition)"
+    }
+   ]
+  },
+  {
+   "sha": "5ec6c70290",
+   "subject": "Guard the spending gate from the branch that cannot see it",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "cb6ffff4ea",
+   "subject": "An acceptance test I cannot talk my way through",
+   "verdict": "CLEAN",
+   "n_files": 3,
+   "findings": []
+  },
+  {
+   "sha": "6ad1203ac2",
+   "subject": "Transport deployed and recorded; the stale-ref trap gets a guard",
+   "verdict": "FINDINGS",
+   "n_files": 7,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "nfl/governance/OWNER_APPROVAL_QUEUE.jsonl",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    },
+    {
+     "rule": "BROAD_EXCEPT_PASS_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/remote_ref_freshness.py",
+     "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+    }
+   ]
+  },
+  {
+   "sha": "5c6d4ecb9c",
+   "subject": "DEF-058 CRITICAL: MOCK was computed at the worker and then ignored",
+   "verdict": "FINDINGS",
+   "n_files": 5,
+   "findings": [
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_mock_worker.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "e3bda6b404",
+   "subject": "suite progress log from the transport audit runs",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "1fe848dd39",
+   "subject": "DEF-057 CRITICAL: the worker containment boundary never fired",
+   "verdict": "CLEAN",
+   "n_files": 4,
+   "findings": []
+  },
+  {
+   "sha": "81e1a9f0bb",
+   "subject": "Cover amend_defect: success, refusal, and the jump it must not allow",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "b324ee624e",
+   "subject": "DEF-053/DEF-056: the timers that never fire, and a fix of mine that never shipped",
+   "verdict": "FINDINGS",
+   "n_files": 4,
+   "findings": [
+    {
+     "rule": "BROAD_EXCEPT_PASS_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_scheduled_workflow_pinning.py",
+     "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+    },
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_scheduled_workflow_pinning.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "6e3f612830",
+   "subject": "DEF-055: the autonomous loop has no cold start",
+   "verdict": "FINDINGS",
+   "n_files": 5,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": ".github/workflows/agent-orchestrator-heartbeat.yml",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    },
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "nfl/governance/OWNER_APPROVAL_QUEUE.jsonl",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    },
+    {
+     "rule": "BROAD_EXCEPT_PASS_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_autonomy_transport.py",
+     "detail": "2 new broad exception swallow(s) (an error silenced is a failure hidden)"
+    },
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_autonomy_transport.py",
+     "detail": "2 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "157dbb26e0",
+   "subject": "Daily shards, and the ordering bug my own test caught before the live writer moved",
+   "verdict": "FINDINGS",
+   "n_files": 3,
+   "findings": [
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_manifest_store.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "771c03f576",
+   "subject": "Approvals are non-blocking in code, the board is pinned, and four more workflows run the wrong tree",
+   "verdict": "FINDINGS",
+   "n_files": 8,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": ".github/workflows/nfl-product-board.yml",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    },
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "nfl/governance/OWNER_APPROVAL_QUEUE.jsonl",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    },
+    {
+     "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+     "severity": "medium",
+     "path": "nfl/tests/test_governance_ledgers.py",
+     "detail": "test_G_escalation_is_event_driven: 3 comparison(s) removed, loosened or altered (operator, number or tripwire condition)"
+    },
+    {
+     "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+     "severity": "medium",
+     "path": "nfl/tests/test_governance_ledgers.py",
+     "detail": "test_N_every_verified_row_names_where_it_ran: 1 comparison(s) removed, loosened or altered (operator, number or tripwire condition)"
+    }
+   ]
+  },
+  {
+   "sha": "04a7730719",
+   "subject": "A row parked on a decided approval is authorized work in hiding",
+   "verdict": "CLEAN",
+   "n_files": 5,
+   "findings": []
+  },
+  {
+   "sha": "0d42a2a3ee",
+   "subject": "A repair is not VERIFIED where it does not run, and main has not run the system since 15 September",
+   "verdict": "FINDINGS",
+   "n_files": 7,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "nfl/governance/OWNER_APPROVAL_QUEUE.jsonl",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    }
+   ]
+  },
+  {
+   "sha": "2922e8c731",
+   "subject": "DEF-047 root-caused: --week defaulted to 1, so the board asked for last month",
+   "verdict": "CLEAN",
+   "n_files": 5,
+   "findings": []
+  },
+  {
+   "sha": "8cb772a088",
+   "subject": "DEF-012: discovery, not extraction repair, and the pin may not move",
+   "verdict": "FINDINGS",
+   "n_files": 6,
+   "findings": [
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_source_discovery.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "1a67734f43",
+   "subject": "DEF-012 diagnosed: the inactives URL is a landing page, and \"not yet\" was a claim nobody checked",
+   "verdict": "FINDINGS",
+   "n_files": 6,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "nfl/governance/OWNER_APPROVAL_QUEUE.jsonl",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    },
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_deferral_escalation.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "ad5b683131",
+   "subject": "Withdraw the capture-stall alarm; the extractor is the defect, and it is live",
+   "verdict": "FINDINGS",
+   "n_files": 5,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "nfl/governance/OWNER_APPROVAL_QUEUE.jsonl",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    }
+   ]
+  },
+  {
+   "sha": "9b29471fdc",
+   "subject": "Source liveness, a scheduler that ranks a dark feed above a refactor, and a contract for auditors",
+   "verdict": "FINDINGS",
+   "n_files": 12,
+   "findings": [
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_capture_cadence.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "9ca1339809",
+   "subject": "Two ledgers and one derived state, so \"unresolved\" stops meaning \"stop\"",
+   "verdict": "FINDINGS",
+   "n_files": 7,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "nfl/governance/OWNER_APPROVAL_QUEUE.jsonl",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    },
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_governance_ledgers.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "1cec293e3b",
+   "subject": "Two authoritative sources went dark before kickoff and nothing said so",
+   "verdict": "CLEAN",
+   "n_files": 4,
+   "findings": []
+  },
+  {
+   "sha": "b8496ad61d",
+   "subject": "Artifact hash consistency verifies; replay determinism is declared blocked",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "d57f05c2f7",
+   "subject": "suite_progress: order runs by the file, not by the key",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "b49d97b4c1",
+   "subject": "Identity: an abbreviated name that fits two men is refused, never resolved",
+   "verdict": "CLEAN",
+   "n_files": 3,
+   "findings": []
+  },
+  {
+   "sha": "4083f4c690",
+   "subject": "Storage: census the manifest's 54 consumers before anyone estimates the blast radius",
+   "verdict": "FINDINGS",
+   "n_files": 3,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "nfl/research/audit/OWNER_DECISIONS_QUARANTINE.md",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    }
+   ]
+  },
+  {
+   "sha": "917f010137",
+   "subject": "Ratchet the audit's counts, and make suite progress survive a second run",
+   "verdict": "FINDINGS",
+   "n_files": 5,
+   "findings": [
+    {
+     "rule": "VERIFICATION_MACHINERY_CHANGED",
+     "severity": "high",
+     "path": "nfl/tests/run_suite.py",
+     "detail": "the machinery that decides what counts as proof changed"
+    }
+   ]
+  },
+  {
+   "sha": "55c1c5f501",
+   "subject": "Suite: emit as it runs, and close the gap that hid 49 of my own checks",
+   "verdict": "FINDINGS",
+   "n_files": 4,
+   "findings": [
+    {
+     "rule": "VERIFICATION_MACHINERY_CHANGED",
+     "severity": "high",
+     "path": "nfl/tests/run_suite.py",
+     "detail": "the machinery that decides what counts as proof changed"
+    },
+    {
+     "rule": "CHECK_HELPER_CHANGED",
+     "severity": "medium",
+     "path": "nfl/tests/test_gate_enforcement.py",
+     "detail": "the module's check() helper changed"
+    },
+    {
+     "rule": "CHECK_HELPER_CHANGED",
+     "severity": "medium",
+     "path": "nfl/tests/test_join_completeness.py",
+     "detail": "the module's check() helper changed"
+    }
+   ]
+  },
+  {
+   "sha": "3753aec802",
+   "subject": "Enforcement: a fired gate now stops the consumer",
+   "verdict": "FINDINGS",
+   "n_files": 3,
+   "findings": [
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_gate_enforcement.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "7b39067835",
+   "subject": "Turn the audit's central lesson into a contract that refuses",
+   "verdict": "FINDINGS",
+   "n_files": 5,
+   "findings": [
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_join_completeness.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "67c71299fc",
+   "subject": "Full audit: nine gates nobody calls, and 35 modules pinned to a game in September",
+   "verdict": "CLEAN",
+   "n_files": 3,
+   "findings": []
+  },
+  {
+   "sha": "8d63b6ce37",
+   "subject": "Day audit: the gates were right, and the winning shape was invisible to us",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "321e483280",
+   "subject": "DK upload artifact for ATL/GB, plus run residue from the selection pass",
+   "verdict": "CLEAN",
+   "n_files": 3,
+   "findings": []
+  },
+  {
+   "sha": "853a55c149",
+   "subject": "Post-inactive research portfolio, with the one adjustment named",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "3b2cf1cd55",
+   "subject": "Secondary inactives relay: the model had Atlanta's quarterback backwards",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "545d4a9ea9",
+   "subject": "Ticket: the suite runner returns nothing under any time bound",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "6c395aa0e7",
+   "subject": "REG-1: retest prior defects, and correct one of my own claims",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "590b6b0859",
+   "subject": "A1: the evidence boundary holds at the contract and not downstream",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "072e658a31",
+   "subject": "Work the gap AUDIT-0 found: refusal branches, not success codes",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "a4d49d4b09",
+   "subject": "AUDIT-0: trace the execution path, and find the suite proves the wrong thing",
+   "verdict": "CLEAN",
+   "n_files": 3,
+   "findings": []
+  },
+  {
+   "sha": "0b68b352be",
+   "subject": "A6: name and store the conditioning event, do not leave it to a ratio",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "fa7d42353a",
+   "subject": "ADV-1: fourteen hostile plausible inputs, each refused by name",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "aa09037bd8",
+   "subject": "RESEARCH_DFS_PORTFOLIO_NOT_JOINT-WORLD_VALIDATED",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "bd53ff463d",
+   "subject": "Outbox: the two pre-lock items that need bytes we do not have",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "261549eca4",
+   "subject": "A3: the detector that would have caught the ESPN cap on day one",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "47ab23c507",
+   "subject": "A2: seven axes a source answers separately",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "285aa721e2",
+   "subject": "DFS-1: refuse a lineup the engine cannot account for",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "814f09b71a",
+   "subject": "Record the DFS product directive, and measure why it cannot be served yet",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "e87fbe140d",
+   "subject": "A5 + a real freshness defect: FRESH meant \"nobody checked\"",
+   "verdict": "FINDINGS",
+   "n_files": 3,
+   "findings": [
+    {
+     "rule": "BROAD_EXCEPT_PASS_ADDED",
+     "severity": "medium",
+     "path": "nfl/truth/run_input.py",
+     "detail": "2 new broad exception swallow(s) (an error silenced is a failure hidden)"
+    }
+   ]
+  },
+  {
+   "sha": "f85001a0d7",
+   "subject": "A9: register tonight's forecast cut, before kickoff",
+   "verdict": "CLEAN",
+   "n_files": 3,
+   "findings": []
+  },
+  {
+   "sha": "cc53a820ca",
+   "subject": "Prepare the post-inactive verification, before the list arrives",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "2e6137b950",
+   "subject": "Register unavailable_owns_nothing and give it a runner",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "a36334790b",
+   "subject": "Withdraw the QB over-hedge ticket: already measured on n=699",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "93ea91adf9",
+   "subject": "A declared-OUT player holds the highest WR gadget share in the game",
+   "verdict": "CLEAN",
+   "n_files": 3,
+   "findings": []
+  },
+  {
+   "sha": "fa8e90108a",
+   "subject": "Ticket: the vintage manifest will block pushes around 9 October",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "5f71a18d24",
+   "subject": "Separate the conditional and unconditional player means",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "94eb2265eb",
+   "subject": "Audit the capture surface and the QB allocation; two findings, one ticket",
+   "verdict": "CLEAN",
+   "n_files": 4,
+   "findings": []
+  },
+  {
+   "sha": "86f426db17",
+   "subject": "Segment the inactives parser against real populated documents",
+   "verdict": "FINDINGS",
+   "n_files": 3,
+   "findings": [
+    {
+     "rule": "TEST_FUNCTION_REMOVED",
+     "severity": "high",
+     "path": "nfl/tests/test_official_inactives_parser.py",
+     "detail": "test_the_empty_state_page_is_refused_by_name was removed, renamed or shadowed"
+    },
+    {
+     "rule": "TEST_FUNCTION_REMOVED",
+     "severity": "high",
+     "path": "nfl/tests/test_official_inactives_parser.py",
+     "detail": "test_every_preserved_landing_page_is_refused was removed, renamed or shadowed"
+    },
+    {
+     "rule": "TEST_FUNCTION_REMOVED",
+     "severity": "high",
+     "path": "nfl/tests/test_official_inactives_parser.py",
+     "detail": "test_the_nfl_weekly_article_parses was removed, renamed or shadowed"
+    },
+    {
+     "rule": "TEST_FUNCTION_REMOVED",
+     "severity": "high",
+     "path": "nfl/tests/test_official_inactives_parser.py",
+     "detail": "test_the_operator_relay_parses_to_the_same_shape was removed, renamed or shadowed"
+    },
+    {
+     "rule": "TEST_FUNCTION_REMOVED",
+     "severity": "high",
+     "path": "nfl/tests/test_official_inactives_parser.py",
+     "detail": "test_absence_is_never_converted_into_presence was removed, renamed or shadowed"
+    },
+    {
+     "rule": "TEST_FUNCTION_REMOVED",
+     "severity": "high",
+     "path": "nfl/tests/test_official_inactives_parser.py",
+     "detail": "test_an_agent_authored_report_is_not_a_source was removed, renamed or shadowed"
+    },
+    {
+     "rule": "TEST_FUNCTION_REMOVED",
+     "severity": "high",
+     "path": "nfl/tests/test_official_inactives_parser.py",
+     "detail": "test_the_entry_grammar_is_tight was removed, renamed or shadowed"
+    },
+    {
+     "rule": "TEST_FUNCTION_REMOVED",
+     "severity": "high",
+     "path": "nfl/tests/test_official_inactives_parser.py",
+     "detail": "test_empty_and_unparseable_inputs_raise was removed, renamed or shadowed"
+    }
+   ]
+  },
+  {
+   "sha": "b6aaee48cd",
+   "subject": "Parse official inactives, and retract a wrong negative result",
+   "verdict": "FINDINGS",
+   "n_files": 5,
+   "findings": [
+    {
+     "rule": "BROAD_EXCEPT_PASS_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_official_inactives_parser.py",
+     "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+    }
+   ]
+  },
+  {
+   "sha": "8c00bfa9f2",
+   "subject": "DFS: reconcile the DK Showdown pool to canonical identities",
+   "verdict": "CLEAN",
+   "n_files": 6,
+   "findings": []
+  },
+  {
+   "sha": "3bf88b57cd",
+   "subject": "ATL/GB: UNSEALED_RESEARCH_OUTPUT, preserved with its blocker",
+   "verdict": "CLEAN",
+   "n_files": 22,
+   "findings": []
+  },
+  {
+   "sha": "a2605199a8",
+   "subject": "Fix UnboundLocalError 'dr': five stages, one defect",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "500fd6caf6",
+   "subject": "Pinned run-input contract: a forecast consumes named evidence, not newest-local",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "66525e2c7c",
+   "subject": "Ingest 2026 week-2 play-by-play through the governed rank-1 path",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "f8fa215c99",
+   "subject": "Outbox: request a content-bearing ATL/GB official inactives artifact",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "5854e8b120",
+   "subject": "Checkpoint C: carry display names, so the availability feed can be driven",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "9c28171e53",
+   "subject": "Preserve the DK Showdown week-3 pool as the ATL/GB salary contract",
+   "verdict": "CLEAN",
+   "n_files": 3,
+   "findings": []
+  },
+  {
+   "sha": "b603fe01e9",
+   "subject": "ATL/GB game-attribution truth layer from captured vintages",
+   "verdict": "CLEAN",
+   "n_files": 4,
+   "findings": []
+  },
+  {
+   "sha": "93f4c6313a",
+   "subject": "Close the loop: the orchestrator now rings the engineering workflow",
+   "verdict": "FINDINGS",
+   "n_files": 3,
+   "findings": [
+    {
+     "rule": "BROAD_EXCEPT_PASS_ADDED",
+     "severity": "medium",
+     "path": "coordination/orchestrator/github_runtime.py",
+     "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+    }
+   ]
+  },
+  {
+   "sha": "9ffd65c680",
+   "subject": "Check the bridge trigger and permissions by parsing, not by grepping",
+   "verdict": "FINDINGS",
+   "n_files": 1,
+   "findings": [
+    {
+     "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+     "severity": "medium",
+     "path": "nfl/tests/test_bridge.py",
+     "detail": "test_j_the_workflow_carries_the_same_gate: 3 comparison(s) removed, loosened or altered (operator, number or tripwire condition)"
+    },
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_bridge.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "9e9ad2695c",
+   "subject": "Bridge reply builder, and tests for the reply and the workflow gate",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "167c9bed41",
+   "subject": "Bridge gate, and wake the owner reviewer after a successful ingest",
+   "verdict": "CLEAN",
+   "n_files": 3,
+   "findings": []
+  },
+  {
+   "sha": "2cca65d9f6",
+   "subject": "Repair test Z: follow the workflow to main, and check permissions structurally",
+   "verdict": "FINDINGS",
+   "n_files": 1,
+   "findings": [
+    {
+     "rule": "TEST_EARLY_RETURN",
+     "severity": "high",
+     "path": "nfl/tests/test_orchestrator.py",
+     "detail": "test_z_the_engineering_workflow_is_narrow_and_guarded now returns before its checks have run"
+    }
+   ]
+  },
+  {
+   "sha": "65510f60b9",
+   "subject": "Disarm autonomous operation while the entry workflow is changed",
+   "verdict": "FINDINGS",
+   "n_files": 1,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "coordination/AUTOMATION_POLICY.json",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    }
+   ]
+  },
+  {
+   "sha": "edc8fd13e5",
+   "subject": "ENG-001: engineering return REFUSED [RESULT_MALFORMED]",
+   "verdict": "CLEAN",
+   "n_files": 4,
+   "findings": []
+  },
+  {
+   "sha": "477b20c046",
+   "subject": "Arm autonomous operation: enable the loop and set execution_mode LIVE",
+   "verdict": "FINDINGS",
+   "n_files": 1,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "coordination/AUTOMATION_POLICY.json",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    }
+   ]
+  },
+  {
+   "sha": "5231781e5b",
+   "subject": "Remove the engineering workflow that could never be dispatched",
+   "verdict": "FINDINGS",
+   "n_files": 2,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": ".github/workflows/claude-engineering.yml",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    }
+   ]
+  },
+  {
+   "sha": "8d4b9eb4da",
+   "subject": "Engineering moves to the Claude Code Action over subscription OAuth",
+   "verdict": "FINDINGS",
+   "n_files": 11,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": ".github/workflows/claude-engineering.yml",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    },
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "coordination/orchestrator/MODELS.json",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    }
+   ]
+  },
+  {
+   "sha": "1f52c694d3",
+   "subject": "Fail closed on a rejected key or unknown model, and stop tests reaching providers",
+   "verdict": "FINDINGS",
+   "n_files": 5,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "coordination/AUTOMATION_POLICY.json",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    }
+   ]
+  },
+  {
+   "sha": "8ace787c43",
+   "subject": "Record the repository-level LIVE refusal",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "d641a4b81c",
+   "subject": "LIVE authority moves to protected policy, so it survives continuation",
+   "verdict": "FINDINGS",
+   "n_files": 6,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "coordination/AUTOMATION_POLICY.json",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    },
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "coordination/orchestrator/locks.py",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    }
+   ]
+  },
+  {
+   "sha": "c620f5af00",
+   "subject": "Record the repository-level proof of the continuation chain",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "e3b2b68d63",
+   "subject": "proof chain ad88f77c324d: pass 3 ran as Actions run 35819031142",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "324ed6d661",
+   "subject": "proof chain ad88f77c324d: pass 2 ran as Actions run 35818980390",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "7bfa49a1f7",
+   "subject": "proof chain ad88f77c324d: pass 1 ran as Actions run 35818923998",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "d64f20b116",
+   "subject": "orchestrator: receive continuation on the default branch, and prove the event chain",
+   "verdict": "FINDINGS",
+   "n_files": 4,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": ".github/workflows/agent-orchestrator.yml",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    }
+   ]
+  },
+  {
+   "sha": "f7ec73f0a1",
+   "subject": "proof chain localdry: pass 3 ran as Actions run None",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "3cffdbc513",
+   "subject": "proof chain localdry: pass 2 ran as Actions run None",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "4e6a1c4c6e",
+   "subject": "proof chain localdry: pass 1 ran as Actions run None",
+   "verdict": "FINDINGS",
+   "n_files": 2,
+   "findings": [
+    {
+     "rule": "BROAD_EXCEPT_PASS_ADDED",
+     "severity": "medium",
+     "path": "coordination/orchestrator/proof_chain.py",
+     "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+    }
+   ]
+  },
+  {
+   "sha": "7ee10f3806",
+   "subject": "orchestrator: the loop could not have sustained itself, and every live call would have 400ed",
+   "verdict": "FINDINGS",
+   "n_files": 12,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": ".github/workflows/agent-orchestrator.yml",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    },
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "coordination/AUTOMATION_POLICY.json",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    },
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "coordination/orchestrator/MODELS.json",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    },
+    {
+     "rule": "BROAD_EXCEPT_PASS_ADDED",
+     "severity": "medium",
+     "path": "coordination/orchestrator/github_runtime.py",
+     "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+    },
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "coordination/orchestrator/locks.py",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    }
+   ]
+  },
+  {
+   "sha": "b72046075e",
+   "subject": "ENG-001: the return, with the full-suite number and what it does not cover",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "51bcb4543b",
+   "subject": "ENG-001: prove the replay's input set is pinned by the seal alone",
+   "verdict": "FINDINGS",
+   "n_files": 2,
+   "findings": [
+    {
+     "rule": "TEST_FUNCTION_REMOVED",
+     "severity": "high",
+     "path": "nfl/tests/test_replay_pins_its_inputs.py",
+     "detail": "test_c_BUG_no_replay_path_reproduces_from_the_recorded_partitions was removed, renamed or shadowed"
+    }
+   ]
+  },
+  {
+   "sha": "84a8177332",
+   "subject": "coordination: an autonomous runtime, off by default",
+   "verdict": "FINDINGS",
+   "n_files": 22,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": ".github/workflows/agent-orchestrator.yml",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    },
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "coordination/AUTOMATION_POLICY.json",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    },
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "coordination/orchestrator/MODELS.json",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    },
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "coordination/orchestrator/locks.py",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    },
+    {
+     "rule": "BROAD_EXCEPT_PASS_ADDED",
+     "severity": "medium",
+     "path": "coordination/orchestrator/providers.py",
+     "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+    }
+   ]
+  },
+  {
+   "sha": "12645d6422",
+   "subject": "coordination: dispatcher claims ENG-001",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "b16d54d411",
+   "subject": "coordination: refresh PROJECT_STATE.json to 9823ffc",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "9823ffc9e8",
+   "subject": "coordination: stop refresh_state raising a drift alarm that can never clear",
+   "verdict": "FINDINGS",
+   "n_files": 2,
+   "findings": [
+    {
+     "rule": "BROAD_EXCEPT_PASS_ADDED",
+     "severity": "medium",
+     "path": "coordination/refresh_state.py",
+     "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+    }
+   ]
+  },
+  {
+   "sha": "2a15f77910",
+   "subject": "coordination: close the loop so directives no longer travel by copy/paste",
+   "verdict": "CLEAN",
+   "n_files": 10,
+   "findings": []
+  },
+  {
+   "sha": "ba794f4c1e",
+   "subject": "Coordination layer: schemas, authorization gate, and a validator that refused its own first draft",
+   "verdict": "FINDINGS",
+   "n_files": 7,
+   "findings": [
+    {
+     "rule": "APPEND_ONLY_LOG_REWRITTEN",
+     "severity": "high",
+     "path": "coordination/HANDOFF_LOG.jsonl",
+     "detail": "5 existing line(s) removed or changed in an append-only file"
+    },
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "coordination/OWNER_DECISIONS.md",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    },
+    {
+     "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+     "severity": "high",
+     "path": "coordination/PROJECT_STATE.json",
+     "detail": "test_surface.last_full_run_stale: true -> (removed)"
+    },
+    {
+     "rule": "BROAD_EXCEPT_PASS_ADDED",
+     "severity": "medium",
+     "path": "coordination/validate_coordination.py",
+     "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+    }
+   ]
+  },
+  {
+   "sha": "b969554565",
+   "subject": "coordination/: a hub for three agents that do not share a memory",
+   "verdict": "FINDINGS",
+   "n_files": 9,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "coordination/OWNER_DECISIONS.md",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    }
+   ]
+  },
+  {
+   "sha": "f0f393cf7e",
+   "subject": "Q9 reproduction contract, declaration-driven discovery, and a guard that found two more silent modules",
+   "verdict": "FINDINGS",
+   "n_files": 11,
+   "findings": [
+    {
+     "rule": "BROAD_EXCEPT_PASS_ADDED",
+     "severity": "medium",
+     "path": "nfl/production/frozen_candidate.py",
+     "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+    },
+    {
+     "rule": "FROZEN_ARTIFACT_MODIFIED",
+     "severity": "high",
+     "path": "nfl/research/q9b/FREEZE_PIN_DIVERGED.md",
+     "detail": "a write-once artifact was modified, moved or deleted"
+    },
+    {
+     "rule": "VERIFICATION_MACHINERY_CHANGED",
+     "severity": "high",
+     "path": "nfl/tests/run_suite.py",
+     "detail": "the machinery that decides what counts as proof changed"
+    },
+    {
+     "rule": "BROAD_EXCEPT_PASS_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/run_suite.py",
+     "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+    },
+    {
+     "rule": "CONSTANT_TRUE_CHECK_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_appearance_candidate_b.py",
+     "detail": "test_layers_py_is_untouched: 1 check(s) whose condition is true whatever the code does"
+    },
+    {
+     "rule": "CONSTANT_TRUE_CHECK_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_appearance_team_scope.py",
+     "detail": "test_a_the_frozen_layers_module_is_not_edited: 1 check(s) whose condition is true whatever the code does"
+    },
+    {
+     "rule": "CONSTANT_TRUE_CHECK_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_p1_appearance_repair.py",
+     "detail": "test_the_frozen_layer_stack_is_untouched: 1 check(s) whose condition is true whatever the code does"
+    },
+    {
+     "rule": "CONSTANT_TRUE_CHECK_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_qb_eligibility_den_kc.py",
+     "detail": "test_q9_frozen_layers_are_untouched: 1 check(s) whose condition is true whatever the code does"
+    }
+   ]
+  },
+  {
+   "sha": "f2a370631f",
+   "subject": "R18 and R19: two UNKNOWNs settled, and they are the same shape",
+   "verdict": "FINDINGS",
+   "n_files": 1,
+   "findings": [
+    {
+     "rule": "RESULT_STATUS_FLIPPED_TO_PASS",
+     "severity": "high",
+     "path": "nfl/research/integrity/RED_TEST_DAG.md",
+     "detail": "a recorded failure row was deleted"
+    }
+   ]
+  },
+  {
+   "sha": "bb9e5c77c8",
+   "subject": "R9 repaired: three modules' checks were invisible to the runner",
+   "verdict": "CLEAN",
+   "n_files": 4,
+   "findings": []
+  },
+  {
+   "sha": "7d9fc45085",
+   "subject": "Withdraw R15: I read silence as green on six modules that never ran",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "23170d0623",
+   "subject": "Red-surface DAG: 42 modules, 15 root causes, UNKNOWN 20 -> 3",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "a24e06b336",
+   "subject": "Three investigations, and one classification I got wrong",
+   "verdict": "CLEAN",
+   "n_files": 2,
+   "findings": []
+  },
+  {
+   "sha": "f076c04cc2",
+   "subject": "Classify the pre-existing red surface: 42 modules, 10 root causes, 20 UNKNOWN",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "445049fe12",
+   "subject": "Promote draw coherence, with applicability that has to prove itself",
+   "verdict": "FINDINGS",
+   "n_files": 15,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "nfl/production/review/gate.py",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    },
+    {
+     "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+     "severity": "medium",
+     "path": "nfl/tests/test_conservation_integrity.py",
+     "detail": "test_the_gate_advertises_only_what_has_a_producer: 1 comparison(s) removed, loosened or altered (operator, number or tripwire condition)"
+    }
+   ]
+  },
+  {
+   "sha": "fef1230ecc",
+   "subject": "Conservation/coherence wiring: three codes, three invariants, two owners",
+   "verdict": "FINDINGS",
+   "n_files": 5,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "nfl/production/review/gate.py",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    },
+    {
+     "rule": "BROAD_EXCEPT_PASS_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_conservation_integrity.py",
+     "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+    },
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_conservation_integrity.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "dbdc642d7f",
+   "subject": "Dependence admissibility: make dependence measurable before calibrating it",
+   "verdict": "FINDINGS",
+   "n_files": 3,
+   "findings": [
+    {
+     "rule": "BROAD_EXCEPT_PASS_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_dependence.py",
+     "detail": "1 new broad exception swallow(s) (an error silenced is a failure hidden)"
+    },
+    {
+     "rule": "SUPPRESSION_ADDED",
+     "severity": "medium",
+     "path": "nfl/tests/test_dependence.py",
+     "detail": "1 new lint/type/coverage suppression(s)"
+    }
+   ]
+  },
+  {
+   "sha": "43d0c24c2b",
+   "subject": "DFS capability: DraftKings' own support articles raise four claims one rung",
+   "verdict": "CLEAN",
+   "n_files": 4,
+   "findings": []
+  },
+  {
+   "sha": "e3fc7aac95",
+   "subject": "DFS history: archive the contest evidence, model nothing",
+   "verdict": "CLEAN",
+   "n_files": 9,
+   "findings": []
+  },
+  {
+   "sha": "ac6ae9836d",
+   "subject": "Conservation ownership audit: two invariants, not one. No wiring.",
+   "verdict": "CLEAN",
+   "n_files": 1,
+   "findings": []
+  },
+  {
+   "sha": "8e31bd8716",
+   "subject": "Materiality share: an explicit rule, and the simulation-eligibility invariant stated exactly",
+   "verdict": "FINDINGS",
+   "n_files": 4,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "nfl/production/review/gate.py",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    },
+    {
+     "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+     "severity": "medium",
+     "path": "nfl/tests/test_gate_migration.py",
+     "detail": "test_the_team_share_comes_from_canonical_state: 1 comparison(s) removed, loosened or altered (operator, number or tripwire condition)"
+    }
+   ]
+  },
+  {
+   "sha": "bfe4611a17",
+   "subject": "DFS eligibility: canonical will-not-play, a typed exclusion ledger, and a producer that proves it",
+   "verdict": "FINDINGS",
+   "n_files": 13,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "nfl/production/review/gate.py",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    },
+    {
+     "rule": "TEST_COMPARISON_NUMBER_CHANGED",
+     "severity": "medium",
+     "path": "nfl/tests/test_integrity_producers.py",
+     "detail": "test_the_clean_fixture_passes_with_every_invariant_checked: 1 comparison(s) removed, loosened or altered (operator, number or tripwire condition)"
+    }
+   ]
+  },
+  {
+   "sha": "d0edafe1a5",
+   "subject": "Integrity producers: the gate consumes findings it no longer pretends to make",
+   "verdict": "FINDINGS",
+   "n_files": 10,
+   "findings": [
+    {
+     "rule": "GOVERNANCE_OR_SAFEGUARD_CHANGED",
+     "severity": "high",
+     "path": "nfl/production/review/gate.py",
+     "detail": "an owner-authority or approval file, or a safeguard itself, changed"
+    }
+   ]
+  }
+ ]
+}
