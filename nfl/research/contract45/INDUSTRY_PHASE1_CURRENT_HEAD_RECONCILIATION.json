@@ -1,0 +1,401 @@
+{
+ "audited_head": "b88200de308a402dbb96a84832353ee90e99d2a1",
+ "implementation_head": "4c80a7129f30dbf107054d9cfb46c480ed8d6ca0",
+ "branch": "claude/nfl-greenfield-architecture-stsxmk",
+ "scope": "read-only reconciliation before shadow implementation",
+ "written_at_utc": "2026-10-11T17:12:07.211686+00:00",
+ "python_files_changed_since_audited_head": [],
+ "bundle": {
+  "zip": "NFL_DFS_Claude_Single_Drop_Handoff_2026-10-11.zip",
+  "bundle_manifest_sha256": "ae0a42cf6b501e221a5d00d78395e4b34d42d9f840efa80e0980babe5d3580f6",
+  "verifier_exit": 0,
+  "verifier_state": "PASS",
+  "verifier_receipt_sha256": "eaefeacff4cdd34564e87ac91b9cdeb63077b65718f1da5949d172a568ba800f",
+  "NOT_COMMITTED": "the bundle stays outside this public repository: it carries owner contest data and third-party research"
+ },
+ "findings": [
+  {
+   "finding_id": "F01",
+   "source": "PERPLEXITY_PHASE1",
+   "boundary": "nfl/postgame/classic_week.py:standings:233-236 (players[name] overwritten per row, last slot and last contest win); :302-303 actual_points copies it; nfl/postgame/classic_week_report.py:exposure_quality:316 labels it field_ownership",
+   "state": "STILL_PRESENT",
+   "evidence": {
+    "files": [
+     {
+      "path": "nfl/postgame/classic_week.py",
+      "blob_at_b88200de": "e1796bcf8d6a497a330f298c89e68774c92a3006",
+      "blob_at_head": "e1796bcf8d6a497a330f298c89e68774c92a3006",
+      "unchanged": true
+     },
+     {
+      "path": "nfl/postgame/classic_week_report.py",
+      "blob_at_b88200de": "1a90850306b68d12a4f03e19bcc26a694362ce80",
+      "blob_at_head": "1a90850306b68d12a4f03e19bcc26a694362ce80",
+      "unchanged": true
+     }
+    ],
+    "read_at_head": "each cited line range was read at HEAD in this session, not inferred from the unchanged blob alone"
+   },
+   "action": "NEW_SHADOW_TEST (E00): two-slot and two-contest fixture through standings -> actual_points -> exposure_quality; fix by reusing standings_addendum per-slot aggregation"
+  },
+  {
+   "finding_id": "F02",
+   "source": "PERPLEXITY_PHASE1",
+   "boundary": "nfl/field/contest_intelligence.py:build:130-136,169-176,200-204; nfl/postgame/standings_addendum.py:137-158 (sum over slots; all-entry denominator; reconciliation refusal)",
+   "state": "ALREADY_FIXED",
+   "evidence": {
+    "files": [
+     {
+      "path": "nfl/field/contest_intelligence.py",
+      "blob_at_b88200de": "625911265ef959a376d5ab9c1b9b2e8c01292322",
+      "blob_at_head": "625911265ef959a376d5ab9c1b9b2e8c01292322",
+      "unchanged": true
+     },
+     {
+      "path": "nfl/postgame/standings_addendum.py",
+      "blob_at_b88200de": "b33e13bae5f7d47ca0956abf00717c98ee8a7440",
+      "blob_at_head": "b33e13bae5f7d47ca0956abf00717c98ee8a7440",
+      "unchanged": true
+     }
+    ],
+    "read_at_head": "each cited line range was read at HEAD in this session, not inferred from the unchanged blob alone"
+   },
+   "action": "REUSE_EXISTING_FIX (source of the E00 repair for F01)"
+  },
+  {
+   "finding_id": "F03",
+   "source": "PERPLEXITY_PHASE1",
+   "boundary": "nfl/research/external_strategy/stokastic_tb_dal_2026W5/scripts/own.py:48 (opt = best lineup of the R1 candidate pool; comparator computed postgame)",
+   "state": "STILL_PRESENT",
+   "evidence": {
+    "files": [
+     {
+      "path": "nfl/research/external_strategy/stokastic_tb_dal_2026W5/scripts/own.py",
+      "blob_at_b88200de": "df6d78a8361e916635ff4f6270529643ae82e5de",
+      "blob_at_head": "df6d78a8361e916635ff4f6270529643ae82e5de",
+      "unchanged": true
+     }
+    ],
+    "read_at_head": "each cited line range was read at HEAD in this session, not inferred from the unchanged blob alone"
+   },
+   "action": "NEW_SHADOW_TEST (E00): label unrestricted / policy-filtered / candidate-pool-best optimal rates separately; record declaration vs execution time"
+  },
+  {
+   "finding_id": "F04",
+   "source": "PERPLEXITY_PHASE1",
+   "boundary": "docs/NFL_SHOWDOWN_TOURNAMENT_PLAN_2026-10-09.md:71-82 (B4/B3S Spearman 0.71, sum ratio 0.16, bar [1/1.5,1.5] FAILED)",
+   "state": "STILL_PRESENT",
+   "evidence": {
+    "files": [
+     {
+      "path": "docs/NFL_SHOWDOWN_TOURNAMENT_PLAN_2026-10-09.md",
+      "blob_at_b88200de": "4cae9ee56525a165a722201b9a9857223b4035f8",
+      "blob_at_head": "4cae9ee56525a165a722201b9a9857223b4035f8",
+      "unchanged": true
+     }
+    ],
+    "read_at_head": "each cited line range was read at HEAD in this session, not inferred from the unchanged blob alone"
+   },
+   "action": "PRESERVE_FROZEN_FAILURE; challenger under a new id (E04)"
+  },
+  {
+   "finding_id": "F05",
+   "source": "PERPLEXITY_PHASE1",
+   "boundary": "WEEK5_SUNDAY_PRELOCK_BOARD.md P0-1 table (lines 54-92 at b88200de; board grew by 10 lines at e21176c9, content of the table unchanged): team volume, targets, efficiency, scoring and opponent DST do not respond to QB identity (W5-G18)",
+   "state": "STILL_PRESENT",
+   "evidence": {
+    "files": [
+     {
+      "path": "nfl/dfs/salaries/classic_early_2026W5/WEEK5_SUNDAY_PRELOCK_BOARD.md",
+      "blob_at_b88200de": "fa4d22dfcbb9262f497d99bf5bbe47c297464140",
+      "blob_at_head": "48974cf2e78d3e08ea85e81c641de81fc9762105",
+      "unchanged": false
+     }
+    ],
+    "read_at_head": "each cited line range was read at HEAD in this session, not inferred from the unchanged blob alone"
+   },
+   "action": "NEW_SHADOW_TEST (P1/E05): rebind a clean Williams-start counterfactual; QB-trait perturbation fixture through proj_v1.team_volume (proj_v1.py:167 takes no QB argument)"
+  },
+  {
+   "finding_id": "F06",
+   "source": "PERPLEXITY_PHASE1",
+   "boundary": "nfl/tools/classic_slate_run.py:efficiency_worlds:73-130 (independent per-player factor :113; INTs :126) -> _write_worlds:168-185; raw-simulator causes nfl/sim/game.py:360,383,472,487,515",
+   "state": "STILL_PRESENT",
+   "evidence": {
+    "files": [
+     {
+      "path": "nfl/tools/classic_slate_run.py",
+      "blob_at_b88200de": "1d2c5cf3235c12c1314029f7737b012ad5bd9d65",
+      "blob_at_head": "1d2c5cf3235c12c1314029f7737b012ad5bd9d65",
+      "unchanged": true
+     },
+     {
+      "path": "nfl/sim/game.py",
+      "blob_at_b88200de": "ec3ff257aa1ea6ed3514b187bbd92206c09ca6d6",
+      "blob_at_head": "ec3ff257aa1ea6ed3514b187bbd92206c09ca6d6",
+      "unchanged": true
+     }
+    ],
+    "read_at_head": "each cited line range was read at HEAD in this session, not inferred from the unchanged blob alone"
+   },
+   "action": "NEW_SHADOW_TEST + build on nfl/sim/event_consistent_worlds.py (bd895bb3, shadow; SC-COH-1 failed its predictive bar, which stays recorded); wire world_accounting_check as a pipeline gate"
+  },
+  {
+   "finding_id": "F07",
+   "source": "PERPLEXITY_PHASE1",
+   "boundary": "nfl/tools/showdown_next_slate.py:355-365,395-405 (failed build exits refused; shadows after upload)",
+   "state": "ALREADY_FIXED",
+   "evidence": {
+    "files": [
+     {
+      "path": "nfl/tools/showdown_next_slate.py",
+      "blob_at_b88200de": "20a557ef6d793247ba294237b2026757a80934f3",
+      "blob_at_head": "20a557ef6d793247ba294237b2026757a80934f3",
+      "unchanged": true
+     }
+    ],
+    "read_at_head": "each cited line range was read at HEAD in this session, not inferred from the unchanged blob alone"
+   },
+   "action": "REUSE_EXISTING_FIX (pattern for the Classic shadow isolation)"
+  },
+  {
+   "finding_id": "F08",
+   "source": "PERPLEXITY_PHASE1",
+   "boundary": "nfl/opt/classic_portfolio.py:PROFILE_BY_ENTRY_COUNT:94-96 (profile chosen by owner entry count, not by contest entry limit)",
+   "state": "STILL_PRESENT",
+   "evidence": {
+    "files": [
+     {
+      "path": "nfl/opt/classic_portfolio.py",
+      "blob_at_b88200de": "674da3561736942f7cdf838b26a6cafc941526a0",
+      "blob_at_head": "674da3561736942f7cdf838b26a6cafc941526a0",
+      "unchanged": true
+     }
+    ],
+    "read_at_head": "each cited line range was read at HEAD in this session, not inferred from the unchanged blob alone"
+   },
+   "action": "NEW_SHADOW_TEST (E01/P0-4): profile keyed by contest id with the contest's own declared limit; refuse inference from owner entry count"
+  },
+  {
+   "finding_id": "F09",
+   "source": "PERPLEXITY_PHASE1",
+   "boundary": "docs/PRODUCTION_CHANGE_DECISION_BOARD.md:50-75 (C1 _chart_rank shadow; C2 appearance successor FAILED gate; C3 coherence repair failed superiority/NI)",
+   "state": "STILL_PRESENT",
+   "evidence": {
+    "files": [
+     {
+      "path": "docs/PRODUCTION_CHANGE_DECISION_BOARD.md",
+      "blob_at_b88200de": "b99db63e37a009d36b940416d0d72cdf24ab635b",
+      "blob_at_head": "b99db63e37a009d36b940416d0d72cdf24ab635b",
+      "unchanged": true
+     }
+    ],
+    "read_at_head": "each cited line range was read at HEAD in this session, not inferred from the unchanged blob alone"
+   },
+   "action": "PRESERVE: new participation and coherence candidates get NEW ids and NEW preregistrations; the failed ones are not relabelled"
+  },
+  {
+   "finding_id": "F10",
+   "source": "PERPLEXITY_PHASE1",
+   "boundary": "nfl/opt/classic_portfolio.py:13-27 objective (fieldless quantile proxy); nfl/tools/showdown_portfolio.py:18-31,996-1001",
+   "state": "STILL_PRESENT",
+   "evidence": {
+    "files": [
+     {
+      "path": "nfl/opt/classic_portfolio.py",
+      "blob_at_b88200de": "674da3561736942f7cdf838b26a6cafc941526a0",
+      "blob_at_head": "674da3561736942f7cdf838b26a6cafc941526a0",
+      "unchanged": true
+     },
+     {
+      "path": "nfl/tools/showdown_portfolio.py",
+      "blob_at_b88200de": "966df95b2e5613066074a55811bfe19632ddabee",
+      "blob_at_head": "966df95b2e5613066074a55811bfe19632ddabee",
+      "unchanged": true
+     }
+    ],
+    "read_at_head": "each cited line range was read at HEAD in this session, not inferred from the unchanged blob alone"
+   },
+   "action": "NEW_SHADOW_TEST (E07) after E02-E05"
+  },
+  {
+   "finding_id": "F11",
+   "source": "PERPLEXITY_PHASE1",
+   "boundary": "nfl/tools/showdown_portfolio.py:996-1001 and nfl/field/ownership.py:1-30 say no field/ownership model exists, while shadows exist (nfl/field/showdown_shadow_field.py, showdown_dupe_shadow.py)",
+   "state": "STILL_PRESENT",
+   "evidence": {
+    "files": [
+     {
+      "path": "nfl/tools/showdown_portfolio.py",
+      "blob_at_b88200de": "966df95b2e5613066074a55811bfe19632ddabee",
+      "blob_at_head": "966df95b2e5613066074a55811bfe19632ddabee",
+      "unchanged": true
+     },
+     {
+      "path": "nfl/field/ownership.py",
+      "blob_at_b88200de": "8e70824f50dc1bf9b9174dcbbb910b92cbf6f888",
+      "blob_at_head": "8e70824f50dc1bf9b9174dcbbb910b92cbf6f888",
+      "unchanged": true
+     }
+    ],
+    "read_at_head": "each cited line range was read at HEAD in this session, not inferred from the unchanged blob alone"
+   },
+   "action": "DOC CORRECTION: \"not approved for consumption\" instead of \"absent\""
+  },
+  {
+   "finding_id": "F12",
+   "source": "PERPLEXITY_PHASE1",
+   "boundary": "nfl/opt/classic_portfolio.py:load:142-151 (market-arm refusal; projection-hash check at :145-147)",
+   "state": "STILL_PRESENT",
+   "evidence": {
+    "files": [
+     {
+      "path": "nfl/opt/classic_portfolio.py",
+      "blob_at_b88200de": "674da3561736942f7cdf838b26a6cafc941526a0",
+      "blob_at_head": "674da3561736942f7cdf838b26a6cafc941526a0",
+      "unchanged": true
+     }
+    ],
+    "read_at_head": "each cited line range was read at HEAD in this session, not inferred from the unchanged blob alone"
+   },
+   "action": "NEW_SHADOW_TEST: perturb a market field and prove the football outputs are byte-identical"
+  },
+  {
+   "finding_id": "F13",
+   "source": "PERPLEXITY_PHASE1",
+   "boundary": "prelock_2026-10-11/POST_INACTIVES_FORENSIC_1618Z.txt:5-13 (team volume identical before/after inactives: a declared fixed-volume policy)",
+   "state": "STILL_PRESENT",
+   "evidence": {
+    "files": [
+     {
+      "path": "nfl/dfs/salaries/classic_early_2026W5/prelock_2026-10-11/POST_INACTIVES_FORENSIC_1618Z.txt",
+      "blob_at_b88200de": "7584e841b63de5b7da2792cbcef6d9c05b93186d",
+      "blob_at_head": "7584e841b63de5b7da2792cbcef6d9c05b93186d",
+      "unchanged": true
+     }
+    ],
+    "read_at_head": "each cited line range was read at HEAD in this session, not inferred from the unchanged blob alone"
+   },
+   "action": "PRESERVE semantics: fixed team volume is a policy, not an invariant; the participation work (P1) must allow measured volume/efficiency response"
+  },
+  {
+   "finding_id": "L01",
+   "source": "CLAUDE_TASK45_AUDIT",
+   "boundary": "nfl/opt/classic_portfolio.py:22-23 docstring says \"Each contest is optimised ... from its own candidate pool\"; :397-410 caches candidates per pool kind and select() is deterministic, so the two 20-max contests (196461815, 196461816) received identical 20 lineups",
+   "state": "STILL_PRESENT",
+   "evidence": {
+    "files": [
+     {
+      "path": "nfl/opt/classic_portfolio.py",
+      "blob_at_b88200de": "674da3561736942f7cdf838b26a6cafc941526a0",
+      "blob_at_head": "674da3561736942f7cdf838b26a6cafc941526a0",
+      "unchanged": true
+     }
+    ],
+    "read_at_head": "each cited line range was read at HEAD in this session, not inferred from the unchanged blob alone"
+   },
+   "action": "NEW_TEST then fix (P0-4)"
+  },
+  {
+   "finding_id": "L02",
+   "source": "CLAUDE_TASK45_AUDIT",
+   "boundary": "nfl/tools/sunday_evidence.py:91 statuses ACTIVE|INACTIVE only; no participation state. McLaurin restriction reached DK_2026W5_EARLY_STATE.json only as note text \"Restriction NOT MODELLED\"",
+   "state": "STILL_PRESENT",
+   "evidence": {
+    "files": [
+     {
+      "path": "nfl/tools/sunday_evidence.py",
+      "blob_at_b88200de": "7aa9d58c9a116ff7a85cc6f9268f4ef8ec746a24",
+      "blob_at_head": "7aa9d58c9a116ff7a85cc6f9268f4ef8ec746a24",
+      "unchanged": true
+     }
+    ],
+    "read_at_head": "each cited line range was read at HEAD in this session, not inferred from the unchanged blob alone"
+   },
+   "action": "NEW_TEST then schema extension (P1-1)"
+  },
+  {
+   "finding_id": "L03",
+   "source": "CLAUDE_TASK45_AUDIT",
+   "boundary": "nfl/tools/classic_slate_run.py:299 writes state_sha256; no Classic consumer reads it",
+   "state": "STILL_PRESENT",
+   "evidence": {
+    "files": [
+     {
+      "path": "nfl/tools/classic_slate_run.py",
+      "blob_at_b88200de": "1d2c5cf3235c12c1314029f7737b012ad5bd9d65",
+      "blob_at_head": "1d2c5cf3235c12c1314029f7737b012ad5bd9d65",
+      "unchanged": true
+     },
+     {
+      "path": "nfl/opt/classic_portfolio.py",
+      "blob_at_b88200de": "674da3561736942f7cdf838b26a6cafc941526a0",
+      "blob_at_head": "674da3561736942f7cdf838b26a6cafc941526a0",
+      "unchanged": true
+     }
+    ],
+    "read_at_head": "each cited line range was read at HEAD in this session, not inferred from the unchanged blob alone"
+   },
+   "action": "NEW_TEST then lineage gate (P0-2)"
+  },
+  {
+   "finding_id": "L04",
+   "source": "CLAUDE_TASK45_AUDIT",
+   "boundary": "release states CURRENT_AND_CERTIFIED/CURRENT_BUT_UNCERTIFIED/STALE_FORECAST/SELECTION_ONLY_OVERRIDE/BLOCKED exist in no .py file",
+   "state": "STILL_PRESENT",
+   "evidence": {
+    "files": [],
+    "read_at_head": "each cited line range was read at HEAD in this session, not inferred from the unchanged blob alone"
+   },
+   "action": "NEW_TEST then release-record module (P0-2)"
+  },
+  {
+   "finding_id": "L05",
+   "source": "CLAUDE_TASK45_AUDIT",
+   "boundary": "nfl/tools/classic_upload_verify.py:141 hard-wired to the production upload path; a tagged sensitivity CSV cannot be verified",
+   "state": "STILL_PRESENT",
+   "evidence": {
+    "files": [
+     {
+      "path": "nfl/tools/classic_upload_verify.py",
+      "blob_at_b88200de": "6f88ed1166122e3804023082f5615c15bbd0a118",
+      "blob_at_head": "6f88ed1166122e3804023082f5615c15bbd0a118",
+      "unchanged": true
+     }
+    ],
+    "read_at_head": "each cited line range was read at HEAD in this session, not inferred from the unchanged blob alone"
+   },
+   "action": "NEW_TEST then fix (P0-2)"
+  },
+  {
+   "finding_id": "L06",
+   "source": "CLAUDE_TASK45_AUDIT",
+   "boundary": "no Week-5 run of nfl/tools/classic_slate_pipeline.py (DK_2026W5_EARLY_RUN_LEDGER.json absent); world_accounting_check not a stage",
+   "state": "STILL_PRESENT",
+   "evidence": {
+    "files": [
+     {
+      "path": "nfl/tools/classic_slate_pipeline.py",
+      "blob_at_b88200de": "24a1a546bc02832fde5e1dc3341813796ba393ca",
+      "blob_at_head": "24a1a546bc02832fde5e1dc3341813796ba393ca",
+      "unchanged": true
+     }
+    ],
+    "read_at_head": "each cited line range was read at HEAD in this session, not inferred from the unchanged blob alone"
+   },
+   "action": "NEW_TEST then pipeline stage (P0-3/P0-5)"
+  },
+  {
+   "finding_id": "L07",
+   "source": "CLAUDE_TASK45_AUDIT",
+   "boundary": "tests write tracked files when run directly: nfl/dfs/salaries/DK_UPLOAD_GENERATED.csv, SLATE_STATUS_BOARD.json, SLATE_STATUS_BOARD.md (reproduced in an overlay, 2026-10-11 17:04-17:07Z)",
+   "state": "STILL_PRESENT",
+   "evidence": {
+    "files": [],
+    "read_at_head": "each cited line range was read at HEAD in this session, not inferred from the unchanged blob alone"
+   },
+   "action": "NEW_TEST then isolation guard (P0-1)"
+  }
+ ],
+ "production_authorization": "NONE_FROM_THIS_HANDOFF"
+}
