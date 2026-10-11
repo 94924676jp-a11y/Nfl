@@ -388,10 +388,17 @@
   {
    "finding_id": "L07",
    "source": "CLAUDE_TASK45_AUDIT",
-   "boundary": "tests write tracked files when run directly: nfl/dfs/salaries/DK_UPLOAD_GENERATED.csv, SLATE_STATUS_BOARD.json, SLATE_STATUS_BOARD.md (reproduced in an overlay, 2026-10-11 17:04-17:07Z)",
+   "boundary": "nfl/tools/slate_to_portfolio.py (via nfl/tests/test_slate_to_portfolio.py) writes tracked nfl/dfs/salaries/DK_UPLOAD_GENERATED.csv, SLATE_STATUS_BOARD.json and SLATE_STATUS_BOARD.md when run directly (reproduced in an overlay, 2026-10-11 17:04-17:07Z). CORRECTED 17:15Z: test_sunday_prelock_p0 does NOT write the live state (research_universe forces write=False, classic_slate_state.py:231-237), and run_suite.py does not isolate writes (its boundary line is the mode check).",
    "state": "STILL_PRESENT",
    "evidence": {
-    "files": [],
+    "files": [
+     {
+      "path": "nfl/tools/slate_to_portfolio.py"
+     },
+     {
+      "path": "nfl/tests/test_slate_to_portfolio.py"
+     }
+    ],
     "read_at_head": "each cited line range was read at HEAD in this session, not inferred from the unchanged blob alone"
    },
    "action": "NEW_TEST then isolation guard (P0-1)"

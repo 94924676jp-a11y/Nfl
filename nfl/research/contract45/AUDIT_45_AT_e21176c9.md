@@ -245,8 +245,11 @@ The code made this possible because `exclude` + `tag` is an ordinary path throug
 | `nfl/derived/SOURCE_MEASUREMENT_CACHE.json` | ignored |
 | `nfl/tests/_control_hits.jsonl` | ignored |
 
-- Under `run_suite.py` the state root is isolated ("boundary CLEAN"). So the runner protects the tree; running a test file directly does not.
-- Running `test_sunday_prelock_p0.py` directly outside an overlay can still overwrite the live `DK_2026W5_EARLY_STATE.json` (`classic_slate_state.build`, `write=True`).
+- **Which module writes the tracked files.** `nfl/tools/slate_to_portfolio.py`, through `test_slate_to_portfolio`, writes `DK_UPLOAD_GENERATED.csv` and `SLATE_STATUS_BOARD.*` (grep for both names: these are the only two `.py` files that use them).
+- **Correction (17:15 UTC).** An earlier version of this section, and `CURRENT_STATE_AUDIT.md` R-7, made two claims that were wrong.
+  - *Claim 1:* that `test_sunday_prelock_p0.py` can overwrite the live `DK_2026W5_EARLY_STATE.json`. It cannot. It passes `research_universe=`, and that forces `write = False` (`classic_slate_state.py:231-237`).
+  - *Claim 2:* that `run_suite.py` isolates the state root. It does not. Its "boundary CLEAN" line is the mode-boundary check (`run_suite.py:364-370`). Under it, the run still wrote `.git/index`, `nfl/tests/_suite_progress.jsonl` and `nfl/tests/DETECTOR_VALIDATION.json` into the overlay.
+  - Both are withdrawn. **The isolation defect is real but narrower than claimed:** one tracked-file writer, plus the runner's own bookkeeping files.
 
 ## 7. Summary verdict
 
