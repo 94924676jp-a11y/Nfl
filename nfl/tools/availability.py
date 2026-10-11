@@ -108,8 +108,18 @@ STATUS_REQUIRES_TIER = {
 NO_OFFENSIVE_ROLE = 'NO_OFFENSIVE_ROLE_ROSTER_POSITION'
 TIER_ROSTER_POSITION = 'CLUB_ROSTER_POSITION_CAPTURED'
 
+#: NOT ON THE ACTIVE ROSTER: the club's captured roster lists him on a reserve list (RES: injured reserve,
+#: PUP, NFI), the exempt list (EXE) or as released (CUT) for this week. He cannot take a snap unless the club
+#: activates him, so for opportunity he is absent. Owner ruling 2026-10-11 (week-5 prelock): the DK-pool
+#: state had handed club volume to such players (Josh Jacobs EXE, De'Von Achane RES, ...), understating their
+#: active teammates by about 3 DK points per club. This is roster membership, not a game-day inactive decision.
+NOT_ON_ACTIVE_ROSTER_CAPTURED = 'NOT_ON_ACTIVE_ROSTER_CAPTURED'
+TIER_ROSTER_STATUS = 'CLUB_ROSTER_STATUS_CAPTURED'
+ROSTER_STATUSES_NOT_ACTIVE = ('RES', 'EXE', 'CUT')
+
 ABSENT_STATUSES = (CONFIRMED_INACTIVE, REPORTED_INACTIVE_OFFICIAL_RELEASE_CITED,
-                   REPORTED_INACTIVE_HIGH_CONFIDENCE, REPORTED_OUT_UNVERIFIED, NO_OFFENSIVE_ROLE)
+                   REPORTED_INACTIVE_HIGH_CONFIDENCE, REPORTED_OUT_UNVERIFIED, NO_OFFENSIVE_ROLE,
+                   NOT_ON_ACTIVE_ROSTER_CAPTURED)
 
 #: Statuses that are NOT a claim of absence and must never be treated as one.
 NOT_A_CLAIM_OF_ABSENCE = (UNKNOWN, UNKNOWN_NOT_RELAYED, UNKNOWN_ACTIVE_STATE,

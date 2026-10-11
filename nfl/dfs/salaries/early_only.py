@@ -85,7 +85,20 @@ SLATES = {
     # No DK file for this slate exists in the repository (owner request open, docs/AGENT_OUTBOX.md).
     # The football universe is built from the roster capture instead (nfl/tools/research_universe.py);
     # the entries/pool blobs are added here when a DK export arrives, and only then can it be priced.
-    '2026W5': {'entries_blob': None, 'entries_sha': None, 'salary_blob': None,
+    # The owner's DKEntries_64.csv (OWNER_MANUAL_EXPORT, ingested 2026-10-10T22:13:27Z, INBOX_LEDGER.jsonl). The
+    # sha256 is the inbox ledger's hash of the uncompressed bytes, re-verified on read. It also carries the pool.
+    '2026W5': {'entries_blob': _REPO / 'nfl' / 'dfs' / 'inbox' / 'store' / 'DK_ENTRIES.f2bc2d72d22b0d35.csv.gz',
+               'entries_sha': 'f2bc2d72d22b0d35fc684cd8dc709a7312c77903ad5fc0cedc8ce959207c822c',
+               'salary_blob': None,
+               'roster_capture': 'nfl/vintage/weekly_rosters.8729b73ef500cdf9.raw.csv.gz',
+               'transactions': 'nfl/dfs/salaries/classic_early_2026W5/transactions/TRANSACTIONS_2026W5.json',
+               # RES in the 10-10 07:41Z roster capture (unchanged at 10-11 13:13Z); activation reported Saturday
+               # only through the ESPN injury feed (capture 20261011T131306Z), not yet in any roster capture.
+               'roster_activation_reported': {
+                   '00-0033375': 'Tim Patrick (NYJ): "The Jets activated Patrick (groin) from injured reserve '
+                                 'Saturday" -- ESPN feed 2026-10-11T00:24Z',
+                   '00-0040509': 'Ben Yurosek (MIN): "The Vikings activated Yurosek (ankle) from injured reserve '
+                                 'Saturday" -- ESPN feed 2026-10-11T01:52Z'},
                'kickoff': '10/11/2026 01:00PM ET'},
 }
 

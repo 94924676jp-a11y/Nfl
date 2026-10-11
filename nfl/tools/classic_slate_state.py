@@ -297,6 +297,19 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
     qb_chart = captured_qb_depth(as_of)
 
     officials = {n.strip() for n in (official_inactives or ())}
+    # ROSTER MEMBERSHIP (owner ruling 2026-10-11). A slate that declares its roster capture gets each player's
+    # captured roster status for this week; RES / EXE / CUT is not on the active roster. A club activation
+    # reported only outside a capture is recorded per player in `roster_activation_reported` and leaves him as
+    # he was (still blocked at upload by the roster-eligibility gate until it is captured or relayed).
+    roster_status, activation_reported = {}, dict(files.get('roster_activation_reported') or {})
+    if files.get('roster_capture') and research_universe is None:
+        from nfl.tools import roster_eligibility as RE_
+        rr = RE_.roster_rows(_REPO / files['roster_capture'], season, week)
+        if not rr:
+            return Outcome.blocked('CLASSIC_STATE_ROSTER_CAPTURE_EMPTY',
+                                   f'{files["roster_capture"]} has no rows for {season} week {week}',
+                                   cause=Cause.DATA)
+        roster_status = {r['gsis_id']: r['status'] for r in rr if r.get('gsis_id')}
     # ------------------------------------------------------------------ Sunday evidence packet
     pres, pstart, complete_clubs = {}, {}, set()
     if evidence_packet:
@@ -321,6 +334,9 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
     # packet absences feed the depth logic too: the next healthy player moves up behind them
     out_gsis |= {(ids.get(dk) or {}).get('gsis_id') for dk, v in pres.items()
                  if v['status'] in AV.ABSENT_STATUSES and (ids.get(dk) or {}).get('gsis_id')}
+    reserve_gsis = {g for g, st_ in roster_status.items()
+                    if st_ in AV.ROSTER_STATUSES_NOT_ACTIVE and g not in activation_reported}
+    out_gsis |= reserve_gsis
     for r in pool_rows:
         dk_id, nm, team, pos = r['dk_id'], r['dk_name'], r['team'], r['dk_pos']
         rec = ids.get(dk_id) or {}
@@ -354,6 +370,8 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
             resolution = pres[dk_id]
         elif team in complete_clubs and status not in AV.ABSENT_STATUSES:
             status, tier = AV.ACTIVE_NOT_ON_INACTIVE_LIST, AV.TIER_OFFICIAL_CAPTURED
+        if (gsis in reserve_gsis and dk_id not in pres and status not in AV.ABSENT_STATUSES):
+            status, tier = AV.NOT_ON_ACTIVE_ROSTER_CAPTURED, AV.TIER_ROSTER_STATUS
         if dk_id in unresolved_ids:
             status, tier = AV.UNKNOWN_ACTIVE_STATE, AV.TIER_NONE
         status_counts[status] += 1
@@ -384,6 +402,8 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
                 # the secondary body part is part of the record (Jeanty: Ankle, Foot; Keenan Allen: rest, Groin)
                 'injury_secondary': (ir or {}).get('report_secondary_injury') or None,
                 'resolution': resolution,
+                'roster_status_captured': roster_status.get(gsis) if gsis else None,
+                'roster_activation_reported': activation_reported.get(gsis) if gsis else None,
                 'IS_NOT': ('a game-day inactive decision unless the status is CONFIRMED_INACTIVE, '
                            'which requires a captured official document'),
             },

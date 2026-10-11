@@ -53,7 +53,9 @@ UPLOAD_FILE = 'FINAL_DK_UPLOAD_POST_INACTIVES.csv'
 #: OWNER SCOPE (2026-10-04): the 8 Early Only 1:00 PM ET games, (away, home). Nothing else may appear in
 #: the pool, a lineup, an exposure/stack/game table, the upload, or the Hard Rock board.
 EARLY_ONLY_GAMES = {'2026W4': frozenset({('ARI', 'NYG'), ('NE', 'BUF'), ('NYJ', 'CHI'), ('DAL', 'HOU'),
-                                         ('LA', 'PHI'), ('GB', 'TB'), ('TEN', 'BAL'), ('JAX', 'CIN')})}
+                                         ('LA', 'PHI'), ('GB', 'TB'), ('TEN', 'BAL'), ('JAX', 'CIN')}),
+                    '2026W5': frozenset({('CHI', 'GB'), ('CIN', 'MIA'), ('CLE', 'NYJ'), ('HOU', 'TEN'),
+                                         ('IND', 'PIT'), ('LV', 'NE'), ('MIN', 'NO'), ('NYG', 'WAS')})}
 EARLY_ONLY_KICKOFF = '01:00PM ET'
 UPLOAD_SLOTS = ('QB', 'RB', 'WR', 'TE', 'FLEX', 'DST')
 
