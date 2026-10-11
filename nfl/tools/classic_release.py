@@ -93,7 +93,13 @@ OPEN_FORECAST_DEFECTS = {
 #: and adds COHERENT_WORLDS_PREDICTIVE_UNVALIDATED (the event-consistent worlds' predecessor SC-COH-1 failed its
 #: predictive bars; structural laws now hold by construction). W5-G18 and L4 are unchanged in this arm.
 CORRECTED_ARM_DEFECTS = {
-    **{k: v for k, v in OPEN_FORECAST_DEFECTS.items() if k not in ('NO_PARTICIPATION_STATE', 'APPEARANCE_NOT_DRAWN')},
+    **{k: v for k, v in OPEN_FORECAST_DEFECTS.items()
+       if k not in ('NO_PARTICIPATION_STATE', 'APPEARANCE_NOT_DRAWN', 'W5-G18_QB_NOT_CONDITIONED')},
+    'W5-G18_QB_PARTLY_CONDITIONED': 'receiver yards follow the QB (ECW QB anchor) and club pass volume follows the '
+                                    'QBCTX-DB1 starter deviation (prospective only, NOT_YET_EVALUABLE); scoring and the '
+                                    'opposing DST still do not depend on quarterback identity',
+    'SIM-D10_CATCHES_BINOMIAL': 'catches given targets are drawn binomially; history is less dispersed in low-share bands '
+                                '(nfl/research/accounting_repair/ECW3_ACCEPTANCE_MEASURE.md)',
     'PARTICIPATION_PM3_UNVALIDATED': 'per-world participation from PM-1/PM-3 (nfl/research/participation_pm1): P(no play) '
                                      'validated held-out, phi prospective only, role band mapped from the projection',
     'APPEARANCE_NOT_DRAWN_FOR_UNDESIGNATED_DEPTH': 'players not on the injury report keep p_plays folded into mean shares',
@@ -260,7 +266,9 @@ def evaluate(slate_id: str, *, tag: str = '', latest_packet=None, out_dir=None, 
         note, pt = res.get('note') or '', res.get('participation') or {}
         limited = pt.get('expectation') not in (None, 'FULL')
         modelled = bool((prows.get(k) or {}).get('participation_model')) or k in arm_modelled
-        if (limited and not modelled) or 'NOT MODELLED' in note.upper():
+        # a model that consumed the player supersedes the packet's 'NOT MODELLED' note, which was written about the
+        # incumbent engine (2026-10-11 20:17Z: the CORRECTED_V1 arm modelled McLaurin and was still listed)
+        if not modelled and (limited or 'NOT MODELLED' in note.upper()):
             unmod.append({'dk_id': k, 'name': p.get('name'), 'team': p.get('team'),
                           'participation': pt or None, 'note': note[:240]})
     rec['evidence']['unmodelled'] = unmod
@@ -312,6 +320,9 @@ def evaluate(slate_id: str, *, tag: str = '', latest_packet=None, out_dir=None, 
     rec['lock'] = {'kickoff_utc': ko, 'portfolio_built_at_utc': built,
                    'portfolio_built_before_lock': (bool(ko and built) and
                                                    dt.datetime.fromisoformat(built) < dt.datetime.fromisoformat(ko))}
+    if ko and built and not rec['lock']['portfolio_built_before_lock']:
+        # a lineup built at or after kickoff cannot be the one entered; a replay may build it, never release it
+        blocked.append(f'BUILT_AFTER_LOCK portfolio built {built} against kickoff {ko}')
 
     # OVERRIDE: players removed from every pool with no forecast change.
     sens = po.get('sensitivity') or {}

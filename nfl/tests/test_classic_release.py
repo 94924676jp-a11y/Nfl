@@ -262,6 +262,17 @@ def test_06_each_requirement_fails_alone():
             cases.append(('a portfolio built outside the ledgered run cannot be certified (NOT_ORCHESTRATED)',
                           r['release_state'] == R.CURRENT_BUT_UNCERTIFIED
                           and any('NOT_ORCHESTRATED' in x for x in r['reasons']['uncertified']), r['reasons']))
+            # g3) built at or after kickoff: a replay may build it, nothing may release it
+            p['run_id'] = None
+            real_built = p.get('built_at_utc')
+            p['built_at_utc'] = '2099-12-31T00:00:00+00:00'
+            pf.write_text(json.dumps(p))
+            r = R.evaluate(slate, latest_packet=pk, out_dir=d, now=NOW)
+            cases.append(('a portfolio built after kickoff is BLOCKED (BUILT_AFTER_LOCK)',
+                          r['release_state'] == R.BLOCKED
+                          and any('BUILT_AFTER_LOCK' in x for x in r['reasons']['blocking']), r['reasons']))
+            p['built_at_utc'] = real_built
+            pf.write_text(json.dumps(p))
             # h) a missing artifact
             pathlib.Path(f'{b}_WORLDS.npz').unlink()
             r = R.evaluate(slate, latest_packet=pk, out_dir=d, now=NOW)
@@ -270,6 +281,23 @@ def test_06_each_requirement_fails_alone():
             check(label, ok, det)
     finally:
         R.world_accounting, R.OPEN_FORECAST_DEFECTS = real_wa, real_def
+
+
+def test_06b_a_model_that_consumed_the_player_supersedes_the_not_modelled_note():
+    print('\n06b. the McLaurin note says NOT MODELLED of the incumbent; an arm that modelled him is not listed')
+    with tempfile.TemporaryDirectory() as d:
+        d = _unpack(['prod_1617Z'], pathlib.Path(d))
+        r0 = R.evaluate('2026W5', latest_packet=PKT_1610, out_dir=d, now=NOW, run_accounting=False)
+        mcl = next(u for u in r0['evidence']['unmodelled'] if u['name'] == 'Terry McLaurin')
+        dp = d / 'DK_2026W5_EARLY_DRAWS.json'
+        dr = json.loads(dp.read_text())
+        dr['arm'] = 'CORRECTED_V1'
+        dr['participation'] = {'designated': {'Terry McLaurin|WAS': {'dk_id': mcl['dk_id']}}}
+        dp.write_text(json.dumps(dr))
+        r1 = R.evaluate('2026W5', latest_packet=PKT_1610, out_dir=d, now=NOW, run_accounting=False)
+    check('incumbent: listed as unmodelled evidence', bool(mcl))
+    check('an arm whose draws record him as designated and modelled: not listed',
+          not any(u['name'] == 'Terry McLaurin' for u in r1['evidence']['unmodelled']), r1['evidence']['unmodelled'])
 
 
 def test_07_build_writes_only_where_told():
