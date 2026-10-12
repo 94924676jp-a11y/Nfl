@@ -63,10 +63,45 @@ def fetch(kind: str, season: int) -> dict:
     return rec
 
 
+def restore() -> int:
+    """Re-fetch every RECORDED file missing from disk and keep it only if its SHA-256 equals the recorded one.
+
+    The injuries files are not redistributed by this repository (NOTICE.md, owner decision 2026-10-12), so a fresh
+    checkout reproduces PM-1 with this. An upstream file that has changed since 2026-10-11 is REFUSED, never
+    substituted: PM-1's tables were computed on the recorded bytes."""
+    rec = json.loads(RECORD.read_text())
+    bad = 0
+    for r in rec['files']:
+        if r.get('state') != 'STORED':
+            continue
+        out = _REPO / r['path']
+        if out.exists():
+            continue
+        try:
+            with urllib.request.urlopen(r['url'], timeout=120) as h:
+                body = h.read()
+        except Exception as e:  # noqa: BLE001
+            print(f"REFUSED FETCH_FAILED {r['path']}: {type(e).__name__}: {e}")
+            bad += 1
+            continue
+        sha = hashlib.sha256(body).hexdigest()
+        if sha != r['sha256']:
+            print(f"REFUSED UPSTREAM_CHANGED {r['path']}: got {sha[:16]}, recorded {r['sha256'][:16]}")
+            bad += 1
+            continue
+        out.write_bytes(gzip.compress(body, compresslevel=9, mtime=0))
+        print(f"RESTORED {r['path']}")
+    return 1 if bad else 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument('--seasons', default='2016-2025')
+    ap.add_argument('--restore', action='store_true',
+                    help='re-fetch recorded files missing from disk, refusing any whose bytes differ from the record')
     a = ap.parse_args()
+    if a.restore:
+        return restore()
     lo, hi = (int(x) for x in a.seasons.split('-'))
     prev = json.loads(RECORD.read_text()) if RECORD.exists() else {'ARTIFACT': 'PM1_ACQUISITION', 'files': []}
     for s in range(lo, hi + 1):
