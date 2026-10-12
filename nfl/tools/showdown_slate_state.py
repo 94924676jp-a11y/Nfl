@@ -262,7 +262,7 @@ def chart_from_capture(csv_path, clubs, capture_id):
     return out
 
 
-def build(export, *, designations=None, official_inactives=None,
+def build(export, *, designations=None, official_inactives=None, roster_blocked=None,
           confirmed_starters=None, depth_chart=None) -> Outcome:
     """Emit the POST-shaped state for one showdown slate.
 
@@ -407,7 +407,13 @@ def build(export, *, designations=None, official_inactives=None,
     specialists, returner_review = {}, {}
     for dk_id, p in flat.items():
         nm = p['name']
-        if nm in officials:
+        if nm in (roster_blocked or {}):
+            # NOT ON THE ACTIVE ROSTER for this week (reserve list, practice squad without an elevation record): he cannot
+            # play, so he is absent HERE, before the projection, and his share is reallocated like any absence. Until
+            # 2026-10-12 these players were excluded only at lineup selection while the simulator still gave them
+            # opportunity (BUF@LAR: 14 players, 3.4 projected DK, among them Ronnie Rivers RES and Terrance Ferguson RES).
+            status, tier = AV.NOT_ON_ACTIVE_ROSTER_CAPTURED, AV.TIER_ROSTER_STATUS
+        elif nm in officials:
             # HIGH CONFIDENCE, NOT CONFIRMED. The inactive list reaches us relayed -- beat reporters
             # and an aggregator -- not as an official document this system captured. The standing rule
             # is that an aggregator list stays REPORTED_INACTIVE_HIGH_CONFIDENCE and never becomes
@@ -527,6 +533,7 @@ def build(export, *, designations=None, official_inactives=None,
                                         'activity would activate the slate on no evidence.'),
             'designations_not_matched_to_the_slate': unmatched_desig,
             'evidence_names_aliased_to_dk': aliased,
+            'roster_blocked_before_projection': dict(roster_blocked or {}),
         },
         'specialist_safety': {
             'auto_enabled': SPECIALIST_AUTO,

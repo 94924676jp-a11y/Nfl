@@ -77,8 +77,12 @@ def classify(pool, rosters, inactives=(), transactions=None, elevations=()):
             out[(name, club)] = {'eligible': True, 'reason': 'TEAM_DEFENCE', 'evidence': 'by construction'}
             continue
         rc = CLUB.get(club, club)
+        # the declared availability.NAME_ALIASES too (2026-10-12: DK 'Joshua Palmer' read NOT_ON_WEEK_ROSTER against the
+        # roster's 'Josh Palmer')
+        from nfl.tools.availability import NAME_ALIASES as _NA
+        al2 = _NA.get((name, club)) or _NA.get((name, rc)) or ''
         rr = (by.get((name, rc)) or by.get((ALIASES.get(name, ''), rc)) or by.get(('~' + _norm(name), rc))
-              or by.get(('~' + _norm(ALIASES.get(name, '')), rc)) or [])
+              or by.get(('~' + _norm(ALIASES.get(name, '')), rc)) or by.get((al2, rc)) or [])
         st = sorted({r['status'] for r in rr})
         if name in tx:
             res = (False, 'RELEASED', tx[name])

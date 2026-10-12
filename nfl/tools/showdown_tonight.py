@@ -26,7 +26,7 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 
-def roster_blocked(export, tag, roster_capture, official_inactives=None, transactions=None, elevations=None):
+def roster_blocked(export, tag, roster_capture, official_inactives=None, transactions=None, elevations=None, reasons=False):
     """Names the roster-eligibility gate blocks (nfl.tools.roster_eligibility): no positive roster evidence -> blocked.
     The optimizer must never select them; the release gate (showdown_run_guards.upload_roster_eligibility) refuses an
     upload that carries one anyway. Empty capture week is an error, never 'nobody blocked'."""
@@ -36,6 +36,8 @@ def roster_blocked(export, tag, roster_capture, official_inactives=None, transac
     if not rows:
         raise RuntimeError(f'ROSTER_CAPTURE_EMPTY_WEEK {roster_capture} {season} week {week}')
     res = E.classify(E.dk_pool(export), rows, official_inactives or (), transactions or {}, elevations or ())
+    if reasons:
+        return {n: v['reason'] for (n, _c), v in res.items() if not v['eligible']}
     return sorted({n for (n, _c), v in res.items() if not v['eligible']})
 
 
@@ -66,7 +68,13 @@ def run(export, tag, scenario, designations=None, outs=(), official_inactives=No
         cid = 'nflverse_depth_charts_' + _h.sha256(pathlib.Path(depth_chart_csv).read_bytes()).hexdigest()[:16]
         chart = SSS.chart_from_capture(depth_chart_csv, [SSS.S.corpus_team(t) for t in tag.split('_2026')[0].split('_')],
                                        cid)   # the state's clubs are corpus codes (LAR -> LA)
-    st = SSS.build(export, designations=desig, official_inactives=official_inactives,
+    # the roster status is applied UPSTREAM (state -> projection -> worlds), not only at selection; the inactive list
+    # keeps its own path, so only roster reasons are passed here
+    rb = None
+    if roster_gate:
+        _rg = {k: v for k, v in roster_gate.items() if k != 'official_inactives'}
+        rb = {n: r for n, r in roster_blocked(export, tag, reasons=True, **_rg).items() if r != 'GAME_DAY_INACTIVE'}
+    st = SSS.build(export, designations=desig, official_inactives=official_inactives, roster_blocked=rb,
                    confirmed_starters=confirmed_starters, depth_chart=chart)
     print('state', st.state.value, st.code, st.detail, flush=True)
     if st.state.value != 'PASS':
