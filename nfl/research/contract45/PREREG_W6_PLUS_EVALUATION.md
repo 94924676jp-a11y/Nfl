@@ -1,6 +1,6 @@
 # Pre-registration: how CORRECTED_V1 is graded from Week 6, and which weeks can confirm anything
 
-- **Written:** 2026-10-12 at about 13:22 UTC (09:22 ET), before any 2026 Week 6 game. The commit time is
+- **Written:** 2026-10-12 at 13:20 UTC (09:20 ET), before any 2026 Week 6 game. The commit time is
   authoritative.
 - **Why:** owner review step 2. The Week 5 receiver-spread result stays FAIL. The new statistic (C3) was designed
   after Week 5 was seen, so the weeks that follow have to be split into those that can confirm and those that cannot.
