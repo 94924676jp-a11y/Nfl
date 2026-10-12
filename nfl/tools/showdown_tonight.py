@@ -64,7 +64,8 @@ def run(export, tag, scenario, designations=None, outs=(), official_inactives=No
     if depth_chart_csv:
         import hashlib as _h
         cid = 'nflverse_depth_charts_' + _h.sha256(pathlib.Path(depth_chart_csv).read_bytes()).hexdigest()[:16]
-        chart = SSS.chart_from_capture(depth_chart_csv, tag.split('_2026')[0].split('_'), cid)
+        chart = SSS.chart_from_capture(depth_chart_csv, [SSS.S.corpus_team(t) for t in tag.split('_2026')[0].split('_')],
+                                       cid)   # the state's clubs are corpus codes (LAR -> LA)
     st = SSS.build(export, designations=desig, official_inactives=official_inactives,
                    confirmed_starters=confirmed_starters, depth_chart=chart)
     print('state', st.state.value, st.code, st.detail, flush=True)

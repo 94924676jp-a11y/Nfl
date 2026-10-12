@@ -32,11 +32,21 @@ def build(injuries, season, week, teams, adds=(), note=None, counterfactual_remo
             if r.get('season') == str(season) and r.get('week') == str(week) and r.get('team') in teams]
     if not rows:
         raise SystemExit(f'NO_INJURY_ROWS season {season} week {week} teams {sorted(teams)} (an empty report is not "nobody injured")')
-    des, practice_only, unknown = {}, [], []
+    # PER TEAM, not only in total (2026-10-12: --teams BUF,LAR returned Buffalo's rows and silently none for the Rams,
+    # whom nflverse files as LA). A requested club with no row is an identity error, not a healthy roster.
+    missing = sorted(t for t in teams if not any(r.get('team') == t for r in rows))
+    if missing:
+        raise SystemExit(f'NO_INJURY_ROWS_FOR_TEAM {missing} season {season} week {week}: nflverse club codes '
+                         f'(e.g. LA, not LAR) are required; an absent club is not "nobody injured"')
+    des, practice_only, unknown, detail = {}, [], [], {}
     for r in rows:
         st = (r.get('report_status') or '').strip().lower()
         if st in MAP:
             des[r['full_name']] = MAP[st]
+            detail[r['full_name']] = {'team': r.get('team'), 'gsis_id': r.get('gsis_id'),
+                                      'practice_status': r.get('practice_status'),
+                                      'injury': r.get('report_primary_injury'),
+                                      'injury_secondary': r.get('report_secondary_injury')}
         elif st:
             unknown.append({'player': r['full_name'], 'report_status': r['report_status']})
         else:
@@ -58,6 +68,7 @@ def build(injuries, season, week, teams, adds=(), note=None, counterfactual_remo
     prov = {'ARTIFACT': 'DESIGNATIONS_PROVENANCE', 'source': str(injuries), 'source_sha256': hashlib.sha256(raw).hexdigest(),
             'season': season, 'week': week, 'teams': sorted(teams), 'n_report_rows': len(rows),
             'formal_designations': {k: v for k, v in des.items() if k not in hyp},
+            'formal_detail': detail,
             'SCENARIO_HYPOTHESIS': hyp, 'scenario_note': note,
             'COUNTERFACTUAL_REMOVED_FORMAL_STATUS': cf,
             'practice_only_no_formal_status': practice_only,

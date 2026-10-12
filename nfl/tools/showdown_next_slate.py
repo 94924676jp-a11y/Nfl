@@ -151,13 +151,18 @@ def verify_football_inputs(cfg, mode):
     want = sorted(cfg['tag'].split('_2026')[0].split('_'))
     if teams != want:
         raise SlateError(f'SLATE_TEAMS_MISMATCH export {teams} tag {want}')
+    # CLUB CODES are compared in the corpus (nflverse) code on both sides: DraftKings prices the Rams as LAR, nflverse
+    # files them as LA (showdown_to_portfolio.TEAM_ALIAS). Before 2026-10-12 BUF@LAR every Showdown slate used identical
+    # codes, so a starters file or depth chart in either code would have been refused here or silently missed later.
+    from nfl.tools.showdown_to_portfolio import corpus_team
+    cteams = sorted(corpus_team(t) for t in teams)
     starters = json.loads((_REPO / cfg['confirmed_starters']).read_text())
-    if sorted(set(starters.values())) != teams:
+    if sorted({corpus_team(v) for v in starters.values()}) != cteams:
         raise SlateError(f'STARTERS_NOT_CONFIRMED_FOR_BOTH_CLUBS {starters}')
     import csv
-    clubs = {r.get('club_code') or r.get('team') for r in csv.DictReader(open(_REPO / cfg['depth_chart']))}
-    if not set(teams) <= clubs:
-        raise SlateError(f'DEPTH_CHART_DOES_NOT_COVER_BOTH_CLUBS has {sorted(c for c in clubs if c)} need {teams}')
+    clubs = {corpus_team(r.get('club_code') or r.get('team') or '') for r in csv.DictReader(open(_REPO / cfg['depth_chart']))}
+    if not set(cteams) <= clubs:
+        raise SlateError(f'DEPTH_CHART_DOES_NOT_COVER_BOTH_CLUBS has {sorted(c for c in clubs if c)} need {cteams}')
     out = {'dk_input_gate': g.code, 'dk_sha256': g.value['sha256'], 'teams': teams,
            'contests_in_export': sorted(g.value['contests'])}
     unknown = sorted(set(g.value['contests']) - set(cfg['contests']))

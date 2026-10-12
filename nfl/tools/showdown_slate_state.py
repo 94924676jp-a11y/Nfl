@@ -183,7 +183,7 @@ def _starter_context(name, club, confirmed):
         club if name in set(confirmed) else None)
     if want is None:
         return {}
-    if isinstance(confirmed, dict) and str(want).upper() != str(club).upper():
+    if isinstance(confirmed, dict) and S.corpus_team(str(want).upper()) != S.corpus_team(str(club).upper()):
         return {
             'state': 'STARTER_EVIDENCE_REJECTED_CLUB_MISMATCH',
             'in_predicted_starting_group': False,
@@ -306,7 +306,8 @@ def build(export, *, designations=None, official_inactives=None,
         return env
 
     # IDENTITY, through the production resolver.
-    flat = {v['flex']['dk_id']: {'name': v['name'], 'team': v['team'], 'position': v['position']}
+    flat = {v['flex']['dk_id']: {'name': v['name'], 'team': v['team'], 'position': v['position'],
+                                 'dk_team': v.get('dk_team', v['team'])}
             for v in slate['players'].values()}
     ids, unresolved, suffixed = proj_v1.resolve_slate_identities({'players': flat},
                                                                  player_prior.name_index())
@@ -329,10 +330,39 @@ def build(export, *, designations=None, official_inactives=None,
             f'refused rather than defaulted, because a silent default turns a DOUBTFUL into an '
             f'absence or an OUT into a maybe.', known=sorted(DESIGNATION_MAP))
     officials = {n.strip() for n in (official_inactives or ())}
+    # DECLARED ALIASES, applied to the evidence names (2026-10-12 BUF@LAR: the injury report names "Josh Palmer" OUT and
+    # DraftKings prices "Joshua Palmer"; an exact-name match dropped the designation and left an OUT receiver projected).
+    # availability.NAME_ALIASES maps (DK name, club) -> the roster name the evidence uses; each entry is a verified
+    # identity, not a fuzzy match. Every rename is recorded.
+    aliased = []
+    for dk_id, p in flat.items():
+        a = AV.NAME_ALIASES.get((p['name'], p['team'])) or AV.NAME_ALIASES.get((p['name'], S.corpus_team(p['team'])))
+        if not a or a == p['name']:
+            continue
+        if a in desig and p['name'] not in desig:
+            desig[p['name']] = desig.pop(a)
+            aliased.append({'evidence_name': a, 'dk_name': p['name'], 'club': p['team'], 'kind': 'designation'})
+        if a in officials and p['name'] not in officials:
+            officials.discard(a)
+            officials.add(p['name'])
+            aliased.append({'evidence_name': a, 'dk_name': p['name'], 'club': p['team'], 'kind': 'official_inactive'})
     by_name = collections.defaultdict(list)
     for dk_id, p in flat.items():
         by_name[p['name']].append(dk_id)
     unmatched_desig = sorted(n for n in desig if n not in by_name)
+    # FAIL CLOSED on an unmatched evidence name that IS a priced player under another spelling: the roster index ties
+    # the name to a gsis id this slate prices, so dropping it would project a player the evidence removed.
+    _ix = player_prior.name_index()
+    _slate_gsis = {(ids.get(dk) or {}).get('gsis_id'): flat[dk]['name'] for dk in flat}
+    _slate_gsis.pop(None, None)
+    priced_mismatch = sorted({(n, _slate_gsis[g]) for n in list(unmatched_desig) + sorted(n for n in officials
+                              if n not in by_name) for g in (_ix.get(n) or {}) if g in _slate_gsis})
+    if priced_mismatch:
+        return Outcome.fail(
+            'SLATE_STATE_EVIDENCE_NAME_IS_A_PRICED_PLAYER',
+            f'{len(priced_mismatch)} designation/inactive name(s) match no DK name but resolve to a priced player '
+            f'{priced_mismatch}. Add the verified pair to availability.NAME_ALIASES; dropping the evidence would '
+            f'project a player it removed.', pairs=priced_mismatch)
     unmatched_official = sorted(n for n in officials if n not in by_name)
     # AN INACTIVE LIST LEGITIMATELY CONTAINS PLAYERS A DFS SLATE DOES NOT PRICE. Tonight's lists name
     # a centre, a guard, two defensive tackles and a linebacker; DraftKings prices none of them, so
@@ -405,7 +435,8 @@ def build(export, *, designations=None, official_inactives=None,
         elif _cls == 'RETURNER_ONLY_REVIEW':
             returner_review[nm] = {'team': p['team'], 'dk_position': p['position'], 'reason': _why}
         status_counts[status] += 1
-        v = slate['players'][S.player_key(nm, p['team'])]
+        # the slate universe is keyed by the DK club (LAR); the state carries the corpus club (LA) everywhere else
+        v = slate['players'][S.player_key(nm, p['dk_team'])]
         rec = ids.get(dk_id) or {}
         gsis = None if p['position'] == 'DST' else (rec.get('gsis_id') or None)
         players[dk_id] = {
@@ -447,7 +478,11 @@ def build(export, *, designations=None, official_inactives=None,
         'state_label': STATE_LABEL,
         'built_at_utc': dt.datetime.now(dt.timezone.utc).isoformat(),
         'game_id': game_id, 'season': kick.year, 'week': sched_week,
-        'away': away, 'home': home, 'kickoff_et_naive': slate['kickoff_et_naive'],
+        # CORPUS club codes, like every player's 'team' and the environment's game key (BUF@LA). The DK codes are kept
+        # beside them; the DK universe (slate['players'], dk_team) stays keyed by DK codes. 2026-10-12: DK 'LAR' here
+        # made the simulator miss the football centre keyed 'BUF@LA'.
+        'away': S.corpus_team(away), 'home': S.corpus_team(home), 'away_dk': away, 'home_dk': home,
+        'kickoff_et_naive': slate['kickoff_et_naive'],
         # S._rel is the non-raising form. pathlib.relative_to throws when the path is already
         # relative or sits outside the repo, and this exact defect has now bitten three times in this
         # tree -- lineage.verify, showdown s_emit_csv, and here. A reporting convenience must not be
@@ -491,6 +526,7 @@ def build(export, *, designations=None, official_inactives=None,
                                         'UNKNOWN_ACTIVE_STATE, not active. Reading silence as '
                                         'activity would activate the slate on no evidence.'),
             'designations_not_matched_to_the_slate': unmatched_desig,
+            'evidence_names_aliased_to_dk': aliased,
         },
         'specialist_safety': {
             'auto_enabled': SPECIALIST_AUTO,

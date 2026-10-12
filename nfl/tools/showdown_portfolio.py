@@ -41,6 +41,7 @@ import collections
 import csv
 import hashlib
 import json
+import re
 import pathlib
 import sys
 
@@ -88,11 +89,41 @@ def load(export, draws_path, inactives=None):
     absent = set((av.value or {}).get('absent') or []) if av.state.value == 'PASS' else set()
     if av.state.value not in ('PASS', 'DEFERRED'):
         return av
-    doc = json.loads(pathlib.Path(draws_path).read_text())
+    doc = _to_dk_keys(json.loads(pathlib.Path(draws_path).read_text()), slate)
     draws = doc.get('draws', doc)
     return Outcome.ok('LOADED', {'entries': ing.value['entries'], 'slate': slate, 'absent': absent,
                                  'draws_doc': doc, 'draws': draws, 'availability': av,
                                  'inactives_not_in_priced_pool': off_pool})
+
+
+def _to_dk_keys(doc, slate):
+    """The draws are keyed by CORPUS club (Puka Nacua|LA, club_worlds['LA']); this module's universe is keyed by the DK
+    club (Puka Nacua|LAR). Re-key the draws document once, at load, so a lookup never silently misses a whole club
+    (2026-10-12 BUF@LAR: every Rams player read as having no draws, and the universe carried one club). Identical codes
+    (every slate before this one) leave the document unchanged."""
+    p2d = {S.player_key(v['name'], v['team']): k for k, v in slate['players'].items()}
+    c2d = {v['team']: v['dk_team'] for v in slate['players'].values()}
+    if all(a == b for a, b in p2d.items()) and all(a == b for a, b in c2d.items()):
+        return doc
+    out = dict(doc)
+    for f in ('draws', 'kickers', 'qb_interceptions', 'dst_components'):
+        if isinstance(doc.get(f), dict):
+            out[f] = {p2d.get(k, k): v for k, v in doc[f].items()}
+    for f in ('club_worlds', 'club_scoring_worlds'):
+        if isinstance(doc.get(f), dict):
+            out[f] = {c2d.get(k, k): v for k, v in doc[f].items()}
+    if isinstance(doc.get('world_points'), dict):
+        wp = dict(doc['world_points'])
+        for f in ('home', 'away'):
+            if wp.get(f) in c2d:
+                wp[f] = c2d[wp[f]]
+        out['world_points'] = wp
+    for f in ('away', 'home'):
+        if doc.get(f) in c2d:
+            out[f] = c2d[doc[f]]
+    missing = sorted(k for k in (doc.get('draws') or {}) if k not in p2d)
+    out['_DK_REKEY'] = {'clubs': {a: b for a, b in c2d.items() if a != b}, 'draw_keys_not_on_dk_slate': missing}
+    return out
 
 
 def players_table(slate, absent, draws):
@@ -300,7 +331,7 @@ def depth_m(n):
     return 1 if (n >= 100 or n <= 2) else 2
 
 
-def select(hit, cand_rows, seats_of, n, n_w, rung):
+def select(hit, cand_rows, seats_of, n, n_w, rung, exclude=frozenset()):
     cap_p = max(1, int(np.ceil(rung['player'] * n))) if n > 1 else 1
     cap_c = max(1, int(np.ceil(rung['captain'] * n))) if n > 1 else 1
     if rung['level'] == 0:
@@ -330,7 +361,7 @@ def select(hit, cand_rows, seats_of, n, n_w, rung):
         for i in order:
             i = int(i)
             seats = seats_of[i]
-            if i in chosen or any(exp[k] + 1 > cap_p for k in seats) or cexp[seats[0]] + 1 > cap_c:
+            if i in chosen or i in exclude or any(exp[k] + 1 > cap_p for k in seats) or cexp[seats[0]] + 1 > cap_c:
                 continue
             if any(len(sets[i] & sets[j]) > rung['overlap'] for j in chosen):
                 continue
@@ -351,10 +382,10 @@ def select(hit, cand_rows, seats_of, n, n_w, rung):
             'short': n - len(chosen), 'relaxation_level': rung['level']}
 
 
-def ladder(hit, cand_rows, seats_of, n, n_w):
+def ladder(hit, cand_rows, seats_of, n, n_w, exclude=frozenset()):
     log = []
     for rung in LADDER:
-        P = select(hit, cand_rows, seats_of, n, n_w, rung)
+        P = select(hit, cand_rows, seats_of, n, n_w, rung, exclude)
         log.append({'level': rung['level'], 'caps': P['caps'], 'built': len(P['chosen']), 'needed': n,
                     'coverage': round(P['coverage'], 4)})
         if P['short'] == 0:
@@ -369,7 +400,7 @@ SWAP_POOL = 3000
 SWAP_MAX_ROUNDS = 50
 
 
-def swap_polish(hit, seats_of, P, n, n_w):
+def swap_polish(hit, seats_of, P, n, n_w, exclude=frozenset()):
     """1-swap hill climbing on the SAME objective E[min(depth, m)] under the SAME rung constraints (player cap,
     captain cap, overlap, distinct lineups). Each round makes the single best improving swap; stops when none
     improves. Never lowers the objective. Greedy selection is not optimal: measured on ATL@NO BASE the 20-entry
@@ -398,7 +429,7 @@ def swap_polish(hit, seats_of, P, n, n_w):
                 if g <= best[0] + 1e-12:
                     break
                 j = pool[t]
-                if j in cur or any(exp[k] + 1 > cap_p for k in seats_of[j]) or cexp[seats_of[j][0]] + 1 > cap_c:
+                if j in cur or j in exclude or any(exp[k] + 1 > cap_p for k in seats_of[j]) or cexp[seats_of[j][0]] + 1 > cap_c:
                     continue
                 if any(len(sets[j] & sets[o]) > rung['overlap'] for o in others):
                     continue
@@ -418,6 +449,45 @@ def swap_polish(hit, seats_of, P, n, n_w):
                      'objective_greedy': round(P['objective']['value'], 4), 'objective_final': round(out['objective']['value'], 4),
                      'coverage_greedy': round(P['coverage'], 4), 'coverage_final': round(out['coverage'], 4)}
     return out
+
+
+def build_contests(hit, cand_rows, seats_of, contests, n_w):
+    """Every contest's portfolio from the same candidates and worlds. {cid: portfolio}, in the contests' own order."""
+    portfolios = {}
+    # EQUAL-SIZE CONTESTS DO NOT SHARE LINEUPS BY DEFAULT (owner contract #45 clause 6; owner ruling 2026-10-12: keep zero
+    # overlap in production, test overlap in shadow). Built on identical inputs, two 20-entry contests came out
+    # identical (2026-10-12 BUF@LAR precompute R4: 20 of 20 shared) -- the cached-greedy duplication the owner named.
+    # Contests are built in descending prize-pool order (declared), and a contest excludes the lineups of every
+    # earlier contest of the same size. The unrestricted build is kept beside it as the shadow, with the cost.
+    taken = collections.defaultdict(set)
+    def _pool_of(cid):
+        try:
+            return float(re.sub(r'[^0-9.]', '', (re.search(r'\$([0-9.]+)K', contests[cid]['name']) or [None, '0'])[1])) * 1000
+        except (TypeError, ValueError):
+            return 0.0
+    build_order = sorted(contests, key=lambda c: (-len(contests[c]['entries']), -_pool_of(c), c))
+    for cid in build_order:
+        cdef = contests[cid]
+        n = len(cdef['entries'])
+        excl = frozenset(taken[n])
+        P, log = ladder(hit, cand_rows, seats_of, n, n_w, excl)
+        if P['short'] == 0:
+            P = swap_polish(hit, seats_of, P, n, n_w, excl)
+        shadow = None
+        if excl:
+            P0, _ = ladder(hit, cand_rows, seats_of, n, n_w)
+            if P0['short'] == 0:
+                P0 = swap_polish(hit, seats_of, P0, n, n_w)
+            shadow = {'arm': 'SHADOW_OVERLAP_ALLOWED', 'objective': round(P0['objective']['value'], 4),
+                      'coverage': round(P0['coverage'], 4),
+                      'shared_with_earlier_equal_size': len(set(P0['chosen']) & excl),
+                      'objective_cost_of_exclusion': round(P0['objective']['value'] - P['objective']['value'], 4),
+                      'MEANING': 'the same contest built without the exclusion; not uploaded'}
+        taken[n].update(P['chosen'])
+        portfolios[cid] = {'contest': cdef, **P, 'relaxation_log': log,
+                           'overlap_policy': {'rule': 'EXCLUDE_LINEUPS_OF_EARLIER_EQUAL_SIZE_CONTESTS',
+                                              'build_order': build_order, 'excluded_n': len(excl), 'shadow': shadow}}
+    return collections.OrderedDict((cid, portfolios[cid]) for cid in contests)
 
 
 def kicker_rule_b(doc, by, rows, cands, seats_of, M, contests, portfolios, n_w):
@@ -689,14 +759,18 @@ def run(export, draws_path, out_dir, prefix, *, inactives=None, proj_path=None, 
     by = {r['key']: r for r in rows}
     proj = json.loads(pathlib.Path(proj_path).read_text()) if proj_path else None
     prow = {}
+    # projection and state rows carry CORPUS clubs; this module keys by DK club (see _to_dk_keys)
+    _p2d = {S.player_key(v['name'], v['team']): k for k, v in slate['players'].items()}
     if proj:
         for r in proj['rows'].values():
-            prow[S.player_key(r['name'], r['team'])] = r
+            _k = S.player_key(r['name'], r['team'])
+            prow[_p2d.get(_k, _k)] = r
     state = json.loads(pathlib.Path(state_path).read_text()) if state_path else None
     st_by = {}
     if state:
         for v in state['players'].values():
-            st_by[S.player_key(v['name'], v['team'])] = v
+            _k = S.player_key(v['name'], v['team'])
+            st_by[_p2d.get(_k, _k)] = v
     n_w = len(next(r['draws'] for r in rows if r['has_draws']))
     home, away = slate['home'], slate['away']
     global TEAM_ORDER
@@ -758,13 +832,7 @@ def run(export, draws_path, out_dir, prefix, *, inactives=None, proj_path=None, 
     for e in V['entries']:
         contests.setdefault(e['contest_id'], {'name': e['contest_name'], 'fee': e['entry_fee'], 'entries': []})['entries'].append(e)
     seats_of = [[cands[i][0]] + list(cands[i][1]) for i in range(len(cands))]
-    portfolios = {}
-    for cid, cdef in contests.items():
-        n = len(cdef['entries'])
-        P, log = ladder(hit, cand_rows, seats_of, n, n_w)
-        if P['short'] == 0:
-            P = swap_polish(hit, seats_of, P, n, n_w)
-        portfolios[cid] = {'contest': cdef, **P, 'relaxation_log': log}
+    portfolios = build_contests(hit, cand_rows, seats_of, contests, n_w)
 
     # ---- 3b. kicker scoring B (missed FG -1) on the same worlds: does it move the selection?
     kick_b = kicker_rule_b(doc, by, rows, cands, seats_of, M, contests, portfolios, n_w)
