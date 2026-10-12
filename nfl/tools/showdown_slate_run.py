@@ -51,6 +51,46 @@ def paths(tag, work=None):
             'dst_rates': (w / 'DST_RATES.json') if work is not None else None}
 
 
+#: The declared corrected arm for Showdown (task #45 corrections; owner decision E2 is "run beside, owner chooses").
+#: NFL_SHOWDOWN_ARM=CORRECTED_V1 selects it; the incumbent is the default and is unchanged byte for byte.
+#:   participation   classic_slate_run.participation_inputs: PM-1 P(no participation) while unresolved, PM-3 phi,
+#:                   teammates take the share from the engine's absent-player projection (no fantasy-point transfer)
+#:   worlds          event_consistent_worlds version classic_slate_run.ECW_VERSION (box-score-coherent), replacing
+#:                   efficiency_worlds and the DST anchor step
+#:   QB volume       QBCTX-DB1 has no BUF/LA forecast file: NOT_APPLIED, recorded
+#: NFL_SHOWDOWN_DESIGNATIONS_PROVENANCE: the designations provenance (practice status and injury per designated player).
+#: NFL_SHOWDOWN_INACTIVES_RESOLVED=1: the official inactive list is in the state, so a designated player NOT on it is
+#: resolved ACTIVE (PREREG_PM2 s.2 declared assumption: P(no participation) = 0, phi still drawn).
+ARM_INCUMBENT, ARM_CORRECTED = 'INCUMBENT', 'CORRECTED_V1'
+
+
+def _participation_state(state):
+    """A copy of the state whose designated players carry practice status, injury and (after the official list) an
+    ACTIVE resolution, which participation.classify reads. The published state is not changed."""
+    import copy
+    import os
+    from nfl.tools import availability as AV
+    st = copy.deepcopy(state)
+    pp = os.environ.get('NFL_SHOWDOWN_DESIGNATIONS_PROVENANCE')
+    det = (json.loads(pathlib.Path(pp).read_text()).get('formal_detail') or {}) if pp else {}
+    resolved = os.environ.get('NFL_SHOWDOWN_INACTIVES_RESOLVED') == '1'
+    applied = {}
+    for v in st['players'].values():
+        av = v.get('current_availability') or {}
+        if not av.get('designation'):
+            continue
+        d = det.get(v['name']) or next((x for x in det.values() if x.get('gsis_id') and x['gsis_id'] == v.get('gsis_id')), None)
+        if d:
+            av['practice_status'] = d.get('practice_status')
+            av['injury'], av['injury_secondary'] = d.get('injury'), d.get('injury_secondary')
+        if resolved and av.get('status') not in AV.ABSENT_STATUSES:
+            av['resolution'] = {'claim': 'ACTIVE', 'basis': 'not on the official inactive list'}
+        applied[v['name']] = {'designation': av.get('designation'), 'practice_status': av.get('practice_status'),
+                              'injury': av.get('injury'), 'resolved_active': resolved and av.get('status') not in AV.ABSENT_STATUSES,
+                              'detail_found': bool(d)}
+    return st, {'designations_provenance': pp, 'inactives_resolved': resolved, 'players': applied}
+
+
 def run(tag, *, n_sims=2000, seed=SEED, work=None) -> Outcome:
     from nfl.tools import proj_v1 as PV, role_state as RS, showdown_draws as SD, football_sanity as FS
     from nfl.tools import availability as AV, dst_model
@@ -90,10 +130,26 @@ def run(tag, *, n_sims=2000, seed=SEED, work=None) -> Outcome:
               if v['current_availability']['status'] in AV.ABSENT_STATUSES]
     sane = FS.assess(proj, absent=absent, clubs=[state['away'], state['home']], units=('DST',))
 
+    import os
+    arm = os.environ.get('NFL_SHOWDOWN_ARM', ARM_INCUMBENT)
+    if arm not in (ARM_INCUMBENT, ARM_CORRECTED):
+        return Outcome.fail('SHOWDOWN_RUN_ARM_UNKNOWN', f'{arm!r}')
+    part_by_club = part_account = part_inputs = None
+    if arm == ARM_CORRECTED:
+        if work is None:
+            return Outcome.fail('SHOWDOWN_ARM_NEEDS_SCENARIO_DIR', 'the corrected arm writes variants; it runs only in '
+                                'an isolated scenario directory')
+        pst, part_inputs = _participation_state(state)
+        try:
+            part_by_club, part_account = CR.participation_inputs(pst, proj, P, n_sims, seed)
+        except RuntimeError as e:
+            return Outcome.fail('SHOWDOWN_ARM_PARTICIPATION_REFUSED', str(e))
+
     td = pathlib.Path(tempfile.mkdtemp(prefix='showdown_draws_'))
     SD.OUT = td / 'draws.json'
     o = SD.build(str(P['proj']), str(P['state']), n_sims=n_sims, seed=seed,
-                 volume_centre=sim_game.VOLUME_CENTRE_PROJECTION, n_calib=n_sims)
+                 volume_centre=sim_game.VOLUME_CENTRE_PROJECTION, n_calib=n_sims,
+                 participation=part_by_club or None)
     if o.state.value != 'PASS':
         return o
     art = o.value
@@ -106,13 +162,32 @@ def run(tag, *, n_sims=2000, seed=SEED, work=None) -> Outcome:
                if isinstance(r.get('dk_points'), (int, float))}
     raw_gap = {k: round(sum(v) / len(v) - targets[k], 3) for k, v in draws.items() if k in targets and v}
     kickers = {k for k, r in rows_by_key.items() if r.get('position') == 'K'}
-    dk_new, stat_worlds, eff = CR.efficiency_worlds(art['stat_draws'], rows_by_key,
-                                                    float(proj['int_rate']), seed + 99)
-    skill = set(dk_new)
-    draws.update(dk_new)
-    dst = {k: v for k, v in draws.items() if k not in skill and k not in kickers}
-    dst, dst_acc = CR.anchor_means(dst, targets)
-    draws.update(dst)
+    coherent_account = None
+    if arm == ARM_CORRECTED:
+        from nfl.sim import event_consistent_worlds as ECW
+        eo = ECW.build(art, rows_by_key, float(proj['int_rate']), seed, incumbent_seed=seed + 99,
+                       version=CR.ECW_VERSION)
+        if eo.state.value != 'PASS':
+            return eo
+        ev = eo.value
+        draws = {k: list(v) for k, v in ev['draws'].items()}
+        stat_worlds = ev['stat_worlds']
+        # publish the ARM'S OWN club scoring, DST components and per-world scoring events, so the accounting checkers
+        # can verify points == event sum and kicker DK == events on the published worlds (reconciliation at f581724c:
+        # NOT_MEASURABLE when the artifact stores no events)
+        art = {**art, 'world_points': ev['world_points'], 'club_scoring_worlds': ev['club_scoring_worlds'],
+               'dst_components': ev['dst_components'], '_scoring_events': ev['scoring_events']}
+        coherent_account = ev['account']
+        eff, dst_acc = {'mode': 'EVENT_CONSISTENT_NO_RESCALE', 'ecw_version': CR.ECW_VERSION}, 'NOT_APPLIED (ECW DST lines)'
+        skill = {k for k in draws if rows_by_key.get(k, {}).get('position') not in ('K', 'DST')}
+    else:
+        dk_new, stat_worlds, eff = CR.efficiency_worlds(art['stat_draws'], rows_by_key,
+                                                        float(proj['int_rate']), seed + 99)
+        skill = set(dk_new)
+        draws.update(dk_new)
+        dst = {k: v for k, v in draws.items() if k not in skill and k not in kickers}
+        dst, dst_acc = CR.anchor_means(dst, targets)
+        draws.update(dst)
     resid = {k: round(sum(v) / len(v) - targets[k], 3) for k, v in draws.items() if k in targets and k in skill}
     n = {len(v) for v in draws.values()}
     if n != {n_sims}:
@@ -143,6 +218,17 @@ def run(tag, *, n_sims=2000, seed=SEED, work=None) -> Outcome:
         'qb_interceptions': {k: [w[10] for w in v] for k, v in stat_worlds.items()
                              if rows_by_key.get(k, {}).get('position') == 'QB'},
         'CPT_RULE': 'CPT score = FLEX score in the same world x 1.5; one distribution per person',
+        'arm': arm,
+        'participation': ({'inputs': part_inputs, **(part_account or {})} if arm == ARM_CORRECTED else None),
+        'participation_world_account': art.get('participation_account') if arm == ARM_CORRECTED else None,
+        'scoring_events': art.get('_scoring_events') if arm == ARM_CORRECTED else None,
+        'account': ({'kicker_keys': coherent_account.get('kicker_keys'), 'dst_keys': coherent_account.get('dst_keys')}
+                    if coherent_account else None),
+        'coherent_account': ({c: {k: v for k, v in a.items() if not isinstance(v, (list, dict))}
+                              for c, a in (coherent_account.get('clubs') or {}).items()}
+                             if coherent_account else None),
+        'qb_conditioned_volume': ({'state': 'NOT_APPLIED', 'why': 'no registered QBCTX-DB1 forecast file covers BUF or LA'}
+                                  if arm == ARM_CORRECTED else None),
         'draws': draws,
     }
     P['draws'].write_text(json.dumps(doc, separators=(',', ':'), default=str))

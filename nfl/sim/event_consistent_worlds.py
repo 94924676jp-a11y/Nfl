@@ -263,7 +263,9 @@ def _band(points):
 
 #: ECW-2 (PREREG_ECW2.md, 6d775337): D2 defensive points out of the drawn remainder, D1 overtime, D4 catch yards from the
 #: measured catch shape. version=1 is ECW-1 exactly as evaluated on 2026-10-09. version=3 is ECW-2 plus PREREG_ECW3 C1
-#: (the club efficiency factor rescaled to the measured club-game spread net of catch-level noise).
+#: (the club efficiency factor rescaled to the measured club-game spread net of catch-level noise). version=4 is
+#: version 3 with the overtime field goal booked as a kicker event (band drawn from the made mix; FG bands sum to FG
+#: made; kicker DK = events), found 2026-10-12 when Showdown made the kicker's events measurable.
 ECW2_INPUTS = _REPO / 'nfl/research/accounting_repair/ECW2_INPUTS.json'
 
 
@@ -289,7 +291,7 @@ def build(art: dict, rows_by_key: dict, int_rate: float, seed: int, *, club_pass
 
 def _build(art, rows_by_key, int_rate, seed, anchor, kicker_inputs, incumbent_seed, version=1):
     import numpy as np
-    if version not in (1, 2, 3):
+    if version not in (1, 2, 3, 4):
         raise _Refuse('EVENT_WORLDS_VERSION_UNKNOWN', f'version {version!r}')
     v2 = json.loads(ECW2_INPUTS.read_text()) if version >= 2 else None
     if anchor not in ANCHORS:
@@ -571,6 +573,21 @@ def _build(art, rows_by_key, int_rate, seed, anchor, kicker_inputs, incumbent_se
                               + POINTS_PER['safety'] * e['safety'][w])
         kdk[c] = dks
     if v2:
+        def _ot_band(ev_c, kdk_, club, w_, rng_):
+            from nfl.tools import kicker_world as KW
+            mix_, _r = _kicker_inputs(club, kicker_inputs)
+            bands_ = list(mix_['made_mix'])
+            tot_ = sum(mix_['made_mix'][b] for b in bands_)
+            u2, cum_ = rng_.random() * tot_, 0.0
+            band_ = bands_[-1]
+            for b in bands_:
+                cum_ += mix_['made_mix'][b]
+                if u2 <= cum_:
+                    band_ = b
+                    break
+            ev_c[f'{band_}_made'][w_] += 1.0
+            if club in kdk_:
+                kdk_[club][w_] += float(KW.BAND_POINTS[band_])
         ot = v2['overtime']['p']
         p_fg = ot.get('FG', 0.0) + sum(v for k_, v in ot.items() if k_.startswith('OTHER'))
         p_td, home_p = ot.get('TD', 0.0), v2['overtime']['home_share_of_ot_wins']
@@ -587,7 +604,12 @@ def _build(art, rows_by_key, int_rate, seed, anchor, kicker_inputs, incumbent_se
             if u_ < p_fg:
                 events[win]['points'][w] += 3.0
                 events[win]['fg_made'][w] += 1.0
-                if win in kdk:
+                if version >= 4:
+                    # version 4: the OT field goal is a kicker event like any other -- its distance band drawn from the
+                    # winner's measured made mix, the band counted, the kicker's DK = the band's points. Version 3 added
+                    # 3 DK and no band, so FG bands did not sum to FG made and kicker DK != events (2026-10-12 BUF@LAR).
+                    _ot_band(events[win], kdk, win, w, rng_ot)
+                elif win in kdk:
                     kdk[win][w] += 3.0
                 ot_count['FG'] += 1
                 continue
@@ -617,6 +639,9 @@ def _build(art, rows_by_key, int_rate, seed, anchor, kicker_inputs, incumbent_se
                 ot_count['TD_RUSH'] += 1
             else:
                 events[win]['points'][w] += 3.0
+                if version >= 4:
+                    events[win]['fg_made'][w] += 1.0      # version 3 added the points with no FG event
+                    _ot_band(events[win], kdk, win, w, rng_ot)
                 ot_count['FG_NO_TD_CARRIER'] += 1
                 continue
             events[win]['off_td'][w] += 1.0

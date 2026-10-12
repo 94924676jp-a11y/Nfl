@@ -206,8 +206,9 @@ def load_worlds(path):
 #: NFL_CLASSIC_ARM=CORRECTED_V1 with NFL_CLASSIC_OUT_DIR under nfl/dfs/salaries/arms/ (classic_paths.py).
 ARM_INCUMBENT = 'INCUMBENT'
 ARM_CORRECTED = 'CORRECTED_V1'
-#: the CORRECTED_V1 arm's world builder: ECW-3 (nfl/research/accounting_repair/PREREG_ECW3.md)
-ECW_VERSION = 3
+#: the CORRECTED_V1 arm's world builder: ECW-3 (nfl/research/accounting_repair/PREREG_ECW3.md) with the version-4
+#: overtime field-goal accounting fix (event_consistent_worlds docstring; PREREG_W6_PLUS amendment A1)
+ECW_VERSION = 4
 
 
 def participation_inputs(state: dict, proj: dict, P: dict, n_sims: int, seed: int):
