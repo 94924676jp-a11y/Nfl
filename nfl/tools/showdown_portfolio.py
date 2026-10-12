@@ -41,6 +41,7 @@ import collections
 import csv
 import hashlib
 import json
+import os
 import re
 import pathlib
 import sys
@@ -466,10 +467,17 @@ def build_contests(hit, cand_rows, seats_of, contests, n_w):
         except (TypeError, ValueError):
             return 0.0
     build_order = sorted(contests, key=lambda c: (-len(contests[c]['entries']), -_pool_of(c), c))
+    # OPT-IN GLOBAL POLICY (2026-10-12 BUF@LAR, owner's latest handoff asks for exact-lineup uniqueness over all 190
+    # entries, while the ruling above covers equal-size contests only; measured: the 150 shared 11-18 lineups with the
+    # 20s). NFL_SHOWDOWN_OVERLAP_POLICY=GLOBAL makes every contest exclude the lineups of EVERY earlier-built contest.
+    # Unset or EQUAL_SIZE leaves the ruling's behaviour unchanged byte for byte. Anything else refuses.
+    policy = os.environ.get('NFL_SHOWDOWN_OVERLAP_POLICY', 'EQUAL_SIZE') or 'EQUAL_SIZE'
+    if policy not in ('EQUAL_SIZE', 'GLOBAL'):
+        raise ValueError(f'NFL_SHOWDOWN_OVERLAP_POLICY={policy!r}: expected EQUAL_SIZE or GLOBAL')
     for cid in build_order:
         cdef = contests[cid]
         n = len(cdef['entries'])
-        excl = frozenset(taken[n])
+        excl = frozenset(taken[n]) if policy == 'EQUAL_SIZE' else frozenset().union(*taken.values())
         P, log = ladder(hit, cand_rows, seats_of, n, n_w, excl)
         if P['short'] == 0:
             P = swap_polish(hit, seats_of, P, n, n_w, excl)
@@ -480,12 +488,13 @@ def build_contests(hit, cand_rows, seats_of, contests, n_w):
                 P0 = swap_polish(hit, seats_of, P0, n, n_w)
             shadow = {'arm': 'SHADOW_OVERLAP_ALLOWED', 'objective': round(P0['objective']['value'], 4),
                       'coverage': round(P0['coverage'], 4),
-                      'shared_with_earlier_equal_size': len(set(P0['chosen']) & excl),
+                      'shared_with_earlier_equal_size': len(set(P0['chosen']) & excl),   # 'equal size' = excluded set under GLOBAL
                       'objective_cost_of_exclusion': round(P0['objective']['value'] - P['objective']['value'], 4),
                       'MEANING': 'the same contest built without the exclusion; not uploaded'}
         taken[n].update(P['chosen'])
         portfolios[cid] = {'contest': cdef, **P, 'relaxation_log': log,
-                           'overlap_policy': {'rule': 'EXCLUDE_LINEUPS_OF_EARLIER_EQUAL_SIZE_CONTESTS',
+                           'overlap_policy': {'rule': ('EXCLUDE_LINEUPS_OF_EARLIER_EQUAL_SIZE_CONTESTS' if policy == 'EQUAL_SIZE'
+                                                       else 'EXCLUDE_LINEUPS_OF_EVERY_EARLIER_CONTEST'),
                                               'build_order': build_order, 'excluded_n': len(excl), 'shadow': shadow}}
     return collections.OrderedDict((cid, portfolios[cid]) for cid in contests)
 

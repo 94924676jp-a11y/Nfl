@@ -46,6 +46,38 @@ def test_equal_size_contests_share_no_lineup_and_the_shadow_records_the_cost():
     assert P['MAX']['overlap_policy']['excluded_n'] == 0
 
 
+def test_default_policy_lets_different_sizes_overlap_and_global_policy_forbids_it(monkeypatch=None):
+    """The default (EQUAL_SIZE) is unchanged: the 150 may share lineups with a 20. Opt-in GLOBAL: 190 distinct, and the
+    shadow records what the exclusion cost each later contest. An unknown policy refuses rather than falling back."""
+    import os
+    hit, cand_rows, seats_of, contests, n_w = _fixture()
+    old = os.environ.pop('NFL_SHOWDOWN_OVERLAP_POLICY', None)
+    try:
+        D = SP.build_contests(hit, cand_rows, seats_of, contests, n_w)
+        os.environ['NFL_SHOWDOWN_OVERLAP_POLICY'] = 'GLOBAL'
+        G = SP.build_contests(hit, cand_rows, seats_of, contests, n_w)
+        os.environ['NFL_SHOWDOWN_OVERLAP_POLICY'] = 'EQUAL'
+        try:
+            SP.build_contests(hit, cand_rows, seats_of, contests, n_w)
+            raise AssertionError('an unknown overlap policy must refuse')
+        except ValueError:
+            pass
+    finally:
+        os.environ.pop('NFL_SHOWDOWN_OVERLAP_POLICY', None)
+        if old is not None:
+            os.environ['NFL_SHOWDOWN_OVERLAP_POLICY'] = old
+    dm, dj = set(D['MAX']['chosen']), set(D['JUKE']['chosen'])
+    assert dm & dj, 'fixture must exercise the default cross-size overlap (else the GLOBAL check proves nothing)'
+    assert D['JUKE']['overlap_policy']['rule'] == 'EXCLUDE_LINEUPS_OF_EARLIER_EQUAL_SIZE_CONTESTS'
+    gm, gj, gd = (set(G[k]['chosen']) for k in ('MAX', 'JUKE', 'DIME'))
+    assert len(gm | gj | gd) == 190, f'GLOBAL must give 190 distinct lineups, got {len(gm | gj | gd)}'
+    assert G['MAX']['chosen'] == D['MAX']['chosen'], 'the first-built contest is unaffected by the policy'
+    assert G['JUKE']['overlap_policy']['rule'] == 'EXCLUDE_LINEUPS_OF_EVERY_EARLIER_CONTEST'
+    assert G['JUKE']['overlap_policy']['excluded_n'] == 150 and G['DIME']['overlap_policy']['excluded_n'] == 170
+    assert G['JUKE']['overlap_policy']['shadow']['objective_cost_of_exclusion'] >= -1e-9
+
+
 if __name__ == '__main__':
     test_equal_size_contests_share_no_lineup_and_the_shadow_records_the_cost()
+    test_default_policy_lets_different_sizes_overlap_and_global_policy_forbids_it()
     print('PASS')
