@@ -74,3 +74,19 @@ A week that lacks any of these is **not graded**. It is not imputed and not repl
 - Grading a confirmatory week on a build whose section 1 hashes differ.
 - Using any outcome from a week to change the arm and then grading that same week as confirmatory.
 - Any post-lock fact in either arm's build (the release record's `BUILT_AFTER_LOCK` block applies).
+
+## Amendment A1 (2026-10-12, before any Week 6 game; BUF@LAR Monday Showdown is Week 5)
+
+- **Change.** `event_consistent_worlds` version 4 = version 3 plus one accounting fix. The CORRECTED_V1 arm now uses
+  it (`classic_slate_run.ECW_VERSION = 4`).
+- **The defect.** An overtime field goal in version 3 added 3 points to the club and 3 DK points to its kicker, but
+  booked no distance band. So FG bands did not sum to FG made, and kicker DK did not equal the events.
+- **How it was found.** On the 2026-10-12 BUF@LAR Showdown, the arm first published its per-world scoring events,
+  which made those laws measurable. The no-carrier overtime field goal also added points without an FG event.
+- **The fix.** The overtime field goal is booked as a kicker event, with its band drawn from the winner's measured
+  made mix. Points are unchanged at 3.
+- **Test.** `test_event_consistent_worlds` k, with version 3 as the negative control.
+- **Frozen configuration.** Section 1's hash for `nfl/sim/event_consistent_worlds.py` is replaced by the version-4
+  file's hash, recorded at the commit that makes this change. Weeks 6-8 are exploratory either way. The
+  confirmatory rule (hashes unchanged from the Week 9 build onward) is untouched.
+- **Recorded hash:** `nfl/sim/event_consistent_worlds.py` c1a95e9927ad61ce, `nfl/tools/classic_slate_run.py` 9bc84635128b29eb
