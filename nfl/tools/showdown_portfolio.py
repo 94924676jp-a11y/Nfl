@@ -1089,7 +1089,8 @@ def run(export, draws_path, out_dir, prefix, *, inactives=None, proj_path=None, 
                              'selection_method': P.get('selection_method', 'GREEDY'), 'polish': P.get('polish'),
                              'greedy_lineups': ([[by[seats_of[i][0]]['name'], sorted(by[k]['name'] for k in seats_of[i][1:])]
                                                  for i in P['greedy']['chosen']] if P.get('greedy') else None),
-                             'split_counts': P.get('split_counts'), 'salary_band_counts': P.get('band_counts')}
+                             'split_counts': P.get('split_counts'), 'salary_band_counts': P.get('band_counts'),
+                             'overlap_policy': P.get('overlap_policy')}
                        for cid, P in portfolios.items()},
         'upload_verification': ver.value if ver.state.value == 'PASS' else {'state': ver.state.value, 'code': ver.code,
                                                                              'detail': ver.detail, **(ver.evidence or {})},
