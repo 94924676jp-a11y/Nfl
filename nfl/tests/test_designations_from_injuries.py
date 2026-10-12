@@ -55,6 +55,21 @@ def test_empty_report_refuses():
     _refuses(lambda: build(_file(), 2026, 6, {'TB'}), 'NO_INJURY_ROWS')
 
 
+def test_a_requested_club_with_no_rows_refuses():
+    # 2026-10-12 BUF@LAR: --teams BUF,LAR silently returned no Rams rows (nflverse files them as LA)
+    _refuses(lambda: build(_file(), 2026, 5, {'TB', 'LAR'}), 'NO_INJURY_ROWS_FOR_TEAM')
+
+
+def test_formal_designations_keep_practice_status_and_injury():
+    rows = [['2026', '5', 'TB', 'QB One', 'Questionable', 'Limited Participation in Practice'],
+            ['2026', '5', 'DAL', 'LB Three', 'Out', 'Did Not Participate In Practice']]
+    _des, prov = build(_file(rows), 2026, 5, {'TB', 'DAL'})
+    d = prov['formal_detail']
+    assert d['QB One']['practice_status'] == 'Limited Participation in Practice' and d['QB One']['team'] == 'TB'
+    assert set(d) == {'QB One', 'LB Three'}
+
+
+
 if __name__ == '__main__':
     for k, v in list(globals().items()):
         if k.startswith('test_'):

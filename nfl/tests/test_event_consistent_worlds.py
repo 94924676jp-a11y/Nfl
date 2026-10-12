@@ -431,6 +431,26 @@ def test_j_tb_dal_official_shadow_repair_artifact():
               f"  {sub}: event laws, no violation and nothing unmeasurable ({x['VIOLATED']}, {x['NOT_MEASURABLE']})")
 
 
+def test_k_version4_books_overtime_field_goals_as_kicker_events():
+    # 2026-10-12 BUF@LAR Showdown: with kickers on the slate, version 3's overtime field goal added 3 kicker DK and no
+    # distance band, so FG bands did not sum to FG made and kicker DK != events. Version 4 books it as a kicker event.
+    art, rows = synthetic(n=2000)
+    res = {}
+    for v in (3, 4):
+        o = ECW.build(art, rows, INT_RATE, 11, kicker_inputs=KICK, version=v)
+        if not check(o.state.value == 'PASS', f'version {v} builds ({o.state.value}[{o.code}] {o.detail})'):
+            return
+        d = pathlib.Path(tempfile.mkdtemp(prefix=f'ecw_v{v}_'))
+        ECW.publish(o.value, d, 'X', game_id='G')
+        res[v] = (o.value['account'].get('overtime') or {}, ECW.event_checks(d)['VIOLATED'], WAC.check(d)['VIOLATED'])
+    ot_fg = sum(res[4][0].get('tied_worlds_resolved', {}).get(k, 0) for k in ('FG', 'FG_NO_TD_CARRIER'))
+    if not check(ot_fg > 0, f'  the fixture produces overtime field goals (non-vacuous): {res[4][0].get("tied_worlds_resolved")}'):
+        return
+    bad3 = sum(n for k, n in res[3][1].items() if k.endswith(('FG_BANDS_SUM', 'KICKER_DK_FROM_EVENTS', 'POINTS_EQ_EVENT_SUM')))
+    check(bad3 > 0, f'  negative control: version 3 violates the kicker/FG event laws in OT worlds ({res[3][1]})')
+    check(res[4][1] == {} and res[4][2] == {}, f'  version 4: every event and accounting law holds ({res[4][1]}, {res[4][2]})')
+
+
 def test_zz_every_check_passed():
     if FAILED:
         raise AssertionError(f'{FAILED} check(s) failed')
