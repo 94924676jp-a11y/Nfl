@@ -383,7 +383,76 @@ def select(hit, cand_rows, seats_of, n, n_w, rung, exclude=frozenset()):
             'short': n - len(chosen), 'relaxation_level': rung['level']}
 
 
+def _greedy_fill(hit_i, fp, dupi, sets, seats_of, start, n, n_w, caps, overlap, exclude, forbid):
+    """select()'s greedy loop, started from an existing partial portfolio (SEL-1 exchange repair). Same gain order,
+    same caps, same overlap, same exclusions, same depth escalation."""
+    cap_p, cap_c = caps
+    m = depth_m(n)
+    chosen = list(start)
+    exp = collections.Counter(k for j in chosen for k in seats_of[j])
+    cexp = collections.Counter(seats_of[j][0] for j in chosen)
+    depth = hit_i[chosen].sum(axis=0) if chosen else np.zeros(n_w, dtype=np.int32)
+    while len(chosen) < n:
+        if n >= 3 and depth.min() >= m:
+            m += 1
+        gain = (hit_i @ (depth < m).astype(np.int32)) / n_w
+        best = None
+        for i in np.lexsort((dupi, -fp, -gain)):
+            i = int(i)
+            seats = seats_of[i]
+            if i in chosen or i in exclude or i in forbid or any(exp[k] + 1 > cap_p for k in seats) \
+                    or cexp[seats[0]] + 1 > cap_c:
+                continue
+            if any(len(sets[i] & sets[j]) > overlap for j in chosen):
+                continue
+            best = i
+            break
+        if best is None:
+            break
+        chosen.append(best)
+        depth = depth + hit_i[best]
+        for k in seats_of[best]:
+            exp[k] += 1
+        cexp[seats_of[best][0]] += 1
+    return chosen, depth, m
+
+
+def repair_fill(hit, cand_rows, seats_of, n, n_w, rung, P, exclude=frozenset()):
+    """SEL-1 (PREREG_SEL1_FILL_REPAIR.md): a greedy shortfall is not proof that no legal portfolio exists at this rung.
+    For each chosen lineup, in increasing order of its marginal objective contribution, remove it and re-fill greedily;
+    keep the best completed portfolio. None when no single exchange completes it (the ladder then relaxes, as before)."""
+    hit_i = hit.astype(np.int32)
+    fp = np.array([c['first_place_proxy'] for c in cand_rows])
+    dupi = np.array([c['structural_duplication_index'] for c in cand_rows])
+    sets = [set(x) for x in seats_of]
+    caps = (P['caps']['player'], P['caps']['captain'])
+    cur = list(P['chosen'])
+    m0 = P['objective']['m']
+    depth = hit_i[cur].sum(axis=0) if cur else np.zeros(n_w, dtype=np.int32)
+    base_v = np.minimum(depth, m0).mean()
+    contrib = sorted(cur, key=lambda j: base_v - np.minimum(depth - hit_i[j], m0).mean())
+    best = None
+    for j in contrib:
+        ch, dep, m = _greedy_fill(hit_i, fp, dupi, sets, seats_of, [c for c in cur if c != j], n, n_w, caps,
+                                  rung['overlap'], exclude, forbid={j})
+        if len(ch) == n:
+            v = float(np.minimum(dep, m).mean())
+            if best is None or v > best[0]:
+                best = (v, ch, dep, m, j)
+    if best is None:
+        return None
+    v, ch, dep, m, j = best
+    return {'chosen': ch, 'coverage': float((dep > 0).mean()),
+            'objective': {'m': m, 'value': v, 'MEANING': 'E[min(entries at the first-place proxy, m)] per world'},
+            'caps': dict(P['caps']), 'short': 0, 'relaxation_level': rung['level'],
+            'repair': {'selector': 'FILL_REPAIR_V1', 'removed': j, 'greedy_built': len(cur)}}
+
+
 def ladder(hit, cand_rows, seats_of, n, n_w, exclude=frozenset()):
+    # SEL-1 is opt-in (NFL_SHOWDOWN_SELECTOR=FILL_REPAIR_V1); unset leaves the ladder byte-identical. Anything else refuses.
+    sel = os.environ.get('NFL_SHOWDOWN_SELECTOR', 'GREEDY') or 'GREEDY'
+    if sel not in ('GREEDY', 'FILL_REPAIR_V1'):
+        raise ValueError(f'NFL_SHOWDOWN_SELECTOR={sel!r}: expected GREEDY or FILL_REPAIR_V1')
     log = []
     for rung in LADDER:
         P = select(hit, cand_rows, seats_of, n, n_w, rung, exclude)
@@ -391,6 +460,11 @@ def ladder(hit, cand_rows, seats_of, n, n_w, exclude=frozenset()):
                     'coverage': round(P['coverage'], 4)})
         if P['short'] == 0:
             return P, log
+        if sel == 'FILL_REPAIR_V1':
+            R = repair_fill(hit, cand_rows, seats_of, n, n_w, rung, P, exclude)
+            log[-1]['repair'] = 'COMPLETED' if R else 'FAILED'
+            if R is not None:
+                return R, log
     return P, log
 
 
