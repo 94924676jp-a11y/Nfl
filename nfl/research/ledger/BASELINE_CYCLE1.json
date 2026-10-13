@@ -4,10 +4,58 @@
  "measured_at_utc": "2026-10-13T20:30Z",
  "release_sha": "2f510449 (branch claude/nfl-greenfield-architecture-stsxmk); no production promotion since the owner-run MNF G1 upload",
  "runtime_tests": {
-  "state": "PENDING_RUN_AT_CYCLE1_COMMIT",
+  "state": "MEASURED",
   "runner": "python3.12 nfl/tests/run_suite.py (reads each module's own tally; refuses zero-check functions)",
   "last_certificate": "nfl/tests/certificates/SUITE_CERTIFICATE_20261007T083657Z-18364.json VERDICT FAILED (368 modules); no certificate at HEAD",
-  "reproduced_at_head": "test_showdown_equal_size_contests + test_showdown_sel1_fill_repair: 0 checks counted, UNRECOGNISED_TALLY x2, SUITE FAIL (issue TALLY-D1)"
+  "reproduced_at_head": "test_showdown_equal_size_contests + test_showdown_sel1_fill_repair: 0 checks counted, UNRECOGNISED_TALLY x2, SUITE FAIL (issue TALLY-D1)",
+  "head": "68130941",
+  "ran_utc": "2026-10-13T20:24Z to ~23:20Z",
+  "log": "nfl/tests/certificates/SUITE_LOG_CYCLE1_68130941.txt",
+  "tally": {
+   "modules": 405,
+   "test_functions": 3955,
+   "checks": 18182,
+   "failing_checks": 188,
+   "raised": 111,
+   "zero_check_functions": 5,
+   "blocked_functions": 24,
+   "unrecognised_tallies": 2,
+   "failing_modules": 67,
+   "tree_written": 3,
+   "verdict": "SUITE FAIL"
+  },
+  "vs_certificate_20261007": {
+   "compared_modules": 364,
+   "still_red": 53,
+   "newly_red": 11,
+   "now_green": 5,
+   "new_modules": 35,
+   "newly_red_classified": {
+    "time_dependent_live_data": [
+     "test_classic_slate_state (FIXED TEST-D6)",
+     "test_role_depth_adversarial (FIXED TEST-D4)",
+     "test_world_clock (TEST-D7)",
+     "test_v1_projection (TEST-D8)"
+    ],
+    "environment": [
+     "test_autonomy_transport",
+     "test_spending_gate (ENV-D1)"
+    ],
+    "tally": [
+     "test_suite_harness_tally (FIXED TALLY-D2)"
+    ],
+    "fixture_pin": [
+     "test_no_unmarked_fixture_pin (FIXED TEST-D5)"
+    ],
+    "firewall_guard_scope": [
+     "test_field_model (FIREWALL-D1; property holds)"
+    ],
+    "requires_repro": [
+     "test_qb2_production (TEST-D9)",
+     "test_uncalled_governance_guards (GOV-D1)"
+    ]
+   }
+  }
  },
  "production_call_graph": {
   "SHOWDOWN_TONIGHT": {

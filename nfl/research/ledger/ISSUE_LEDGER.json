@@ -645,15 +645,15 @@
    "verification": "VERIFIED",
    "severity": "P2",
    "production_path": "SHOWDOWN",
-   "state": "OPEN",
+   "state": "FIXED",
    "owner_gate": null,
-   "guard_test": null,
+   "guard_test": "nfl/tests/test_showdown_identity_paths.py",
    "test_type": "unit+mutation",
    "blast_radius": "",
    "data_rights": "OWN_CODE",
    "depends_on": [],
    "experiment": null,
-   "source": "atlas agent 1",
+   "source": "atlas agent 1; repaired cycle 1 (ENG-013): counted tests + mutation controls (rekey disabled, roster block disabled)",
    "reproducible_fixture": null
   },
   {
@@ -670,7 +670,7 @@
    "production_path": "SHOWDOWN",
    "state": "FIXED",
    "owner_gate": null,
-   "guard_test": "nfl/tests/test_roster_eligibility_aliases.py",
+   "guard_test": "nfl/tests/test_showdown_identity_paths.py",
    "test_type": "unit+mutation",
    "blast_radius": "",
    "data_rights": "OWN_CODE",
@@ -887,11 +887,10 @@
   {
    "id": "TEST-D2",
    "domain": "governance",
-   "title": "Pre-existing red tests: test_showdown_family (stale data-cutoff pin), test_role_depth_adversarial (state builder)",
-   "user_visible_consequence": "suite not green at HEAD",
+   "title": "Pre-existing red test: test_showdown_family (stale data-cutoff pin)",
+   "user_visible_consequence": "10 of 12 checks fail because the pinned pbp blob was superseded; suite not green at HEAD",
    "evidence": [
-    "nfl/tests/test_showdown_family.py",
-    "nfl/tests/test_role_depth_adversarial.py"
+    "nfl/tests/test_showdown_family.py"
    ],
    "verification": "VERIFIED",
    "severity": "P2",
@@ -904,7 +903,7 @@
    "data_rights": "OWN_CODE",
    "depends_on": [],
    "experiment": null,
-   "source": "RESULT_PROJFIX1 notes",
+   "source": "RESULT_PROJFIX1 notes; cycle 1 suite: test_role_depth_adversarial fixed (TEST-D4), test_showdown_family still red",
    "reproducible_fixture": null
   },
   {
@@ -973,6 +972,331 @@
    "experiment": null,
    "source": "atlas Governance",
    "reproducible_fixture": null
+  },
+  {
+   "id": "GAME-ID-D1",
+   "domain": "identity",
+   "title": "Showdown state chose the unplayed game by club PAIR, ignoring away@home orientation",
+   "user_visible_consequence": "a division rematch slate built while the first meeting's result lagged in the schedules capture would read the first meeting's environment",
+   "evidence": [
+    "nfl/tools/showdown_slate_state.py:82",
+    "nfl/tools/classic_slate_state.py:170"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P1",
+   "production_path": "SHOWDOWN",
+   "state": "FIXED",
+   "owner_gate": null,
+   "guard_test": "nfl/tests/test_showdown_identity_paths.py",
+   "test_type": "unit+mutation",
+   "blast_radius": "every Showdown slate between division rivals",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "found cycle 1 while repairing test_role_depth_adversarial (it resolved 2026_17_NO_ATL for the W4 ATL@NO slate); Classic already matched by gameday and refused ambiguity",
+   "reproducible_fixture": "nfl/tests/test_showdown_identity_paths.py::test_game_is_chosen_by_orientation_not_by_the_club_pair"
+  },
+  {
+   "id": "TEST-D4",
+   "domain": "governance",
+   "title": "test_role_depth_adversarial read the LIVE warehouse, so a played game turned it red and skipped its specialist checks",
+   "user_visible_consequence": "the specialist-detection guard silently stopped running once ATL@NO W4 was recorded",
+   "evidence": [
+    "nfl/tests/test_role_depth_adversarial.py"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P2",
+   "production_path": "TESTS",
+   "state": "FIXED",
+   "owner_gate": null,
+   "guard_test": "nfl/tests/test_role_depth_adversarial.py",
+   "test_type": "point-in-time fixture",
+   "blast_radius": "one guard module",
+   "data_rights": "OWN_CODE",
+   "depends_on": [
+    "GAME-ID-D1"
+   ],
+   "experiment": null,
+   "source": "cycle 1: replay now reads TEAM_GAME at 8feac0f3 (the vintage the slate ran on); 30 checks, 0 failing",
+   "reproducible_fixture": null
+  },
+  {
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "every replay or backtest run without a PIT manifest",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "reproducible_fixture": null,
+   "id": "PIT-D1",
+   "domain": "point-in-time",
+   "title": "Classic build(as_of=...) reads TEAM_GAME live unless NFL_PIT_MANIFEST is set",
+   "user_visible_consequence": "a historical build with a past as_of silently sees later lines and results (ATL@NO W4 implied 21.0 then, 23.0 now); nothing refuses it",
+   "evidence": [
+    "nfl/tools/classic_slate_state.py:162",
+    "nfl/tools/showdown_slate_state.py:59",
+    "nfl/warehouse/point_in_time.py:337"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P1",
+   "production_path": "ALL",
+   "state": "OPEN",
+   "source": "cycle 1: found repairing test_classic_slate_state"
+  },
+  {
+   "owner_gate": null,
+   "guard_test": "nfl/tests/test_field_model.py",
+   "test_type": "transitive import guard",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "reproducible_fixture": null,
+   "id": "FIREWALL-D1",
+   "domain": "governance",
+   "title": "Field-model firewall guard is red: showdown_next_slate.postgame imports nfl.field (since a136804b)",
+   "user_visible_consequence": "the guard cannot tell a postgame archive import from a forecast import, so it has been red and ignored; the protected property itself HOLDS (no forecast or state module reaches nfl.field transitively, checked on 7 entry modules)",
+   "evidence": [
+    "nfl/tools/showdown_next_slate.py:614",
+    "nfl/tests/test_field_model.py:210"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P2",
+   "production_path": "SHOWDOWN",
+   "state": "OPEN",
+   "source": "cycle 1 suite comparison vs 2026-10-07 certificate"
+  },
+  {
+   "owner_gate": null,
+   "guard_test": "nfl/tests/test_no_unmarked_fixture_pin.py",
+   "test_type": "unit",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "reproducible_fixture": null,
+   "id": "TEST-D5",
+   "domain": "governance",
+   "title": "Hard-coded week paths undeclared in W5 research scripts and the Early-Only slate registry",
+   "user_visible_consequence": "fixture-pin guard red since the W5 work",
+   "evidence": [
+    "nfl/tests/test_no_unmarked_fixture_pin.py",
+    "nfl/dfs/salaries/early_only.py:97"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P3",
+   "production_path": "TESTS",
+   "state": "FIXED",
+   "source": "cycle 1: declared with reasons; the reachability half of the guard still passes"
+  },
+  {
+   "owner_gate": null,
+   "guard_test": "nfl/tests/test_classic_slate_state.py",
+   "test_type": "point-in-time fixture",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [
+    "PIT-D1"
+   ],
+   "experiment": null,
+   "reproducible_fixture": null,
+   "id": "TEST-D6",
+   "domain": "governance",
+   "title": "test_classic_slate_state replayed week 4 against the LIVE warehouse",
+   "user_visible_consequence": "red once week 4 was recorded; 12 downstream checks never ran",
+   "evidence": [
+    "nfl/tests/test_classic_slate_state.py"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P2",
+   "production_path": "TESTS",
+   "state": "FIXED",
+   "source": "cycle 1: TEAM_GAME at 8feac0f3; 36 checks, 0 failing"
+  },
+  {
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "environment",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "reproducible_fixture": null,
+   "id": "ENV-D1",
+   "domain": "governance",
+   "title": "test_autonomy_transport and test_spending_gate: local origin/main ref is stale against the remote",
+   "user_visible_consequence": "the test refuses to assert deployment state from an old tree (correct behaviour); environment, not code",
+   "evidence": [
+    "nfl/tests/test_autonomy_transport.py",
+    "nfl/tests/test_spending_gate.py"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P3",
+   "production_path": "TESTS",
+   "state": "OPEN",
+   "source": "cycle 1: fix is git fetch origin '+refs/heads/*:refs/remotes/origin/*' once no suite is running"
+  },
+  {
+   "owner_gate": null,
+   "guard_test": "nfl/tests/test_suite_harness_tally.py",
+   "test_type": "runner+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "reproducible_fixture": null,
+   "id": "TALLY-D2",
+   "domain": "governance",
+   "title": "Two more modules with bare asserts were invisible to the suite (UNRECOGNISED_TALLY)",
+   "user_visible_consequence": "the Palmer alias and designations guards never counted",
+   "evidence": [
+    "nfl/tests/test_designations_from_injuries.py",
+    "nfl/tests/test_roster_eligibility_aliases.py",
+    "nfl/tests/test_suite_harness_tally.py"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P1",
+   "production_path": "TESTS",
+   "state": "FIXED",
+   "source": "full suite at 68130941; converted cycle 1 (15 checks; mutation turns the suite red)"
+  },
+  {
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "reproducible_fixture": null,
+   "id": "TEST-D7",
+   "domain": "point-in-time",
+   "title": "test_world_clock leakage guard is pinned to cutoff 2026-10-01 and reads the live tree",
+   "user_visible_consequence": "red once games after the cutoff were played (440 outcome values); whether the guard should move with the forecast cut is a design question",
+   "evidence": [
+    "nfl/tests/test_world_clock.py"
+   ],
+   "verification": "REQUIRES_REPRO",
+   "severity": "P2",
+   "production_path": "TESTS",
+   "state": "OPEN",
+   "source": "full suite at 68130941"
+  },
+  {
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "reproducible_fixture": null,
+   "id": "TEST-D8",
+   "domain": "forecast",
+   "title": "test_v1_projection asserts NYJ zero interceptions over 1,419 plays on LIVE data",
+   "user_visible_consequence": "the Poisson-plausibility guard fixture went stale as the Jets recorded interceptions; the guard itself is unexercised",
+   "evidence": [
+    "nfl/tests/test_v1_projection.py"
+   ],
+   "verification": "REQUIRES_REPRO",
+   "severity": "P2",
+   "production_path": "TESTS",
+   "state": "OPEN",
+   "source": "full suite at 68130941"
+  },
+  {
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "bypass control",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "reproducible_fixture": null,
+   "id": "TEST-D9",
+   "domain": "governance",
+   "title": "test_qb2_production guard-deletion control: violation still caught with qb_accounting.reconcile_team bypassed",
+   "user_visible_consequence": "either the guard is no longer load-bearing or the fixture changed",
+   "evidence": [
+    "nfl/tests/test_qb2_production.py",
+    "nfl/tests/bypass.py:73"
+   ],
+   "verification": "REQUIRES_REPRO",
+   "severity": "P1",
+   "production_path": "ALL",
+   "state": "OPEN",
+   "source": "full suite at 68130941"
+  },
+  {
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "reproducible_fixture": null,
+   "id": "GOV-D1",
+   "domain": "governance",
+   "title": "test_uncalled_governance_guards: a governance guard has no production caller (NO_PROD_CALLER); draw-artifact refusal codes changed",
+   "user_visible_consequence": "a declared guard protects nothing",
+   "evidence": [
+    "nfl/tests/test_uncalled_governance_guards.py",
+    "nfl/tests/test_v1_draw_artifact.py"
+   ],
+   "verification": "REQUIRES_REPRO",
+   "severity": "P2",
+   "production_path": "ALL",
+   "state": "OPEN",
+   "source": "full suite at 68130941"
+  },
+  {
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "reproducible_fixture": null,
+   "id": "TREE-D1",
+   "domain": "governance",
+   "title": "Three tests write tracked files outside a temporary root (TREE_WRITTEN)",
+   "user_visible_consequence": "a suite run dirties the tree: DK_WEEK3_PROJECTION_SOURCE_LEDGER.json, r5 active_board_pointer.json, production READINESS / SUNDAY_RUN_REPORT",
+   "evidence": [
+    "nfl/tests/test_fc_firewall_and_projection_source.py",
+    "nfl/tests/test_quality_gates.py",
+    "nfl/tests/test_sunday_run.py"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P2",
+   "production_path": "TESTS",
+   "state": "OPEN",
+   "source": "full suite at 68130941"
+  },
+  {
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "reproducible_fixture": null,
+   "id": "ZERO-D1",
+   "domain": "governance",
+   "title": "Five test functions recorded zero checks (capture_surface x4, inactives_propagation x1)",
+   "user_visible_consequence": "guards that measured nothing",
+   "evidence": [
+    "nfl/tests/test_capture_surface_is_executable.py",
+    "nfl/tests/test_inactives_propagation.py"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P2",
+   "production_path": "TESTS",
+   "state": "OPEN",
+   "source": "full suite at 68130941"
   }
  ]
 }
