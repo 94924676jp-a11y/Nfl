@@ -120,3 +120,27 @@ needs his 2026 role data, not one game.
 | ALLOC-D1 proportional absent-WR rule | **VERIFIED direction, for the simple rule.** The engine's own blend must be tested on the same 56 cases. | H1 |
 | RB2 tail shape | **NOT a defect on current evidence** | H2 |
 | PROJ-D-TE-CARRIES, ECW-D-DST-PA, receiver spread C2 FAIL, QB / DST conditioning | unchanged, open | — |
+
+## CORRECTION (2026-10-13 15:25 UTC): the stage attribution in section 1 is confounded by the relaxation ladder
+
+The arms were **not built at the same cap level**. From each audit's `relaxation_log`:
+
+| arm | 150-max | $10K 20 | $5K 20 |
+|---|---|---|---|
+| A (production) | level 0 (player 75 / 150, overlap 4) | level 2 (13 / 20) | level 2 |
+| B (enriched, same size) | **level 2** (player 98 / 150, overlap 5) | level 2 | level 2 |
+| C (union) | level 0 | **level 1** (10 / 20) | level 2 |
+
+- **"B − A = +0.0115 in the 150" is CONFOUNDED.** B selected under looser caps. It is withdrawn as evidence that the
+  enriched pool helps.
+- **"C − A = −0.1485 in the $10K" is largely the stricter level-1 caps**, not pool quality. It is withdrawn as a
+  measure of selector instability *at fixed policy*.
+- **What remains VERIFIED:**
+  - candidate recall (19.4% at the pool median);
+  - solver exactness.
+- **What replaces PORT-D4: the ladder is triggered by greedy fill failure, not by infeasibility.**
+  - Every relaxation recorded here followed a greedy fill **1 to 10 lineups short** (19 of 20, 18 of 20, 140 of 150).
+  - A greedy shortfall does not show that no legal portfolio exists at the stricter level.
+  - So the cap level, and with it the objective, jumps with the pool's composition.
+- **That is the instability.** The fix to test is a fill-repair at each rung before relaxing
+  (`PREREG_SEL1_FILL_REPAIR.md`). The pool comparison must be re-run at **fixed rungs**.
