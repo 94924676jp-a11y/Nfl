@@ -78,7 +78,28 @@ def test_default_unchanged_and_unknown_selector_refuses():
         pass
 
 
+def test_sel2_fixed_policy_level_2_for_20s_untouched_150_and_loud_when_unfillable():
+    for seed in range(12):
+        hit, rows, seats_of, n_w = _fixture(seed)
+        F, flog = _run('FIXED_POLICY_V1', hit, rows, seats_of, 20, n_w)
+        assert F['relaxation_level'] == SP.FIXED_POLICY_LEVEL and flog[0]['policy'] == 'FIXED_POLICY_V1'
+        if not F.get('POLICY_UNFILLABLE'):
+            _lawful(F, seats_of, 20, frozenset())
+        else:
+            assert F['short'] > 0, 'an unfillable contest must stay visibly short'
+    # the 150-entry ladder is not covered by the owner decision and stays the greedy ladder
+    hit, rows, seats_of, n_w = _fixture(5, n_c=1200, n_p=24)
+    g150, _ = _run(None, hit, rows, seats_of, 150, n_w)
+    f150, _ = _run('FIXED_POLICY_V1', hit, rows, seats_of, 150, n_w)
+    assert g150['chosen'] == f150['chosen'] and g150['relaxation_level'] == f150['relaxation_level']
+    # unfillable at the policy: too few distinct lineups exist -> flagged, never relaxed
+    hit, rows, seats_of, n_w = _fixture(9, n_c=12, n_p=8)
+    U, ulog = _run('FIXED_POLICY_V1', hit, rows, seats_of, 20, n_w)
+    assert U.get('POLICY_UNFILLABLE') is True and U['short'] > 0 and U['relaxation_level'] == SP.FIXED_POLICY_LEVEL
+
+
 if __name__ == '__main__':
     test_repair_is_lawful_never_relaxes_more_and_completes_some_greedy_shortfall()
     test_default_unchanged_and_unknown_selector_refuses()
+    test_sel2_fixed_policy_level_2_for_20s_untouched_150_and_loud_when_unfillable()
     print('PASS')

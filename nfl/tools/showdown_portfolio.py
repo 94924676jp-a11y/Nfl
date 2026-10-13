@@ -383,6 +383,12 @@ def select(hit, cand_rows, seats_of, n, n_w, rung, exclude=frozenset()):
             'short': n - len(chosen), 'relaxation_level': rung['level']}
 
 
+#: SEL-2 fixed policy (owner decision 2026-10-13, PREREG_SEL2_FIXED_POLICY.md): contests with
+#: FIXED_POLICY_MIN_N <= entries < FIXED_POLICY_MAX_N are built at LADDER[FIXED_POLICY_LEVEL] only (player 65%, captain
+#: 30%, overlap 5). Declared by the owner, not fitted.
+FIXED_POLICY_LEVEL, FIXED_POLICY_MIN_N, FIXED_POLICY_MAX_N = 2, 3, 100
+
+
 def _greedy_fill(hit_i, fp, dupi, sets, seats_of, start, n, n_w, caps, overlap, exclude, forbid):
     """select()'s greedy loop, started from an existing partial portfolio (SEL-1 exchange repair). Same gain order,
     same caps, same overlap, same exclusions, same depth escalation."""
@@ -451,9 +457,24 @@ def repair_fill(hit, cand_rows, seats_of, n, n_w, rung, P, exclude=frozenset()):
 def ladder(hit, cand_rows, seats_of, n, n_w, exclude=frozenset()):
     # SEL-1 is opt-in (NFL_SHOWDOWN_SELECTOR=FILL_REPAIR_V1); unset leaves the ladder byte-identical. Anything else refuses.
     sel = os.environ.get('NFL_SHOWDOWN_SELECTOR', 'GREEDY') or 'GREEDY'
-    if sel not in ('GREEDY', 'FILL_REPAIR_V1'):
-        raise ValueError(f'NFL_SHOWDOWN_SELECTOR={sel!r}: expected GREEDY or FILL_REPAIR_V1')
+    if sel not in ('GREEDY', 'FILL_REPAIR_V1', 'FIXED_POLICY_V1'):
+        raise ValueError(f'NFL_SHOWDOWN_SELECTOR={sel!r}: expected GREEDY, FILL_REPAIR_V1 or FIXED_POLICY_V1')
     log = []
+    if sel == 'FIXED_POLICY_V1' and FIXED_POLICY_MIN_N <= n < FIXED_POLICY_MAX_N:
+        # SEL-2 (PREREG_SEL2_FIXED_POLICY.md; owner decision 2026-10-13): a 20-entry contest is built at ONE declared
+        # rung. A greedy shortfall gets the exchange repair at that rung; if it still cannot fill, the short portfolio is
+        # returned flagged POLICY_UNFILLABLE -- never a silent relaxation (the upload verifier then refuses the file).
+        rung = LADDER[FIXED_POLICY_LEVEL]
+        P = select(hit, cand_rows, seats_of, n, n_w, rung, exclude)
+        log.append({'level': rung['level'], 'caps': P['caps'], 'built': len(P['chosen']), 'needed': n,
+                    'coverage': round(P['coverage'], 4), 'policy': 'FIXED_POLICY_V1'})
+        if P['short'] == 0:
+            return P, log
+        R = repair_fill(hit, cand_rows, seats_of, n, n_w, rung, P, exclude)
+        log[-1]['repair'] = 'COMPLETED' if R else 'FAILED'
+        if R is not None:
+            return R, log
+        return {**P, 'POLICY_UNFILLABLE': True}, log
     for rung in LADDER:
         P = select(hit, cand_rows, seats_of, n, n_w, rung, exclude)
         log.append({'level': rung['level'], 'caps': P['caps'], 'built': len(P['chosen']), 'needed': n,
