@@ -84,18 +84,86 @@ def test_verifier_catches_tampering():
         e = entries[0]
         good = [e[0], e[1], e[2], e[3], c[ph['ID']]] + [q[ph['ID']] for q in fl]
         csv.writer(open(up, 'w', newline='')).writerows([hdr[:4] + ['CPT'] + ['FLEX'] * 5, good])
-        v = SP.verify_upload(up, EXPORT)
+        v = SP.verify_upload(up, EXPORT, require_all_entries=False)
         check(v.state.value == 'PASS', f'a legal cheap lineup verifies ({v.code} {(v.evidence or {}).get("violations")})')
         dup = good[:5] + [good[5]] * 5
         csv.writer(open(up, 'w', newline='')).writerows([hdr[:4] + ['CPT'] + ['FLEX'] * 5, dup])
-        check(SP.verify_upload(up, EXPORT).state.value == 'FAIL', 'a repeated person is caught')
+        check(SP.verify_upload(up, EXPORT, require_all_entries=False).state.value == 'FAIL', 'a repeated person is caught')
         swap = [e[0], e[1], e[2], e[3], fl[0][ph['ID']], c[ph['ID']]] + [q[ph['ID']] for q in fl[1:]]
         csv.writer(open(up, 'w', newline='')).writerows([hdr[:4] + ['CPT'] + ['FLEX'] * 5, swap])
-        check(SP.verify_upload(up, EXPORT).state.value == 'FAIL', 'a FLEX id in the CPT slot is caught')
+        check(SP.verify_upload(up, EXPORT, require_all_entries=False).state.value == 'FAIL', 'a FLEX id in the CPT slot is caught')
         wrong = ['999'] + good[1:]
         csv.writer(open(up, 'w', newline='')).writerows([hdr[:4] + ['CPT'] + ['FLEX'] * 5, wrong])
-        check(SP.verify_upload(up, EXPORT).state.value == 'FAIL', 'an entry id not in the export is caught')
+        check(SP.verify_upload(up, EXPORT, require_all_entries=False).state.value == 'FAIL', 'an entry id not in the export is caught')
 
+
+
+def _pool_and_entries():
+    rows = list(csv.reader(open(EXPORT, newline='', encoding='utf-8-sig')))
+    entries = [r for r in rows[1:] if r and r[0].strip().isdigit()]
+    for i, r in enumerate(rows):
+        if 'Roster Position' in r and 'Salary' in r:
+            ph = {h: j for j, h in enumerate(r)}
+            pool = [q for q in rows[i + 1:] if len(q) > ph['Salary'] and q[ph['ID']].strip()]
+            return rows[0], entries, pool, ph
+
+
+def _legal_lineups(pool, ph, k):
+    """k distinct legal lineups (cap, both teams, distinct people, CPT at 1.5x of the same person), cheapest first."""
+    import itertools
+    cpt = sorted((q for q in pool if q[ph['Roster Position']] == 'CPT'), key=lambda q: int(q[ph['Salary']]))
+    flex = sorted((q for q in pool if q[ph['Roster Position']] == 'FLEX'), key=lambda q: int(q[ph['Salary']]))[:14]
+    out = []
+    for c in cpt:
+        for fl in itertools.combinations(flex, 5):
+            names = {q[ph['Name']] for q in fl}
+            if c[ph['Name']] in names or len({q[ph['TeamAbbrev']] for q in fl + (c,)}) < 2:
+                continue
+            if int(c[ph['Salary']]) + sum(int(q[ph['Salary']]) for q in fl) > SP.CAP:
+                continue
+            out.append([c[ph['ID']]] + [q[ph['ID']] for q in fl])
+            if len(out) == k:
+                return out
+    return out
+
+
+def test_verifier_requires_every_entry_once_and_no_repeat_inside_a_contest():
+    """UPL-D2 (2026-10-13): completeness and within-contest uniqueness are the verifier's OWN checks."""
+    hdr, entries, pool, ph = _pool_and_entries()
+    lus = _legal_lineups(pool, ph, len(entries))
+    enough = len(lus) == len(entries)      # this module's check() returns None, so the guard is computed, not returned
+    check(enough, f'fixture: {len(lus)} distinct legal lineups for {len(entries)} entries')
+    if not enough:
+        return
+    head = hdr[:4] + ['CPT'] + ['FLEX'] * 5
+    full = [e[:4] + lu for e, lu in zip(entries, lus)]
+    with tempfile.TemporaryDirectory() as d:
+        up = pathlib.Path(d) / 'up.csv'
+        def verdict(rows_):
+            csv.writer(open(up, 'w', newline='')).writerows([head] + rows_)
+            v = SP.verify_upload(up, EXPORT)
+            return v, [x[1] for x in (v.evidence or {}).get('violations', [])]
+        v, _ = verdict(full)
+        check(v.state.value == 'PASS', f'negative control: a complete, legal, distinct upload verifies ({v.code} {(v.evidence or {}).get("violations")})')
+        v, viol = verdict(full[:-1])
+        check(v.state.value == 'FAIL' and any(x.startswith('ENTRY_WITHOUT_LINEUP') for x in viol),
+              f'positive control: an upload missing one entry is refused ({viol[:3]})')
+        cids = [e[2] for e in entries]
+        i, j = next((a, b) for a in range(len(entries)) for b in range(a + 1, len(entries)) if cids[a] == cids[b])
+        twin = [list(r) for r in full]
+        twin[j] = twin[j][:4] + twin[i][4:]
+        v, viol = verdict(twin)
+        check(v.state.value == 'FAIL' and any(x.startswith('DUPLICATE_LINEUP_IN_CONTEST') for x in viol),
+              f'positive control: the same lineup twice in one contest is refused ({viol[:3]})')
+        other = [b for b in range(len(entries)) if cids[b] != cids[i]]
+        if other:
+            cross = [list(r) for r in full]
+            cross[other[0]] = cross[other[0]][:4] + cross[i][4:]
+            v, viol = verdict(cross)
+            check(not any(x.startswith('DUPLICATE_LINEUP_IN_CONTEST') for x in viol),
+                  f'legitimate exception: one lineup in two DIFFERENT contests is not this rule\'s refusal ({viol[:3]})')
+        else:
+            check(True, 'export has a single contest; the cross-contest exception is not exercisable here')
 
 def test_swap_polish():
     # textbook greedy trap: G covers 7 of 12 worlds; A and B cover 6 each, disjoint, together all 12.

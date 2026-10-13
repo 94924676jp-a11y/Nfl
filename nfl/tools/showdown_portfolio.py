@@ -463,7 +463,7 @@ def ladder(hit, cand_rows, seats_of, n, n_w, exclude=frozenset()):
     if sel == 'FIXED_POLICY_V1' and FIXED_POLICY_MIN_N <= n < FIXED_POLICY_MAX_N:
         # SEL-2 (PREREG_SEL2_FIXED_POLICY.md; owner decision 2026-10-13): a 20-entry contest is built at ONE declared
         # rung. A greedy shortfall gets the exchange repair at that rung; if it still cannot fill, the short portfolio is
-        # returned flagged POLICY_UNFILLABLE -- never a silent relaxation (the upload verifier then refuses the file).
+        # returned flagged POLICY_UNFILLABLE -- never a silent relaxation (the builder's short check then writes no upload: FINALIZATION_BLOCKED).
         rung = LADDER[FIXED_POLICY_LEVEL]
         P = select(hit, cand_rows, seats_of, n, n_w, rung, exclude)
         log.append({'level': rung['level'], 'caps': P['caps'], 'built': len(P['chosen']), 'needed': n,
@@ -1216,8 +1216,13 @@ def run(export, draws_path, out_dir, prefix, *, inactives=None, proj_path=None, 
                                   for P in portfolios.values()))
 
 
-def verify_upload(upload, export, *, absent_names=(), inactive_keys=()):
-    """Independent re-check of the upload against the DK export only. Shares no state with the builder."""
+def verify_upload(upload, export, *, absent_names=(), inactive_keys=(), require_all_entries=True):
+    """Independent re-check of the upload against the DK export only. Shares no state with the builder.
+
+    COMPLETENESS IS THE VERIFIER'S OWN CHECK (repair 2026-10-13, issue UPL-D2): every entry in the owner's export must
+    carry exactly one row, and one contest may not hold the same lineup twice. Before this, a partial upload verified
+    PASS here and only the builder's row count (`UPLOAD_ROWS_NE_PAID_ENTRIES`) caught it. `require_all_entries=False`
+    exists for row-level tamper fixtures only; production never passes it."""
     rows = list(csv.reader(open(export, newline='', encoding='utf-8-sig')))
     hdr = rows[0]
     entries = {}
@@ -1271,6 +1276,18 @@ def verify_upload(upload, export, *, absent_names=(), inactive_keys=()):
         if any(x['name'] in absent_names for x in items):
             viol.append((n, 'INACTIVE_ROSTERED'))
     lineups = [tuple(r[4:10]) for r in up[1:]]
+    if require_all_entries:
+        for eid in sorted(set(entries) - seen_entries):
+            viol.append((0, f'ENTRY_WITHOUT_LINEUP {eid}'))
+        per_contest = collections.defaultdict(list)
+        for n, r in enumerate(up[1:], 1):
+            per_contest[r[2]].append((n, (r[4], tuple(sorted(r[5:10])))))
+        for cid, rows_ in per_contest.items():
+            first = {}
+            for n, key in rows_:
+                if key in first:
+                    viol.append((n, f'DUPLICATE_LINEUP_IN_CONTEST {cid} (same as row {first[key]})'))
+                first.setdefault(key, n)
     out = {'n_rows': len(up) - 1, 'n_unique_entries': len(seen_entries), 'violations': viol,
            'n_distinct_lineups': len(set(lineups)),
            'sha256': hashlib.sha256(pathlib.Path(upload).read_bytes()).hexdigest()}
