@@ -117,7 +117,9 @@ class Constraints:
     min_unique_players: int = 1
     max_from_team: Optional[int] = None
     max_from_game: Optional[int] = None
-    #: QB stack: how many pass catchers from the QB's own team.
+    #: QB stack: how many same-team skill players (RB, WR or TE -- running backs COUNT here) the QB needs.
+    #: Not a receiving-role rule. The production Classic builder (nfl/opt/exact.py, qb_stack_positions)
+    #: counts WR/TE only; this research/benchmark optimizer is not on that path.
     qb_stack_min: int = 0
     #: Bring-back: how many players from the opposing team of the QB's game.
     bring_back_min: int = 0

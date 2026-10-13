@@ -37,13 +37,18 @@ POOL = [_p(1, 'QB', 'BUF', 'NE@BUF', 7000), _p(2, 'RB', 'BUF', 'NE@BUF'), _p(3, 
         _p(4, 'WR', 'BUF', 'NE@BUF'), _p(5, 'WR', 'NE', 'NE@BUF'), _p(6, 'WR', 'BAL', 'TEN@BAL'),
         _p(7, 'TE', 'BAL', 'TEN@BAL', 4000), _p(8, 'RB', 'TEN', 'TEN@BAL', 4000),
         _p(9, 'DST', 'BAL', 'TEN@BAL', 3000), _p(10, 'WR', 'TEN', 'TEN@BAL', 4000),
-        _p(11, 'WR', 'TEN', 'TEN@BAL', 30000), _p(12, 'QB', 'NE', 'NE@BUF', 6000)]
+        _p(11, 'WR', 'TEN', 'TEN@BAL', 30000), _p(12, 'QB', 'NE', 'NE@BUF', 6000),
+        # one-game material: with 1, 2, 4 and 5 these fill a whole roster from NE@BUF alone
+        _p(13, 'RB', 'NE', 'NE@BUF', 4000), _p(14, 'WR', 'NE', 'NE@BUF', 4000), _p(15, 'TE', 'NE', 'NE@BUF', 4000),
+        _p(16, 'DST', 'BUF', 'NE@BUF', 3000), _p(17, 'RB', 'NE', 'NE@BUF', 4000)]
 ENTRIES = [{'entry_id': 'E1', 'contest_name': 'Big', 'contest_id': 'C150', 'entry_fee': '$0.50'},
            {'entry_id': 'E2', 'contest_name': 'Big', 'contest_id': 'C150', 'entry_fee': '$0.50'},
            {'entry_id': 'E3', 'contest_name': 'Small', 'contest_id': 'C20', 'entry_fee': '$0.25'}]
 L1 = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
 L2 = ['1', '2', '3', '4', '5', '6', '7', '10', '9']
 L3 = ['1', '2', '8', '4', '5', '6', '7', '10', '9']
+ONE_GAME = ['1', '2', '13', '4', '5', '14', '15', '17', '16']        # every player from NE@BUF
+TWO_GAMES_MIN = ['1', '2', '13', '4', '5', '14', '15', '17', '9']   # the same, DST from TEN@BAL: exactly 2 games
 
 
 def _file(*rows):
@@ -105,6 +110,19 @@ def test_02_each_breach_is_refused():
     o = U.verify(f, POOL, ENTRIES, set())
     check('positive control: a duplicate lineup inside one contest is refused',
           any('duplicate lineup' in x for x in (o.evidence or {}).get('violations', [])), str(o.evidence))
+
+
+def test_02b_every_player_from_one_game_is_refused_and_exactly_two_games_passes():
+    f = _good()
+    f[1][4:] = ONE_GAME
+    o = U.verify(f, POOL, ENTRIES, set())
+    v = (o.evidence or {}).get('violations', [])
+    check('positive control: a lineup with every player from one game is refused at the upload boundary',
+          o.state.value == 'FAIL' and any('fewer than 2 games' in x for x in v), str(v))
+    f[1][4:] = TWO_GAMES_MIN
+    o = U.verify(f, POOL, ENTRIES, set())
+    check('  legitimate exception: the same lineup with one player from a second game passes',
+          o.state.value == 'PASS', f'{o.code} {(o.evidence or {}).get("violations")}')
 
 
 def test_03_empty_is_a_refusal_not_a_pass():
