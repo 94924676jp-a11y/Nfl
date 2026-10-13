@@ -18,6 +18,19 @@ if str(_REPO) not in sys.path:
 from nfl.tools import showdown_portfolio as SP  # noqa: E402
 
 
+PASSED = FAILED = 0
+
+
+def check(ok, label=''):
+    """Counted check (nfl/tests/run_suite.py reads PASSED/FAILED around every test function)."""
+    global PASSED, FAILED
+    if ok:
+        PASSED += 1
+    else:
+        FAILED += 1
+        print(f'  FAIL {label}')
+    return bool(ok)
+
 def _fixture(seed, n_c=300, n_w=400, n_p=14):
     rng = np.random.default_rng(seed)
     seats_of = [list(rng.choice(n_p, 6, replace=False)) for _ in range(n_c)]
@@ -29,13 +42,13 @@ def _fixture(seed, n_c=300, n_w=400, n_p=14):
 
 def _lawful(P, seats_of, n, exclude):
     ch = P['chosen']
-    assert len(ch) == n and len(set(ch)) == n, 'size / distinct'
-    assert not (set(ch) & set(exclude)), 'exclusion'
+    check(len(ch) == n and len(set(ch)) == n, 'size / distinct')
+    check(not (set(ch) & set(exclude)), 'exclusion')
     exp = collections.Counter(k for j in ch for k in seats_of[j])
     cexp = collections.Counter(seats_of[j][0] for j in ch)
-    assert max(exp.values()) <= P['caps']['player'] and max(cexp.values()) <= P['caps']['captain'], 'caps'
+    check(max(exp.values()) <= P['caps']['player'] and max(cexp.values()) <= P['caps']['captain'], 'caps')
     sets = [set(seats_of[j]) for j in ch]
-    assert all(len(a & b) <= P['caps']['overlap'] for i, a in enumerate(sets) for b in sets[i + 1:]), 'overlap'
+    check(all(len(a & b) <= P['caps']['overlap'] for i, a in enumerate(sets) for b in sets[i + 1:]), 'overlap')
 
 
 def _run(sel, hit, rows, seats_of, n, n_w, exclude=frozenset()):
@@ -59,18 +72,18 @@ def test_repair_is_lawful_never_relaxes_more_and_completes_some_greedy_shortfall
         R, log = _run('FILL_REPAIR_V1', hit, rows, seats_of, 20, n_w, excl)
         if R['short'] == 0:
             _lawful(R, seats_of, 20, excl)
-        assert R['relaxation_level'] <= G['relaxation_level'], (seed, R['relaxation_level'], G['relaxation_level'])
+        check(R['relaxation_level'] <= G['relaxation_level'], (seed, R['relaxation_level'], G['relaxation_level']))
         if R['relaxation_level'] < G['relaxation_level']:
             completed_at_stricter += 1
-            assert any(x.get('repair') == 'COMPLETED' for x in log)
-    assert completed_at_stricter > 0, 'fixture never exercised a greedy shortfall that a repair completes'
+            check(any(x.get('repair') == 'COMPLETED' for x in log), "any(x.get('repair') == 'COMPLETED' for x in log)")
+    check(completed_at_stricter > 0, 'fixture never exercised a greedy shortfall that a repair completes')
 
 
 def test_default_unchanged_and_unknown_selector_refuses():
     hit, rows, seats_of, n_w = _fixture(3)
     a, la = _run(None, hit, rows, seats_of, 20, n_w)
     b, lb = _run('GREEDY', hit, rows, seats_of, 20, n_w)
-    assert a['chosen'] == b['chosen'] and la == lb and 'repair' not in a
+    check(a['chosen'] == b['chosen'] and la == lb and 'repair' not in a, "a['chosen'] == b['chosen'] and la == lb and 'repair' not in a")
     try:
         _run('FILL', hit, rows, seats_of, 20, n_w)
         raise AssertionError('an unknown selector must refuse')
@@ -82,24 +95,32 @@ def test_sel2_fixed_policy_level_2_for_20s_untouched_150_and_loud_when_unfillabl
     for seed in range(12):
         hit, rows, seats_of, n_w = _fixture(seed)
         F, flog = _run('FIXED_POLICY_V1', hit, rows, seats_of, 20, n_w)
-        assert F['relaxation_level'] == SP.FIXED_POLICY_LEVEL and flog[0]['policy'] == 'FIXED_POLICY_V1'
+        check(F['relaxation_level'] == SP.FIXED_POLICY_LEVEL and flog[0]['policy'] == 'FIXED_POLICY_V1', "F['relaxation_level'] == SP.FIXED_POLICY_LEVEL and flog[0]['policy'] == 'FIXED_POLICY_V1'")
         if not F.get('POLICY_UNFILLABLE'):
             _lawful(F, seats_of, 20, frozenset())
         else:
-            assert F['short'] > 0, 'an unfillable contest must stay visibly short'
+            check(F['short'] > 0, 'an unfillable contest must stay visibly short')
     # the 150-entry ladder is not covered by the owner decision and stays the greedy ladder
     hit, rows, seats_of, n_w = _fixture(5, n_c=1200, n_p=24)
     g150, _ = _run(None, hit, rows, seats_of, 150, n_w)
     f150, _ = _run('FIXED_POLICY_V1', hit, rows, seats_of, 150, n_w)
-    assert g150['chosen'] == f150['chosen'] and g150['relaxation_level'] == f150['relaxation_level']
+    check(g150['chosen'] == f150['chosen'] and g150['relaxation_level'] == f150['relaxation_level'], "g150['chosen'] == f150['chosen'] and g150['relaxation_level'] == f150['relaxation_level']")
     # unfillable at the policy: too few distinct lineups exist -> flagged, never relaxed
     hit, rows, seats_of, n_w = _fixture(9, n_c=12, n_p=8)
     U, ulog = _run('FIXED_POLICY_V1', hit, rows, seats_of, 20, n_w)
-    assert U.get('POLICY_UNFILLABLE') is True and U['short'] > 0 and U['relaxation_level'] == SP.FIXED_POLICY_LEVEL
+    check(U.get('POLICY_UNFILLABLE') is True and U['short'] > 0 and U['relaxation_level'] == SP.FIXED_POLICY_LEVEL, "U.get('POLICY_UNFILLABLE') is True and U['short'] > 0 and U['relaxation_level'] == SP.FIXED_POLICY_LEVEL")
+
+
+def test_zz_every_check_passed():
+    """The module's own counter, re-raised so a failure turns this module RED when run standalone."""
+    if FAILED:
+        raise AssertionError(f'{FAILED} check(s) failed in this module')
+    check(PASSED > 0, 'the module counted at least one check')
 
 
 if __name__ == '__main__':
     test_repair_is_lawful_never_relaxes_more_and_completes_some_greedy_shortfall()
     test_default_unchanged_and_unknown_selector_refuses()
     test_sel2_fixed_policy_level_2_for_20s_untouched_150_and_loud_when_unfillable()
-    print('PASS')
+    test_zz_every_check_passed()
+    print(f'PASSED {PASSED}  FAILED {FAILED}')
