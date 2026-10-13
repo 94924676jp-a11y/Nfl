@@ -79,6 +79,29 @@ DESIGNATION_MAP = {
 DST_IDENTITY = 'TEAM_DEFENCE_NOT_A_PLAYER_IDENTITY'
 
 
+def unplayed_games_for(rows, season, away, home):
+    """TEAM_GAME rows of the unplayed `season` game with THIS orientation (away at home).
+
+    ORIENTATION IS PART OF THE GAME'S IDENTITY (issue GAME-ID-D1, 2026-10-13). nflverse game ids are
+    SEASON_WEEK_AWAY_HOME, and division rivals meet twice with the clubs swapped (2026_04_ATL_NO, 2026_17_NO_ATL).
+    Matching on the club PAIR alone took the first unplayed meeting in file order, so a week-17 slate built while the
+    week-4 result had not yet reached the schedules capture would read week 4's environment. A row whose id carries the
+    opposite orientation is excluded; more than one remaining game refuses rather than picking one."""
+    pair = {away, home}
+    hits = [r for r in rows if r.get('season') == season and {r.get('club'), r.get('opponent')} == pair
+            and r.get('points') is None]
+    def oriented(r):
+        parts = str(r.get('game_id') or '').split('_')
+        return len(parts) >= 4 and parts[-2] == away and parts[-1] == home
+    keep = [r for r in hits if oriented(r)]
+    if len({r.get('game_id') for r in keep}) > 1:
+        return Outcome.blocked('SLATE_STATE_GAME_AMBIGUOUS',
+                               f'{len({r.get("game_id") for r in keep})} unplayed {season} games {away}@{home}: '
+                               f'{sorted({r.get("game_id") for r in keep})}', cause=Cause.DATA,
+                               games=sorted({r.get('game_id') for r in keep}))
+    return keep
+
+
 def environment_for(game_id: str, away: str, home: str) -> Outcome:
     """The market's own view of the game, read from TEAM_GAME. Refuses rather than assuming."""
     if not TEAM_GAME.exists():
@@ -287,10 +310,9 @@ def build(export, *, designations=None, official_inactives=None, roster_blocked=
     sched_week = None
     art = json.loads(TEAM_GAME.read_text()) if TEAM_GAME.exists() else {'rows': []}
     rows = art['rows'] if isinstance(art['rows'], list) else list(art['rows'].values())
-    cand = [r for r in rows
-            if r.get('season') == kick.year
-            and {r.get('club'), r.get('opponent')} == {S.corpus_team(away), S.corpus_team(home)}
-            and r.get('points') is None]
+    cand = unplayed_games_for(rows, kick.year, S.corpus_team(away), S.corpus_team(home))
+    if isinstance(cand, Outcome):
+        return cand
     if not cand:
         return Outcome.blocked(
             'SLATE_STATE_NO_UNPLAYED_GAME_FOR_THESE_CLUBS',
