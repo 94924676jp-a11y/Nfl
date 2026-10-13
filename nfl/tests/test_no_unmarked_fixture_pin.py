@@ -76,6 +76,14 @@ DECLARED_PINS = {
     'nfl/market/': (
         'ONE-OFF price evaluations against EARLY_1PM_2026W2 and 2026_02_NYG_LA; '
         'not reachable from a scheduled workflow.'),
+    'nfl/dfs/salaries/classic_early_2026W5/': (
+        'WEEK-5 CLASSIC EARLY SLATE RESEARCH (fc_diagnosis, qb_verification, saturday_audit, world_audit): frozen '
+        'one-off audits of that slate, pinned to its own raw captures by design; not reachable from a scheduled '
+        'workflow (checked below). Declared 2026-10-13, ledger TEST-D5.'),
+    'nfl/dfs/salaries/early_only.py': (
+        'THE EARLY-ONLY SLATE REGISTRY: one entry per declared week (2026W3, W4, W5 at this writing), each naming that week\'s own '
+        'captures by design. An entry is read only when its slate_id is requested; no week is a default. Declared '
+        '2026-10-13, ledger TEST-D5.'),
     'nfl/dfs/salaries/emit_package.py': (
         'emits the Week-2 early-slate package; one-off, not scheduled.'),
     'nfl/dfs/scoring/dual_board.py': (

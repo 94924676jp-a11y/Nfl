@@ -196,16 +196,24 @@ def test_specialist_auto_in_state_builder():
     # suite run overwrote the slate state other modules read with a test fixture (certified run
     # 20261007T083657Z-18364, TREE_MUTATED_BY_RUN). The state is written into a temporary
     # directory instead; every check below reads the returned value, never the file.
+    import subprocess
     import tempfile
-    saved_out = SSS.OUT
-    SSS.OUT = pathlib.Path(tempfile.mkdtemp(prefix='showdown_state_')) / saved_out.name
+    saved_out, saved_tg = SSS.OUT, SSS.TEAM_GAME
+    tmp = pathlib.Path(tempfile.mkdtemp(prefix='showdown_state_'))
+    SSS.OUT = tmp / saved_out.name
+    # POINT IN TIME (TEST-D2, 2026-10-13). The live warehouse now records 2026_04_ATL_NO as PLAYED, so the state builder
+    # rightly finds no unplayed ATL@NO game and refuses. This replay reads TEAM_GAME as it stood when the slate ran:
+    # the blob at 8feac0f3 (2026-10-01), the last warehouse commit before the game. No row is edited by hand.
+    SSS.TEAM_GAME = tmp / 'TEAM_GAME.json'
+    SSS.TEAM_GAME.write_bytes(subprocess.run(['git', 'show', '8feac0f3:nfl/warehouse/TEAM_GAME.json'], cwd=_REPO,
+                                             capture_output=True, check=True).stdout)
     try:
         o = SSS.build(R / 'DKEntries_ATL_NO_SHOWDOWN_2026W4.fd0c1faa2271ca66.csv', designations=des,
                       official_inactives=json.loads((R / 'OFFICIAL_INACTIVES_ATL_NO_2026W4.json').read_text()),
                       confirmed_starters=json.loads((D / 'STARTERS_ATL_NO_2026W4.json').read_text()),
                       depth_chart=chart)
     finally:
-        SSS.OUT = saved_out
+        SSS.OUT, SSS.TEAM_GAME = saved_out, saved_tg
     check(o.state.value == 'PASS', f'state builds ({o.state.value} {getattr(o, "code", "")})')
     if o.state.value != 'PASS':
         return

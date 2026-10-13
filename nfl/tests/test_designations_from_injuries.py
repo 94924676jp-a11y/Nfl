@@ -14,6 +14,19 @@ ROWS = [['2026', '5', 'TB', 'QB One', 'Out', 'Did Not Participate In Practice'],
         ['2026', '5', 'DAL', 'LB Three', 'Questionable', 'Full Participation in Practice']]
 
 
+PASSED = FAILED = 0
+
+
+def check(ok, label=''):
+    """Counted check (nfl/tests/run_suite.py reads PASSED/FAILED around every test function)."""
+    global PASSED, FAILED
+    if ok:
+        PASSED += 1
+    else:
+        FAILED += 1
+        print(f'  FAIL {label}')
+    return bool(ok)
+
 def _file(rows=ROWS):
     d = pathlib.Path(tempfile.mkdtemp())
     p = d / 'inj.csv.gz'
@@ -28,22 +41,22 @@ def _refuses(fn, code):
     try:
         fn()
     except SystemExit as e:
-        assert code in str(e), e
+        check(code in str(e), e)
         return
     raise AssertionError(f'expected {code}')
 
 
 def test_formal_only_practice_never_designates():
     des, prov = build(_file(), 2026, 5, {'TB', 'DAL'})
-    assert des == {'QB One': 'OUT', 'LB Three': 'QUESTIONABLE'}
-    assert [x['player'] for x in prov['practice_only_no_formal_status']] == ['WR Two']
+    check(des == {'QB One': 'OUT', 'LB Three': 'QUESTIONABLE'}, "des == {'QB One': 'OUT', 'LB Three': 'QUESTIONABLE'}")
+    check([x['player'] for x in prov['practice_only_no_formal_status']] == ['WR Two'], "[x['player'] for x in prov['practice_only_no_formal_status']] == ['WR Two']")
 
 
 def test_counterfactual_remove_is_recorded():
     des, prov = build(_file(), 2026, 5, {'TB', 'DAL'}, counterfactual_remove=['QB One'])
-    assert 'QB One' not in des
-    assert prov['COUNTERFACTUAL_REMOVED_FORMAL_STATUS'] == {'QB One': 'OUT'}
-    assert 'QB One' not in prov['formal_designations']
+    check('QB One' not in des, "'QB One' not in des")
+    check(prov['COUNTERFACTUAL_REMOVED_FORMAL_STATUS'] == {'QB One': 'OUT'}, "prov['COUNTERFACTUAL_REMOVED_FORMAL_STATUS'] == {'QB One': 'OUT'}")
+    check('QB One' not in prov['formal_designations'], "'QB One' not in prov['formal_designations']")
 
 
 def test_counterfactual_remove_needs_a_formal_status():
@@ -65,9 +78,15 @@ def test_formal_designations_keep_practice_status_and_injury():
             ['2026', '5', 'DAL', 'LB Three', 'Out', 'Did Not Participate In Practice']]
     _des, prov = build(_file(rows), 2026, 5, {'TB', 'DAL'})
     d = prov['formal_detail']
-    assert d['QB One']['practice_status'] == 'Limited Participation in Practice' and d['QB One']['team'] == 'TB'
-    assert set(d) == {'QB One', 'LB Three'}
+    check(d['QB One']['practice_status'] == 'Limited Participation in Practice' and d['QB One']['team'] == 'TB', "d['QB One']['practice_status'] == 'Limited Participation in Practice' and d['QB One']['team'] == 'TB'")
+    check(set(d) == {'QB One', 'LB Three'}, "set(d) == {'QB One', 'LB Three'}")
 
+
+def test_zz_every_check_passed():
+    """The module's own counter, re-raised so a failure turns this module RED when run standalone."""
+    if FAILED:
+        raise AssertionError(f'{FAILED} check(s) failed in this module')
+    check(PASSED > 0, 'the module counted at least one check')
 
 
 if __name__ == '__main__':

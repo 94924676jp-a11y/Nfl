@@ -34,6 +34,24 @@ CHART = {'CHI': {'order': ['W', 'B', 'K'], 'dt': 'd', 'capture_id': 'c'},
 DEPTH = {'S': {'pregame_rank': 1}}
 
 
+def _w4_build(*a, **kw):
+    """The week-4 replay at its own vintage (TEST-D2/PIT-D1, 2026-10-13). TEAM_GAME is point-in-time only under
+    NFL_PIT_MANIFEST; read live it now records week 4 as PLAYED, and the builder rightly finds no unplayed game. This
+    reads TEAM_GAME as of 8feac0f3 (2026-10-01), the last warehouse commit before the as_of 2026-10-04T05:00Z. No row
+    is edited by hand."""
+    import subprocess
+    import tempfile
+    saved = C.SS.TEAM_GAME
+    tg = pathlib.Path(tempfile.mkdtemp(prefix='classic_w4_')) / 'TEAM_GAME.json'
+    tg.write_bytes(subprocess.run(['git', 'show', '8feac0f3:nfl/warehouse/TEAM_GAME.json'], cwd=_REPO,
+                                  capture_output=True, check=True).stdout)
+    C.SS.TEAM_GAME = tg
+    try:
+        return C.build(*a, **kw)
+    finally:
+        C.SS.TEAM_GAME = saved
+
+
 def test_01_a_reported_out_starter_vacates_rank_one():
     r = C._qb_rank('QB', 'CHI', 'B', CHART, DEPTH, out_gsis={'W'})
     check('positive control: QB1 reported OUT -> his QB2 ranks 1', r == 1, str(r))
@@ -114,7 +132,7 @@ def _qbs(v, club):
 def test_05_an_evidence_packet_drives_the_real_week4_state():
     """Integration on the committed week-4 inputs (write=False: the production state is untouched)."""
     from nfl.opt import classic_portfolio as CP
-    o = C.build('2026W4', as_of='2026-10-04T05:00:00Z', write=False,
+    o = _w4_build('2026W4', as_of='2026-10-04T05:00:00Z', write=False,
                 evidence_packet=_pk([{'name': 'Tyson Bagent', 'team': 'CHI', 'status': 'INACTIVE'},
                                      {'name': 'Zay Flowers', 'team': 'BAL', 'status': 'ACTIVE', 'cited': 'OFFICIAL_RELEASE'}]))
     if not check('the week-4 state builds with a packet', o.state.value == 'PASS', f'{o.code} {o.detail}'):
@@ -135,7 +153,7 @@ def test_05_an_evidence_packet_drives_the_real_week4_state():
           CP._effective_designation({'designation': 'QUESTIONABLE'}) == 'QUESTIONABLE')
     check('a rehearsal is labelled as not evidence', o.value['official_inactives']['STATE'] == 'REHEARSAL_NOT_EVIDENCE')
 
-    o = C.build('2026W4', as_of='2026-10-04T05:00:00Z', write=False,
+    o = _w4_build('2026W4', as_of='2026-10-04T05:00:00Z', write=False,
                 evidence_packet=_pk([], {'CHI': 'Case Keenum'}))
     q = _qbs(o.value, 'CHI')
     check('positive control: a confirmed starter overrides chart inference',
@@ -149,7 +167,7 @@ def test_05_an_evidence_packet_drives_the_real_week4_state():
           and C.STARTER_TIER_FOR_SOURCE['OWNER_RELAYED'] != C.STARTER_TIER_FOR_SOURCE['OFFICIAL_CAPTURED'])
     check('  and no next-healthy guess is layered on a confirmed club',
           not any((v.get('predicted_lineup_context') or {}).get('state') == C.NEXT_HEALTHY_TIER for v in q.values()))
-    o = C.build('2026W4', as_of='2026-10-04T05:00:00Z', write=False)
+    o = _w4_build('2026W4', as_of='2026-10-04T05:00:00Z', write=False)
     q = _qbs(o.value, 'CHI')
     check('negative control: with no packet the chart starter keeps the next-healthy tier and the slot is AWAITING',
           q['Tyson Bagent']['depth_rank'] == 1 and o.value['official_inactives'].get('STATE', '').startswith('AWAITING'),
