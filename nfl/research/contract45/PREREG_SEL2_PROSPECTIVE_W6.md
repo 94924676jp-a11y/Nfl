@@ -107,3 +107,31 @@ This is **descriptive only**. One game per slate cannot rank selectors, and it i
 
 - Payout, ROI and duplication against a real field: no lawful field or prize model exists.
 - The candidate generator, which is a separate experiment with a fixed pool size and compute budget.
+
+## AMENDMENT 1 (2026-10-13, ~20:00 UTC, before any Week 6 data exists; the decision rules are unchanged)
+
+**The limitation:** production generates its candidates from **all** worlds (`showdown_portfolio.py:909-918`). The H
+worlds therefore helped shape the shared pool.
+
+**What this does and does not affect:**
+
+- It does **not** bias the paired comparison: both arms use the same pool.
+- It **does** make the absolute H objectives optimistic.
+
+So H values are reported as **paired differences only**, never as absolute out-of-sample performance. Generation worlds
+that are disjoint from evaluation worlds belong to the candidate-generator experiment (CG-1), not to this test.
+
+## AMENDMENT 2 (2026-10-13, ~20:30 UTC, before any Week 6 data exists; the decision rules are unchanged)
+
+**1. Equal objectives only.** Nested-pool monotonicity compares S objectives only where the full pool and the subsample
+ran with the **same m**. E[min(depth, m)] under a different m is a different objective. Each contest reports
+`nested_comparable` beside `nested_violations`.
+
+**2. What the metric means for each contest.**
+
+- **First-built contest:** a clean selector-monotonicity test, because nothing is excluded.
+- **Later contests:** under sequential exclusion, a later contest's feasible set depends on what the earlier contests
+  took. Its count therefore measures selector and exclusion coupling **together**, and it is reported as such.
+
+**Shakedown, diagnostic only.** On the frozen W5 slates, m was equal in all comparisons, and the counts were unchanged
+by this amendment.
