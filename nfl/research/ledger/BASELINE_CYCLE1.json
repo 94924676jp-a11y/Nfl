@@ -1,0 +1,109 @@
+{
+ "schema": "nfl-baseline-1",
+ "cycle": 1,
+ "measured_at_utc": "2026-10-13T20:30Z",
+ "release_sha": "2f510449 (branch claude/nfl-greenfield-architecture-stsxmk); no production promotion since the owner-run MNF G1 upload",
+ "runtime_tests": {
+  "state": "PENDING_RUN_AT_CYCLE1_COMMIT",
+  "runner": "python3.12 nfl/tests/run_suite.py (reads each module's own tally; refuses zero-check functions)",
+  "last_certificate": "nfl/tests/certificates/SUITE_CERTIFICATE_20261007T083657Z-18364.json VERDICT FAILED (368 modules); no certificate at HEAD",
+  "reproduced_at_head": "test_showdown_equal_size_contests + test_showdown_sel1_fill_repair: 0 checks counted, UNRECOGNISED_TALLY x2, SUITE FAIL (issue TALLY-D1)"
+ },
+ "production_call_graph": {
+  "SHOWDOWN_TONIGHT": {
+   "entry": "nfl/tools/showdown_tonight.py",
+   "n_files": 106,
+   "scripts_invoked": [
+    "nfl/capture/persisted_provenance.py",
+    "nfl/research/own9/a1_lib.py",
+    "nfl/tools/classic_paths.py"
+   ]
+  },
+  "SHOWDOWN_NEXT_SLATE": {
+   "entry": "nfl/tools/showdown_next_slate.py",
+   "n_files": 131,
+   "scripts_invoked": [
+    "nfl/capture/persisted_provenance.py",
+    "nfl/dfs/showdown/optimal_worlds.py",
+    "nfl/field/showdown_archetype_field.py",
+    "nfl/field/showdown_cheap_ownership_research.py",
+    "nfl/field/showdown_dupe_research.py",
+    "nfl/field/showdown_dupe_shadow.py",
+    "nfl/field/showdown_field_archive.py",
+    "nfl/field/showdown_history_calibration.py",
+    "nfl/field/showdown_shadow_board.py",
+    "nfl/field/showdown_shadow_field.py",
+    "nfl/market/showdown_prop_shadow.py",
+    "nfl/postgame/showdown_atl_no_field_actual.py",
+    "nfl/research/appearance/grade_appearance_seal.py",
+    "nfl/research/own9/a1_lib.py",
+    "nfl/research/ownership/grade_sc_own_rotation_2.py",
+    "nfl/research/ownership/predict_sc_own_rotation_2.py",
+    "nfl/research/ownership/sc_own_rotation_2.py",
+    "nfl/tools/classic_paths.py",
+    "nfl/tools/showdown_cycle1_checks.py",
+    "nfl/tools/showdown_fc_compare.py",
+    "nfl/tools/showdown_portfolio_audit.py",
+    "nfl/tools/showdown_prelock_board.py",
+    "nfl/tools/showdown_to_portfolio.py",
+    "nfl/tools/showdown_tonight.py"
+   ]
+  },
+  "CLASSIC_PIPELINE": {
+   "entry": "nfl/tools/classic_slate_pipeline.py",
+   "n_files": 123,
+   "scripts_invoked": [
+    "nfl/capture/persisted_provenance.py",
+    "nfl/opt/classic_portfolio.py",
+    "nfl/research/own9/a1_lib.py",
+    "nfl/tools/classic_change_log.py",
+    "nfl/tools/classic_fc_compare.py",
+    "nfl/tools/classic_finalize.py",
+    "nfl/tools/classic_owner_board.py",
+    "nfl/tools/classic_owner_page.py",
+    "nfl/tools/classic_paths.py",
+    "nfl/tools/classic_prelock.py",
+    "nfl/tools/classic_production_audit.py",
+    "nfl/tools/classic_prop_compare.py",
+    "nfl/tools/classic_release.py",
+    "nfl/tools/classic_research_book.py",
+    "nfl/tools/classic_slate_run.py",
+    "nfl/tools/classic_slate_state.py",
+    "nfl/tools/classic_upload_verify.py"
+   ]
+  }
+ },
+ "call_graph_method": "static ast closure of in-repo imports plus script paths named as string constants (nfl/research/ledger/callgraph.py); over-approximates conditional imports, can miss dynamic ones",
+ "not_reachable_from_any_entrypoint": [
+  "nfl/dfs/classic/optimizer.py",
+  "nfl/opt/contest.py",
+  "nfl/field/ownership.py"
+ ],
+ "data_freshness": {
+  "play_by_play": "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz: weeks 1-4, 64 games, file time 2026-10-07T16:59Z; week 5 ABSENT (DATA-D1, RES-008)"
+ },
+ "lock_policy": {
+  "showdown": "RUN_AFTER_KICKOFF / FINAL_VERIFY_AFTER_KICKOFF in showdown_next_slate only; direct showdown_tonight has no clock check (LOCK-D1)",
+  "classic": "classic_slate_pipeline.lock_check AFTER_LOCK / WOULD_NOT_FINISH_BEFORE_LOCK / LOCK_UNKNOWN; classic_release blocks only when both build time and kickoff exist (LOCK-D2)"
+ },
+ "defaults": {
+  "showdown_selector": "GREEDY (ladder relaxes on shortfall; SEL-D1)",
+  "showdown_overlap_policy": "EQUAL_SIZE (GLOBAL opt-in)",
+  "arm": "INCUMBENT by code default; Showdown arm chosen by NFL_SHOWDOWN_ARM (MNF BUF@LAR production pool was FINAL_CV1, the corrected arm)"
+ },
+ "issue_ledger": "nfl/research/ledger/ISSUE_LEDGER.json",
+ "failed_or_withdrawn_experiments": [
+  "SEL-1 FILL_REPAIR_V1 FAILED (3f04bd76)",
+  "SEL-2 missed retrospective promotion bar on BUF $5K (81e78264); prospective test registered (2f510449)",
+  "PROJ-FIX-1 REJECTED (b8d3389b)",
+  "PORT-D3 stage attribution WITHDRAWN as confounded (47e14110)",
+  "postmortem claims \"volume to run game\" and \"backup tails too thin\" WITHDRAWN (RESULT_PORT_D3_AND_WR1OUT_RB2.md)"
+ ],
+ "owner_decisions_in_force": [
+  "2026-10-12 GLOBAL overlap = 190 distinct lineups for MNF",
+  "2026-10-13 20-entry caps fixed at level 2 as policy; SEL-2 stays opt-in for W6, not default",
+  "2026-10-13 no automatic production promotion; no wagers, DFS submission or account action",
+  "FC is never a football input; FC ownership only via a separately governed field model",
+  "2026-10-11 a roster snapshot alone never zeroes a player (conflicts with the 2026-10-13 mandate: AVAIL-D1)"
+ ]
+}

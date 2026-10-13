@@ -250,6 +250,105 @@
    "created_by": "owner",
    "result_path": null,
    "commit_sha": null
+  },
+  {
+   "task_id": "ENG-013",
+   "title": "Tests for untested production-path fixes: showdown_portfolio._to_dk_keys and showdown_slate_state.build(roster_blocked=...)",
+   "status": "AUTHORIZED",
+   "priority": 13,
+   "authorized": true,
+   "depends_on": [],
+   "objective": "Both fixes (Palmer/LA re-key; reserve gate) have no test, so a regression passes the suite. Ledger: TEST-D1, PALMER-LA. Authorization: owner 2026-10-13: \"Continue authorized work independently without requesting my approval for routine research or testing.\"",
+   "acceptance_tests": [
+    "a counted test drives each function on a fixture with the alias / reserve case",
+    "mutation: reverting each fix turns its test red"
+   ],
+   "created_by": "claude",
+   "result_path": null,
+   "commit_sha": null
+  },
+  {
+   "task_id": "ENG-014",
+   "title": "Fail closed on the direct Showdown path: refuse a run without a roster capture, and a run after kickoff",
+   "status": "DRAFT",
+   "priority": 13,
+   "authorized": false,
+   "depends_on": [],
+   "objective": "showdown_tonight credits reserves when --roster-capture is absent and has no clock check; only showdown_next_slate refuses. Ledger: AVAIL-D2, LOCK-D1. DRAFT: changes live run behaviour or an artifact schema; needs an owner action.",
+   "acceptance_tests": [
+    "direct run without a capture is BLOCKED with a named code",
+    "direct run after a known kickoff is BLOCKED",
+    "precompute with a capture is unchanged"
+   ],
+   "created_by": "claude",
+   "result_path": null,
+   "commit_sha": null
+  },
+  {
+   "task_id": "ENG-015",
+   "title": "CG-1 candidate-generator experiment: pre-register, then build the harness (fixed pool size and budget, generation worlds disjoint from evaluation)",
+   "status": "AUTHORIZED",
+   "priority": 13,
+   "authorized": true,
+   "depends_on": [],
+   "objective": "Recall is 19.4% at the pool median and candidates are fitted to the worlds they are scored on. Ledger: CAND-D1, CAND-D2. Authorization: owner 2026-10-13: \"Continue authorized work independently without requesting my approval for routine research or testing.\"",
+   "acceptance_tests": [
+    "pre-registration committed before any run",
+    "same selector, same fixed rung, same pool size for both arms",
+    "generation, selection and evaluation worlds disjoint"
+   ],
+   "created_by": "claude",
+   "result_path": null,
+   "commit_sha": null
+  },
+  {
+   "task_id": "ENG-016",
+   "title": "ALLOC-1: run the engine allocator (proj_v1.allocate_opportunity) on the 56 historical WR1-out cases, point in time",
+   "status": "AUTHORIZED",
+   "priority": 13,
+   "authorized": true,
+   "depends_on": [],
+   "objective": "Only the proportional rule was tested (WR +6.9pp, TE -3.0, RB -3.9); the production blend never was. Ledger: ALLOC-1. Authorization: owner 2026-10-13: \"Continue authorized work independently without requesting my approval for routine research or testing.\"",
+   "acceptance_tests": [
+    "pre-registration committed before the run",
+    "the same 56 cases and clustering as H1",
+    "engine vs proportional vs actual, team-season clustered"
+   ],
+   "created_by": "claude",
+   "result_path": null,
+   "commit_sha": null
+  },
+  {
+   "task_id": "ENG-017",
+   "title": "Record selector, overlap policy and arm in every Showdown audit; strip inherited NFL_SHOWDOWN_* unless declared",
+   "status": "DRAFT",
+   "priority": 13,
+   "authorized": false,
+   "depends_on": [],
+   "objective": "Which policy built a production file cannot be proven afterwards. Ledger: PROV-D1, ARM-D1. DRAFT: changes live run behaviour or an artifact schema; needs an owner action.",
+   "acceptance_tests": [
+    "audit carries selector / overlap / arm with their source",
+    "an undeclared inherited NFL_SHOWDOWN_* value refuses or is named"
+   ],
+   "created_by": "claude",
+   "result_path": null,
+   "commit_sha": null
+  },
+  {
+   "task_id": "ENG-018",
+   "title": "Repair the two red tests at HEAD without weakening them (test_showdown_family stale cutoff pin; test_role_depth_adversarial state builder)",
+   "status": "AUTHORIZED",
+   "priority": 13,
+   "authorized": true,
+   "depends_on": [],
+   "objective": "The suite is not green at HEAD for reasons unrelated to code changes. Ledger: TEST-D2. Authorization: owner 2026-10-13: \"Continue authorized work independently without requesting my approval for routine research or testing.\"",
+   "acceptance_tests": [
+    "root cause written down for each",
+    "the guard still fails on its original defect (mutation)"
+   ],
+   "created_by": "claude",
+   "result_path": null,
+   "commit_sha": null
   }
  ]
 }

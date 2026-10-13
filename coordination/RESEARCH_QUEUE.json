@@ -139,6 +139,24 @@
    "created_by": "owner",
    "result_path": null,
    "commit_sha": null
+  },
+  {
+   "task_id": "RES-008",
+   "title": "Land 2026 week-5 nflverse play-by-play and player-week stats (data freshness for week 6)",
+   "status": "DRAFT",
+   "priority": 2,
+   "authorized": false,
+   "depends_on": [],
+   "objective": "The newest captured play-by-play blob, nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz, holds weeks 1-4 only (64 games; file time 2026-10-07T16:59Z). Week 5 (games 2026-10-09 through the 2026-10-13 MNF BUF@LAR) is absent, so every week-6 forecast would miss a week of evidence. Needed: the nflverse 2026 play_by_play release and the stats_player_week 2026 release as published AFTER the week-5 MNF final, captured the same way as the existing blobs (content-hash file name, retrieved_at recorded). Engineering has no network (issue DATA-D1 in nfl/research/ledger/ISSUE_LEDGER.json).",
+   "acceptance_tests": [
+    "a new pbp_2026.<sha16>.csv.gz whose week column includes 5, with every week-5 game_id present (the full week-5 schedule)",
+    "a stats_player_week 2026 capture covering week 5, with its retrieved_at",
+    "the original bytes land unmodified; engineering does NOT reconstruct them",
+    "nflverse terms recorded as for the earlier captures"
+   ],
+   "created_by": "claude",
+   "result_path": null,
+   "commit_sha": null
   }
  ]
 }
