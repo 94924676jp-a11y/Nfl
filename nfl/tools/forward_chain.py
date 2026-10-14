@@ -416,6 +416,8 @@ def project_week(panel, pos_of, season, week, priors, depth, groups, bonus, ip, 
         V.allocate_opportunity(crows, tv, depth, groups, blend=blend, apply_appearance=APPLY_APPEARANCE[0])
         if D1_W[0] is not None:
             shrink_receiver_targets(crows, panel, club, season, week, D1_W[0])
+        if D2_ARM[0] is not None or D2_FEATURE_SINK is not None:
+            reweight_appearance(crows, panel, club, season, week, D2_ARM[0], D2_PARAMS[0])
         for r in crows:
             V.finalize(r)
         # club touchdown pool from the club's OWN measured touchdown rate -- no market input
@@ -503,6 +505,88 @@ def shrink_receiver_targets(crows, panel, club, season, week, w):
         if g in obs and osum > 0:
             r['targets'] = ((1.0 - w) * alloc[g] + w * obs[g] / osum * mass) * total
     return {'applied': True, 'n_receivers': len(rec), 'n_observed': len(obs)}
+
+
+#: D2 (PREREG_D2_APPEARANCE.md): None = off (production behaviour). 'NONE' | 'CURRENT' | 'SHRINK' | 'ROLE'.
+D2_ARM = [None]
+#: frozen D2_PARAMS.json content: {'SHRINK': {'kappa', 'm_pooled'}, 'ROLE': {'kappa', 'm_role', 'm_pos'}}
+D2_PARAMS = [None]
+#: when a list, every pool player's D2 features are appended (season, week, gsis, pos, role_key, n, N) for fitting
+D2_FEATURE_SINK = None
+D2_FIELDS = ('targets', 'carries', 'pass_attempts')
+_CLUB_WEEKS = {}
+
+
+def club_weeks_before(panel, club, season, week):
+    """Weeks before `week` in which `club` has at least one player row in the panel (its games, as the panel sees them)."""
+    key = (id(panel), int(season))          # keyed on the panel object too: a different panel never reads a stale cache
+    if key not in _CLUB_WEEKS:
+        cw = collections.defaultdict(set)
+        for g, ss in panel['players'].items():
+            for w, r in (ss.get(str(season)) or {}).items():
+                if r.get('team'):
+                    cw[r['team']].add(int(w))
+        _CLUB_WEEKS.clear()
+        _CLUB_WEEKS[key] = dict(cw)
+    return sorted(w for w in _CLUB_WEEKS[key].get(club, ()) if w < week)
+
+
+def d2_features(r, panel, club, season, week):
+    """(role_key, n, N) for D2. Every element is known before the game."""
+    from nfl.tools import proj_v1 as V
+    ss = (panel['players'].get(r['gsis']) or {}).get(str(season)) or {}
+    n = sum(1 for w, x in ss.items() if int(w) < week and x.get('team'))
+    prev = club_weeks_before(panel, club, season, week)
+    N = max(len(prev), n)
+    last = bool(prev) and bool((ss.get(str(prev[-1])) or {}).get('team'))
+    pos = r.get('position')
+    rank = (((r.get('allocation') or {}).get(V.DEPTH_TABLE_FIELD.get(pos)) or {}).get('depth_rank_in_group'))
+    rb = 'NA' if rank is None else str(min(int(rank), 4))
+    return f'{pos}|{rb}|{int(last)}', n, N
+
+
+def d2_q(arm, params, pos, role, n, N):
+    if arm == 'NONE':
+        return 1.0
+    if arm == 'SHRINK':
+        k, m = params['SHRINK']['kappa'], params['SHRINK']['m_pooled']
+    elif arm == 'ROLE':
+        P = params['ROLE']
+        k, m = P['kappa'], P['m_role'].get(role, P['m_pos'][pos])
+    else:
+        raise ValueError(f'D2_ARM_UNKNOWN {arm!r}')
+    return (n + k * m) / (N + k)
+
+
+def reweight_appearance(crows, panel, club, season, week, arm, params):
+    """D2: replace the allocator's appearance factor p by q, preserving every club total. Mutates r[f] before finalize().
+
+    u_i = r_i[f] * q_i / p_i ; r_i'[f] = M_f * u_i / sum u, over players with p_i > 0. arm 'CURRENT' (q = p) and None
+    change nothing; with D2_FEATURE_SINK set, features are recorded whatever the arm."""
+    feats = {}
+    for r in crows:
+        if r.get('position') in SKILL and r.get('gsis'):
+            feats[r['gsis']] = d2_features(r, panel, club, season, week)
+            if D2_FEATURE_SINK is not None:
+                D2_FEATURE_SINK.append((season, week, r['gsis'], r['position'], *feats[r['gsis']]))
+    if arm in (None, 'CURRENT'):
+        return {'applied': False}
+    for f in D2_FIELDS:
+        idx = [r for r in crows if r.get('gsis') in feats and r.get(f) is not None
+               and ((r.get('p_plays') or {}).get(f) or 0.0) > 0.0]
+        M = sum(r[f] for r in idx)
+        if not idx or M <= 0:
+            continue
+        u = {}
+        for r in idx:
+            role, n, N = feats[r['gsis']]
+            u[r['gsis']] = r[f] * d2_q(arm, params, r['position'], role, n, N) / r['p_plays'][f]
+        su = sum(u.values())
+        if su <= 0:
+            continue
+        for r in idx:
+            r[f] = M * u[r['gsis']] / su
+    return {'applied': True}
 
 
 def evaluate(panel, pos_of, seasons, arms, max_weeks=None):
