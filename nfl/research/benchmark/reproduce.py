@@ -25,6 +25,14 @@ steps = [
     ('DECOMPOSE_2024', PY + [str(B / 'decompose_dev.py')], 'DECOMPOSE_2024.json'),
     ('D1_ESTIMATE_2024', PY + [str(B / 'd1_estimate.py')], 'D1_ESTIMATE_2024.json'),
     ('D1_HOLDOUT_2025', PY + [str(B / 'd1_holdout.py')], 'D1_HOLDOUT_2025.json'),
+    ('FORECAST_ERROR_ATLAS', PY + [str(B / 'error_atlas.py')], 'FORECAST_ERROR_ATLAS.json'),
+    ('D2_PARAMS', PY + [str(B / 'd2_fit.py')], 'D2_PARAMS.json'),
+    ('D2_DEV_2024', PY + [str(B / 'd2_eval.py'), '2024'], 'D2_DEV_2024.json'),
+    # a deterministic recompute of the frozen look, not a new look: nothing is chosen from it
+    ('D2_LOOK_2025', PY + [str(B / 'd2_eval.py'), '2025'], 'D2_LOOK_2025.json'),
+    ('JOINT_CALIBRATION', PY + [str(B / 'joint_calibration.py')], 'JOINT_CALIBRATION_SCORECARD.json'),
+    # reads the committed artifacts above; run last
+    ('FAIR_BASELINE', PY + [str(B / 'fair_baseline_scorecard.py')], 'FAIR_BASELINE_SCORECARD.json'),
 ]
 TIMESTAMPS = {'written_at_utc', 'at_utc'}
 

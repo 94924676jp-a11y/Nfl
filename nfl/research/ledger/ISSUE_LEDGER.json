@@ -2033,7 +2033,7 @@
    "id": "BENCH-D2",
    "domain": "calibration",
    "title": "Prospective 2026 prelock forecasts: top-tercile 50/80/90% intervals covered 43/71/81% (both tails heavy)",
-   "user_visible_consequence": "upside and downside outcomes for the players who matter may be under-represented in the worlds; 19 game clusters, a lean not a finding",
+   "user_visible_consequence": "upside and downside outcomes for the players who matter may be under-represented in the worlds; 11 game clusters (BENCH-D4 corrected the count from 19), a lean not a finding",
    "evidence": [
     "nfl/research/benchmark/PROSPECTIVE_SCORECARD.json"
    ],
@@ -2120,6 +2120,31 @@
    "source": "mandate b0540a52 phase 2 (FORECAST_ERROR_ATLAS)",
    "reproducible_fixture": "python3.12 nfl/research/benchmark/error_atlas.py",
    "fix_note": "D2-ROLE (player-level beta-binomial appearance, role prior, fitted 2022-23): 2024 dev -0.71 DK MAE; 2025 one look (previously inspected season) PASS -0.61 [-0.71, -0.51], every position better, -0.05 [-0.10, -0.01] vs naive; appearance Brier 0.391 -> 0.173. NOT_CONFIRMED: needs a prelock prospective arm. Not promoted."
+  },
+  {
+   "id": "BENCH-D4",
+   "domain": "measurement",
+   "title": "Prospective scorers (prospective_scorecard, four_arm) clustered each Classic club as its own game: per_game has no away/home keys, so 8 Classic games became 16 clusters and the prospective set read 19 games instead of 11",
+   "user_visible_consequence": "game-blocked intervals on the prospective benchmark treated the two clubs of one Classic game as independent; point estimates were unaffected and no conclusion changes",
+   "evidence": [
+    "nfl/research/benchmark/FOUR_ARM_EXPLORATORY.json",
+    "nfl/research/benchmark/PROSPECTIVE_SCORECARD.json",
+    "nfl/research/benchmark/MODEL_SCORECARD.json CORRECTION_BENCH_D4"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P2",
+   "production_path": "NONE (measurement only)",
+   "state": "FIXED",
+   "owner_gate": null,
+   "guard_test": "club2game now reads the clubs from the game id and a club with no game raises KeyError (no club-sized fallback)",
+   "test_type": "research",
+   "blast_radius": "prospective benchmark intervals only",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "mandate b0540a52 phase 4 (found while building JOINT_CALIBRATION_SCORECARD: the Classic slate's 16 clubs were scored as 16 clusters for 8 games)",
+   "reproducible_fixture": "python3.12 nfl/research/benchmark/four_arm.py",
+   "fix_note": "C-B1 -0.53 [-0.70, -0.37]; C-B3 -0.70 [-0.99, -0.43]; top tercile vs naive -1.20 [-1.62, -0.75]"
   }
  ]
 }

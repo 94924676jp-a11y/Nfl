@@ -1,0 +1,390 @@
+{
+ "artifact": "FAIR_BASELINE_SCORECARD",
+ "mandate": "b0540a52 phase 3",
+ "HEADLINE_FULL_MODEL_VS_NEWS_BASELINE": {
+  "QUESTION (OD-003)": "does the complete football model beat a news-adjusted simple baseline?",
+  "PROSPECTIVE_WITH_NEWS": "C beats B1, B2 and B3 on 2026 W4-W5 (11 games, 503 players): C-B1 -0.53 [-0.6972, -0.3749], C-B3 -0.70 [-0.9915, -0.4324]. EXPLORATORY; INTERIM / NOT A DECISION.",
+  "HISTORICAL_WITH_NEWS": "UNAVAILABLE (RES-010)",
+  "HISTORICAL_NO_NEWS": "incumbent core LOSES to naive by +0.70 [0.6216, 0.773] DK MAE (2024-25); challenger D2-ROLE beats naive by -0.05 [-0.0957, -0.0061] on the 2025 look (not confirmed)",
+  "READING": "NOT RECONCILED. Prospectively C beats baselines that have the SAME news, while historically, with no news on either side, the incumbent core loses to naive. Two candidate explanations, neither tested: (a) C converts news into volume redistribution (an absent teammate's targets and carries move to the players who remain), which the B arms do not do; (b) 11 games over two weeks, already inspected. APPEAR-D1 explains the historical deficit; whether the core adds value once news is equal is the W6+ pre-registered question."
+ },
+ "historical": [
+  {
+   "id": "H1",
+   "question": "incumbent football core vs naive per-appearance mean, unconditional (0 if absent)",
+   "information": "NO NEWS on either side (no injury reports, no inactives, no markets)",
+   "seasons": "2024-2025 held out",
+   "n": 9496,
+   "mae": {
+    "incumbent": 5.4888,
+    "naive_STD_U": 4.7897
+   },
+   "incumbent_minus_naive": {
+    "diff": 0.6992,
+    "ci95": [
+     0.6216,
+     0.773
+    ]
+   },
+   "reliance": "HELD_OUT_NO_NEWS",
+   "source": "PLAYER_SCORECARD.json"
+  },
+  {
+   "id": "H2",
+   "question": "incumbent vs naive, conditional on playing (no appearance discount on either side)",
+   "information": "NO NEWS",
+   "seasons": "2024-2025 held out",
+   "n": 5816,
+   "mae": {
+    "incumbent": 5.4452,
+    "naive_STD": 5.3078
+   },
+   "incumbent_minus_naive": {
+    "diff": 0.1374,
+    "ci95": [
+     0.037,
+     0.2438
+    ]
+   },
+   "reliance": "HELD_OUT_NO_NEWS_CONDITIONAL",
+   "source": "PLAYER_SCORECARD.json"
+  },
+  {
+   "id": "H3",
+   "question": "appearance probability: incumbent p_plays vs naive own-history rate (Brier)",
+   "information": "NO NEWS",
+   "seasons": "2024 development",
+   "n": 5637,
+   "brier": {
+    "incumbent": 0.37222,
+    "naive": 0.19604,
+    "constant_base_rate_reference": 0.23925
+   },
+   "reliance": "DEVELOPMENT_DESCRIPTIVE",
+   "source": "FORECAST_ERROR_ATLAS.json"
+  },
+  {
+   "id": "H4",
+   "question": "D2-ROLE (player-level appearance) vs incumbent and vs naive, unconditional",
+   "information": "NO NEWS",
+   "seasons": "2025, one logged look (PREVIOUSLY_INSPECTED_SEASON)",
+   "n": 6566,
+   "mae": {
+    "incumbent": 4.8815,
+    "D2_ROLE": 4.2692,
+    "naive_STD_U": 4.321
+   },
+   "D2_minus_incumbent": {
+    "diff": -0.6124,
+    "ci95": [
+     -0.7066,
+     -0.5074
+    ]
+   },
+   "D2_minus_naive": {
+    "diff": -0.0519,
+    "ci95": [
+     -0.0957,
+     -0.0061
+    ]
+   },
+   "verdict": "PASS",
+   "reliance": "ONE_LOOK_NOT_CONFIRMED",
+   "source": "D2_LOOK_2025.json"
+  },
+  {
+   "id": "H5",
+   "question": "D2-ROLE on 2024 development (all ablations in the source)",
+   "information": "NO NEWS",
+   "seasons": "2024 development",
+   "n": 5637,
+   "mae": {
+    "incumbent": 5.2639,
+    "NONE": 5.1279,
+    "CURRENT": 5.2639,
+    "SHRINK": 4.7632,
+    "ROLE": 4.5537
+   },
+   "naive_STD_U_mae": 4.5756,
+   "D2_minus_naive": {
+    "diff": -0.022,
+    "ci95": [
+     -0.0724,
+     0.0292
+    ]
+   },
+   "reliance": "DEVELOPMENT_DESCRIPTIVE",
+   "source": "D2_DEV_2024.json"
+  },
+  {
+   "id": "H6",
+   "question": "D1 target shrink vs incumbent and naive",
+   "information": "NO NEWS",
+   "seasons": "2025, look 1",
+   "n": 6566,
+   "D1_minus_incumbent": {
+    "diff": -0.2275,
+    "ci95": [
+     -0.2704,
+     -0.1885
+    ]
+   },
+   "D1_minus_naive": {
+    "diff": 0.333,
+    "ci95": [
+     0.2753,
+     0.39
+    ]
+   },
+   "verdict": "FAIL",
+   "reliance": "ONE_LOOK_FAILED_BY_RULE",
+   "source": "D1_HOLDOUT_2025.json"
+  },
+  {
+   "id": "H7",
+   "question": "incumbent vs a NEWS-ADJUSTED naive baseline on historical seasons (arms B1-B3 vs C)",
+   "information": "would need historical pregame injury and inactive vintages",
+   "status": "UNAVAILABLE",
+   "reason": "historical injury files have unknown terms and are withheld (RES-010; owner OD-001 decision 5)"
+  }
+ ],
+ "prospective": {
+  "id": "P1",
+  "question": "complete production forecast C vs news-adjusted simple baselines B1/B2/B3 and naive A",
+  "information": "EQUAL: every arm uses the slate's own frozen prelock state (the same availability and depth C consumed)",
+  "label": "EXPLORATORY: 2026 W4-W5 slates were inspected before this pre-registration; nothing here is confirmatory",
+  "decision_status": "INTERIM / NOT A DECISION (PREREG_FOUR_ARM: 30 prospective games from W6)",
+  "n_players": 503,
+  "n_games": 11,
+  "mae": {
+   "A": 3.0784,
+   "B1": 2.7925,
+   "B2": 3.2393,
+   "B3": 2.958,
+   "C": 2.2597
+  },
+  "paired_game_blocked": {
+   "C_minus_A": {
+    "diff": -0.8187,
+    "ci95": [
+     -1.0621,
+     -0.574
+    ]
+   },
+   "C_minus_B1": {
+    "diff": -0.5328,
+    "ci95": [
+     -0.6972,
+     -0.3749
+    ]
+   },
+   "C_minus_B2": {
+    "diff": -0.9796,
+    "ci95": [
+     -1.2775,
+     -0.7017
+    ]
+   },
+   "C_minus_B3": {
+    "diff": -0.6983,
+    "ci95": [
+     -0.9915,
+     -0.4324
+    ]
+   }
+  },
+  "by_slate": {
+   "2026W5_SHOWDOWN_TB_DAL": {
+    "n_players": 46,
+    "n_games": 1,
+    "mae": {
+     "A": 3.2164,
+     "B1": 2.9821,
+     "B2": 3.2444,
+     "B3": 3.1666,
+     "C": 2.7557
+    },
+    "C_minus_B1": -0.2265,
+    "C_minus_B2": -0.4888,
+    "C_minus_B3": -0.4109,
+    "NOTE": "one game: no interval"
+   },
+   "2026W4_SHOWDOWN_ATL_NO": {
+    "n_players": 46,
+    "n_games": 1,
+    "mae": {
+     "A": 2.603,
+     "B1": 2.0884,
+     "B2": 2.1772,
+     "B3": 1.6386,
+     "C": 1.4496
+    },
+    "C_minus_B1": -0.6388,
+    "C_minus_B2": -0.7276,
+    "C_minus_B3": -0.189,
+    "NOTE": "one game: no interval"
+   },
+   "2026W4_SHOWDOWN_PIT_CLE": {
+    "n_players": 42,
+    "n_games": 1,
+    "mae": {
+     "A": 2.1454,
+     "B1": 2.0418,
+     "B2": 2.3567,
+     "B3": 2.3496,
+     "C": 1.8135
+    },
+    "C_minus_B1": -0.2282,
+    "C_minus_B2": -0.5432,
+    "C_minus_B3": -0.536,
+    "NOTE": "one game: no interval"
+   },
+   "2026W4_CLASSIC_EARLY": {
+    "n_players": 369,
+    "n_games": 8,
+    "mae": {
+     "A": 3.2267,
+     "B1": 2.9421,
+     "B2": 3.4715,
+     "B3": 3.1657,
+     "C": 2.3496
+    },
+    "C_minus_B1": -0.5924,
+    "C_minus_B2": -1.1219,
+    "C_minus_B3": -0.8161,
+    "NOTE": null
+   }
+  },
+  "by_position": {
+   "QB": {
+    "C_minus_B1": {
+     "diff": -1.683,
+     "ci95": [
+      -2.5104,
+      -0.8944
+     ]
+    },
+    "C_minus_B2": {
+     "diff": -2.648,
+     "ci95": [
+      -3.5225,
+      -1.7791
+     ]
+    },
+    "C_minus_B3": {
+     "diff": -0.7358,
+     "ci95": [
+      -1.3592,
+      -0.1931
+     ]
+    }
+   },
+   "RB": {
+    "C_minus_B1": {
+     "diff": -0.2836,
+     "ci95": [
+      -0.5673,
+      -0.0282
+     ]
+    },
+    "C_minus_B2": {
+     "diff": -1.0491,
+     "ci95": [
+      -1.4121,
+      -0.6956
+     ]
+    },
+    "C_minus_B3": {
+     "diff": -1.0491,
+     "ci95": [
+      -1.4121,
+      -0.6956
+     ]
+    }
+   },
+   "WR": {
+    "C_minus_B1": {
+     "diff": -0.4714,
+     "ci95": [
+      -0.7953,
+      -0.1206
+     ]
+    },
+    "C_minus_B2": {
+     "diff": -0.6564,
+     "ci95": [
+      -1.0588,
+      -0.2771
+     ]
+    },
+    "C_minus_B3": {
+     "diff": -0.6564,
+     "ci95": [
+      -1.0588,
+      -0.2771
+     ]
+    }
+   },
+   "TE": {
+    "C_minus_B1": {
+     "diff": -0.161,
+     "ci95": [
+      -0.4303,
+      0.0581
+     ]
+    },
+    "C_minus_B2": {
+     "diff": -0.4152,
+     "ci95": [
+      -0.7128,
+      -0.1462
+     ]
+    },
+    "C_minus_B3": {
+     "diff": -0.4152,
+     "ci95": [
+      -0.7128,
+      -0.1462
+     ]
+    }
+   }
+  },
+  "with_2026_history": {
+   "C_minus_B1": {
+    "diff": -0.6257,
+    "ci95": [
+     -0.9222,
+     -0.3196
+    ]
+   },
+   "C_minus_B2": {
+    "diff": -0.7296,
+    "ci95": [
+     -1.1898,
+     -0.298
+    ]
+   },
+   "C_minus_B3": {
+    "diff": -0.5765,
+    "ci95": [
+     -0.9643,
+     -0.2253
+    ]
+   }
+  },
+  "arm_D": "NOT_EVALUABLE: no prelock challenger forecast exists for these slates",
+  "source": "FOUR_ARM_EXPLORATORY.json"
+ },
+ "inputs_sha256": {
+  "PLAYER_SCORECARD.json": "9a99695d5c38cc43041341dd5ded3771f55991db915a5c703c7e73952a0877c8",
+  "D1_HOLDOUT_2025.json": "e6150b64dc0d34b346da6625403c2751f79830b36877bb5a86d43d04fdab55a4",
+  "D2_DEV_2024.json": "dea1c06792287ecd89bfd4a7da2e1e888a37f93fe24e180412fb909c6a086128",
+  "D2_LOOK_2025.json": "f29b2aa4e76ceeb45c8b8e9782790cd25e394bfbed52c4ecba2bc9a8dd88cdb4",
+  "FOUR_ARM_EXPLORATORY.json": "3ad40f09d0a89a1301bec7f7fa445bd25e899155c06d92e266d1a8236e060d98",
+  "FORECAST_ERROR_ATLAS.json": "0b70c7f7d5ba75cd1bd65a875150bebba0ad9ac85b9b3f4f111021b562101c3c"
+ },
+ "NOT_SCORED": {
+  "K_DST": "no panel actuals for kickers and team defences",
+  "external_vendors": "no timestamped archive (RES-011)"
+ }
+}

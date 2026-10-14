@@ -88,7 +88,7 @@ def slate_rows(slate, fmt, week, state_p, draws_p, act_src, game_id):
     post = json.load(open(act_src))['player_actuals'] if act_src != 'PANEL' else None
     club2game = {}
     for gid, v in (dr.get('per_game') or {}).items():
-        for c in (v.get('away'), v.get('home')):
+        for c in (v.get('away'), v.get('home'), *gid.split('_')[2:4]):   # BENCH-D4: clubs from the game id
             if c:
                 club2game[c] = gid
     rows, skipped = [], collections.Counter()
@@ -112,7 +112,7 @@ def slate_rows(slate, fmt, week, state_p, draws_p, act_src, game_id):
         mean, rate, src = naive(g, club, week)
         absent = status.get(key) in AV.ABSENT_STATUSES
         x = dr['draws'].get(key)
-        rows.append({'slate': slate, 'format': fmt, 'game': game_id or club2game.get(club, club), 'player': key, 'pos': pos,
+        rows.append({'slate': slate, 'format': fmt, 'game': game_id or club2game[club], 'player': key, 'pos': pos,
                      'actual': y, 'status': status.get(key), 'designation': desig.get(key), 'naive_source': src,
                      'A': mean * rate, 'B1': 0.0 if absent else mean * rate, 'B2': 0.0 if absent else mean,
                      # AMENDMENT 1: the state's QB depth rank is news too; a QB not ranked 1 by the chart scores 0

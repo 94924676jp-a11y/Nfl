@@ -106,11 +106,11 @@ def score_slate(slate, games, week, draws_p, actual_src):
     if games is None:   # Classic: one cluster per game, from the draws' per_game block
         club2game = {}
         for gid, v in (d.get('per_game') or {}).items():
-            for c in (v.get('away'), v.get('home')):
+            for c in (v.get('away'), v.get('home'), *gid.split('_')[2:4]):   # BENCH-D4: clubs from the game id
                 if c:
                     club2game[c] = gid
         for r in rows:
-            r['game'] = club2game.get(r['club'], r['club'])
+            r['game'] = club2game[r['club']]   # BENCH-D4: KeyError, never a club-sized cluster
     return rows, dict(skipped), {'n_sims': d.get('n_sims'), 'market_arm': d.get('market_arm'),
                                  'projection_sha256': d.get('projection_sha256')}
 

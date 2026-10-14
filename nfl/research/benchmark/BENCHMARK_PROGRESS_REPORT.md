@@ -51,18 +51,18 @@ no fitted constant.
 ## 2. The real prelock forecasts, 2026 (what was actually produced before kickoff)
 
 **Sample.** Four incumbent slates whose forecasts are prelock by both the artifact clock and the git clock: W4 Classic
-Early, ATL@NO, PIT@CLE and TB@DAL. That is 445 skill-player games in 19 games. Kickers and team defences are not scored
+Early, ATL@NO, PIT@CLE and TB@DAL. That is 445 skill-player games in 11 games (corrected from 19, BENCH-D4). Kickers and team defences are not scored
 (no panel actuals).
 
 **Top third of players by forecast** (n = 149; the strata are defined on the prediction, not the outcome):
 
 | measure | value |
 |---|---|
-| Mean bias | +0.24 [−0.67, +1.27]; no detectable bias |
-| Against the naive baseline (MAE) | **−1.20 [−1.91, −0.53]**: better. These forecasts had injury designations and inactives; the baseline did not. |
+| Mean bias | +0.24 [−0.62, +1.12] (corrected interval, BENCH-D4); no detectable bias |
+| Against the naive baseline (MAE) | **−1.20 [−1.62, −0.75]** (corrected interval, BENCH-D4): better. These forecasts had injury designations and inactives; the baseline did not. |
 | 50/80/90% interval coverage | **43 / 71 / 81%**; PIT is heavy in both tails |
 
-**On coverage.** The intervals lean too narrow. With 19 game clusters, no predeclared margin and no equivalence test,
+**On coverage.** The intervals lean too narrow. With 11 game clusters (corrected from 19, BENCH-D4), no predeclared margin and no equivalence test,
 this is a **lean, not a finding** (BENCH-D2).
 
 **One correction to my own first pass.** I had computed coverage on "players who played". That subset is selected on
