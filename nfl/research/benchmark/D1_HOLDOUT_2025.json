@@ -1,0 +1,102 @@
+{
+ "artifact": "D1_HOLDOUT",
+ "season": 2025,
+ "w_star": 0.8,
+ "frozen_at": "D1_ESTIMATE_2024.json @d464f4b1",
+ "n_unconditional": 6566,
+ "unconditional_D1_minus_incumbent": {
+  "diff": -0.2275,
+  "ci95": [
+   -0.2704,
+   -0.1885
+  ],
+  "n_weeks": 14,
+  "n_rows": 6566
+ },
+ "mae": {
+  "incumbent": 4.8815,
+  "D1": 4.654
+ },
+ "conditional_D1_minus_incumbent": {
+  "diff": -0.4727,
+  "ci95": [
+   -0.5405,
+   -0.4055
+  ],
+  "n_weeks": 14,
+  "n_rows": 3779
+ },
+ "by_position_unconditional": {
+  "QB": {
+   "diff": 0.0,
+   "ci95": [
+    0.0,
+    0.0
+   ],
+   "n_weeks": 14,
+   "n_rows": 922
+  },
+  "RB": {
+   "diff": 0.0007,
+   "ci95": [
+    0.0001,
+    0.0012
+   ],
+   "n_weeks": 14,
+   "n_rows": 1690
+  },
+  "WR": {
+   "diff": -0.3792,
+   "ci95": [
+    -0.4656,
+    -0.2949
+   ],
+   "n_weeks": 14,
+   "n_rows": 2509
+  },
+  "TE": {
+   "diff": -0.3762,
+   "ci95": [
+    -0.4487,
+    -0.3015
+   ],
+   "n_weeks": 14,
+   "n_rows": 1445
+  }
+ },
+ "vs_naive_STD_U": {
+  "n": 6566,
+  "D1_minus_naive": {
+   "diff": 0.333,
+   "ci95": [
+    0.2753,
+    0.39
+   ],
+   "n_weeks": 14,
+   "n_rows": 6566
+  },
+  "incumbent_minus_naive": {
+   "diff": 0.5605,
+   "ci95": [
+    0.4876,
+    0.6285
+   ],
+   "n_weeks": 14,
+   "n_rows": 6566
+  }
+ },
+ "top_decile_wr_te_level_given_play": {
+  "incumbent": 1.256,
+  "D1": 1.0135,
+  "naive_control_STD": 1.1321
+ },
+ "PASS_RULE": {
+  "upper95_unconditional_below_0": true,
+  "no_position_worse": false,
+  "positions_worse": [
+   "RB"
+  ],
+  "top_decile_level_moves_toward_naive_control": true
+ },
+ "VERDICT": "FAIL"
+}
