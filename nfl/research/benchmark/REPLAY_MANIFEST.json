@@ -1,0 +1,235 @@
+{
+ "artifact": "REPLAY_MANIFEST",
+ "spec": "benchmark-replay-1",
+ "written_at_utc": "2026-10-14T21:19:35+00:00",
+ "repo_head_at_run": "2efc7ba298cff39469432448ab732fda314b1f05",
+ "working_tree_note": "forward_chain.py and td_rates.py edits are this commit; their sha256 below are the bytes that ran",
+ "code_sha256": {
+  "nfl/tools/forward_chain.py": "ed1ea420174cdb2c509f603de2f35dabc90b798b313e557cd06cdc6dd86b9c41",
+  "nfl/tools/td_rates.py": "12eb148ec77176092162cfe70a5a4a837ec747960669c9d5f1394fe8559df555",
+  "nfl/tools/proj_v1.py": "92aa6de0a93828e41fbcf910c138eba964c2d8390f322391cf1f332118f4baea",
+  "nfl/tools/player_prior.py": "8a790b7c433ebe4e16a91a2df988cd35f508a659b8e404b8adcd5c9dbd8235e0",
+  "nfl/research/benchmark/player_rows.py": "4a4d86d473a178381fe55a7b0537d420a4de1452a9541c34c130d143aae4e7fe",
+  "nfl/research/benchmark/player_scorecard.py": "d562437f7aa4ccde3da5e9c61c6415d45bf8642d675de39ce41ff8d8b4d99cac"
+ },
+ "inputs": {
+  "nfl/derived/USAGE_HISTORY_2021_2026.json": {
+   "sha256": "f2fec8b6edd3e2392b3d8ed85067db764b74088a1a5d2fef5e5e3c0870646484",
+   "seasons_present": [
+    "2021",
+    "2022",
+    "2023",
+    "2024",
+    "2025",
+    "2026"
+   ],
+   "tracked_in_git": false,
+   "clock_note": "nfl/derived is uncommitted; its content clock is its mtime (SEAL-D1)",
+   "provenance": {
+    "provenance": {
+     "2021": {
+      "season": 2021,
+      "n_rows": 49922,
+      "n_reg": 47651,
+      "n_player_weeks": 5510,
+      "n_team_weeks": 544,
+      "blob": "nfl/research/postgame/pbp_2021.e8743a568f99667a.csv.gz",
+      "n_reg_weeks": 18,
+      "week_span": [
+       1,
+       18
+      ],
+      "rejected_captures": [],
+      "sha256": "e8743a568f99667a"
+     },
+     "2022": {
+      "season": 2022,
+      "n_rows": 49434,
+      "n_reg": 47157,
+      "n_player_weeks": 5456,
+      "n_team_weeks": 542,
+      "blob": "nfl/research/postgame/pbp_2022.0c69a71eb3949895.csv.gz",
+      "n_reg_weeks": 18,
+      "week_span": [
+       1,
+       18
+      ],
+      "rejected_captures": [],
+      "sha256": "0c69a71eb3949895"
+     },
+     "2023": {
+      "season": 2023,
+      "n_rows": 49665,
+      "n_reg": 47399,
+      "n_player_weeks": 5468,
+      "n_team_weeks": 544,
+      "blob": "nfl/research/postgame/pbp_2023.4649804ee0f0a40b.csv.gz",
+      "n_reg_weeks": 18,
+      "week_span": [
+       1,
+       18
+      ],
+      "rejected_captures": [],
+      "sha256": "4649804ee0f0a40b"
+     },
+     "2024": {
+      "season": 2024,
+      "n_rows": 49492,
+      "n_reg": 47274,
+      "n_player_weeks": 5391,
+      "n_team_weeks": 544,
+      "blob": "nfl/research/postgame/pbp_2024.23370d5d10f8104d.csv.gz",
+      "n_reg_weeks": 18,
+      "week_span": [
+       1,
+       18
+      ],
+      "rejected_captures": [
+       {
+        "path": "nfl/vintage/pbp_2024.23370d5d10f8104d.csv.gz",
+        "n_rows": 49492,
+        "n_reg_weeks": 18,
+        "week_span": [
+         1,
+         18
+        ]
+       }
+      ],
+      "sha256": "23370d5d10f8104d"
+     },
+     "2025": {
+      "season": 2025,
+      "n_rows": 48771,
+      "n_reg": 46452,
+      "n_player_weeks": 5432,
+      "n_team_weeks": 544,
+      "blob": "nfl/research/postgame/pbp_2025.2f135887790a013f.csv.gz",
+      "n_reg_weeks": 18,
+      "week_span": [
+       1,
+       18
+      ],
+      "rejected_captures": [
+       {
+        "path": "nfl/vintage/pbp_2025.2f135887790a013f.csv.gz",
+        "n_rows": 48771,
+        "n_reg_weeks": 18,
+        "week_span": [
+         1,
+         18
+        ]
+       }
+      ],
+      "sha256": "2f135887790a013f"
+     },
+     "2026": {
+      "season": 2026,
+      "n_rows": 11155,
+      "n_reg": 11155,
+      "n_player_weeks": 1274,
+      "n_team_weeks": 128,
+      "blob": "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz",
+      "n_reg_weeks": 4,
+      "week_span": [
+       1,
+       4
+      ],
+      "rejected_captures": [
+       {
+        "path": "nfl/research/postgame/pbp_2026.79b02496d26004ee.csv.gz",
+        "n_rows": 8311,
+        "n_reg_weeks": 3,
+        "week_span": [
+         1,
+         3
+        ]
+       },
+       {
+        "path": "nfl/research/postgame/pbp_2026.6643f82adb1158c8.csv.gz",
+        "n_rows": 5489,
+        "n_reg_weeks": 2,
+        "week_span": [
+         1,
+         2
+        ]
+       },
+       {
+        "path": "nfl/vintage/pbp_2026.b69f55a172965e16.csv.gz",
+        "n_rows": 2756,
+        "n_reg_weeks": 1,
+        "week_span": [
+         1,
+         1
+        ]
+       },
+       {
+        "path": "nfl/research/postgame/pbp_2026.1415dd98ba7f701a.csv.gz",
+        "n_rows": 1738,
+        "n_reg_weeks": 1,
+        "week_span": [
+         1,
+         1
+        ]
+       },
+       {
+        "path": "nfl/research/postgame/pbp_2026.d9e442ae17ba88e7.csv.gz",
+        "n_rows": 323,
+        "n_reg_weeks": 1,
+        "week_span": [
+         1,
+         1
+        ]
+       }
+      ],
+      "sha256": "2b3e9f2c6f92123f"
+     }
+    },
+    "spec_version": "usage-history-1"
+   }
+  },
+  "position_index": "player_prior.position_index() from the weekly roster blobs (current-position survivorship: L4-DEPTH)"
+ },
+ "runs": [
+  {
+   "vintage": "STRICT",
+   "appearance": "OFF",
+   "cmd": "python3.12 nfl/research/benchmark/player_rows.py STRICT OFF <out>"
+  },
+  {
+   "vintage": "STRICT",
+   "appearance": "ON",
+   "cmd": "python3.12 nfl/research/benchmark/player_rows.py STRICT ON <out>"
+  },
+  {
+   "vintage": "LEGACY",
+   "appearance": "ON",
+   "cmd": "python3.12 nfl/research/benchmark/player_rows.py LEGACY ON <out>"
+  }
+ ],
+ "evaluation": {
+  "seasons": [
+   2024,
+   2025
+  ],
+  "weeks": 28,
+  "arm": "('PROD', blend 1.0, production prior cap)",
+  "scoring": "python3.12 nfl/research/benchmark/player_scorecard.py STRICT_OFF STRICT_ON LEGACY_ON",
+  "bootstrap": {
+   "unit": "week (season, week)",
+   "resamples": 10000,
+   "seed": 20261014
+  }
+ },
+ "VINTAGE_CORRECTNESS": {
+  "priors_depth_groups_bonus": "seasons <= S-1 (forward_chain since its creation)",
+  "current_season_shares_and_club_volume": "weeks < W of season S",
+  "td_rates_pass_split_int_rate": "STRICT: seasons <= S-1 (this commit); LEGACY reproduced for comparison",
+  "positions": "NOT vintage-correct: current position index (L4-DEPTH). Affects which pool a player is scored in.",
+  "panel_rows": "realised box-score rows; pre-game knowledge of availability is NOT represented (no injury reports)"
+ },
+ "NOT_EVALUABLE_HERE": [
+  "availability forecasting (no historical pregame injury/inactive data)",
+  "market-informed team environment (no historical closing lines, OUT-036)",
+  "distributional quality (the chain produces means, not draws)"
+ ]
+}

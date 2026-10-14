@@ -1,0 +1,936 @@
+{
+ "artifact": "PLAYER_SCORECARD",
+ "spec": "benchmark-player-2",
+ "seasons": [
+  2024,
+  2025
+ ],
+ "arm": "PROD blend 1.0, production prior cap",
+ "LIMITS": [
+  "held-out seasons 2024-2025, forward chain: priors from seasons <= S-1, current season weeks < W",
+  "no market input (historical closing lines are not held): the club touchdown pool is the club own rate",
+  "paired differences week-blocked (10,000 resamples, seed 20261014); an interval spanning zero is not a finding",
+  "baselines are naive per-appearance means; they are not vendor projections"
+ ],
+ "CONDITIONAL_GIVEN_PLAYING": {
+  "what": "players who played; incumbent WITHOUT the appearance discount vs per-appearance naive means",
+  "vintage": "STRICT",
+  "n_rows_all": 7182,
+  "n_rows_common": 5816,
+  "coverage_common": 0.8098,
+  "n_weeks": 28,
+  "overall": {
+   "proj": {
+    "n": 5816,
+    "mae": 5.4452,
+    "rmse": 7.8777,
+    "bias": -2.8581,
+    "level_ratio": 0.712,
+    "pearson": 0.5711
+   },
+   "STD": {
+    "n": 5816,
+    "mae": 5.3078,
+    "rmse": 7.3003,
+    "bias": -0.2914,
+    "level_ratio": 0.9706,
+    "pearson": 0.5793
+   },
+   "L3": {
+    "n": 5816,
+    "mae": 5.6513,
+    "rmse": 7.7454,
+    "bias": 0.0118,
+    "level_ratio": 1.0012,
+    "pearson": 0.5428
+   },
+   "PRIOR_SEASON": {
+    "n": 5816,
+    "mae": 5.7605,
+    "rmse": 7.799,
+    "bias": -0.2446,
+    "level_ratio": 0.9753,
+    "pearson": 0.5058
+   }
+  },
+  "paired_vs_baselines": {
+   "STD": {
+    "mae": {
+     "diff": 0.1374,
+     "ci95": [
+      0.037,
+      0.2438
+     ],
+     "n_weeks": 28,
+     "n_rows": 5816
+    },
+    "mse": {
+     "diff": 8.7631,
+     "ci95": [
+      6.3827,
+      11.2291
+     ],
+     "n_weeks": 28,
+     "n_rows": 5816
+    }
+   },
+   "L3": {
+    "mae": {
+     "diff": -0.2061,
+     "ci95": [
+      -0.318,
+      -0.0916
+     ],
+     "n_weeks": 28,
+     "n_rows": 5816
+    },
+    "mse": {
+     "diff": 2.0664,
+     "ci95": [
+      -0.3682,
+      4.5801
+     ],
+     "n_weeks": 28,
+     "n_rows": 5816
+    }
+   },
+   "PRIOR_SEASON": {
+    "mae": {
+     "diff": -0.3153,
+     "ci95": [
+      -0.4381,
+      -0.1894
+     ],
+     "n_weeks": 28,
+     "n_rows": 5816
+    },
+    "mse": {
+     "diff": 1.234,
+     "ci95": [
+      -0.7394,
+      3.2252
+     ],
+     "n_weeks": 28,
+     "n_rows": 5816
+    }
+   }
+  },
+  "by_position": {
+   "QB": {
+    "incumbent": {
+     "n": 765,
+     "mae": 7.9682,
+     "rmse": 10.0261,
+     "bias": -4.6489,
+     "level_ratio": 0.713,
+     "pearson": 0.3847
+    },
+    "STD": {
+     "n": 765,
+     "mae": 6.7699,
+     "rmse": 8.8174,
+     "bias": -0.719,
+     "level_ratio": 0.9556,
+     "pearson": 0.4584
+    },
+    "incumbent_minus_STD_mae": {
+     "diff": 1.1983,
+     "ci95": [
+      0.8519,
+      1.517
+     ],
+     "n_weeks": 28,
+     "n_rows": 765
+    }
+   },
+   "RB": {
+    "incumbent": {
+     "n": 1473,
+     "mae": 5.3649,
+     "rmse": 7.9774,
+     "bias": -2.9593,
+     "level_ratio": 0.7049,
+     "pearson": 0.5953
+    },
+    "STD": {
+     "n": 1473,
+     "mae": 5.3761,
+     "rmse": 7.4021,
+     "bias": -0.1372,
+     "level_ratio": 0.9863,
+     "pearson": 0.593
+    },
+    "incumbent_minus_STD_mae": {
+     "diff": -0.0112,
+     "ci95": [
+      -0.1853,
+      0.156
+     ],
+     "n_weeks": 28,
+     "n_rows": 1473
+    }
+   },
+   "TE": {
+    "incumbent": {
+     "n": 1339,
+     "mae": 4.0601,
+     "rmse": 6.0212,
+     "bias": -1.9732,
+     "level_ratio": 0.7108,
+     "pearson": 0.5178
+    },
+    "STD": {
+     "n": 1339,
+     "mae": 4.0612,
+     "rmse": 5.6863,
+     "bias": -0.5216,
+     "level_ratio": 0.9236,
+     "pearson": 0.5045
+    },
+    "incumbent_minus_STD_mae": {
+     "diff": -0.0011,
+     "ci95": [
+      -0.1218,
+      0.1167
+     ],
+     "n_weeks": 28,
+     "n_rows": 1339
+    }
+   },
+   "WR": {
+    "incumbent": {
+     "n": 2239,
+     "mae": 5.4642,
+     "rmse": 7.9565,
+     "bias": -2.7088,
+     "level_ratio": 0.7167,
+     "pearson": 0.4994
+    },
+    "STD": {
+     "n": 2239,
+     "mae": 5.5088,
+     "rmse": 7.5161,
+     "bias": -0.1092,
+     "level_ratio": 0.9886,
+     "pearson": 0.4975
+    },
+    "incumbent_minus_STD_mae": {
+     "diff": -0.0445,
+     "ci95": [
+      -0.1741,
+      0.0898
+     ],
+     "n_weeks": 28,
+     "n_rows": 2239
+    }
+   }
+  },
+  "by_week_of_season": {
+   "5": {
+    "n": 376,
+    "mae_incumbent": 5.627,
+    "mae_STD": 5.552,
+    "bias_incumbent": -3.2616
+   },
+   "6": {
+    "n": 388,
+    "mae_incumbent": 5.463,
+    "mae_STD": 5.5319,
+    "bias_incumbent": -2.2677
+   },
+   "7": {
+    "n": 419,
+    "mae_incumbent": 5.2629,
+    "mae_STD": 5.3882,
+    "bias_incumbent": -1.7974
+   },
+   "8": {
+    "n": 411,
+    "mae_incumbent": 5.5647,
+    "mae_STD": 5.3764,
+    "bias_incumbent": -2.9951
+   },
+   "9": {
+    "n": 399,
+    "mae_incumbent": 5.4974,
+    "mae_STD": 5.3623,
+    "bias_incumbent": -3.1659
+   },
+   "10": {
+    "n": 396,
+    "mae_incumbent": 5.0764,
+    "mae_STD": 5.184,
+    "bias_incumbent": -2.1554
+   },
+   "11": {
+    "n": 418,
+    "mae_incumbent": 5.4525,
+    "mae_STD": 5.5099,
+    "bias_incumbent": -2.8187
+   },
+   "12": {
+    "n": 390,
+    "mae_incumbent": 5.3477,
+    "mae_STD": 5.231,
+    "bias_incumbent": -2.6206
+   },
+   "13": {
+    "n": 450,
+    "mae_incumbent": 5.3365,
+    "mae_STD": 5.0771,
+    "bias_incumbent": -2.8575
+   },
+   "14": {
+    "n": 388,
+    "mae_incumbent": 5.3749,
+    "mae_STD": 5.0281,
+    "bias_incumbent": -3.1718
+   },
+   "15": {
+    "n": 444,
+    "mae_incumbent": 5.7593,
+    "mae_STD": 5.5268,
+    "bias_incumbent": -3.2973
+   },
+   "16": {
+    "n": 461,
+    "mae_incumbent": 5.5576,
+    "mae_STD": 5.0563,
+    "bias_incumbent": -3.3667
+   },
+   "17": {
+    "n": 447,
+    "mae_incumbent": 5.4855,
+    "mae_STD": 5.2998,
+    "bias_incumbent": -3.0975
+   },
+   "18": {
+    "n": 429,
+    "mae_incumbent": 5.3959,
+    "mae_STD": 5.2299,
+    "bias_incumbent": -3.0257
+   }
+  },
+  "by_projection_decile": {
+   "D1": {
+    "n": 581,
+    "mean_proj": 2.067,
+    "mean_actual": 3.403,
+    "mae": 2.4755
+   },
+   "D2": {
+    "n": 582,
+    "mean_proj": 3.016,
+    "mean_actual": 4.281,
+    "mae": 3.1075
+   },
+   "D3": {
+    "n": 581,
+    "mean_proj": 3.862,
+    "mean_actual": 5.477,
+    "mae": 3.9724
+   },
+   "D4": {
+    "n": 582,
+    "mean_proj": 4.748,
+    "mean_actual": 6.931,
+    "mae": 4.7681
+   },
+   "D5": {
+    "n": 582,
+    "mean_proj": 5.743,
+    "mean_actual": 8.23,
+    "mae": 5.3121
+   },
+   "D6": {
+    "n": 581,
+    "mean_proj": 6.852,
+    "mean_actual": 9.578,
+    "mae": 5.613
+   },
+   "D7": {
+    "n": 582,
+    "mean_proj": 8.049,
+    "mean_actual": 11.783,
+    "mae": 6.7627
+   },
+   "D8": {
+    "n": 581,
+    "mean_proj": 9.508,
+    "mean_actual": 13.513,
+    "mae": 6.8026
+   },
+   "D9": {
+    "n": 582,
+    "mean_proj": 11.341,
+    "mean_actual": 16.275,
+    "mae": 7.6879
+   },
+   "D10": {
+    "n": 582,
+    "mean_proj": 15.454,
+    "mean_actual": 19.745,
+    "mae": 7.9447
+   }
+  },
+  "worst_segments": [
+   {
+    "segment": "QB projection quintile 1",
+    "n": 153,
+    "mae_incumbent": 8.7948,
+    "mae_STD": 7.2079,
+    "excess_mae": 1.5869,
+    "bias_incumbent": -5.1824,
+    "bias_STD": -4.1782
+   },
+   {
+    "segment": "QB projection quintile 3",
+    "n": 153,
+    "mae_incumbent": 7.8841,
+    "mae_STD": 6.5629,
+    "excess_mae": 1.3212,
+    "bias_incumbent": -5.9386,
+    "bias_STD": 0.4169
+   },
+   {
+    "segment": "QB projection quintile 4",
+    "n": 153,
+    "mae_incumbent": 7.7381,
+    "mae_STD": 6.5197,
+    "excess_mae": 1.2184,
+    "bias_incumbent": -4.6059,
+    "bias_STD": 0.2937
+   },
+   {
+    "segment": "QB projection quintile 2",
+    "n": 153,
+    "mae_incumbent": 8.0556,
+    "mae_STD": 6.842,
+    "excess_mae": 1.2136,
+    "bias_incumbent": -4.3623,
+    "bias_STD": 0.4731
+   },
+   {
+    "segment": "QB projection quintile 5",
+    "n": 153,
+    "mae_incumbent": 7.3684,
+    "mae_STD": 6.7168,
+    "excess_mae": 0.6516,
+    "bias_incumbent": -3.1553,
+    "bias_STD": -0.6003
+   },
+   {
+    "segment": "RB projection quintile 4",
+    "n": 295,
+    "mae_incumbent": 6.7374,
+    "mae_STD": 6.4848,
+    "excess_mae": 0.2526,
+    "bias_incumbent": -4.4891,
+    "bias_STD": -0.1873
+   },
+   {
+    "segment": "WR projection quintile 5",
+    "n": 448,
+    "mae_incumbent": 7.8705,
+    "mae_STD": 7.7425,
+    "excess_mae": 0.128,
+    "bias_incumbent": -4.3029,
+    "bias_STD": 0.9034
+   },
+   {
+    "segment": "TE projection quintile 4",
+    "n": 268,
+    "mae_incumbent": 5.0418,
+    "mae_STD": 4.929,
+    "excess_mae": 0.1128,
+    "bias_incumbent": -2.9437,
+    "bias_STD": -0.7763
+   },
+   {
+    "segment": "TE projection quintile 3",
+    "n": 268,
+    "mae_incumbent": 4.09,
+    "mae_STD": 3.982,
+    "excess_mae": 0.108,
+    "bias_incumbent": -1.987,
+    "bias_STD": -0.9422
+   },
+   {
+    "segment": "TE projection quintile 5",
+    "n": 268,
+    "mae_incumbent": 6.3313,
+    "mae_STD": 6.2721,
+    "excess_mae": 0.0592,
+    "bias_incumbent": -3.3363,
+    "bias_STD": -0.1808
+   }
+  ]
+ },
+ "UNCONDITIONAL_DFS": {
+  "what": "every pool candidate, zero if he did not play; production incumbent (appearance-discounted) vs naive means x his appearance rate before W",
+  "vintage": "STRICT",
+  "n_rows_all": 11915,
+  "n_rows_common": 9321,
+  "coverage_common": 0.7823,
+  "n_weeks": 28,
+  "overall": {
+   "proj": {
+    "n": 9321,
+    "mae": 5.5055,
+    "rmse": 8.0447,
+    "bias": 1.265,
+    "level_ratio": 1.2043,
+    "pearson": 0.5022
+   },
+   "STD_U": {
+    "n": 9321,
+    "mae": 4.8221,
+    "rmse": 7.1028,
+    "bias": 0.5092,
+    "level_ratio": 1.0822,
+    "pearson": 0.5734
+   },
+   "L3_U": {
+    "n": 9321,
+    "mae": 4.9569,
+    "rmse": 7.3455,
+    "bias": 0.6167,
+    "level_ratio": 1.0996,
+    "pearson": 0.5594
+   },
+   "PRIOR_SEASON_U": {
+    "n": 9321,
+    "mae": 5.1484,
+    "rmse": 7.3986,
+    "bias": 0.5645,
+    "level_ratio": 1.0912,
+    "pearson": 0.5253
+   }
+  },
+  "paired_vs_baselines": {
+   "STD_U": {
+    "mae": {
+     "diff": 0.6834,
+     "ci95": [
+      0.6001,
+      0.7616
+     ],
+     "n_weeks": 28,
+     "n_rows": 9321
+    },
+    "mse": {
+     "diff": 14.2667,
+     "ci95": [
+      12.4812,
+      16.0131
+     ],
+     "n_weeks": 28,
+     "n_rows": 9321
+    }
+   },
+   "L3_U": {
+    "mae": {
+     "diff": 0.5486,
+     "ci95": [
+      0.4522,
+      0.6446
+     ],
+     "n_weeks": 28,
+     "n_rows": 9321
+    },
+    "mse": {
+     "diff": 10.7609,
+     "ci95": [
+      8.8701,
+      12.681
+     ],
+     "n_weeks": 28,
+     "n_rows": 9321
+    }
+   },
+   "PRIOR_SEASON_U": {
+    "mae": {
+     "diff": 0.357,
+     "ci95": [
+      0.2768,
+      0.4384
+     ],
+     "n_weeks": 28,
+     "n_rows": 9321
+    },
+    "mse": {
+     "diff": 9.9777,
+     "ci95": [
+      8.5969,
+      11.3504
+     ],
+     "n_weeks": 28,
+     "n_rows": 9321
+    }
+   }
+  },
+  "by_position": {
+   "QB": {
+    "incumbent": {
+     "n": 1367,
+     "mae": 7.0333,
+     "rmse": 9.9046,
+     "bias": 1.4821,
+     "level_ratio": 1.1635,
+     "pearson": 0.5027
+    },
+    "STD_U": {
+     "n": 1367,
+     "mae": 6.512,
+     "rmse": 9.048,
+     "bias": 1.0851,
+     "level_ratio": 1.1197,
+     "pearson": 0.5776
+    },
+    "incumbent_minus_STD_U_mae": {
+     "diff": 0.5213,
+     "ci95": [
+      0.3736,
+      0.6596
+     ],
+     "n_weeks": 28,
+     "n_rows": 1367
+    }
+   },
+   "RB": {
+    "incumbent": {
+     "n": 2251,
+     "mae": 5.565,
+     "rmse": 8.1509,
+     "bias": 1.0598,
+     "level_ratio": 1.1615,
+     "pearson": 0.5228
+    },
+    "STD_U": {
+     "n": 2251,
+     "mae": 4.7961,
+     "rmse": 7.1017,
+     "bias": 0.5921,
+     "level_ratio": 1.0902,
+     "pearson": 0.6101
+    },
+    "incumbent_minus_STD_U_mae": {
+     "diff": 0.7689,
+     "ci95": [
+      0.6324,
+      0.8978
+     ],
+     "n_weeks": 28,
+     "n_rows": 2251
+    }
+   },
+   "TE": {
+    "incumbent": {
+     "n": 2164,
+     "mae": 4.1836,
+     "rmse": 5.9533,
+     "bias": 1.3607,
+     "level_ratio": 1.3223,
+     "pearson": 0.4866
+    },
+    "STD_U": {
+     "n": 2164,
+     "mae": 3.5313,
+     "rmse": 5.2937,
+     "bias": -0.0158,
+     "level_ratio": 0.9963,
+     "pearson": 0.5139
+    },
+    "incumbent_minus_STD_U_mae": {
+     "diff": 0.6523,
+     "ci95": [
+      0.5505,
+      0.753
+     ],
+     "n_weeks": 28,
+     "n_rows": 2164
+    }
+   },
+   "WR": {
+    "incumbent": {
+     "n": 3539,
+     "mae": 5.6858,
+     "rmse": 8.2842,
+     "bias": 1.2533,
+     "level_ratio": 1.2071,
+     "pearson": 0.4467
+    },
+    "STD_U": {
+     "n": 3539,
+     "mae": 4.9751,
+     "rmse": 7.2137,
+     "bias": 0.5551,
+     "level_ratio": 1.0917,
+     "pearson": 0.5106
+    },
+    "incumbent_minus_STD_U_mae": {
+     "diff": 0.7106,
+     "ci95": [
+      0.5786,
+      0.8536
+     ],
+     "n_weeks": 28,
+     "n_rows": 3539
+    }
+   }
+  },
+  "by_week_of_season": {
+   "5": {
+    "n": 493,
+    "mae_incumbent": 5.8686,
+    "mae_STD_U": 5.65,
+    "bias_incumbent": 0.2536
+   },
+   "6": {
+    "n": 613,
+    "mae_incumbent": 5.5925,
+    "mae_STD_U": 5.2303,
+    "bias_incumbent": 1.7004
+   },
+   "7": {
+    "n": 631,
+    "mae_incumbent": 5.497,
+    "mae_STD_U": 4.8764,
+    "bias_incumbent": 1.6714
+   },
+   "8": {
+    "n": 648,
+    "mae_incumbent": 5.6313,
+    "mae_STD_U": 5.1108,
+    "bias_incumbent": 1.207
+   },
+   "9": {
+    "n": 658,
+    "mae_incumbent": 5.3872,
+    "mae_STD_U": 4.7363,
+    "bias_incumbent": 1.1899
+   },
+   "10": {
+    "n": 671,
+    "mae_incumbent": 5.5701,
+    "mae_STD_U": 4.7267,
+    "bias_incumbent": 2.0353
+   },
+   "11": {
+    "n": 678,
+    "mae_incumbent": 5.6348,
+    "mae_STD_U": 4.8186,
+    "bias_incumbent": 1.3326
+   },
+   "12": {
+    "n": 687,
+    "mae_incumbent": 5.6963,
+    "mae_STD_U": 4.8919,
+    "bias_incumbent": 1.9125
+   },
+   "13": {
+    "n": 691,
+    "mae_incumbent": 4.9515,
+    "mae_STD_U": 4.3856,
+    "bias_incumbent": 0.8167
+   },
+   "14": {
+    "n": 697,
+    "mae_incumbent": 5.3505,
+    "mae_STD_U": 4.625,
+    "bias_incumbent": 1.5912
+   },
+   "15": {
+    "n": 703,
+    "mae_incumbent": 5.1034,
+    "mae_STD_U": 4.5092,
+    "bias_incumbent": 0.6667
+   },
+   "16": {
+    "n": 708,
+    "mae_incumbent": 5.1046,
+    "mae_STD_U": 4.2991,
+    "bias_incumbent": 0.5704
+   },
+   "17": {
+    "n": 719,
+    "mae_incumbent": 5.5751,
+    "mae_STD_U": 4.7595,
+    "bias_incumbent": 1.0165
+   },
+   "18": {
+    "n": 724,
+    "mae_incumbent": 6.2161,
+    "mae_STD_U": 5.1938,
+    "bias_incumbent": 1.5805
+   }
+  },
+  "by_projection_decile": {
+   "D1": {
+    "n": 932,
+    "mean_proj": 0.044,
+    "mean_actual": 1.344,
+    "mae": 1.3601
+   },
+   "D2": {
+    "n": 932,
+    "mean_proj": 0.349,
+    "mean_actual": 2.223,
+    "mae": 2.2534
+   },
+   "D3": {
+    "n": 932,
+    "mean_proj": 1.009,
+    "mean_actual": 2.917,
+    "mae": 3.2081
+   },
+   "D4": {
+    "n": 932,
+    "mean_proj": 1.892,
+    "mean_actual": 3.276,
+    "mae": 3.6353
+   },
+   "D5": {
+    "n": 932,
+    "mean_proj": 3.339,
+    "mean_actual": 3.751,
+    "mae": 3.8388
+   },
+   "D6": {
+    "n": 932,
+    "mean_proj": 5.709,
+    "mean_actual": 5.38,
+    "mae": 5.1484
+   },
+   "D7": {
+    "n": 932,
+    "mean_proj": 10.337,
+    "mean_actual": 7.855,
+    "mae": 6.976
+   },
+   "D8": {
+    "n": 932,
+    "mean_proj": 13.763,
+    "mean_actual": 8.728,
+    "mae": 8.8594
+   },
+   "D9": {
+    "n": 932,
+    "mean_proj": 16.895,
+    "mean_actual": 11.382,
+    "mae": 9.5443
+   },
+   "D10": {
+    "n": 933,
+    "mean_proj": 21.214,
+    "mean_actual": 15.051,
+    "mae": 10.2259
+   }
+  },
+  "worst_segments": [
+   {
+    "segment": "WR projection quintile 5",
+    "n": 708,
+    "mae_incumbent": 10.9336,
+    "mae_STD_U": 8.3926,
+    "excess_mae": 2.541,
+    "bias_incumbent": 7.4495,
+    "bias_STD_U": 1.9836
+   },
+   {
+    "segment": "RB projection quintile 4",
+    "n": 450,
+    "mae_incumbent": 8.7311,
+    "mae_STD_U": 6.2694,
+    "excess_mae": 2.4617,
+    "bias_incumbent": 3.9518,
+    "bias_STD_U": 1.1621
+   },
+   {
+    "segment": "TE projection quintile 4",
+    "n": 433,
+    "mae_incumbent": 5.5345,
+    "mae_STD_U": 4.0994,
+    "excess_mae": 1.4351,
+    "bias_incumbent": 2.7686,
+    "bias_STD_U": -0.6283
+   },
+   {
+    "segment": "TE projection quintile 5",
+    "n": 433,
+    "mae_incumbent": 8.3595,
+    "mae_STD_U": 6.964,
+    "excess_mae": 1.3955,
+    "bias_incumbent": 5.1259,
+    "bias_STD_U": 0.9796
+   },
+   {
+    "segment": "RB projection quintile 5",
+    "n": 451,
+    "mae_incumbent": 9.6251,
+    "mae_STD_U": 8.3485,
+    "excess_mae": 1.2766,
+    "bias_incumbent": 5.664,
+    "bias_STD_U": 2.747
+   },
+   {
+    "segment": "QB projection quintile 3",
+    "n": 274,
+    "mae_incumbent": 9.4919,
+    "mae_STD_U": 8.5801,
+    "excess_mae": 0.9118,
+    "bias_incumbent": 4.0288,
+    "bias_STD_U": 2.5943
+   },
+   {
+    "segment": "QB projection quintile 4",
+    "n": 273,
+    "mae_incumbent": 9.2004,
+    "mae_STD_U": 8.3382,
+    "excess_mae": 0.8622,
+    "bias_incumbent": 4.4322,
+    "bias_STD_U": 3.0538
+   },
+   {
+    "segment": "WR projection quintile 4",
+    "n": 708,
+    "mae_incumbent": 7.561,
+    "mae_STD_U": 6.7206,
+    "excess_mae": 0.8404,
+    "bias_incumbent": 2.8849,
+    "bias_STD_U": 0.6574
+   },
+   {
+    "segment": "QB projection quintile 1",
+    "n": 273,
+    "mae_incumbent": 3.4841,
+    "mae_STD_U": 2.8916,
+    "excess_mae": 0.5925,
+    "bias_incumbent": -2.1059,
+    "bias_STD_U": -2.2138
+   },
+   {
+    "segment": "TE projection quintile 3",
+    "n": 433,
+    "mae_incumbent": 3.7246,
+    "mae_STD_U": 3.2851,
+    "excess_mae": 0.4395,
+    "bias_incumbent": 0.0316,
+    "bias_STD_U": -0.422
+   }
+  ]
+ },
+ "VINTAGE_OPTIMISM_LEGACY_MINUS_STRICT": {
+  "mae": {
+   "diff": -0.0001,
+   "ci95": [
+    -0.0005,
+    0.0002
+   ],
+   "n_weeks": 28,
+   "n_rows": 11915
+  },
+  "n_paired_rows": 11915,
+  "MEANING": "negative = the pre-2026-10-14 full-period fit looked better than the vintage-correct fit (PIT-D4)"
+ }
+}

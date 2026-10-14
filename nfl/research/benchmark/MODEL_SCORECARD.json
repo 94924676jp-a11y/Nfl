@@ -1,0 +1,248 @@
+{
+ "artifact": "MODEL_SCORECARD",
+ "spec": "nfl-model-scorecard-1",
+ "mandate": "owner 37cdd6dc (2026-10-14) NFL Industry Benchmark",
+ "written_at_utc": "2026-10-14T21:41:59+00:00",
+ "head": "2efc7ba298cff39469432448ab732fda314b1f05",
+ "EXTERNAL_RANK": {
+  "state": "UNKNOWN",
+  "why": "no archive of timestamped prelock vendor projections for matched slates; a percent-of-industry figure is not computable (mandate 01). Requested: RES-011."
+ },
+ "production_reference": {
+  "showdown_arm": "INCUMBENT (FOOTBALL_ONLY), selector GREEDY (SEL-2 opt-in only)",
+  "classic_arm": "INCUMBENT (FOOTBALL_ONLY), classic-portfolio-1",
+  "evidence": "showdown_tonight.DECLARED_ENV defaults; DK_2026W4_EARLY_PORTFOLIOS spec_version"
+ },
+ "scorecards": {
+  "player_means_held_out": {
+   "source": "nfl/research/benchmark/PLAYER_SCORECARD.json",
+   "replay": "nfl/research/benchmark/REPLAY_MANIFEST.json",
+   "sample": "2024-2025, 28 weeks, 9321 unconditional / 5816 conditional player-weeks",
+   "vintage": "STRICT (priors <= S-1, current season < W, TD rates/split/int rate <= S-1); positions not vintage-correct (L4-DEPTH)",
+   "unconditional_mae": {
+    "incumbent": 5.5055,
+    "naive_STD_U": 4.8221,
+    "incumbent_minus_naive": {
+     "diff": 0.6834,
+     "ci95": [
+      0.6001,
+      0.7616
+     ],
+     "n_weeks": 28,
+     "n_rows": 9321
+    }
+   },
+   "conditional_mae": {
+    "incumbent_no_appearance": 5.4452,
+    "naive_STD": 5.3078,
+    "incumbent_minus_naive": {
+     "diff": 0.1374,
+     "ci95": [
+      0.037,
+      0.2438
+     ],
+     "n_weeks": 28,
+     "n_rows": 5816
+    }
+   },
+   "reading": "ON IDENTICAL INFORMATION (no injury reports, no market lines) the incumbent football core does NOT beat a naive per-appearance mean on held-out seasons; unconditionally it is worse at every position. The top projection decile is over-projected given that the player plays (+15%; WR +31%) and the chain cannot see the ~18% of top-decile weeks the player did not play.",
+   "vintage_optimism_legacy_minus_strict": {
+    "diff": -0.0001,
+    "ci95": [
+     -0.0005,
+     0.0002
+    ],
+    "n_weeks": 28,
+    "n_rows": 11915
+   }
+  },
+  "prospective_prelock_2026": {
+   "source": "nfl/research/benchmark/PROSPECTIVE_SCORECARD.json",
+   "sample": "445 skill player-games, 19 games, 4 slates (W4 Classic Early, ATL@NO, PIT@CLE, TB@DAL); K/DST excluded",
+   "top_tercile_by_forecast": {
+    "n": 149,
+    "bias": {
+     "value": 0.2374,
+     "ci95": [
+      -0.6734,
+      1.2661
+     ],
+     "n_games": 19,
+     "n_players": 149
+    },
+    "crps": {
+     "value": 4.2248,
+     "ci95": [
+      3.6738,
+      4.8304
+     ],
+     "n_games": 19,
+     "n_players": 149
+    },
+    "coverage": {
+     "nominal50": 0.43,
+     "nominal80": 0.711,
+     "nominal90": 0.805
+    },
+    "pit_deciles": [
+     0.174,
+     0.087,
+     0.067,
+     0.074,
+     0.087,
+     0.087,
+     0.114,
+     0.054,
+     0.128,
+     0.128
+    ],
+    "vs_naive_mae": {
+     "value": -1.1976,
+     "ci95": [
+      -1.9133,
+      -0.5325
+     ],
+     "n_games": 19,
+     "n_players": 147
+    }
+   },
+   "reading": "the real prelock forecasts (which had injury designations and inactives) beat the naive baseline on the players who matter; their means show no detectable bias; their 50/80/90% intervals cover 43/71/81% -- leaning too narrow in both tails. 19 game clusters: a lean, not an adequacy or defect claim (no TOST, no predeclared margin)."
+  },
+  "simulation_validity": {
+   "state": "PARTIAL",
+   "evidence": [
+    "world accounting checker (ACC-D1 owner-gated: incumbent worlds violate box-score laws)",
+    "REC-SPREAD-C2 receiver-spread calibration fails on both arms"
+   ],
+   "NOT_EVALUABLE": "held-out joint calibration (QB-WR covariance, team scoring, DST) has no harness yet"
+  },
+  "availability": {
+   "state": "NOT_EVALUABLE",
+   "why": "no archive of historical pregame injury designations/inactives with retrieval clocks (RES-010)"
+  },
+  "candidate_and_selector": {
+   "state": "PARTIAL",
+   "evidence": [
+    "CAND-D1 recall 19.4%",
+    "SEL-2 prospective prereg from W6 (2f510449)",
+    "CG-1 prereg (98f88f38), not built"
+   ]
+  },
+  "ownership_field_and_ev": {
+   "state": "NOT_EVALUABLE",
+   "why": "no lawful prize tables or archived contest fields (FIELD-D1)"
+  },
+  "release_safety": {
+   "state": "MEASURED",
+   "production_gate": {
+    "list": "nfl/tests/PRODUCTION_GATE.json (32 modules)",
+    "runs": [
+     {
+      "head": "e0a45d9f+08c8443e working tree (fresh overlay, pre-commit)",
+      "order": "sorted",
+      "verdict": "PASS",
+      "checks": 1443,
+      "blocked": 0,
+      "seconds": 721
+     },
+     {
+      "head": "3fc67181",
+      "order": "shuffled seed 20261014",
+      "verdict": "PASS",
+      "checks": 1716,
+      "blocked": 0,
+      "seconds": 735,
+      "note": "checks rose with the ledger (85 issues checked instead of 55)"
+     }
+    ]
+   },
+   "full_suite": {
+    "modules": 411,
+    "checks": 18784,
+    "failing_checks": 164,
+    "n_red_modules": 61
+   },
+   "blockers": "every certified release refuses until elevation records exist (ELIG-D5, RES-009)"
+  }
+ },
+ "evaluable_slates": {
+  "PARTIAL": [
+   "2026W5_CLASSIC_EARLY_ONLY",
+   "2026W5_APPEARANCE_SUCCESSOR_SHADOW",
+   "2026W2_CLASSIC_EARLY_ONLY",
+   "2026W2_SHOWDOWN_IND_KC_SNF",
+   "2026W1_PER_GAME_RESEARCH_BOARDS"
+  ],
+  "EVALUABLE": [
+   "2026W5_SHOWDOWN_TB_DAL",
+   "2026W4_CLASSIC_EARLY_ONLY",
+   "2026W4_SHOWDOWN_ATL_NO_MNF",
+   "2026W4_SHOWDOWN_PIT_CLE_TNF",
+   "2026W3_SHOWDOWN_ATL_GB_TNF",
+   "2026W2_SHOWDOWN_DET_BUF_TNF",
+   "2026W2_SHOWDOWN_NYG_LA_MNF"
+  ],
+  "NOT_EVALUABLE": [
+   "2026W5_SHOWDOWN_BUF_LAR_MNF",
+   "2026W3_CLASSIC_EARLY_ONLY",
+   "2026W3_SHOWDOWN_PHI_CHI_MNF",
+   "2026W1_SHADOW_NE_SEA"
+  ]
+ },
+ "capability_rows_reconciled": [
+  {
+   "category": "Mean points",
+   "mandate_observed": "unvalidated",
+   "now": "MEASURED: held-out core worse than naive on equal information; prospective prelock better than naive on top tercile",
+   "gap": "top-decile level given play; availability unmeasured"
+  },
+  {
+   "category": "Sim accounting",
+   "mandate_observed": "corrected shadow 0 violations; incumbent failures",
+   "now": "unchanged (ACC-D1 owner-gated)",
+   "gap": "held-out joint calibration harness"
+  },
+  {
+   "category": "Roster roles",
+   "mandate_observed": "3-state logic, captures incomplete",
+   "now": "unchanged; release gated",
+   "gap": "RES-009 elevations, ELIG-D4 freshness standard"
+  },
+  {
+   "category": "Point-in-time",
+   "mandate_observed": "multiple unresolved gaps",
+   "now": "PIT-D4 fixed for the benchmark chain (optimism measured at -0.0001 MAE); PIT-D1 open",
+   "gap": "PIT-D2, D5-D9"
+  },
+  {
+   "category": "Candidate selection",
+   "mandate_observed": "19.4% recall",
+   "now": "unchanged",
+   "gap": "CG-1 harness"
+  },
+  {
+   "category": "Selector",
+   "mandate_observed": "greedy relaxation flaw; SEL-2 shadow",
+   "now": "unchanged; SEL-2 prospective from W6",
+   "gap": "feasibility proof before relaxation"
+  },
+  {
+   "category": "Ownership field",
+   "mandate_observed": "shadows unused",
+   "now": "unchanged",
+   "gap": "calibration needs archived fields"
+  },
+  {
+   "category": "ROI EV",
+   "mandate_observed": "no payout tables",
+   "now": "NOT_EVALUABLE",
+   "gap": "prize tables (owner input)"
+  }
+ ],
+ "inputs_sha256": {
+  "PLAYER_SCORECARD.json": "c6742e1ea23ecb4d5a02a92b170d659b3c9bc28a084e6451bc213170547ede09",
+  "PROSPECTIVE_SCORECARD.json": "77c436916e1fc30d9f565218738fae1d89a9c2d36fad263222e1b37de9863477",
+  "DATA_INVENTORY.json": "4fda5400d8bbf8f5bcd32c3cfc5245b205424fc2525b3c083c3b3286de3155df",
+  "REPLAY_MANIFEST.json": "b6cfd19f2fdb9758ffcd362675bae8c95a88570258cf4a9ccbffa9c7e666d027"
+ }
+}

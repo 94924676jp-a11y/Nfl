@@ -1,6 +1,6 @@
 {
  "schema": "nfl-issue-ledger-1",
- "written_at_utc": "2026-10-14T16:41:17Z",
+ "written_at_utc": "2026-10-14T21:42:26Z",
  "head": "e0a45d9f",
  "vocabulary": {
   "verification": [
@@ -1365,16 +1365,17 @@
    "verification": "VERIFIED",
    "severity": "P2",
    "production_path": "SHADOW",
-   "state": "OPEN",
+   "state": "FIXED",
    "owner_gate": null,
-   "guard_test": null,
+   "guard_test": "nfl/tests/test_forward_chain_vintage.py",
    "test_type": "unit+mutation",
    "blast_radius": "",
    "data_rights": "OWN_CODE",
    "depends_on": [],
    "experiment": null,
    "source": "cycle 2 (owner OD-001, 2026-10-14)",
-   "reproducible_fixture": null
+   "reproducible_fixture": null,
+   "fix_note": "benchmark mandate 2026-10-14: forward_chain STRICT (default) fits TD rates, pass/rush split and int rate on seasons <= S-1; LEGACY reproduces old results. Measured optimism of the old fit: -0.0001 MAE [-0.0005, +0.0002] -- negligible; earlier paired results stand. Mutation caught."
   },
   {
    "id": "WC-D1",
@@ -2002,6 +2003,73 @@
    "depends_on": [],
    "experiment": null,
    "source": "cycle 2 full suite at 3fc67181",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "BENCH-D1",
+   "domain": "projection",
+   "title": "Held-out (2024-25, equal information) the incumbent football core does not beat a naive per-appearance mean; the top projection decile is over-projected given play (+15%, WR +31%)",
+   "user_visible_consequence": "the players lineups are built from are projected too high when they play, in the core allocation; production adds injury and market-free environment layers this test does not see",
+   "evidence": [
+    "nfl/research/benchmark/PLAYER_SCORECARD.json",
+    "nfl/research/benchmark/REPLAY_MANIFEST.json"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P1",
+   "production_path": "ALL",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "research",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "benchmark mandate 37cdd6dc (nfl/research/benchmark/MODEL_SCORECARD.json)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "BENCH-D2",
+   "domain": "calibration",
+   "title": "Prospective 2026 prelock forecasts: top-tercile 50/80/90% intervals covered 43/71/81% (both tails heavy)",
+   "user_visible_consequence": "upside and downside outcomes for the players who matter may be under-represented in the worlds; 19 game clusters, a lean not a finding",
+   "evidence": [
+    "nfl/research/benchmark/PROSPECTIVE_SCORECARD.json"
+   ],
+   "verification": "REQUIRES_REPRO",
+   "severity": "P2",
+   "production_path": "ALL",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "research",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "benchmark mandate 37cdd6dc (nfl/research/benchmark/MODEL_SCORECARD.json)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "BENCH-D3",
+   "domain": "measurement",
+   "title": "Availability forecasting is NOT_EVALUABLE: no historical pregame injury/inactive data with clocks",
+   "user_visible_consequence": "the largest unconditional error source (players who do not play) cannot be measured or improved on history",
+   "evidence": [
+    "coordination/RESEARCH_QUEUE.json"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P1",
+   "production_path": "ALL",
+   "state": "BLOCKED_DATA",
+   "owner_gate": "RES-010 (historical pregame injury/inactive archives)",
+   "guard_test": null,
+   "test_type": "research",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "benchmark mandate 37cdd6dc (nfl/research/benchmark/MODEL_SCORECARD.json)",
    "reproducible_fixture": null
   }
  ]

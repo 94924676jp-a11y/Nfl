@@ -175,6 +175,39 @@
    "created_by": "claude",
    "result_path": null,
    "commit_sha": null
+  },
+  {
+   "task_id": "RES-010",
+   "title": "Archive of historical pregame injury designations and inactives with retrieval clocks (2021-2025)",
+   "status": "DRAFT",
+   "priority": 2,
+   "authorized": false,
+   "depends_on": [],
+   "objective": "Benchmark mandate 37cdd6dc: availability forecasting is NOT_EVALUABLE. The held-out scorecard shows ~18% of top-decile player-weeks the player did not play, and the chain cannot see why. Needed: per game, the final pregame injury report and the official inactive list as published before kickoff, with a retrieval or publication time, for 2021-2025, from a source whose terms permit research use (RIGHTS-D1 applies; NFL.com/ESPN are pending owner OD-1/OD-2). Engineering has no network.",
+   "acceptance_tests": [
+    "per game: designations per player and the inactive list, each with a timestamp before kickoff",
+    "rights recorded per source; nothing whose terms prohibit research use",
+    "original bytes land unmodified, content-hash named, retrieved_at recorded"
+   ],
+   "created_by": "claude",
+   "result_path": null,
+   "commit_sha": null
+  },
+  {
+   "task_id": "RES-011",
+   "title": "Timestamped prelock vendor projection archives for matched slates (external ranking)",
+   "status": "DRAFT",
+   "priority": 3,
+   "authorized": false,
+   "depends_on": [],
+   "objective": "Benchmark mandate 37cdd6dc: EXTERNAL_RANK is UNKNOWN. A defensible comparison with any vendor needs that vendor's projections as they stood before lock, for the same slates, with original version timestamps, and a licence that permits this comparison. FC exports are never a model input (owner rule); a comparison file is a benchmark only. Engineering has no network.",
+   "acceptance_tests": [
+    "per slate: vendor projection file, its export/publish time before lock, the vendor and licence terms",
+    "at least 20 slates before any ranking is reported; paired, slate-blocked statistics"
+   ],
+   "created_by": "claude",
+   "result_path": null,
+   "commit_sha": null
   }
  ]
 }

@@ -122,15 +122,19 @@ def _pos_index():
     return player_prior.position_index() if hasattr(player_prior, 'position_index') else {}
 
 
-def positional_rates(panel, pos_of):
-    """Fit touchdowns = b_rz*rz_opps + b_far*far_opps per position over player-seasons."""
+def positional_rates(panel, pos_of, seasons=None):
+    """Fit touchdowns = b_rz*rz_opps + b_far*far_opps per position over player-seasons.
+
+    `seasons` restricts the fit (a held-out evaluation passes the seasons before the one it scores); the default,
+    FIT_SEASONS, is the production fit and is unchanged."""
+    fit = tuple(FIT_SEASONS if seasons is None else seasons)
     acc = {p: [] for p in POSITIONS}
     for gsis, seasons in panel['players'].items():
         pos = pos_of.get(gsis)
         if pos not in acc:
             continue
         for season, weeks in seasons.items():
-            if int(season) not in FIT_SEASONS:
+            if int(season) not in fit:
                 continue
             rz = far = td = 0.0
             for w in weeks.values():
@@ -204,7 +208,7 @@ def positional_rates(panel, pos_of):
 
 
 # ------------------------------------------------------- pass / rush split of the team pool
-def pass_rush_split(panel):
+def pass_rush_split(panel, seasons=None):
     """Share of a club's offensive touchdowns thrown rather than run, measured per club-season.
 
     WHY THIS EXISTS. A passing touchdown scores for two players: four points to the thrower and
@@ -213,10 +217,11 @@ def pass_rush_split(panel):
     The pool is therefore split first, and receivers are allocated inside the passing half while
     backs and the quarterback's own legs are allocated inside the rushing half.
     """
+    fit = tuple(FIT_SEASONS if seasons is None else seasons)   # default = the production fit, unchanged
     per, obs = {}, []
-    for gsis, seasons in panel['players'].items():
-        for season, weeks in seasons.items():
-            if int(season) not in FIT_SEASONS:
+    for gsis, seasons_ in panel['players'].items():
+        for season, weeks in seasons_.items():
+            if int(season) not in fit:
                 continue
             for wk, w in weeks.items():
                 club = w.get('team')

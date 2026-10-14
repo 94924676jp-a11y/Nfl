@@ -1,0 +1,879 @@
+{
+ "artifact": "PROSPECTIVE_SCORECARD",
+ "spec": "benchmark-prospective-1",
+ "scope": "INCUMBENT prelock forecasts, 2026 W4-W5, skill positions; kickers and DST excluded",
+ "LIMITS": [
+  "few games: game-blocked intervals are wide and a single slate is anecdote, not evidence",
+  "actuals for W4 from the usage panel (skill opportunity rows); TB@DAL from its graded postgame file",
+  "naive baseline uses only 2026 weeks before the slate; it has no injury information (the forecast did)"
+ ],
+ "pooled": {
+  "n_players": 445,
+  "n_games": 19,
+  "mae_mean": {
+   "value": 2.5542,
+   "ci95": [
+    2.2937,
+    2.8094
+   ],
+   "n_games": 19,
+   "n_players": 445
+  },
+  "bias_mean": {
+   "value": -0.113,
+   "ci95": [
+    -0.4403,
+    0.2427
+   ],
+   "n_games": 19,
+   "n_players": 445
+  },
+  "crps": {
+   "value": 1.815,
+   "ci95": [
+    1.6379,
+    1.9917
+   ],
+   "n_games": 19,
+   "n_players": 445
+  },
+  "coverage": {
+   "nominal50": 0.685,
+   "nominal80": 0.816,
+   "nominal90": 0.863
+  },
+  "pit_deciles": [
+   0.072,
+   0.065,
+   0.054,
+   0.052,
+   0.481,
+   0.031,
+   0.043,
+   0.022,
+   0.054,
+   0.126
+  ],
+  "vs_naive_STD_U": {
+   "n_players": 250,
+   "mae_forecast_minus_naive": {
+    "value": -0.6733,
+    "ci95": [
+     -1.1341,
+     -0.2471
+    ],
+    "n_games": 19,
+    "n_players": 250
+   },
+   "mae_naive": 4.9895,
+   "MEANING": "positive = the forecast mean was further from the result than the naive baseline"
+  },
+  "n_no_row_zero": 214
+ },
+ "by_forecast_tercile": {
+  "T1": {
+   "n_players": 148,
+   "n_games": 19,
+   "mae_mean": {
+    "value": 0.2082,
+    "ci95": [
+     0.074,
+     0.4374
+    ],
+    "n_games": 19,
+    "n_players": 148
+   },
+   "bias_mean": {
+    "value": -0.1829,
+    "ci95": [
+     -0.4148,
+     -0.0471
+    ],
+    "n_games": 19,
+    "n_players": 148
+   },
+   "crps": {
+    "value": 0.1951,
+    "ci95": [
+     0.0603,
+     0.4243
+    ],
+    "n_games": 19,
+    "n_players": 148
+   },
+   "coverage": {
+    "nominal50": 0.926,
+    "nominal80": 0.926,
+    "nominal90": 0.926
+   },
+   "pit_deciles": [
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.919,
+    0.007,
+    0.0,
+    0.0,
+    0.0,
+    0.074
+   ],
+   "vs_naive_STD_U": {
+    "n_players": 25,
+    "mae_forecast_minus_naive": {
+     "value": -0.3705,
+     "ci95": [
+      -1.1073,
+      0.2059
+     ],
+     "n_games": 16,
+     "n_players": 25
+    },
+    "mae_naive": 1.4435,
+    "MEANING": "positive = the forecast mean was further from the result than the naive baseline"
+   },
+   "n_no_row_zero": 118
+  },
+  "T2": {
+   "n_players": 148,
+   "n_games": 19,
+   "mae_mean": {
+    "value": 1.4287,
+    "ci95": [
+     1.1087,
+     1.7862
+    ],
+    "n_games": 19,
+    "n_players": 148
+   },
+   "bias_mean": {
+    "value": -0.3958,
+    "ci95": [
+     -0.7587,
+     -0.0434
+    ],
+    "n_games": 19,
+    "n_players": 148
+   },
+   "crps": {
+    "value": 1.0088,
+    "ci95": [
+     0.7101,
+     1.3393
+    ],
+    "n_games": 19,
+    "n_players": 148
+   },
+   "coverage": {
+    "nominal50": 0.703,
+    "nominal80": 0.811,
+    "nominal90": 0.858
+   },
+   "pit_deciles": [
+    0.041,
+    0.108,
+    0.095,
+    0.081,
+    0.439,
+    0.0,
+    0.014,
+    0.014,
+    0.034,
+    0.176
+   ],
+   "vs_naive_STD_U": {
+    "n_players": 78,
+    "mae_forecast_minus_naive": {
+     "value": 0.2178,
+     "ci95": [
+      -0.1909,
+      0.5748
+     ],
+     "n_games": 19,
+     "n_players": 78
+    },
+    "mae_naive": 1.9438,
+    "MEANING": "positive = the forecast mean was further from the result than the naive baseline"
+   },
+   "n_no_row_zero": 92
+  },
+  "T3": {
+   "n_players": 149,
+   "n_games": 19,
+   "mae_mean": {
+    "value": 6.0024,
+    "ci95": [
+     5.1725,
+     6.8688
+    ],
+    "n_games": 19,
+    "n_players": 149
+   },
+   "bias_mean": {
+    "value": 0.2374,
+    "ci95": [
+     -0.6734,
+     1.2661
+    ],
+    "n_games": 19,
+    "n_players": 149
+   },
+   "crps": {
+    "value": 4.2248,
+    "ci95": [
+     3.6738,
+     4.8304
+    ],
+    "n_games": 19,
+    "n_players": 149
+   },
+   "coverage": {
+    "nominal50": 0.43,
+    "nominal80": 0.711,
+    "nominal90": 0.805
+   },
+   "pit_deciles": [
+    0.174,
+    0.087,
+    0.067,
+    0.074,
+    0.087,
+    0.087,
+    0.114,
+    0.054,
+    0.128,
+    0.128
+   ],
+   "vs_naive_STD_U": {
+    "n_players": 147,
+    "mae_forecast_minus_naive": {
+     "value": -1.1976,
+     "ci95": [
+      -1.9133,
+      -0.5325
+     ],
+     "n_games": 19,
+     "n_players": 147
+    },
+    "mae_naive": 7.2087,
+    "MEANING": "positive = the forecast mean was further from the result than the naive baseline"
+   },
+   "n_no_row_zero": 4
+  }
+ },
+ "DIAGNOSTIC_ONLY_played_only": {
+  "NOT_CALIBRATION_EVIDENCE": "selected on the OUTCOME (he played): removing realised zeros pushes outcomes into the tails by construction. Coverage here is not evidence of dispersion; use by_forecast_tercile, which is defined on the prediction.",
+  "n_players": 231,
+  "n_games": 19,
+  "mae_mean": {
+   "value": 4.5884,
+   "ci95": [
+    3.8666,
+    5.5523
+   ],
+   "n_games": 19,
+   "n_players": 231
+  },
+  "bias_mean": {
+   "value": -0.5497,
+   "ci95": [
+    -1.221,
+    0.0689
+   ],
+   "n_games": 19,
+   "n_players": 231
+  },
+  "crps": {
+   "value": 3.3808,
+   "ci95": [
+    2.8522,
+    4.0832
+   ],
+   "n_games": 19,
+   "n_players": 231
+  },
+  "coverage": {
+   "nominal50": 0.442,
+   "nominal80": 0.658,
+   "nominal90": 0.745
+  },
+  "pit_deciles": [
+   0.113,
+   0.065,
+   0.052,
+   0.052,
+   0.19,
+   0.056,
+   0.082,
+   0.043,
+   0.104,
+   0.242
+  ],
+  "vs_naive_STD_U": {
+   "n_players": 202,
+   "mae_forecast_minus_naive": {
+    "value": -0.6815,
+    "ci95": [
+     -1.2452,
+     -0.1823
+    ],
+    "n_games": 19,
+    "n_players": 202
+   },
+   "mae_naive": 5.8141,
+   "MEANING": "positive = the forecast mean was further from the result than the naive baseline"
+  },
+  "n_no_row_zero": 0
+ },
+ "by_slate": {
+  "2026W5_SHOWDOWN_TB_DAL": {
+   "n_sims": 2000,
+   "market_arm": "FOOTBALL_ONLY",
+   "projection_sha256": "d16a86965c5f7646984d07f35cb6500898fc826c917f6fc52517a37d836e47f2",
+   "draws": "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SHOWDOWN_TB_DAL_2026W5_DRAWS.json",
+   "actuals": "nfl/postgame/showdown_tb_dal_2026W5/TB_DAL_2026W5_POSTGAME.json",
+   "skipped": {
+    "not_skill_or_unresolved": 5
+   },
+   "n_players": 44,
+   "n_games": 1,
+   "mae_mean": {
+    "value": 2.8809,
+    "ci95": [
+     2.8809,
+     2.8809
+    ],
+    "n_games": 1,
+    "n_players": 44
+   },
+   "bias_mean": {
+    "value": -0.0655,
+    "ci95": [
+     -0.0655,
+     -0.0655
+    ],
+    "n_games": 1,
+    "n_players": 44
+   },
+   "crps": {
+    "value": 2.1027,
+    "ci95": [
+     2.1027,
+     2.1027
+    ],
+    "n_games": 1,
+    "n_players": 44
+   },
+   "coverage": {
+    "nominal50": 0.636,
+    "nominal80": 0.773,
+    "nominal90": 0.841
+   },
+   "pit_deciles": [
+    0.068,
+    0.068,
+    0.045,
+    0.045,
+    0.5,
+    0.023,
+    0.023,
+    0.023,
+    0.045,
+    0.159
+   ],
+   "vs_naive_STD_U": {
+    "n_players": 25,
+    "mae_forecast_minus_naive": {
+     "value": -0.2982,
+     "ci95": [
+      -0.2982,
+      -0.2982
+     ],
+     "n_games": 1,
+     "n_players": 25
+    },
+    "mae_naive": 5.3346,
+    "MEANING": "positive = the forecast mean was further from the result than the naive baseline"
+   },
+   "n_no_row_zero": 0
+  },
+  "2026W4_SHOWDOWN_ATL_NO": {
+   "n_sims": 2000,
+   "market_arm": "FOOTBALL_ONLY",
+   "projection_sha256": "3e6898124439a2e9ba33bd98da552c6d0795eb904051ecfec92ddfca46126cb9",
+   "draws": "nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX/SHOWDOWN_ATL_NO_2026W4_DRAWS.json",
+   "actuals": "PANEL",
+   "skipped": {
+    "not_skill_or_unresolved": 6
+   },
+   "n_players": 24,
+   "n_games": 1,
+   "mae_mean": {
+    "value": 2.7784,
+    "ci95": [
+     2.7784,
+     2.7784
+    ],
+    "n_games": 1,
+    "n_players": 24
+   },
+   "bias_mean": {
+    "value": -0.1965,
+    "ci95": [
+     -0.1965,
+     -0.1965
+    ],
+    "n_games": 1,
+    "n_players": 24
+   },
+   "crps": {
+    "value": 1.8938,
+    "ci95": [
+     1.8938,
+     1.8938
+    ],
+    "n_games": 1,
+    "n_players": 24
+   },
+   "coverage": {
+    "nominal50": 0.667,
+    "nominal80": 0.792,
+    "nominal90": 0.875
+   },
+   "pit_deciles": [
+    0.083,
+    0.0,
+    0.083,
+    0.208,
+    0.333,
+    0.0,
+    0.042,
+    0.042,
+    0.042,
+    0.167
+   ],
+   "vs_naive_STD_U": {
+    "n_players": 20,
+    "mae_forecast_minus_naive": {
+     "value": -0.6502,
+     "ci95": [
+      -0.6502,
+      -0.6502
+     ],
+     "n_games": 1,
+     "n_players": 20
+    },
+    "mae_naive": 3.9597,
+    "MEANING": "positive = the forecast mean was further from the result than the naive baseline"
+   },
+   "n_no_row_zero": 6
+  },
+  "2026W4_SHOWDOWN_PIT_CLE": {
+   "n_sims": 2000,
+   "market_arm": null,
+   "projection_sha256": null,
+   "draws": "nfl/dfs/salaries/SHOWDOWN_TONIGHT_DRAWS.json",
+   "actuals": "PANEL",
+   "skipped": {
+    "not_skill_or_unresolved": 9
+   },
+   "n_players": 36,
+   "n_games": 1,
+   "mae_mean": {
+    "value": 2.1158,
+    "ci95": [
+     2.1158,
+     2.1158
+    ],
+    "n_games": 1,
+    "n_players": 36
+   },
+   "bias_mean": {
+    "value": -1.0261,
+    "ci95": [
+     -1.0261,
+     -1.0261
+    ],
+    "n_games": 1,
+    "n_players": 36
+   },
+   "crps": {
+    "value": 1.5862,
+    "ci95": [
+     1.5862,
+     1.5862
+    ],
+    "n_games": 1,
+    "n_players": 36
+   },
+   "coverage": {
+    "nominal50": 0.694,
+    "nominal80": 0.833,
+    "nominal90": 0.861
+   },
+   "pit_deciles": [
+    0.028,
+    0.056,
+    0.0,
+    0.056,
+    0.472,
+    0.111,
+    0.0,
+    0.0,
+    0.139,
+    0.139
+   ],
+   "vs_naive_STD_U": {
+    "n_players": 22,
+    "mae_forecast_minus_naive": {
+     "value": 0.0358,
+     "ci95": [
+      0.0358,
+      0.0358
+     ],
+     "n_games": 1,
+     "n_players": 22
+    },
+    "mae_naive": 3.3076,
+    "MEANING": "positive = the forecast mean was further from the result than the naive baseline"
+   },
+   "n_no_row_zero": 19
+  },
+  "2026W4_CLASSIC_EARLY": {
+   "n_sims": 2000,
+   "market_arm": "FOOTBALL_ONLY",
+   "projection_sha256": "3d7c770af4b350777e8be2f623bfc4cffdf1f35293772a057f90b41194aa7a43",
+   "draws": "nfl/dfs/salaries/DK_2026W4_EARLY_DRAWS.json",
+   "actuals": "PANEL",
+   "skipped": {
+    "not_skill_or_unresolved": 40
+   },
+   "n_players": 341,
+   "n_games": 16,
+   "mae_mean": {
+    "value": 2.5426,
+    "ci95": [
+     2.2284,
+     2.8451
+    ],
+    "n_games": 16,
+    "n_players": 341
+   },
+   "bias_mean": {
+    "value": -0.0168,
+    "ci95": [
+     -0.4006,
+     0.3946
+    ],
+    "n_games": 16,
+    "n_players": 341
+   },
+   "crps": {
+    "value": 1.7965,
+    "ci95": [
+     1.5838,
+     2.0082
+    ],
+    "n_games": 16,
+    "n_players": 341
+   },
+   "coverage": {
+    "nominal50": 0.692,
+    "nominal80": 0.821,
+    "nominal90": 0.865
+   },
+   "pit_deciles": [
+    0.076,
+    0.07,
+    0.059,
+    0.041,
+    0.49,
+    0.026,
+    0.05,
+    0.023,
+    0.047,
+    0.117
+   ],
+   "vs_naive_STD_U": {
+    "n_players": 183,
+    "mae_forecast_minus_naive": {
+     "value": -0.8123,
+     "ci95": [
+      -1.3664,
+      -0.2376
+     ],
+     "n_games": 16,
+     "n_players": 183
+    },
+    "mae_naive": 5.2571,
+    "MEANING": "positive = the forecast mean was further from the result than the naive baseline"
+   },
+   "n_no_row_zero": 189
+  }
+ },
+ "by_position": {
+  "QB": {
+   "n_players": 60,
+   "n_games": 19,
+   "mae_mean": {
+    "value": 1.8955,
+    "ci95": [
+     1.4613,
+     2.404
+    ],
+    "n_games": 19,
+    "n_players": 60
+   },
+   "bias_mean": {
+    "value": 0.3862,
+    "ci95": [
+     -0.4878,
+     1.2702
+    ],
+    "n_games": 19,
+    "n_players": 60
+   },
+   "crps": {
+    "value": 1.2786,
+    "ci95": [
+     1.0453,
+     1.5666
+    ],
+    "n_games": 19,
+    "n_players": 60
+   },
+   "coverage": {
+    "nominal50": 0.8,
+    "nominal80": 0.967,
+    "nominal90": 0.983
+   },
+   "pit_deciles": [
+    0.017,
+    0.017,
+    0.1,
+    0.067,
+    0.617,
+    0.067,
+    0.0,
+    0.017,
+    0.083,
+    0.017
+   ],
+   "vs_naive_STD_U": {
+    "n_players": 29,
+    "mae_forecast_minus_naive": {
+     "value": -2.7841,
+     "ci95": [
+      -4.4783,
+      -1.3317
+     ],
+     "n_games": 19,
+     "n_players": 29
+    },
+    "mae_naive": 6.5351,
+    "MEANING": "positive = the forecast mean was further from the result than the naive baseline"
+   },
+   "n_no_row_zero": 33
+  },
+  "RB": {
+   "n_players": 102,
+   "n_games": 19,
+   "mae_mean": {
+    "value": 2.8267,
+    "ci95": [
+     2.2007,
+     3.5046
+    ],
+    "n_games": 19,
+    "n_players": 102
+   },
+   "bias_mean": {
+    "value": -0.2459,
+    "ci95": [
+     -0.9573,
+     0.4428
+    ],
+    "n_games": 19,
+    "n_players": 102
+   },
+   "crps": {
+    "value": 1.9653,
+    "ci95": [
+     1.4763,
+     2.5028
+    ],
+    "n_games": 19,
+    "n_players": 102
+   },
+   "coverage": {
+    "nominal50": 0.637,
+    "nominal80": 0.775,
+    "nominal90": 0.833
+   },
+   "pit_deciles": [
+    0.078,
+    0.118,
+    0.049,
+    0.098,
+    0.353,
+    0.02,
+    0.049,
+    0.049,
+    0.039,
+    0.147
+   ],
+   "vs_naive_STD_U": {
+    "n_players": 61,
+    "mae_forecast_minus_naive": {
+     "value": -0.1095,
+     "ci95": [
+      -0.7244,
+      0.4725
+     ],
+     "n_games": 19,
+     "n_players": 61
+    },
+    "mae_naive": 4.4486,
+    "MEANING": "positive = the forecast mean was further from the result than the naive baseline"
+   },
+   "n_no_row_zero": 45
+  },
+  "WR": {
+   "n_players": 175,
+   "n_games": 19,
+   "mae_mean": {
+    "value": 3.1072,
+    "ci95": [
+     2.5429,
+     3.7322
+    ],
+    "n_games": 19,
+    "n_players": 175
+   },
+   "bias_mean": {
+    "value": -0.6865,
+    "ci95": [
+     -1.2803,
+     -0.0531
+    ],
+    "n_games": 19,
+    "n_players": 175
+   },
+   "crps": {
+    "value": 2.2943,
+    "ci95": [
+     1.8544,
+     2.7722
+    ],
+    "n_games": 19,
+    "n_players": 175
+   },
+   "coverage": {
+    "nominal50": 0.651,
+    "nominal80": 0.777,
+    "nominal90": 0.829
+   },
+   "pit_deciles": [
+    0.091,
+    0.017,
+    0.051,
+    0.034,
+    0.491,
+    0.017,
+    0.046,
+    0.023,
+    0.074,
+    0.154
+   ],
+   "vs_naive_STD_U": {
+    "n_players": 105,
+    "mae_forecast_minus_naive": {
+     "value": -0.6422,
+     "ci95": [
+      -1.3877,
+      -0.0142
+     ],
+     "n_games": 19,
+     "n_players": 105
+    },
+    "mae_naive": 5.6666,
+    "MEANING": "positive = the forecast mean was further from the result than the naive baseline"
+   },
+   "n_no_row_zero": 82
+  },
+  "TE": {
+   "n_players": 108,
+   "n_games": 19,
+   "mae_mean": {
+    "value": 1.7667,
+    "ci95": [
+     1.3997,
+     2.2271
+    ],
+    "n_games": 19,
+    "n_players": 108
+   },
+   "bias_mean": {
+    "value": 0.6645,
+    "ci95": [
+     0.0972,
+     1.2492
+    ],
+    "n_games": 19,
+    "n_players": 108
+   },
+   "crps": {
+    "value": 1.1944,
+    "ci95": [
+     0.9335,
+     1.5254
+    ],
+    "n_games": 19,
+    "n_players": 108
+   },
+   "coverage": {
+    "nominal50": 0.722,
+    "nominal80": 0.833,
+    "nominal90": 0.88
+   },
+   "pit_deciles": [
+    0.065,
+    0.12,
+    0.037,
+    0.028,
+    0.509,
+    0.046,
+    0.056,
+    0.0,
+    0.019,
+    0.12
+   ],
+   "vs_naive_STD_U": {
+    "n_players": 55,
+    "mae_forecast_minus_naive": {
+     "value": -0.2449,
+     "ci95": [
+      -0.8336,
+      0.3609
+     ],
+     "n_games": 19,
+     "n_players": 55
+    },
+    "mae_naive": 3.4818,
+    "MEANING": "positive = the forecast mean was further from the result than the naive baseline"
+   },
+   "n_no_row_zero": 54
+  }
+ },
+ "actuals_crosscheck_ATL_NO": {
+  "n": 24,
+  "max_abs_diff": 1.0,
+  "mismatches": [
+   [
+    "Kendre Miller|NO",
+    3.9,
+    2.9
+   ]
+  ]
+ }
+}

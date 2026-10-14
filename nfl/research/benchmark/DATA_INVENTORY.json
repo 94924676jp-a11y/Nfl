@@ -1,0 +1,684 @@
+{
+ "repo": "/home/user/nfl",
+ "head": "2efc7ba298cff39469432448ab732fda314b1f05",
+ "generated_utc": "2026-10-14",
+ "prospective_slates": [
+  {
+   "slate_id": "2026W5_CLASSIC_EARLY_ONLY",
+   "format": "Classic",
+   "status": "PARTIAL",
+   "games": [
+    "2026_05_CHI_GB",
+    "2026_05_CIN_MIA",
+    "2026_05_CLE_NYJ",
+    "2026_05_HOU_TEN",
+    "2026_05_IND_PIT",
+    "2026_05_LV_NE",
+    "2026_05_MIN_NO",
+    "2026_05_NYG_WAS"
+   ],
+   "games_cite": "nfl/dfs/salaries/DK_2026W5_EARLY_STATE.json field games (8 games)",
+   "kickoff_utc": "2026-10-11T17:00:00Z",
+   "kickoff_cite": "nfl/dfs/salaries/DK_2026W5_EARLY_SEAL.json field kickoff_utc",
+   "final_prelock_projection": "nfl/dfs/salaries/DK_2026W5_EARLY_PROJ.json (UNTRACKED in git; sha256 87f826b1...); git-tracked byte copies: nfl/dfs/salaries/classic_early_2026W5/prelock_2026-10-11/final_16team_1617Z/DK_2026W5_EARLY_PROJ.json.gz and nfl/tests/fixtures/release_w5_2026-10-11/prod_1617Z/DK_2026W5_EARLY_PROJ.json.gz (decompressed sha256 87f826b1... verified)",
+   "per_player_draws": "nfl/dfs/salaries/DK_2026W5_EARLY_DRAWS.json (UNTRACKED; sha256 5dbe7836...) + DK_2026W5_EARLY_WORLDS.npz (UNTRACKED; sha256 b6cec1bd...); git-tracked byte-identical copies in nfl/tests/fixtures/release_w5_2026-10-11/prod_1617Z/ (DRAWS.json.gz decompresses to 5dbe7836..., WORLDS.npz = b6cec1bd...)",
+   "sealed_timestamp": "2026-10-11T16:08:12.401907+00:00",
+   "sealed_cite": "nfl/dfs/salaries/DK_2026W5_EARLY_SEAL.json field written_at (and resealed_at 16:08:12.401927); seal projection_sha256/worlds_sha256 match current files",
+   "before_kickoff": true,
+   "corroboration": [
+    "git: final_16team_1617Z/DK_2026W5_EARLY_SEAL.json first committed 7668b1a8 2026-10-11T16:18:13Z (< 17:00Z)",
+    "git: prod_1617Z WORLDS fixture first committed a64e932f 2026-10-11T17:35:34Z (AFTER kickoff) -- pre-kickoff existence of the worlds rests on the 16:08Z seal hash, not on the commit",
+    "nfl/dfs/salaries/DK_2026W5_EARLY_STATE.json built_at_utc 2026-10-11T16:05:35Z; PORTFOLIOS built_at_utc 2026-10-11T16:17:29Z",
+    "nfl/dfs/salaries/classic_early_2026W5/prelock_2026-10-11/FINAL_RELEASE_REPORT_1617Z.txt lines 1-9 list STATE/PROJ/DRAWS/WORLDS/SEAL times and hashes"
+   ],
+   "arm": "INCUMBENT (label PROPRIETARY_V1, market_arm FOOTBALL_ONLY)",
+   "arm_cite": "DK_2026W5_EARLY_PROJ.json fields label, market_arm; DK_2026W5_EARLY_DRAWS.json field market_arm; nfl/research/contract45/CORRECTED_V1_W5_REPLAY.md lines 1-6 (CORRECTED_V1 is a POST-LOCK replay, not prospective)",
+   "selector": "classic-portfolio-1, objective E_w[max_i (S_iw - T_w)+]; selector version not otherwise recorded",
+   "selector_cite": "nfl/dfs/salaries/DK_2026W5_EARLY_PORTFOLIOS.json fields spec_version, objective",
+   "draws_exist": true,
+   "n_worlds": 2000,
+   "n_players_with_draws": 378,
+   "draws_cite": "DK_2026W5_EARLY_DRAWS.json fields n_sims=2000, n_players=378; WORLDS.npz stats shape (362,2000,11)",
+   "actual_dk_points": "ABSENT. Only TB@DAL (Thursday) week-5 rows exist: nfl/postgame/raw/showdown_tb_dal_2026W5/NFLVERSE_STATS_PLAYER_WEEK_2026.8304933b6ee2bc2e.csv has 2026 w5 = 1 game (2026_05_TB_DAL); every pbp capture tops out at w5 = 1 game (e.g. nfl/postgame/raw/showdown_tb_dal_2026W5/NFLVERSE_PBP_2026.42ef5132fd211775.csv.gz). DATA-D1: nfl/research/ledger/ISSUE_LEDGER.json line 937 (state BLOCKED_DATA).",
+   "missing": [
+    "realised per-player DK points for the 8 Sunday games (DATA-D1)"
+   ],
+   "other_prelock_versions": [
+    "pre_inactives_1444Z (seal written 14:35:22Z), pre_inactives_1511Z (15:03:15Z), final_1603Z (15:54:11Z) under nfl/dfs/salaries/classic_early_2026W5/prelock_2026-10-11/ -- PROJ.json.gz + SEAL + STATE tracked, no DRAWS/WORLDS in those folders; seal chain in nfl/dfs/salaries/DK_2026W5_EARLY_SEAL_HISTORY.jsonl (5 rows)",
+    "shadow arms A0_INCUMBENT/A1_ORDER/A2_FORMATION/A3_APPEARANCE: nfl/dfs/salaries/runs/w5_arms/*/ (gitignored, .gitignore line 27; STATE built_at_utc 2026-10-09T15:18Z; 266 players x 2000 worlds per RUN_OUTCOME.json detail)",
+    "research rebuild nfl/dfs/salaries/classic_early_2026W5/research_projection/rebuild_2026-10-10_prelock/ (STATE built_at_utc 2026-10-10T18:22:59Z, DRAWS.json.gz)",
+    "POST-LOCK (not prospective): CORRECTED_V1 replay nfl/tests/fixtures/contract45_w5_2026-10-11/corrected/ (MANIFEST.json note: built after lock, 19:57Z-20:01Z)"
+   ]
+  },
+  {
+   "slate_id": "2026W5_SHOWDOWN_TB_DAL",
+   "format": "Showdown",
+   "status": "EVALUABLE",
+   "games": [
+    "2026_05_TB_DAL"
+   ],
+   "kickoff_utc": "2026-10-09T00:15:00Z",
+   "kickoff_cite": "nfl/postgame/showdown_tb_dal_2026W5/PREGAME_FREEZE_MANIFEST.json field kickoff_utc",
+   "final_prelock_projection": "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SHOWDOWN_TB_DAL_2026W5_PROJ.json (graded forecast: nfl/postgame/showdown_tb_dal_2026W5/POSTGAME_CONFIG.json field forecast_scenario_dir = .../OFFICIAL)",
+   "per_player_draws": "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/SHOWDOWN_TB_DAL_2026W5_DRAWS.json (sha256 a14075e6...) + SHOWDOWN_TB_DAL_2026W5_WORLDS.npz (6e8a34cc...)",
+   "sealed_timestamp": "2026-10-08T23:17:53.963214+00:00 (run completed); STATE built_at_utc 2026-10-08T23:07:11Z; DRAWS mtime 2026-10-08T23:08:06Z",
+   "sealed_cite": "nfl/dfs/salaries/showdown_tb_dal/OFFICIAL/RUN_RECEIPT.json field completed_at (artifact hashes match); PREGAME_FREEZE_MANIFEST.json groups[].mtime_utc",
+   "before_kickoff": true,
+   "corroboration": [
+    "git: OFFICIAL draws and OFFICIAL_ELIGIBILITY_FIX_R1 upload first committed ffd74417 2026-10-08T23:54:37Z (< 00:15Z)",
+    "freeze manifest itself written 2026-10-09T04:22:43Z (post-game) but lists prelock mtimes"
+   ],
+   "arm": "INCUMBENT (market_arm FOOTBALL_ONLY; scenario OFFICIAL, QB scenario Daniels)",
+   "arm_cite": "OFFICIAL/SHOWDOWN_TB_DAL_2026W5_DRAWS.json field market_arm; OFFICIAL/SCENARIO.json field scenario; RELEASE_STATUS_OFFICIAL.json disclosed_limitations",
+   "selector": "GREEDY_THEN_1SWAP_POLISH (all 3 contests); release DECISION NOT_READY for OFFICIAL upload (11 ineligible lineups); OFFICIAL_ELIGIBILITY_FIX_R1 portfolio (same OFFICIAL draws) recommended",
+   "selector_cite": "OFFICIAL/SHOWDOWN_TB_DAL_AUDIT.json portfolios.*.selection_method; nfl/dfs/salaries/showdown_tb_dal/RELEASE_STATUS_OFFICIAL.json field DECISION; OFFICIAL_ELIGIBILITY_FIX_R1/SHOWDOWN_TB_DAL_AUDIT.json field draws",
+   "draws_exist": true,
+   "n_worlds": 2000,
+   "n_players_with_draws": 49,
+   "draws_cite": "OFFICIAL DRAWS fields n_sims=2000, n_players=49, seed=20261005",
+   "actual_dk_points": "PRESENT: nfl/postgame/showdown_tb_dal_2026W5/TB_DAL_2026W5_POSTGAME.json (player_actuals, player_grading; provenance pbp 42ef5132...); nfl/postgame/SHOWDOWN_PLAYER_GRADING_LEDGER.jsonl (49 rows tag TB_DAL_2026W5 with actual, ours_mean, pit); raw nfl/postgame/raw/showdown_tb_dal_2026W5/NFLVERSE_PBP_2026.42ef5132fd211775.csv.gz (w5 1 game, 172 plays) and NFLVERSE_STATS_PLAYER_WEEK_2026.8304933b6ee2bc2e.csv (w5 TB_DAL 68 rows)",
+   "missing": [],
+   "other_prelock_versions": [
+    "PRECOMPUTE_TBQB_DANIELS_R2..R10 and PRECOMPUTE_TBQB_MAYFIELD..R4 scenario folders under nfl/dfs/salaries/showdown_tb_dal/ (INVALIDATED_RUNS_TB_DAL_2026W5.json lists invalidated runs)",
+    "POST-LOCK replays: nfl/research/accounting_repair/TB_DAL_2026W5/EVENT_CONSISTENT* (first committed bc446603 2026-10-09T17:10:55Z)"
+   ]
+  },
+  {
+   "slate_id": "2026W5_SHOWDOWN_BUF_LAR_MNF",
+   "format": "Showdown",
+   "status": "NOT_EVALUABLE",
+   "games": [
+    "2026_05_BUF_LA"
+   ],
+   "kickoff_utc": "2026-10-13T00:15:00Z",
+   "kickoff_cite": "schedule row 2026_05_BUF_LA gameday 2026-10-12 gametime 20:15 ET in nfl/dfs/salaries/raw/classic_early_2026W5/NFLVERSE_GAMES_2026.368c6c5011f078ae.slate16.csv.gz (EDT = UTC-4)",
+   "final_prelock_projection": "NOT IN REPOSITORY. Referenced as FINAL_CV1/SHOWDOWN_BUF_LAR_2026W5_DRAWS.json (corrected arm, seed 20261005, 2,000 worlds, sha256 a1592f79...) in nfl/research/contract45/PREREG_PORT_D3_CANDIDATE_RECALL.md lines 8-14; code reads nfl/dfs/salaries/showdown_buf_lar/FINAL_CV1 in an overlay (nfl/research/contract45/port_d3/d3_brute.py lines 3,9-13). No nfl/dfs/salaries/showdown_buf_lar or raw/showdown_buf_lar_2026W5 directory exists at HEAD, in the working tree, or in git history (git log --all --name-only has no BUF_LA path).",
+   "per_player_draws": "ABSENT from repo (primary FINAL_CV1 and SHADOW_S1SEED_FINAL_CV1 worlds were in a /tmp overlay upper dir that no longer exists on disk)",
+   "sealed_timestamp": null,
+   "sealed_cite": "UNCONFIRMED: no artifact in repo to read",
+   "before_kickoff": "UNCONFIRMED",
+   "arm": "CORRECTED_V1 (primary, \"CV1_R2\"/FINAL_CV1) plus INCUMBENT FINAL_R run",
+   "arm_cite": "nfl/research/contract45/RESULT_MNF_SHADOW_PORTD1_TE.md lines 3-5; PREREG_PORT_D3 line 12",
+   "selector": "build_contests (showdown_portfolio), GLOBAL overlap policy; G1 guard shadow only",
+   "selector_cite": "nfl/research/contract45/PREREG_PORT_D3_CANDIDATE_RECALL.md \"Measurements\" item 2; RESULT_MNF_SHADOW_PORTD1_TE.md S1",
+   "draws_exist": false,
+   "n_worlds": "2000 (claimed, not present)",
+   "actual_dk_points": "ABSENT in repo: week-5 MNF play-by-play not captured (DATA-D1, nfl/research/ledger/ISSUE_LEDGER.json line 937; coordination/RESEARCH_QUEUE.json line 150 names BUF@LAR as missing). Only diagnostic hindsight summaries in nfl/research/contract45/RESULT_PORT_D3_AND_WR1OUT_RB2.md.",
+   "missing": [
+    "forecast draws/projections in repo",
+    "sealed timestamp",
+    "actual per-player DK points"
+   ],
+   "notes": [
+    "OUTSIDE REPO (not part of this inventory's evidence, UNCONFIRMED): session scratchpad .../scratchpad/MNF_BUF_LAR/FINAL/CORRECTED_V1_PROJECTIONS.csv (quantiles, no draws) and POSTGAME/pm.json (actual FLEX points derived from owner DK standings -- owner contest data, contents not read)."
+   ]
+  },
+  {
+   "slate_id": "2026W5_APPEARANCE_SUCCESSOR_SHADOW",
+   "format": "Shadow (all 15 week-5 games; appearance/zero-mass probabilities, not a DFS slate)",
+   "status": "PARTIAL",
+   "games": "15 games, 2026_05_* (field n_games_sealed=15)",
+   "kickoff_utc": "first 2026-10-09T00:15:00+00:00",
+   "kickoff_cite": "nfl/prospective/appearance/APPEARANCE_SUCCESSOR_W5_SEAL.json field first_kickoff_utc; games.*.kickoff_utc",
+   "final_prelock_projection": "nfl/prospective/appearance/APPEARANCE_SUCCESSOR_W5_SEAL.json (per-unit P0/P_dk_zero/expected for CURRENT vs SUCCESSOR arms; 437 units)",
+   "per_player_draws": "NO stored draws; per-unit summary probabilities only (n_sims 2000 used)",
+   "sealed_timestamp": "2026-10-07T15:22:07.495604+00:00",
+   "sealed_cite": "APPEARANCE_SUCCESSOR_W5_SEAL.json field written_at; prereg.locked_at 2026-10-07T15:13:20Z",
+   "before_kickoff": true,
+   "corroboration": [
+    "git: first committed c3d37d77 2026-10-07T16:19:09Z"
+   ],
+   "arm": "CURRENT (production allocator) vs SUCCESSOR (SC-APPEAR-1), STATUS SHADOW_ONLY",
+   "arm_cite": "same file fields CURRENT, CANDIDATE, STATUS, EVIDENCE_CLASS (\"PROSPECTIVE FORECAST, UNGRADED\")",
+   "selector": null,
+   "draws_exist": false,
+   "n_worlds": 2000,
+   "actual_dk_points": "Only TB@DAL graded-able (see TB@DAL row); other 14 games lack week-5 actuals (DATA-D1).",
+   "missing": [
+    "actuals for 14 of 15 games",
+    "draws"
+   ]
+  },
+  {
+   "slate_id": "2026W4_CLASSIC_EARLY_ONLY",
+   "format": "Classic",
+   "status": "EVALUABLE",
+   "games": "8 games, 1:00 PM ET",
+   "games_cite": "nfl/dfs/salaries/postgame/FROZEN_2026W4_EARLY.json field slate (\"2026W4 DraftKings Early Only (8 games, 1:00 PM ET)\")",
+   "kickoff_utc": "2026-10-04T17:00:00Z",
+   "kickoff_cite": "nfl/dfs/salaries/DK_2026W4_EARLY_SEAL.json field kickoff_utc",
+   "final_prelock_projection": "nfl/dfs/salaries/DK_2026W4_EARLY_PROJ.json (sha256 3d7c770a..., matches seal)",
+   "per_player_draws": "nfl/dfs/salaries/DK_2026W4_EARLY_DRAWS.json (5b7a519f...) + DK_2026W4_EARLY_WORLDS.npz (8fbc7129..., matches seal)",
+   "sealed_timestamp": "2026-10-04T16:01:18.810818+00:00 (resealed 16:11:48.452584)",
+   "sealed_cite": "nfl/dfs/salaries/DK_2026W4_EARLY_SEAL.json fields written_at, resealed_at; DK_2026W4_EARLY_PRELOCK.json checked_at_utc 16:11:56Z state PASS NO_RERUN_REQUIRED",
+   "before_kickoff": true,
+   "corroboration": [
+    "git: last commit touching PROJ/DRAWS/WORLDS/SEAL is 039cfd0e 2026-10-04T16:13:12Z (< 17:00Z); postgame LOCK.commit = 039cfd0e (nfl/dfs/salaries/postgame/DK_2026W4_EARLY_POSTGAME.json field LOCK)",
+    "STATE built_at_utc 2026-10-04T15:59:20Z; PORTFOLIOS built_at_utc 2026-10-04T16:11:42Z"
+   ],
+   "arm": "INCUMBENT (FOOTBALL_ONLY)",
+   "arm_cite": "DK_2026W4_EARLY_DRAWS.json field market_arm; PORTFOLIOS market_arm",
+   "selector": "classic-portfolio-1, objective E_w[max_i (S_iw - T_w)+]",
+   "selector_cite": "nfl/dfs/salaries/DK_2026W4_EARLY_PORTFOLIOS.json fields spec_version, objective",
+   "draws_exist": true,
+   "n_worlds": 2000,
+   "n_players_with_draws": 381,
+   "draws_cite": "DK_2026W4_EARLY_DRAWS.json fields n_sims=2000, n_players=381",
+   "actual_dk_points": "PRESENT: nfl/dfs/salaries/postgame/DK_2026W4_EARLY_POSTGAME_PLAYERS.csv (201 player rows: actual, sim_mean, p10..p95, crps, pit) and DK_2026W4_EARLY_POSTGAME_PLAYER_TABLE.csv; frozen by nfl/dfs/salaries/postgame/FROZEN_2026W4_EARLY.json (frozen_at_utc 2026-10-05T11:37Z); raw stats nfl/postgame/raw/2026W4/NFL_PLAYER_WEEK.27a8a46468790134.csv (w4 15 of 16 games, missing ATL_NO only) and NFLVERSE_STATS_PLAYER_WEEK_2026.8304933b6ee2bc2e (w4 16 games); pbp_2026.2b3e9f2c6f92123f (w1-w4).",
+   "missing": [
+    "the 201-row grading table covers 201 of 381 drawn players; the rest need derivation from the raw stats files (UNCONFIRMED which players were excluded and why; actual_basis_counts INACTIVE_AT_LOCK_AND_NO_STAT_ROW=30 in DK_2026W4_EARLY_POSTGAME.json)"
+   ],
+   "other_prelock_versions": [
+    "Saturday pre-inactives baseline nfl/dfs/salaries/baseline_2026W4_pre_inactives/ (MANIFEST.json: seal written 2026-10-03T20:12:56Z, worlds 4e08425b..., source_commit 1691dd0e, LABEL \"NOT Sunday-final\")"
+   ]
+  },
+  {
+   "slate_id": "2026W4_SHOWDOWN_ATL_NO_MNF",
+   "format": "Showdown",
+   "status": "EVALUABLE",
+   "games": [
+    "2026_04_ATL_NO"
+   ],
+   "kickoff_utc": "2026-10-06T00:15:00Z",
+   "kickoff_cite": "DRAWS field kickoff_et_naive 2026-10-05T20:15:00 (ET, EDT=UTC-4) in nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX/SHOWDOWN_ATL_NO_2026W4_DRAWS.json",
+   "final_prelock_projection": "nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX/SHOWDOWN_ATL_NO_2026W4_PROJ.json (graded scenario: nfl/postgame/showdown_atl_no_postgame.py line 37; final upload sha 8f4d9a77... = ATL_NO_POSTGAME_ACTUAL.json provenance FINAL_UPLOAD_PRELOCK_PORTFOLIO)",
+   "per_player_draws": "nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX/SHOWDOWN_ATL_NO_2026W4_DRAWS.json (sha 43d6938e...) + SHOWDOWN_ATL_NO_2026W4_WORLDS.npz (stats 26x2000x11)",
+   "sealed_timestamp": "STATE built_at_utc 2026-10-05T23:19:16Z (DRAWS has no written-at field)",
+   "sealed_cite": "RW_INACTIVES_CHARTFIX/SHOWDOWN_ATL_NO_2026W4_STATE.json field built_at_utc",
+   "before_kickoff": true,
+   "corroboration": [
+    "git: DRAWS and DK_UPLOAD first committed 9736516d 2026-10-05T23:47:26Z (< 00:15Z)",
+    "PRELOCK_BOARD STATUS READY (RW_INACTIVES_CHARTFIX/SHOWDOWN_ATL_NO_PRELOCK_BOARD.json)"
+   ],
+   "arm": "INCUMBENT (FOOTBALL_ONLY; scenario RW_INACTIVES_CHARTFIX)",
+   "arm_cite": "DRAWS field market_arm; SCENARIO.json field scenario",
+   "selector": "GREEDY_THEN_1SWAP_POLISH",
+   "selector_cite": "RW_INACTIVES_CHARTFIX/SHOWDOWN_ATL_NO_AUDIT.json portfolios.196285137.selection_method",
+   "draws_exist": true,
+   "n_worlds": 2000,
+   "n_players_with_draws": 30,
+   "draws_cite": "DRAWS fields n_sims=2000, seed=20261005, n_players=30",
+   "actual_dk_points": "PRESENT: nfl/postgame/showdown_atl_no_2026W4/ATL_NO_POSTGAME_ACTUAL.json (player_actuals 56; provenance pbp 40fb5ce1...); ATL_NO_PLAYER_FORECAST_GRADING.json (30 players: dk_actual, dk_mean, p10/p90, pit); SHOWDOWN_PLAYER_GRADING_LEDGER.jsonl (30 rows); raw nfl/postgame/raw/showdown_atl_no_2026W4/NFLVERSE_PBP_2026.40fb5ce16256530d.csv.gz (w4 16 games)",
+   "missing": [],
+   "other_prelock_versions": [
+    "BASE, FANT_OUT, OFFICIAL_DRYRUN, RW_INACTIVES, RW_CRN, HOLDOUT_SEED2 scenario folders under nfl/dfs/salaries/showdown_atl_no/",
+    "POST-LOCK replays: nfl/research/accounting_repair/ATL_NO_2026W4/EVENT_CONSISTENT* (first committed bd895bb3 2026-10-09T15:33:48Z); CHARTFIX_REPRO / REPRO_SPECAUTO_NOTAG are reproductions"
+   ]
+  },
+  {
+   "slate_id": "2026W4_SHOWDOWN_PIT_CLE_TNF",
+   "format": "Showdown",
+   "status": "EVALUABLE",
+   "games": [
+    "2026_04_PIT_CLE"
+   ],
+   "kickoff_utc": "2026-10-02T00:15:00Z",
+   "kickoff_cite": "nfl/research/showdown_live/2026_04_PIT_CLE/PROJ_V1_JOINT_2000_CORRECTED/061b8b3bb7b651fa/forecast_artifact.json field kickoff_utc",
+   "final_prelock_projection": "nfl/dfs/salaries/SHOWDOWN_TONIGHT_PROJ.json (sha16 63f8404165fc32d1 = corrected_proj_sha16 in nfl/research/postgame/PROSPECTIVE_EVALUATION_LEDGER.jsonl row PIT_CLE_2026W4_SHOWDOWN)",
+   "per_player_draws": "nfl/dfs/salaries/SHOWDOWN_TONIGHT_DRAWS.json (sha16 f81d27dbbf968c54 = corrected_draws_sha16; DK-point draws only, per-stat draws NOT stored per ledger scope.per_stat_draws); also nfl/research/showdown_live/2026_04_PIT_CLE/PROJ_V1_JOINT_2000_CORRECTED/061b8b3bb7b651fa/player_draws.npz (written_at 00:01:57Z but first committed 4f6362e8 2026-10-02T02:42:37Z, post-kickoff). Baseline-A 400-draw version only in history: git show 6e6c82dd:nfl/dfs/salaries/SHOWDOWN_TONIGHT_DRAWS.json",
+   "sealed_timestamp": "corrected committed 2026-10-02T00:01:57Z (b05e476a); baseline-A committed 2026-10-01T23:13:31Z (6e6c82dd); STATE built_at_utc 2026-10-01T23:06:52Z",
+   "sealed_cite": "PROSPECTIVE_EVALUATION_LEDGER.jsonl row PIT_CLE_2026W4_SHOWDOWN sealed_inputs (corrected_committed_utc, baseline_A_committed_utc); git log of nfl/dfs/salaries/SHOWDOWN_TONIGHT_DRAWS.json",
+   "before_kickoff": true,
+   "corroboration": [
+    "ledger notes: registration itself is post-kickoff (2026-10-02) and says so",
+    "later QBTGT_FIXED (written 05:52Z) and FOOTBALL_ONLY_CENTRED (06:44Z) versions are POST-KICKOFF (nfl/research/showdown_live/2026_04_PIT_CLE/*/forecast_artifact.json written_at)"
+   ],
+   "arm": "baseline_A (400 draws) and corrected (2000 draws, PROJ_V1_JOINT_2000_CORRECTED); both incumbent-era, not CORRECTED_V1",
+   "arm_cite": "PROSPECTIVE_EVALUATION_LEDGER.jsonl PIT_CLE row forecast_identity showdown_proj_v1+sim.game_joint/b05e476aea0e",
+   "selector": "UNCONFIRMED (78-entry portfolio DK_SHOWDOWN_UPLOAD_GENERATED.csv sha16 bf7d03e38d525133 = corrected_upload_sha16)",
+   "selector_cite": "same ledger row scope.portfolio",
+   "draws_exist": true,
+   "n_worlds": 2000,
+   "n_players_with_draws": 45,
+   "draws_cite": "SHOWDOWN_TONIGHT_DRAWS.json fields n_sims=2000, n_players=45, seed=20261001",
+   "actual_dk_points": "DERIVABLE, no graded per-player table found: pbp nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz and nfl/postgame/raw/showdown_atl_no_2026W4/NFLVERSE_PBP_2026.40fb5ce16256530d.csv.gz (w4 16 games incl. PIT_CLE); stats nfl/postgame/raw/2026W4/NFL_PLAYER_WEEK.27a8a46468790134.csv (includes PIT_CLE; only ATL_NO missing) and NFLVERSE_STATS_PLAYER_WEEK_2026.8304933b6ee2bc2e. TEAM_GAME points present for 2026 W4 (nfl/warehouse/TEAM_GAME.json).",
+   "missing": [
+    "no frozen per-player DK actual table for PIT@CLE (must be derived; UNCONFIRMED exact DK scoring incl. kicker/DST)"
+   ]
+  },
+  {
+   "slate_id": "2026W3_CLASSIC_EARLY_ONLY",
+   "format": "Classic",
+   "status": "NOT_EVALUABLE",
+   "games": [
+    "CAR@CLE",
+    "CIN@PIT",
+    "HOU@IND",
+    "KC@MIA",
+    "LAC@BUF",
+    "NE@JAX",
+    "NYJ@DET",
+    "SEA@WAS",
+    "TEN@NYG"
+   ],
+   "games_cite": "nfl/dfs/salaries/DK_WEEK3_TODAY_STATE_POST_INACTIVES.json field slate.games",
+   "kickoff_utc": "2026-09-27T17:00:00Z",
+   "kickoff_cite": "DK_WEEK3_TODAY_STATE_POST_INACTIVES.json field slate.kickoff_utc",
+   "final_prelock_projection": "NONE PRODUCED BY THE MODEL. Prelock artifacts record a governed refusal: DK_WEEK3_EARLY_BASELINE.json model.can_produce_lawful_board=false, refusal \"feature_build: STAGE_DECLARED_UNIMPLEMENTED\", NOT_SYNTHESIZED (built 2026-09-27T01:25:46Z); DK_WEEK3_TODAY_STATE_POST_INACTIVES.json proprietary_projection_board.exists=false (generated 2026-09-27T16:24:41Z). DK_WEEK3_PROJ_V1.json first committed 65c20976 2026-09-28T01:02:08Z (POST-kickoff, retroactive build); production run archives nfl/production/runs/DK_NFL_WEEK3_2026__20260928T* sealed 2026-09-28 (SEAL.json sealed_at_utc 2026-09-28T20:06:25Z) are post-lock.",
+   "per_player_draws": "NONE prelock",
+   "sealed_timestamp": null,
+   "before_kickoff": false,
+   "arm": null,
+   "selector": "SLATE_STATUS_BOARD.json (generated 2026-10-03, post-lock) reports EXTERNAL_FC_FALLBACK projections and CORRELATION_HEURISTIC_NOT_SIMULATION",
+   "selector_cite": "nfl/dfs/salaries/SLATE_STATUS_BOARD.json fields generated_at_utc, stages[projections].evidence.modes, CORRELATION_BASIS",
+   "draws_exist": false,
+   "n_worlds": null,
+   "actual_dk_points": "PRESENT (W3): nfl/warehouse/PLAYER_GAME.json dk_points_current_rules for all 2026 W3 games (source pbp_2026.79b02496d26004ee per PLAYER_GAME per_season.2026.source); pbp 79b02496/2b3e9f2c cover w3 16 games",
+   "missing": [
+    "no prelock model forecast exists"
+   ]
+  },
+  {
+   "slate_id": "2026W3_SHOWDOWN_ATL_GB_TNF",
+   "format": "Showdown",
+   "status": "EVALUABLE",
+   "games": [
+    "2026_03_ATL_GB"
+   ],
+   "kickoff_utc": "2026-09-25T00:15:00Z",
+   "kickoff_cite": "nfl/prospective/FORECAST_CUT_LEDGER.jsonl (only row) field kickoff_utc",
+   "final_prelock_projection": "nfl/research/unsealed/2026_03_ATL_GB/2fc4e9599f0889f1/RESEARCH_SUMMARY.json (output_class UNSEALED_RESEARCH_OUTPUT) -- artifact_sealing REFUSED (run_status.json first_failure ARTIFACT_SEALING_FAILURE, CURRENT_SEASON_INPUT_STALE)",
+   "per_player_draws": "nfl/research/unsealed/2026_03_ATL_GB/2fc4e9599f0889f1/player_draws.npz (10 layers incl. dk_scoring; run_id 2fc4e9599f0889f1)",
+   "sealed_timestamp": "run written_at 2026-09-24T15:30:00Z; cut frozen_at_utc 2026-09-24T15:35:27Z",
+   "sealed_cite": "run_status.json field written_at; nfl/prospective/FORECAST_CUT_LEDGER.jsonl fields cutoff_utc, frozen_at_utc (cut CUT-e3a92fca9dbe8cb7, publication BLOCKED NFL1_NOT_AUTHORIZED)",
+   "before_kickoff": true,
+   "corroboration": [
+    "git: player_draws.npz first committed 3bf88b57 2026-09-24T17:33:13Z (< 00:15Z next day)"
+   ],
+   "arm": "A (V1 candidate pipeline, unsealed)",
+   "arm_cite": "run_status.json field arm; FORECAST_CUT_LEDGER.jsonl field arm",
+   "selector": "UNCONFIRMED (entries file nfl/dfs/entries/2026-09-25_ATL_GB_DKEntries_UPLOAD.csv; portfolio research nfl/dfs/RESEARCH_PORTFOLIO_2026_03_ATL_GB_POST_INACTIVE.md)",
+   "draws_exist": true,
+   "n_worlds": 8000,
+   "draws_cite": "player_draws_manifest.json field n_draws=8000",
+   "actual_dk_points": "PRESENT: nfl/warehouse/PLAYER_GAME.json game 2026_03_ATL_GB (dk_points_current_rules); pbp_2026.79b02496d26004ee (w3)",
+   "missing": [
+    "forecast never sealed (governance), so it is UNSEALED research; kicker/DST actual coverage in PLAYER_GAME UNCONFIRMED"
+   ]
+  },
+  {
+   "slate_id": "2026W3_SHOWDOWN_PHI_CHI_MNF",
+   "format": "Showdown",
+   "status": "NOT_EVALUABLE",
+   "games": [
+    "2026_03_PHI_CHI"
+   ],
+   "kickoff_utc": "2026-09-29T00:15:00Z",
+   "kickoff_cite": "schedule row 2026_03_PHI_CHI 2026-09-28 20:15 ET (NFLVERSE_GAMES_2026.368c6c5011f078ae.slate16.csv.gz)",
+   "final_prelock_projection": "NONE FOUND. Only owner DK standings (nfl/postgame/raw/showdown_history/196036243_PHI_CHI/, owner contest file, not read) used for duplication/history calibration (commit 9ce52c1e).",
+   "per_player_draws": null,
+   "sealed_timestamp": null,
+   "before_kickoff": null,
+   "arm": null,
+   "draws_exist": false,
+   "actual_dk_points": "PRESENT in nfl/warehouse/PLAYER_GAME.json (2026_03_PHI_CHI)",
+   "missing": [
+    "no system forecast"
+   ]
+  },
+  {
+   "slate_id": "2026W2_SHOWDOWN_DET_BUF_TNF",
+   "format": "Showdown",
+   "status": "EVALUABLE",
+   "games": [
+    "2026_02_DET_BUF"
+   ],
+   "kickoff_utc": "2026-09-18T00:15:00Z",
+   "kickoff_cite": "nfl/research/postgame/PROSPECTIVE_EVALUATION_LEDGER.jsonl row DET_BUF_2026W2 sealed_inputs.kickoff_utc",
+   "final_prelock_projection": "post-inactives final: nfl/research/live/2026_02_DET_BUF/post_inactives_V1_CANDIDATE_R9_W1P_GA_OFFICIAL/ARTIFACT.json (built_at 2026-09-17T23:47:13Z, derived_from_run pre_inactives_V1_CANDIDATE_R9_W1P_GA/117a78668a0b7a0e, ZERO_DELTA.json). Graded identity: c3probe_V1_CANDIDATE_R9_W1P_GSVUC/d709e67b82d5b01c, board_dir nfl/research/dfs/DET_BUF_2026W2/frozen",
+   "per_player_draws": "(a) nfl/research/live/2026_02_DET_BUF/pre_inactives_V1_CANDIDATE_R9_W1P_GA/117a78668a0b7a0e/player_draws.npz (8000 draws, dk_scoring layer); (b) post-inactives nfl/research/live/2026_02_DET_BUF/post_inactives_V1_CANDIDATE_R9_W1P_GA_OFFICIAL/player_draws.npz (8000); (c) graded sealed copy nfl/research/dfs/DET_BUF_2026W2/frozen/sealed_player_draws.npz (run d709e67b82d5b01c, sha c24d9dcc..., 8000 draws, dk_scoring__dk_points)",
+   "sealed_timestamp": "forecast_sealed_at_utc 2026-09-16T15:45:14Z (graded identity); GA run written_at 2026-09-16T15:45:14Z; post-inactives built_at 2026-09-17T23:47:13Z",
+   "sealed_cite": "PROSPECTIVE_EVALUATION_LEDGER.jsonl sealed_inputs.forecast_sealed_at_utc; forecast_artifact.json written_at; ARTIFACT.json built_at",
+   "before_kickoff": true,
+   "corroboration": [
+    "git: GA 117a78668a0b7a0e draws first committed 1e6bb842 2026-09-16T16:41:21Z; post-inactives OFFICIAL draws 1ad9d57e 2026-09-17T23:47:45Z (both < 00:15Z)",
+    "CAVEAT: frozen/sealed_player_draws.npz (d709e67b82d5b01c, the graded identity) first committed fb2636ce 2026-09-18T02:56:20Z, AFTER kickoff; its prelock existence rests on in-file/ledger timestamps only (ledger row written 2026-09-18T03:54:37Z). Its sha differs from the GA run npz (41b6e11a...)."
+   ],
+   "arm": "A, model_configuration V1_CANDIDATE_R9_W1P_GA (graded: ..._GSVUC)",
+   "arm_cite": "forecast_artifact.json fields model_arm, model_configuration; ledger forecast_identity",
+   "selector": "two 40-entry portfolios PORTFOLIO_CLAUDE_40.csv / PORTFOLIO_ALTERNATE_40.csv (ledger scope.portfolios); selector version UNCONFIRMED",
+   "draws_exist": true,
+   "n_worlds": 8000,
+   "draws_cite": "player_draws_manifest.json n_draws=8000",
+   "actual_dk_points": "PRESENT: nfl/research/dfs/DET_BUF_2026W2/POSTGAME_OUTCOME/OUTCOME.json (72 player stat rows, retrieved 2026-09-18T04:40:28Z; no fumbles/2pt fields), GRADE_PROJECTIONS.json (29 players x 12 stats), raw nflverse_stats_player_week.f35e9d110d363a69.csv.gz (w2 1 game); nfl/warehouse/PLAYER_GAME.json 2026_02_DET_BUF dk_points_current_rules",
+   "missing": [
+    "DK points must be computed from stats or taken from PLAYER_GAME (exact kicker/DST coverage UNCONFIRMED)"
+   ]
+  },
+  {
+   "slate_id": "2026W2_CLASSIC_EARLY_ONLY",
+   "format": "Classic",
+   "status": "PARTIAL",
+   "games": [
+    "2026_02_CAR_ATL",
+    "2026_02_CIN_HOU",
+    "2026_02_CLE_TB",
+    "2026_02_GB_NYJ",
+    "2026_02_MIN_CHI",
+    "2026_02_NO_BAL",
+    "2026_02_PHI_TEN",
+    "2026_02_PIT_NE"
+   ],
+   "games_cite": "nfl/research/sunday/EARLY_ONLY_POSTINACTIVES_PACKAGE_2026W2.json provenance.games_expected",
+   "kickoff_utc": "2026-09-20T17:00:00Z",
+   "kickoff_cite": "schedule rows 2026_02_* 13:00 ET (NFLVERSE_GAMES_2026.368c6c5011f078ae.slate16.csv.gz)",
+   "final_prelock_projection": "nfl/research/sunday/EARLY_ONLY_POSTINACTIVES_PACKAGE_2026W2.json (model V1_CANDIDATE_R9_W1P_GSVUCY, information_cut 2026-09-20T16:22:00Z, board_is_unsealed=true, DST unsupported) and per-player rows in nfl/research/postgame/week2_postgame_grading.jsonl (520 rows, pregame_information_cut 16:22:00Z, proj_dk_mean/sd/p10/p50/p90/p95, n_draws 8000, run_id 2a343307b948fe2b)",
+   "per_player_draws": "NOT STORED in repo (run 2a343307b948fe2b has no directory; only summary quantiles)",
+   "sealed_timestamp": "package generated_at_utc 2026-09-20T17:13:35Z (AFTER 17:00Z kickoff); information cut 16:22:00Z (before)",
+   "sealed_cite": "EARLY_ONLY_POSTINACTIVES_PACKAGE_2026W2.json fields generated_at_utc, provenance.information_cut; git first commit 3c682cae 2026-09-20T17:26:47Z",
+   "before_kickoff": "NO (written after kickoff with a pre-kickoff information cut)",
+   "arm": "V1_CANDIDATE_R9_W1P_GSVUCY (CANDIDATE_NOT_ACCEPTED_BASELINE)",
+   "arm_cite": "week2_postgame_grading.jsonl fields model_configuration, candidate_status",
+   "selector": "none: EARLY_ONLY_PRELOCK_VERDICT_2026W2.md lines 3-4 \"STOP CONDITION REACHED. No upload-ready portfolio may be produced today.\"",
+   "draws_exist": false,
+   "n_worlds": "8000 (not stored)",
+   "actual_dk_points": "PRESENT: week2_postgame_grading.jsonl grade_state GRADED 409 / GAME_RESULT_NOT_PUBLISHED 67 / PLAYER_ABSENT_FROM_RESULTS 44 (actuals snapshot nfl/research/postgame/raw/nflverse_stats_player_week_2026_retrieved_2026-09-20T2221Z.csv, w2 8 games); full W2 actuals in nfl/warehouse/PLAYER_GAME.json",
+   "missing": [
+    "per-player draws (exact CRPS impossible; quantile-based scores only)",
+    "forecast artifact written 13 min after kickoff",
+    "earlier 06:32Z run (EARLY_ONLY_PRODUCTION_RUN_2026W2.json, V1_CANDIDATE_R8) had no RB/WR/TE layers"
+   ]
+  },
+  {
+   "slate_id": "2026W2_SHOWDOWN_IND_KC_SNF",
+   "format": "Showdown",
+   "status": "PARTIAL",
+   "games": [
+    "2026_02_IND_KC"
+   ],
+   "kickoff_utc": "2026-09-21T00:20:00Z",
+   "kickoff_cite": "schedule row 2026_02_IND_KC 2026-09-20 20:20 ET",
+   "final_prelock_projection": "nfl/research/sunday/IND_KC_SHOWDOWN_POSTINACTIVES_2026W2.json (LABEL POSTINACTIVES_CURRENT, 30 players with dk_flex/dk_cpt quantiles; run_status REFUSED at artifact_sealing)",
+   "per_player_draws": "NOT STORED (provenance.draw_content_digest only; run 12eda64603a377d7 has no directory)",
+   "sealed_timestamp": "generated_at_utc 2026-09-20T23:11:56Z; information_cut 2026-09-20T23:05:00Z",
+   "sealed_cite": "same file fields generated_at_utc, provenance.information_cut; git first commit 6f48f60a 2026-09-20T23:12:43Z",
+   "before_kickoff": true,
+   "arm": "V1 candidate (code b50ca0a1...; unsealed)",
+   "arm_cite": "provenance.code_commit",
+   "selector": "UNCONFIRMED (DKEntries_IND_KC_SHOWDOWN_2026W2.csv exists; no portfolio artifact located)",
+   "draws_exist": false,
+   "n_worlds": "8000 (not stored)",
+   "actual_dk_points": "PRESENT in nfl/warehouse/PLAYER_GAME.json (2026_02_IND_KC)",
+   "missing": [
+    "per-player draws"
+   ]
+  },
+  {
+   "slate_id": "2026W2_SHOWDOWN_NYG_LA_MNF",
+   "format": "Showdown (research chain; no portfolio)",
+   "status": "EVALUABLE",
+   "games": [
+    "2026_02_NYG_LA"
+   ],
+   "kickoff_utc": "2026-09-22T00:15:00Z",
+   "kickoff_cite": "schedule row 2026_02_NYG_LA 2026-09-21 20:15 ET",
+   "final_prelock_projection": "nfl/research/mnf/CHAIN_NYG_LA_WITH_DRAWS.json (ran_at 2026-09-21T19:15:21Z; gates.ARTIFACT_SEALED FAIL)",
+   "per_player_draws": "nfl/research/mnf/run_nyg_la/9f2e3d1ae24fc05b/player_draws.npz (8000 draws, layers incl. dk_scoring)",
+   "sealed_timestamp": "run_status written_at 2026-09-21T19:08:29Z",
+   "sealed_cite": "nfl/research/mnf/run_nyg_la/9f2e3d1ae24fc05b/run_status.json field written_at (first_failure artifact_sealing)",
+   "before_kickoff": true,
+   "corroboration": [
+    "git: player_draws.npz first committed 4bf829c3 2026-09-21T19:15:42Z"
+   ],
+   "arm": "C",
+   "arm_cite": "run_status.json field arm",
+   "selector": null,
+   "draws_exist": true,
+   "n_worlds": 8000,
+   "actual_dk_points": "PRESENT in nfl/warehouse/PLAYER_GAME.json (2026_02_NYG_LA); pbp 6643f82a/79b02496 cover w2",
+   "missing": [
+    "unsealed; no portfolio (market board HR_NYG_LAR only)"
+   ]
+  },
+  {
+   "slate_id": "2026W1_SHADOW_NE_SEA",
+   "format": "Single-game shadow",
+   "status": "NOT_EVALUABLE",
+   "games": [
+    "2026_01_NE_SEA"
+   ],
+   "kickoff_utc": "2026-09-10T00:20:00Z",
+   "kickoff_cite": "nfl/research/shadow/g1_ne_sea/SEALED_FORECAST.json declared.kickoff_utc",
+   "final_prelock_projection": "nfl/research/shadow/g1_ne_sea/ and g1_ne_sea_runB/ (declared written_at 2026-09-08T17:10:00Z)",
+   "per_player_draws": "player_draws.npz.gz (1000 draws)",
+   "sealed_timestamp": "declared 2026-09-08T17:10:00Z but first committed bba6f0bd 2026-09-10T13:53:38Z (after kickoff)",
+   "before_kickoff": "NO (replay at a declared information set)",
+   "arm": "A V1_CANDIDATE",
+   "notes": [
+    "NFL_SHADOW_G1_NE_SEA_RETURN.md line 3: \"Exploratory ... nothing is prospective evidence\"; graded per-stat in nfl/research/postgame/PROSPECTIVE_LEDGER.jsonl with cutoff_regime UNLABELLED"
+   ],
+   "draws_exist": true,
+   "n_worlds": 1000,
+   "actual_dk_points": "PLAYER_GAME.json 2026_01_NE_SEA"
+  },
+  {
+   "slate_id": "2026W1_PER_GAME_RESEARCH_BOARDS",
+   "format": "Per-game research boards (no DFS portfolio)",
+   "status": "PARTIAL",
+   "games": [
+    "2026_01_SF_LA",
+    "2026_01_ARI_LAC",
+    "2026_01_ATL_PIT",
+    "2026_01_BAL_IND",
+    "2026_01_BUF_HOU",
+    "2026_01_CHI_CAR",
+    "2026_01_CLE_JAX",
+    "2026_01_GB_MIN",
+    "2026_01_MIA_LV",
+    "2026_01_NO_DET",
+    "2026_01_NYJ_TEN",
+    "2026_01_TB_CIN",
+    "2026_01_WAS_PHI",
+    "2026_01_DAL_NYG",
+    "2026_01_DEN_KC"
+   ],
+   "kickoff_utc": "per game (forecast_artifact.json kickoff_utc): SF_LA 2026-09-11T00:35Z; Sunday early 2026-09-13T17:00Z; late 20:25Z; DAL_NYG 2026-09-14T00:20Z; DEN_KC 2026-09-15T00:15Z",
+   "final_prelock_projection": "latest git-confirmed prelock run per game, e.g. SF_LA nfl/research/live/2026_01_SF_LA/post_inactives_V1_CANDIDATE/f6c8251583500e35 (git 2026-09-11T00:18:58Z); ATL_PIT/BAL_IND/CHI_CAR/CLE_JAX pre_inactives_V1_CANDIDATE_R8 (git 410daf59 2026-09-13T15:52:08Z); BUF_HOU/NO_DET/NYJ_TEN/TB_CIN post_inactives_V1_CANDIDATE (git b501cad3 16:27:11Z); ARI_LAC/GB_MIN/MIA_LV/WAS_PHI post_inactives_V1_CANDIDATE (git 7ee7037d 20:07:32Z); DAL_NYG FORENSIC_CORRECTED_RESEARCH/4b186a21b83a49ec + pre_inactives R8 3dddf9f62c9260b0 (git d652afb3 2026-09-14T00:11:13Z, 8000 draws); DEN_KC PRELIMINARY_PROVISIONAL_V1_CANDIDATE_R9/96954efc523bd7d3 (git f326a6d0 2026-09-14T23:32:57Z)",
+   "per_player_draws": "player_draws.npz per run dir: per-STAT draws only (qb, team_volume; receiving and rushing carries/td for some games). No dk_scoring layer and no non-QB rushing-yards matrix, so per-player DK-point draws cannot be reconstructed exactly. Games with qb+team_volume only: BUF_HOU, CHI_CAR, CLE_JAX, GB_MIN, MIA_LV, NYJ_TEN, WAS_PHI (no receiving/rushing layers).",
+   "sealed_timestamp": "forecast_artifact.json written_at per dir (all before kickoff); git first-commit times listed above",
+   "before_kickoff": true,
+   "arm": "A; V1_CANDIDATE / _R5.._R8 / _R9",
+   "arm_cite": "forecast_artifact.json model_arm, model_configuration",
+   "draws_exist": "per-stat only",
+   "n_worlds": "1000 (DAL_NYG forensic: 8000)",
+   "actual_dk_points": "PRESENT: nfl/warehouse/PLAYER_GAME.json covers all 16 W1 games (dk_points_current_rules); per-stat grades for SF_LA and NE_SEA in nfl/research/postgame/PROSPECTIVE_LEDGER.jsonl (3,230 rows; metrics receiving/qb/rushing/team_volume, no DK points)",
+   "missing": [
+    "DK-point draws",
+    "nfl/research/live/REPLAY_C1/* and nfl/research/v2,v4/* dirs inherit original written_at but were committed later (e.g. afefd392 2026-09-14T17:46Z) -- replays, not prospective"
+   ]
+  }
+ ],
+ "data_families": [
+  {
+   "family": "schedules (nflverse games.csv)",
+   "location": "nfl/vintage/schedules.*.csv.gz",
+   "newest": "nfl/vintage/schedules.6e1c5e30d52422ea.csv.gz",
+   "capture_clock": "2026-10-11T15:33:06.958583Z (source Last-Modified 2026-10-11T15:16:38Z)",
+   "clock_cite": "nfl/vintage_manifest.jsonl line 12875 value.provenance.retrieved_at, capture_id 20261011T153306Z",
+   "coverage": "seasons 1999-2026; 2026 scores present W1-W4 (16 games each) + W5 1 game (TB_DAL)",
+   "git_tracked": true,
+   "n_files": 792,
+   "note": "48 of 792 schedule blobs have no manifest row naming their hash",
+   "rights": "nflverse I01 READ_ONLY_RESEARCH, terms_evidence PRIMARY (nfl/integrations/matrix.py:42-45); nflverse redistribution UNKNOWN (nfl/research/integrations/PLATFORM_TERMS_AND_APIS.md:11)"
+  },
+  {
+   "family": "weekly_rosters (nflverse roster_weekly)",
+   "location": "nfl/vintage/weekly_rosters.*.reduced.csv.gz (tracked) + nfl_vintage/raw/weekly_rosters.*.csv (full, gitignored)",
+   "newest": "nfl/vintage/weekly_rosters.ff5969b8e9e78d84.reduced.csv.gz",
+   "capture_clock": "2026-10-11T14:56:13.735583Z (source 2026-10-11T14:00:50Z)",
+   "clock_cite": "nfl/vintage_manifest.jsonl line 12867",
+   "coverage": "2026 W1-W5, 13,048 rows; reduced to season/week/team/gsis_id/position (drops status)",
+   "git_tracked": true,
+   "n_files": 70,
+   "newest_full_raw": "nfl_vintage/raw/weekly_rosters.8729b73ef500cdf9.csv (UNTRACKED, .gitignore line 7), retrieved 2026-10-10T07:41:57.342902Z (manifest line 12767)",
+   "rights": "I02 READ_ONLY_RESEARCH, PRIMARY; build PARTIAL because reduced blob drops status (nfl/integrations/matrix.py:46-50); redistribution UNKNOWN (PLATFORM_TERMS_AND_APIS.md:11)"
+  },
+  {
+   "family": "depth_charts (nflverse, ESPN-sourced)",
+   "location": "nfl/vintage/depth_charts.*.reduced.csv.gz + nfl_vintage/raw/depth_charts.*.csv",
+   "newest": "nfl/vintage/depth_charts.4a17f55fd9f025b1.reduced.csv.gz",
+   "capture_clock": "2026-10-11T14:56:08.589123Z (source 2026-10-11T13:56:41Z)",
+   "clock_cite": "nfl/vintage_manifest.jsonl line 12866",
+   "coverage": "single snapshot, max dt 2026-10-11T13:56:31Z, 2,333 rows",
+   "git_tracked": true,
+   "n_files": 78,
+   "newest_full_raw": "nfl_vintage/raw/depth_charts.779f5b89c5c9dec4.csv (UNTRACKED), retrieved 2026-10-10T07:41:43.963847Z (manifest line 12766)",
+   "rights": "I03: \"fine for personal research, not for redistribution\" (nfl/integrations/matrix.py:51-55)"
+  },
+  {
+   "family": "injuries 2026 (nflverse injuries_2026)",
+   "location": "nfl/vintage/injuries.*.csv.gz",
+   "newest": "nfl/vintage/injuries.8dd06b0e55128af4.csv.gz",
+   "capture_clock": "2026-10-11T06:07:01.806577Z (source 2026-10-11T06:01:13Z)",
+   "clock_cite": "nfl/vintage_manifest.jsonl line 12844",
+   "coverage": "2026 W1-W5, 1,413 rows",
+   "git_tracked": true,
+   "n_files": 29,
+   "rights": "I04 READ_ONLY_RESEARCH, PRIMARY (nfl/integrations/matrix.py:56-60); the same upstream source's terms are UNKNOWN per nfl/research/participation_pm1/NOTICE.md:10-16 (historical files withheld) -- the 2026 files remain tracked: CONFLICT/UNRESOLVED"
+  },
+  {
+   "family": "hist_injuries 2016-2025 (PM-1 input)",
+   "location": "nfl/vintage/hist_injuries_<season>.*.csv.gz",
+   "newest": "hist_injuries_2025.873ca1606dd575bd.csv.gz",
+   "capture_clock": "retrieved 2026-10-11 (ACQUISITION.json per-file retrieved_at_utc); no vintage_manifest row",
+   "clock_cite": "nfl/research/participation_pm1/ACQUISITION.json; NOTICE.md:18",
+   "coverage": "2016-2025",
+   "git_tracked": false,
+   "rights": "terms UNKNOWN; NOT redistributed, removed at tip and git-ignored (owner decision 2026-10-12): NOTICE.md:10-16, .gitignore:43, commit 5f1164ef"
+  },
+  {
+   "family": "hist_participation 2016-2025 (FTN via nflverse)",
+   "location": "nfl/vintage/hist_participation_<season>.*.csv.gz",
+   "newest": "hist_participation_2025.*.csv.gz",
+   "capture_clock": "retrieved 2026-10-11 (e.g. 2016 file 2026-10-11T19:15:15Z); no vintage_manifest row",
+   "clock_cite": "nfl/research/participation_pm1/ACQUISITION.json files[].retrieved_at_utc",
+   "coverage": "2016-2025 (in-season 2026 participation unavailable at no cost: matrix.py:95-99 I11)",
+   "git_tracked": true,
+   "rights": "CC-BY-SA 4.0, attribution FTN Data via nflverse (nfl/research/participation_pm1/NOTICE.md:5-9); derived PM tables CC-BY-SA (NOTICE.md:22-30); injury-conditioning use UNRESOLVED (NOTICE.md:32-35)"
+  },
+  {
+   "family": "official_injury_report (NFL.com page fetch)",
+   "location": "nfl/vintage/official_injury_report.*.html.gz",
+   "newest": "nfl/vintage/official_injury_report.1f5ddd2fe8d1067f.html.gz",
+   "capture_clock": "2026-10-11T15:33:12.771281Z",
+   "clock_cite": "nfl/vintage_manifest.jsonl line 12878",
+   "git_tracked": true,
+   "n_files": 1179,
+   "rights": "I05 PROHIBITED_OR_UNSUPPORTED, SNIPPET_ONLY evidence, owner_decision OD-1 (nfl/integrations/matrix.py:61-67; OD-1 question matrix.py:165-174); RIGHTS-D1 OWNER_GATED (nfl/research/ledger/ISSUE_LEDGER.json:959-975); NFL official PROHIBITED_BY_TERMS (PLATFORM_TERMS_AND_APIS.md:12)"
+  },
+  {
+   "family": "official_inactives (NFL.com page fetch)",
+   "location": "nfl/vintage/official_inactives.*.html.gz",
+   "newest": "nfl/vintage/official_inactives.6dafcf6e981f11be.html.gz (by first capture clock; latest manifest row naming an inactives blob UNCONFIRMED beyond this)",
+   "capture_clock": "2026-09-17T23:41:00Z",
+   "clock_cite": "nfl/vintage_manifest.jsonl line 6427",
+   "git_tracked": true,
+   "n_files": 367,
+   "rights": "I06 PROHIBITED_OR_UNSUPPORTED, OD-1 (nfl/integrations/matrix.py:68-73); \"Has never yielded rows in the W5 week\""
+  },
+  {
+   "family": "espn_injuries_json",
+   "location": "nfl/vintage/espn_injuries_json.*.json.gz",
+   "newest": "nfl/vintage/espn_injuries_json.ad357207d59a074d.json.gz",
+   "capture_clock": "2026-10-11T15:33:13.086923Z",
+   "clock_cite": "nfl/vintage_manifest.jsonl line 12880",
+   "git_tracked": true,
+   "n_files": 1253,
+   "rights": "I07 PROHIBITED_OR_UNSUPPORTED (Disney terms), OD-2 (nfl/integrations/matrix.py:74-78, 175-178); feeds no forecast target"
+  },
+  {
+   "family": "pbp 2026 (nflverse play_by_play)",
+   "location": "nfl/research/postgame/pbp_2026.*.csv.gz (production read path) + nfl/vintage/pbp_2026.* + raw copies",
+   "newest": "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.gz (W1-W4, 64 games)",
+   "capture_clock": "2026-10-07T16:59:14.202692Z",
+   "clock_cite": "nfl/research/postgame/pbp_2026.2b3e9f2c6f92123f.csv.provenance.json retrieved_at (no vintage_manifest row: manifest last pbp row is line 6413, 2026-09-17, nfl/vintage/pbp_2026.b69f55a172965e16 = W1 only)",
+   "coverage": "W1-W4; newer raw copies add W5 TB_DAL only: nfl/postgame/raw/showdown_tb_dal_2026W5/NFLVERSE_PBP_2026.42ef5132fd211775.csv.gz and nfl/dfs/salaries/raw/classic_early_2026W5/NFLVERSE_PBP_2026.e7c162e793cb0f82.csv.gz (11,327 rows, w5=1 game; git a7c25460 2026-10-09T13:38Z; capture clock UNCONFIRMED, PROVENANCE.json captured_at_utc 2026-10-09T13:30:51Z)",
+   "git_tracked": true,
+   "rights": "I09 READ_ONLY_RESEARCH, PRIMARY, build PARTIAL (nfl/integrations/matrix.py:85-89); DATA-D1 data_rights \"nflverse (public)\" (nfl/research/ledger/ISSUE_LEDGER.json:952); W5 absent (DATA-D1, ISSUE_LEDGER.json:937)"
+  },
+  {
+   "family": "pbp history 2021-2025",
+   "location": "nfl/research/postgame/pbp_20{21..25}.*.csv.gz",
+   "newest": "pbp_2025.2f135887790a013f.csv.gz",
+   "capture_clock": "2026-09-14T18:50:09Z",
+   "clock_cite": "nfl/research/postgame/pbp_2025.2f135887790a013f.csv.provenance.json",
+   "git_tracked": true,
+   "rights": "as I09"
+  },
+  {
+   "family": "stats_player_week 2026 (nflverse)",
+   "location": "raw copies only (not in nfl/vintage)",
+   "newest": "nfl/postgame/raw/showdown_tb_dal_2026W5/NFLVERSE_STATS_PLAYER_WEEK_2026.8304933b6ee2bc2e.csv",
+   "capture_clock": "UNCONFIRMED (no retrieved_at recorded; git first commit be87cb0d 2026-10-09T08:54:23Z)",
+   "coverage": "W1-W4 16 games each + W5 TB_DAL (4,517 rows; has fantasy_points/_ppr, game_id)",
+   "git_tracked": true,
+   "rights": "I09/H02 nflverse READ_ONLY_RESEARCH (nfl/integrations/matrix.py:85-89, 140-142)"
+  },
+  {
+   "family": "snap_counts 2026 (nflverse, PFR-sourced)",
+   "location": "raw slices: nfl/dfs/salaries/raw/classic_early_2026W5/NFLVERSE_SNAP_COUNTS_2026.fd2656dbe119dfe4.slate16.csv.gz; nfl/postgame/raw/showdown_atl_no_2026W4/SNAP_COUNTS_2026.125e7bfba67b6b13.csv.gz; history nfl/postgame/raw/role_audit_history/snap_counts_2024/2025",
+   "newest": "NFLVERSE_SNAP_COUNTS_2026.fd2656dbe119dfe4.slate16.csv.gz",
+   "capture_clock": "2026-10-09T13:30:51Z (folder PROVENANCE captured_at_utc; per-file retrieved_at not recorded)",
+   "clock_cite": "nfl/dfs/salaries/raw/classic_early_2026W5/PROVENANCE.json captured_at_utc",
+   "git_tracked": true,
+   "rights": "I10: PFR terms restrict tools built on scraped data; reading nflverse file for personal research is the supported route (nfl/integrations/matrix.py:90-94); PFR PROHIBITED_BY_TERMS for redistribution/tools (PLATFORM_TERMS_AND_APIS.md:17); NOTICE.md:20 says PFR snap counts were deliberately NOT downloaded for PM-1 -- tension with these tracked 2026/2024/2025 snap files (UNRESOLVED)"
+  },
+  {
+   "family": "nfl/derived caches (production read-only cache)",
+   "location": "nfl/derived/*.json, panel_enriched.pkl, volume_store.npy",
+   "newest": "nfl/derived/SOURCE_MEASUREMENT_CACHE.json (mtime 2026-10-13T16:55Z); DST_RATES.json and ROLE_STATE.json mtime 2026-10-11T16:05Z; FORWARD_CHAIN/KICKER_*/TD_RATES/USAGE_HISTORY mtime 2026-10-07T17:04-17:05Z",
+   "capture_clock": "generation 2 rebuilt 2026-10-07 with pbp_2026.2b3e9f2c (W1-W4)",
+   "clock_cite": "nfl/production/DERIVED_REBUILD_MANIFEST.json fields generation, inputs_changed (committed 0a81c60b 2026-10-07T17:07:38Z); on-disk sha256 of DST_RATES/FORWARD_CHAIN/KICKER_RATES/KICKER_WORLD/TD_RATES/USAGE_HISTORY match the manifest; ROLE_STATE and SOURCE_MEASUREMENT_CACHE are not in the manifest",
+   "git_tracked": false,
+   "rights": "gitignored as regenerable (.gitignore:17); inherits input rights; PM-derived tables CC-BY-SA (NOTICE.md:22-30)"
+  },
+  {
+   "family": "nfl/sim fitted models",
+   "location": "nfl/sim/*.json (13 tracked)",
+   "newest": "nfl/sim/FOOTBALL_POINTS.json built_at 2026-10-02T06:30:40Z, fit_seasons [2001, 2025] (git 7d3d0e90 2026-10-02T06:57Z); DST_MODEL/PAIR_CORRELATIONS/SHARED_STATE/SHARE_COVARIANCE/USAGE_MODEL/VARIANCE_COMPONENTS last commit 8835eca3 2026-10-01T21:36:39Z; EFFICIENCY a6a65a0d 2026-09-28",
+   "capture_clock": "n/a (fitted); fit windows mostly not recorded in-file -- UNCONFIRMED except FOOTBALL_POINTS fit_seasons and DST_MODEL._lineage (TEAM_GAME + pbp 2021-2025)",
+   "git_tracked": true,
+   "rights": "inherits nflverse inputs (no separate statement found)"
+  },
+  {
+   "family": "nfl/warehouse TEAM_GAME / PLAYER_GAME",
+   "location": "nfl/warehouse/TEAM_GAME.json, PLAYER_GAME.json",
+   "newest": "TEAM_GAME.json (git last c8fd1641 2026-10-08T13:34:12Z); PLAYER_GAME.json",
+   "capture_clock": "TEAM_GAME scores from schedules capture (score_provenance.PRIMARY), pbp fallback; exact schedules blob UNCONFIRMED",
+   "coverage": "TEAM_GAME 13,982 club-game rows; 2026 points present W1-W4 only. PLAYER_GAME 27,899 rows, 2026 = 48 games W1-W3 from pbp_2026.79b02496d26004ee (per_season.2026.source), dk_points_current_rules; W4 not in PLAYER_GAME",
+   "git_tracked": true,
+   "rights": "derived from nflverse; no separate statement found"
+  },
+  {
+   "family": "DK salary / entry exports (owner manual)",
+   "location": "nfl/vintage/dk_entries.* (3), dk_salaries.* (1), dk_salaries_early.* (3); nfl/dfs/inbox/store/DK_ENTRIES.f2bc2d72d22b0d35.csv.gz; slate raw DKEntries_* in nfl/dfs/salaries/raw/**",
+   "newest": "inbox: DK_ENTRIES.f2bc2d72d22b0d35.csv.gz (W5 Early export, file mtime 2026-10-10T22:13Z; referenced by DK_2026W5_EARLY_STATE.json field export); vintage: dk_entries.ddddf790bfd2bf65.csv.gz and dk_salaries_early.da5fd2511ea37072.csv.gz",
+   "capture_clock": "vintage newest 2026-10-03T17:09:46Z (PRESERVED_BY_DELIVERY)",
+   "clock_cite": "nfl/vintage_manifest.jsonl lines 12432-12433; inbox store items not in manifest (INBOX_LEDGER.jsonl has 6 rows, contents not read)",
+   "git_tracked": "vintage: yes; inbox store: 2 of 6 tracked (4 FC_PLAYERS_EXPORT files untracked per git status); BUF@LAR DKEntries 81b504db: NOT IN REPO",
+   "rights": "D01/D04 MANUAL_EXPORT, ACCOUNT_PRIVATE read-only (nfl/integrations/matrix.py:101-116); automated access PROHIBITED_BY_TERMS (PLATFORM_TERMS_AND_APIS.md:9); FC exports F01 context only, never a model input (matrix.py:126-129)"
+  },
+  {
+   "family": "Hard Rock market snapshots",
+   "location": "nfl/vintage/hardrock_market_snapshot.*; nfl/research/market/**",
+   "newest": "nfl/vintage/hardrock_market_snapshot.3d9b22dc39e12e54.csv.gz",
+   "capture_clock": "2026-09-13T18:13:12.712Z",
+   "clock_cite": "nfl/vintage_manifest.jsonl line 6293",
+   "git_tracked": true,
+   "rights": "W01: no sportsbook price enters an NFL prediction (nfl/integrations/matrix.py:158-160); terms UNKNOWN"
+  }
+ ],
+ "notes": [
+  "Repo HEAD 2efc7ba2. Working tree is DIRTY: W5 Early top-level artifacts (DK_2026W5_EARLY_PROJ/DRAWS/WORLDS/SEAL/STATE/PORTFOLIOS/UPLOAD) are UNTRACKED; byte-identical tracked copies exist under nfl/tests/fixtures/release_w5_2026-10-11/prod_1617Z/ (hashes verified) and nfl/dfs/salaries/classic_early_2026W5/prelock_2026-10-11/final_16team_1617Z/ (PROJ/SEAL/STATE only). nfl/research/benchmark/ (player_rows.py) is untracked.",
+  "Before-kickoff test used two clocks: the artifact's own written/sealed/built field, and the git first-commit time. Where they disagree it is stated per slate (DET_BUF frozen copy, PIT_CLE showdown_live copy, W2 Early package, NE_SEA shadow, W5 worlds fixture).",
+  "Several research directories (nfl/research/live/REPLAY_C1, nfl/research/v2/*, nfl/research/v4/*) copy the original run's written_at into a later replay. Their written_at is NOT a write time; git first-commit is later.",
+  "Kickoff UTC values derived from schedule gametime (ET) assume EDT = UTC-4, consistent with every artifact that records kickoff_utc directly (e.g. 13:00 ET -> 17:00Z in DK_2026W5_EARLY_SEAL.json).",
+  "DATA-D1 confirmed: no capture in the repo has 2026 week-5 play-by-play or player stats beyond 2026_05_TB_DAL. W5 Classic Early and BUF@LAR MNF therefore lack actuals.",
+  "Naming ambiguity: \"OD-1\"/\"OD-2\" denote RIGHTS decisions in nfl/integrations/matrix.py:164-178 (NFL.com page fetch; ESPN JSON) but different items in nfl/research/audit/OWNER_DECISIONS_QUARANTINE.md:9,30 (gate severity; manifest sharding), and coordination uses OD-001/OD-002 for 2026-10-14 cycle-2 directives (coordination/OWNER_INBOX.md:44,79). No owner resolution of rights OD-1/OD-2 was found; RIGHTS-D1 is OWNER_GATED (nfl/research/ledger/ISSUE_LEDGER.json:959-975). coordination/OWNER_INBOX.md:65: \"Do not use an uncertain data license as authorization for retention, public publication, or model training.\"",
+  "vintage_manifest.jsonl (99,141,700 bytes, 12,883 lines, mtime 2026-10-11T15:34Z) was scanned line by line; 3,699 of 3,769 hashed blobs in nfl/vintage + nfl_vintage have at least one manifest row. No capture after 2026-10-11T15:33Z exists in the manifest.",
+  "Q9 prospective ledger is empty (nfl/prospective/q9shadow/Q9_PROSPECTIVE_LEDGER_STATE.json accounting.rows_on_ledger = 0). FORECAST_CUT_LEDGER.jsonl holds one cut (ATL@GB, BLOCKED at artifact_sealing).",
+  "Realised actual sources by week: W1-W3 player DK points in nfl/warehouse/PLAYER_GAME.json (opportunity rows only; kicker/DST coverage UNCONFIRMED); W4 graded tables for Classic Early and ATL@NO plus raw stats/pbp; W5 only TB@DAL.",
+  "Owner contest files (DKEntries, standings, FC exports, INBOX_LEDGER.jsonl) were counted and named only; contents were not read or copied.",
+  "Nothing was run from the repository; no repository file was modified. Helper scripts lived in the scratchpad inv/ folder and were removed after writing this file."
+ ]
+}

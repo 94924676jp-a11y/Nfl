@@ -413,14 +413,14 @@ def project_week(panel, pos_of, season, week, priors, depth, groups, bonus, ip, 
     blend = None if arm == BASELINE_ARM else arm
     for club, crows in by_club.items():
         tv = club_volume_before(panel, club, season, week, prior_games)
-        V.allocate_opportunity(crows, tv, depth, groups, blend=blend)
+        V.allocate_opportunity(crows, tv, depth, groups, blend=blend, apply_appearance=APPLY_APPEARANCE[0])
         for r in crows:
             V.finalize(r)
         # club touchdown pool from the club's OWN measured touchdown rate -- no market input
         pool = tv.get('proj_team_td')
         V_alloc = None
         if pool:
-            V.allocate_club_td(pool, 0.6156, crows, PRATES[0])
+            V.allocate_club_td(pool, PASS_SHARE[0], crows, PRATES[0])
     V.PRIOR_WEIGHT_CAP = _saved_cap
     out = {}
     for gsis, r in rows.items():
@@ -444,6 +444,24 @@ POOL_CLUB = [{}]
 #: Positional touchdown rates, loaded once. Held in a one-element list so project_week can see
 #: them without threading another argument through every call site.
 PRATES = [None]
+#: The pass share of offensive touchdowns used to split the club pool (was the literal 0.6156, the production fit
+#: over every season including the ones scored here).
+PASS_SHARE = [None]
+
+#: VINTAGE (ledger PIT-D4, benchmark mandate 2026-10-14). STRICT fits the positional touchdown rates, the pass/rush
+#: touchdown split and the interception rate on seasons BEFORE the evaluated one, like every other input of the
+#: chain. LEGACY reproduces results recorded before 2026-10-14, which fitted those three on every season (including
+#: the evaluated one) and are therefore optimistic in absolute level; paired arm comparisons on the same inputs were
+#: unaffected in kind. Every output records which vintage produced it.
+VINTAGE = ['STRICT']
+
+#: APPEARANCE (benchmark mandate 2026-10-14). True = the production projection, discounted by each player's appearance
+#: probability (UNCONDITIONAL, what a rostered DFS slot pays). False = the same projection given that he plays
+#: (CONDITIONAL), the like-for-like comparison with the conditional-on-playing rows and with naive per-appearance means.
+APPLY_APPEARANCE = [True]
+#: Optional sink for the UNCONDITIONAL (DFS) scoring rows: (season, week, label, gsis, pos, proj, actual_or_zero,
+#: appeared, pool club). None = off, as before.
+PER_PLAYER_SINK_DFS = None
 
 
 def evaluate(panel, pos_of, seasons, arms, max_weeks=None):
@@ -456,11 +474,20 @@ def evaluate(panel, pos_of, seasons, arms, max_weeks=None):
         through = season - 1
         season_pos = _SeasonPos(pos_map, season, pos_of)
         excluded = {g for (g, s) in inferred if s == season}
-        PRATES[0] = R.positional_rates(panel, pos_of)
+        if VINTAGE[0] == 'STRICT':
+            fit = tuple(s for s in R.FIT_SEASONS if s <= through)
+            PRATES[0] = R.positional_rates(panel, pos_of, seasons=fit)
+            PASS_SHARE[0] = (R.pass_rush_split(panel, seasons=fit) or {}).get('mean_pass_share_of_offensive_td')
+            ip = V.int_rate(panel, pos_of, through=through)['int_per_attempt']
+        elif VINTAGE[0] == 'LEGACY':
+            PRATES[0] = R.positional_rates(panel, pos_of)
+            PASS_SHARE[0] = 0.6156
+            ip = V.int_rate(panel, pos_of)['int_per_attempt']
+        else:
+            raise ValueError(f'FORWARD_CHAIN_VINTAGE_UNKNOWN {VINTAGE[0]!r}')
         depth = V.depth_shares(panel, pos_of, through=through)
         groups = V.group_shares(panel, pos_of, through=through)
         bonus = V.bonus_rates(panel, pos_of, through=through)
-        ip = V.int_rate(panel, pos_of)['int_per_attempt']
         weeks = sorted({int(w) for g, s in panel['players'].items()
                         for ss, ws in s.items() if int(ss) == season for w in ws})
         lo, hi = WEEK_RANGE[0]
@@ -523,7 +550,7 @@ def evaluate(panel, pos_of, seasons, arms, max_weeks=None):
                     actual_dfs[gsis] = 0.0
             if len(actual) < 50:
                 continue
-            wk_row = {'season': season, 'week': week, 'n_players': len(actual), 'arms': {}}
+            wk_row = {'season': season, 'week': week, 'n_players': len(actual), 'arms': {}, 'vintage': VINTAGE[0]}
             for spec in arms:
                 if isinstance(spec, tuple):
                     label, arm, cap = spec
@@ -557,6 +584,9 @@ def evaluate(panel, pos_of, seasons, arms, max_weeks=None):
                     'top30_mean_actual': round(statistics.fmean([actual[g] for g in top30]), 4),
                 }
                 # the unconditional DFS scoring, over every candidate with a zero for absence
+                if PER_PLAYER_SINK_DFS is not None:
+                    PER_PLAYER_SINK_DFS.extend((season, week, label, g, season_pos.get(g), proj[g], actual_dfs[g],
+                                                g in actual, POOL_CLUB[0].get(g)) for g in dfs)
                 if len(dfs) >= 50:
                     dx = [proj[g] for g in dfs]
                     dy = [actual_dfs[g] for g in dfs]
