@@ -1,0 +1,5987 @@
+{
+ "ARTIFACT": "SC_APPEAR_1_PROPAGATION",
+ "STATUS": "SHADOW_ONLY",
+ "PHASE": "SCORED",
+ "DECLARATION": {
+  "written_before_any_score": true,
+  "PRIMARY": {
+   "comparison": "PRIMARY__GATE_ALONE__CURRENT_GATED_vs_CURRENT",
+   "why_this_one": "one change at a time (governing rule 2): the gate alone, at the CURRENT production p_plays, against the production draws. The candidate's effect under the gate is the secondary S2",
+   "cohort": "ALL_RB_WR_TE dressed units, held-out 2025 REG weeks >= 4",
+   "metric": "Brier score of the draw-implied P(0 opportunities in the field), paired per unit",
+   "bar": "improvement (CURRENT loss - GATED loss) has week-blocked z > 2 AND the club-blocked mean is positive; AND positive-count calibration is not worse: conditional CRPS (actual > 0 units) of the gated arm is not worse than current by more than 2 week-blocked SE",
+   "what_a_pass_would_mean": "the gate moves the worlds' zero mass toward the observed zero share on held-out games. It would NOT establish that the gate is adequate, that DFS lineups improve, or that the shape conditional on > 0 is calibrated -- those are separate questions"
+  },
+  "SECONDARY": [
+   "S1 (is draw P(0) under the candidate different from current without a gate)",
+   "S2",
+   "S3",
+   "S4",
+   "REF (the projection-layer comparison SC-APPEAR-1 already passed, recomputed on these units)",
+   "propagation_ratio",
+   "positive-count calibration by arm",
+   "cohorts by role"
+  ],
+  "NOT_A_BAR": "secondaries are descriptive; no secondary result promotes anything",
+  "evidence_class": "RETROSPECTIVE OUT-OF-SAMPLE. 2025 has been read twice before this (forward test and the production-path replay); this is the third read. Not a sealed holdout for any variant chosen after reading it"
+ },
+ "declared_at": "2026-10-14T18:47:17.995345+00:00",
+ "declaration_sha256": "c5fb2302934c5c5fc0853777b3f80b2471d9b12fcefab34fe94d379ba799a644",
+ "scored_at": "2026-10-14T19:13:00.730964+00:00",
+ "production_files": {
+  "sha256_before": {
+   "nfl/sim/game.py": "cc0a94e72c073d5090b29d734a859c40b8131e94c74fc21e142135a8cfab24e7",
+   "nfl/tools/showdown_draws.py": "8fd69a85fea81c2d5f8c650c7d254bdabc054a73952af7bd92862955323ff11e",
+   "nfl/tools/proj_v1.py": "92aa6de0a93828e41fbcf910c138eba964c2d8390f322391cf1f332118f4baea",
+   "nfl/tools/classic_slate_run.py": "9bc84635128b29ebe7c35ba2eab6e618f4564a0bd10a83ea051436ef8a8b88a1",
+   "nfl/tools/showdown_slate_run.py": "5dc61c7f3201515d0b6617d66cfbfcafd654f46f29451b2a34c531946b7f4a1b",
+   "nfl/tools/showdown_slate_state.py": "4ea80f7ad3f5b4aa6f0fb6f5d5831394b8a5d064c5a61e4abb037fb5b7f855b6",
+   "nfl/tools/role_state.py": "511426416aea163a1fe9257c1581b3c49ffcec45f7bcb00d5c39ab30d5ddc826",
+   "nfl/tools/availability.py": "5f187c2a3686fbccb6827981889e66d50829c307408f25704ac9a1eba662c8b6"
+  },
+  "sha256_after": {
+   "nfl/sim/game.py": "cc0a94e72c073d5090b29d734a859c40b8131e94c74fc21e142135a8cfab24e7",
+   "nfl/tools/showdown_draws.py": "8fd69a85fea81c2d5f8c650c7d254bdabc054a73952af7bd92862955323ff11e",
+   "nfl/tools/proj_v1.py": "92aa6de0a93828e41fbcf910c138eba964c2d8390f322391cf1f332118f4baea",
+   "nfl/tools/classic_slate_run.py": "9bc84635128b29ebe7c35ba2eab6e618f4564a0bd10a83ea051436ef8a8b88a1",
+   "nfl/tools/showdown_slate_run.py": "5dc61c7f3201515d0b6617d66cfbfcafd654f46f29451b2a34c531946b7f4a1b",
+   "nfl/tools/showdown_slate_state.py": "4ea80f7ad3f5b4aa6f0fb6f5d5831394b8a5d064c5a61e4abb037fb5b7f855b6",
+   "nfl/tools/role_state.py": "511426416aea163a1fe9257c1581b3c49ffcec45f7bcb00d5c39ab30d5ddc826",
+   "nfl/tools/availability.py": "5f187c2a3686fbccb6827981889e66d50829c307408f25704ac9a1eba662c8b6"
+  },
+  "any_production_file_changed": false
+ },
+ "FIVE_STATE_TRACE": [
+  {
+   "state": "ELIGIBILITY",
+   "stage": "slate state",
+   "at": "nfl/tools/showdown_slate_state.py:474",
+   "what": "a name on the relayed inactive list -> REPORTED_INACTIVE_HIGH_CONFIDENCE (in ABSENT_STATUSES)"
+  },
+  {
+   "state": "ELIGIBILITY",
+   "stage": "slate state",
+   "at": "nfl/tools/showdown_slate_state.py:476",
+   "what": "a team-release designation (OUT etc.) -> status"
+  },
+  {
+   "state": "ELIGIBILITY",
+   "stage": "slate state",
+   "at": "nfl/tools/showdown_slate_state.py:479",
+   "what": "everybody else -> UNKNOWN_ACTIVE_STATE. There is no ACTIVE state on this path: unknown players stay in the pool"
+  },
+  {
+   "state": "ELIGIBILITY",
+   "stage": "availability",
+   "at": "nfl/tools/availability.py:130",
+   "what": "the statuses treated as not playing (incl. NO_OFFENSIVE_ROLE); UNKNOWN is NOT_A_CLAIM_OF_ABSENCE"
+  },
+  {
+   "state": "ELIGIBILITY",
+   "stage": "role state",
+   "at": "nfl/tools/role_state.py:196",
+   "what": "absent -> state NOT_PLAYING, no role band"
+  },
+  {
+   "state": "ELIGIBILITY",
+   "stage": "projection",
+   "at": "nfl/tools/proj_v1.py:1219",
+   "what": "NOT_PLAYING -> dk_points None, no allocation row; he is outside the club allocation entirely"
+  },
+  {
+   "state": "ELIGIBILITY",
+   "stage": "draw spec",
+   "at": "nfl/tools/showdown_draws.py:67",
+   "what": "_shares admits only rows with numeric dk_points: an absent player is in no share denominator and gets no draws"
+  },
+  {
+   "state": "SPECIAL_TEAMS_ONLY_APPEARANCE",
+   "stage": "slate state",
+   "at": "nfl/tools/showdown_slate_state.py:488",
+   "what": "long snapper / punter by roster or chart -> NO_OFFENSIVE_ROLE, which is IN ABSENT_STATUSES: collapsed into ineligible-for-opportunity"
+  },
+  {
+   "state": "SPECIAL_TEAMS_ONLY_APPEARANCE",
+   "stage": "slate state",
+   "at": "nfl/tools/showdown_slate_state.py:490",
+   "what": "chart lists him only as a returner -> RETURNER_ONLY_REVIEW: listed, NOT excluded, no variable downstream"
+  },
+  {
+   "state": "OFFENSIVE_APPEARANCE",
+   "stage": "depth table",
+   "at": "nfl/tools/proj_v1.py:1549",
+   "what": "appearance_rate = share of club-weeks with >= r position players holding ANY panel row (play-by-play stat). No snap variable exists on the live path: offensive appearance without a recorded stat is unobservable here"
+  },
+  {
+   "state": "POSITIVE_OPPORTUNITY",
+   "stage": "projection",
+   "at": "nfl/tools/proj_v1.py:879",
+   "what": "P(plays) read from the depth table at the player's allocator rank (one table per position, so in practice the same rate for every field)"
+  },
+  {
+   "state": "POSITIVE_OPPORTUNITY",
+   "stage": "projection",
+   "at": "nfl/tools/proj_v1.py:912",
+   "what": "COLLAPSE: P(plays) multiplied into the claim, so appearance becomes a scale on the expected share"
+  },
+  {
+   "state": "POSITIVE_OPPORTUNITY",
+   "stage": "projection",
+   "at": "nfl/tools/proj_v1.py:942",
+   "what": "p_plays[field] emitted beside the unconditional volume r[field] = team_total * w_i / sum w"
+  },
+  {
+   "state": "POSITIVE_OPPORTUNITY",
+   "stage": "projection",
+   "at": "nfl/tools/proj_v1.py:1391",
+   "what": "p_plays_by_field written to the projection artifact (consumed by workbooks / audits, not by the draw path)"
+  },
+  {
+   "state": "POSITIVE_OPPORTUNITY",
+   "stage": "draw spec",
+   "at": "nfl/tools/showdown_draws.py:103",
+   "what": "DROPPED: the simulator share is the UNCONDITIONAL volume over the club sum; p_plays is not carried into the spec"
+  },
+  {
+   "state": "POSITIVE_OPPORTUNITY",
+   "stage": "simulator",
+   "at": "nfl/sim/game.py:412",
+   "what": "per-world shares: Dirichlet(conc x unconditional share). This is the ONLY source of a zero-opportunity world: small mean share -> small alpha -> mass near zero. Driven by the mean and the concentration, never by p_plays"
+  },
+  {
+   "state": "POSITIVE_OPPORTUNITY",
+   "stage": "simulator",
+   "at": "nfl/sim/game.py:416",
+   "what": "multinomial over the drawn club total; zero count when the drawn share is small"
+  },
+  {
+   "state": "POSITIVE_COUNT",
+   "stage": "projection",
+   "at": "nfl/tools/proj_v1.py:1387",
+   "what": "conditional (if-plays) volume from build()'s second pass"
+  },
+  {
+   "state": "POSITIVE_COUNT",
+   "stage": "simulator",
+   "at": "nfl/sim/game.py:426",
+   "what": "COLLAPSE: positive counts are the same Dirichlet-multinomial draw as the zeros; there is no separate positive part, so a backup's count given > 0 is centred on his unconditional (shrunk) share, not his conditional volume"
+  },
+  {
+   "state": "POSITIVE_COUNT",
+   "stage": "post-step",
+   "at": "nfl/tools/classic_slate_run.py:110",
+   "what": "conditional_volume consumed ONLY as yards per opportunity in efficiency_worlds; counts untouched"
+  },
+  {
+   "state": "POSITIVE_COUNT",
+   "stage": "post-step",
+   "at": "nfl/tools/classic_slate_run.py:134",
+   "what": "yards rescaled per world; volumes, catches and touchdowns left exactly as simulated -> zero worlds stay zero"
+  },
+  {
+   "state": "ELIGIBILITY",
+   "stage": "post-step",
+   "at": "nfl/tools/showdown_slate_run.py:189",
+   "what": "the only multiplicative anchor on the Showdown path is applied to DST, not to skill players"
+  }
+ ],
+ "FIVE_STATE_SUMMARY": {
+  "ELIGIBILITY": {
+   "distinct_variable": "YES, as current_availability.status (slate state); collapsed to a pool membership boolean at proj_v1 NOT_PLAYING / showdown_draws._shares",
+   "produced_by": "showdown_slate_state.build",
+   "consumed_by": "role_state.assign -> proj_v1.build -> showdown_draws._shares",
+   "collapsed_or_dropped": "ABSENT -> outside the pool (exact zero, no draws). UNKNOWN_ACTIVE_STATE -> inside the pool as if eligible; its eligibility uncertainty has no variable and is only implicitly inside the depth appearance rate"
+  },
+  "OFFENSIVE_APPEARANCE": {
+   "distinct_variable": "NO",
+   "produced_by": "nothing on the live path (no snap input)",
+   "consumed_by": "nothing",
+   "collapsed_or_dropped": "merged with positive opportunity: appearance_rate counts a player as appearing only if he holds a play-by-play row"
+  },
+  "SPECIAL_TEAMS_ONLY_APPEARANCE": {
+   "distinct_variable": "NO (only a roster/chart specialist label)",
+   "produced_by": "showdown_slate_state.specialist_class",
+   "consumed_by": "availability.ABSENT_STATUSES via NO_OFFENSIVE_ROLE",
+   "collapsed_or_dropped": "specialists collapsed into ABSENT; returner-only flagged for review and otherwise identical to any pool member; a skill player who plays only special teams has no representation"
+  },
+  "POSITIVE_OPPORTUNITY": {
+   "distinct_variable": "YES in the projection (p_plays[field]); NO in the simulator",
+   "produced_by": "proj_v1.allocate_opportunity",
+   "consumed_by": "its own claim product (mean scaling) and output tables; NOT showdown_draws, NOT nfl/sim, NOT the post-steps",
+   "collapsed_or_dropped": "collapsed into the unconditional mean share at the claim product, then DROPPED at showdown_draws._shares. Per-world zero opportunity in the draws comes only from the Dirichlet-multinomial on the mean share"
+  },
+  "POSITIVE_COUNT": {
+   "distinct_variable": "YES in the projection (conditional_volume); NO in the simulator",
+   "produced_by": "proj_v1.build second pass",
+   "consumed_by": "classic_slate_run.efficiency_worlds as yards per opportunity only",
+   "collapsed_or_dropped": "the simulator draws zeros and positive counts from one Dirichlet-multinomial centred on the unconditional share; there is no positive part of a hurdle"
+  }
+ },
+ "P_PLAYS_GREP": {
+  "command": "grep -nE 'p_plays|appearance_rate' nfl/sim/*.py nfl/tools/showdown_draws.py nfl/tools/classic_slate_run.py nfl/tools/showdown_slate_run.py",
+  "hits_on_draw_path": {},
+  "n_hits_on_draw_path": 0,
+  "files_searched": [
+   "nfl/sim/__init__.py",
+   "nfl/sim/dst.py",
+   "nfl/sim/dst_k_event_scoring.py",
+   "nfl/sim/event_consistent_worlds.py",
+   "nfl/sim/football_points.py",
+   "nfl/sim/game.py",
+   "nfl/sim/pair_correlations.py",
+   "nfl/sim/participation.py",
+   "nfl/sim/share_model.py",
+   "nfl/sim/shared_state.py",
+   "nfl/sim/usage.py",
+   "nfl/sim/validate_correlations.py",
+   "nfl/sim/variance_components.py",
+   "nfl/tools/classic_slate_run.py",
+   "nfl/tools/showdown_draws.py",
+   "nfl/tools/showdown_slate_run.py"
+  ],
+  "non_research_modules_that_mention_p_plays": [
+   "nfl/dfs/salaries/classic_early_2026W5/fc_diagnosis/build.py",
+   "nfl/dfs/salaries/classic_early_2026W5/fc_diagnosis/build_FINAL.py",
+   "nfl/dfs/salaries/classic_early_2026W5/fc_diagnosis/dump.py",
+   "nfl/dfs/salaries/classic_early_2026W5/saturday_audit/scripts/compare.py",
+   "nfl/dfs/salaries/classic_early_2026W5/world_audit/audit.py",
+   "nfl/dfs/salaries/classic_early_2026W5/world_audit/build_final.py",
+   "nfl/postgame/showdown_atl_no_role_audit.py",
+   "nfl/production/sunday.py",
+   "nfl/prospective/appearance/seal_appearance_w5.py",
+   "nfl/tools/classic_evidence_board.py",
+   "nfl/tools/classic_release.py",
+   "nfl/tools/proj_v1.py",
+   "nfl/tools/projection_workbook.py",
+   "nfl/tools/showdown_scenario_compare.py"
+  ],
+  "VERDICT": "CONFIRMED: no line in nfl/sim or in the three draw-path tools reads p_plays or an appearance rate"
+ },
+ "GATED_SIMULATOR": {
+  "source": "nfl/sim/game.py read at run time; two substitutions, nothing written",
+  "source_sha256": "cc0a94e72c073d5090b29d734a859c40b8131e94c74fc21e142135a8cfab24e7",
+  "lines_added": 1,
+  "substitutions": [
+   {
+    "production": "rng = random.Random(seed)",
+    "research": "rng = random.Random(seed)\n    _grng = random.Random(seed + GATE_SEED_OFFSET)"
+   },
+   {
+    "production": "ps = c['players']",
+    "research": "ps = gate_players(c['players'], _grng)"
+   }
+  ],
+  "gate_seed_offset": 7919
+ },
+ "ATL_NO_FROZEN_V2": {
+  "files": {
+   "PROJ": "nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX/SHOWDOWN_ATL_NO_2026W4_PROJ.json",
+   "DRAWS": "nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX/SHOWDOWN_ATL_NO_2026W4_DRAWS.json",
+   "WORLDS": "nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX/SHOWDOWN_ATL_NO_2026W4_WORLDS.npz",
+   "STATE": "nfl/dfs/salaries/showdown_atl_no/RW_INACTIVES_CHARTFIX/SHOWDOWN_ATL_NO_2026W4_STATE.json"
+  },
+  "sha256": {
+   "PROJ": "3e6898124439a2e9ba33bd98da552c6d0795eb904051ecfec92ddfca46126cb9",
+   "DRAWS": "43d6938e0b65c8a18ddca3613ce16223751e621412074f5408ae82332bcbf7a0",
+   "WORLDS": "2280be4b41709dddd6e58949880074309f7656315e92067889bc563f081d87a9",
+   "STATE": "3a4795eadb29e26c0db70ebd1dc95023b404d2d0ba034545453e5e8ff518bdd4"
+  },
+  "n_worlds": 2000,
+  "n_skill_players_in_worlds": 26,
+  "inactive_rows_in_projection": 26,
+  "inactive_rows_with_draws_or_worlds": [],
+  "table": [
+   {
+    "player": "Alvin Kamara|NO",
+    "role": "RB1",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 13.679,
+    "dk_points_if_plays": 13.5749,
+    "zero_dk_share_worlds": 0.0,
+    "targets": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 0.0055,
+     "gap_worlds_minus_proj_P0": 0.0055,
+     "mean_worlds": 5.724,
+     "proj_unconditional": 5.717,
+     "proj_conditional": 5.708
+    },
+    "carries": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 0.0,
+     "gap_worlds_minus_proj_P0": 0.0,
+     "mean_worlds": 12.409,
+     "proj_unconditional": 12.415,
+     "proj_conditional": 12.374
+    },
+    "pass_attempts": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 1.0,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.0,
+     "proj_conditional": 0.0
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 0.007,
+      "carries": 0.001,
+      "pass_attempts": 1.0
+     },
+     "mean": {
+      "targets": 5.748,
+      "carries": 13.094,
+      "pass_attempts": 0.0
+     },
+     "zero_dk_share": 0.0,
+     "mean_dk": 14.113
+    },
+    "ungated_mean_dk_worlds": 13.662
+   },
+   {
+    "player": "Austin Hooper|ATL",
+    "role": "TE2",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 3.6281,
+    "dk_points_if_plays": 6.0093,
+    "zero_dk_share_worlds": 0.123,
+    "targets": {
+     "p_plays": 0.57624,
+     "proj_P0": 0.4238,
+     "worlds_zero_share": 0.178,
+     "gap_worlds_minus_proj_P0": -0.2458,
+     "mean_worlds": 1.911,
+     "proj_unconditional": 1.905,
+     "proj_conditional": 3.148
+    },
+    "carries": {
+     "p_plays": 0.57624,
+     "proj_P0": 0.4238,
+     "worlds_zero_share": 0.7905,
+     "gap_worlds_minus_proj_P0": 0.3667,
+     "mean_worlds": 0.394,
+     "proj_unconditional": 0.393,
+     "proj_conditional": 0.393
+    },
+    "pass_attempts": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 1.0,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.0,
+     "proj_conditional": 0.0
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 0.4385,
+      "carries": 0.7965,
+      "pass_attempts": 1.0
+     },
+     "mean": {
+      "targets": 1.868,
+      "carries": 0.439,
+      "pass_attempts": 0.0
+     },
+     "zero_dk_share": 0.419,
+     "mean_dk": 3.617
+    },
+    "ungated_mean_dk_worlds": 3.644
+   },
+   {
+    "player": "Barion Brown|NO",
+    "role": "WR5",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 0.2015,
+    "dk_points_if_plays": 2.5763,
+    "zero_dk_share_worlds": 0.8705,
+    "targets": {
+     "p_plays": 0.07566,
+     "proj_P0": 0.9243,
+     "worlds_zero_share": 0.9035,
+     "gap_worlds_minus_proj_P0": -0.0208,
+     "mean_worlds": 0.111,
+     "proj_unconditional": 0.104,
+     "proj_conditional": 1.323
+    },
+    "carries": {
+     "p_plays": 0.07566,
+     "proj_P0": 0.9243,
+     "worlds_zero_share": 0.9705,
+     "gap_worlds_minus_proj_P0": 0.0462,
+     "mean_worlds": 0.051,
+     "proj_unconditional": 0.049,
+     "proj_conditional": 0.63
+    },
+    "pass_attempts": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 1.0,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.002,
+     "proj_conditional": 0.002
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 0.943,
+      "carries": 0.9775,
+      "pass_attempts": 1.0
+     },
+     "mean": {
+      "targets": 0.104,
+      "carries": 0.043,
+      "pass_attempts": 0.0
+     },
+     "zero_dk_share": 0.9365,
+     "mean_dk": 0.192
+    },
+    "ungated_mean_dk_worlds": 0.202
+   },
+   {
+    "player": "Bijan Robinson|ATL",
+    "role": "RB1",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 27.1438,
+    "dk_points_if_plays": 27.1439,
+    "zero_dk_share_worlds": 0.0,
+    "targets": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 0.002,
+     "gap_worlds_minus_proj_P0": 0.002,
+     "mean_worlds": 6.638,
+     "proj_unconditional": 6.606,
+     "proj_conditional": 6.606
+    },
+    "carries": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 0.0,
+     "gap_worlds_minus_proj_P0": 0.0,
+     "mean_worlds": 20.277,
+     "proj_unconditional": 20.517,
+     "proj_conditional": 20.517
+    },
+    "pass_attempts": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 1.0,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.0,
+     "proj_conditional": 0.0
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 0.0055,
+      "carries": 0.0,
+      "pass_attempts": 1.0
+     },
+     "mean": {
+      "targets": 6.497,
+      "carries": 21.234,
+      "pass_attempts": 0.0
+     },
+     "zero_dk_share": 0.0,
+     "mean_dk": 26.491
+    },
+    "ungated_mean_dk_worlds": 26.011
+   },
+   {
+    "player": "Brian Robinson Jr.|ATL",
+    "role": "RB2",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 4.9405,
+    "dk_points_if_plays": 7.034,
+    "zero_dk_share_worlds": 0.007,
+    "targets": {
+     "p_plays": 0.64523,
+     "proj_P0": 0.3548,
+     "worlds_zero_share": 0.527,
+     "gap_worlds_minus_proj_P0": 0.1722,
+     "mean_worlds": 0.698,
+     "proj_unconditional": 0.717,
+     "proj_conditional": 1.096
+    },
+    "carries": {
+     "p_plays": 0.64523,
+     "proj_P0": 0.3548,
+     "worlds_zero_share": 0.0145,
+     "gap_worlds_minus_proj_P0": -0.3403,
+     "mean_worlds": 6.871,
+     "proj_unconditional": 7.058,
+     "proj_conditional": 9.704
+    },
+    "pass_attempts": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 1.0,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.0,
+     "proj_conditional": 0.0
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 0.5965,
+      "carries": 0.3485,
+      "pass_attempts": 1.0
+     },
+     "mean": {
+      "targets": 0.721,
+      "carries": 6.189,
+      "pass_attempts": 0.0
+     },
+     "zero_dk_share": 0.346,
+     "mean_dk": 4.52
+    },
+    "ungated_mean_dk_worlds": 4.653
+   },
+   {
+    "player": "Bryce Lance|NO",
+    "role": "WR3",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 2.663,
+    "dk_points_if_plays": 4.5714,
+    "zero_dk_share_worlds": 0.181,
+    "targets": {
+     "p_plays": 0.56209,
+     "proj_P0": 0.4379,
+     "worlds_zero_share": 0.2065,
+     "gap_worlds_minus_proj_P0": -0.2314,
+     "mean_worlds": 1.788,
+     "proj_unconditional": 1.86,
+     "proj_conditional": 3.179
+    },
+    "carries": {
+     "p_plays": 0.56209,
+     "proj_P0": 0.4379,
+     "worlds_zero_share": 0.964,
+     "gap_worlds_minus_proj_P0": 0.5261,
+     "mean_worlds": 0.057,
+     "proj_unconditional": 0.055,
+     "proj_conditional": 0.097
+    },
+    "pass_attempts": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 1.0,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.0,
+     "proj_conditional": 0.0
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 0.4675,
+      "carries": 0.9545,
+      "pass_attempts": 1.0
+     },
+     "mean": {
+      "targets": 1.83,
+      "carries": 0.071,
+      "pass_attempts": 0.0
+     },
+     "zero_dk_share": 0.4635,
+     "mean_dk": 2.693
+    },
+    "ungated_mean_dk_worlds": 2.699
+   },
+   {
+    "player": "CJ Donaldson|NO",
+    "role": "RB3",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 0.5173,
+    "dk_points_if_plays": 2.1079,
+    "zero_dk_share_worlds": 0.5165,
+    "targets": {
+     "p_plays": 0.23029,
+     "proj_P0": 0.7697,
+     "worlds_zero_share": 0.798,
+     "gap_worlds_minus_proj_P0": 0.0283,
+     "mean_worlds": 0.265,
+     "proj_unconditional": 0.26,
+     "proj_conditional": 1.102
+    },
+    "carries": {
+     "p_plays": 0.23029,
+     "proj_P0": 0.7697,
+     "worlds_zero_share": 0.67,
+     "gap_worlds_minus_proj_P0": -0.0997,
+     "mean_worlds": 0.618,
+     "proj_unconditional": 0.655,
+     "proj_conditional": 2.596
+    },
+    "pass_attempts": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 1.0,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.0,
+     "proj_conditional": 0.0
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 0.85,
+      "carries": 0.8035,
+      "pass_attempts": 1.0
+     },
+     "mean": {
+      "targets": 0.276,
+      "carries": 0.65,
+      "pass_attempts": 0.0
+     },
+     "zero_dk_share": 0.7755,
+     "mean_dk": 0.517
+    },
+    "ungated_mean_dk_worlds": 0.52
+   },
+   {
+    "player": "Charlie Woerner|ATL",
+    "role": "TE3",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 0.4008,
+    "dk_points_if_plays": 3.302,
+    "zero_dk_share_worlds": 0.8175,
+    "targets": {
+     "p_plays": 0.11517,
+     "proj_P0": 0.8848,
+     "worlds_zero_share": 0.834,
+     "gap_worlds_minus_proj_P0": -0.0508,
+     "mean_worlds": 0.196,
+     "proj_unconditional": 0.197,
+     "proj_conditional": 1.625
+    },
+    "carries": {
+     "p_plays": 0.11517,
+     "proj_P0": 0.8848,
+     "worlds_zero_share": 0.998,
+     "gap_worlds_minus_proj_P0": 0.1132,
+     "mean_worlds": 0.004,
+     "proj_unconditional": 0.003,
+     "proj_conditional": 0.027
+    },
+    "pass_attempts": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 1.0,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.001,
+     "proj_conditional": 0.001
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 0.914,
+      "carries": 0.997,
+      "pass_attempts": 1.0
+     },
+     "mean": {
+      "targets": 0.193,
+      "carries": 0.007,
+      "pass_attempts": 0.0
+     },
+     "zero_dk_share": 0.908,
+     "mean_dk": 0.392
+    },
+    "ungated_mean_dk_worlds": 0.386
+   },
+   {
+    "player": "Chris Blair|ATL",
+    "role": "WR5",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 0.151,
+    "dk_points_if_plays": 1.8988,
+    "zero_dk_share_worlds": 0.8895,
+    "targets": {
+     "p_plays": 0.07566,
+     "proj_P0": 0.9243,
+     "worlds_zero_share": 0.8965,
+     "gap_worlds_minus_proj_P0": -0.0278,
+     "mean_worlds": 0.122,
+     "proj_unconditional": 0.119,
+     "proj_conditional": 1.499
+    },
+    "carries": {
+     "p_plays": 0.07566,
+     "proj_P0": 0.9243,
+     "worlds_zero_share": 0.996,
+     "gap_worlds_minus_proj_P0": 0.0717,
+     "mean_worlds": 0.01,
+     "proj_unconditional": 0.005,
+     "proj_conditional": 0.063
+    },
+    "pass_attempts": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 1.0,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.0,
+     "proj_conditional": 0.0
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 0.9425,
+      "carries": 0.9955,
+      "pass_attempts": 1.0
+     },
+     "mean": {
+      "targets": 0.117,
+      "carries": 0.006,
+      "pass_attempts": 0.0
+     },
+     "zero_dk_share": 0.9395,
+     "mean_dk": 0.131
+    },
+    "ungated_mean_dk_worlds": 0.154
+   },
+   {
+    "player": "Chris Olave|NO",
+    "role": "WR1",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 25.318,
+    "dk_points_if_plays": 25.2812,
+    "zero_dk_share_worlds": 0.0,
+    "targets": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 0.0,
+     "gap_worlds_minus_proj_P0": 0.0,
+     "mean_worlds": 12.514,
+     "proj_unconditional": 12.582,
+     "proj_conditional": 12.563
+    },
+    "carries": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 0.979,
+     "gap_worlds_minus_proj_P0": 0.979,
+     "mean_worlds": 0.037,
+     "proj_unconditional": 0.036,
+     "proj_conditional": 0.036
+    },
+    "pass_attempts": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 1.0,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.009,
+     "proj_conditional": 0.009
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 0.0005,
+      "carries": 0.9795,
+      "pass_attempts": 1.0
+     },
+     "mean": {
+      "targets": 12.745,
+      "carries": 0.034,
+      "pass_attempts": 0.0
+     },
+     "zero_dk_share": 0.0,
+     "mean_dk": 26.324
+    },
+    "ungated_mean_dk_worlds": 25.666
+   },
+   {
+    "player": "Devaughn Vele|NO",
+    "role": "WR2",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 10.5903,
+    "dk_points_if_plays": 12.1365,
+    "zero_dk_share_worlds": 0.003,
+    "targets": {
+     "p_plays": 0.85556,
+     "proj_P0": 0.1444,
+     "worlds_zero_share": 0.008,
+     "gap_worlds_minus_proj_P0": -0.1364,
+     "mean_worlds": 5.98,
+     "proj_unconditional": 6.08,
+     "proj_conditional": 6.903
+    },
+    "carries": {
+     "p_plays": 0.85556,
+     "proj_P0": 0.1444,
+     "worlds_zero_share": 0.54,
+     "gap_worlds_minus_proj_P0": 0.3956,
+     "mean_worlds": 0.966,
+     "proj_unconditional": 1.021,
+     "proj_conditional": 1.021
+    },
+    "pass_attempts": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 1.0,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.0,
+     "proj_conditional": 0.0
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 0.1545,
+      "carries": 0.5315,
+      "pass_attempts": 1.0
+     },
+     "mean": {
+      "targets": 5.898,
+      "carries": 1.081,
+      "pass_attempts": 0.0
+     },
+     "zero_dk_share": 0.1535,
+     "mean_dk": 10.886
+    },
+    "ungated_mean_dk_worlds": 11.02
+   },
+   {
+    "player": "Drake London|ATL",
+    "role": "WR1",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 20.502,
+    "dk_points_if_plays": 20.5021,
+    "zero_dk_share_worlds": 0.0,
+    "targets": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 0.0,
+     "gap_worlds_minus_proj_P0": 0.0,
+     "mean_worlds": 8.414,
+     "proj_unconditional": 8.491,
+     "proj_conditional": 8.491
+    },
+    "carries": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 0.785,
+     "gap_worlds_minus_proj_P0": 0.785,
+     "mean_worlds": 0.397,
+     "proj_unconditional": 0.38,
+     "proj_conditional": 0.38
+    },
+    "pass_attempts": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 1.0,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.003,
+     "proj_conditional": 0.003
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 0.0,
+      "carries": 0.7835,
+      "pass_attempts": 1.0
+     },
+     "mean": {
+      "targets": 8.537,
+      "carries": 0.435,
+      "pass_attempts": 0.0
+     },
+     "zero_dk_share": 0.0,
+     "mean_dk": 20.266
+    },
+    "ungated_mean_dk_worlds": 20.004
+   },
+   {
+    "player": "Jahan Dotson|ATL",
+    "role": "WR2",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 4.171,
+    "dk_points_if_plays": 4.7806,
+    "zero_dk_share_worlds": 0.045,
+    "targets": {
+     "p_plays": 0.85556,
+     "proj_P0": 0.1444,
+     "worlds_zero_share": 0.0525,
+     "gap_worlds_minus_proj_P0": -0.0919,
+     "mean_worlds": 3.302,
+     "proj_unconditional": 3.267,
+     "proj_conditional": 3.744
+    },
+    "carries": {
+     "p_plays": 0.85556,
+     "proj_P0": 0.1444,
+     "worlds_zero_share": 0.9825,
+     "gap_worlds_minus_proj_P0": 0.8381,
+     "mean_worlds": 0.033,
+     "proj_unconditional": 0.029,
+     "proj_conditional": 0.034
+    },
+    "pass_attempts": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 1.0,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.0,
+     "proj_conditional": 0.0
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 0.169,
+      "carries": 0.9815,
+      "pass_attempts": 1.0
+     },
+     "mean": {
+      "targets": 3.239,
+      "carries": 0.03,
+      "pass_attempts": 0.0
+     },
+     "zero_dk_share": 0.1615,
+     "mean_dk": 4.025
+    },
+    "ungated_mean_dk_worlds": 4.089
+   },
+   {
+    "player": "Juwan Johnson|NO",
+    "role": "TE1",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 15.4202,
+    "dk_points_if_plays": 15.3974,
+    "zero_dk_share_worlds": 0.0,
+    "targets": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 0.0005,
+     "gap_worlds_minus_proj_P0": 0.0005,
+     "mean_worlds": 7.489,
+     "proj_unconditional": 7.484,
+     "proj_conditional": 7.473
+    },
+    "carries": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 0.4555,
+     "gap_worlds_minus_proj_P0": 0.4555,
+     "mean_worlds": 1.26,
+     "proj_unconditional": 1.312,
+     "proj_conditional": 1.312
+    },
+    "pass_attempts": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 1.0,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.0,
+     "proj_conditional": 0.0
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 0.001,
+      "carries": 0.434,
+      "pass_attempts": 1.0
+     },
+     "mean": {
+      "targets": 7.371,
+      "carries": 1.365,
+      "pass_attempts": 0.0
+     },
+     "zero_dk_share": 0.0,
+     "mean_dk": 15.856
+    },
+    "ungated_mean_dk_worlds": 16.166
+   },
+   {
+    "player": "Kendre Miller|NO",
+    "role": "RB2",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 3.6771,
+    "dk_points_if_plays": 5.2524,
+    "zero_dk_share_worlds": 0.013,
+    "targets": {
+     "p_plays": 0.64523,
+     "proj_P0": 0.3548,
+     "worlds_zero_share": 0.3865,
+     "gap_worlds_minus_proj_P0": 0.0317,
+     "mean_worlds": 1.042,
+     "proj_unconditional": 1.0,
+     "proj_conditional": 1.524
+    },
+    "carries": {
+     "p_plays": 0.64523,
+     "proj_P0": 0.3548,
+     "worlds_zero_share": 0.037,
+     "gap_worlds_minus_proj_P0": -0.3178,
+     "mean_worlds": 5.222,
+     "proj_unconditional": 5.141,
+     "proj_conditional": 7.099
+    },
+    "pass_attempts": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 1.0,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.0,
+     "proj_conditional": 0.0
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 0.504,
+      "carries": 0.3665,
+      "pass_attempts": 1.0
+     },
+     "mean": {
+      "targets": 1.024,
+      "carries": 4.679,
+      "pass_attempts": 0.0
+     },
+     "zero_dk_share": 0.36,
+     "mean_dk": 3.569
+    },
+    "ungated_mean_dk_worlds": 3.752
+   },
+   {
+    "player": "Kevin Austin Jr.|NO",
+    "role": "WR4",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 0.7908,
+    "dk_points_if_plays": 2.9546,
+    "zero_dk_share_worlds": 0.6155,
+    "targets": {
+     "p_plays": 0.25831,
+     "proj_P0": 0.7417,
+     "worlds_zero_share": 0.649,
+     "gap_worlds_minus_proj_P0": -0.0927,
+     "mean_worlds": 0.475,
+     "proj_unconditional": 0.47,
+     "proj_conditional": 1.752
+    },
+    "carries": {
+     "p_plays": 0.25831,
+     "proj_P0": 0.7417,
+     "worlds_zero_share": 0.9635,
+     "gap_worlds_minus_proj_P0": 0.2218,
+     "mean_worlds": 0.055,
+     "proj_unconditional": 0.064,
+     "proj_conditional": 0.246
+    },
+    "pass_attempts": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 1.0,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.002,
+     "proj_conditional": 0.002
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 0.809,
+      "carries": 0.9645,
+      "pass_attempts": 1.0
+     },
+     "mean": {
+      "targets": 0.406,
+      "carries": 0.057,
+      "pass_attempts": 0.0
+     },
+     "zero_dk_share": 0.7945,
+     "mean_dk": 0.645
+    },
+    "ungated_mean_dk_worlds": 0.751
+   },
+   {
+    "player": "Kyle Pitts Sr.|ATL",
+    "role": "TE1",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 5.2682,
+    "dk_points_if_plays": 5.2682,
+    "zero_dk_share_worlds": 0.0205,
+    "targets": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 0.024,
+     "gap_worlds_minus_proj_P0": 0.024,
+     "mean_worlds": 4.347,
+     "proj_unconditional": 4.335,
+     "proj_conditional": 4.335
+    },
+    "carries": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 0.99,
+     "gap_worlds_minus_proj_P0": 0.99,
+     "mean_worlds": 0.013,
+     "proj_unconditional": 0.012,
+     "proj_conditional": 0.012
+    },
+    "pass_attempts": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 1.0,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.0,
+     "proj_conditional": 0.0
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 0.0275,
+      "carries": 0.9945,
+      "pass_attempts": 1.0
+     },
+     "mean": {
+      "targets": 4.397,
+      "carries": 0.008,
+      "pass_attempts": 0.0
+     },
+     "zero_dk_share": 0.0245,
+     "mean_dk": 5.203
+    },
+    "ungated_mean_dk_worlds": 5.13
+   },
+   {
+    "player": "Michael Penix Jr.|ATL",
+    "role": "QB1",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 15.8572,
+    "dk_points_if_plays": 15.8711,
+    "zero_dk_share_worlds": 0.0,
+    "targets": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 1.0,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.005,
+     "proj_conditional": 0.005
+    },
+    "carries": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 0.25,
+     "gap_worlds_minus_proj_P0": 0.25,
+     "mean_worlds": 2.305,
+     "proj_unconditional": 2.386,
+     "proj_conditional": 2.386
+    },
+    "pass_attempts": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 0.0,
+     "gap_worlds_minus_proj_P0": 0.0,
+     "mean_worlds": 31.42,
+     "proj_unconditional": 31.387,
+     "proj_conditional": 31.387
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 1.0,
+      "carries": 0.241,
+      "pass_attempts": 0.0
+     },
+     "mean": {
+      "targets": 0.0,
+      "carries": 2.482,
+      "pass_attempts": 31.178
+     },
+     "zero_dk_share": 0.0,
+     "mean_dk": 15.19
+    },
+    "ungated_mean_dk_worlds": 15.328
+   },
+   {
+    "player": "Nick Muse|ATL",
+    "role": "TE4",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 0.0179,
+    "dk_points_if_plays": 2.1421,
+    "zero_dk_share_worlds": 0.985,
+    "targets": {
+     "p_plays": 0.00803,
+     "proj_P0": 0.992,
+     "worlds_zero_share": 0.988,
+     "gap_worlds_minus_proj_P0": -0.004,
+     "mean_worlds": 0.013,
+     "proj_unconditional": 0.01,
+     "proj_conditional": 1.152
+    },
+    "carries": {
+     "p_plays": 0.00803,
+     "proj_P0": 0.992,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 0.008,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.0,
+     "proj_conditional": 0.046
+    },
+    "pass_attempts": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 1.0,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.002,
+     "proj_conditional": 0.002
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 0.993,
+      "carries": 1.0,
+      "pass_attempts": 1.0
+     },
+     "mean": {
+      "targets": 0.011,
+      "carries": 0.0,
+      "pass_attempts": 0.0
+     },
+     "zero_dk_share": 0.9915,
+     "mean_dk": 0.016
+    },
+    "ungated_mean_dk_worlds": 0.021
+   },
+   {
+    "player": "Olamide Zaccheaus|ATL",
+    "role": "WR3",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 2.4856,
+    "dk_points_if_plays": 4.2178,
+    "zero_dk_share_worlds": 0.1885,
+    "targets": {
+     "p_plays": 0.56209,
+     "proj_P0": 0.4379,
+     "worlds_zero_share": 0.216,
+     "gap_worlds_minus_proj_P0": -0.2219,
+     "mean_worlds": 1.766,
+     "proj_unconditional": 1.742,
+     "proj_conditional": 2.956
+    },
+    "carries": {
+     "p_plays": 0.56209,
+     "proj_P0": 0.4379,
+     "worlds_zero_share": 0.971,
+     "gap_worlds_minus_proj_P0": 0.5331,
+     "mean_worlds": 0.051,
+     "proj_unconditional": 0.046,
+     "proj_conditional": 0.081
+    },
+    "pass_attempts": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 1.0,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.0,
+     "proj_conditional": 0.0
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 0.489,
+      "carries": 0.9745,
+      "pass_attempts": 1.0
+     },
+     "mean": {
+      "targets": 1.627,
+      "carries": 0.045,
+      "pass_attempts": 0.0
+     },
+     "zero_dk_share": 0.48,
+     "mean_dk": 2.264
+    },
+    "ungated_mean_dk_worlds": 2.422
+   },
+   {
+    "player": "Oscar Delp|NO",
+    "role": "TE2",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 1.443,
+    "dk_points_if_plays": 2.4093,
+    "zero_dk_share_worlds": 0.4135,
+    "targets": {
+     "p_plays": 0.57624,
+     "proj_P0": 0.4238,
+     "worlds_zero_share": 0.431,
+     "gap_worlds_minus_proj_P0": 0.0072,
+     "mean_worlds": 0.914,
+     "proj_unconditional": 0.916,
+     "proj_conditional": 1.529
+    },
+    "carries": {
+     "p_plays": 0.57624,
+     "proj_P0": 0.4238,
+     "worlds_zero_share": 0.9915,
+     "gap_worlds_minus_proj_P0": 0.5677,
+     "mean_worlds": 0.013,
+     "proj_unconditional": 0.016,
+     "proj_conditional": 0.028
+    },
+    "pass_attempts": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 1.0,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.002,
+     "proj_conditional": 0.002
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 0.5685,
+      "carries": 0.988,
+      "pass_attempts": 1.0
+     },
+     "mean": {
+      "targets": 0.873,
+      "carries": 0.017,
+      "pass_attempts": 0.0
+     },
+     "zero_dk_share": 0.56,
+     "mean_dk": 1.383
+    },
+    "ungated_mean_dk_worlds": 1.471
+   },
+   {
+    "player": "Spencer Rattler|NO",
+    "role": "QB2",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 0.0948,
+    "dk_points_if_plays": 6.219,
+    "zero_dk_share_worlds": 0.8435,
+    "targets": {
+     "p_plays": 0.13789,
+     "proj_P0": 0.8621,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 0.1379,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.028,
+     "proj_conditional": 0.202
+    },
+    "carries": {
+     "p_plays": 0.13789,
+     "proj_P0": 0.8621,
+     "worlds_zero_share": 0.9495,
+     "gap_worlds_minus_proj_P0": 0.0874,
+     "mean_worlds": 0.087,
+     "proj_unconditional": 0.078,
+     "proj_conditional": 0.552
+    },
+    "pass_attempts": {
+     "p_plays": 0.13789,
+     "proj_P0": 0.8621,
+     "worlds_zero_share": 0.89,
+     "gap_worlds_minus_proj_P0": 0.0279,
+     "mean_worlds": 0.121,
+     "proj_unconditional": 0.114,
+     "proj_conditional": 0.809
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 1.0,
+      "carries": 0.963,
+      "pass_attempts": 0.933
+     },
+     "mean": {
+      "targets": 0.0,
+      "carries": 0.07,
+      "pass_attempts": 0.11
+     },
+     "zero_dk_share": 0.9105,
+     "mean_dk": 0.101
+    },
+    "ungated_mean_dk_worlds": 0.099
+   },
+   {
+    "player": "Treyton Welch|NO",
+    "role": "TE3",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 0.3216,
+    "dk_points_if_plays": 2.7359,
+    "zero_dk_share_worlds": 0.8275,
+    "targets": {
+     "p_plays": 0.11517,
+     "proj_P0": 0.8848,
+     "worlds_zero_share": 0.8385,
+     "gap_worlds_minus_proj_P0": -0.0463,
+     "mean_worlds": 0.195,
+     "proj_unconditional": 0.197,
+     "proj_conditional": 1.676
+    },
+    "carries": {
+     "p_plays": 0.11517,
+     "proj_P0": 0.8848,
+     "worlds_zero_share": 0.9965,
+     "gap_worlds_minus_proj_P0": 0.1117,
+     "mean_worlds": 0.005,
+     "proj_unconditional": 0.005,
+     "proj_conditional": 0.043
+    },
+    "pass_attempts": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 1.0,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.002,
+     "proj_conditional": 0.002
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 0.9175,
+      "carries": 0.9955,
+      "pass_attempts": 1.0
+     },
+     "mean": {
+      "targets": 0.172,
+      "carries": 0.009,
+      "pass_attempts": 0.0
+     },
+     "zero_dk_share": 0.9095,
+     "mean_dk": 0.303
+    },
+    "ungated_mean_dk_worlds": 0.315
+   },
+   {
+    "player": "Tua Tagovailoa|ATL",
+    "role": "QB2",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 0.0529,
+    "dk_points_if_plays": 5.305,
+    "zero_dk_share_worlds": 0.8965,
+    "targets": {
+     "p_plays": 0.13789,
+     "proj_P0": 0.8621,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 0.1379,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.0,
+     "proj_conditional": 0.0
+    },
+    "carries": {
+     "p_plays": 0.13789,
+     "proj_P0": 0.8621,
+     "worlds_zero_share": 0.9685,
+     "gap_worlds_minus_proj_P0": 0.1064,
+     "mean_worlds": 0.058,
+     "proj_unconditional": 0.045,
+     "proj_conditional": 0.321
+    },
+    "pass_attempts": {
+     "p_plays": 0.13789,
+     "proj_P0": 0.8621,
+     "worlds_zero_share": 0.9285,
+     "gap_worlds_minus_proj_P0": 0.0664,
+     "mean_worlds": 0.09,
+     "proj_unconditional": 0.086,
+     "proj_conditional": 0.617
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 1.0,
+      "carries": 0.9795,
+      "pass_attempts": 0.937
+     },
+     "mean": {
+      "targets": 0.0,
+      "carries": 0.037,
+      "pass_attempts": 0.091
+     },
+     "zero_dk_share": 0.923,
+     "mean_dk": 0.057
+    },
+    "ungated_mean_dk_worlds": 0.058
+   },
+   {
+    "player": "Tyler Shough|NO",
+    "role": "QB1",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 21.5792,
+    "dk_points_if_plays": 21.5787,
+    "zero_dk_share_worlds": 0.0,
+    "targets": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 1.0,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.007,
+     "proj_conditional": 0.007
+    },
+    "carries": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 0.0405,
+     "gap_worlds_minus_proj_P0": 0.0405,
+     "mean_worlds": 5.279,
+     "proj_unconditional": 5.203,
+     "proj_conditional": 5.186
+    },
+    "pass_attempts": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 0.0,
+     "gap_worlds_minus_proj_P0": 0.0,
+     "mean_worlds": 41.472,
+     "proj_unconditional": 41.669,
+     "proj_conditional": 41.669
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 1.0,
+      "carries": 0.046,
+      "pass_attempts": 0.0
+     },
+     "mean": {
+      "targets": 0.0,
+      "carries": 5.519,
+      "pass_attempts": 41.433
+     },
+     "zero_dk_share": 0.0,
+     "mean_dk": 22.601
+    },
+    "ungated_mean_dk_worlds": 22.458
+   },
+   {
+    "player": "Zachariah Branch|ATL",
+    "role": "WR4",
+    "availability": "UNKNOWN_ACTIVE_STATE",
+    "dk_points_projection": 0.7799,
+    "dk_points_if_plays": 2.8796,
+    "zero_dk_share_worlds": 0.6235,
+    "targets": {
+     "p_plays": 0.25831,
+     "proj_P0": 0.7417,
+     "worlds_zero_share": 0.638,
+     "gap_worlds_minus_proj_P0": -0.1037,
+     "mean_worlds": 0.492,
+     "proj_unconditional": 0.48,
+     "proj_conditional": 1.769
+    },
+    "carries": {
+     "p_plays": 0.25831,
+     "proj_P0": 0.7417,
+     "worlds_zero_share": 0.99,
+     "gap_worlds_minus_proj_P0": 0.2483,
+     "mean_worlds": 0.019,
+     "proj_unconditional": 0.016,
+     "proj_conditional": 0.063
+    },
+    "pass_attempts": {
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_zero_share": 1.0,
+     "gap_worlds_minus_proj_P0": 1.0,
+     "mean_worlds": 0.0,
+     "proj_unconditional": 0.0,
+     "proj_conditional": 0.0
+    },
+    "gated": {
+     "zero_share": {
+      "targets": 0.7895,
+      "carries": 0.986,
+      "pass_attempts": 1.0
+     },
+     "mean": {
+      "targets": 0.48,
+      "carries": 0.02,
+      "pass_attempts": 0.0
+     },
+     "zero_dk_share": 0.7865,
+     "mean_dk": 0.738
+    },
+    "ungated_mean_dk_worlds": 0.747
+   }
+  ],
+  "resimulation": {
+   "reproduced_frozen_counts": true,
+   "mismatched_series": [],
+   "reproduced_frozen_dk_draws": true,
+   "mismatched_dk_players": [],
+   "REPRODUCTION_MEANING": "the frozen projection pushed through the production simulate_game_centred with the frozen seed and n_sims reproduces every per-world count in the frozen WORLDS.npz (pass attempts, carries, targets, receptions, TDs) exactly; the spec is the production spec",
+   "gated_seed": 20261005,
+   "gate_counts": {
+    "targets_closed_player_worlds": 90408,
+    "targets_gated_player_worlds": 144000,
+    "carries_closed_player_worlds": 90408,
+    "carries_gated_player_worlds": 144000,
+    "pass_attempts_closed_player_worlds": 13850,
+    "pass_attempts_gated_player_worlds": 16000
+   },
+   "gated_unallocated_fraction": {
+    "pass_attempts": 0.0003,
+    "targets": 0.00065,
+    "rush_attempts": 0.0
+   },
+   "ungated_unallocated_fraction": {
+    "pass_attempts": 0.00033,
+    "targets": 0.00052,
+    "rush_attempts": 0.0
+   },
+   "gated_volume_centre_all_within_tol": true,
+   "gated_conservation_per_world": {
+    "NO": {
+     "max_abs_targets_minus_club": 2.0,
+     "max_abs_carries_minus_club": 0.0,
+     "max_abs_pass_att_minus_club": 2.0,
+     "NOTE": "differences of a unit are the ghost bucket (pool shares sum below 1); see unallocated"
+    },
+    "ATL": {
+     "max_abs_targets_minus_club": 2.0,
+     "max_abs_carries_minus_club": 0.0,
+     "max_abs_pass_att_minus_club": 2.0,
+     "NOTE": "differences of a unit are the ghost bucket (pool shares sum below 1); see unallocated"
+    }
+   },
+   "seconds": 6.4,
+   "WRITTEN_TO_NFL_DFS": false
+  },
+  "by_role": {
+   "QB1": [
+    {
+     "player": "Michael Penix Jr.|ATL",
+     "field": "pass_attempts",
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_P0": 0.0,
+     "gap": 0.0,
+     "worlds_P0_dk": 0.0,
+     "mean_worlds": 31.42,
+     "proj_conditional": 31.387,
+     "gated_P0": 0.0,
+     "gated_P0_dk": 0.0,
+     "mean_dk_ungated_vs_gated": [
+      15.328,
+      15.19
+     ]
+    },
+    {
+     "player": "Tyler Shough|NO",
+     "field": "pass_attempts",
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_P0": 0.0,
+     "gap": 0.0,
+     "worlds_P0_dk": 0.0,
+     "mean_worlds": 41.472,
+     "proj_conditional": 41.669,
+     "gated_P0": 0.0,
+     "gated_P0_dk": 0.0,
+     "mean_dk_ungated_vs_gated": [
+      22.458,
+      22.601
+     ]
+    }
+   ],
+   "QB2": [
+    {
+     "player": "Spencer Rattler|NO",
+     "field": "pass_attempts",
+     "p_plays": 0.13789,
+     "proj_P0": 0.8621,
+     "worlds_P0": 0.89,
+     "gap": 0.0279,
+     "worlds_P0_dk": 0.8435,
+     "mean_worlds": 0.121,
+     "proj_conditional": 0.809,
+     "gated_P0": 0.933,
+     "gated_P0_dk": 0.9105,
+     "mean_dk_ungated_vs_gated": [
+      0.099,
+      0.101
+     ]
+    },
+    {
+     "player": "Tua Tagovailoa|ATL",
+     "field": "pass_attempts",
+     "p_plays": 0.13789,
+     "proj_P0": 0.8621,
+     "worlds_P0": 0.9285,
+     "gap": 0.0664,
+     "worlds_P0_dk": 0.8965,
+     "mean_worlds": 0.09,
+     "proj_conditional": 0.617,
+     "gated_P0": 0.937,
+     "gated_P0_dk": 0.923,
+     "mean_dk_ungated_vs_gated": [
+      0.058,
+      0.057
+     ]
+    }
+   ],
+   "RB1": [
+    {
+     "player": "Alvin Kamara|NO",
+     "field": "carries",
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_P0": 0.0,
+     "gap": 0.0,
+     "worlds_P0_dk": 0.0,
+     "mean_worlds": 12.409,
+     "proj_conditional": 12.374,
+     "targets": {
+      "p_plays": 1.0,
+      "worlds_P0": 0.0055
+     },
+     "gated_P0": 0.001,
+     "gated_P0_dk": 0.0,
+     "mean_dk_ungated_vs_gated": [
+      13.662,
+      14.113
+     ]
+    },
+    {
+     "player": "Bijan Robinson|ATL",
+     "field": "carries",
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_P0": 0.0,
+     "gap": 0.0,
+     "worlds_P0_dk": 0.0,
+     "mean_worlds": 20.277,
+     "proj_conditional": 20.517,
+     "targets": {
+      "p_plays": 1.0,
+      "worlds_P0": 0.002
+     },
+     "gated_P0": 0.0,
+     "gated_P0_dk": 0.0,
+     "mean_dk_ungated_vs_gated": [
+      26.011,
+      26.491
+     ]
+    }
+   ],
+   "RB2": [
+    {
+     "player": "Brian Robinson Jr.|ATL",
+     "field": "carries",
+     "p_plays": 0.64523,
+     "proj_P0": 0.3548,
+     "worlds_P0": 0.0145,
+     "gap": -0.3403,
+     "worlds_P0_dk": 0.007,
+     "mean_worlds": 6.871,
+     "proj_conditional": 9.704,
+     "targets": {
+      "p_plays": 0.64523,
+      "worlds_P0": 0.527
+     },
+     "gated_P0": 0.3485,
+     "gated_P0_dk": 0.346,
+     "mean_dk_ungated_vs_gated": [
+      4.653,
+      4.52
+     ]
+    },
+    {
+     "player": "Kendre Miller|NO",
+     "field": "carries",
+     "p_plays": 0.64523,
+     "proj_P0": 0.3548,
+     "worlds_P0": 0.037,
+     "gap": -0.3178,
+     "worlds_P0_dk": 0.013,
+     "mean_worlds": 5.222,
+     "proj_conditional": 7.099,
+     "targets": {
+      "p_plays": 0.64523,
+      "worlds_P0": 0.3865
+     },
+     "gated_P0": 0.3665,
+     "gated_P0_dk": 0.36,
+     "mean_dk_ungated_vs_gated": [
+      3.752,
+      3.569
+     ]
+    }
+   ],
+   "RB3": [
+    {
+     "player": "CJ Donaldson|NO",
+     "field": "carries",
+     "p_plays": 0.23029,
+     "proj_P0": 0.7697,
+     "worlds_P0": 0.67,
+     "gap": -0.0997,
+     "worlds_P0_dk": 0.5165,
+     "mean_worlds": 0.618,
+     "proj_conditional": 2.596,
+     "targets": {
+      "p_plays": 0.23029,
+      "worlds_P0": 0.798
+     },
+     "gated_P0": 0.8035,
+     "gated_P0_dk": 0.7755,
+     "mean_dk_ungated_vs_gated": [
+      0.52,
+      0.517
+     ]
+    }
+   ],
+   "TE1": [
+    {
+     "player": "Juwan Johnson|NO",
+     "field": "targets",
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_P0": 0.0005,
+     "gap": 0.0005,
+     "worlds_P0_dk": 0.0,
+     "mean_worlds": 7.489,
+     "proj_conditional": 7.473,
+     "gated_P0": 0.001,
+     "gated_P0_dk": 0.0,
+     "mean_dk_ungated_vs_gated": [
+      16.166,
+      15.856
+     ]
+    },
+    {
+     "player": "Kyle Pitts Sr.|ATL",
+     "field": "targets",
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_P0": 0.024,
+     "gap": 0.024,
+     "worlds_P0_dk": 0.0205,
+     "mean_worlds": 4.347,
+     "proj_conditional": 4.335,
+     "gated_P0": 0.0275,
+     "gated_P0_dk": 0.0245,
+     "mean_dk_ungated_vs_gated": [
+      5.13,
+      5.203
+     ]
+    }
+   ],
+   "TE2": [
+    {
+     "player": "Austin Hooper|ATL",
+     "field": "targets",
+     "p_plays": 0.57624,
+     "proj_P0": 0.4238,
+     "worlds_P0": 0.178,
+     "gap": -0.2458,
+     "worlds_P0_dk": 0.123,
+     "mean_worlds": 1.911,
+     "proj_conditional": 3.148,
+     "gated_P0": 0.4385,
+     "gated_P0_dk": 0.419,
+     "mean_dk_ungated_vs_gated": [
+      3.644,
+      3.617
+     ]
+    },
+    {
+     "player": "Oscar Delp|NO",
+     "field": "targets",
+     "p_plays": 0.57624,
+     "proj_P0": 0.4238,
+     "worlds_P0": 0.431,
+     "gap": 0.0072,
+     "worlds_P0_dk": 0.4135,
+     "mean_worlds": 0.914,
+     "proj_conditional": 1.529,
+     "gated_P0": 0.5685,
+     "gated_P0_dk": 0.56,
+     "mean_dk_ungated_vs_gated": [
+      1.471,
+      1.383
+     ]
+    }
+   ],
+   "TE3": [
+    {
+     "player": "Charlie Woerner|ATL",
+     "field": "targets",
+     "p_plays": 0.11517,
+     "proj_P0": 0.8848,
+     "worlds_P0": 0.834,
+     "gap": -0.0508,
+     "worlds_P0_dk": 0.8175,
+     "mean_worlds": 0.196,
+     "proj_conditional": 1.625,
+     "gated_P0": 0.914,
+     "gated_P0_dk": 0.908,
+     "mean_dk_ungated_vs_gated": [
+      0.386,
+      0.392
+     ]
+    },
+    {
+     "player": "Treyton Welch|NO",
+     "field": "targets",
+     "p_plays": 0.11517,
+     "proj_P0": 0.8848,
+     "worlds_P0": 0.8385,
+     "gap": -0.0463,
+     "worlds_P0_dk": 0.8275,
+     "mean_worlds": 0.195,
+     "proj_conditional": 1.676,
+     "gated_P0": 0.9175,
+     "gated_P0_dk": 0.9095,
+     "mean_dk_ungated_vs_gated": [
+      0.315,
+      0.303
+     ]
+    }
+   ],
+   "TE4": [
+    {
+     "player": "Nick Muse|ATL",
+     "field": "targets",
+     "p_plays": 0.00803,
+     "proj_P0": 0.992,
+     "worlds_P0": 0.988,
+     "gap": -0.004,
+     "worlds_P0_dk": 0.985,
+     "mean_worlds": 0.013,
+     "proj_conditional": 1.152,
+     "gated_P0": 0.993,
+     "gated_P0_dk": 0.9915,
+     "mean_dk_ungated_vs_gated": [
+      0.021,
+      0.016
+     ]
+    }
+   ],
+   "WR1": [
+    {
+     "player": "Chris Olave|NO",
+     "field": "targets",
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_P0": 0.0,
+     "gap": 0.0,
+     "worlds_P0_dk": 0.0,
+     "mean_worlds": 12.514,
+     "proj_conditional": 12.563,
+     "gated_P0": 0.0005,
+     "gated_P0_dk": 0.0,
+     "mean_dk_ungated_vs_gated": [
+      25.666,
+      26.324
+     ]
+    },
+    {
+     "player": "Drake London|ATL",
+     "field": "targets",
+     "p_plays": 1.0,
+     "proj_P0": 0.0,
+     "worlds_P0": 0.0,
+     "gap": 0.0,
+     "worlds_P0_dk": 0.0,
+     "mean_worlds": 8.414,
+     "proj_conditional": 8.491,
+     "gated_P0": 0.0,
+     "gated_P0_dk": 0.0,
+     "mean_dk_ungated_vs_gated": [
+      20.004,
+      20.266
+     ]
+    }
+   ],
+   "WR2": [
+    {
+     "player": "Devaughn Vele|NO",
+     "field": "targets",
+     "p_plays": 0.85556,
+     "proj_P0": 0.1444,
+     "worlds_P0": 0.008,
+     "gap": -0.1364,
+     "worlds_P0_dk": 0.003,
+     "mean_worlds": 5.98,
+     "proj_conditional": 6.903,
+     "gated_P0": 0.1545,
+     "gated_P0_dk": 0.1535,
+     "mean_dk_ungated_vs_gated": [
+      11.02,
+      10.886
+     ]
+    },
+    {
+     "player": "Jahan Dotson|ATL",
+     "field": "targets",
+     "p_plays": 0.85556,
+     "proj_P0": 0.1444,
+     "worlds_P0": 0.0525,
+     "gap": -0.0919,
+     "worlds_P0_dk": 0.045,
+     "mean_worlds": 3.302,
+     "proj_conditional": 3.744,
+     "gated_P0": 0.169,
+     "gated_P0_dk": 0.1615,
+     "mean_dk_ungated_vs_gated": [
+      4.089,
+      4.025
+     ]
+    }
+   ],
+   "WR3": [
+    {
+     "player": "Bryce Lance|NO",
+     "field": "targets",
+     "p_plays": 0.56209,
+     "proj_P0": 0.4379,
+     "worlds_P0": 0.2065,
+     "gap": -0.2314,
+     "worlds_P0_dk": 0.181,
+     "mean_worlds": 1.788,
+     "proj_conditional": 3.179,
+     "gated_P0": 0.4675,
+     "gated_P0_dk": 0.4635,
+     "mean_dk_ungated_vs_gated": [
+      2.699,
+      2.693
+     ]
+    },
+    {
+     "player": "Olamide Zaccheaus|ATL",
+     "field": "targets",
+     "p_plays": 0.56209,
+     "proj_P0": 0.4379,
+     "worlds_P0": 0.216,
+     "gap": -0.2219,
+     "worlds_P0_dk": 0.1885,
+     "mean_worlds": 1.766,
+     "proj_conditional": 2.956,
+     "gated_P0": 0.489,
+     "gated_P0_dk": 0.48,
+     "mean_dk_ungated_vs_gated": [
+      2.422,
+      2.264
+     ]
+    }
+   ],
+   "WR4": [
+    {
+     "player": "Kevin Austin Jr.|NO",
+     "field": "targets",
+     "p_plays": 0.25831,
+     "proj_P0": 0.7417,
+     "worlds_P0": 0.649,
+     "gap": -0.0927,
+     "worlds_P0_dk": 0.6155,
+     "mean_worlds": 0.475,
+     "proj_conditional": 1.752,
+     "gated_P0": 0.809,
+     "gated_P0_dk": 0.7945,
+     "mean_dk_ungated_vs_gated": [
+      0.751,
+      0.645
+     ]
+    },
+    {
+     "player": "Zachariah Branch|ATL",
+     "field": "targets",
+     "p_plays": 0.25831,
+     "proj_P0": 0.7417,
+     "worlds_P0": 0.638,
+     "gap": -0.1037,
+     "worlds_P0_dk": 0.6235,
+     "mean_worlds": 0.492,
+     "proj_conditional": 1.769,
+     "gated_P0": 0.7895,
+     "gated_P0_dk": 0.7865,
+     "mean_dk_ungated_vs_gated": [
+      0.747,
+      0.738
+     ]
+    }
+   ],
+   "WR5": [
+    {
+     "player": "Barion Brown|NO",
+     "field": "targets",
+     "p_plays": 0.07566,
+     "proj_P0": 0.9243,
+     "worlds_P0": 0.9035,
+     "gap": -0.0208,
+     "worlds_P0_dk": 0.8705,
+     "mean_worlds": 0.111,
+     "proj_conditional": 1.323,
+     "gated_P0": 0.943,
+     "gated_P0_dk": 0.9365,
+     "mean_dk_ungated_vs_gated": [
+      0.202,
+      0.192
+     ]
+    },
+    {
+     "player": "Chris Blair|ATL",
+     "field": "targets",
+     "p_plays": 0.07566,
+     "proj_P0": 0.9243,
+     "worlds_P0": 0.8965,
+     "gap": -0.0278,
+     "worlds_P0_dk": 0.8895,
+     "mean_worlds": 0.122,
+     "proj_conditional": 1.499,
+     "gated_P0": 0.9425,
+     "gated_P0_dk": 0.9395,
+     "mean_dk_ungated_vs_gated": [
+      0.154,
+      0.131
+     ]
+    }
+   ]
+  }
+ },
+ "HELD_OUT_2025": {
+  "n_games_simulated": 218,
+  "n_sims_per_game_per_arm": 1000,
+  "refused": {
+   "CURRENT:VOLUME_CENTRE_NOT_RECONCILED": 4,
+   "CANDIDATE:VOLUME_CENTRE_NOT_RECONCILED": 2
+  },
+  "gate_counts": {
+   "CURRENT_GATED:targets_closed_player_worlds": 10620308,
+   "CURRENT_GATED:targets_gated_player_worlds": 15676000,
+   "CURRENT_GATED:carries_closed_player_worlds": 10621402,
+   "CURRENT_GATED:carries_gated_player_worlds": 15676000,
+   "CURRENT_GATED:pass_attempts_closed_player_worlds": 410517,
+   "CURRENT_GATED:pass_attempts_gated_player_worlds": 468000,
+   "CANDIDATE_GATED:targets_closed_player_worlds": 8570454,
+   "CANDIDATE_GATED:targets_gated_player_worlds": 19416000,
+   "CANDIDATE_GATED:carries_closed_player_worlds": 9826489,
+   "CANDIDATE_GATED:carries_gated_player_worlds": 17060000,
+   "CANDIDATE_GATED:pass_attempts_closed_player_worlds": 410517,
+   "CANDIDATE_GATED:pass_attempts_gated_player_worlds": 468000
+  },
+  "gate_counts_MEANING": "player-worlds, summed over the 3 centring calibration passes and the final pass of every game",
+  "configuration": {
+   "simulator": "simulate_game_centred (volume_centre=PROJECTION, n_calib=n_sims), CLUB_TOTAL_IMPOSED, DIRICHLET -- showdown_slate_run's configuration",
+   "scoring_centre": "nfl/sim/football_points.centre_for_game (FOOTBALL_ONLY arm residuals)",
+   "shares": "nfl/tools/showdown_draws._shares on the allocator's unconditional volumes",
+   "fit": "depth table, group split, priors and SC-APPEAR-1 rates through 2024"
+  },
+  "n_units": 7087,
+  "n_weeks": 15,
+  "weeks": [
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18
+  ],
+  "n_club_weeks": 436,
+  "cohorts": {
+   "ALL_RB_WR_TE": {
+    "n_units": 6534,
+    "n_players": 546,
+    "n_weeks": 15,
+    "n_club_weeks": 436,
+    "observed_P0": 0.3145,
+    "arms": {
+     "PROJ_CURRENT": {
+      "mean_P0": 0.4951,
+      "P0_minus_observed": {
+       "pooled": 0.1806,
+       "mean_of_block_means": 0.18053,
+       "se": 0.00379,
+       "n_blocks": 15,
+       "z": 47.57
+      },
+      "brier": 0.25639,
+      "log_score": 0.8959
+     },
+     "PROJ_CANDIDATE": {
+      "mean_P0": 0.3863,
+      "P0_minus_observed": {
+       "pooled": 0.0718,
+       "mean_of_block_means": 0.07141,
+       "se": 0.00419,
+       "n_blocks": 15,
+       "z": 17.06
+      },
+      "brier": 0.18593,
+      "log_score": 0.68452
+     },
+     "DRAW_CURRENT": {
+      "mean_P0": 0.3747,
+      "P0_minus_observed": {
+       "pooled": 0.0602,
+       "mean_of_block_means": 0.06024,
+       "se": 0.00365,
+       "n_blocks": 15,
+       "z": 16.48
+      },
+      "brier": 0.2128,
+      "log_score": 0.68431,
+      "unconditional_crps": 1.6843,
+      "mean_draw_minus_actual": -0.0609,
+      "positive_count": {
+       "n_units_actual_gt0": 4479,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -0.1791,
+       "conditional_abs_error": 2.5488,
+       "conditional_crps": 1.8913
+      }
+     },
+     "DRAW_CANDIDATE": {
+      "mean_P0": 0.3276,
+      "P0_minus_observed": {
+       "pooled": 0.0131,
+       "mean_of_block_means": 0.01263,
+       "se": 0.0042,
+       "n_blocks": 15,
+       "z": 3.01
+      },
+      "brier": 0.18056,
+      "log_score": 0.58731,
+      "unconditional_crps": 1.3842,
+      "mean_draw_minus_actual": -0.0175,
+      "positive_count": {
+       "n_units_actual_gt0": 4479,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -0.183,
+       "conditional_abs_error": 2.2063,
+       "conditional_crps": 1.5676
+      }
+     },
+     "DRAW_CURRENT_GATED": {
+      "mean_P0": 0.5216,
+      "P0_minus_observed": {
+       "pooled": 0.2071,
+       "mean_of_block_means": 0.20694,
+       "se": 0.00385,
+       "n_blocks": 15,
+       "z": 53.77
+      },
+      "brier": 0.25944,
+      "log_score": 0.84422,
+      "unconditional_crps": 1.743,
+      "mean_draw_minus_actual": -0.0752,
+      "positive_count": {
+       "n_units_actual_gt0": 4479,
+       "n_units_no_positive_draw": 1,
+       "conditional_mean_minus_actual": 1.1091,
+       "conditional_abs_error": 2.6089,
+       "conditional_crps": 1.7295
+      }
+     },
+     "DRAW_CANDIDATE_GATED": {
+      "mean_P0": 0.4284,
+      "P0_minus_observed": {
+       "pooled": 0.1139,
+       "mean_of_block_means": 0.11355,
+       "se": 0.0041,
+       "n_blocks": 15,
+       "z": 27.71
+      },
+      "brier": 0.18563,
+      "log_score": 0.63269,
+      "unconditional_crps": 1.3826,
+      "mean_draw_minus_actual": -0.0342,
+      "positive_count": {
+       "n_units_actual_gt0": 4479,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.5195,
+       "conditional_abs_error": 2.3457,
+       "conditional_crps": 1.5769
+      }
+     }
+    }
+   },
+   "QUALIFYING_RB_WR_TE": {
+    "n_units": 2855,
+    "n_players": 337,
+    "n_weeks": 15,
+    "n_club_weeks": 436,
+    "observed_P0": 0.0655,
+    "arms": {
+     "PROJ_CURRENT": {
+      "mean_P0": 0.3217,
+      "P0_minus_observed": {
+       "pooled": 0.2562,
+       "mean_of_block_means": 0.25754,
+       "se": 0.00686,
+       "n_blocks": 15,
+       "z": 37.53
+      },
+      "brier": 0.22196,
+      "log_score": 0.7218
+     },
+     "PROJ_CANDIDATE": {
+      "mean_P0": 0.0727,
+      "P0_minus_observed": {
+       "pooled": 0.0072,
+       "mean_of_block_means": 0.0075,
+       "se": 0.00337,
+       "n_blocks": 15,
+       "z": 2.22
+      },
+      "brier": 0.06069,
+      "log_score": 0.23804
+     },
+     "DRAW_CURRENT": {
+      "mean_P0": 0.1871,
+      "P0_minus_observed": {
+       "pooled": 0.1216,
+       "mean_of_block_means": 0.12329,
+       "se": 0.00653,
+       "n_blocks": 15,
+       "z": 18.89
+      },
+      "brier": 0.12489,
+      "log_score": 0.39039,
+      "unconditional_crps": 2.3878,
+      "mean_draw_minus_actual": -0.4641,
+      "positive_count": {
+       "n_units_actual_gt0": 2668,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -0.3184,
+       "conditional_abs_error": 3.0557,
+       "conditional_crps": 2.2906
+      }
+     },
+     "DRAW_CANDIDATE": {
+      "mean_P0": 0.0523,
+      "P0_minus_observed": {
+       "pooled": -0.0132,
+       "mean_of_block_means": -0.0127,
+       "se": 0.00346,
+       "n_blocks": 15,
+       "z": -3.67
+      },
+      "brier": 0.05472,
+      "log_score": 0.19553,
+      "unconditional_crps": 1.8016,
+      "mean_draw_minus_actual": -0.073,
+      "positive_count": {
+       "n_units_actual_gt0": 2668,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -0.1289,
+       "conditional_abs_error": 2.5713,
+       "conditional_crps": 1.7983
+      }
+     },
+     "DRAW_CURRENT_GATED": {
+      "mean_P0": 0.3359,
+      "P0_minus_observed": {
+       "pooled": 0.2704,
+       "mean_of_block_means": 0.27169,
+       "se": 0.00667,
+       "n_blocks": 15,
+       "z": 40.7
+      },
+      "brier": 0.22708,
+      "log_score": 0.7024,
+      "unconditional_crps": 2.5382,
+      "mean_draw_minus_actual": -0.4638,
+      "positive_count": {
+       "n_units_actual_gt0": 2668,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.9881,
+       "conditional_abs_error": 2.9019,
+       "conditional_crps": 1.9633
+      }
+     },
+     "DRAW_CANDIDATE_GATED": {
+      "mean_P0": 0.1132,
+      "P0_minus_observed": {
+       "pooled": 0.0477,
+       "mean_of_block_means": 0.04823,
+       "se": 0.00333,
+       "n_blocks": 15,
+       "z": 14.47
+      },
+      "brier": 0.05781,
+      "log_score": 0.22313,
+      "unconditional_crps": 1.8108,
+      "mean_draw_minus_actual": -0.0733,
+      "positive_count": {
+       "n_units_actual_gt0": 2668,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.2925,
+       "conditional_abs_error": 2.6321,
+       "conditional_crps": 1.8103
+      }
+     }
+    }
+   },
+   "NON_QUALIFYING_RB_WR_TE": {
+    "n_units": 3679,
+    "n_players": 474,
+    "n_weeks": 15,
+    "n_club_weeks": 436,
+    "observed_P0": 0.5077,
+    "arms": {
+     "PROJ_CURRENT": {
+      "mean_P0": 0.6296,
+      "P0_minus_observed": {
+       "pooled": 0.1219,
+       "mean_of_block_means": 0.12101,
+       "se": 0.00636,
+       "n_blocks": 15,
+       "z": 19.01
+      },
+      "brier": 0.28311,
+      "log_score": 1.03101
+     },
+     "PROJ_CANDIDATE": {
+      "mean_P0": 0.6296,
+      "P0_minus_observed": {
+       "pooled": 0.1219,
+       "mean_of_block_means": 0.12101,
+       "se": 0.00636,
+       "n_blocks": 15,
+       "z": 19.01
+      },
+      "brier": 0.28311,
+      "log_score": 1.03101
+     },
+     "DRAW_CURRENT": {
+      "mean_P0": 0.5203,
+      "P0_minus_observed": {
+       "pooled": 0.0126,
+       "mean_of_block_means": 0.01141,
+       "se": 0.00677,
+       "n_blocks": 15,
+       "z": 1.68
+      },
+      "brier": 0.28102,
+      "log_score": 0.9124,
+      "unconditional_crps": 1.1383,
+      "mean_draw_minus_actual": 0.2521,
+      "positive_count": {
+       "n_units_actual_gt0": 1811,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.0261,
+       "conditional_abs_error": 1.802,
+       "conditional_crps": 1.303
+      }
+     },
+     "DRAW_CANDIDATE": {
+      "mean_P0": 0.5412,
+      "P0_minus_observed": {
+       "pooled": 0.0335,
+       "mean_of_block_means": 0.03228,
+       "se": 0.007,
+       "n_blocks": 15,
+       "z": 4.61
+      },
+      "brier": 0.27822,
+      "log_score": 0.89134,
+      "unconditional_crps": 1.0603,
+      "mean_draw_minus_actual": 0.0257,
+      "positive_count": {
+       "n_units_actual_gt0": 1811,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -0.2629,
+       "conditional_abs_error": 1.6686,
+       "conditional_crps": 1.2277
+      }
+     },
+     "DRAW_CURRENT_GATED": {
+      "mean_P0": 0.6657,
+      "P0_minus_observed": {
+       "pooled": 0.1579,
+       "mean_of_block_means": 0.15689,
+       "se": 0.00643,
+       "n_blocks": 15,
+       "z": 24.41
+      },
+      "brier": 0.28454,
+      "log_score": 0.95427,
+      "unconditional_crps": 1.1259,
+      "mean_draw_minus_actual": 0.2264,
+      "positive_count": {
+       "n_units_actual_gt0": 1811,
+       "n_units_no_positive_draw": 1,
+       "conditional_mean_minus_actual": 1.2873,
+       "conditional_abs_error": 2.1769,
+       "conditional_crps": 1.3848
+      }
+     },
+     "DRAW_CANDIDATE_GATED": {
+      "mean_P0": 0.673,
+      "P0_minus_observed": {
+       "pooled": 0.1653,
+       "mean_of_block_means": 0.16422,
+       "se": 0.00654,
+       "n_blocks": 15,
+       "z": 25.11
+      },
+      "brier": 0.28481,
+      "log_score": 0.95052,
+      "unconditional_crps": 1.0503,
+      "mean_draw_minus_actual": -0.0038,
+      "positive_count": {
+       "n_units_actual_gt0": 1811,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.8538,
+       "conditional_abs_error": 1.9237,
+       "conditional_crps": 1.2332
+      }
+     }
+    }
+   },
+   "RANK1_RB_WR_TE": {
+    "n_units": 1744,
+    "n_players": 189,
+    "n_weeks": 15,
+    "n_club_weeks": 436,
+    "observed_P0": 0.0814,
+    "arms": {
+     "PROJ_CURRENT": {
+      "mean_P0": 0.0055,
+      "P0_minus_observed": {
+       "pooled": -0.0759,
+       "mean_of_block_means": -0.07596,
+       "se": 0.00566,
+       "n_blocks": 15,
+       "z": -13.41
+      },
+      "brier": 0.08104,
+      "log_score": 0.6018
+     },
+     "PROJ_CANDIDATE": {
+      "mean_P0": 0.0609,
+      "P0_minus_observed": {
+       "pooled": -0.0205,
+       "mean_of_block_means": -0.02054,
+       "se": 0.00599,
+       "n_blocks": 15,
+       "z": -3.43
+      },
+      "brier": 0.082,
+      "log_score": 0.55629
+     },
+     "DRAW_CURRENT": {
+      "mean_P0": 0.0302,
+      "P0_minus_observed": {
+       "pooled": -0.0513,
+       "mean_of_block_means": -0.05133,
+       "se": 0.00569,
+       "n_blocks": 15,
+       "z": -9.02
+      },
+      "brier": 0.07022,
+      "log_score": 0.30739,
+      "unconditional_crps": 2.177,
+      "mean_draw_minus_actual": 1.8495,
+      "positive_count": {
+       "n_units_actual_gt0": 1602,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 1.6853,
+       "conditional_abs_error": 3.1079,
+       "conditional_crps": 2.0967
+      }
+     },
+     "DRAW_CANDIDATE": {
+      "mean_P0": 0.0431,
+      "P0_minus_observed": {
+       "pooled": -0.0384,
+       "mean_of_block_means": -0.03846,
+       "se": 0.0058,
+       "n_blocks": 15,
+       "z": -6.63
+      },
+      "brier": 0.06777,
+      "log_score": 0.26457,
+      "unconditional_crps": 1.8816,
+      "mean_draw_minus_actual": 0.5364,
+      "positive_count": {
+       "n_units_actual_gt0": 1602,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.367,
+       "conditional_abs_error": 2.6598,
+       "conditional_crps": 1.8353
+      }
+     },
+     "DRAW_CURRENT_GATED": {
+      "mean_P0": 0.033,
+      "P0_minus_observed": {
+       "pooled": -0.0484,
+       "mean_of_block_means": -0.04858,
+       "se": 0.0058,
+       "n_blocks": 15,
+       "z": -8.37
+      },
+      "brier": 0.07017,
+      "log_score": 0.29723,
+      "unconditional_crps": 2.2422,
+      "mean_draw_minus_actual": 2.1249,
+      "positive_count": {
+       "n_units_actual_gt0": 1602,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 1.9773,
+       "conditional_abs_error": 3.2686,
+       "conditional_crps": 2.1625
+      }
+     },
+     "DRAW_CANDIDATE_GATED": {
+      "mean_P0": 0.0961,
+      "P0_minus_observed": {
+       "pooled": 0.0147,
+       "mean_of_block_means": 0.01453,
+       "se": 0.00613,
+       "n_blocks": 15,
+       "z": 2.37
+      },
+      "brier": 0.07165,
+      "log_score": 0.30043,
+      "unconditional_crps": 1.9097,
+      "mean_draw_minus_actual": 0.5348,
+      "positive_count": {
+       "n_units_actual_gt0": 1602,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.8024,
+       "conditional_abs_error": 2.7627,
+       "conditional_crps": 1.873
+      }
+     }
+    }
+   },
+   "RANK2PLUS_RB_WR_TE": {
+    "n_units": 4790,
+    "n_players": 459,
+    "n_weeks": 15,
+    "n_club_weeks": 436,
+    "observed_P0": 0.3994,
+    "arms": {
+     "PROJ_CURRENT": {
+      "mean_P0": 0.6733,
+      "P0_minus_observed": {
+       "pooled": 0.274,
+       "mean_of_block_means": 0.27389,
+       "se": 0.00526,
+       "n_blocks": 15,
+       "z": 52.05
+      },
+      "brier": 0.32023,
+      "log_score": 1.00299
+     },
+     "PROJ_CANDIDATE": {
+      "mean_P0": 0.5048,
+      "P0_minus_observed": {
+       "pooled": 0.1054,
+       "mean_of_block_means": 0.1049,
+       "se": 0.00552,
+       "n_blocks": 15,
+       "z": 19.0
+      },
+      "brier": 0.22376,
+      "log_score": 0.73121
+     },
+     "DRAW_CURRENT": {
+      "mean_P0": 0.5002,
+      "P0_minus_observed": {
+       "pooled": 0.1008,
+       "mean_of_block_means": 0.10085,
+       "se": 0.00507,
+       "n_blocks": 15,
+       "z": 19.88
+      },
+      "brier": 0.26472,
+      "log_score": 0.82154,
+      "unconditional_crps": 1.5049,
+      "mean_draw_minus_actual": -0.7564,
+      "positive_count": {
+       "n_units_actual_gt0": 2877,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -1.2172,
+       "conditional_abs_error": 2.2375,
+       "conditional_crps": 1.777
+      }
+     },
+     "DRAW_CANDIDATE": {
+      "mean_P0": 0.4312,
+      "P0_minus_observed": {
+       "pooled": 0.0318,
+       "mean_of_block_means": 0.03124,
+       "se": 0.00559,
+       "n_blocks": 15,
+       "z": 5.59
+      },
+      "brier": 0.22163,
+      "log_score": 0.70482,
+      "unconditional_crps": 1.2031,
+      "mean_draw_minus_actual": -0.2191,
+      "positive_count": {
+       "n_units_actual_gt0": 2877,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -0.4893,
+       "conditional_abs_error": 1.9538,
+       "conditional_crps": 1.4185
+      }
+     },
+     "DRAW_CURRENT_GATED": {
+      "mean_P0": 0.6994,
+      "P0_minus_observed": {
+       "pooled": 0.3001,
+       "mean_of_block_means": 0.29996,
+       "se": 0.00524,
+       "n_blocks": 15,
+       "z": 57.28
+      },
+      "brier": 0.32835,
+      "log_score": 1.04337,
+      "unconditional_crps": 1.5613,
+      "mean_draw_minus_actual": -0.8762,
+      "positive_count": {
+       "n_units_actual_gt0": 2877,
+       "n_units_no_positive_draw": 1,
+       "conditional_mean_minus_actual": 0.6255,
+       "conditional_abs_error": 2.2413,
+       "conditional_crps": 1.4882
+      }
+     },
+     "DRAW_CANDIDATE_GATED": {
+      "mean_P0": 0.5494,
+      "P0_minus_observed": {
+       "pooled": 0.15,
+       "mean_of_block_means": 0.14961,
+       "se": 0.00534,
+       "n_blocks": 15,
+       "z": 28.03
+      },
+      "brier": 0.22712,
+      "log_score": 0.75367,
+      "unconditional_crps": 1.1907,
+      "mean_draw_minus_actual": -0.2413,
+      "positive_count": {
+       "n_units_actual_gt0": 2877,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.3619,
+       "conditional_abs_error": 2.1135,
+       "conditional_crps": 1.4121
+      }
+     }
+    }
+   },
+   "QB_RANK1_pass_attempts": {
+    "n_units": 436,
+    "n_players": 64,
+    "n_weeks": 15,
+    "n_club_weeks": 436,
+    "observed_P0": 0.0206,
+    "arms": {
+     "PROJ_CURRENT": {
+      "mean_P0": 0.0,
+      "P0_minus_observed": {
+       "pooled": -0.0206,
+       "mean_of_block_means": -0.02022,
+       "se": 0.00719,
+       "n_blocks": 15,
+       "z": -2.81
+      },
+      "brier": 0.02062,
+      "log_score": 0.15739
+     },
+     "PROJ_CANDIDATE": {
+      "mean_P0": 0.0,
+      "P0_minus_observed": {
+       "pooled": -0.0206,
+       "mean_of_block_means": -0.02022,
+       "se": 0.00719,
+       "n_blocks": 15,
+       "z": -2.81
+      },
+      "brier": 0.02062,
+      "log_score": 0.15739
+     },
+     "DRAW_CURRENT": {
+      "mean_P0": 0.0,
+      "P0_minus_observed": {
+       "pooled": -0.0206,
+       "mean_of_block_means": -0.0202,
+       "se": 0.00719,
+       "n_blocks": 15,
+       "z": -2.81
+      },
+      "brier": 0.02062,
+      "log_score": 0.15581,
+      "unconditional_crps": 5.816,
+      "mean_draw_minus_actual": 2.5354,
+      "positive_count": {
+       "n_units_actual_gt0": 427,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 2.0286,
+       "conditional_abs_error": 7.4796,
+       "conditional_crps": 5.4557
+      }
+     },
+     "DRAW_CANDIDATE": {
+      "mean_P0": 0.0,
+      "P0_minus_observed": {
+       "pooled": -0.0206,
+       "mean_of_block_means": -0.02021,
+       "se": 0.00719,
+       "n_blocks": 15,
+       "z": -2.81
+      },
+      "brier": 0.02062,
+      "log_score": 0.15581,
+      "unconditional_crps": 5.7995,
+      "mean_draw_minus_actual": 2.5365,
+      "positive_count": {
+       "n_units_actual_gt0": 427,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 2.0357,
+       "conditional_abs_error": 7.4731,
+       "conditional_crps": 5.4435
+      }
+     },
+     "DRAW_CURRENT_GATED": {
+      "mean_P0": 0.0003,
+      "P0_minus_observed": {
+       "pooled": -0.0203,
+       "mean_of_block_means": -0.01987,
+       "se": 0.00715,
+       "n_blocks": 15,
+       "z": -2.78
+      },
+      "brier": 0.02033,
+      "log_score": 0.13842,
+      "unconditional_crps": 6.1178,
+      "mean_draw_minus_actual": 3.0362,
+      "positive_count": {
+       "n_units_actual_gt0": 427,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 2.4178,
+       "conditional_abs_error": 7.7961,
+       "conditional_crps": 5.6869
+      }
+     },
+     "DRAW_CANDIDATE_GATED": {
+      "mean_P0": 0.0003,
+      "P0_minus_observed": {
+       "pooled": -0.0204,
+       "mean_of_block_means": -0.01994,
+       "se": 0.00715,
+       "n_blocks": 15,
+       "z": -2.79
+      },
+      "brier": 0.02039,
+      "log_score": 0.13925,
+      "unconditional_crps": 6.1117,
+      "mean_draw_minus_actual": 3.0558,
+      "positive_count": {
+       "n_units_actual_gt0": 427,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 2.4342,
+       "conditional_abs_error": 7.7709,
+       "conditional_crps": 5.6769
+      }
+     }
+    }
+   },
+   "QB_RANK2PLUS_pass_attempts": {
+    "n_units": 117,
+    "n_players": 48,
+    "n_weeks": 15,
+    "n_club_weeks": 115,
+    "observed_P0": 0.2735,
+    "arms": {
+     "PROJ_CURRENT": {
+      "mean_P0": 0.8773,
+      "P0_minus_observed": {
+       "pooled": 0.6038,
+       "mean_of_block_means": 0.5908,
+       "se": 0.0373,
+       "n_blocks": 15,
+       "z": 15.84
+      },
+      "brier": 0.56331,
+      "log_score": 1.56017
+     },
+     "PROJ_CANDIDATE": {
+      "mean_P0": 0.8773,
+      "P0_minus_observed": {
+       "pooled": 0.6038,
+       "mean_of_block_means": 0.5908,
+       "se": 0.0373,
+       "n_blocks": 15,
+       "z": 15.84
+      },
+      "brier": 0.56331,
+      "log_score": 1.56017
+     },
+     "DRAW_CURRENT": {
+      "mean_P0": 0.2332,
+      "P0_minus_observed": {
+       "pooled": -0.0403,
+       "mean_of_block_means": -0.0485,
+       "se": 0.03866,
+       "n_blocks": 15,
+       "z": -1.25
+      },
+      "brier": 0.22766,
+      "log_score": 0.69176,
+      "unconditional_crps": 7.9893,
+      "mean_draw_minus_actual": -7.1802,
+      "positive_count": {
+       "n_units_actual_gt0": 85,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -10.2511,
+       "conditional_abs_error": 11.1862,
+       "conditional_crps": 10.3404
+      }
+     },
+     "DRAW_CANDIDATE": {
+      "mean_P0": 0.2331,
+      "P0_minus_observed": {
+       "pooled": -0.0404,
+       "mean_of_block_means": -0.04827,
+       "se": 0.038,
+       "n_blocks": 15,
+       "z": -1.27
+      },
+      "brier": 0.22492,
+      "log_score": 0.6795,
+      "unconditional_crps": 7.9903,
+      "mean_draw_minus_actual": -7.1884,
+      "positive_count": {
+       "n_units_actual_gt0": 85,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -10.2529,
+       "conditional_abs_error": 11.1945,
+       "conditional_crps": 10.3546
+      }
+     },
+     "DRAW_CURRENT_GATED": {
+      "mean_P0": 0.8825,
+      "P0_minus_observed": {
+       "pooled": 0.6089,
+       "mean_of_block_means": 0.59587,
+       "se": 0.03725,
+       "n_blocks": 15,
+       "z": 16.0
+      },
+      "brier": 0.56672,
+      "log_score": 1.57957,
+      "unconditional_crps": 9.2576,
+      "mean_draw_minus_actual": -9.0785,
+      "positive_count": {
+       "n_units_actual_gt0": 85,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -0.7212,
+       "conditional_abs_error": 10.6652,
+       "conditional_crps": 8.5825
+      }
+     },
+     "DRAW_CANDIDATE_GATED": {
+      "mean_P0": 0.8826,
+      "P0_minus_observed": {
+       "pooled": 0.6091,
+       "mean_of_block_means": 0.59608,
+       "se": 0.03716,
+       "n_blocks": 15,
+       "z": 16.04
+      },
+      "brier": 0.56663,
+      "log_score": 1.57886,
+      "unconditional_crps": 9.2561,
+      "mean_draw_minus_actual": -9.08,
+      "positive_count": {
+       "n_units_actual_gt0": 85,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -0.7124,
+       "conditional_abs_error": 10.6551,
+       "conditional_crps": 8.5813
+      }
+     }
+    }
+   },
+   "RB1_carries": {
+    "n_units": 436,
+    "n_players": 59,
+    "n_weeks": 15,
+    "n_club_weeks": 436,
+    "observed_P0": 0.0459,
+    "arms": {
+     "PROJ_CURRENT": {
+      "mean_P0": 0.0,
+      "P0_minus_observed": {
+       "pooled": -0.0459,
+       "mean_of_block_means": -0.04598,
+       "se": 0.00783,
+       "n_blocks": 15,
+       "z": -5.87
+      },
+      "brier": 0.04583,
+      "log_score": 0.34914
+     },
+     "PROJ_CANDIDATE": {
+      "mean_P0": 0.0453,
+      "P0_minus_observed": {
+       "pooled": -0.0006,
+       "mean_of_block_means": -0.00069,
+       "se": 0.00819,
+       "n_blocks": 15,
+       "z": -0.08
+      },
+      "brier": 0.04711,
+      "log_score": 0.3404
+     },
+     "DRAW_CURRENT": {
+      "mean_P0": 0.0018,
+      "P0_minus_observed": {
+       "pooled": -0.0441,
+       "mean_of_block_means": -0.04422,
+       "se": 0.0078,
+       "n_blocks": 15,
+       "z": -5.67
+      },
+      "brier": 0.04513,
+      "log_score": 0.27312,
+      "unconditional_crps": 3.5108,
+      "mean_draw_minus_actual": 2.5995,
+      "positive_count": {
+       "n_units_actual_gt0": 416,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 2.2456,
+       "conditional_abs_error": 4.8552,
+       "conditional_crps": 3.3226
+      }
+     },
+     "DRAW_CANDIDATE": {
+      "mean_P0": 0.0052,
+      "P0_minus_observed": {
+       "pooled": -0.0407,
+       "mean_of_block_means": -0.04086,
+       "se": 0.00778,
+       "n_blocks": 15,
+       "z": -5.25
+      },
+      "brier": 0.04357,
+      "log_score": 0.21631,
+      "unconditional_crps": 3.1209,
+      "mean_draw_minus_actual": 0.5262,
+      "positive_count": {
+       "n_units_actual_gt0": 416,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.2105,
+       "conditional_abs_error": 4.278,
+       "conditional_crps": 3.023
+      }
+     },
+     "DRAW_CURRENT_GATED": {
+      "mean_P0": 0.0026,
+      "P0_minus_observed": {
+       "pooled": -0.0432,
+       "mean_of_block_means": -0.04339,
+       "se": 0.00782,
+       "n_blocks": 15,
+       "z": -5.55
+      },
+      "brier": 0.04473,
+      "log_score": 0.2581,
+      "unconditional_crps": 3.6822,
+      "mean_draw_minus_actual": 3.2383,
+      "positive_count": {
+       "n_units_actual_gt0": 416,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 2.8706,
+       "conditional_abs_error": 5.2219,
+       "conditional_crps": 3.4902
+      }
+     },
+     "DRAW_CANDIDATE_GATED": {
+      "mean_P0": 0.0504,
+      "P0_minus_observed": {
+       "pooled": 0.0045,
+       "mean_of_block_means": 0.00435,
+       "se": 0.00809,
+       "n_blocks": 15,
+       "z": 0.54
+      },
+      "brier": 0.04517,
+      "log_score": 0.24731,
+      "unconditional_crps": 3.1644,
+      "mean_draw_minus_actual": 0.4152,
+      "positive_count": {
+       "n_units_actual_gt0": 416,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.7628,
+       "conditional_abs_error": 4.381,
+       "conditional_crps": 3.046
+      }
+     }
+    }
+   },
+   "RB1_targets": {
+    "n_units": 436,
+    "n_players": 59,
+    "n_weeks": 15,
+    "n_club_weeks": 436,
+    "observed_P0": 0.1606,
+    "arms": {
+     "PROJ_CURRENT": {
+      "mean_P0": 0.0222,
+      "P0_minus_observed": {
+       "pooled": -0.1384,
+       "mean_of_block_means": -0.13796,
+       "se": 0.0149,
+       "n_blocks": 15,
+       "z": -9.26
+      },
+      "brier": 0.15919,
+      "log_score": 1.15057
+     },
+     "PROJ_CANDIDATE": {
+      "mean_P0": 0.0883,
+      "P0_minus_observed": {
+       "pooled": -0.0722,
+       "mean_of_block_means": -0.07141,
+       "se": 0.01445,
+       "n_blocks": 15,
+       "z": -4.94
+      },
+      "brier": 0.15575,
+      "log_score": 0.95926
+     },
+     "DRAW_CURRENT": {
+      "mean_P0": 0.1051,
+      "P0_minus_observed": {
+       "pooled": -0.0555,
+       "mean_of_block_means": -0.0548,
+       "se": 0.01467,
+       "n_blocks": 15,
+       "z": -3.74
+      },
+      "brier": 0.12231,
+      "log_score": 0.41048,
+      "unconditional_crps": 1.1547,
+      "mean_draw_minus_actual": 0.8958,
+      "positive_count": {
+       "n_units_actual_gt0": 366,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.8312,
+       "conditional_abs_error": 1.6932,
+       "conditional_crps": 1.0954
+      }
+     },
+     "DRAW_CANDIDATE": {
+      "mean_P0": 0.1382,
+      "P0_minus_observed": {
+       "pooled": -0.0223,
+       "mean_of_block_means": -0.02163,
+       "se": 0.01487,
+       "n_blocks": 15,
+       "z": -1.45
+      },
+      "brier": 0.11889,
+      "log_score": 0.3857,
+      "unconditional_crps": 1.0154,
+      "mean_draw_minus_actual": 0.225,
+      "positive_count": {
+       "n_units_actual_gt0": 366,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.1776,
+       "conditional_abs_error": 1.4287,
+       "conditional_crps": 0.9636
+      }
+     },
+     "DRAW_CURRENT_GATED": {
+      "mean_P0": 0.1142,
+      "P0_minus_observed": {
+       "pooled": -0.0463,
+       "mean_of_block_means": -0.04589,
+       "se": 0.01523,
+       "n_blocks": 15,
+       "z": -3.01
+      },
+      "brier": 0.1232,
+      "log_score": 0.41343,
+      "unconditional_crps": 1.1653,
+      "mean_draw_minus_actual": 0.9756,
+      "positive_count": {
+       "n_units_actual_gt0": 366,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.9514,
+       "conditional_abs_error": 1.7253,
+       "conditional_crps": 1.0992
+      }
+     },
+     "DRAW_CANDIDATE_GATED": {
+      "mean_P0": 0.199,
+      "P0_minus_observed": {
+       "pooled": 0.0385,
+       "mean_of_block_means": 0.03918,
+       "se": 0.01494,
+       "n_blocks": 15,
+       "z": 2.62
+      },
+      "brier": 0.12459,
+      "log_score": 0.41561,
+      "unconditional_crps": 1.0312,
+      "mean_draw_minus_actual": 0.254,
+      "positive_count": {
+       "n_units_actual_gt0": 366,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.5132,
+       "conditional_abs_error": 1.5251,
+       "conditional_crps": 0.9983
+      }
+     }
+    }
+   },
+   "RB2_carries": {
+    "n_units": 436,
+    "n_players": 76,
+    "n_weeks": 15,
+    "n_club_weeks": 436,
+    "observed_P0": 0.2431,
+    "arms": {
+     "PROJ_CURRENT": {
+      "mean_P0": 0.4512,
+      "P0_minus_observed": {
+       "pooled": 0.2081,
+       "mean_of_block_means": 0.20809,
+       "se": 0.01352,
+       "n_blocks": 15,
+       "z": 15.39
+      },
+      "brier": 0.22732,
+      "log_score": 0.64765
+     },
+     "PROJ_CANDIDATE": {
+      "mean_P0": 0.2524,
+      "P0_minus_observed": {
+       "pooled": 0.0092,
+       "mean_of_block_means": 0.00943,
+       "se": 0.01374,
+       "n_blocks": 15,
+       "z": 0.69
+      },
+      "brier": 0.13346,
+      "log_score": 0.39846
+     },
+     "DRAW_CURRENT": {
+      "mean_P0": 0.122,
+      "P0_minus_observed": {
+       "pooled": -0.1211,
+       "mean_of_block_means": -0.12133,
+       "se": 0.01268,
+       "n_blocks": 15,
+       "z": -9.57
+      },
+      "brier": 0.18372,
+      "log_score": 0.60102,
+      "unconditional_crps": 2.9243,
+      "mean_draw_minus_actual": -1.2699,
+      "positive_count": {
+       "n_units_actual_gt0": 330,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -2.4179,
+       "conditional_abs_error": 4.1365,
+       "conditional_crps": 3.1498
+      }
+     },
+     "DRAW_CANDIDATE": {
+      "mean_P0": 0.1113,
+      "P0_minus_observed": {
+       "pooled": -0.1318,
+       "mean_of_block_means": -0.13226,
+       "se": 0.01251,
+       "n_blocks": 15,
+       "z": -10.57
+      },
+      "brier": 0.17284,
+      "log_score": 0.54118,
+      "unconditional_crps": 2.5712,
+      "mean_draw_minus_actual": -0.1715,
+      "positive_count": {
+       "n_units_actual_gt0": 330,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -0.9713,
+       "conditional_abs_error": 3.8784,
+       "conditional_crps": 2.7894
+      }
+     },
+     "DRAW_CURRENT_GATED": {
+      "mean_P0": 0.4773,
+      "P0_minus_observed": {
+       "pooled": 0.2342,
+       "mean_of_block_means": 0.23408,
+       "se": 0.01305,
+       "n_blocks": 15,
+       "z": 17.94
+      },
+      "brier": 0.23151,
+      "log_score": 0.65658,
+      "unconditional_crps": 3.0992,
+      "mean_draw_minus_actual": -1.975,
+      "positive_count": {
+       "n_units_actual_gt0": 330,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.0541,
+       "conditional_abs_error": 4.1093,
+       "conditional_crps": 2.8443
+      }
+     },
+     "DRAW_CANDIDATE_GATED": {
+      "mean_P0": 0.2888,
+      "P0_minus_observed": {
+       "pooled": 0.0457,
+       "mean_of_block_means": 0.04588,
+       "se": 0.01348,
+       "n_blocks": 15,
+       "z": 3.4
+      },
+      "brier": 0.13302,
+      "log_score": 0.39969,
+      "unconditional_crps": 2.4616,
+      "mean_draw_minus_actual": -0.3137,
+      "positive_count": {
+       "n_units_actual_gt0": 330,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.0656,
+       "conditional_abs_error": 4.0237,
+       "conditional_crps": 2.7863
+      }
+     }
+    }
+   },
+   "RB2_targets": {
+    "n_units": 436,
+    "n_players": 76,
+    "n_weeks": 15,
+    "n_club_weeks": 436,
+    "observed_P0": 0.406,
+    "arms": {
+     "PROJ_CURRENT": {
+      "mean_P0": 0.5177,
+      "P0_minus_observed": {
+       "pooled": 0.1118,
+       "mean_of_block_means": 0.11126,
+       "se": 0.0151,
+       "n_blocks": 15,
+       "z": 7.37
+      },
+      "brier": 0.26884,
+      "log_score": 0.82667
+     },
+     "PROJ_CANDIDATE": {
+      "mean_P0": 0.4159,
+      "P0_minus_observed": {
+       "pooled": 0.0099,
+       "mean_of_block_means": 0.00948,
+       "se": 0.01708,
+       "n_blocks": 15,
+       "z": 0.56
+      },
+      "brier": 0.23203,
+      "log_score": 0.74026
+     },
+     "DRAW_CURRENT": {
+      "mean_P0": 0.4403,
+      "P0_minus_observed": {
+       "pooled": 0.0343,
+       "mean_of_block_means": 0.03314,
+       "se": 0.01548,
+       "n_blocks": 15,
+       "z": 2.14
+      },
+      "brier": 0.25564,
+      "log_score": 0.72883,
+      "unconditional_crps": 0.919,
+      "mean_draw_minus_actual": -0.3548,
+      "positive_count": {
+       "n_units_actual_gt0": 259,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -0.6228,
+       "conditional_abs_error": 1.2947,
+       "conditional_crps": 0.9475
+      }
+     },
+     "DRAW_CANDIDATE": {
+      "mean_P0": 0.4326,
+      "P0_minus_observed": {
+       "pooled": 0.0267,
+       "mean_of_block_means": 0.02526,
+       "se": 0.01552,
+       "n_blocks": 15,
+       "z": 1.63
+      },
+      "brier": 0.24431,
+      "log_score": 0.69349,
+      "unconditional_crps": 0.8577,
+      "mean_draw_minus_actual": -0.2235,
+      "positive_count": {
+       "n_units_actual_gt0": 259,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -0.4044,
+       "conditional_abs_error": 1.2775,
+       "conditional_crps": 0.8913
+      }
+     },
+     "DRAW_CURRENT_GATED": {
+      "mean_P0": 0.6079,
+      "P0_minus_observed": {
+       "pooled": 0.2019,
+       "mean_of_block_means": 0.20108,
+       "se": 0.01535,
+       "n_blocks": 15,
+       "z": 13.1
+      },
+      "brier": 0.289,
+      "log_score": 0.82167,
+      "unconditional_crps": 0.9431,
+      "mean_draw_minus_actual": -0.3767,
+      "positive_count": {
+       "n_units_actual_gt0": 259,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.2965,
+       "conditional_abs_error": 1.3832,
+       "conditional_crps": 0.8756
+      }
+     },
+     "DRAW_CANDIDATE_GATED": {
+      "mean_P0": 0.5346,
+      "P0_minus_observed": {
+       "pooled": 0.1287,
+       "mean_of_block_means": 0.12809,
+       "se": 0.01683,
+       "n_blocks": 15,
+       "z": 7.61
+      },
+      "brier": 0.24582,
+      "log_score": 0.71808,
+      "unconditional_crps": 0.8498,
+      "mean_draw_minus_actual": -0.2247,
+      "positive_count": {
+       "n_units_actual_gt0": 259,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.0478,
+       "conditional_abs_error": 1.309,
+       "conditional_crps": 0.8454
+      }
+     }
+    }
+   },
+   "RB3_carries": {
+    "n_units": 400,
+    "n_players": 71,
+    "n_weeks": 15,
+    "n_club_weeks": 400,
+    "observed_P0": 0.39,
+    "arms": {
+     "PROJ_CURRENT": {
+      "mean_P0": 0.8378,
+      "P0_minus_observed": {
+       "pooled": 0.4478,
+       "mean_of_block_means": 0.44694,
+       "se": 0.02102,
+       "n_blocks": 15,
+       "z": 21.27
+      },
+      "brier": 0.4384,
+      "log_score": 1.17847
+     },
+     "PROJ_CANDIDATE": {
+      "mean_P0": 0.5567,
+      "P0_minus_observed": {
+       "pooled": 0.1667,
+       "mean_of_block_means": 0.16536,
+       "se": 0.02244,
+       "n_blocks": 15,
+       "z": 7.37
+      },
+      "brier": 0.21813,
+      "log_score": 0.6338
+     },
+     "DRAW_CURRENT": {
+      "mean_P0": 0.6061,
+      "P0_minus_observed": {
+       "pooled": 0.2161,
+       "mean_of_block_means": 0.21659,
+       "se": 0.02217,
+       "n_blocks": 15,
+       "z": 9.77
+      },
+      "brier": 0.26463,
+      "log_score": 0.74177,
+      "unconditional_crps": 2.8497,
+      "mean_draw_minus_actual": -2.7801,
+      "positive_count": {
+       "n_units_actual_gt0": 244,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -3.8206,
+       "conditional_abs_error": 4.2242,
+       "conditional_crps": 3.7046
+      }
+     },
+     "DRAW_CANDIDATE": {
+      "mean_P0": 0.4656,
+      "P0_minus_observed": {
+       "pooled": 0.0756,
+       "mean_of_block_means": 0.07489,
+       "se": 0.02334,
+       "n_blocks": 15,
+       "z": 3.21
+      },
+      "brier": 0.18895,
+      "log_score": 0.55607,
+      "unconditional_crps": 1.7885,
+      "mean_draw_minus_actual": -1.2121,
+      "positive_count": {
+       "n_units_actual_gt0": 244,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -1.7614,
+       "conditional_abs_error": 3.1366,
+       "conditional_crps": 2.3607
+      }
+     },
+     "DRAW_CURRENT_GATED": {
+      "mean_P0": 0.8608,
+      "P0_minus_observed": {
+       "pooled": 0.4708,
+       "mean_of_block_means": 0.46993,
+       "se": 0.02101,
+       "n_blocks": 15,
+       "z": 22.36
+      },
+      "brier": 0.45292,
+      "log_score": 1.2455,
+      "unconditional_crps": 3.0412,
+      "mean_draw_minus_actual": -2.9298,
+      "positive_count": {
+       "n_units_actual_gt0": 244,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -0.4132,
+       "conditional_abs_error": 3.1385,
+       "conditional_crps": 2.149
+      }
+     },
+     "DRAW_CANDIDATE_GATED": {
+      "mean_P0": 0.6004,
+      "P0_minus_observed": {
+       "pooled": 0.2104,
+       "mean_of_block_means": 0.20949,
+       "se": 0.02272,
+       "n_blocks": 15,
+       "z": 9.22
+      },
+      "brier": 0.22996,
+      "log_score": 0.68852,
+      "unconditional_crps": 1.8082,
+      "mean_draw_minus_actual": -1.2261,
+      "positive_count": {
+       "n_units_actual_gt0": 244,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -0.4642,
+       "conditional_abs_error": 3.1172,
+       "conditional_crps": 2.1326
+      }
+     }
+    }
+   },
+   "RB3_targets": {
+    "n_units": 400,
+    "n_players": 71,
+    "n_weeks": 15,
+    "n_club_weeks": 400,
+    "observed_P0": 0.5175,
+    "arms": {
+     "PROJ_CURRENT": {
+      "mean_P0": 0.7513,
+      "P0_minus_observed": {
+       "pooled": 0.2338,
+       "mean_of_block_means": 0.23275,
+       "se": 0.02004,
+       "n_blocks": 15,
+       "z": 11.61
+      },
+      "brier": 0.30701,
+      "log_score": 0.86706
+     },
+     "PROJ_CANDIDATE": {
+      "mean_P0": 0.6218,
+      "P0_minus_observed": {
+       "pooled": 0.1043,
+       "mean_of_block_means": 0.10264,
+       "se": 0.02141,
+       "n_blocks": 15,
+       "z": 4.79
+      },
+      "brier": 0.23499,
+      "log_score": 0.69527
+     },
+     "DRAW_CURRENT": {
+      "mean_P0": 0.6743,
+      "P0_minus_observed": {
+       "pooled": 0.1568,
+       "mean_of_block_means": 0.15552,
+       "se": 0.0224,
+       "n_blocks": 15,
+       "z": 6.94
+      },
+      "brier": 0.26058,
+      "log_score": 0.74098,
+      "unconditional_crps": 0.8408,
+      "mean_draw_minus_actual": -0.6244,
+      "positive_count": {
+       "n_units_actual_gt0": 193,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -0.8913,
+       "conditional_abs_error": 1.2587,
+       "conditional_crps": 1.0193
+      }
+     },
+     "DRAW_CANDIDATE": {
+      "mean_P0": 0.6151,
+      "P0_minus_observed": {
+       "pooled": 0.0976,
+       "mean_of_block_means": 0.09594,
+       "se": 0.02243,
+       "n_blocks": 15,
+       "z": 4.28
+      },
+      "brier": 0.22234,
+      "log_score": 0.6604,
+      "unconditional_crps": 0.6968,
+      "mean_draw_minus_actual": -0.391,
+      "positive_count": {
+       "n_units_actual_gt0": 193,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -0.5713,
+       "conditional_abs_error": 1.1228,
+       "conditional_crps": 0.8416
+      }
+     },
+     "DRAW_CURRENT_GATED": {
+      "mean_P0": 0.8022,
+      "P0_minus_observed": {
+       "pooled": 0.2847,
+       "mean_of_block_means": 0.28356,
+       "se": 0.02027,
+       "n_blocks": 15,
+       "z": 13.99
+      },
+      "brier": 0.32403,
+      "log_score": 0.93656,
+      "unconditional_crps": 0.8775,
+      "mean_draw_minus_actual": -0.6357,
+      "positive_count": {
+       "n_units_actual_gt0": 193,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.2348,
+       "conditional_abs_error": 1.2134,
+       "conditional_crps": 0.7845
+      }
+     },
+     "DRAW_CANDIDATE_GATED": {
+      "mean_P0": 0.7015,
+      "P0_minus_observed": {
+       "pooled": 0.184,
+       "mean_of_block_means": 0.18236,
+       "se": 0.02163,
+       "n_blocks": 15,
+       "z": 8.43
+      },
+      "brier": 0.24657,
+      "log_score": 0.74826,
+      "unconditional_crps": 0.708,
+      "mean_draw_minus_actual": -0.3894,
+      "positive_count": {
+       "n_units_actual_gt0": 193,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.0398,
+       "conditional_abs_error": 1.1655,
+       "conditional_crps": 0.7652
+      }
+     }
+    }
+   },
+   "WR1_targets": {
+    "n_units": 436,
+    "n_players": 66,
+    "n_weeks": 15,
+    "n_club_weeks": 436,
+    "observed_P0": 0.0115,
+    "arms": {
+     "PROJ_CURRENT": {
+      "mean_P0": 0.0,
+      "P0_minus_observed": {
+       "pooled": -0.0115,
+       "mean_of_block_means": -0.01219,
+       "se": 0.00464,
+       "n_blocks": 15,
+       "z": -2.63
+      },
+      "brier": 0.01146,
+      "log_score": 0.08766
+     },
+     "PROJ_CANDIDATE": {
+      "mean_P0": 0.0394,
+      "P0_minus_observed": {
+       "pooled": 0.0279,
+       "mean_of_block_means": 0.02699,
+       "se": 0.00527,
+       "n_blocks": 15,
+       "z": 5.12
+      },
+      "brier": 0.01291,
+      "log_score": 0.10643
+     },
+     "DRAW_CURRENT": {
+      "mean_P0": 0.001,
+      "P0_minus_observed": {
+       "pooled": -0.0104,
+       "mean_of_block_means": -0.01114,
+       "se": 0.00462,
+       "n_blocks": 15,
+       "z": -2.41
+      },
+      "brier": 0.01146,
+      "log_score": 0.08373,
+      "unconditional_crps": 2.2229,
+      "mean_draw_minus_actual": 2.0867,
+      "positive_count": {
+       "n_units_actual_gt0": 431,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 2.0137,
+       "conditional_abs_error": 3.1731,
+       "conditional_crps": 2.1674
+      }
+     },
+     "DRAW_CANDIDATE": {
+      "mean_P0": 0.003,
+      "P0_minus_observed": {
+       "pooled": -0.0084,
+       "mean_of_block_means": -0.0092,
+       "se": 0.0046,
+       "n_blocks": 15,
+       "z": -2.0
+      },
+      "brier": 0.01146,
+      "log_score": 0.07354,
+      "unconditional_crps": 1.8627,
+      "mean_draw_minus_actual": 0.6961,
+      "positive_count": {
+       "n_units_actual_gt0": 431,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.6388,
+       "conditional_abs_error": 2.6883,
+       "conditional_crps": 1.8225
+      }
+     },
+     "DRAW_CURRENT_GATED": {
+      "mean_P0": 0.0013,
+      "P0_minus_observed": {
+       "pooled": -0.0101,
+       "mean_of_block_means": -0.01084,
+       "se": 0.00463,
+       "n_blocks": 15,
+       "z": -2.34
+      },
+      "brier": 0.01146,
+      "log_score": 0.08239,
+      "unconditional_crps": 2.2691,
+      "mean_draw_minus_actual": 2.3175,
+      "positive_count": {
+       "n_units_actual_gt0": 431,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 2.2482,
+       "conditional_abs_error": 3.3025,
+       "conditional_crps": 2.215
+      }
+     },
+     "DRAW_CANDIDATE_GATED": {
+      "mean_P0": 0.0421,
+      "P0_minus_observed": {
+       "pooled": 0.0307,
+       "mean_of_block_means": 0.02969,
+       "se": 0.00535,
+       "n_blocks": 15,
+       "z": 5.55
+      },
+      "brier": 0.01312,
+      "log_score": 0.10173,
+      "unconditional_crps": 1.8777,
+      "mean_draw_minus_actual": 0.7514,
+      "positive_count": {
+       "n_units_actual_gt0": 431,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 1.0157,
+       "conditional_abs_error": 2.7759,
+       "conditional_crps": 1.8579
+      }
+     }
+    }
+   },
+   "WR2_targets": {
+    "n_units": 436,
+    "n_players": 95,
+    "n_weeks": 15,
+    "n_club_weeks": 436,
+    "observed_P0": 0.1009,
+    "arms": {
+     "PROJ_CURRENT": {
+      "mean_P0": 0.1745,
+      "P0_minus_observed": {
+       "pooled": 0.0736,
+       "mean_of_block_means": 0.07338,
+       "se": 0.01464,
+       "n_blocks": 15,
+       "z": 5.01
+      },
+      "brier": 0.09615,
+      "log_score": 0.3486
+     },
+     "PROJ_CANDIDATE": {
+      "mean_P0": 0.0929,
+      "P0_minus_observed": {
+       "pooled": -0.008,
+       "mean_of_block_means": -0.00798,
+       "se": 0.01413,
+       "n_blocks": 15,
+       "z": -0.57
+      },
+      "brier": 0.08149,
+      "log_score": 0.27641
+     },
+     "DRAW_CURRENT": {
+      "mean_P0": 0.0168,
+      "P0_minus_observed": {
+       "pooled": -0.0841,
+       "mean_of_block_means": -0.08429,
+       "se": 0.01413,
+       "n_blocks": 15,
+       "z": -5.97
+      },
+      "brier": 0.09459,
+      "log_score": 0.41409,
+      "unconditional_crps": 1.7787,
+      "mean_draw_minus_actual": 1.0384,
+      "positive_count": {
+       "n_units_actual_gt0": 392,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.7189,
+       "conditional_abs_error": 2.4084,
+       "conditional_crps": 1.6332
+      }
+     },
+     "DRAW_CANDIDATE": {
+      "mean_P0": 0.0209,
+      "P0_minus_observed": {
+       "pooled": -0.08,
+       "mean_of_block_means": -0.08017,
+       "se": 0.01412,
+       "n_blocks": 15,
+       "z": -5.68
+      },
+      "brier": 0.09199,
+      "log_score": 0.38332,
+      "unconditional_crps": 1.6945,
+      "mean_draw_minus_actual": 0.875,
+      "positive_count": {
+       "n_units_actual_gt0": 392,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.5932,
+       "conditional_abs_error": 2.3123,
+       "conditional_crps": 1.5794
+      }
+     },
+     "DRAW_CURRENT_GATED": {
+      "mean_P0": 0.1826,
+      "P0_minus_observed": {
+       "pooled": 0.0816,
+       "mean_of_block_means": 0.08143,
+       "se": 0.01435,
+       "n_blocks": 15,
+       "z": 5.67
+      },
+      "brier": 0.09608,
+      "log_score": 0.34836,
+      "unconditional_crps": 1.777,
+      "mean_draw_minus_actual": 0.9294,
+      "positive_count": {
+       "n_units_actual_gt0": 392,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 1.705,
+       "conditional_abs_error": 2.8176,
+       "conditional_crps": 1.8709
+      }
+     },
+     "DRAW_CANDIDATE_GATED": {
+      "mean_P0": 0.106,
+      "P0_minus_observed": {
+       "pooled": 0.0051,
+       "mean_of_block_means": 0.00511,
+       "se": 0.01388,
+       "n_blocks": 15,
+       "z": 0.37
+      },
+      "brier": 0.07973,
+      "log_score": 0.27223,
+      "unconditional_crps": 1.6674,
+      "mean_draw_minus_actual": 0.8853,
+      "positive_count": {
+       "n_units_actual_gt0": 392,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 1.0731,
+       "conditional_abs_error": 2.5003,
+       "conditional_crps": 1.6683
+      }
+     }
+    }
+   },
+   "WR3_targets": {
+    "n_units": 436,
+    "n_players": 110,
+    "n_weeks": 15,
+    "n_club_weeks": 436,
+    "observed_P0": 0.3028,
+    "arms": {
+     "PROJ_CURRENT": {
+      "mean_P0": 0.5005,
+      "P0_minus_observed": {
+       "pooled": 0.1977,
+       "mean_of_block_means": 0.19527,
+       "se": 0.02162,
+       "n_blocks": 15,
+       "z": 9.03
+      },
+      "brier": 0.25019,
+      "log_score": 0.69353
+     },
+     "PROJ_CANDIDATE": {
+      "mean_P0": 0.3199,
+      "P0_minus_observed": {
+       "pooled": 0.0171,
+       "mean_of_block_means": 0.01514,
+       "se": 0.01917,
+       "n_blocks": 15,
+       "z": 0.79
+      },
+      "brier": 0.19681,
+      "log_score": 0.58703
+     },
+     "DRAW_CURRENT": {
+      "mean_P0": 0.1523,
+      "P0_minus_observed": {
+       "pooled": -0.1504,
+       "mean_of_block_means": -0.15279,
+       "se": 0.02151,
+       "n_blocks": 15,
+       "z": -7.1
+      },
+      "brier": 0.22966,
+      "log_score": 0.70049,
+      "unconditional_crps": 1.2664,
+      "mean_draw_minus_actual": 0.0122,
+      "positive_count": {
+       "n_units_actual_gt0": 304,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -0.5829,
+       "conditional_abs_error": 1.6776,
+       "conditional_crps": 1.1987
+      }
+     },
+     "DRAW_CANDIDATE": {
+      "mean_P0": 0.1361,
+      "P0_minus_observed": {
+       "pooled": -0.1667,
+       "mean_of_block_means": -0.16877,
+       "se": 0.0196,
+       "n_blocks": 15,
+       "z": -8.61
+      },
+      "brier": 0.22248,
+      "log_score": 0.66708,
+      "unconditional_crps": 1.1998,
+      "mean_draw_minus_actual": 0.4767,
+      "positive_count": {
+       "n_units_actual_gt0": 304,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.037,
+       "conditional_abs_error": 1.6851,
+       "conditional_crps": 1.1473
+      }
+     },
+     "DRAW_CURRENT_GATED": {
+      "mean_P0": 0.5208,
+      "P0_minus_observed": {
+       "pooled": 0.218,
+       "mean_of_block_means": 0.21557,
+       "se": 0.02175,
+       "n_blocks": 15,
+       "z": 9.91
+      },
+      "brier": 0.25739,
+      "log_score": 0.70799,
+      "unconditional_crps": 1.2866,
+      "mean_draw_minus_actual": -0.1438,
+      "positive_count": {
+       "n_units_actual_gt0": 304,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 1.2611,
+       "conditional_abs_error": 2.1426,
+       "conditional_crps": 1.3663
+      }
+     },
+     "DRAW_CANDIDATE_GATED": {
+      "mean_P0": 0.3532,
+      "P0_minus_observed": {
+       "pooled": 0.0504,
+       "mean_of_block_means": 0.04848,
+       "se": 0.01928,
+       "n_blocks": 15,
+       "z": 2.51
+      },
+      "brier": 0.1963,
+      "log_score": 0.56858,
+      "unconditional_crps": 1.1638,
+      "mean_draw_minus_actual": 0.4243,
+      "positive_count": {
+       "n_units_actual_gt0": 304,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.9426,
+       "conditional_abs_error": 1.9839,
+       "conditional_crps": 1.2764
+      }
+     }
+    }
+   },
+   "WR4_targets": {
+    "n_units": 431,
+    "n_players": 109,
+    "n_weeks": 15,
+    "n_club_weeks": 431,
+    "observed_P0": 0.355,
+    "arms": {
+     "PROJ_CURRENT": {
+      "mean_P0": 0.8207,
+      "P0_minus_observed": {
+       "pooled": 0.4657,
+       "mean_of_block_means": 0.46501,
+       "se": 0.02296,
+       "n_blocks": 15,
+       "z": 20.26
+      },
+      "brier": 0.44587,
+      "log_score": 1.17875
+     },
+     "PROJ_CANDIDATE": {
+      "mean_P0": 0.5482,
+      "P0_minus_observed": {
+       "pooled": 0.1932,
+       "mean_of_block_means": 0.19283,
+       "se": 0.02325,
+       "n_blocks": 15,
+       "z": 8.29
+      },
+      "brier": 0.24499,
+      "log_score": 0.69457
+     },
+     "DRAW_CURRENT": {
+      "mean_P0": 0.5535,
+      "P0_minus_observed": {
+       "pooled": 0.1985,
+       "mean_of_block_means": 0.19829,
+       "se": 0.02113,
+       "n_blocks": 15,
+       "z": 9.38
+      },
+      "brier": 0.24471,
+      "log_score": 0.68211,
+      "unconditional_crps": 1.6803,
+      "mean_draw_minus_actual": -1.6173,
+      "positive_count": {
+       "n_units_actual_gt0": 278,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -2.0477,
+       "conditional_abs_error": 2.291,
+       "conditional_crps": 1.981
+      }
+     },
+     "DRAW_CANDIDATE": {
+      "mean_P0": 0.4262,
+      "P0_minus_observed": {
+       "pooled": 0.0712,
+       "mean_of_block_means": 0.07103,
+       "se": 0.02168,
+       "n_blocks": 15,
+       "z": 3.28
+      },
+      "brier": 0.1877,
+      "log_score": 0.53486,
+      "unconditional_crps": 1.1135,
+      "mean_draw_minus_actual": -0.6317,
+      "positive_count": {
+       "n_units_actual_gt0": 278,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -0.8347,
+       "conditional_abs_error": 1.7002,
+       "conditional_crps": 1.2996
+      }
+     },
+     "DRAW_CURRENT_GATED": {
+      "mean_P0": 0.8347,
+      "P0_minus_observed": {
+       "pooled": 0.4797,
+       "mean_of_block_means": 0.47897,
+       "se": 0.02284,
+       "n_blocks": 15,
+       "z": 20.97
+      },
+      "brier": 0.45439,
+      "log_score": 1.21047,
+      "unconditional_crps": 1.8138,
+      "mean_draw_minus_actual": -1.6833,
+      "positive_count": {
+       "n_units_actual_gt0": 278,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.4357,
+       "conditional_abs_error": 1.886,
+       "conditional_crps": 1.2704
+      }
+     },
+     "DRAW_CANDIDATE_GATED": {
+      "mean_P0": 0.5807,
+      "P0_minus_observed": {
+       "pooled": 0.2257,
+       "mean_of_block_means": 0.22545,
+       "se": 0.02257,
+       "n_blocks": 15,
+       "z": 9.99
+      },
+      "brier": 0.25042,
+      "log_score": 0.71194,
+      "unconditional_crps": 1.1519,
+      "mean_draw_minus_actual": -0.6444,
+      "positive_count": {
+       "n_units_actual_gt0": 278,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.1511,
+       "conditional_abs_error": 1.8037,
+       "conditional_crps": 1.2283
+      }
+     }
+    }
+   },
+   "WR5_targets": {
+    "n_units": 388,
+    "n_players": 83,
+    "n_weeks": 15,
+    "n_club_weeks": 388,
+    "observed_P0": 0.4356,
+    "arms": {
+     "PROJ_CURRENT": {
+      "mean_P0": 0.9521,
+      "P0_minus_observed": {
+       "pooled": 0.5165,
+       "mean_of_block_means": 0.51988,
+       "se": 0.02131,
+       "n_blocks": 15,
+       "z": 24.39
+      },
+      "brier": 0.51261,
+      "log_score": 1.73604
+     },
+     "PROJ_CANDIDATE": {
+      "mean_P0": 0.7074,
+      "P0_minus_observed": {
+       "pooled": 0.2718,
+       "mean_of_block_means": 0.27311,
+       "se": 0.01847,
+       "n_blocks": 15,
+       "z": 14.79
+      },
+      "brier": 0.36115,
+      "log_score": 1.23536
+     },
+     "DRAW_CURRENT": {
+      "mean_P0": 0.8907,
+      "P0_minus_observed": {
+       "pooled": 0.4552,
+       "mean_of_block_means": 0.45838,
+       "se": 0.02033,
+       "n_blocks": 15,
+       "z": 22.55
+      },
+      "brier": 0.44079,
+      "log_score": 1.2654,
+      "unconditional_crps": 1.4187,
+      "mean_draw_minus_actual": -1.4306,
+      "positive_count": {
+       "n_units_actual_gt0": 219,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -1.5868,
+       "conditional_abs_error": 1.7,
+       "conditional_crps": 1.5606
+      }
+     },
+     "DRAW_CANDIDATE": {
+      "mean_P0": 0.6965,
+      "P0_minus_observed": {
+       "pooled": 0.2609,
+       "mean_of_block_means": 0.26226,
+       "se": 0.0177,
+       "n_blocks": 15,
+       "z": 14.82
+      },
+      "brier": 0.32669,
+      "log_score": 0.99763,
+      "unconditional_crps": 1.0681,
+      "mean_draw_minus_actual": -0.7511,
+      "positive_count": {
+       "n_units_actual_gt0": 219,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -0.8614,
+       "conditional_abs_error": 1.4006,
+       "conditional_crps": 1.1551
+      }
+     },
+     "DRAW_CURRENT_GATED": {
+      "mean_P0": 0.9586,
+      "P0_minus_observed": {
+       "pooled": 0.523,
+       "mean_of_block_means": 0.52643,
+       "se": 0.02127,
+       "n_blocks": 15,
+       "z": 24.75
+      },
+      "brier": 0.51799,
+      "log_score": 1.80658,
+      "unconditional_crps": 1.4678,
+      "mean_draw_minus_actual": -1.439,
+      "positive_count": {
+       "n_units_actual_gt0": 219,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.3125,
+       "conditional_abs_error": 1.5287,
+       "conditional_crps": 1.0218
+      }
+     },
+     "DRAW_CANDIDATE_GATED": {
+      "mean_P0": 0.7413,
+      "P0_minus_observed": {
+       "pooled": 0.3057,
+       "mean_of_block_means": 0.30699,
+       "se": 0.01792,
+       "n_blocks": 15,
+       "z": 17.13
+      },
+      "brier": 0.35913,
+      "log_score": 1.26238,
+      "unconditional_crps": 1.0886,
+      "mean_draw_minus_actual": -0.7473,
+      "positive_count": {
+       "n_units_actual_gt0": 219,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.1,
+       "conditional_abs_error": 1.4568,
+       "conditional_crps": 0.9895
+      }
+     }
+    }
+   },
+   "TE1_targets": {
+    "n_units": 436,
+    "n_players": 64,
+    "n_weeks": 15,
+    "n_club_weeks": 436,
+    "observed_P0": 0.1078,
+    "arms": {
+     "PROJ_CURRENT": {
+      "mean_P0": 0.0,
+      "P0_minus_observed": {
+       "pooled": -0.1078,
+       "mean_of_block_means": -0.1077,
+       "se": 0.01163,
+       "n_blocks": 15,
+       "z": -9.26
+      },
+      "brier": 0.10769,
+      "log_score": 0.81981
+     },
+     "PROJ_CANDIDATE": {
+      "mean_P0": 0.0707,
+      "P0_minus_observed": {
+       "pooled": -0.0371,
+       "mean_of_block_means": -0.03704,
+       "se": 0.01223,
+       "n_blocks": 15,
+       "z": -3.03
+      },
+      "brier": 0.11221,
+      "log_score": 0.81909
+     },
+     "DRAW_CURRENT": {
+      "mean_P0": 0.0127,
+      "P0_minus_observed": {
+       "pooled": -0.0951,
+       "mean_of_block_means": -0.09518,
+       "se": 0.01157,
+       "n_blocks": 15,
+       "z": -8.22
+      },
+      "brier": 0.102,
+      "log_score": 0.46225,
+      "unconditional_crps": 1.8195,
+      "mean_draw_minus_actual": 1.8158,
+      "positive_count": {
+       "n_units_actual_gt0": 389,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 1.5257,
+       "conditional_abs_error": 2.4984,
+       "conditional_crps": 1.6493
+      }
+     },
+     "DRAW_CANDIDATE": {
+      "mean_P0": 0.0258,
+      "P0_minus_observed": {
+       "pooled": -0.082,
+       "mean_of_block_means": -0.08215,
+       "se": 0.01162,
+       "n_blocks": 15,
+       "z": -7.07
+      },
+      "brier": 0.09717,
+      "log_score": 0.38272,
+      "unconditional_crps": 1.5272,
+      "mean_draw_minus_actual": 0.6983,
+      "positive_count": {
+       "n_units_actual_gt0": 389,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.4112,
+       "conditional_abs_error": 2.0558,
+       "conditional_crps": 1.3995
+      }
+     },
+     "DRAW_CURRENT_GATED": {
+      "mean_P0": 0.0137,
+      "P0_minus_observed": {
+       "pooled": -0.0941,
+       "mean_of_block_means": -0.0942,
+       "se": 0.01156,
+       "n_blocks": 15,
+       "z": -8.15
+      },
+      "brier": 0.10128,
+      "log_score": 0.43501,
+      "unconditional_crps": 1.8523,
+      "mean_draw_minus_actual": 1.9683,
+      "positive_count": {
+       "n_units_actual_gt0": 389,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 1.6869,
+       "conditional_abs_error": 2.5944,
+       "conditional_crps": 1.6849
+      }
+     },
+     "DRAW_CANDIDATE_GATED": {
+      "mean_P0": 0.0929,
+      "P0_minus_observed": {
+       "pooled": -0.0149,
+       "mean_of_block_means": -0.01509,
+       "se": 0.01219,
+       "n_blocks": 15,
+       "z": -1.24
+      },
+      "brier": 0.10372,
+      "log_score": 0.43708,
+      "unconditional_crps": 1.5657,
+      "mean_draw_minus_actual": 0.7184,
+      "positive_count": {
+       "n_units_actual_gt0": 389,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.8803,
+       "conditional_abs_error": 2.1818,
+       "conditional_crps": 1.4583
+      }
+     }
+    }
+   },
+   "TE2_targets": {
+    "n_units": 436,
+    "n_players": 79,
+    "n_weeks": 15,
+    "n_club_weeks": 436,
+    "observed_P0": 0.4358,
+    "arms": {
+     "PROJ_CURRENT": {
+      "mean_P0": 0.4707,
+      "P0_minus_observed": {
+       "pooled": 0.035,
+       "mean_of_block_means": 0.03363,
+       "se": 0.02315,
+       "n_blocks": 15,
+       "z": 1.45
+      },
+      "brier": 0.2471,
+      "log_score": 0.68734
+     },
+     "PROJ_CANDIDATE": {
+      "mean_P0": 0.3834,
+      "P0_minus_observed": {
+       "pooled": -0.0524,
+       "mean_of_block_means": -0.05378,
+       "se": 0.02304,
+       "n_blocks": 15,
+       "z": -2.33
+      },
+      "brier": 0.23717,
+      "log_score": 0.67371
+     },
+     "DRAW_CURRENT": {
+      "mean_P0": 0.2114,
+      "P0_minus_observed": {
+       "pooled": -0.2243,
+       "mean_of_block_means": -0.22542,
+       "se": 0.02324,
+       "n_blocks": 15,
+       "z": -9.7
+      },
+      "brier": 0.30899,
+      "log_score": 0.90116,
+      "unconditional_crps": 0.9626,
+      "mean_draw_minus_actual": 0.6042,
+      "positive_count": {
+       "n_units_actual_gt0": 246,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.0118,
+       "conditional_abs_error": 1.1633,
+       "conditional_crps": 0.7673
+      }
+     },
+     "DRAW_CANDIDATE": {
+      "mean_P0": 0.2194,
+      "P0_minus_observed": {
+       "pooled": -0.2163,
+       "mean_of_block_means": -0.2175,
+       "se": 0.02282,
+       "n_blocks": 15,
+       "z": -9.53
+      },
+      "brier": 0.29803,
+      "log_score": 0.86775,
+      "unconditional_crps": 0.9257,
+      "mean_draw_minus_actual": 0.6608,
+      "positive_count": {
+       "n_units_actual_gt0": 246,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.175,
+       "conditional_abs_error": 1.1878,
+       "conditional_crps": 0.7615
+      }
+     },
+     "DRAW_CURRENT_GATED": {
+      "mean_P0": 0.5087,
+      "P0_minus_observed": {
+       "pooled": 0.0729,
+       "mean_of_block_means": 0.07155,
+       "se": 0.02349,
+       "n_blocks": 15,
+       "z": 3.05
+      },
+      "brier": 0.25234,
+      "log_score": 0.69784,
+      "unconditional_crps": 0.8865,
+      "mean_draw_minus_actual": 0.5292,
+      "positive_count": {
+       "n_units_actual_gt0": 246,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 1.2811,
+       "conditional_abs_error": 1.7832,
+       "conditional_crps": 1.0657
+      }
+     },
+     "DRAW_CANDIDATE_GATED": {
+      "mean_P0": 0.4398,
+      "P0_minus_observed": {
+       "pooled": 0.004,
+       "mean_of_block_means": 0.00262,
+       "se": 0.02308,
+       "n_blocks": 15,
+       "z": 0.11
+      },
+      "brier": 0.23579,
+      "log_score": 0.66322,
+      "unconditional_crps": 0.8537,
+      "mean_draw_minus_actual": 0.6232,
+      "positive_count": {
+       "n_units_actual_gt0": 246,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.9879,
+       "conditional_abs_error": 1.6093,
+       "conditional_crps": 0.9642
+      }
+     }
+    }
+   },
+   "TE3_targets": {
+    "n_units": 408,
+    "n_players": 68,
+    "n_weeks": 15,
+    "n_club_weeks": 408,
+    "observed_P0": 0.4436,
+    "arms": {
+     "PROJ_CURRENT": {
+      "mean_P0": 0.9165,
+      "P0_minus_observed": {
+       "pooled": 0.4729,
+       "mean_of_block_means": 0.47888,
+       "se": 0.02635,
+       "n_blocks": 15,
+       "z": 18.17
+      },
+      "brier": 0.47047,
+      "log_score": 1.42035
+     },
+     "PROJ_CANDIDATE": {
+      "mean_P0": 0.6876,
+      "P0_minus_observed": {
+       "pooled": 0.244,
+       "mean_of_block_means": 0.24981,
+       "se": 0.02613,
+       "n_blocks": 15,
+       "z": 9.56
+      },
+      "brier": 0.28454,
+      "log_score": 0.88515
+     },
+     "DRAW_CURRENT": {
+      "mean_P0": 0.8015,
+      "P0_minus_observed": {
+       "pooled": 0.3579,
+       "mean_of_block_means": 0.36398,
+       "se": 0.02613,
+       "n_blocks": 15,
+       "z": 13.93
+      },
+      "brier": 0.34859,
+      "log_score": 0.94458,
+      "unconditional_crps": 1.3639,
+      "mean_draw_minus_actual": -1.3704,
+      "positive_count": {
+       "n_units_actual_gt0": 227,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -1.6568,
+       "conditional_abs_error": 1.8282,
+       "conditional_crps": 1.64
+      }
+     },
+     "DRAW_CANDIDATE": {
+      "mean_P0": 0.6384,
+      "P0_minus_observed": {
+       "pooled": 0.1948,
+       "mean_of_block_means": 0.20052,
+       "se": 0.02496,
+       "n_blocks": 15,
+       "z": 8.03
+      },
+      "brier": 0.24771,
+      "log_score": 0.71343,
+      "unconditional_crps": 0.8387,
+      "mean_draw_minus_actual": -0.6018,
+      "positive_count": {
+       "n_units_actual_gt0": 227,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": -0.6534,
+       "conditional_abs_error": 1.2852,
+       "conditional_crps": 0.9649
+      }
+     },
+     "DRAW_CURRENT_GATED": {
+      "mean_P0": 0.9281,
+      "P0_minus_observed": {
+       "pooled": 0.4845,
+       "mean_of_block_means": 0.49049,
+       "se": 0.02643,
+       "n_blocks": 15,
+       "z": 18.56
+      },
+      "brier": 0.47924,
+      "log_score": 1.48606,
+      "unconditional_crps": 1.4485,
+      "mean_draw_minus_actual": -1.3939,
+      "positive_count": {
+       "n_units_actual_gt0": 227,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.5119,
+       "conditional_abs_error": 1.582,
+       "conditional_crps": 1.0089
+      }
+     },
+     "DRAW_CANDIDATE_GATED": {
+      "mean_P0": 0.7217,
+      "P0_minus_observed": {
+       "pooled": 0.2781,
+       "mean_of_block_means": 0.28379,
+       "se": 0.02532,
+       "n_blocks": 15,
+       "z": 11.21
+      },
+      "brier": 0.2907,
+      "log_score": 0.93691,
+      "unconditional_crps": 0.8667,
+      "mean_draw_minus_actual": -0.6088,
+      "positive_count": {
+       "n_units_actual_gt0": 227,
+       "n_units_no_positive_draw": 0,
+       "conditional_mean_minus_actual": 0.2643,
+       "conditional_abs_error": 1.4864,
+       "conditional_crps": 0.9612
+      }
+     }
+    }
+   }
+  },
+  "comparisons_ALL_RB_WR_TE": {
+   "PRIMARY__GATE_ALONE__CURRENT_GATED_vs_CURRENT": {
+    "A": "DRAW_CURRENT",
+    "B": "DRAW_CURRENT_GATED",
+    "brier_improvement_B_over_A": {
+     "n_units": 6534,
+     "pooled": -0.046633,
+     "week_blocked": {
+      "mean_of_block_means": -0.04617,
+      "se": 0.00259,
+      "n_blocks": 15,
+      "z": -17.81
+     },
+     "club_blocked": {
+      "mean_of_block_means": -0.04697,
+      "se": 0.00534,
+      "n_blocks": 32,
+      "z": -8.8
+     }
+    },
+    "log_score_improvement_B_over_A": {
+     "n_units": 6534,
+     "pooled": -0.159909,
+     "week_blocked": {
+      "mean_of_block_means": -0.1589,
+      "se": 0.00844,
+      "n_blocks": 15,
+      "z": -18.83
+     },
+     "club_blocked": {
+      "mean_of_block_means": -0.16027,
+      "se": 0.01674,
+      "n_blocks": 32,
+      "z": -9.57
+     }
+    },
+    "unconditional_crps_improvement_B_over_A": {
+     "n_units": 6534,
+     "pooled": -0.058734,
+     "week_blocked": {
+      "mean_of_block_means": -0.05775,
+      "se": 0.00571,
+      "n_blocks": 15,
+      "z": -10.12
+     },
+     "club_blocked": {
+      "mean_of_block_means": -0.05979,
+      "se": 0.01059,
+      "n_blocks": 32,
+      "z": -5.65
+     }
+    },
+    "positive_count_crps_improvement_B_over_A": {
+     "n_units": 4478,
+     "pooled": 0.162113,
+     "week_blocked": {
+      "mean_of_block_means": 0.16231,
+      "se": 0.00727,
+      "n_blocks": 15,
+      "z": 22.31
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.16028,
+      "se": 0.03739,
+      "n_blocks": 32,
+      "z": 4.29
+     }
+    }
+   },
+   "S1__CANDIDATE_UNGATED_vs_CURRENT__does_the_candidate_reach_the_draws_today": {
+    "A": "DRAW_CURRENT",
+    "B": "DRAW_CANDIDATE",
+    "brier_improvement_B_over_A": {
+     "n_units": 6534,
+     "pooled": 0.032241,
+     "week_blocked": {
+      "mean_of_block_means": 0.03271,
+      "se": 0.00234,
+      "n_blocks": 15,
+      "z": 14.01
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.03189,
+      "se": 0.00373,
+      "n_blocks": 32,
+      "z": 8.55
+     }
+    },
+    "log_score_improvement_B_over_A": {
+     "n_units": 6534,
+     "pooled": 0.096996,
+     "week_blocked": {
+      "mean_of_block_means": 0.09821,
+      "se": 0.00636,
+      "n_blocks": 15,
+      "z": 15.45
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.09622,
+      "se": 0.01103,
+      "n_blocks": 32,
+      "z": 8.72
+     }
+    },
+    "unconditional_crps_improvement_B_over_A": {
+     "n_units": 6534,
+     "pooled": 0.300058,
+     "week_blocked": {
+      "mean_of_block_means": 0.29995,
+      "se": 0.01131,
+      "n_blocks": 15,
+      "z": 26.52
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.30261,
+      "se": 0.03909,
+      "n_blocks": 32,
+      "z": 7.74
+     }
+    },
+    "positive_count_crps_improvement_B_over_A": {
+     "n_units": 4479,
+     "pooled": 0.323724,
+     "week_blocked": {
+      "mean_of_block_means": 0.32271,
+      "se": 0.01358,
+      "n_blocks": 15,
+      "z": 23.76
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.3211,
+      "se": 0.04346,
+      "n_blocks": 32,
+      "z": 7.39
+     }
+    }
+   },
+   "S2__CANDIDATE_GATED_vs_CURRENT_GATED__candidate_effect_once_propagated": {
+    "A": "DRAW_CURRENT_GATED",
+    "B": "DRAW_CANDIDATE_GATED",
+    "brier_improvement_B_over_A": {
+     "n_units": 6534,
+     "pooled": 0.07381,
+     "week_blocked": {
+      "mean_of_block_means": 0.07416,
+      "se": 0.00261,
+      "n_blocks": 15,
+      "z": 28.38
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.07379,
+      "se": 0.00616,
+      "n_blocks": 32,
+      "z": 11.99
+     }
+    },
+    "log_score_improvement_B_over_A": {
+     "n_units": 6534,
+     "pooled": 0.211525,
+     "week_blocked": {
+      "mean_of_block_means": 0.21277,
+      "se": 0.00809,
+      "n_blocks": 15,
+      "z": 26.3
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.21135,
+      "se": 0.01925,
+      "n_blocks": 32,
+      "z": 10.98
+     }
+    },
+    "unconditional_crps_improvement_B_over_A": {
+     "n_units": 6534,
+     "pooled": 0.360403,
+     "week_blocked": {
+      "mean_of_block_means": 0.36007,
+      "se": 0.01303,
+      "n_blocks": 15,
+      "z": 27.63
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.36402,
+      "se": 0.04315,
+      "n_blocks": 32,
+      "z": 8.44
+     }
+    },
+    "positive_count_crps_improvement_B_over_A": {
+     "n_units": 4478,
+     "pooled": 0.152184,
+     "week_blocked": {
+      "mean_of_block_means": 0.15128,
+      "se": 0.00845,
+      "n_blocks": 15,
+      "z": 17.91
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.15075,
+      "se": 0.01993,
+      "n_blocks": 32,
+      "z": 7.56
+     }
+    }
+   },
+   "S3__CANDIDATE_GATED_vs_CURRENT__both_changes": {
+    "A": "DRAW_CURRENT",
+    "B": "DRAW_CANDIDATE_GATED",
+    "brier_improvement_B_over_A": {
+     "n_units": 6534,
+     "pooled": 0.027178,
+     "week_blocked": {
+      "mean_of_block_means": 0.02799,
+      "se": 0.00343,
+      "n_blocks": 15,
+      "z": 8.16
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.02682,
+      "se": 0.00532,
+      "n_blocks": 32,
+      "z": 5.04
+     }
+    },
+    "log_score_improvement_B_over_A": {
+     "n_units": 6534,
+     "pooled": 0.051616,
+     "week_blocked": {
+      "mean_of_block_means": 0.05386,
+      "se": 0.0102,
+      "n_blocks": 15,
+      "z": 5.28
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.05108,
+      "se": 0.01547,
+      "n_blocks": 32,
+      "z": 3.3
+     }
+    },
+    "unconditional_crps_improvement_B_over_A": {
+     "n_units": 6534,
+     "pooled": 0.301669,
+     "week_blocked": {
+      "mean_of_block_means": 0.30232,
+      "se": 0.01137,
+      "n_blocks": 15,
+      "z": 26.6
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.30423,
+      "se": 0.03902,
+      "n_blocks": 32,
+      "z": 7.8
+     }
+    },
+    "positive_count_crps_improvement_B_over_A": {
+     "n_units": 4479,
+     "pooled": 0.314388,
+     "week_blocked": {
+      "mean_of_block_means": 0.3137,
+      "se": 0.01052,
+      "n_blocks": 15,
+      "z": 29.81
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.3112,
+      "se": 0.04887,
+      "n_blocks": 32,
+      "z": 6.37
+     }
+    }
+   },
+   "S4__CANDIDATE_GATED_vs_CANDIDATE_UNGATED__gate_under_candidate_rates": {
+    "A": "DRAW_CANDIDATE",
+    "B": "DRAW_CANDIDATE_GATED",
+    "brier_improvement_B_over_A": {
+     "n_units": 6534,
+     "pooled": -0.005063,
+     "week_blocked": {
+      "mean_of_block_means": -0.00473,
+      "se": 0.00183,
+      "n_blocks": 15,
+      "z": -2.58
+     },
+     "club_blocked": {
+      "mean_of_block_means": -0.00507,
+      "se": 0.00362,
+      "n_blocks": 32,
+      "z": -1.4
+     }
+    },
+    "log_score_improvement_B_over_A": {
+     "n_units": 6534,
+     "pooled": -0.04538,
+     "week_blocked": {
+      "mean_of_block_means": -0.04435,
+      "se": 0.00658,
+      "n_blocks": 15,
+      "z": -6.74
+     },
+     "club_blocked": {
+      "mean_of_block_means": -0.04515,
+      "se": 0.01025,
+      "n_blocks": 32,
+      "z": -4.4
+     }
+    },
+    "unconditional_crps_improvement_B_over_A": {
+     "n_units": 6534,
+     "pooled": 0.001611,
+     "week_blocked": {
+      "mean_of_block_means": 0.00237,
+      "se": 0.00328,
+      "n_blocks": 15,
+      "z": 0.72
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.00162,
+      "se": 0.00509,
+      "n_blocks": 32,
+      "z": 0.32
+     }
+    },
+    "positive_count_crps_improvement_B_over_A": {
+     "n_units": 4479,
+     "pooled": -0.009337,
+     "week_blocked": {
+      "mean_of_block_means": -0.00901,
+      "se": 0.0071,
+      "n_blocks": 15,
+      "z": -1.27
+     },
+     "club_blocked": {
+      "mean_of_block_means": -0.00991,
+      "se": 0.01159,
+      "n_blocks": 32,
+      "z": -0.85
+     }
+    }
+   },
+   "REF__PROJECTION_CANDIDATE_vs_PROJECTION_CURRENT__the_layer_SC_APPEAR_1_was_scored_on": {
+    "A": "PROJ_CURRENT",
+    "B": "PROJ_CANDIDATE",
+    "brier_improvement_B_over_A": {
+     "n_units": 6534,
+     "pooled": 0.070464,
+     "week_blocked": {
+      "mean_of_block_means": 0.07086,
+      "se": 0.00286,
+      "n_blocks": 15,
+      "z": 24.79
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.07042,
+      "se": 0.00606,
+      "n_blocks": 32,
+      "z": 11.62
+     }
+    },
+    "log_score_improvement_B_over_A": {
+     "n_units": 6534,
+     "pooled": 0.211378,
+     "week_blocked": {
+      "mean_of_block_means": 0.21284,
+      "se": 0.01013,
+      "n_blocks": 15,
+      "z": 21.02
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.21099,
+      "se": 0.01891,
+      "n_blocks": 32,
+      "z": 11.16
+     }
+    }
+   }
+  },
+  "comparisons_QUALIFYING_RB_WR_TE": {
+   "PRIMARY__GATE_ALONE__CURRENT_GATED_vs_CURRENT": {
+    "A": "DRAW_CURRENT",
+    "B": "DRAW_CURRENT_GATED",
+    "brier_improvement_B_over_A": {
+     "n_units": 2855,
+     "pooled": -0.102191,
+     "week_blocked": {
+      "mean_of_block_means": -0.10207,
+      "se": 0.00291,
+      "n_blocks": 15,
+      "z": -35.03
+     },
+     "club_blocked": {
+      "mean_of_block_means": -0.10128,
+      "se": 0.00723,
+      "n_blocks": 32,
+      "z": -14.0
+     }
+    },
+    "log_score_improvement_B_over_A": {
+     "n_units": 2855,
+     "pooled": -0.312009,
+     "week_blocked": {
+      "mean_of_block_means": -0.31303,
+      "se": 0.00846,
+      "n_blocks": 15,
+      "z": -36.99
+     },
+     "club_blocked": {
+      "mean_of_block_means": -0.30926,
+      "se": 0.02067,
+      "n_blocks": 32,
+      "z": -14.96
+     }
+    },
+    "unconditional_crps_improvement_B_over_A": {
+     "n_units": 2855,
+     "pooled": -0.150438,
+     "week_blocked": {
+      "mean_of_block_means": -0.1493,
+      "se": 0.00874,
+      "n_blocks": 15,
+      "z": -17.08
+     },
+     "club_blocked": {
+      "mean_of_block_means": -0.15048,
+      "se": 0.01513,
+      "n_blocks": 32,
+      "z": -9.95
+     }
+    },
+    "positive_count_crps_improvement_B_over_A": {
+     "n_units": 2668,
+     "pooled": 0.327373,
+     "week_blocked": {
+      "mean_of_block_means": 0.32815,
+      "se": 0.01825,
+      "n_blocks": 15,
+      "z": 17.98
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.3218,
+      "se": 0.05498,
+      "n_blocks": 32,
+      "z": 5.85
+     }
+    }
+   },
+   "S1__CANDIDATE_UNGATED_vs_CURRENT__does_the_candidate_reach_the_draws_today": {
+    "A": "DRAW_CURRENT",
+    "B": "DRAW_CANDIDATE",
+    "brier_improvement_B_over_A": {
+     "n_units": 2855,
+     "pooled": 0.070173,
+     "week_blocked": {
+      "mean_of_block_means": 0.07151,
+      "se": 0.00532,
+      "n_blocks": 15,
+      "z": 13.44
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.06885,
+      "se": 0.00785,
+      "n_blocks": 32,
+      "z": 8.77
+     }
+    },
+    "log_score_improvement_B_over_A": {
+     "n_units": 2855,
+     "pooled": 0.19486,
+     "week_blocked": {
+      "mean_of_block_means": 0.19811,
+      "se": 0.01385,
+      "n_blocks": 15,
+      "z": 14.31
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.19176,
+      "se": 0.02181,
+      "n_blocks": 32,
+      "z": 8.79
+     }
+    },
+    "unconditional_crps_improvement_B_over_A": {
+     "n_units": 2855,
+     "pooled": 0.586172,
+     "week_blocked": {
+      "mean_of_block_means": 0.58505,
+      "se": 0.02449,
+      "n_blocks": 15,
+      "z": 23.89
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.57569,
+      "se": 0.0755,
+      "n_blocks": 32,
+      "z": 7.63
+     }
+    },
+    "positive_count_crps_improvement_B_over_A": {
+     "n_units": 2668,
+     "pooled": 0.492309,
+     "week_blocked": {
+      "mean_of_block_means": 0.48933,
+      "se": 0.02203,
+      "n_blocks": 15,
+      "z": 22.21
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.48408,
+      "se": 0.06765,
+      "n_blocks": 32,
+      "z": 7.16
+     }
+    }
+   },
+   "S2__CANDIDATE_GATED_vs_CURRENT_GATED__candidate_effect_once_propagated": {
+    "A": "DRAW_CURRENT_GATED",
+    "B": "DRAW_CANDIDATE_GATED",
+    "brier_improvement_B_over_A": {
+     "n_units": 2855,
+     "pooled": 0.169275,
+     "week_blocked": {
+      "mean_of_block_means": 0.17048,
+      "se": 0.00636,
+      "n_blocks": 15,
+      "z": 26.8
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.16714,
+      "se": 0.01322,
+      "n_blocks": 32,
+      "z": 12.64
+     }
+    },
+    "log_score_improvement_B_over_A": {
+     "n_units": 2855,
+     "pooled": 0.479269,
+     "week_blocked": {
+      "mean_of_block_means": 0.48364,
+      "se": 0.01907,
+      "n_blocks": 15,
+      "z": 25.37
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.47371,
+      "se": 0.04092,
+      "n_blocks": 32,
+      "z": 11.58
+     }
+    },
+    "unconditional_crps_improvement_B_over_A": {
+     "n_units": 2855,
+     "pooled": 0.727443,
+     "week_blocked": {
+      "mean_of_block_means": 0.72603,
+      "se": 0.02817,
+      "n_blocks": 15,
+      "z": 25.78
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.717,
+      "se": 0.08265,
+      "n_blocks": 32,
+      "z": 8.68
+     }
+    },
+    "positive_count_crps_improvement_B_over_A": {
+     "n_units": 2668,
+     "pooled": 0.153006,
+     "week_blocked": {
+      "mean_of_block_means": 0.15048,
+      "se": 0.0146,
+      "n_blocks": 15,
+      "z": 10.31
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.14974,
+      "se": 0.02228,
+      "n_blocks": 32,
+      "z": 6.72
+     }
+    }
+   },
+   "S3__CANDIDATE_GATED_vs_CURRENT__both_changes": {
+    "A": "DRAW_CURRENT",
+    "B": "DRAW_CANDIDATE_GATED",
+    "brier_improvement_B_over_A": {
+     "n_units": 2855,
+     "pooled": 0.067085,
+     "week_blocked": {
+      "mean_of_block_means": 0.0684,
+      "se": 0.00526,
+      "n_blocks": 15,
+      "z": 13.0
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.06587,
+      "se": 0.00787,
+      "n_blocks": 32,
+      "z": 8.37
+     }
+    },
+    "log_score_improvement_B_over_A": {
+     "n_units": 2855,
+     "pooled": 0.16726,
+     "week_blocked": {
+      "mean_of_block_means": 0.17061,
+      "se": 0.0137,
+      "n_blocks": 15,
+      "z": 12.46
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.16445,
+      "se": 0.02373,
+      "n_blocks": 32,
+      "z": 6.93
+     }
+    },
+    "unconditional_crps_improvement_B_over_A": {
+     "n_units": 2855,
+     "pooled": 0.577004,
+     "week_blocked": {
+      "mean_of_block_means": 0.57674,
+      "se": 0.02441,
+      "n_blocks": 15,
+      "z": 23.63
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.56652,
+      "se": 0.07567,
+      "n_blocks": 32,
+      "z": 7.49
+     }
+    },
+    "positive_count_crps_improvement_B_over_A": {
+     "n_units": 2668,
+     "pooled": 0.480379,
+     "week_blocked": {
+      "mean_of_block_means": 0.47863,
+      "se": 0.0203,
+      "n_blocks": 15,
+      "z": 23.58
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.47154,
+      "se": 0.06828,
+      "n_blocks": 32,
+      "z": 6.91
+     }
+    }
+   },
+   "S4__CANDIDATE_GATED_vs_CANDIDATE_UNGATED__gate_under_candidate_rates": {
+    "A": "DRAW_CANDIDATE",
+    "B": "DRAW_CANDIDATE_GATED",
+    "brier_improvement_B_over_A": {
+     "n_units": 2855,
+     "pooled": -0.003088,
+     "week_blocked": {
+      "mean_of_block_means": -0.00311,
+      "se": 0.00041,
+      "n_blocks": 15,
+      "z": -7.51
+     },
+     "club_blocked": {
+      "mean_of_block_means": -0.00298,
+      "se": 0.00048,
+      "n_blocks": 32,
+      "z": -6.21
+     }
+    },
+    "log_score_improvement_B_over_A": {
+     "n_units": 2855,
+     "pooled": -0.0276,
+     "week_blocked": {
+      "mean_of_block_means": -0.0275,
+      "se": 0.00352,
+      "n_blocks": 15,
+      "z": -7.81
+     },
+     "club_blocked": {
+      "mean_of_block_means": -0.02731,
+      "se": 0.00443,
+      "n_blocks": 32,
+      "z": -6.17
+     }
+    },
+    "unconditional_crps_improvement_B_over_A": {
+     "n_units": 2855,
+     "pooled": -0.009168,
+     "week_blocked": {
+      "mean_of_block_means": -0.00832,
+      "se": 0.00344,
+      "n_blocks": 15,
+      "z": -2.42
+     },
+     "club_blocked": {
+      "mean_of_block_means": -0.00917,
+      "se": 0.00303,
+      "n_blocks": 32,
+      "z": -3.03
+     }
+    },
+    "positive_count_crps_improvement_B_over_A": {
+     "n_units": 2668,
+     "pooled": -0.01193,
+     "week_blocked": {
+      "mean_of_block_means": -0.0107,
+      "se": 0.00612,
+      "n_blocks": 15,
+      "z": -1.75
+     },
+     "club_blocked": {
+      "mean_of_block_means": -0.01254,
+      "se": 0.00568,
+      "n_blocks": 32,
+      "z": -2.21
+     }
+    }
+   },
+   "REF__PROJECTION_CANDIDATE_vs_PROJECTION_CURRENT__the_layer_SC_APPEAR_1_was_scored_on": {
+    "A": "PROJ_CURRENT",
+    "B": "PROJ_CANDIDATE",
+    "brier_improvement_B_over_A": {
+     "n_units": 2855,
+     "pooled": 0.161265,
+     "week_blocked": {
+      "mean_of_block_means": 0.16261,
+      "se": 0.00697,
+      "n_blocks": 15,
+      "z": 23.33
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.15912,
+      "se": 0.01325,
+      "n_blocks": 32,
+      "z": 12.01
+     }
+    },
+    "log_score_improvement_B_over_A": {
+     "n_units": 2855,
+     "pooled": 0.483764,
+     "week_blocked": {
+      "mean_of_block_means": 0.48826,
+      "se": 0.02398,
+      "n_blocks": 15,
+      "z": 20.36
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.47891,
+      "se": 0.04286,
+      "n_blocks": 32,
+      "z": 11.17
+     }
+    }
+   }
+  },
+  "comparisons_RANK1_RB_WR_TE": {
+   "PRIMARY__GATE_ALONE__CURRENT_GATED_vs_CURRENT": {
+    "A": "DRAW_CURRENT",
+    "B": "DRAW_CURRENT_GATED",
+    "brier_improvement_B_over_A": {
+     "n_units": 1744,
+     "pooled": 5.6e-05,
+     "week_blocked": {
+      "mean_of_block_means": 1e-05,
+      "se": 0.00044,
+      "n_blocks": 15,
+      "z": 0.03
+     },
+     "club_blocked": {
+      "mean_of_block_means": 5e-05,
+      "se": 0.00028,
+      "n_blocks": 32,
+      "z": 0.17
+     }
+    },
+    "log_score_improvement_B_over_A": {
+     "n_units": 1744,
+     "pooled": 0.010162,
+     "week_blocked": {
+      "mean_of_block_means": 0.01041,
+      "se": 0.0028,
+      "n_blocks": 15,
+      "z": 3.72
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.01038,
+      "se": 0.00351,
+      "n_blocks": 32,
+      "z": 2.96
+     }
+    },
+    "unconditional_crps_improvement_B_over_A": {
+     "n_units": 1744,
+     "pooled": -0.065213,
+     "week_blocked": {
+      "mean_of_block_means": -0.06458,
+      "se": 0.00491,
+      "n_blocks": 15,
+      "z": -13.15
+     },
+     "club_blocked": {
+      "mean_of_block_means": -0.06594,
+      "se": 0.00901,
+      "n_blocks": 32,
+      "z": -7.32
+     }
+    },
+    "positive_count_crps_improvement_B_over_A": {
+     "n_units": 1602,
+     "pooled": -0.065842,
+     "week_blocked": {
+      "mean_of_block_means": -0.06513,
+      "se": 0.00518,
+      "n_blocks": 15,
+      "z": -12.57
+     },
+     "club_blocked": {
+      "mean_of_block_means": -0.06756,
+      "se": 0.00949,
+      "n_blocks": 32,
+      "z": -7.12
+     }
+    }
+   },
+   "S1__CANDIDATE_UNGATED_vs_CURRENT__does_the_candidate_reach_the_draws_today": {
+    "A": "DRAW_CURRENT",
+    "B": "DRAW_CANDIDATE",
+    "brier_improvement_B_over_A": {
+     "n_units": 1744,
+     "pooled": 0.002453,
+     "week_blocked": {
+      "mean_of_block_means": 0.00246,
+      "se": 0.00069,
+      "n_blocks": 15,
+      "z": 3.55
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.00249,
+      "se": 0.0008,
+      "n_blocks": 32,
+      "z": 3.11
+     }
+    },
+    "log_score_improvement_B_over_A": {
+     "n_units": 1744,
+     "pooled": 0.042829,
+     "week_blocked": {
+      "mean_of_block_means": 0.04356,
+      "se": 0.00506,
+      "n_blocks": 15,
+      "z": 8.61
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.04327,
+      "se": 0.00958,
+      "n_blocks": 32,
+      "z": 4.52
+     }
+    },
+    "unconditional_crps_improvement_B_over_A": {
+     "n_units": 1744,
+     "pooled": 0.295448,
+     "week_blocked": {
+      "mean_of_block_means": 0.29405,
+      "se": 0.0223,
+      "n_blocks": 15,
+      "z": 13.19
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.29815,
+      "se": 0.05044,
+      "n_blocks": 32,
+      "z": 5.91
+     }
+    },
+    "positive_count_crps_improvement_B_over_A": {
+     "n_units": 1602,
+     "pooled": 0.261358,
+     "week_blocked": {
+      "mean_of_block_means": 0.26007,
+      "se": 0.02183,
+      "n_blocks": 15,
+      "z": 11.91
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.27499,
+      "se": 0.04749,
+      "n_blocks": 32,
+      "z": 5.79
+     }
+    }
+   },
+   "S2__CANDIDATE_GATED_vs_CURRENT_GATED__candidate_effect_once_propagated": {
+    "A": "DRAW_CURRENT_GATED",
+    "B": "DRAW_CANDIDATE_GATED",
+    "brier_improvement_B_over_A": {
+     "n_units": 1744,
+     "pooled": -0.001484,
+     "week_blocked": {
+      "mean_of_block_means": -0.00147,
+      "se": 0.00097,
+      "n_blocks": 15,
+      "z": -1.52
+     },
+     "club_blocked": {
+      "mean_of_block_means": -0.00143,
+      "se": 0.0012,
+      "n_blocks": 32,
+      "z": -1.2
+     }
+    },
+    "log_score_improvement_B_over_A": {
+     "n_units": 1744,
+     "pooled": -0.003199,
+     "week_blocked": {
+      "mean_of_block_means": -0.00301,
+      "se": 0.00602,
+      "n_blocks": 15,
+      "z": -0.5
+     },
+     "club_blocked": {
+      "mean_of_block_means": -0.00295,
+      "se": 0.01338,
+      "n_blocks": 32,
+      "z": -0.22
+     }
+    },
+    "unconditional_crps_improvement_B_over_A": {
+     "n_units": 1744,
+     "pooled": 0.332479,
+     "week_blocked": {
+      "mean_of_block_means": 0.33122,
+      "se": 0.02524,
+      "n_blocks": 15,
+      "z": 13.12
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.33578,
+      "se": 0.05507,
+      "n_blocks": 32,
+      "z": 6.1
+     }
+    },
+    "positive_count_crps_improvement_B_over_A": {
+     "n_units": 1602,
+     "pooled": 0.289518,
+     "week_blocked": {
+      "mean_of_block_means": 0.28893,
+      "se": 0.01968,
+      "n_blocks": 15,
+      "z": 14.68
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.30217,
+      "se": 0.04637,
+      "n_blocks": 32,
+      "z": 6.52
+     }
+    }
+   },
+   "S3__CANDIDATE_GATED_vs_CURRENT__both_changes": {
+    "A": "DRAW_CURRENT",
+    "B": "DRAW_CANDIDATE_GATED",
+    "brier_improvement_B_over_A": {
+     "n_units": 1744,
+     "pooled": -0.001428,
+     "week_blocked": {
+      "mean_of_block_means": -0.00146,
+      "se": 0.001,
+      "n_blocks": 15,
+      "z": -1.47
+     },
+     "club_blocked": {
+      "mean_of_block_means": -0.00138,
+      "se": 0.00118,
+      "n_blocks": 32,
+      "z": -1.17
+     }
+    },
+    "log_score_improvement_B_over_A": {
+     "n_units": 1744,
+     "pooled": 0.006963,
+     "week_blocked": {
+      "mean_of_block_means": 0.0074,
+      "se": 0.0063,
+      "n_blocks": 15,
+      "z": 1.18
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.00744,
+      "se": 0.01394,
+      "n_blocks": 32,
+      "z": 0.53
+     }
+    },
+    "unconditional_crps_improvement_B_over_A": {
+     "n_units": 1744,
+     "pooled": 0.267266,
+     "week_blocked": {
+      "mean_of_block_means": 0.26664,
+      "se": 0.02289,
+      "n_blocks": 15,
+      "z": 11.65
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.26985,
+      "se": 0.05004,
+      "n_blocks": 32,
+      "z": 5.39
+     }
+    },
+    "positive_count_crps_improvement_B_over_A": {
+     "n_units": 1602,
+     "pooled": 0.223676,
+     "week_blocked": {
+      "mean_of_block_means": 0.2238,
+      "se": 0.01782,
+      "n_blocks": 15,
+      "z": 12.56
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.23461,
+      "se": 0.04059,
+      "n_blocks": 32,
+      "z": 5.78
+     }
+    }
+   },
+   "S4__CANDIDATE_GATED_vs_CANDIDATE_UNGATED__gate_under_candidate_rates": {
+    "A": "DRAW_CANDIDATE",
+    "B": "DRAW_CANDIDATE_GATED",
+    "brier_improvement_B_over_A": {
+     "n_units": 1744,
+     "pooled": -0.003881,
+     "week_blocked": {
+      "mean_of_block_means": -0.00392,
+      "se": 0.00041,
+      "n_blocks": 15,
+      "z": -9.65
+     },
+     "club_blocked": {
+      "mean_of_block_means": -0.00387,
+      "se": 0.00054,
+      "n_blocks": 32,
+      "z": -7.17
+     }
+    },
+    "log_score_improvement_B_over_A": {
+     "n_units": 1744,
+     "pooled": -0.035866,
+     "week_blocked": {
+      "mean_of_block_means": -0.03616,
+      "se": 0.00431,
+      "n_blocks": 15,
+      "z": -8.38
+     },
+     "club_blocked": {
+      "mean_of_block_means": -0.03583,
+      "se": 0.00573,
+      "n_blocks": 32,
+      "z": -6.26
+     }
+    },
+    "unconditional_crps_improvement_B_over_A": {
+     "n_units": 1744,
+     "pooled": -0.028182,
+     "week_blocked": {
+      "mean_of_block_means": -0.02741,
+      "se": 0.00365,
+      "n_blocks": 15,
+      "z": -7.51
+     },
+     "club_blocked": {
+      "mean_of_block_means": -0.0283,
+      "se": 0.00411,
+      "n_blocks": 32,
+      "z": -6.89
+     }
+    },
+    "positive_count_crps_improvement_B_over_A": {
+     "n_units": 1602,
+     "pooled": -0.037682,
+     "week_blocked": {
+      "mean_of_block_means": -0.03627,
+      "se": 0.00744,
+      "n_blocks": 15,
+      "z": -4.88
+     },
+     "club_blocked": {
+      "mean_of_block_means": -0.04038,
+      "se": 0.00916,
+      "n_blocks": 32,
+      "z": -4.41
+     }
+    }
+   },
+   "REF__PROJECTION_CANDIDATE_vs_PROJECTION_CURRENT__the_layer_SC_APPEAR_1_was_scored_on": {
+    "A": "PROJ_CURRENT",
+    "B": "PROJ_CANDIDATE",
+    "brier_improvement_B_over_A": {
+     "n_units": 1744,
+     "pooled": -0.000956,
+     "week_blocked": {
+      "mean_of_block_means": -0.00093,
+      "se": 0.00067,
+      "n_blocks": 15,
+      "z": -1.38
+     },
+     "club_blocked": {
+      "mean_of_block_means": -0.00093,
+      "se": 0.0007,
+      "n_blocks": 32,
+      "z": -1.33
+     }
+    },
+    "log_score_improvement_B_over_A": {
+     "n_units": 1744,
+     "pooled": 0.045501,
+     "week_blocked": {
+      "mean_of_block_means": 0.0454,
+      "se": 0.01464,
+      "n_blocks": 15,
+      "z": 3.1
+     },
+     "club_blocked": {
+      "mean_of_block_means": 0.04622,
+      "se": 0.01855,
+      "n_blocks": 32,
+      "z": 2.49
+     }
+    }
+   }
+  },
+  "propagation_ratio": {
+   "UNGATED": {
+    "mean_change_projection_P0": -0.249,
+    "mean_change_draw_P0": -0.1349,
+    "ratio_draw_over_projection": 0.542,
+    "n_qualifying_units": 2855
+   },
+   "GATED": {
+    "mean_change_projection_P0": -0.249,
+    "mean_change_draw_P0": -0.2226,
+    "ratio_draw_over_projection": 0.894,
+    "n_qualifying_units": 2855
+   },
+   "MEANING": "1.0 = the projection layer's change in zero mass arrives in the worlds in full; 0 = none of it does. Measured on qualifying units, the only units whose P(plays) the candidate changes"
+  },
+  "observed_state_decomposition_2025": {
+   "n_units": 6534,
+   "ELIGIBILITY": "dressed = present in snap counts (>= 1 offensive or special-teams snap). Active players with zero snaps are NOT in the data: NOT_IDENTIFIABLE_FROM_CURRENT_DATA",
+   "share_offensive_appearance": 0.9267,
+   "share_special_teams_only": 0.0732,
+   "share_positive_opportunity_in_field": 0.6855,
+   "P_positive_given_offensive_appearance": 0.7397,
+   "P_positive_given_special_teams_only": 0.0,
+   "P0_decomposition": {
+    "special_teams_only": 0.0732,
+    "offensive_snap_but_zero_in_field": 0.2412,
+    "total_observed_P0": 0.3145
+   },
+   "by_role": {
+    "RB1_carries": {
+     "n": 436,
+     "st_only": 0.0161,
+     "offensive": 0.9839,
+     "positive_in_field": 0.9541
+    },
+    "RB1_targets": {
+     "n": 436,
+     "st_only": 0.0161,
+     "offensive": 0.9839,
+     "positive_in_field": 0.8394
+    },
+    "RB2_carries": {
+     "n": 436,
+     "st_only": 0.1261,
+     "offensive": 0.8739,
+     "positive_in_field": 0.7569
+    },
+    "RB2_targets": {
+     "n": 436,
+     "st_only": 0.1261,
+     "offensive": 0.8739,
+     "positive_in_field": 0.594
+    },
+    "RB3_carries": {
+     "n": 400,
+     "st_only": 0.18,
+     "offensive": 0.82,
+     "positive_in_field": 0.61
+    },
+    "RB3_targets": {
+     "n": 400,
+     "st_only": 0.18,
+     "offensive": 0.82,
+     "positive_in_field": 0.4825
+    },
+    "RB4_carries": {
+     "n": 168,
+     "st_only": 0.119,
+     "offensive": 0.881,
+     "positive_in_field": 0.3452
+    },
+    "RB4_targets": {
+     "n": 168,
+     "st_only": 0.119,
+     "offensive": 0.881,
+     "positive_in_field": 0.2619
+    },
+    "TE1_targets": {
+     "n": 436,
+     "st_only": 0.0161,
+     "offensive": 0.9839,
+     "positive_in_field": 0.8922
+    },
+    "TE2_targets": {
+     "n": 436,
+     "st_only": 0.0206,
+     "offensive": 0.9794,
+     "positive_in_field": 0.5642
+    },
+    "TE3_targets": {
+     "n": 408,
+     "st_only": 0.0221,
+     "offensive": 0.9779,
+     "positive_in_field": 0.5564
+    },
+    "TE4_targets": {
+     "n": 98,
+     "st_only": 0.1837,
+     "offensive": 0.8163,
+     "positive_in_field": 0.3673
+    },
+    "WR1_targets": {
+     "n": 436,
+     "st_only": 0.0023,
+     "offensive": 0.9977,
+     "positive_in_field": 0.9885
+    },
+    "WR2_targets": {
+     "n": 436,
+     "st_only": 0.0206,
+     "offensive": 0.9794,
+     "positive_in_field": 0.8991
+    },
+    "WR3_targets": {
+     "n": 436,
+     "st_only": 0.055,
+     "offensive": 0.945,
+     "positive_in_field": 0.6972
+    },
+    "WR4_targets": {
+     "n": 431,
+     "st_only": 0.0951,
+     "offensive": 0.9049,
+     "positive_in_field": 0.645
+    },
+    "WR5_targets": {
+     "n": 388,
+     "st_only": 0.0722,
+     "offensive": 0.9253,
+     "positive_in_field": 0.5644
+    },
+    "WR6_targets": {
+     "n": 97,
+     "st_only": 0.1856,
+     "offensive": 0.8144,
+     "positive_in_field": 0.4021
+    }
+   }
+  }
+ },
+ "PRIMARY_RESULT": {
+  "checks": {
+   "brier_week_blocked_z_gt_2": false,
+   "brier_club_blocked_mean_positive": false,
+   "positive_count_crps_not_worse_by_2se": true
+  },
+  "RESULT": "FAIL",
+  "brier": {
+   "n_units": 6534,
+   "pooled": -0.046633,
+   "week_blocked": {
+    "mean_of_block_means": -0.04617,
+    "se": 0.00259,
+    "n_blocks": 15,
+    "z": -17.81
+   },
+   "club_blocked": {
+    "mean_of_block_means": -0.04697,
+    "se": 0.00534,
+    "n_blocks": 32,
+    "z": -8.8
+   }
+  },
+  "positive_count_crps": {
+   "n_units": 4478,
+   "pooled": 0.162113,
+   "week_blocked": {
+    "mean_of_block_means": 0.16231,
+    "se": 0.00727,
+    "n_blocks": 15,
+    "z": 22.31
+   },
+   "club_blocked": {
+    "mean_of_block_means": 0.16028,
+    "se": 0.03739,
+    "n_blocks": 32,
+    "z": 4.29
+   }
+  }
+ },
+ "PRE_DECLARATION_SMOKE_RUN": "DISCLOSED: after the DECLARATION text above was written into this module and before run() stamped it into the JSON, the scoring code was exercised once on 6 games of 2025 week 7 at 300 draws to check it did not crash (that subset pointed the primary toward FAIL: gated Brier worse than current). The declaration was not edited after that run; declaration_sha256 is the hash of the text as first written.",
+ "ACTIVE_ZERO_SNAP_COHORT": "NOT_IDENTIFIABLE_FROM_CURRENT_DATA",
+ "LIMITATIONS": [
+  "ACTIVE ZERO-SNAP PLAYERS: NOT_IDENTIFIABLE_FROM_CURRENT_DATA. Official 2024-2025 game-day active lists are not in the repository (outbox request filed). The dressed universe is snap-count presence, so an active player who took no snap is in neither the pool nor the scored set; observed zero shares are understated for every arm alike. Realised snaps are used only to DESCRIBE observed states, never as an eligibility input.",
+  "SIMULATOR CONSTANTS ARE NOT HELD OUT: the share concentrations (VARIANCE_COMPONENTS, USAGE_MODEL), efficiency and the football-points residuals are fitted on data that include 2025 (PLAYER_GAME 2021-2026; FOOTBALL_POINTS 2001-2025). They are identical in every arm, so the paired comparisons are not driven by them, but the absolute calibration of any arm is partly in-sample. Refitting them would need a production change and is not done here.",
+  "p_plays IS NOT FIELD-SPECIFIC IN PRODUCTION: the depth appearance rate is P(>= r position players hold ANY panel row), one table per position. Used as the gate for a specific field it overstates P(>= 1 in that field) for a player who appears without e.g. a target; the gated P(0) then adds P(M = 0 | open) on top of 1 - pi.",
+  "THE GATE IS NOT A STRICT HURDLE: P(N = 0) = (1 - pi) + pi x P(M = 0 | open). A zero-truncated positive part would make P(N = 0) = 1 - pi exactly but cannot be byte-identical to production at pi = 1, which the identity test requires. Both readings are reported (gate_counts, positive-count calibration).",
+  "GATED MEANS DRIFT: renormalising over open players preserves club totals exactly and each player's expected weight before renormalising, not his expected count after it. The ATL@NO table reports ungated vs gated means.",
+  "HARNESS IS NOT LIVE PRODUCTION: no role state, no captured chart rank, QB starter proxy from prior pass attempts, TD shares proxied by opportunity shares (they move TD draws only, never an opportunity count), no DST/kicker. The allocator, the share builder (showdown_draws._shares), the football-only centre and the centred simulator are production code.",
+  "MONTE CARLO: 1,000 worlds per game per arm; per-unit P(0) carries SE <= 0.016. Common random numbers on the main stream within a game; the gate draws from its own stream.",
+  "WEEK-BLOCKED SEs rest on 15 blocks; club-blocked SEs are reported alongside.",
+  "2025 HAS NOW BEEN READ THREE TIMES. Any variant chosen after this read needs a new holdout."
+ ],
+ "PRODUCTION_CHANGE_WOULD_INVOLVE": {
+  "STATUS": "DESCRIPTION ONLY -- NO PRODUCTION FILE EDITED",
+  "steps": [
+   "nfl/tools/showdown_draws._shares: carry each player's p_plays_by_field into the spec (as `gate`), beside the unconditional share it already carries",
+   "nfl/sim/game.simulate_game: a DECLARED ARM (keyword, default off -> byte-identical) that draws the gate from a separate random stream and reweights open players by u/pi before alloc(); simulate_game_centred passes it through. Club totals, the ghost bucket and all seven identities are unchanged by construction",
+   "decide, as a declared choice, whether the positive part is zero-truncated (strict hurdle, P(0) = 1 - pi, loses byte identity at pi = 1) or left as the existing allocation (this prototype)",
+   "decide whether pi should be field-specific (P(>= 1 target) etc.) rather than the any-stat depth rate",
+   "keep eligibility separate: an UNKNOWN_ACTIVE_STATE player is currently a pool member whose eligibility uncertainty is silently folded into p_plays; an official-actives gate would be a second, separate factor",
+   "re-run the ATL@NO baseline and a classic slate with the arm off (identity) and on; the optimiser and candidate scorer then see more zero worlds for backups, which changes p_optimal and exposures",
+   "its own commit, with its own baseline, never in the same commit as a validation change (rule 2)"
+  ]
+ },
+ "AUDIT_LADDER": {
+  "reached": "ADVERSARIAL_TESTED (research prototype); production: NOT_ON_EXECUTION_PATH",
+  "IMPLEMENTED": "yes -- research module; the gated simulator is the production source plus two lines, in memory",
+  "ON_EXECUTION_PATH": "NO -- nothing on the live Showdown or classic path calls it; no production file edited",
+  "SUCCESS_TESTED": "yes -- nfl/tests/test_sc_appear_1_propagation.py: all-pi=1 and no-gate draws byte-identical to production; frozen ATL@NO counts reproduced",
+  "REFUSAL_TESTED": "yes -- empty game, empty pool, missing gate anchor, pi out of range, no scored units",
+  "ADVERSARIAL_TESTED": "yes -- inactive rows with volume never drawn; pi = 0 never receives volume; club totals conserved per world; fit identical with 2025 removed; week-W draws identical after perturbing week >= W outcomes",
+  "PROSPECTIVELY_VALIDATED": "NO"
+ },
+ "seconds": 1542.7
+}

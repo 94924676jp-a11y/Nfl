@@ -54,51 +54,81 @@ def _setup(td: pathlib.Path, with_newer: bool):
     return out, pk
 
 
-def test_01_no_new_evidence_keeps_the_label():
-    print('\n01. the packet the state consumed is the newest: no rebuild, the label stands')
+class _PreGate:
+    """THE FIXTURE PREDATES THE ELIGIBILITY CONTRACT (OD-002, 2026-10-14). The 16:17Z W5 state carries no
+    roster_eligibility record, so classic_release now BLOCKS it (ELIGIBILITY_NOT_APPLIED) -- asserted in test_00. This
+    module tests the evidence WATCH (label transitions on newer packets), so its other checks treat the fixture as a
+    pre-gate slate, exactly as 2026W2-W4 are, and say so here rather than silently."""
+
+    def __enter__(self):
+        from nfl.tools import classic_upload_verify as UV
+        self.UV, self.real = UV, UV.LEGACY_PRE_ROSTER_GATE
+        UV.LEGACY_PRE_ROSTER_GATE = frozenset(self.real | {'2026W5'})
+
+    def __exit__(self, *a):
+        self.UV.LEGACY_PRE_ROSTER_GATE = self.real
+
+
+def test_00_the_fixture_is_blocked_by_the_eligibility_gate_and_nothing_else():
+    print('\n00. OD-002: the pre-contract 16:17Z file is BLOCKED by ELIGIBILITY_NOT_APPLIED, and by nothing else')
+    from nfl.tools import classic_release as R
     with tempfile.TemporaryDirectory() as d:
-        out, pk = _setup(pathlib.Path(d), with_newer=False)
-        o = W.run('2026W5', out_dir=out, pk_dir=pk, now=dt.datetime(2026, 10, 11, 16, 20, tzinfo=UTC))
-        rec = json.loads((out / 'DK_2026W5_EARLY_EVIDENCE_WATCH.json').read_text())
-    check('decision NO_NEW_EVIDENCE', rec['decision'] == 'NO_NEW_EVIDENCE', rec['decision'])
-    check('the 16:17Z file stays CURRENT_BUT_UNCERTIFIED', rec['current_release']['release_state'] == 'CURRENT_BUT_UNCERTIFIED',
-          rec['current_release'])
-    check('no escalation', o.state.value == 'PASS' and 'escalation' not in rec, o.code)
+        out, _pk = _setup(pathlib.Path(d), with_newer=False)
+        rel = R.evaluate('2026W5', latest_packet=TR.PKT_1610, out_dir=out,
+                         now=dt.datetime(2026, 10, 11, 16, 20, tzinfo=UTC))
+    b = rel['reasons']['blocking']
+    check('release BLOCKED, the only blocker ELIGIBILITY_NOT_APPLIED',
+          rel['release_state'] == 'BLOCKED' and len(b) == 1 and b[0].startswith('ELIGIBILITY_NOT_APPLIED'), b)
+
+
+def test_01_no_new_evidence_keeps_the_label():
+    with _PreGate():
+        print('\n01. the packet the state consumed is the newest: no rebuild, the label stands')
+        with tempfile.TemporaryDirectory() as d:
+            out, pk = _setup(pathlib.Path(d), with_newer=False)
+            o = W.run('2026W5', out_dir=out, pk_dir=pk, now=dt.datetime(2026, 10, 11, 16, 20, tzinfo=UTC))
+            rec = json.loads((out / 'DK_2026W5_EARLY_EVIDENCE_WATCH.json').read_text())
+        check('decision NO_NEW_EVIDENCE', rec['decision'] == 'NO_NEW_EVIDENCE', rec['decision'])
+        check('the 16:17Z file stays CURRENT_BUT_UNCERTIFIED', rec['current_release']['release_state'] == 'CURRENT_BUT_UNCERTIFIED',
+              rec['current_release'])
+        check('no escalation', o.state.value == 'PASS' and 'escalation' not in rec, o.code)
 
 
 def test_02_new_evidence_without_launch_escalates_and_marks_the_file_stale():
-    print('\n02. a newer packet and no launch: escalation, and the 16:17Z file reads STALE_FORECAST')
-    with tempfile.TemporaryDirectory() as d:
-        out, pk = _setup(pathlib.Path(d), with_newer=True)
-        o = W.run('2026W5', out_dir=out, pk_dir=pk, now=dt.datetime(2026, 10, 11, 16, 31, tzinfo=UTC))
-        rec = json.loads((out / 'DK_2026W5_EARLY_EVIDENCE_WATCH.json').read_text())
-        rel = json.loads((out / 'DK_2026W5_EARLY_RELEASE.json').read_text())
-    check('decision NEW_EVIDENCE, naming the newest packet', rec['decision'] == 'NEW_EVIDENCE'
-          and rec['newest']['packet_id'] == '2026W5-synthetic-1630Z', rec.get('newest'))
-    check('escalated NEW_EVIDENCE_REBUILD_NOT_LAUNCHED', o.state.value == 'BLOCKED'
-          and rec['escalation']['code'] == 'NEW_EVIDENCE_REBUILD_NOT_LAUNCHED', rec.get('escalation'))
-    check('the 16:17Z file is now STALE_FORECAST, and the release record beside it says so',
-          rec['current_release']['release_state'] == 'STALE_FORECAST' and rel['release_state'] == 'STALE_FORECAST',
-          (rec['current_release'], rel['release_state']))
+    with _PreGate():
+        print('\n02. a newer packet and no launch: escalation, and the 16:17Z file reads STALE_FORECAST')
+        with tempfile.TemporaryDirectory() as d:
+            out, pk = _setup(pathlib.Path(d), with_newer=True)
+            o = W.run('2026W5', out_dir=out, pk_dir=pk, now=dt.datetime(2026, 10, 11, 16, 31, tzinfo=UTC))
+            rec = json.loads((out / 'DK_2026W5_EARLY_EVIDENCE_WATCH.json').read_text())
+            rel = json.loads((out / 'DK_2026W5_EARLY_RELEASE.json').read_text())
+        check('decision NEW_EVIDENCE, naming the newest packet', rec['decision'] == 'NEW_EVIDENCE'
+              and rec['newest']['packet_id'] == '2026W5-synthetic-1630Z', rec.get('newest'))
+        check('escalated NEW_EVIDENCE_REBUILD_NOT_LAUNCHED', o.state.value == 'BLOCKED'
+              and rec['escalation']['code'] == 'NEW_EVIDENCE_REBUILD_NOT_LAUNCHED', rec.get('escalation'))
+        check('the 16:17Z file is now STALE_FORECAST, and the release record beside it says so',
+              rec['current_release']['release_state'] == 'STALE_FORECAST' and rel['release_state'] == 'STALE_FORECAST',
+              (rec['current_release'], rel['release_state']))
 
 
 def test_03_new_evidence_too_close_to_lock_is_refused_and_escalated():
-    print('\n03. a newer packet at 16:50Z with --launch: the pipeline refuses (cannot finish), the watch escalates')
-    real = PL.OUT_DIR
-    with tempfile.TemporaryDirectory() as d:
-        out, pk = _setup(pathlib.Path(d), with_newer=True)
-        try:
-            PL.OUT_DIR = out
-            o = W.run('2026W5', launch=True, out_dir=out, pk_dir=pk, now=dt.datetime(2026, 10, 11, 16, 50, tzinfo=UTC))
-        finally:
-            PL.OUT_DIR = real
-        rec = json.loads((out / 'DK_2026W5_EARLY_EVIDENCE_WATCH.json').read_text())
-        led = json.loads((out / 'DK_2026W5_EARLY_RUN_LEDGER.json').read_text())
-    check('the pipeline was asked, and refused WOULD_NOT_FINISH_BEFORE_LOCK without running a stage',
-          led['STATE'] == 'REFUSED_WOULD_NOT_FINISH_BEFORE_LOCK' and led['stages'] == [], led['STATE'])
-    check('the watch escalates NEW_EVIDENCE_NOT_REBUILT', o.state.value == 'BLOCKED'
-          and rec['escalation']['code'] == 'NEW_EVIDENCE_NOT_REBUILT', rec.get('escalation'))
-    check('and the file the owner holds reads STALE_FORECAST', rec['current_release']['release_state'] == 'STALE_FORECAST')
+    with _PreGate():
+        print('\n03. a newer packet at 16:50Z with --launch: the pipeline refuses (cannot finish), the watch escalates')
+        real = PL.OUT_DIR
+        with tempfile.TemporaryDirectory() as d:
+            out, pk = _setup(pathlib.Path(d), with_newer=True)
+            try:
+                PL.OUT_DIR = out
+                o = W.run('2026W5', launch=True, out_dir=out, pk_dir=pk, now=dt.datetime(2026, 10, 11, 16, 50, tzinfo=UTC))
+            finally:
+                PL.OUT_DIR = real
+            rec = json.loads((out / 'DK_2026W5_EARLY_EVIDENCE_WATCH.json').read_text())
+            led = json.loads((out / 'DK_2026W5_EARLY_RUN_LEDGER.json').read_text())
+        check('the pipeline was asked, and refused WOULD_NOT_FINISH_BEFORE_LOCK without running a stage',
+              led['STATE'] == 'REFUSED_WOULD_NOT_FINISH_BEFORE_LOCK' and led['stages'] == [], led['STATE'])
+        check('the watch escalates NEW_EVIDENCE_NOT_REBUILT', o.state.value == 'BLOCKED'
+              and rec['escalation']['code'] == 'NEW_EVIDENCE_NOT_REBUILT', rec.get('escalation'))
+        check('and the file the owner holds reads STALE_FORECAST', rec['current_release']['release_state'] == 'STALE_FORECAST')
 
 
 def test_04_new_evidence_with_time_launches_the_full_pipeline_with_that_packet():

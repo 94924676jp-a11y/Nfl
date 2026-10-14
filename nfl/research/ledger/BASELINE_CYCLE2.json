@@ -170,6 +170,82 @@
     "nfl/tests/test_quality_gates.py",
     "nfl/tests/test_sunday_run.py"
    ]
+  },
+  "3fc67181": {
+   "modules": 411,
+   "test_functions": 3990,
+   "checks": 18784,
+   "failing_checks": 164,
+   "raised": 88,
+   "zero_check_functions": 0,
+   "blocked_functions": 29,
+   "unrecognised_tallies": 0,
+   "verdict": "FAIL",
+   "red_modules": [
+    "nfl/tests/test_agent_state.py",
+    "nfl/tests/test_autonomy_transport.py",
+    "nfl/tests/test_c1_denominator.py",
+    "nfl/tests/test_capture_deployment_integrity.py",
+    "nfl/tests/test_capture_obligations.py",
+    "nfl/tests/test_capture_prod_deployment.py",
+    "nfl/tests/test_classic_evidence_watch.py",
+    "nfl/tests/test_completeness_ratchet.py",
+    "nfl/tests/test_conservation.py",
+    "nfl/tests/test_contract45_integration.py",
+    "nfl/tests/test_detbuf_conservation.py",
+    "nfl/tests/test_determinism_proof.py",
+    "nfl/tests/test_discovery.py",
+    "nfl/tests/test_discovery_boundary.py",
+    "nfl/tests/test_dossier_migration.py",
+    "nfl/tests/test_draw_coherence.py",
+    "nfl/tests/test_eligibility_gate.py",
+    "nfl/tests/test_execution_lineage.py",
+    "nfl/tests/test_field_model.py",
+    "nfl/tests/test_football_only_arm.py",
+    "nfl/tests/test_full_slate_rehearsal.py",
+    "nfl/tests/test_fullslate_adjudication.py",
+    "nfl/tests/test_gadget_rush.py",
+    "nfl/tests/test_governance_transport.py",
+    "nfl/tests/test_guard_census_is_not_stale.py",
+    "nfl/tests/test_inactives_drill.py",
+    "nfl/tests/test_inactives_substance.py",
+    "nfl/tests/test_integrity_producers.py",
+    "nfl/tests/test_kicker_resolution.py",
+    "nfl/tests/test_live_capture_den_kc.py",
+    "nfl/tests/test_non_g0a_isolation.py",
+    "nfl/tests/test_nonqb_r3.py",
+    "nfl/tests/test_own9_write_guard.py",
+    "nfl/tests/test_p6_false_greens.py",
+    "nfl/tests/test_p7_dag.py",
+    "nfl/tests/test_p7_data_plane.py",
+    "nfl/tests/test_persisted_provenance.py",
+    "nfl/tests/test_pool_entries_separation.py",
+    "nfl/tests/test_preflight.py",
+    "nfl/tests/test_product_orchestration.py",
+    "nfl/tests/test_publication_semantics.py",
+    "nfl/tests/test_q7_panel_nondegeneracy.py",
+    "nfl/tests/test_q9_live_feature_builder.py",
+    "nfl/tests/test_qb2_production.py",
+    "nfl/tests/test_qb_eligibility_den_kc.py",
+    "nfl/tests/test_qb_room_composition.py",
+    "nfl/tests/test_r5_active_pool.py",
+    "nfl/tests/test_rushing_survivorship.py",
+    "nfl/tests/test_sc2_interception_reservation.py",
+    "nfl/tests/test_sc_appear_1_production_path.py",
+    "nfl/tests/test_sc_own_rotation_2.py",
+    "nfl/tests/test_scheduled_workflow_pinning.py",
+    "nfl/tests/test_sealed_corpus_census.py",
+    "nfl/tests/test_spending_gate.py",
+    "nfl/tests/test_stat_contract.py",
+    "nfl/tests/test_sunday_run.py",
+    "nfl/tests/test_system_state.py",
+    "nfl/tests/test_t90_workflow.py",
+    "nfl/tests/test_v1_draw_artifact.py",
+    "nfl/tests/test_v1_rushing_a1.py",
+    "nfl/tests/test_volatility.py"
+   ],
+   "n_red_modules": 61,
+   "tree_written": []
   }
  },
  "diff_f0d2e104_vs_68130941": {
@@ -182,5 +258,43 @@
   ]
  },
  "classification": "nfl/research/ledger/RED_MODULES_68130941.json (every red and raising module, one cause class each)",
- "NOTE": "f0d2e104 is the committed head BEFORE the cycle-2 code (59d9424b..). The cycle-2 head is measured by a fresh full run recorded separately; the production gate (run_suite.py --gate) is a separate result, never a suite result."
+ "NOTE": "f0d2e104 is the committed head BEFORE the cycle-2 code (59d9424b..). The cycle-2 head is measured by a fresh full run recorded separately; the production gate (run_suite.py --gate) is a separate result, never a suite result.",
+ "diff_3fc67181_vs_f0d2e104": {
+  "newly_red": [
+   "nfl/tests/test_classic_evidence_watch.py",
+   "nfl/tests/test_sc_appear_1_production_path.py"
+  ],
+  "no_longer_red": [
+   "nfl/tests/test_showdown_family.py",
+   "nfl/tests/test_uncalled_governance_guards.py",
+   "nfl/tests/test_v1_projection.py",
+   "nfl/tests/test_world_clock.py"
+  ],
+  "newly_red_explained": {
+   "nfl/tests/test_classic_evidence_watch.py": "OD-002 gate: the pre-contract W5 fixture is now BLOCKED by ELIGIBILITY_NOT_APPLIED, masking the watch transitions. Fixed after this run: test_00 asserts the block, the watch checks treat the fixture as pre-gate (19 checks, 0 failing).",
+   "nfl/tests/test_sc_appear_1_production_path.py": "the SC-APPEAR-1 shadow artifact pins proj_v1.py bytes; the PIT kicker change moved them. Re-run on 3fc67181: PRIMARY_RESULT shifts slightly (brier pooled -0.047767 -> -0.046633; positive_count_crps 0.165223 -> 0.162113, n 4484 -> 4478), not attributable to this change alone because game.py, role_state.py and classic_slate_run.py also changed since 2026-10-07. The recorded artifact is kept; the re-run is SC_APPEAR_1_PROPAGATION.RERUN_3fc67181.json. Left RED as a correct staleness signal (ledger SA1-STALE)."
+  }
+ },
+ "production_gate": {
+  "list": "nfl/tests/PRODUCTION_GATE.json (32 modules)",
+  "runs": [
+   {
+    "head": "e0a45d9f+08c8443e working tree (fresh overlay, pre-commit)",
+    "order": "sorted",
+    "verdict": "PASS",
+    "checks": 1443,
+    "blocked": 0,
+    "seconds": 721
+   },
+   {
+    "head": "3fc67181",
+    "order": "shuffled seed 20261014",
+    "verdict": "PASS",
+    "checks": 1716,
+    "blocked": 0,
+    "seconds": 735,
+    "note": "checks rose with the ledger (85 issues checked instead of 55)"
+   }
+  ]
+ }
 }

@@ -1979,6 +1979,30 @@
    "experiment": null,
    "source": "cycle 2 PIT audit (nfl/research/ledger/PIT_AUDIT_CYCLE2.json)",
    "reproducible_fixture": null
+  },
+  {
+   "id": "SA1-STALE",
+   "domain": "research",
+   "title": "SC-APPEAR-1 shadow result was recorded on 2026-10-07 production bytes; a re-run on 3fc67181 moves its primary metrics slightly",
+   "user_visible_consequence": "the recorded shadow numbers do not describe current production; any promotion argument must use a re-run",
+   "evidence": [
+    "nfl/research/appearance/SC_APPEAR_1_PROPAGATION.json",
+    "nfl/research/appearance/SC_APPEAR_1_PROPAGATION.RERUN_3fc67181.json",
+    "nfl/tests/test_sc_appear_1_production_path.py"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P3",
+   "production_path": "SHADOW",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": "nfl/tests/test_sc_appear_1_production_path.py",
+   "test_type": "unit",
+   "blast_radius": "one research result",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 full suite at 3fc67181",
+   "reproducible_fixture": null
   }
  ]
 }
