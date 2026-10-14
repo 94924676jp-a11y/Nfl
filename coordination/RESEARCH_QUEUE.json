@@ -157,6 +157,24 @@
    "created_by": "claude",
    "result_path": null,
    "commit_sha": null
+  },
+  {
+   "task_id": "RES-009",
+   "title": "Capture game-day practice-squad elevation records (week 5 retrospectively, week 6 onward prelock)",
+   "status": "DRAFT",
+   "priority": 1,
+   "authorized": false,
+   "depends_on": [],
+   "objective": "Owner OD-002 (2026-10-14): missing elevation records are not proof of ineligibility. With none captured, every practice-squad player is ELIGIBILITY_UNRESOLVED; on W5 Classic that is 92 players across 16 clubs (nfl/research/contract45/AUDIT_W5_ELIGIBILITY_COVERAGE.md), and every certified release refuses (ELIGIBILITY_UNRESOLVED_MATERIAL). Needed per slate: the clubs' official game-day practice-squad elevations (standard elevations, announced the day before a game), as a JSON list of player names per game, with retrieved_at and source URL, captured BEFORE the release cutoff. Engineering has no network.",
+   "acceptance_tests": [
+    "a JSON list per slate (nfl/dfs/salaries/<slate dir>/elevations/ELEVATIONS_<slate>.json), names as published, with retrieved_at and a source per entry",
+    "an empty list only when the source says no club elevated anyone (an empty list is evidence; a missing file is not)",
+    "for week 5: the elevations actually announced for the 2026-10-11 games, captured from an archived source with its retrieval time recorded (a postgame capture is research evidence only, never a prelock input)",
+    "the original bytes or a cited transcription land unmodified; engineering does NOT reconstruct them"
+   ],
+   "created_by": "claude",
+   "result_path": null,
+   "commit_sha": null
   }
  ]
 }

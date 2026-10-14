@@ -270,11 +270,11 @@
   {
    "task_id": "ENG-014",
    "title": "Fail closed on the direct Showdown path: refuse a run without a roster capture, and a run after kickoff",
-   "status": "DRAFT",
+   "status": "AUTHORIZED",
    "priority": 13,
-   "authorized": false,
+   "authorized": true,
    "depends_on": [],
-   "objective": "showdown_tonight credits reserves when --roster-capture is absent and has no clock check; only showdown_next_slate refuses. Ledger: AVAIL-D2, LOCK-D1. DRAFT: changes live run behaviour or an artifact schema; needs an owner action.",
+   "objective": "showdown_tonight credits reserves when --roster-capture is absent and has no clock check; only showdown_next_slate refuses. Ledger: AVAIL-D2, LOCK-D1. AUTHORIZED by owner directive OD-001 (2026-10-14), decisions 2 and 3.",
    "acceptance_tests": [
     "direct run without a capture is BLOCKED with a named code",
     "direct run after a known kickoff is BLOCKED",
@@ -321,11 +321,11 @@
   {
    "task_id": "ENG-017",
    "title": "Record selector, overlap policy and arm in every Showdown audit; strip inherited NFL_SHOWDOWN_* unless declared",
-   "status": "DRAFT",
+   "status": "AUTHORIZED",
    "priority": 13,
-   "authorized": false,
+   "authorized": true,
    "depends_on": [],
-   "objective": "Which policy built a production file cannot be proven afterwards. Ledger: PROV-D1, ARM-D1. DRAFT: changes live run behaviour or an artifact schema; needs an owner action.",
+   "objective": "Which policy built a production file cannot be proven afterwards. Ledger: PROV-D1, ARM-D1. AUTHORIZED by owner directive OD-001 (2026-10-14), decisions 2 and 3.",
    "acceptance_tests": [
     "audit carries selector / overlap / arm with their source",
     "an undeclared inherited NFL_SHOWDOWN_* value refuses or is named"

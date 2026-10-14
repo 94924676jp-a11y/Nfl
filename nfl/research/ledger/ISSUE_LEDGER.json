@@ -1,7 +1,7 @@
 {
  "schema": "nfl-issue-ledger-1",
- "written_at_utc": "2026-10-13T20:18:13Z",
- "head": "2f510449",
+ "written_at_utc": "2026-10-14T16:41:17Z",
+ "head": "e0a45d9f",
  "vocabulary": {
   "verification": [
    "VERIFIED",
@@ -521,23 +521,25 @@
    "title": "Classic: unelevated practice-squad (DEV) players keep projected volume; blocked only at selection",
    "user_visible_consequence": "active teammates understated",
    "evidence": [
-    "nfl/tools/availability.py:118",
-    "nfl/tools/classic_slate_state.py:351",
-    "nfl/tools/roster_eligibility.py:95"
+    "nfl/tools/roster_eligibility.py",
+    "nfl/tools/classic_slate_state.py",
+    "nfl/tools/showdown_slate_state.py"
    ],
    "verification": "VERIFIED",
    "severity": "P1",
    "production_path": "CLASSIC",
-   "state": "OWNER_GATED",
-   "owner_gate": "CONFLICT between owner ruling 2026-10-11 (\"a roster snapshot alone never zeroes a player\") and the 2026-10-13 mandate (\"no reserve/practice squad usage absent current elevation\")",
-   "guard_test": null,
-   "test_type": "unit+mutation",
+   "state": "FIXED",
+   "guard_test": "nfl/tests/test_roster_eligibility_contract.py",
+   "test_type": "unit+integration+mutation",
    "blast_radius": "",
    "data_rights": "OWN_CODE",
    "depends_on": [],
    "experiment": null,
    "source": "atlas agent 1 (e0adeb91 bug class on Classic)",
-   "reproducible_fixture": null
+   "reproducible_fixture": null,
+   "fix_note": "cycle 2 (owner OD-001, 2026-10-14): owner decision 1 settles the gate for practice-squad players. Shared three-state contract (roster_eligibility.eligibility_state / opportunity_withheld / withheld_status) applied before projection in Classic and Showdown, refined by OD-002: only CONFIRMED_INELIGIBLE players are withheld (zero projection and zero club share proven through role_state -> proj_v1 -> showdown_draws._shares for Classic and to the joint draws for Showdown, each with a power control); ELIGIBILITY_UNRESOLVED players (missing elevation records, absent from the capture) are kept in the forecast, labelled with the missing evidence, never selectable, and block a certified release while they carry projected opportunity. Missing elevation evidence is no longer read as \"nobody elevated\". Audit: nfl/research/contract45/AUDIT_W5_ELIGIBILITY_COVERAGE.md.",
+   "owner_gate_resolved": "CONFLICT between owner ruling 2026-10-11 (\"a roster snapshot alone never zeroes a player\") and the 2026-10-13 mandate (\"no reserve/practice squad usage absent current elevation\")",
+   "owner_gate": null
   },
   {
    "id": "AVAIL-D2",
@@ -545,22 +547,22 @@
    "title": "Showdown roster gate runs only with --roster-capture; the forecast otherwise credits reserves",
    "user_visible_consequence": "contaminated forecast; final gate fails closed only in showdown_next_slate",
    "evidence": [
-    "nfl/tools/showdown_tonight.py:301",
-    "nfl/tools/showdown_run_guards.py:342"
+    "nfl/tools/showdown_tonight.py"
    ],
    "verification": "VERIFIED",
    "severity": "P1",
    "production_path": "SHOWDOWN",
-   "state": "OPEN",
+   "state": "FIXED",
    "owner_gate": null,
-   "guard_test": null,
-   "test_type": "e2e+mutation",
+   "guard_test": "nfl/tests/test_showdown_release_status.py",
+   "test_type": "unit+mutation",
    "blast_radius": "",
    "data_rights": "OWN_CODE",
    "depends_on": [],
    "experiment": null,
    "source": "atlas agent 1, re-read",
-   "reproducible_fixture": null
+   "reproducible_fixture": null,
+   "fix_note": "cycle 2 (owner OD-001, 2026-10-14): ENG-014: a Showdown run without a roster capture is DIAGNOSTIC_NOT_RELEASABLE (NO_ROSTER_CAPTURE): uploads withheld, no receipt. The diagnostic forecast itself still credits reserves; it can never be released."
   },
   {
    "id": "AVAIL-D3",
@@ -755,21 +757,22 @@
    "title": "Showdown lock check lives only in showdown_next_slate; calling showdown_tonight directly bypasses it",
    "user_visible_consequence": "a run after kickoff is not refused on the direct path",
    "evidence": [
-    "nfl/tools/showdown_next_slate.py:318"
+    "nfl/tools/showdown_tonight.py"
    ],
    "verification": "VERIFIED",
    "severity": "P2",
    "production_path": "SHOWDOWN",
-   "state": "OPEN",
+   "state": "FIXED",
    "owner_gate": null,
-   "guard_test": null,
+   "guard_test": "nfl/tests/test_showdown_release_status.py",
    "test_type": "unit+mutation",
    "blast_radius": "",
    "data_rights": "OWN_CODE",
    "depends_on": [],
    "experiment": null,
    "source": "atlas agent 2",
-   "reproducible_fixture": null
+   "reproducible_fixture": null,
+   "fix_note": "cycle 2 (owner OD-001, 2026-10-14): ENG-014: showdown_tonight.kickoff_gate refuses a run after kickoff (RUN_AFTER_KICKOFF) unless --diagnostic, which withholds uploads and writes no receipt."
   },
   {
    "id": "LOCK-D2",
@@ -882,7 +885,8 @@
    "depends_on": [],
    "experiment": null,
    "source": "atlas agent 2",
-   "reproducible_fixture": null
+   "reproducible_fixture": null,
+   "fix_note": "cycle 2 (owner OD-001, 2026-10-14): PARTIAL. showdown_tonight writes EFFECTIVE_CONFIG.json (arm, selector, overlap policy with their source, generator, ladder, inputs and code sha256, cutoff, release status) and refuses an undeclared NFL_SHOWDOWN_* variable (ENG-017). showdown_next_slate and the Classic pipeline do not yet."
   },
   {
    "id": "TEST-D2",
@@ -895,16 +899,17 @@
    "verification": "VERIFIED",
    "severity": "P2",
    "production_path": "TESTS",
-   "state": "OPEN",
+   "state": "FIXED",
    "owner_gate": null,
-   "guard_test": null,
+   "guard_test": "nfl/tests/test_showdown_family.py",
    "test_type": "unit+mutation",
    "blast_radius": "",
    "data_rights": "OWN_CODE",
    "depends_on": [],
    "experiment": null,
    "source": "RESULT_PROJFIX1 notes; cycle 1 suite: test_role_depth_adversarial fixed (TEST-D4), test_showdown_family still red",
-   "reproducible_fixture": null
+   "reproducible_fixture": null,
+   "fix_note": "cycle 2 (owner OD-001, 2026-10-14): the data-cutoff blob is read from PP.PANEL provenance and the roster count from the glob; the admissible check uses a live seal in a temporary root."
   },
   {
    "id": "TEST-D3",
@@ -1022,7 +1027,7 @@
   },
   {
    "owner_gate": null,
-   "guard_test": null,
+   "guard_test": "nfl/tests/test_pit_fail_closed.py",
    "test_type": "unit+mutation",
    "blast_radius": "every replay or backtest run without a PIT manifest",
    "data_rights": "OWN_CODE",
@@ -1042,7 +1047,8 @@
    "severity": "P1",
    "production_path": "ALL",
    "state": "OPEN",
-   "source": "cycle 1: found repairing test_classic_slate_state"
+   "source": "cycle 1: found repairing test_classic_slate_state",
+   "fix_note": "cycle 2 (owner OD-001, 2026-10-14): PARTIAL, NOT CLOSED (OD-002 item 5). Fixed: point_in_time.require_point_in_time: with no manifest, a cutoff earlier than any guarded file's content clock refuses (PIT_LIVE_READ_AFTER_CUTOFF); a manifest later than the run cutoff refuses; Classic and Showdown state builders call it first; replay tests declare pit_exempt and are stamped NOT_POINT_IN_TIME, RELEASABLE false, never written to production paths; nfl/sim fitted models need pins. Mutations M1-M3 caught. Added after the PIT audit (nfl/research/ledger/PIT_AUDIT_CYCLE2.json): the live check now also clocks nfl/derived caches and nfl/sim fitted models; a PIT refusal inside kicker rates propagates; a Classic as_of at/after kickoff is RELEASABLE False; the Classic release record and showdown_tonight refuse a non-releasable state. Open: PIT-D2 (week/date filtering in readers), PIT-D5 (per-slate inputs never time-checked), PIT-D6 (later stages not bound to the manifest), PIT-D7 (fitted files outside nfl/sim), PIT-D8 (pins declared, not proven)."
   },
   {
    "owner_gate": null,
@@ -1163,7 +1169,7 @@
   },
   {
    "owner_gate": null,
-   "guard_test": null,
+   "guard_test": "nfl/tests/test_world_clock.py",
    "test_type": "unit",
    "blast_radius": "",
    "data_rights": "OWN_CODE",
@@ -1180,12 +1186,13 @@
    "verification": "REQUIRES_REPRO",
    "severity": "P2",
    "production_path": "TESTS",
-   "state": "OPEN",
-   "source": "full suite at 68130941"
+   "state": "FIXED",
+   "source": "full suite at 68130941",
+   "fix_note": "cycle 2 (owner OD-001, 2026-10-14): the leakage checks cut at the latest scored game day instead of a fixed 2026-10-01, together with WC-D1."
   },
   {
    "owner_gate": null,
-   "guard_test": null,
+   "guard_test": "nfl/tests/test_v1_projection.py",
    "test_type": "unit",
    "blast_radius": "",
    "data_rights": "OWN_CODE",
@@ -1202,8 +1209,9 @@
    "verification": "REQUIRES_REPRO",
    "severity": "P2",
    "production_path": "TESTS",
-   "state": "OPEN",
-   "source": "full suite at 68130941"
+   "state": "FIXED",
+   "source": "full suite at 68130941",
+   "fix_note": "cycle 2 (owner OD-001, 2026-10-14): the live NYJ assertion is replaced by a synthetic club_rates case; mutation IMPLAUSIBLE_ZERO_P = 0 caught."
   },
   {
    "owner_gate": null,
@@ -1226,11 +1234,12 @@
    "severity": "P1",
    "production_path": "ALL",
    "state": "OPEN",
-   "source": "full suite at 68130941"
+   "source": "full suite at 68130941",
+   "fix_note": "cycle 2 (owner OD-001, 2026-10-14): PARTIAL. The fixture now declares schedules/depth_charts/injuries/weekly_rosters; failing checks 13 -> 5. Remaining: player_draws DECLARED_DRAW_ARTIFACT_INCOMPLETE on the fixture. run_forecast is not reachable from the DFS entry points; load-bearing status unproven."
   },
   {
    "owner_gate": null,
-   "guard_test": null,
+   "guard_test": "nfl/tests/test_uncalled_governance_guards.py",
    "test_type": "unit",
    "blast_radius": "",
    "data_rights": "OWN_CODE",
@@ -1248,12 +1257,13 @@
    "verification": "REQUIRES_REPRO",
    "severity": "P2",
    "production_path": "ALL",
-   "state": "OPEN",
-   "source": "full suite at 68130941"
+   "state": "FIXED",
+   "source": "full suite at 68130941",
+   "fix_note": "cycle 2 (owner OD-001, 2026-10-14): GUARD_REACHABILITY.json regenerated (the census was stale); the test asserts the superseded guard has no production caller."
   },
   {
    "owner_gate": null,
-   "guard_test": null,
+   "guard_test": "nfl/tests/test_quality_gates.py",
    "test_type": "unit",
    "blast_radius": "",
    "data_rights": "OWN_CODE",
@@ -1272,12 +1282,13 @@
    "verification": "VERIFIED",
    "severity": "P2",
    "production_path": "TESTS",
-   "state": "OPEN",
-   "source": "full suite at 68130941"
+   "state": "FIXED",
+   "source": "full suite at 68130941",
+   "fix_note": "cycle 2 (owner OD-001, 2026-10-14): test_fc_firewall_and_projection_source, test_quality_gates and test_sunday_run redirect every writer (projection_source.LEDGER_OUT, portfolio_audit.OUT, BP.STATE_DIR/POINTER, sunday.REPORT, readiness.OUT) to temporary roots; the runner reports no TREE_WRITTEN."
   },
   {
    "owner_gate": null,
-   "guard_test": null,
+   "guard_test": "nfl/tests/test_inactives_propagation.py",
    "test_type": "unit",
    "blast_radius": "",
    "data_rights": "OWN_CODE",
@@ -1295,8 +1306,679 @@
    "verification": "VERIFIED",
    "severity": "P2",
    "production_path": "TESTS",
+   "state": "FIXED",
+   "source": "full suite at 68130941",
+   "fix_note": "cycle 2 (owner OD-001, 2026-10-14): the five functions now count a BLOCKED (named cause) instead of passing on nothing; with a local capture-prod branch the capture-surface module runs 70 checks (see ENV-D2)."
+  },
+  {
+   "id": "PIT-D2",
+   "domain": "point-in-time",
+   "title": "Defence in depth: proj_v1 current-season shares/team volume, DST pbp choice and kicker rates take every captured week, not weeks before the cutoff",
+   "user_visible_consequence": "a replay that reaches these readers without the PIT gate would see later weeks",
+   "evidence": [
+    "nfl/tools/proj_v1.py"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P2",
+   "production_path": "ALL",
    "state": "OPEN",
-   "source": "full suite at 68130941"
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "replays only; live runs read nothing after now",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 (owner OD-001, 2026-10-14)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "PIT-D3",
+   "domain": "point-in-time",
+   "title": "Historical states built in live mode before 2026-10-14 (research_universe, role_ceiling) may contain information after their as_of",
+   "user_visible_consequence": "research results computed on them may be optimistic",
+   "evidence": [
+    "nfl/research/role_ceiling"
+   ],
+   "verification": "REQUIRES_REPRO",
+   "severity": "P1",
+   "production_path": "SHADOW",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "research artifacts, not production",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 (owner OD-001, 2026-10-14)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "PIT-D4",
+   "domain": "point-in-time",
+   "title": "forward_chain held-out absolute numbers are optimistic (PRATES, int_rate and pos_of are full-period)",
+   "user_visible_consequence": "absolute held-out MAE is not out-of-sample; paired comparisons on identical inputs stand",
+   "evidence": [
+    "nfl/tools/forward_chain.py"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P2",
+   "production_path": "SHADOW",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 (owner OD-001, 2026-10-14)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "WC-D1",
+   "domain": "point-in-time",
+   "title": "world_clock.latest_completed_in_evidence counted game days on or after the as_of",
+   "user_visible_consequence": "semantic freshness could be satisfied by a game played after the cutoff",
+   "evidence": [
+    "nfl/production/world_clock.py"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P2",
+   "production_path": "ALL",
+   "state": "FIXED",
+   "owner_gate": null,
+   "guard_test": "nfl/tests/test_world_clock.py",
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 (owner OD-001, 2026-10-14)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "SEAL-D1",
+   "domain": "point-in-time",
+   "title": "File-mtime clocks are unreliable in a fresh checkout (every file carries the checkout time)",
+   "user_visible_consequence": "a seal or freshness check keyed on mtime can read every file as just written",
+   "evidence": [
+    "nfl/warehouse/point_in_time.py"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P2",
+   "production_path": "ALL",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 (owner OD-001, 2026-10-14)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "TEST-D10",
+   "domain": "tests",
+   "title": "test_point_in_time functions took parameters; the runner called them bare and half the checks never ran",
+   "user_visible_consequence": "16 of 32 point-in-time checks were silently not executed",
+   "evidence": [
+    "nfl/tests/test_point_in_time.py"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P2",
+   "production_path": "TESTS",
+   "state": "FIXED",
+   "owner_gate": null,
+   "guard_test": "nfl/tests/test_point_in_time.py",
+   "test_type": "unit",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 (owner OD-001, 2026-10-14)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "ENV-D2",
+   "domain": "tests",
+   "title": "No local capture-prod branch in a fresh checkout; the capture-surface module BLOCKS instead of running",
+   "user_visible_consequence": "70 capture-surface checks are not run unless the branch is created locally",
+   "evidence": [
+    "nfl/tests/test_capture_surface_is_executable.py"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P3",
+   "production_path": "TESTS",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 (owner OD-001, 2026-10-14)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "ELIG-D1",
+   "domain": "availability",
+   "title": "An identity-unresolved DK player is still projected (PROJECTED_COLD_START); the identity fallback ran after and over-wrote the eligibility withholding",
+   "user_visible_consequence": "W5: 7 eligibility-withheld players would have received cold-start projections",
+   "evidence": [
+    "nfl/tools/classic_slate_state.py"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P1",
+   "production_path": "CLASSIC",
+   "state": "FIXED",
+   "owner_gate": null,
+   "guard_test": "nfl/tests/test_roster_eligibility_contract.py",
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 (owner OD-001, 2026-10-14)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "ELIG-D2",
+   "domain": "availability",
+   "title": "Classic vacates a withheld player's chart rank (out_gsis); Showdown's _out_gsis does not include roster-withheld players",
+   "user_visible_consequence": "a Showdown next-man-up can keep rank 2 behind a withheld player (affects depth context, not his zero opportunity)",
+   "evidence": [
+    "nfl/tools/showdown_slate_state.py"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P2",
+   "production_path": "SHOWDOWN",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 (owner OD-001, 2026-10-14)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "ELIG-D3",
+   "domain": "availability",
+   "title": "RES/EXE/CUT treatment differs between the pipelines when a Classic slate declares corroboration",
+   "user_visible_consequence": "the same reserve player can be absent in Showdown and carried in Classic",
+   "evidence": [
+    "nfl/tools/classic_slate_state.py",
+    "nfl/tools/showdown_tonight.py"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P2",
+   "production_path": "ALL",
+   "state": "FIXED",
+   "owner_gate": null,
+   "guard_test": "nfl/tests/test_roster_reserve_absent.py",
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 (owner OD-001, 2026-10-14)",
+   "reproducible_fixture": null,
+   "fix_note": "cycle 2 (owner OD-001, 2026-10-14): resolved by OD-002 -- an authoritative capture showing RES/EXE/CUT is actionable in Classic as in Showdown without a corroboration list; a reported activation against it is ELIGIBILITY_CONFLICT, left as the incumbent had him, and refuses release (W5: 49 absent, 2 conflicts)"
+  },
+  {
+   "id": "PERF-D1",
+   "domain": "performance",
+   "title": "qb_allocation._depth_chart_vintages json-encodes every vintage-manifest row once per depth-chart blob, per call",
+   "user_visible_consequence": "99 MB / 12,883-row manifest x 78 blobs: test_depth_chart_vintage_selection > 1 h in the f0d2e104 suite (about 5 min on the smaller September manifest); every captured_depth_chart call pays it",
+   "evidence": [
+    "nfl/production/nonqb/qb_allocation.py:116"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P2",
+   "production_path": "ALL",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 (owner OD-001, 2026-10-14)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "CAP-D1",
+   "domain": "capture",
+   "title": "live_game_evidence accepts only the wording persisted_uncompressed_bytes in sha256_is_of; 3,055 manifest rows say uncompressed_bytes",
+   "user_visible_consequence": "those rows are refused as unverifiable; whether their digest covers the persisted blob is undecided",
+   "evidence": [
+    "nfl/capture/live_game_evidence.py:285"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P2",
+   "production_path": "SHADOW",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 red-module classification of the 68130941 suite (read-only agent; RED_MODULES_68130941.json)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "CAP-D2",
+   "domain": "capture",
+   "title": "coverage.py compares the decompressed blob with a digest that, for 4 pbp rows, is of the .gz file",
+   "user_visible_consequence": "intact pbp captures reported PERSISTED_CONTENT_SHA256_MISMATCH",
+   "evidence": [
+    "nfl/capture/coverage.py:262"
+   ],
+   "verification": "REQUIRES_REPRO",
+   "severity": "P2",
+   "production_path": "SHADOW",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 red-module classification of the 68130941 suite (read-only agent; RED_MODULES_68130941.json)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "RATCHET-D1",
+   "domain": "governance",
+   "title": "Completeness ratchets grew: 263 new untested refusal codes, orphaned guard module projection_source.py, FIXTURE_PINNED 24 -> 50",
+   "user_visible_consequence": "refusal codes without a test that trips them",
+   "evidence": [
+    "nfl/tests/test_completeness_ratchet.py"
+   ],
+   "verification": "REQUIRES_REPRO",
+   "severity": "P2",
+   "production_path": "TESTS",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 red-module classification of the 68130941 suite (read-only agent; RED_MODULES_68130941.json)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "DET-D1",
+   "domain": "determinism",
+   "title": "Modules outside nfl/identity call git for working-tree state (classic_release, showdown_run_guards, commit_claim)",
+   "user_visible_consequence": "a result can depend on the checkout state, not only on the inputs",
+   "evidence": [
+    "nfl/tools/classic_release.py:163",
+    "nfl/tools/showdown_run_guards.py:191"
+   ],
+   "verification": "REQUIRES_REPRO",
+   "severity": "P2",
+   "production_path": "ALL",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 red-module classification of the 68130941 suite (read-only agent; RED_MODULES_68130941.json)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "INTEG-D1",
+   "domain": "governance",
+   "title": "Two conservation invariant codes are absent from GATE.ADVERTISED_INTEGRITY / OBSERVED_INTEGRITY (gate.py is protected)",
+   "user_visible_consequence": "a conservation failure is not advertised by the review gate",
+   "evidence": [
+    "nfl/production/review/gate.py:112"
+   ],
+   "verification": "REQUIRES_REPRO",
+   "severity": "P2",
+   "production_path": "ALL",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 red-module classification of the 68130941 suite (read-only agent; RED_MODULES_68130941.json)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "DAG-D1",
+   "domain": "point-in-time",
+   "title": "Undeclared vintage reads (usage_vintage.py, early_only.py) and undeclared sources (pbp, dk_entries, dk_salaries_early) in the capture registry",
+   "user_visible_consequence": "the data-plane DAG cannot prove which vintage a run read",
+   "evidence": [
+    "nfl/production/universe/usage_vintage.py:107",
+    "nfl/dfs/salaries/early_only.py:122",
+    "nfl/capture/registry.py"
+   ],
+   "verification": "REQUIRES_REPRO",
+   "severity": "P2",
+   "production_path": "ALL",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 red-module classification of the 68130941 suite (read-only agent; RED_MODULES_68130941.json)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "FIREWALL-D2",
+   "domain": "firewall",
+   "title": "showdown_next_slate runs the research ownership shadow as a subprocess (FIREWALL-D1 shape)",
+   "user_visible_consequence": "a research module executes on the production path; selection appears not to read it",
+   "evidence": [
+    "nfl/tools/showdown_next_slate.py:456"
+   ],
+   "verification": "REQUIRES_REPRO",
+   "severity": "P2",
+   "production_path": "SHOWDOWN",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 red-module classification of the 68130941 suite (read-only agent; RED_MODULES_68130941.json)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "QBROOM-D1",
+   "domain": "research",
+   "title": "research/postgame.py ignores layers.qb.row_teams carried by showdown_live seals",
+   "user_visible_consequence": "QB room composition misread in postgame research",
+   "evidence": [
+    "nfl/research/postgame.py:338"
+   ],
+   "verification": "REQUIRES_REPRO",
+   "severity": "P3",
+   "production_path": "SHADOW",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 red-module classification of the 68130941 suite (read-only agent; RED_MODULES_68130941.json)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "REHEARSAL-D1",
+   "domain": "simulation",
+   "title": "Full-slate week-1 rehearsal: all 16 games refuse (QB dropbacks do not close in 337 of 400 cells; feature_build unimplemented)",
+   "user_visible_consequence": "no full-slate end-to-end path passes its own rehearsal",
+   "evidence": [
+    "nfl/tests/test_full_slate_rehearsal.py"
+   ],
+   "verification": "REQUIRES_REPRO",
+   "severity": "P1",
+   "production_path": "ALL",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 red-module classification of the 68130941 suite (read-only agent; RED_MODULES_68130941.json)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "DEP-D1",
+   "domain": "simulation",
+   "title": "External-report correlations hard-coded in dependence.py (labelled, reported only)",
+   "user_visible_consequence": "a reported comparison rests on typed-in constants",
+   "evidence": [
+    "nfl/production/dependence.py:307"
+   ],
+   "verification": "REQUIRES_REPRO",
+   "severity": "P3",
+   "production_path": "SHADOW",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 red-module classification of the 68130941 suite (read-only agent; RED_MODULES_68130941.json)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "PBP-D1",
+   "domain": "point-in-time",
+   "title": "kicking.py globs play-by-play without de-duplicating overlapping vintages",
+   "user_visible_consequence": "a game in two vintages may be counted twice in kicker rates",
+   "evidence": [
+    "nfl/production/kicking.py:108"
+   ],
+   "verification": "REQUIRES_REPRO",
+   "severity": "P2",
+   "production_path": "ALL",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 red-module classification of the 68130941 suite (read-only agent; RED_MODULES_68130941.json)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "SEALED-D1",
+   "domain": "research",
+   "title": "sealed_index.live_draw_files counts any player_draws.npz, including a refused run and a derived non-board artifact (DET_BUF)",
+   "user_visible_consequence": "corpus counts include two folders that are not boards",
+   "evidence": [
+    "nfl/research/sealed_index.py:229"
+   ],
+   "verification": "REQUIRES_REPRO",
+   "severity": "P3",
+   "production_path": "SHADOW",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 red-module classification of the 68130941 suite (read-only agent; RED_MODULES_68130941.json)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "ELIG-D4",
+   "domain": "availability",
+   "title": "Roster captures can predate the last pre-game transaction window (W5: 33.3 h before kickoff, before the Saturday activations)",
+   "user_visible_consequence": "a reserve status that changed after the capture is treated as current; the two W5 conflicts are exactly that case. Freshness is now recorded (roster_source_freshness), not yet acted on",
+   "evidence": [
+    "nfl/research/contract45/AUDIT_W5_ELIGIBILITY_COVERAGE.md",
+    "nfl/tools/roster_eligibility.py"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P1",
+   "production_path": "ALL",
+   "state": "OWNER_GATED",
+   "owner_gate": "OD-002 \"sufficiently current\": which roster/transaction evidence is current enough at a release cutoff (a capture after the final pre-game transaction window, or a declared transactions feed covering the gap)",
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 (owner OD-001, 2026-10-14)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "ELIG-D5",
+   "domain": "availability",
+   "title": "No game-day elevation records are captured for any slate; every practice-squad player is ELIGIBILITY_UNRESOLVED",
+   "user_visible_consequence": "every certified release refuses on ELIGIBILITY_UNRESOLVED_MATERIAL (W5: 99 unresolved, all projected) until elevation records exist",
+   "evidence": [
+    "coordination/RESEARCH_QUEUE.json",
+    "nfl/research/contract45/AUDIT_W5_ELIGIBILITY_COVERAGE.md"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P1",
+   "production_path": "ALL",
+   "state": "BLOCKED_DATA",
+   "owner_gate": "RES-009: game-day elevation records are captured outside this checkout",
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 (owner OD-001, 2026-10-14)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "PIT-D5",
+   "domain": "point-in-time",
+   "title": "Per-slate inputs are never time-checked (Showdown depth chart, designations, inactives, starters, roster capture, transactions, elevations; Classic evidence packet received_at only present-checked; DK pool)",
+   "user_visible_consequence": "a replay can be fed evidence written after its cutoff",
+   "evidence": [
+    "nfl/tools/showdown_tonight.py",
+    "nfl/tools/sunday_evidence.py:99"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P2",
+   "production_path": "ALL",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 PIT audit (nfl/research/ledger/PIT_AUDIT_CYCLE2.json)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "PIT-D6",
+   "domain": "point-in-time",
+   "title": "Stages after the state are not bound to the manifest; draws, worlds, book, seal and receipt do not record it",
+   "user_visible_consequence": "a stage run by hand without NFL_PIT_MANIFEST reads derived and fitted files unchecked",
+   "evidence": [
+    "nfl/tools/showdown_run_guards.py:198",
+    "nfl/tools/classic_slate_run.py"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P2",
+   "production_path": "ALL",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 PIT audit (nfl/research/ledger/PIT_AUDIT_CYCLE2.json)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "PIT-D7",
+   "domain": "point-in-time",
+   "title": "Fitted files outside nfl/sim are never pinned (MARKET_VOLUME, PM1_TABLE, PM3_PHI, REDISTRIBUTION_STUDY, ECW2_INPUTS)",
+   "user_visible_consequence": "CORRECTED_V1 arm and the market-volume reader can read refits made after a cutoff",
+   "evidence": [
+    "nfl/tools/market_response.py:55",
+    "nfl/sim/participation.py:51"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P3",
+   "production_path": "ALL",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 PIT audit (nfl/research/ledger/PIT_AUDIT_CYCLE2.json)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "PIT-D8",
+   "domain": "point-in-time",
+   "title": "Manifest pins for derived and fitted files are declared, not proven to be built from admitted captures",
+   "user_visible_consequence": "a pinned cache built from post-cutoff data passes a sealed replay",
+   "evidence": [
+    "nfl/warehouse/point_in_time.py"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P2",
+   "production_path": "ALL",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 PIT audit (nfl/research/ledger/PIT_AUDIT_CYCLE2.json)",
+   "reproducible_fixture": null
+  },
+  {
+   "id": "PIT-D9",
+   "domain": "point-in-time",
+   "title": "The Classic run rewrites the pinned nfl/derived/DST_RATES.json on every run (Showdown redirects it)",
+   "user_visible_consequence": "a sealed replay changes a pinned cache it later reads",
+   "evidence": [
+    "nfl/tools/dst_model.py"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P3",
+   "production_path": "CLASSIC",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "unit+mutation",
+   "blast_radius": "",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "cycle 2 PIT audit (nfl/research/ledger/PIT_AUDIT_CYCLE2.json)",
+   "reproducible_fixture": null
   }
  ]
 }
