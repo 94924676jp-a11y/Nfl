@@ -147,9 +147,18 @@ def t_gate_is_a_fail_not_a_deferral():
     return 'FAIL, so a product mode cannot read READY through it'
 
 
+def _live_cut():
+    """TEST-D7 (2026-10-14): the leakage checks used a FIXED cutoff of 2026-10-01 against the LIVE schedule, so once
+    games after that date were played their real scores read as leakage and the seeded games already had scores. The
+    cutoff is now the latest gameday with a recorded result: every game after it is genuinely unplayed, and the guard
+    is still exercised on the real tree."""
+    played = [r['gameday'] for r in _sched() if r.get('gameday') and str(r.get('home_score') or '').strip() not in ('', 'None')]
+    return max(played)
+
+
 @check('the leakage guard passes on the real tree, having examined a non-zero number of games')
 def t_leakage_clean_now():
-    o = W.assert_no_post_cutoff_outcomes('2026-10-01')
+    o = W.assert_no_post_cutoff_outcomes(_live_cut())
     assert o.state is State.PASS, o
     assert o.code == 'NO_POST_CUTOFF_OUTCOME', o.code
     assert o.evidence['n_future_games_examined'] > 100, o.evidence
@@ -160,9 +169,9 @@ def t_leakage_clean_now():
 @check('LOAD-BEARING: a seeded future SCORE in the schedule is caught')
 def t_leakage_schedule_seeded():
     rows = copy.deepcopy(_sched())
-    target = next(r for r in rows if r['gameday'] > '2026-10-01')
+    target = next(r for r in rows if r['gameday'] > _live_cut())
     target['home_score'] = '31'
-    o = W.assert_no_post_cutoff_outcomes('2026-10-01', rows=rows, team_game_rows=[])
+    o = W.assert_no_post_cutoff_outcomes(_live_cut(), rows=rows, team_game_rows=[])
     observe('nfl.production.world_clock:assert_no_post_cutoff_outcomes:POST_CUTOFF_OUTCOME_PRESENT', o)
     assert o.state is State.FAIL, o
     assert o.code == 'POST_CUTOFF_OUTCOME_PRESENT', o.code
@@ -173,9 +182,9 @@ def t_leakage_schedule_seeded():
 @check('LOAD-BEARING: a seeded future STAT in TEAM_GAME is caught')
 def t_leakage_team_game_seeded():
     rows = _sched()
-    fut = next(r for r in rows if r['gameday'] > '2026-10-01')
+    fut = next(r for r in rows if r['gameday'] > _live_cut())
     seeded = [{'game_id': fut['game_id'], 'club': fut['home_team'], 'points': 24}]
-    o = W.assert_no_post_cutoff_outcomes('2026-10-01', rows=rows, team_game_rows=seeded)
+    o = W.assert_no_post_cutoff_outcomes(_live_cut(), rows=rows, team_game_rows=seeded)
     assert o.state is State.FAIL, o
     assert o.code == 'POST_CUTOFF_OUTCOME_PRESENT', o.code
     assert o.evidence['by_field'].get('points') == 1, o.evidence['by_field']
@@ -185,14 +194,14 @@ def t_leakage_team_game_seeded():
 @check('the PENDING sentinel is treated as absent, and a real zero is NOT')
 def t_pending_vs_zero():
     rows = _sched()
-    fut = next(r for r in rows if r['gameday'] > '2026-10-01')
+    fut = next(r for r in rows if r['gameday'] > _live_cut())
     pend = [{'game_id': fut['game_id'], 'club': fut['home_team'], 'points': W.PENDING}]
-    o = W.assert_no_post_cutoff_outcomes('2026-10-01', rows=rows, team_game_rows=pend)
+    o = W.assert_no_post_cutoff_outcomes(_live_cut(), rows=rows, team_game_rows=pend)
     assert o.state is State.PASS, o
     # A shutout is a real outcome and must still be caught. This is the half of the distinction that
     # a falsiness check would get wrong.
     zero = [{'game_id': fut['game_id'], 'club': fut['home_team'], 'points': 0}]
-    o2 = W.assert_no_post_cutoff_outcomes('2026-10-01', rows=rows, team_game_rows=zero)
+    o2 = W.assert_no_post_cutoff_outcomes(_live_cut(), rows=rows, team_game_rows=zero)
     assert o2.state is State.FAIL, o2
     assert o2.evidence['by_field'].get('points') == 1, o2.evidence
     return 'PENDING passes, points=0 is caught as the real outcome it is'

@@ -549,7 +549,7 @@ def final_verify(cfg, cfg_path, hashes, ver, L, P, sd, pre, env, prop_seal_ok, r
                                            (_REPO / cfg['roster_capture']) if cfg.get('roster_capture') else None,
                                            int(cfg.get('season') or cfg['tag'].rsplit('_', 1)[-1][:4]),
                                            int(cfg.get('week') or cfg['tag'].rsplit('W', 1)[-1]), _ld('official_inactives', []),
-                                           _ld('transactions', {}), _ld('elevations', []))
+                                           _ld('transactions', {}), _ld('elevations', None))
     blockers += eb
     if cfg.get('rehearsal'):
         blockers.append('REHEARSAL_NOT_LIVE (kickoff and scenario are rehearsal values; never READY)')

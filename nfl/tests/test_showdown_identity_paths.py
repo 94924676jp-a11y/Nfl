@@ -75,16 +75,15 @@ def test_draws_are_rekeyed_to_the_dk_club_and_identical_codes_are_untouched():
 
 def _build(roster_blocked=None):
     R = _REPO / 'nfl/dfs/salaries/raw/showdown_atl_no_2026W4'
-    saved = SSS.OUT, SSS.TEAM_GAME
-    tmp = pathlib.Path(tempfile.mkdtemp(prefix='sss_identity_'))
-    SSS.OUT = tmp / saved[0].name
-    SSS.TEAM_GAME = tmp / 'TEAM_GAME.json'                  # the warehouse as it stood before the game (8feac0f3)
-    SSS.TEAM_GAME.write_bytes(subprocess.run(['git', 'show', '8feac0f3:nfl/warehouse/TEAM_GAME.json'], cwd=_REPO,
-                                             capture_output=True, check=True).stdout)
+    saved = SSS.OUT
+    SSS.OUT = pathlib.Path(tempfile.mkdtemp(prefix='sss_identity_')) / saved.name
     try:
-        return SSS.build(R / 'DKEntries_ATL_NO_SHOWDOWN_2026W4.fd0c1faa2271ca66.csv', roster_blocked=roster_blocked)
+        from nfl.tests._pit import vintage_team_game
+        with vintage_team_game('8feac0f3'):      # the warehouse as the ATL@NO slate saw it
+            return SSS.build(R / 'DKEntries_ATL_NO_SHOWDOWN_2026W4.fd0c1faa2271ca66.csv', roster_blocked=roster_blocked,
+                             pit_exempt='LOGIC_TEST: frozen-slate fixture on today\'s tree; not a forecast (PIT-D1)')
     finally:
-        SSS.OUT, SSS.TEAM_GAME = saved
+        SSS.OUT = saved
 
 
 def test_roster_blocked_player_is_absent_before_projection_and_only_him():

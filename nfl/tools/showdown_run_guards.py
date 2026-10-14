@@ -330,7 +330,7 @@ ELIGIBILITY_PREFIXES = ('VERIFIER_VIOLATIONS', 'UNCLASSIFIED_PLAYERS', 'BLOCKED_
 
 
 def upload_roster_eligibility(upload_csv, export, roster_capture, season, week, inactives=(), transactions=None,
-                              elevations=()):
+                              elevations=None):
     """Release gate (owner directive 2026-10-08, TB@DAL): every player in the upload needs POSITIVE roster evidence.
 
     Uses nfl.tools.roster_eligibility.classify (ACT, or DEV with an elevation record; everything else blocked by name).
@@ -347,7 +347,7 @@ def upload_roster_eligibility(upload_csv, export, roster_capture, season, week, 
         return ([f'ROSTER_ELIGIBILITY_UNVERIFIED (roster capture has no rows for {season} week {week})'],
                 {'status': 'UNVERIFIED', 'reason': 'EMPTY_ROSTER_WEEK'})
     pool = E.dk_pool(export)
-    res = E.classify(pool, rows, inactives or (), transactions or {}, elevations or ())
+    res = E.classify(pool, rows, inactives or (), transactions or {}, elevations)
     by_id = {i: k for k, v in pool.items() for i in v['ids']}
     bad, n_lineups, unknown_ids = {}, 0, set()
     allr = list(_csv.reader(open(upload_csv, encoding='utf-8-sig')))

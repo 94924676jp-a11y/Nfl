@@ -35,22 +35,12 @@ DEPTH = {'S': {'pregame_rank': 1}}
 
 
 def _w4_build(*a, **kw):
-    """The week-4 replay at its own vintage (TEST-D2/PIT-D1, 2026-10-13). TEAM_GAME is point-in-time only under
-    NFL_PIT_MANIFEST; read live it now records week 4 as PLAYED, and the builder rightly finds no unplayed game. This
-    reads TEAM_GAME as of 8feac0f3 (2026-10-01), the last warehouse commit before the as_of 2026-10-04T05:00Z. No row
-    is edited by hand."""
-    import subprocess
-    import tempfile
-    saved = C.SS.TEAM_GAME
-    tg = pathlib.Path(tempfile.mkdtemp(prefix='classic_w4_')) / 'TEAM_GAME.json'
-    tg.write_bytes(subprocess.run(['git', 'show', '8feac0f3:nfl/warehouse/TEAM_GAME.json'], cwd=_REPO,
-                                  capture_output=True, check=True).stdout)
-    C.SS.TEAM_GAME = tg
-    try:
-        return C.build(*a, **kw)
-    finally:
-        C.SS.TEAM_GAME = saved
-
+    """The week-4 fixture on today's tree, declared NOT a point-in-time replay (PIT-D1): live mode refuses a past as_of,
+    and a faithful replay needs the derived caches as of 2026-10-04, which only a worktree at that commit has. The state
+    is stamped NOT_POINT_IN_TIME and never written. These checks test QB-depth logic, not a forecast."""
+    from nfl.tests._pit import vintage_team_game
+    with vintage_team_game('8feac0f3'):          # the warehouse as the week-4 slate saw it (last commit before as_of)
+        return C.build(*a, pit_exempt='LOGIC_TEST: frozen-slate fixture on today\'s tree; not a forecast (PIT-D1)', **kw)
 
 def test_01_a_reported_out_starter_vacates_rank_one():
     r = C._qb_rank('QB', 'CHI', 'B', CHART, DEPTH, out_gsis={'W'})

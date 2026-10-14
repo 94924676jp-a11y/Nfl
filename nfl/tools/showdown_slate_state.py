@@ -285,8 +285,8 @@ def chart_from_capture(csv_path, clubs, capture_id):
     return out
 
 
-def build(export, *, designations=None, official_inactives=None, roster_blocked=None,
-          confirmed_starters=None, depth_chart=None) -> Outcome:
+def build(export, *, designations=None, official_inactives=None, roster_blocked=None, roster_eligibility_state=None,
+          confirmed_starters=None, depth_chart=None, pit_exempt: str = None) -> Outcome:
     """Emit the POST-shaped state for one showdown slate.
 
     `designations` is {player name: 'OUT' | 'DOUBTFUL' | 'QUESTIONABLE' | 'NO_DESIGNATION'} from a team
@@ -307,6 +307,27 @@ def build(export, *, designations=None, official_inactives=None, roster_blocked=
     # The game id the warehouse uses. Derived from the file's own clubs and date, then checked to
     # exist rather than trusted.
     kick = dt.datetime.fromisoformat(slate['kickoff_et_naive'])
+    # POINT IN TIME, FAIL CLOSED (PIT-D1; owner D-12 2026-10-14). This state's evidence cutoff is the earlier of now and
+    # kickoff. Without a sealed manifest, a build whose cutoff predates data already on disk (a replay, or any run after
+    # kickoff) would silently read the future, so it refuses; with a manifest the manifest governs every read.
+    from zoneinfo import ZoneInfo
+    kick_utc = kick.replace(tzinfo=ZoneInfo('America/New_York')).astimezone(dt.timezone.utc)
+    pit_cut = min(dt.datetime.now(dt.timezone.utc), kick_utc).strftime('%Y-%m-%dT%H:%M:%SZ')
+    if pit_exempt:
+        # LOGIC tests on a frozen slate only (keyword, stated reason): stamped NOT_POINT_IN_TIME and never allowed to
+        # land at the production state path that portfolios and uploads read.
+        if pathlib.Path(OUT).resolve() == (_REPO / 'nfl/dfs/salaries/SHOWDOWN_TONIGHT_STATE.json').resolve():
+            return Outcome.blocked('PIT_EXEMPT_STATE_NOT_WRITABLE_TO_PRODUCTION',
+                                   f'pit_exempt={pit_exempt!r} but the state would be written to {OUT}', cause=Cause.DATA)
+        live = PIT.live_reads_after_cutoff(pit_cut)
+        pit_check = {'mode': 'NOT_POINT_IN_TIME', 'reason': str(pit_exempt), 'cutoff_utc': pit_cut,
+                     'n_live_reads_after_cutoff': live['n'], 'RELEASABLE': False}
+    else:
+        try:
+            pit_check = PIT.require_point_in_time(pit_cut, f'showdown slate state {away}@{home}')
+        except PIT.PITLiveReadAfterCutoff as e:
+            return Outcome.blocked('PIT_LIVE_READ_AFTER_CUTOFF', str(e), cause=Cause.DATA, cutoff_utc=pit_cut)
+        pit_check = {k: v for k, v in pit_check.items() if k != 'items'}
     sched_week = None
     art = json.loads(TEAM_GAME.read_text()) if TEAM_GAME.exists() else {'rows': []}
     rows = art['rows'] if isinstance(art['rows'], list) else list(art['rows'].values())
@@ -434,7 +455,12 @@ def build(export, *, designations=None, official_inactives=None, roster_blocked=
             # play, so he is absent HERE, before the projection, and his share is reallocated like any absence. Until
             # 2026-10-12 these players were excluded only at lineup selection while the simulator still gave them
             # opportunity (BUF@LAR: 14 players, 3.4 projected DK, among them Ronnie Rivers RES and Terrance Ferguson RES).
-            status, tier = AV.NOT_ON_ACTIVE_ROSTER_CAPTURED, AV.TIER_ROSTER_STATUS
+            # The label names the evidence (OD-002): confirmed not elevated, or a roster list. Only a CONFIRMED
+            # ineligible player is passed here; a caller that supplies no eligibility state keeps the incumbent label.
+            from nfl.tools import roster_eligibility as _RE
+            _es = (roster_eligibility_state or {}).get(nm)
+            status, tier = (_RE.withheld_status(_es, roster_blocked[nm]) if _es else
+                            (AV.NOT_ON_ACTIVE_ROSTER_CAPTURED, AV.TIER_ROSTER_STATUS))
         elif nm in officials:
             # HIGH CONFIDENCE, NOT CONFIRMED. The inactive list reaches us relayed -- beat reporters
             # and an aggregator -- not as an official document this system captured. The standing rule
@@ -494,6 +520,7 @@ def build(export, *, designations=None, official_inactives=None, roster_blocked=
             'current_availability': {
                 'status': status, 'tier': tier,
                 'designation': desig.get(nm),
+                'eligibility_state': (roster_eligibility_state or {}).get(nm),
                 'IS_NOT': ('a game-day inactive decision unless the status is CONFIRMED_INACTIVE, '
                            'which requires a captured official document'),
             },
@@ -511,6 +538,7 @@ def build(export, *, designations=None, official_inactives=None, roster_blocked=
         # made the simulator miss the football centre keyed 'BUF@LA'.
         'away': S.corpus_team(away), 'home': S.corpus_team(home), 'away_dk': away, 'home_dk': home,
         'kickoff_et_naive': slate['kickoff_et_naive'],
+        'point_in_time': pit_check,
         # S._rel is the non-raising form. pathlib.relative_to throws when the path is already
         # relative or sits outside the repo, and this exact defect has now bitten three times in this
         # tree -- lineage.verify, showdown s_emit_csv, and here. A reporting convenience must not be
@@ -556,6 +584,7 @@ def build(export, *, designations=None, official_inactives=None, roster_blocked=
             'designations_not_matched_to_the_slate': unmatched_desig,
             'evidence_names_aliased_to_dk': aliased,
             'roster_blocked_before_projection': dict(roster_blocked or {}),
+            'roster_eligibility_state': dict(roster_eligibility_state or {}),
         },
         'specialist_safety': {
             'auto_enabled': SPECIALIST_AUTO,

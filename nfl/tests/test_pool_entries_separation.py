@@ -85,7 +85,7 @@ def test_research_state_is_never_written_to_the_production_path():
     from nfl.tools import classic_slate_state as CS
     from sportsplatform.governance.outcome import Outcome
     bad = Outcome.ok('SOMETHING_ELSE', value=[])
-    o = CS.build('2026W5', as_of='2026-10-09T15:30:00Z', research_universe=bad)
+    o = CS.build('2026W5', as_of='2026-10-09T15:30:00Z', research_universe=bad, pit_exempt='LOGIC_TEST: frozen-slate fixture on today\'s tree; not a forecast (PIT-D1)')
     check(o.state.value != 'PASS' and o.code == 'CLASSIC_STATE_RESEARCH_UNIVERSE_INVALID',
           f'a universe that is not a research universe is refused ({o.code})')
 

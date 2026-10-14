@@ -176,7 +176,7 @@ def run(slate_id: str, tag: str = '', write: bool = True) -> Outcome:
         _ld = lambda k, d: json.loads((_REPO / f[k]).read_text()) if f.get(k) else d  # noqa: E731
         rb, rrep = G.upload_roster_eligibility(up, f['entries_blob_plain'] if f.get('entries_blob_plain') else _plain(f),
                                                _REPO / f['roster_capture'], int(slate_id[:4]), int(slate_id.split('W')[1]),
-                                               _ld('official_inactives', []), _ld('transactions', {}), _ld('elevations', []))
+                                               _ld('official_inactives', []), _ld('transactions', {}), _ld('elevations', None))
     elif slate_id in LEGACY_PRE_ROSTER_GATE:
         rb, rrep = [], {'status': 'NOT_CHECKED_LEGACY_SLATE', 'reason': 'slate predates the roster-eligibility gate'}
     else:

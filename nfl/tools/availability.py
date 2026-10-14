@@ -117,6 +117,11 @@ NOT_ON_ACTIVE_ROSTER_CAPTURED = 'NOT_ON_ACTIVE_ROSTER_CAPTURED'
 TIER_ROSTER_STATUS = 'CLUB_ROSTER_STATUS_CAPTURED'
 ROSTER_STATUSES_NOT_ACTIVE = ('RES', 'EXE', 'CUT')
 
+#: PRACTICE SQUAD, CONFIRMED NOT ELEVATED (owner OD-001 decision 1, 2026-10-14): the dated week capture lists him DEV and
+#: the game-day elevation records SUPPLIED for this game do not name him. He cannot take a snap, so he is absent.
+PRACTICE_SQUAD_NOT_ELEVATED_CONFIRMED = 'PRACTICE_SQUAD_NOT_ELEVATED_CONFIRMED'
+TIER_ROSTER_AND_ELEVATION = 'CLUB_ROSTER_STATUS_AND_ELEVATION_RECORD_CAPTURED'
+
 #: A player removed ONLY inside a participation variant (nfl/tools/classic_slate_run.py, CORRECTED_V1 arm): the
 #: projection is re-run with him absent to learn where his work goes. It is written into temporary variant states and
 #: never into a slate state, so no production file can carry it.
@@ -124,7 +129,8 @@ PARTICIPATION_VARIANT_ABSENT = 'PARTICIPATION_VARIANT_ABSENT'
 
 ABSENT_STATUSES = (CONFIRMED_INACTIVE, REPORTED_INACTIVE_OFFICIAL_RELEASE_CITED,
                    REPORTED_INACTIVE_HIGH_CONFIDENCE, REPORTED_OUT_UNVERIFIED, NO_OFFENSIVE_ROLE,
-                   NOT_ON_ACTIVE_ROSTER_CAPTURED, PARTICIPATION_VARIANT_ABSENT)
+                   NOT_ON_ACTIVE_ROSTER_CAPTURED, PARTICIPATION_VARIANT_ABSENT,
+                   PRACTICE_SQUAD_NOT_ELEVATED_CONFIRMED)
 
 #: Statuses that are NOT a claim of absence and must never be treated as one.
 NOT_A_CLAIM_OF_ABSENCE = (UNKNOWN, UNKNOWN_NOT_RELAYED, UNKNOWN_ACTIVE_STATE,

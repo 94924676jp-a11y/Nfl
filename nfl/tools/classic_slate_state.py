@@ -43,6 +43,7 @@ from nfl.production import pool_audit as PA  # noqa: E402
 from nfl.production import world_clock as WC  # noqa: E402
 from nfl.tools import availability as AV  # noqa: E402
 from nfl.tools import player_prior, proj_v1  # noqa: E402
+from nfl.tools import roster_eligibility as RE_  # noqa: E402
 from nfl.tools import showdown_slate_state as SS  # noqa: E402
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 
@@ -228,7 +229,7 @@ def captured_qb_depth(as_of: str) -> dict:
 
 
 def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_starters=None,
-          evidence_packet=None, write: bool = True, research_universe=None) -> Outcome:
+          evidence_packet=None, write: bool = True, research_universe=None, pit_exempt: str = None) -> Outcome:
     """`evidence_packet`: a loaded nfl/tools/sunday_evidence packet (inactives, cleared players,
     starting quarterbacks, each with its provenance tier). See that module for the rules.
 
@@ -237,7 +238,38 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
     universe; it does not need DK's ids. A state built this way carries `RESEARCH_UNIVERSE` as its
     export, synthetic `RU-` ids, and is never written to the production state path, so no portfolio
     or upload stage can read it."""
+    # POINT IN TIME, FAIL CLOSED (PIT-D1; owner D-12 2026-10-14). `as_of` governed injuries, depth and freshness but not
+    # the fixed-path warehouse or the capture globs, so a past as_of in live mode read today's lines, results and
+    # rosters. Without a sealed manifest a past as_of that predates data on disk now refuses.
+    # `pit_exempt` (a stated reason; keyword only, never an environment switch) is for LOGIC tests on a frozen slate:
+    # the state is stamped NOT_POINT_IN_TIME with what it could read from the future, and is never written.
+    if pit_exempt:
+        live = SS.PIT.live_reads_after_cutoff(as_of)
+        pit_check = {'mode': 'NOT_POINT_IN_TIME', 'reason': str(pit_exempt), 'n_live_reads_after_cutoff': live['n'],
+                     'RELEASABLE': False}
+        write = False
+    else:
+        try:
+            pit_check = SS.PIT.require_point_in_time(as_of, f'classic slate state {slate_id}')
+        except SS.PIT.PITLiveReadAfterCutoff as e:
+            return Outcome.blocked('PIT_LIVE_READ_AFTER_CUTOFF', str(e), cause=Cause.DATA, as_of=as_of)
+        pit_check = {k: v for k, v in pit_check.items() if k != 'items'}
     files = EO.slate_files(slate_id)
+    # AS_OF AGAINST KICKOFF (PIT audit 2026-10-14): Showdown clamps its cutoff to kickoff; Classic had no upper bound,
+    # so an as_of at or after the first kickoff was stamped LIVE_VERIFIED. Such a state is never a prelock forecast:
+    # it is built (research may need it) but carries RELEASABLE False, which the release record refuses.
+    try:
+        from zoneinfo import ZoneInfo as _ZI
+        _ko = dt.datetime.strptime(files['kickoff'], '%m/%d/%Y %I:%M%p ET').replace(
+            tzinfo=_ZI('America/New_York')).astimezone(dt.timezone.utc)
+        _asof = SS.PIT.parse_utc(as_of)
+    except (KeyError, ValueError):
+        _ko = _asof = None
+    pit_check = {**pit_check, 'kickoff_utc': _ko.isoformat() if _ko else None}
+    if _ko is None or _asof is None:
+        pit_check.update(RELEASABLE=False, not_releasable_reason='KICKOFF_OR_AS_OF_UNPARSEABLE')
+    elif _asof >= _ko:
+        pit_check.update(RELEASABLE=False, not_releasable_reason=f'AS_OF_AT_OR_AFTER_KICKOFF {as_of} >= {_ko.isoformat()}')
     if research_universe is not None:
         po = research_universe
         if po.state.value != 'PASS' or po.code != RESEARCH_UNIVERSE_CODE:
@@ -311,14 +343,48 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
     # reported only outside a capture is recorded per player in `roster_activation_reported` and leaves him as
     # he was (still blocked at upload by the roster-eligibility gate until it is captured or relayed).
     roster_status, activation_reported = {}, dict(files.get('roster_activation_reported') or {})
+    eligibility_withheld, eligibility_unresolved, eligibility_state_of = {}, {}, {}
+    eligibility_doc = {'applied': False, 'reason': ('RESEARCH_UNIVERSE' if research_universe is not None
+                                                    else 'NO_ROSTER_CAPTURE_DECLARED')}
     if files.get('roster_capture') and research_universe is None:
-        from nfl.tools import roster_eligibility as RE_
         rr = RE_.roster_rows(_REPO / files['roster_capture'], season, week)
         if not rr:
             return Outcome.blocked('CLASSIC_STATE_ROSTER_CAPTURE_EMPTY',
                                    f'{files["roster_capture"]} has no rows for {season} week {week}',
                                    cause=Cause.DATA)
         roster_status = {r['gsis_id']: r['status'] for r in rr if r.get('gsis_id')}
+        # THE SHARED THREE-STATE CONTRACT (owner OD-001 decision 1, 2026-10-14), the same function Showdown applies:
+        # a confirmed non-elevated practice-squad player, and any player whose eligibility is unresolved, receives no
+        # active-game opportunity. RES / EXE / CUT stay under the 2026-10-11 roster-membership ruling below.
+        _ld = lambda k: json.loads((_REPO / files[k]).read_text()) if files.get(k) else None  # noqa: E731
+        pool_e = {}
+        for r in pool_rows:
+            pool_e.setdefault((r['dk_name'], r['team']), {'pos': r['dk_pos'], 'ids': []})['ids'].append(r['dk_id'])
+        res_e = RE_.classify(pool_e, rr, (), _ld('transactions') or {}, _ld('elevations'))
+        # RES / EXE / CUT are applied by gsis id below (the exact key); the shared rule covers the rest
+        eligibility_withheld = {k: v for k, v in RE_.opportunity_withheld(res_e).items()
+                                if not set(v.get('roster_status') or ()) & set(AV.ROSTER_STATUSES_NOT_ACTIVE)}
+        eligibility_unresolved = RE_.unresolved(res_e)
+        eligibility_state_of = {k: v['eligibility_state'] for k, v in res_e.items()}
+        eligibility_doc = {'applied': True,
+                           'contract': 'nfl.tools.roster_eligibility (opportunity_withheld / unresolved), OD-002',
+                           'roster_capture': files['roster_capture'],
+                           'elevation_evidence_supplied': files.get('elevations') is not None,
+                           'state_counts': dict(collections.Counter(v['eligibility_state'] for v in res_e.values())),
+                           'withheld': {}, 'unresolved': {}, 'conflicts': {}}
+        # ROSTER-SOURCE FRESHNESS (OD-002 "sufficiently current"): when the capture was taken, against the kickoff.
+        # Recorded, not yet a rule: what counts as current enough is ELIG-D4, an owner standard.
+        _cc, _cb = RE_.capture_clock(files['roster_capture'], _REPO)
+        _cct = SS.PIT.parse_utc(_cc) if _cc and 'T' in _cc and '-' in _cc else None
+        if _cct is None and _cc:
+            try:
+                _cct = dt.datetime.strptime(_cc, '%Y%m%dT%H%M%SZ').replace(tzinfo=dt.timezone.utc)
+            except ValueError:
+                _cct = None
+        _kt = SS.PIT.parse_utc(pit_check.get('kickoff_utc')) if pit_check.get('kickoff_utc') else None
+        eligibility_doc['roster_source_freshness'] = {
+            'capture_clock': _cc, 'clock_basis': _cb,
+            'hours_before_kickoff': round((_kt - _cct).total_seconds() / 3600, 1) if (_kt and _cct) else None}
     # ------------------------------------------------------------------ Sunday evidence packet
     pres, pstart, complete_clubs = {}, {}, set()
     if evidence_packet:
@@ -343,15 +409,28 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
     # packet absences feed the depth logic too: the next healthy player moves up behind them
     out_gsis |= {(ids.get(dk) or {}).get('gsis_id') for dk, v in pres.items()
                  if v['status'] in AV.ABSENT_STATUSES and (ids.get(dk) or {}).get('gsis_id')}
-    # OWNER RULING 2026-10-11 (modified): a roster snapshot alone never zeroes a player. When the slate declares
-    # `roster_reserve_corroboration`, only players it names (each with time-appropriate evidence of an unavailable
-    # status) AND whose captured roster status is RES / EXE / CUT are absent; everyone else stays as the incumbent
-    # had him (and remains blocked at upload by the roster-eligibility gate).
-    corroborated = files.get('roster_reserve_corroboration')
+    # OWNER DECISION OD-002 (2026-10-14, supersedes the corroboration requirement of 2026-10-11): a current,
+    # game-week roster capture showing RES / EXE / CUT is authoritative evidence of ineligibility and is actionable in
+    # Classic exactly as in Showdown; the absence of a corroboration list does not override it. CONFLICTING SOURCES --
+    # the capture says RES/EXE/CUT while a club activation is reported -- are an ELIGIBILITY CONFLICT: the player is
+    # left as the incumbent had him, never selectable, and the release record refuses until the conflict is resolved.
     reserve_gsis = {g for g, st_ in roster_status.items()
-                    if st_ in AV.ROSTER_STATUSES_NOT_ACTIVE and g not in activation_reported
-                    and (corroborated is None or g in corroborated)}
+                    if st_ in AV.ROSTER_STATUSES_NOT_ACTIVE and g not in activation_reported}
+    if files.get('roster_capture') and research_universe is None:
+        for g, st_ in roster_status.items():
+            if st_ in AV.ROSTER_STATUSES_NOT_ACTIVE and g in activation_reported:
+                eligibility_doc['conflicts'][g] = {'roster_status_captured': st_,
+                                                   'activation_reported': activation_reported[g],
+                                                   'RESOLUTION_NEEDED': 'a capture after the activation, or a relayed '
+                                                                        'official transaction'}
+        eligibility_doc['corroboration_list_declared'] = files.get('roster_reserve_corroboration') is not None
     out_gsis |= reserve_gsis
+    withheld_dk = {}
+    for r in pool_rows:
+        w_ = eligibility_withheld.get((r['dk_name'], r['team']))
+        if w_ and r['dk_id'] not in pres:
+            withheld_dk[r['dk_id']] = w_
+    out_gsis |= {(ids.get(dk) or {}).get('gsis_id') for dk in withheld_dk if (ids.get(dk) or {}).get('gsis_id')}
     for r in pool_rows:
         dk_id, nm, team, pos = r['dk_id'], r['dk_name'], r['team'], r['dk_pos']
         rec = ids.get(dk_id) or {}
@@ -389,6 +468,26 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
             status, tier = AV.NOT_ON_ACTIVE_ROSTER_CAPTURED, AV.TIER_ROSTER_STATUS
         if dk_id in unresolved_ids:
             status, tier = AV.UNKNOWN_ACTIVE_STATE, AV.TIER_NONE
+        # LAST, so nothing re-activates him: an identity-unresolved player is still projected (PROJECTED_COLD_START),
+        # and found 2026-10-14 on W5, 7 eligibility-withheld players were reaching the projection that way.
+        if dk_id in withheld_dk and status not in AV.ABSENT_STATUSES:
+            w_ = withheld_dk[dk_id]
+            status, tier = RE_.withheld_status(w_['eligibility_state'], w_['reason'])
+        if dk_id in withheld_dk:     # the FINAL label, so the record never claims a withholding that was overridden
+            eligibility_doc['withheld'][dk_id] = {'name': nm, 'team': team, 'reason': withheld_dk[dk_id]['reason'],
+                                                  'eligibility_state': withheld_dk[dk_id]['eligibility_state'],
+                                                  'status': status, 'identity_unresolved': dk_id in unresolved_ids}
+        e_state = eligibility_state_of.get((nm, team))
+        if gsis in reserve_gsis and dk_id not in pres:
+            e_state = RE_.CONFIRMED_INELIGIBLE
+        if gsis in eligibility_doc.get('conflicts', {}):
+            e_state = 'ELIGIBILITY_CONFLICT'
+            eligibility_doc['conflicts'][gsis].update(name=nm, team=team, dk_id=dk_id)
+        u_ = eligibility_unresolved.get((nm, team))
+        if u_ and dk_id not in pres:
+            eligibility_doc['unresolved'][dk_id] = {'name': nm, 'team': team, 'reason': u_['reason'],
+                                                    'missing_evidence': u_['missing_evidence'], 'status': status,
+                                                    'identity_unresolved': dk_id in unresolved_ids}
         status_counts[status] += 1
         if ir is not None:
             desig_counts[designation] += 1
@@ -419,6 +518,9 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
                 'resolution': resolution,
                 'roster_status_captured': roster_status.get(gsis) if gsis else None,
                 'roster_activation_reported': activation_reported.get(gsis) if gsis else None,
+                'eligibility_state': e_state,
+                'eligibility_missing_evidence': (u_ or {}).get('missing_evidence') if e_state == RE_.ELIGIBILITY_UNRESOLVED
+                else None,
                 'IS_NOT': ('a game-day inactive decision unless the status is CONFIRMED_INACTIVE, '
                            'which requires a captured official document'),
             },
@@ -431,7 +533,7 @@ def build(slate_id: str, *, as_of: str, official_inactives=None, confirmed_start
     out = {
         'artifact': 'CLASSIC_SLATE_STATE', 'spec_version': SPEC_VERSION, 'state_label': STATE_LABEL,
         'slate_id': slate_id, 'built_at_utc': dt.datetime.now(dt.timezone.utc).isoformat(),
-        'as_of': as_of, 'season': season, 'week': week, 'kickoff': files['kickoff'],
+        'as_of': as_of, 'point_in_time': pit_check, 'roster_eligibility': eligibility_doc, 'season': season, 'week': week, 'kickoff': files['kickoff'],
         'games': {gid: {'away': a, 'home': h} for (a, h), (gid, _w) in sorted(games.items())},
         'export': ('RESEARCH_UNIVERSE' if research_universe is not None
                    else str(pathlib.Path(files['pool_blob']).relative_to(_REPO))),

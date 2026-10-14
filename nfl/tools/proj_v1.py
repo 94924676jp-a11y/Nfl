@@ -1085,7 +1085,12 @@ def _kicker_rates():
     if _KM is None:
         try:
             m = kicker_model.measure()
-        except Exception:                                                   # noqa: BLE001
+        except Exception as e:                                              # noqa: BLE001
+            # A POINT-IN-TIME REFUSAL IS NEVER A MISSING TABLE (PIT audit 2026-10-14): swallowing it turned a refused
+            # read into KICKER_RATES_ABSENT and a degraded projection. It propagates; anything else stays "absent".
+            from nfl.warehouse.point_in_time import PITError
+            if isinstance(e, PITError):
+                raise
             return None
         _KM = m.value if hasattr(m, 'value') else m
     return _KM

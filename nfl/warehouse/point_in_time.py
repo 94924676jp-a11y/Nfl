@@ -79,6 +79,10 @@ NOT_CAPTURES = ('SYNC_PROVENANCE.jsonl',)
 RESOLVED = ('nfl/warehouse/TEAM_GAME.json',)
 DERIVED_DIR = 'nfl/derived'
 DERIVED_RUN_CACHES = ('ROLE_STATE.json', 'SOURCE_MEASUREMENT_CACHE.json')   # rebuilt per run / content-keyed
+#: FITTED model artifacts (PIT-D1 audit 2026-10-14): fit at build time from today's PLAYER_GAME / TEAM_GAME and read by
+#: the simulator. They were UNGUARDED under a manifest, so a sealed replay silently used models fit on later data. In a
+#: sealed run they are now admitted only against a declared pin keyed by repo-relative path, like nfl/derived caches.
+FITTED_DIRS = ('nfl/sim',)
 _ID = re.compile(r'^(?P<src>[A-Za-z_]+?)(?:_(?P<season>\d{4}))?\.(?P<id>[0-9a-f]{16})\.')
 
 
@@ -185,15 +189,10 @@ def _git(root, *a):
     return subprocess.run(['git', *a], cwd=root, capture_output=True, text=True, check=True).stdout
 
 
-# ------------------------------------------------------------------ build
-def build(cutoff: str, label: str, cutoff_basis: str, root=None, derived_pins=None, inputs=(), out_dir=None):
-    """Classify every guarded capture against the cutoff, resolve fixed paths, seal, write. Returns (path, manifest)."""
-    root = pathlib.Path(root or _REPO)
-    cut = parse_utc(cutoff)
-    if cut is None:
-        raise PITCutoffUnresolved(f'PIT_CUTOFF_UNRESOLVED: {cutoff!r} is not an aware UTC instant')
-    if not cutoff_basis:
-        raise PITCutoffUnresolved('PIT_CUTOFF_BASIS_MISSING: state what the cutoff is (kickoff, production commit, ...)')
+
+def _classify_guarded(root: pathlib.Path, cut: dt.datetime, *, with_sha: bool):
+    """(admitted, refused) for every guarded capture against `cut`. The ONE copy of the clock rules: `build` seals its
+    result, and `live_reads_after_cutoff` uses it without hashing to refuse a live-mode read of a past cutoff."""
     clocks = _first_pass_clocks(root)
     committed = _first_commit_clocks(root)
     admitted, refused = {}, {}
@@ -206,6 +205,7 @@ def build(cutoff: str, label: str, cutoff_basis: str, root=None, derived_pins=No
             if not f.is_file() or _guard_of(rel) is None:
                 continue
             m = _ID.match(f.name)
+            sc = None
             if clk == 'PROVENANCE_SIDECAR':
                 sc = f.with_name(f.name[:-3] + '.provenance.json') if f.name.endswith('.gz') else None
                 t = parse_utc(json.loads(sc.read_text()).get('retrieved_at')) if sc and sc.is_file() else None
@@ -221,9 +221,97 @@ def build(cutoff: str, label: str, cutoff_basis: str, root=None, derived_pins=No
             elif t > cut:
                 refused[rel] = {**rec, 'reason': 'REFUSED_AFTER_CUTOFF'}
             else:
-                admitted[rel] = {**rec, 'sha256': sha256(f)}
+                admitted[rel] = {**rec, 'sha256': sha256(f)} if with_sha else rec
                 if clk == 'PROVENANCE_SIDECAR' and sc is not None and sc.is_file():
-                    admitted[str(sc.relative_to(root))] = {**rec, 'companion_of': rel, 'sha256': sha256(sc)}
+                    admitted[str(sc.relative_to(root))] = ({**rec, 'companion_of': rel, 'sha256': sha256(sc)} if with_sha
+                                                           else {**rec, 'companion_of': rel})
+    return admitted, refused
+
+
+def _content_clock(root: pathlib.Path, rel: str):
+    """When the CURRENT bytes of a fixed-path artifact first existed: the commit that first introduced this exact blob,
+    else (uncommitted content) the file's mtime. Both are upper bounds on when its information was known, so a check
+    built on them can refuse too often but never admit a later read."""
+    f = root / rel
+    if not f.is_file():
+        return None, 'MISSING'
+    blob = _git(root, 'hash-object', '--', rel).strip()
+    for ln in reversed(_git(root, 'log', '--format=%H %cI', '--', rel).splitlines()):
+        h, _, t = ln.partition(' ')
+        if h and subprocess.run(['git', 'rev-parse', '-q', '--verify', f'{h}:{rel}'], cwd=root, capture_output=True,
+                                text=True).stdout.strip() == blob:
+            return parse_utc(t), 'GIT_FIRST_COMMIT_OF_BLOB'
+    return dt.datetime.fromtimestamp(f.stat().st_mtime, dt.timezone.utc), 'UNCOMMITTED_FILE_MTIME'
+
+
+class PITLiveReadAfterCutoff(PITError):
+    """A build with a past cutoff would read, in live mode, data that did not exist at the cutoff (ledger PIT-D1)."""
+
+
+def live_reads_after_cutoff(cutoff, root=None) -> dict:
+    """What a LIVE-mode run at `cutoff` could read that did not exist at `cutoff`: guarded captures retrieved after it
+    (or unclocked), and fixed-path artifacts whose current bytes first existed after it. Empty `items` = lawful."""
+    root = pathlib.Path(root or _REPO)
+    cut = parse_utc(cutoff)
+    if cut is None:
+        raise PITCutoffUnresolved(f'PIT_CUTOFF_UNRESOLVED: {cutoff!r} is not an aware UTC instant')
+    _, refused = _classify_guarded(root, cut, with_sha=False)
+    items = {k: v['reason'] for k, v in refused.items()}
+    fixed = {}
+    for rel in RESOLVED:
+        t, basis = _content_clock(root, rel)
+        fixed[rel] = {'clock': _iso(t) if t else None, 'clock_basis': basis}
+        if t is None or t > cut:
+            items[rel] = 'FIXED_PATH_CONTENT_AFTER_CUTOFF' if t else 'FIXED_PATH_UNCLOCKED'
+    # DERIVED CACHES AND FITTED MODELS (PIT audit 2026-10-14, the highest-risk finding): in live mode they were never
+    # checked, so a replay could pass the gate and then read today's usage history, DST model or share covariance.
+    # Their content clock (first commit of the current bytes, else mtime) is the earliest moment their information is
+    # known to have existed; content first seen after the cutoff may encode the future, so it refuses.
+    for d_, code in ((DERIVED_DIR, 'DERIVED'), *((fd, 'FITTED') for fd in FITTED_DIRS)):
+        for f in sorted((root / d_).glob('*.json')):
+            rel = str(f.relative_to(root))
+            if d_ == DERIVED_DIR and f.name in DERIVED_RUN_CACHES:
+                continue                     # rebuilt within the run from admitted inputs (content-keyed)
+            t, basis = _content_clock(root, rel)
+            fixed[rel] = {'clock': _iso(t) if t else None, 'clock_basis': basis}
+            if t is None or t > cut:
+                items[rel] = f'{code}_CONTENT_AFTER_CUTOFF' if t else f'{code}_UNCLOCKED'
+    return {'cutoff_utc': _iso(cut), 'items': items, 'n': len(items), 'fixed_paths': fixed}
+
+
+def require_point_in_time(cutoff, what: str, root=None) -> dict:
+    """FAIL CLOSED (PIT-D1, owner D-12 2026-10-14). With a manifest active the manifest governs every read. Without one,
+    a run whose cutoff predates any guarded capture or fixed-path content on disk is refused: it would silently read
+    the future. Returns the check record on success; raises PITLiveReadAfterCutoff otherwise."""
+    a = active()
+    if a is not None:
+        cut, mcut = parse_utc(cutoff), parse_utc(a.man.get('cutoff_utc'))
+        if cut is None or mcut is None or mcut > cut:
+            # a manifest sealed LATER than this run's cutoff admits data the run must not see
+            raise PITLiveReadAfterCutoff(
+                f'PIT_MANIFEST_CUTOFF_AFTER_RUN_CUTOFF: {what} has cutoff {cutoff} but the active manifest admits data '
+                f'through {a.man.get("cutoff_utc")} (seal {str(a.man.get("seal"))[:16]})')
+        return {'mode': 'MANIFEST', 'seal': a.man.get('seal'), 'cutoff_utc': a.man.get('cutoff_utc')}
+    r = live_reads_after_cutoff(cutoff, root)
+    if r['n']:
+        ex = sorted(r['items'].items())[:5]
+        raise PITLiveReadAfterCutoff(
+            f'PIT_LIVE_READ_AFTER_CUTOFF: {what} at cutoff {r["cutoff_utc"]} would read {r["n"]} file(s) that did not '
+            f'exist then (e.g. {ex}). Build a manifest at this cutoff (point_in_time.py build --cutoff ...) and run with '
+            f'{ENV} set, or run with a cutoff of now.')
+    return {'mode': 'LIVE_VERIFIED', **r}
+
+
+# ------------------------------------------------------------------ build
+def build(cutoff: str, label: str, cutoff_basis: str, root=None, derived_pins=None, inputs=(), out_dir=None):
+    """Classify every guarded capture against the cutoff, resolve fixed paths, seal, write. Returns (path, manifest)."""
+    root = pathlib.Path(root or _REPO)
+    cut = parse_utc(cutoff)
+    if cut is None:
+        raise PITCutoffUnresolved(f'PIT_CUTOFF_UNRESOLVED: {cutoff!r} is not an aware UTC instant')
+    if not cutoff_basis:
+        raise PITCutoffUnresolved('PIT_CUTOFF_BASIS_MISSING: state what the cutoff is (kickoff, production commit, ...)')
+    admitted, refused = _classify_guarded(root, cut, with_sha=True)
     resolved = {}
     for rel in RESOLVED:
         hist = [ln.split(' ', 1) for ln in _git(root, 'log', '--format=%H %cI', '--', rel).splitlines() if ln.strip()]
@@ -413,6 +501,8 @@ def _classify(a, rel):
     d, name = os.path.split(rel)
     if d == DERIVED_DIR:
         return 'DERIVED_RUN_CACHE' if name in DERIVED_RUN_CACHES else 'DERIVED_PINNED'
+    if d in FITTED_DIRS and name.endswith('.json'):
+        return 'FITTED_PINNED'
     return 'UNGUARDED'
 
 
@@ -455,6 +545,18 @@ def _hook(event, args):
                 got = sha256(a.root / rel)
                 if got != pins[name]:
                     raise PITUnauthorizedRead(f'PIT_DERIVED_VINTAGE_MISMATCH: {rel} {got[:16]} != pin {pins[name][:16]}')
+                a.verified.add(rel)
+            a.reads[rel] = a.reads.get(rel, 0) + 1
+            return
+        if d in FITTED_DIRS and name.endswith('.json') and not writing:
+            pins = (a.man.get('derived_pins') or {}).get('sha256') or {}
+            if rel not in pins:
+                raise PITUnauthorizedRead(f'PIT_FITTED_UNPINNED: {rel} (a model fit at build time) read in a sealed run '
+                                          f'without a declared pin')
+            if rel not in a.verified:
+                got = sha256(a.root / rel)
+                if got != pins[rel]:
+                    raise PITUnauthorizedRead(f'PIT_FITTED_VINTAGE_MISMATCH: {rel} {got[:16]} != pin {pins[rel][:16]}')
                 a.verified.add(rel)
             a.reads[rel] = a.reads.get(rel, 0) + 1
             return

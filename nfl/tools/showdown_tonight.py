@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import pathlib
 import shutil
 import sys
@@ -26,7 +27,8 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 
-def roster_blocked(export, tag, roster_capture, official_inactives=None, transactions=None, elevations=None, reasons=False):
+def roster_blocked(export, tag, roster_capture, official_inactives=None, transactions=None, elevations=None, reasons=False,
+                   withheld=False, unresolved=False):
     """Names the roster-eligibility gate blocks (nfl.tools.roster_eligibility): no positive roster evidence -> blocked.
     The optimizer must never select them; the release gate (showdown_run_guards.upload_roster_eligibility) refuses an
     upload that carries one anyway. Empty capture week is an error, never 'nobody blocked'."""
@@ -35,14 +37,99 @@ def roster_blocked(export, tag, roster_capture, official_inactives=None, transac
     rows = E.roster_rows(roster_capture, season, week)
     if not rows:
         raise RuntimeError(f'ROSTER_CAPTURE_EMPTY_WEEK {roster_capture} {season} week {week}')
-    res = E.classify(E.dk_pool(export), rows, official_inactives or (), transactions or {}, elevations or ())
+    res = E.classify(E.dk_pool(export), rows, official_inactives or (), transactions or {}, elevations)
+    if withheld:      # the shared upstream rule (OD-002), the same function the Classic state applies
+        return {n: {'reason': v['reason'], 'eligibility_state': v['eligibility_state']}
+                for (n, _c), v in E.opportunity_withheld(res).items()}
+    if unresolved:    # kept in the forecast, never selectable, a release blocker while material (OD-002)
+        return {n: {'reason': v['reason'], 'missing_evidence': v['missing_evidence']}
+                for (n, _c), v in E.unresolved(res).items()}
     if reasons:
         return {n: v['reason'] for (n, _c), v in res.items() if not v['eligible']}
     return sorted({n for (n, _c), v in res.items() if not v['eligible']})
 
 
+#: Every NFL_SHOWDOWN_* switch the code reads (ENG-017, owner OD-001 2026-10-14). Any other NFL_SHOWDOWN_* value in the
+#: environment refuses the run: an environment variable may not silently determine undocumented production behaviour.
+DECLARED_ENV = ('NFL_SHOWDOWN_ARM', 'NFL_SHOWDOWN_SELECTOR', 'NFL_SHOWDOWN_OVERLAP_POLICY',
+                'NFL_SHOWDOWN_DESIGNATIONS_PROVENANCE', 'NFL_SHOWDOWN_INACTIVES_RESOLVED')
+RELEASE_CANDIDATE = 'CERTIFIABLE_CANDIDATE'          # may proceed to the governed finalize/verify path
+RELEASE_DIAGNOSTIC = 'DIAGNOSTIC_NOT_RELEASABLE'     # never produces a releasable upload
+
+
+def unresolved_material(unres, draws):
+    """OD-002: the unresolved players (by name) whose simulated DK points are nonzero in any world. Draws are keyed
+    'name|club'. Material means any nonzero draw: no margin is declared, so none is invented."""
+    return sorted({n for n in unres for k, v in draws.items() if k.split('|')[0] == n and max(v or [0]) > 0})
+
+
+def undeclared_env(env=None):
+    env = os.environ if env is None else env
+    return sorted(k for k in env if k.startswith('NFL_SHOWDOWN_') and k not in DECLARED_ENV)
+
+
+def kickoff_gate(kickoff_et_naive, *, diagnostic=False, now=None):
+    """ENG-014: 'OK' before kickoff; after it 'REFUSE', or 'DIAGNOSTIC' when a non-releasable analysis was asked for."""
+    import datetime as dt
+    from zoneinfo import ZoneInfo
+    kick = dt.datetime.fromisoformat(kickoff_et_naive).replace(tzinfo=ZoneInfo('America/New_York'))
+    now = now or dt.datetime.now(dt.timezone.utc)
+    if now < kick:
+        return 'OK'
+    return 'DIAGNOSTIC' if diagnostic else 'REFUSE'
+
+
+def withhold_uploads(sd, pre):
+    """ENG-014: rename every upload-named file of a DIAGNOSTIC run so nothing releasable remains. Returns the new names."""
+    out = []
+    for f in sorted(pathlib.Path(sd).glob(f'{pre}_DK_UPLOAD*.csv')):
+        if f.name.endswith('.DIAGNOSTIC_NOT_RELEASABLE.csv'):
+            continue
+        g = f.with_name(f.name[:-4] + '.DIAGNOSTIC_NOT_RELEASABLE.csv')
+        f.rename(g)
+        out.append(g.name)
+    return out
+
+
+def effective_config(export, roster_gate, release_status, reasons, state_value=None, env=None):
+    """ENG-017: the configuration that actually governed this run, each switch with its source, plus input hashes."""
+    import hashlib
+    env = os.environ if env is None else env
+    from nfl.tools import showdown_portfolio as SPF, showdown_to_portfolio as S, showdown_slate_run as SR
+
+    def sw(name, default):
+        return {'value': env.get(name) or default, 'source': 'ENV' if env.get(name) else 'CODE_DEFAULT'}
+
+    def sha(p):
+        try:
+            return hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()
+        except (OSError, TypeError):
+            return None
+    code = {m: sha(_REPO / f'nfl/tools/{m}.py') for m in ('showdown_portfolio', 'showdown_to_portfolio', 'showdown_slate_run',
+                                                           'showdown_slate_state', 'showdown_draws', 'proj_v1')}
+    return {
+        'ARTIFACT': 'SHOWDOWN_EFFECTIVE_CONFIG', 'spec_version': 'showdown-effective-config-1',
+        'release_status': release_status, 'release_reasons': list(reasons),
+        'forecast_arm': sw('NFL_SHOWDOWN_ARM', SR.ARM_INCUMBENT),
+        'selector': sw('NFL_SHOWDOWN_SELECTOR', 'GREEDY'),
+        'overlap_policy': sw('NFL_SHOWDOWN_OVERLAP_POLICY', 'EQUAL_SIZE'),
+        'candidate_generator': {'function': 'showdown_to_portfolio.near_optimal_candidates',
+                                'near_optimal_loss_band': getattr(S, 'NEAR_OPTIMAL_LOSS_BAND', None),
+                                'forced_captain': True, 'code_sha256': code['showdown_to_portfolio']},
+        'exposure_and_relaxation': {'ladder': SPF.LADDER, 'fixed_policy': {
+            'level': SPF.FIXED_POLICY_LEVEL, 'min_n': SPF.FIXED_POLICY_MIN_N, 'max_n': SPF.FIXED_POLICY_MAX_N}},
+        'declared_env_present': {k: env[k] for k in DECLARED_ENV if k in env},
+        'inputs': {'export': {'path': str(export), 'sha256': sha(export)},
+                   'roster_capture': ({'path': str(roster_gate.get('roster_capture')),
+                                       'sha256': sha(roster_gate.get('roster_capture'))} if roster_gate else None)},
+        'point_in_time': (state_value or {}).get('point_in_time'),
+        'kickoff_et_naive': (state_value or {}).get('kickoff_et_naive'),
+        'code_sha256': code,
+    }
+
+
 def run(export, tag, scenario, designations=None, outs=(), official_inactives=None, n_sims=2000,
-        confirmed_starters=None, starter_tier=None, depth_chart_csv=None, roster_gate=None):
+        confirmed_starters=None, starter_tier=None, depth_chart_csv=None, roster_gate=None, diagnostic=False):
     from nfl.tools import showdown_slate_state as SSS, showdown_slate_run as SR, showdown_portfolio as SPF
     P = SR.paths(tag)
     P['dir'].mkdir(parents=True, exist_ok=True)
@@ -55,6 +142,15 @@ def run(export, tag, scenario, designations=None, outs=(), official_inactives=No
                                                                   default=str)[:1500], flush=True)
     if gate.state.value != 'PASS':
         return gate
+    from sportsplatform.governance.outcome import Outcome as _OE, Cause as _CE
+    und = undeclared_env()
+    if und:
+        return _OE.blocked('UNDECLARED_RUN_CONFIG', f'NFL_SHOWDOWN_* values this code does not declare: {und}. An '
+                           f'environment variable may not silently change production behaviour (ENG-017).', cause=_CE.DATA,
+                           undeclared=und)
+    # ENG-014 (owner OD-001): without dated roster evidence a run is DIAGNOSTIC and can never produce a releasable upload
+    release_reasons = ([] if roster_gate else ['NO_ROSTER_CAPTURE']) + (['DIAGNOSTIC_REQUESTED'] if diagnostic else [])
+    release_status = RELEASE_DIAGNOSTIC if release_reasons else RELEASE_CANDIDATE
     sd = P['dir'] / scenario
     sd.mkdir(exist_ok=True)
     P = SR.paths(tag, work=sd)          # every intermediate in the scenario's own directory
@@ -70,15 +166,33 @@ def run(export, tag, scenario, designations=None, outs=(), official_inactives=No
                                        cid)   # the state's clubs are corpus codes (LAR -> LA)
     # the roster status is applied UPSTREAM (state -> projection -> worlds), not only at selection; the inactive list
     # keeps its own path, so only roster reasons are passed here
-    rb = None
+    rb = rbs = unres = None
     if roster_gate:
         _rg = {k: v for k, v in roster_gate.items() if k != 'official_inactives'}
-        rb = {n: r for n, r in roster_blocked(export, tag, reasons=True, **_rg).items() if r != 'GAME_DAY_INACTIVE'}
+        wh = roster_blocked(export, tag, withheld=True, **_rg)
+        unres = roster_blocked(export, tag, unresolved=True, **_rg)
+        rb = {n: v['reason'] for n, v in wh.items()}
+        rbs = {**{n: v['eligibility_state'] for n, v in wh.items()},
+               **{n: 'ELIGIBILITY_UNRESOLVED' for n in unres}}
     st = SSS.build(export, designations=desig, official_inactives=official_inactives, roster_blocked=rb,
-                   confirmed_starters=confirmed_starters, depth_chart=chart)
+                   roster_eligibility_state=rbs, confirmed_starters=confirmed_starters, depth_chart=chart)
     print('state', st.state.value, st.code, st.detail, flush=True)
     if st.state.value != 'PASS':
         return st
+    # P0-A: a state stamped NOT_POINT_IN_TIME (a pit_exempt replay) can never feed a production run
+    if (st.value.get('point_in_time') or {}).get('mode') == 'NOT_POINT_IN_TIME':
+        return _OE.fail('NOT_POINT_IN_TIME_STATE', 'the state was built pit_exempt; it is barred from any run that '
+                        'could release', cause=_CE.DATA)
+    # ENG-014: a run after kickoff is never a prelock forecast. Only an explicitly requested diagnostic may proceed.
+    kg = kickoff_gate(st.value['kickoff_et_naive'], diagnostic=diagnostic)
+    if kg == 'REFUSE':
+        return _OE.blocked('RUN_AFTER_KICKOFF', f"kickoff was {st.value['kickoff_et_naive']} ET; a run after kickoff is not a "
+                           f'prelock forecast. Re-run with --diagnostic for a non-releasable analysis.', cause=_CE.DATA)
+    if kg == 'DIAGNOSTIC':
+        release_reasons.append('AFTER_KICKOFF')
+        release_status = RELEASE_DIAGNOSTIC
+    (sd / 'EFFECTIVE_CONFIG.json').write_text(json.dumps(
+        effective_config(export, roster_gate, release_status, release_reasons, st.value), indent=1, default=str))
     # STARTER-STATE INTEGRITY, BEFORE ANY PROJECTION OR SIMULATION (independent P0 fixtures QB-*): bind this
     # scenario's identity and starter evidence onto the state, then require the state to say, positively and
     # completely, what the scenario says. A refusal here means role_state / proj_v1 / the simulator never ran.
@@ -113,6 +227,21 @@ def run(export, tag, scenario, designations=None, outs=(), official_inactives=No
     if dr.state.value != 'PASS':
         return dr
     from sportsplatform.governance.outcome import Outcome as _O
+    # OD-002 EVIDENCE-COMPLETENESS GATE: an unresolved player is kept in the forecast; a certified release refuses while
+    # any of them carries material opportunity -- any nonzero simulated DK points (no margin is declared, so none is
+    # invented). The research forecast stands; only release changes.
+    unres_material = []
+    if unres:
+        unres_material = unresolved_material(unres, json.loads(P['draws'].read_text()).get('draws') or {})
+        (sd / 'ELIGIBILITY_COVERAGE.json').write_text(json.dumps(
+            {'unresolved': unres, 'material_in_draws': unres_material,
+             'RULE': 'OD-002: certified release refuses while an unresolved player has nonzero simulated DK points'},
+            indent=1))
+    if unres_material and release_status == RELEASE_CANDIDATE:
+        release_reasons.append(f'ELIGIBILITY_UNRESOLVED_MATERIAL {len(unres_material)}: {unres_material[:6]}')
+        release_status = RELEASE_DIAGNOSTIC
+        (sd / 'EFFECTIVE_CONFIG.json').write_text(json.dumps(     # the record states the FINAL release status
+            effective_config(export, roster_gate, release_status, release_reasons, st.value), indent=1, default=str))
     if (dr.evidence or {}).get('sanity') != 'PASS':
         # a football contradiction (e.g. a starter carrying a backup's appearance discount) is never
         # optimised over: no portfolio is built on a failed sanity gate
@@ -138,11 +267,14 @@ def run(export, tag, scenario, designations=None, outs=(), official_inactives=No
                  proj_path=sd / P['proj'].name, state_path=sd / P['state'].name)
     print('portfolio', pf.state.value, pf.code, pf.detail, flush=True)
     pre = f'SHOWDOWN_{tag.split("_2026")[0]}'
+    if release_status != RELEASE_CANDIDATE:
+        # ENG-014: a DIAGNOSTIC run keeps no file under an upload name, and writes no receipt (finalize needs one)
+        withhold_uploads(sd, pre)
     role_diagnostic(P['dir'] / f'{pre}_ROLE_REVIEW.csv', sd / P['proj'].name, sd / f'{pre}_ROLE_DIAGNOSTIC.csv')
     audit = (pf.value if pf.state.value == 'PASS' else (pf.evidence or {}).get('audit'))
     if audit:
         final_board(audit, json.loads((sd / 'SCENARIO.json').read_text()), sd / f'{pre}_FINAL_BOARD', pf)
-    if pf.state.value == 'PASS':
+    if pf.state.value == 'PASS' and release_status == RELEASE_CANDIDATE:
         # THE LAST ACT: a receipt binding this run, commit, scenario, freeze seal, environment and the sha256 of every
         # football-state and publication artifact. Absent run context (a direct call) it is written with run_id None
         # and can never finalize.
@@ -286,6 +418,7 @@ def main():
     ap.add_argument('--roster-capture', help='weekly roster capture (nflverse weekly_rosters); enables the eligibility gate')
     ap.add_argument('--transactions', help='JSON {name: evidence} of releases after the capture')
     ap.add_argument('--elevations', help='JSON [name] of game-day practice-squad elevations')
+    ap.add_argument('--diagnostic', action='store_true', help='non-releasable analysis run (ENG-014)')
     a = ap.parse_args()
     # Point-in-time contract (nfl/warehouse/point_in_time.py). NFL_PIT_MANIFEST names a sealed manifest: the run then
     # reads only the captures it admits, and opening any other guarded file is refused. Unset (live): no effect.
@@ -303,7 +436,8 @@ def main():
         rg = {'roster_capture': a.roster_capture, 'official_inactives': oi,
               'transactions': json.loads(pathlib.Path(a.transactions).read_text()) if a.transactions else None,
               'elevations': json.loads(pathlib.Path(a.elevations).read_text()) if a.elevations else None}
-    o = run(a.export, a.tag, a.scenario, d, a.out, oi, a.n_sims, cs, a.starter_tier, a.depth_chart, roster_gate=rg)
+    o = run(a.export, a.tag, a.scenario, d, a.out, oi, a.n_sims, cs, a.starter_tier, a.depth_chart, roster_gate=rg,
+            diagnostic=a.diagnostic)
     if pit is not None:
         sd = _scenario_root(a.tag) / a.scenario
         if sd.is_dir():

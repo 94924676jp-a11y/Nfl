@@ -1,8 +1,9 @@
 """Roster membership on the DK-pool state path (owner ruling 2026-10-11, week-5 prelock).
 
 A player whose captured roster status for the slate's week is RES / EXE / CUT is not on the active roster and gets
-NOT_ON_ACTIVE_ROSTER_CAPTURED, an absence the allocator honours, so his club volume goes to active teammates. A
-club activation recorded in `roster_activation_reported` leaves him as he was. A research-universe state and a
+NOT_ON_ACTIVE_ROSTER_CAPTURED, an absence the allocator honours, so his club volume goes to active teammates. Since
+OD-002 (2026-10-14) no corroboration list is required. A club activation recorded in `roster_activation_reported` is a
+source CONFLICT: he is left as he was, recorded, and the release record refuses until it is resolved. A research-universe state and a
 slate that declares no roster capture are unchanged.
 """
 import pathlib
@@ -37,24 +38,33 @@ def test_02_reserve_players_absent_on_w5_pool():
     if not files.get('roster_capture') or not (_REPO / files['roster_capture']).is_file():
         print('BLOCKED[ROSTER_CAPTURE_ABSENT] the W5 roster capture blob is not in this checkout')
         return
-    o = CS.build('2026W5', as_of=AS_OF, write=False)
+    o = CS.build('2026W5', as_of=AS_OF, write=False, pit_exempt='LOGIC_TEST: frozen-slate fixture on today\'s tree; not a forecast (PIT-D1)')
     check(o.state.value == 'PASS', f'W5 state builds: {o.state.value} {o.code}')
     P = o.value['players']
     for nm, tm in (('Josh Oliver', 'MIN'), ('A.J. Brown', 'NE'), ('Jeremy McNichols', 'WAS')):
         a = _row(P, nm, tm)['current_availability']
         check(a['status'] == AV.NOT_ON_ACTIVE_ROSTER_CAPTURED and a['tier'] == AV.TIER_ROSTER_STATUS,
               f'{nm} ({a.get("roster_status_captured")}, corroborated) is NOT_ON_ACTIVE_ROSTER_CAPTURED')
-    # a roster snapshot alone never zeroes a player (owner ruling, modified)
+    # OD-002 (2026-10-14) supersedes the corroboration requirement: a current week capture showing RES / EXE / CUT is
+    # authoritative and actionable without a corroboration list (formerly these three stayed UNKNOWN_ACTIVE_STATE)
     for nm, tm in (('Josh Jacobs', 'GB'), ("De'Von Achane", 'MIA'), ('Travis Etienne Jr.', 'NO')):
         a = _row(P, nm, tm)['current_availability']
-        check(a['status'] == AV.UNKNOWN_ACTIVE_STATE and a['roster_status_captured'] in AV.ROSTER_STATUSES_NOT_ACTIVE,
-              f'{nm} ({a.get("roster_status_captured")}, uncorroborated) stays UNKNOWN_ACTIVE_STATE')
-    n = sum(1 for v in P.values() if v['current_availability']['status'] == AV.NOT_ON_ACTIVE_ROSTER_CAPTURED)
-    check(n == 5, f'exactly the 5 corroborated players are absent on roster grounds ({n})')
+        check(a['status'] == AV.NOT_ON_ACTIVE_ROSTER_CAPTURED and a['roster_status_captured'] in AV.ROSTER_STATUSES_NOT_ACTIVE,
+              f'{nm} ({a.get("roster_status_captured")}, not on a corroboration list) is absent on the capture alone')
+    cap = [v for v in P.values() if v['current_availability'].get('roster_status_captured') in AV.ROSTER_STATUSES_NOT_ACTIVE
+           and not v['current_availability'].get('roster_activation_reported')]
+    n = sum(1 for v in cap if v['current_availability']['status'] in AV.ABSENT_STATUSES)
+    n_roster = sum(1 for v in cap if v['current_availability']['status'] == AV.NOT_ON_ACTIVE_ROSTER_CAPTURED)
+    check(n == len(cap) and n_roster > 5,
+          f'every captured RES/EXE/CUT player without a reported activation is absent ({n} of {len(cap)}; '
+          f'{n_roster} on roster grounds, the rest already out by the official report)')
+    # a reported activation against the capture is a CONFLICT (OD-002): left as the incumbent had him, and recorded
     for nm, tm in (('Tim Patrick', 'NYJ'), ('Ben Yurosek', 'MIN')):
         a = _row(P, nm, tm)['current_availability']
-        check(a['status'] == AV.UNKNOWN_ACTIVE_STATE and a['roster_activation_reported'],
-              f'{nm}: reported activation leaves him UNKNOWN_ACTIVE_STATE')
+        check(a['status'] == AV.UNKNOWN_ACTIVE_STATE and a['roster_activation_reported']
+              and a['eligibility_state'] == 'ELIGIBILITY_CONFLICT',
+              f'{nm}: reported activation against the capture is an ELIGIBILITY_CONFLICT, not silently resolved')
+    check(len(o.value['roster_eligibility']['conflicts']) >= 2, 'the conflicts are listed in the state for the release gate')
     for nm, tm in (('Justin Jefferson', 'MIN'), ('Tyson Bagent', 'CHI')):
         a = _row(P, nm, tm)['current_availability']
         check(a['status'] == AV.UNKNOWN_ACTIVE_STATE and a['roster_status_captured'] == 'ACT', f'{nm} (ACT) unchanged')

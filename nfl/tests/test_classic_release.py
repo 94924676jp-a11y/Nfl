@@ -78,10 +78,13 @@ def test_01_the_fixture_is_the_live_bytes():
 
 
 def test_02_the_1617Z_build_is_current_but_uncertified():
-    print('\n02. 16:17Z production -> CURRENT_BUT_UNCERTIFIED, with the reasons named')
+    print('\n02. 16:17Z production -> CURRENT_BUT_UNCERTIFIED on the day; re-evaluated under OD-002 it is BLOCKED, '
+          'because its state carries no eligibility contract')
     with tempfile.TemporaryDirectory() as d:
         r = R.evaluate('2026W5', latest_packet=PKT_1610, out_dir=_unpack(['prod_1617Z'], pathlib.Path(d)), now=NOW)
-    check('release state', r['release_state'] == R.CURRENT_BUT_UNCERTIFIED, r['release_state'])
+    check('release state today: BLOCKED by ELIGIBILITY_NOT_APPLIED and by nothing else',
+          r['release_state'] == R.BLOCKED and len(r['reasons']['blocking']) == 1
+          and r['reasons']['blocking'][0].startswith('ELIGIBILITY_NOT_APPLIED'), r['reasons']['blocking'])
     check('every chain link holds', all(r['chain'].values()), {k: v for k, v in r['chain'].items() if not v})
     check('nothing is stale: the state consumed the newest packet', r['reasons']['stale'] == [], r['reasons']['stale'])
     wa = r['world_accounting']['violations_by_law']
@@ -104,8 +107,11 @@ def test_03_the_1632Z_override_is_selection_only_and_its_forecast_stale():
     with tempfile.TemporaryDirectory() as d:
         r = R.evaluate('2026W5', tag='NO_MCLAURIN_1623Z', latest_packet=PKT_1610,
                        out_dir=_unpack(['prod_1617Z', 'override_1632Z'], pathlib.Path(d)), now=NOW)
-    check('release state', r['release_state'] == R.SELECTION_ONLY_OVERRIDE, r['release_state'])
-    check('its forecast is stale', r['forecast_state'] == R.STALE_FORECAST, r['forecast_state'])
+    check('release state today: BLOCKED by ELIGIBILITY_NOT_APPLIED (on the day: SELECTION_ONLY_OVERRIDE)',
+          r['release_state'] == R.BLOCKED and any(x.startswith('ELIGIBILITY_NOT_APPLIED') for x in r['reasons']['blocking']),
+          r['reasons']['blocking'])
+    check('its forecast is still reported stale (the override changed no forecast)',
+          any(x.startswith('OVERRIDE_WITHOUT_FORECAST') for x in r['reasons']['stale']), r['reasons']['stale'])
     check('the override names the excluded player and says no forecast changed',
           r.get('override', {}).get('excluded') == {'44418755': 'Terry McLaurin'}
           and r['override']['forecast_changed'] is False, r.get('override'))
@@ -128,16 +134,24 @@ def test_04_the_1603Z_build_is_untraceable_and_its_evidence_stale():
 
 
 # ------------------------------------------------------------------ synthetic controls
-def _synthetic(td: pathlib.Path, slate='2099W1'):
-    """A minimal coherent chain: every hash link holds, one contest pair with 0 shared lineups, no unmodelled note."""
+ELIG_OK = {'applied': True, 'withheld': {}, 'unresolved': {}, 'conflicts': {}, 'elevation_evidence_supplied': True,
+           'state_counts': {'CONFIRMED_ELIGIBLE': 1}}
+PIT_OK = {'mode': 'LIVE_VERIFIED', 'cutoff_utc': '2099-01-01T16:00:00+00:00'}
+
+
+def _synthetic(td: pathlib.Path, slate='2099W1', eligibility=None, point_in_time=None, proj_rows=None):
+    """A minimal coherent chain: every hash link holds, one contest pair with 0 shared lineups, no unmodelled note.
+    The state carries a clean eligibility record and a point-in-time stamp unless told otherwise."""
     import numpy as np
     b = td / f'DK_{slate}_EARLY'
     pk = td / 'PACKET_A.json'
     pk.write_text(json.dumps({'packet_id': 'A', 'received_at': '2099-01-01T12:00:00Z', 'players': []}))
     state = {'players': {'1': {'name': 'Synthetic Player', 'team': 'AAA', 'current_availability': {'status': 'X'}}},
-             'official_inactives': {'packet_id': 'A', 'packet_sha256': hashlib.sha256(pk.read_bytes()).hexdigest()}}
+             'official_inactives': {'packet_id': 'A', 'packet_sha256': hashlib.sha256(pk.read_bytes()).hexdigest()},
+             'roster_eligibility': ELIG_OK if eligibility is None else eligibility,
+             'point_in_time': PIT_OK if point_in_time is None else point_in_time}
     pathlib.Path(f'{b}_STATE.json').write_text(json.dumps(state))
-    pathlib.Path(f'{b}_PROJ.json').write_text(json.dumps({'rows': {}}))
+    pathlib.Path(f'{b}_PROJ.json').write_text(json.dumps({'rows': proj_rows or {}}))
     sh = lambda p: hashlib.sha256(pathlib.Path(p).read_bytes()).hexdigest()  # noqa: E731
     s_state, s_proj = sh(f'{b}_STATE.json'), sh(f'{b}_PROJ.json')
     pathlib.Path(f'{b}_RUN_LEDGER.json').write_text(json.dumps({'run_id': 'RUN-1'}))
@@ -298,6 +312,50 @@ def test_06b_a_model_that_consumed_the_player_supersedes_the_not_modelled_note()
     check('incumbent: listed as unmodelled evidence', bool(mcl))
     check('an arm whose draws record him as designated and modelled: not listed',
           not any(u['name'] == 'Terry McLaurin' for u in r1['evidence']['unmodelled']), r1['evidence']['unmodelled'])
+
+
+def test_08_eligibility_and_point_in_time_gate_release():
+    print('\n08. OD-002 / P0-A: each eligibility or point-in-time requirement, broken alone, blocks a certifiable chain')
+    real_wa, real_def = R.world_accounting, R.OPEN_FORECAST_DEFECTS
+    U = {'2': {'name': 'Unresolved Dev', 'team': 'AAA', 'reason': 'PRACTICE_SQUAD_NOT_ELEVATED',
+               'missing_evidence': 'GAME_DAY_ELEVATION_RECORDS'}}
+    cases = [
+        ('a pit_exempt state (NOT_POINT_IN_TIME) is BLOCKED',
+         {'point_in_time': {'mode': 'NOT_POINT_IN_TIME', 'RELEASABLE': False, 'reason': 'LOGIC_TEST'}},
+         'NOT_POINT_IN_TIME_STATE'),
+        ('an unresolved player with projected opportunity is BLOCKED',
+         {'eligibility': {**ELIG_OK, 'unresolved': U}, 'proj_rows': {'2': {'dk_points': 0.02}}},
+         'ELIGIBILITY_UNRESOLVED_MATERIAL'),
+        ('a roster/activation conflict is BLOCKED',
+         {'eligibility': {**ELIG_OK, 'conflicts': {'00-1': {'name': 'Conflicted', 'roster_status_captured': 'RES'}}}},
+         'ELIGIBILITY_CONFLICT'),
+        ('a state with no eligibility contract applied (non-legacy slate) is BLOCKED',
+         {'eligibility': {'applied': False, 'reason': 'NO_ROSTER_CAPTURE_DECLARED'}}, 'ELIGIBILITY_NOT_APPLIED'),
+    ]
+    try:
+        R.world_accounting, R.OPEN_FORECAST_DEFECTS = _clean_accounting, {}
+        for label, kw, code in cases:
+            with tempfile.TemporaryDirectory() as d:
+                slate, pk = _synthetic(pathlib.Path(d), **kw)
+                r = R.evaluate(slate, latest_packet=pk, out_dir=d, now=NOW)
+                b = r['reasons']['blocking']
+                check(label, r['release_state'] == R.BLOCKED and len(b) == 1 and b[0].startswith(code), b)
+        # negative control: an unresolved player with NO projected opportunity does not block (not material)
+        with tempfile.TemporaryDirectory() as d:
+            slate, pk = _synthetic(pathlib.Path(d), eligibility={**ELIG_OK, 'unresolved': U},
+                                   proj_rows={'2': {'dk_points': None}})
+            r = R.evaluate(slate, latest_packet=pk, out_dir=d, now=NOW)
+            check('an unresolved player with no projected opportunity is recorded, not blocking',
+                  r['release_state'] == R.CURRENT_AND_CERTIFIED and r['eligibility']['n_unresolved'] == 1,
+                  (r['release_state'], r['reasons']))
+        # a legacy slate (pre roster gate) is not blocked for lacking the contract
+        with tempfile.TemporaryDirectory() as d:
+            slate, pk = _synthetic(pathlib.Path(d), slate='2026W4', eligibility={'applied': False, 'reason': 'X'})
+            r = R.evaluate(slate, latest_packet=pk, out_dir=d, now=NOW)
+            check('a legacy slate (2026W4) is not blocked by ELIGIBILITY_NOT_APPLIED',
+                  not any(x.startswith('ELIGIBILITY_NOT_APPLIED') for x in r['reasons']['blocking']), r['reasons'])
+    finally:
+        R.world_accounting, R.OPEN_FORECAST_DEFECTS = real_wa, real_def
 
 
 def test_07_build_writes_only_where_told():

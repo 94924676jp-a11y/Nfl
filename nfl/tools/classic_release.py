@@ -252,6 +252,39 @@ def evaluate(slate_id: str, *, tag: str = '', latest_packet=None, out_dir=None, 
         rec['evidence']['latest_known'] = 'NOT_SUPPLIED: currency against newer evidence was not checked'
         uncert.append('EVIDENCE_CURRENCY_UNCHECKED no latest packet was supplied to compare against')
 
+    # POINT IN TIME (P0-A, OD-002): a state built pit_exempt is NOT_POINT_IN_TIME and is barred from release.
+    pit = J['state'].get('point_in_time') or {}
+    rec['point_in_time'] = {'mode': pit.get('mode'), 'cutoff_utc': pit.get('cutoff_utc')}
+    if pit.get('mode') == 'NOT_POINT_IN_TIME' or pit.get('RELEASABLE') is False:
+        blocked.append(f"NOT_POINT_IN_TIME_STATE the state is not releasable as a prelock forecast "
+                       f"({pit.get('not_releasable_reason') or pit.get('reason')!r})")
+    elif not pit.get('mode'):
+        uncert.append('POINT_IN_TIME_NOT_RECORDED the state predates the point-in-time stamp (2026-10-14)')
+
+    # ROSTER-ELIGIBILITY EVIDENCE COMPLETENESS (OD-002). Unresolved players stay in the forecast; a certified release
+    # refuses while any of them carries material opportunity (nonzero projected DK points: no margin is declared, so
+    # none is invented) or while any source conflict is unresolved. A slate with no eligibility contract applied is
+    # unverified unless it predates the roster gate.
+    from nfl.tools import classic_upload_verify as _UV
+    el = J['state'].get('roster_eligibility') or {}
+    prows_ = json.loads(P['proj'].read_text()).get('rows') or {}
+    material = sorted(f"{u['name']} {u['team']}" for k, u in (el.get('unresolved') or {}).items()
+                      if ((prows_.get(k) or {}).get('dk_points') or 0) > 0)
+    rec['eligibility'] = {'applied': el.get('applied'), 'state_counts': el.get('state_counts'),
+                          'elevation_evidence_supplied': el.get('elevation_evidence_supplied'),
+                          'n_withheld': len(el.get('withheld') or {}), 'n_unresolved': len(el.get('unresolved') or {}),
+                          'unresolved_material': material, 'conflicts': sorted((el.get('conflicts') or {})),
+                          'roster_source_freshness': el.get('roster_source_freshness')}
+    if el.get('conflicts'):
+        blocked.append(f"ELIGIBILITY_CONFLICT {len(el['conflicts'])} player(s): roster status and a reported activation "
+                       f"disagree ({[c.get('name') for c in el['conflicts'].values()][:6]})")
+    if material:
+        blocked.append(f'ELIGIBILITY_UNRESOLVED_MATERIAL {len(material)} unresolved player(s) carry projected opportunity: '
+                       + ', '.join(material[:6]) + ('' if el.get('elevation_evidence_supplied')
+                                                    else ' (no game-day elevation records were supplied)'))
+    if not el.get('applied') and slate_id not in _UV.LEGACY_PRE_ROSTER_GATE:
+        blocked.append(f"ELIGIBILITY_NOT_APPLIED {el.get('reason')}")
+
     # EVIDENCE THE ENGINE CANNOT REPRESENT, recorded by the packet as not modelled (interim convention until the
     # participation schema exists: the resolution note carries "NOT MODELLED").
     # Structured first: a packet item's participation expectation other than FULL (sunday_evidence.py) that no

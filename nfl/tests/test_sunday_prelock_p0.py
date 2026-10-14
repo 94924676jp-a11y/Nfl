@@ -33,7 +33,7 @@ def _state(with_packet):
     if with_packet not in _CACHE:
         u = RU.build('2026W5', RAW)
         pk = SE.load(PKT).value if with_packet else None
-        _CACHE[with_packet] = CS.build('2026W5', as_of=AS_OF, research_universe=u, evidence_packet=pk).value['players']
+        _CACHE[with_packet] = CS.build('2026W5', as_of=AS_OF, research_universe=u, evidence_packet=pk, pit_exempt='LOGIC_TEST: frozen-slate fixture on today\'s tree; not a forecast (PIT-D1)').value['players']
     return _CACHE[with_packet]
 
 

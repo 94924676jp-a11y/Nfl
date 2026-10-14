@@ -52,7 +52,8 @@ if str(_REPO) not in sys.path:
 
 from sportsplatform.governance.outcome import Cause, Outcome  # noqa: E402
 
-TEAM_GAME = _REPO / 'nfl/warehouse/TEAM_GAME.json'
+from nfl.warehouse import point_in_time as _PIT  # noqa: E402
+TEAM_GAME = _PIT.resolve(_REPO / 'nfl/warehouse/TEAM_GAME.json')   # PIT-D1: as of the cutoff in a sealed run
 
 #: Outcome-bearing columns in the schedule. Named EXPLICITLY, because a leakage guard that infers
 #: which fields are outcomes will miss the one that gets added next season.
@@ -137,8 +138,11 @@ def latest_completed_in_world(rows, as_of=None) -> Outcome:
     }, f'world is through {last} (week {max(weeks)}, {len(done)} games)')
 
 
-def latest_completed_in_evidence(rows) -> Outcome:
-    """The last game day for which our own warehouse actually holds a score."""
+def latest_completed_in_evidence(rows, before=None) -> Outcome:
+    """The last game day for which our own warehouse actually holds a score.
+
+    `before` (WC-D1, 2026-10-14): only games on a day earlier than it count. Without it a freshness question asked "as
+    of" a past day counted scores recorded later -- the evidence frontier ran ahead of the world it was compared to."""
     if not TEAM_GAME.exists():
         return Outcome.blocked('WORLD_CLOCK_NO_TEAM_GAME', f'{TEAM_GAME} missing', cause=Cause.DATA)
     art = json.loads(TEAM_GAME.read_text())
@@ -152,7 +156,7 @@ def latest_completed_in_evidence(rows) -> Outcome:
             continue
         n += 1
         d = day_of.get(r.get('game_id'))
-        if d:
+        if d and (before is None or d < before):
             scored_days.append(d)
             scored_weeks.add(int(r['week']))
     if not scored_days:
@@ -189,7 +193,7 @@ def semantic_freshness(as_of=None, rows=None) -> Outcome:
     w = latest_completed_in_world(rows, as_of)
     if w.state.value != 'PASS':
         return w
-    e = latest_completed_in_evidence(rows)
+    e = latest_completed_in_evidence(rows, before=w.value['as_of'])
     if e.state.value != 'PASS':
         return e
 
