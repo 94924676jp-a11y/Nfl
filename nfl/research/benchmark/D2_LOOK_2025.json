@@ -1,0 +1,143 @@
+{
+ "artifact": "D2_LOOK_2025",
+ "season": 2025,
+ "prereg": "PREREG_D2_APPEARANCE.md @554eb007",
+ "params": "D2_PARAMS.json @f8c5be88",
+ "status": "ONE LOGGED LOOK, PREVIOUSLY_INSPECTED_SEASON (2025 aggregates seen in PLAYER_SCORECARD and the D1 look)",
+ "n_unconditional": 6566,
+ "n_appeared_rows": 3779,
+ "n_appearance_rows": 6566,
+ "mae_unconditional": {
+  "incumbent": 4.8815,
+  "ROLE": 4.2692
+ },
+ "appearance_incumbent": {
+  "brier": 0.39117,
+  "log_loss_clip_0_01": 1.77796
+ },
+ "naive_STD_U_mae": 4.321,
+ "top_decile_wr_te_level_given_play": {
+  "incumbent": 1.256,
+  "naive_control_STD": 1.1321
+ },
+ "arms": {
+  "ROLE": {
+   "unconditional_minus_incumbent": {
+    "diff": -0.6124,
+    "ci95": [
+     -0.7066,
+     -0.5074
+    ],
+    "n_weeks": 14,
+    "n_rows": 6566
+   },
+   "appeared_rows_minus_incumbent_DIAGNOSTIC": {
+    "diff": -0.8066,
+    "ci95": [
+     -0.9184,
+     -0.6859
+    ],
+    "n_weeks": 14,
+    "n_rows": 3779
+   },
+   "by_position_unconditional": {
+    "QB": {
+     "diff": -0.4252,
+     "ci95": [
+      -0.7383,
+      -0.0614
+     ],
+     "n_weeks": 14,
+     "n_rows": 922
+    },
+    "RB": {
+     "diff": -0.7769,
+     "ci95": [
+      -0.868,
+      -0.6817
+     ],
+     "n_weeks": 14,
+     "n_rows": 1690
+    },
+    "WR": {
+     "diff": -0.546,
+     "ci95": [
+      -0.6584,
+      -0.434
+     ],
+     "n_weeks": 14,
+     "n_rows": 2509
+    },
+    "TE": {
+     "diff": -0.6546,
+     "ci95": [
+      -0.7322,
+      -0.5741
+     ],
+     "n_weeks": 14,
+     "n_rows": 1445
+    }
+   },
+   "by_last_game_stratum_unconditional": {
+    "appeared_last_club_game": {
+     "diff": -0.4583,
+     "ci95": [
+      -0.6028,
+      -0.3094
+     ],
+     "n_weeks": 14,
+     "n_rows": 4207
+    },
+    "missed_last_club_game": {
+     "diff": -0.8872,
+     "ci95": [
+      -1.0019,
+      -0.7906
+     ],
+     "n_weeks": 14,
+     "n_rows": 2359
+    }
+   },
+   "minus_naive_STD_U": {
+    "diff": -0.0519,
+    "ci95": [
+     -0.0957,
+     -0.0061
+    ],
+    "n_weeks": 14,
+    "n_rows": 6566
+   },
+   "top_decile_wr_te_level_given_play": 0.9228,
+   "appearance": {
+    "brier": 0.17289,
+    "log_loss_clip_0_01": 0.52638,
+    "brier_minus_incumbent": {
+     "diff": -0.2183,
+     "ci95": [
+      -0.233,
+      -0.201
+     ],
+     "n_weeks": 14,
+     "n_rows": 6566
+    }
+   }
+  }
+ },
+ "incumbent_minus_naive_STD_U": {
+  "diff": 0.5605,
+  "ci95": [
+   0.4876,
+   0.6285
+  ],
+  "n_weeks": 14,
+  "n_rows": 6566
+ },
+ "PASS_RULE": {
+  "upper95_unconditional_below_0": true,
+  "no_position_worse": true,
+  "positions_worse": [],
+  "appearance_brier_below_incumbent": true
+ },
+ "VERDICT": "PASS",
+ "CONFIRMATION": "NOT_CONFIRMED whatever the verdict: only a prelock prospective arm (W6 onward) can confirm"
+}
