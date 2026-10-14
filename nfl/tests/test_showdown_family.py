@@ -65,8 +65,14 @@ def _sealed():
         assert k in a, k
     assert a['model_family'] == SF.MODEL_FAMILY
     assert len(a['code_identity']) == len(SF.EXECUTION_PATH)
-    assert a['data_cutoff']['blob'].endswith('pbp_2026.79b02496d26004ee.csv.gz'), a['data_cutoff']
-    assert len(a['roster_vintage']) == 11, len(a['roster_vintage'])
+    # TEST-D2 (2026-10-14): these pinned a blob name and a file count that went stale the moment the panel was rebuilt
+    # from a newer capture. What the seal must do is record the panel's DECLARED source and every roster capture on
+    # disk, so both are read from the same places the seal reads.
+    import glob as _glob
+    from nfl.tools import player_prior as _PP
+    declared = ((json.loads(pathlib.Path(_PP.PANEL).read_text()).get('provenance') or {}).get('2026') or {}).get('blob')
+    assert declared and a['data_cutoff']['blob'] == declared, (a['data_cutoff'], declared)
+    assert len(a['roster_vintage']) == len(_glob.glob(str(_REPO / _PP.ROSTERS))) > 0, len(a['roster_vintage'])
     assert a['depth_vintage']['basis'] == 'USAGE_DERIVED_FROM_PANEL'
     d = pathlib.Path(o.value['dir'])
     assert (d / 'forecast_artifact.json').exists() and (d / 'player_draws.npz').exists() \
@@ -87,7 +93,21 @@ def _discovered():
 
 @check('ADMISSIBLE when sealed live before kickoff with every field present')
 def _admissible():
-    o = REUSE.assert_currently_admissible(_art(_SEAL['ok']))
+    # TEST-D2 / SEAL-D1 (2026-10-14): the shared fixture seals at a 2026-10-02 test clock, but the seal clocks its
+    # inputs by FILE MTIME, and in a fresh checkout every mtime is the checkout time -- so on any new clone the inputs
+    # read as retrieved after written_at and the time-basis control (correctly) refuses. The positive control is sealed
+    # truthfully instead: written now, kickoff an hour later. That is what "sealed live before kickoff" means.
+    import datetime as _dt
+    import tempfile as _tf
+    now = _dt.datetime.now(_dt.timezone.utc)
+    import atexit as _ax
+    import shutil as _sh
+    _live_root = _tf.mkdtemp(prefix='sf_live_')
+    _ax.register(_sh.rmtree, _live_root, True)
+    live = _seal(written_at=now.strftime('%Y-%m-%dT%H:%M:%SZ'), kickoff_utc=(now + _dt.timedelta(hours=1)).strftime('%Y-%m-%dT%H:%M:%SZ'),
+                 out_root=pathlib.Path(_live_root))
+    assert live.state is State.PASS, (live.code, live.detail)
+    o = REUSE.assert_currently_admissible(_art(live))
     assert o.state is State.PASS, (o.code, {k: v['code'] for k, v in (o.evidence.get('controls') or {}).items()})
     per = o.evidence.get('controls') or {}
     assert set(per) == set(SF.MANDATORY_CONTROLS), sorted(per)

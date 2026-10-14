@@ -231,10 +231,25 @@ def t_dst():
     assert 0 < lo and hi < 20, f'DST board runs {lo}..{hi}, which is not a plausible range'
     art = json.loads(DST.read_text())
     iz = art['implausible_zeros_found']
-    assert iz.get('NYJ') == ['interception'], (
-        'the Poisson plausibility test no longer catches the Jets zero interceptions across 1,419 '
-        'defensive plays. P(zero) under the measured league rate is 6e-07; reporting it as a zero '
-        f'silently deletes a scoring term. found: {iz}')
+    # TEST-D8 (2026-10-14): this pinned the LIVE artifact's flag for the Jets' zero interceptions; once the Jets
+    # recorded one the flag left the data and the check went red, though the guard was untouched. The guard is now
+    # exercised on a constructed case, so it is tested whether or not any club happens to be at zero this week.
+    from nfl.tools import dst_model as DM
+    per = {}
+    for i, club in enumerate(['ZRO'] + [f'C{j}' for j in range(9)]):
+        for wk in range(1, 13):
+            per[(club, 2026, wk)] = {'has_pa': True, 'sack': 2, 'interception': 0 if club == 'ZRO' else 1,
+                                     'fumble_recovery': 1, 'return_td': 0, 'safety': 0,
+                                     'blocked_kick': 1 if (club == 'C0' and wk == 1) else 0}
+    syn = DM.club_rates(per)
+    assert list(syn['ZRO']['implausible_zeros']) == ['interception'], (
+        'the Poisson plausibility test no longer catches a club with zero interceptions over 12 games against a '
+        f"league rate near 0.9 a game; reporting it as a zero silently deletes a scoring term: {syn['ZRO']['implausible_zeros']}")
+    assert abs(syn['ZRO']['interception'] - DM.league_rates(per)[0]['interception']) < 1e-12, (
+        'the flagged zero must be replaced by the measured league rate')
+    assert not syn['C1']['implausible_zeros'], f"a normal club was flagged: {syn['C1']['implausible_zeros']}"
+    assert 'safety' not in syn['ZRO']['implausible_zeros'] and 'blocked_kick' not in syn['ZRO']['implausible_zeros'], (
+        'ordinary zeros (no safety, a rare blocked kick) must not fire')
     for club, meas in iz.items():
         assert 'safety' not in meas and 'blocked_kick' not in meas, (
             f'{club} flagged {meas}; a zero safety over 19 games is ordinary and must not fire')

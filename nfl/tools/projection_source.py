@@ -107,6 +107,10 @@ class BlendedModeRefused(RuntimeError):
     """BLENDED_RESEARCH_MODE is defined but not authorised."""
 
 
+#: Where run() writes the ledger. A module constant so a test can redirect it (ledger TREE-D1, 2026-10-14);
+#: the default is the unchanged production path.
+LEDGER_OUT = _REPO / 'nfl/dfs/salaries/DK_WEEK3_PROJECTION_SOURCE_LEDGER.json'
+
 def resolve(player, proprietary=None, fc=None, *, mode_preference=MODE_PROPRIETARY):
     """One player's projection record with explicit provenance.
 
@@ -327,7 +331,7 @@ def run(mode=MODE_FC_FALLBACK):
         'upstream': {'post_state_sha256': __import__('hashlib').sha256(
             post_p.read_bytes()).hexdigest(), 'fc_sha256': fcr.evidence['sha256']},
     }
-    out = _REPO / 'nfl/dfs/salaries/DK_WEEK3_PROJECTION_SOURCE_LEDGER.json'
+    out = LEDGER_OUT
     out.write_text(json.dumps(art, indent=2) + '\n')
     return Outcome.ok('PROJECTION_SOURCE_LEDGER', art,
                       f'{len(records)} records in {mode}', counts=dict(counts))

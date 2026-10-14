@@ -19,6 +19,14 @@ from nfl.tools import availability as AV  # noqa: E402
 from nfl.tools import fc_context as FC  # noqa: E402
 from nfl.tools import portfolio_audit as PA  # noqa: E402
 from nfl.tools import projection_source as PS  # noqa: E402
+
+# TREE-D1 (2026-10-14): PS.run() wrote the tracked DK_WEEK3_PROJECTION_SOURCE_LEDGER.json on every suite run. The
+# ledger goes to a temporary file for this module; every check reads the returned value.
+import atexit as _atexit, shutil as _shutil, tempfile as _tempfile  # noqa: E401,E402
+_TMP_LEDGER_DIR = _tempfile.mkdtemp(prefix='ps_ledger_')
+_atexit.register(_shutil.rmtree, _TMP_LEDGER_DIR, True)
+PS.LEDGER_OUT = pathlib.Path(_TMP_LEDGER_DIR) / PS.LEDGER_OUT.name
+PA.OUT = pathlib.Path(_TMP_LEDGER_DIR) / PA.OUT.name          # and the placeholder portfolio audit
 from sportsplatform.governance.outcome import State  # noqa: E402
 
 from nfl.tests import _registry  # noqa: E402

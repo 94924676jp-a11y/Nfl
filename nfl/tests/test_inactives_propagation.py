@@ -26,6 +26,8 @@ from nfl.production.nonqb import roster_status as RS                 # noqa: E40
 from nfl.production.nonqb import layers as LY                        # noqa: E402
 
 PASSED = FAILED = 0
+#: read by run_suite.blocked_tally: an evidence gap is BLOCKED, not a silent skip (ledger ZERO-D1, 2026-10-14)
+BLOCKED = 0
 KO = '2026-09-11T00:35:00Z'
 T90 = '2026-09-10T23:05:00Z'
 
@@ -264,7 +266,11 @@ def test_tonights_roster_capture_is_free_of_posthoc_contamination():
     o = RS.status_map(2026, 1, ['SF', 'LA'],
                       observed_before='2026-09-11T00:35:00Z')
     if o.state is not State.PASS:
-        print(f'  ..   roster status unavailable ({o.code}); skipped')
+        # NO LAWFUL VINTAGE is a real evidence gap (every roster capture postdates this week-1 cutoff), and the guard
+        # refusing is correct. It is reported BLOCKED -- never a pass, never a silent zero-check function.
+        global BLOCKED
+        BLOCKED += 1
+        print(f'  ..   BLOCKED roster status unavailable ({o.code})')
         return
     counts = o.evidence['status_counts']
     check('SF and LA carry no post-hoc status before kickoff',

@@ -1030,29 +1030,41 @@
    "line": 98,
    "n_definitions": 1,
    "fails_by": "RAISE_OR_RETURN",
-   "callers_prod": 1,
-   "callers_prod_external": 1,
-   "callers_test": 1,
+   "callers_prod": 3,
+   "callers_prod_external": 3,
+   "callers_test": 2,
    "callers_research": 0,
    "effect_on_failure": [
     "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
    "caller_modules": [
-    "nfl/postgame/grade_projections.py"
+    "nfl/postgame/auto_postgame.py",
+    "nfl/postgame/grade_projections.py",
+    "nfl/postgame/showdown_postgame.py"
    ],
    "caller_modules_excluding_cli_demo": [
-    "nfl/postgame/grade_projections.py"
+    "nfl/postgame/auto_postgame.py",
+    "nfl/postgame/grade_projections.py",
+    "nfl/postgame/showdown_postgame.py"
    ],
    "only_called_in_cli_demo": false,
    "caller_entry_points": {
+    "nfl/postgame/auto_postgame.py": {
+     "has_main": true,
+     "referenced_outside_python": false
+    },
     "nfl/postgame/grade_projections.py": {
      "has_main": true,
      "referenced_outside_python": false
+    },
+    "nfl/postgame/showdown_postgame.py": {
+     "has_main": true,
+     "referenced_outside_python": true
     }
    },
    "runnable_caller": true,
-   "caller_referenced_outside_python": false,
+   "caller_referenced_outside_python": true,
    "direct_test_coverage": true,
    "load_bearing_proof": "nfl/tests/test_missing_is_not_zero.py",
    "load_bearing_proof_determinism": {
@@ -1061,7 +1073,9 @@
    "classification": "LOAD_BEARING",
    "classification_reason": "raises AnonymousZero at the point a graded row is emitted; a stranger id is refused rather than zeroed, proven through the real grader",
    "prod_sites": [
-    "nfl/postgame/grade_projections.py:327:NOTHING"
+    "nfl/postgame/grade_projections.py:327:NOTHING",
+    "nfl/postgame/showdown_postgame.py:206:NOTHING",
+    "nfl/postgame/auto_postgame.py:109:NOTHING"
    ],
    "n_definitions_of_this_name": 1
   },
@@ -1866,7 +1880,7 @@
    "guard": "assert_no_post_cutoff_outcomes",
    "protects": "No outcome-bearing field may carry a value for a game kicking off after `cutoff`.",
    "defined_in": "nfl/production/world_clock.py",
-   "line": 283,
+   "line": 284,
    "n_definitions": 1,
    "fails_by": "RETURN",
    "callers_prod": 1,
@@ -1896,7 +1910,7 @@
    "classification": "NOT_ESTABLISHED",
    "classification_reason": "",
    "prod_sites": [
-    "nfl/production/world_clock.py:365:DOWNGRADE"
+    "nfl/production/world_clock.py:366:DOWNGRADE"
    ],
    "n_definitions_of_this_name": 1
   },
@@ -3025,17 +3039,19 @@
    "line": 53,
    "n_definitions": 1,
    "fails_by": "RETURN",
-   "callers_prod": 2,
-   "callers_prod_external": 2,
+   "callers_prod": 3,
+   "callers_prod_external": 3,
    "callers_test": 1,
    "callers_research": 0,
    "effect_on_failure": [
+    "ANNOTATE",
     "STOP"
    ],
    "reachability": "EXTERNALLY_CALLED",
    "caller_modules": [
     "nfl/dfs/classic/optimizer.py",
-    "nfl/dfs/classic/reference.py"
+    "nfl/dfs/classic/reference.py",
+    "nfl/dfs/salaries/classic_early_2026W5/classic_audit_2026-10-10/entries_audit.py"
    ],
    "caller_modules_excluding_cli_demo": [
     "nfl/dfs/classic/optimizer.py",
@@ -3050,9 +3066,13 @@
     "nfl/dfs/classic/reference.py": {
      "has_main": false,
      "referenced_outside_python": true
+    },
+    "nfl/dfs/salaries/classic_early_2026W5/classic_audit_2026-10-10/entries_audit.py": {
+     "has_main": true,
+     "referenced_outside_python": false
     }
    },
-   "runnable_caller": false,
+   "runnable_caller": true,
    "caller_referenced_outside_python": true,
    "direct_test_coverage": true,
    "load_bearing_proof": "NONE",
@@ -3061,7 +3081,8 @@
    "classification_reason": "",
    "prod_sites": [
     "nfl/dfs/classic/reference.py:341:STOP",
-    "nfl/dfs/classic/optimizer.py:488:STOP"
+    "nfl/dfs/classic/optimizer.py:490:STOP",
+    "nfl/dfs/salaries/classic_early_2026W5/classic_audit_2026-10-10/entries_audit.py:62:ANNOTATE"
    ],
    "n_definitions_of_this_name": 1
   },

@@ -96,9 +96,22 @@ def child(root, manifest, code):
     return r.returncode, r.stdout + r.stderr
 
 
+_FIX: dict = {}
+
+
+def _fixture():
+    """The synthetic store and its manifest, built once per process. The authoritative runner calls every test
+    function WITHOUT arguments, so the four functions that took (r, p) from test_classification's return value raised
+    TypeError there and their checks never ran in the suite (found 2026-10-14, ledger TEST-D10)."""
+    if not _FIX:
+        r = store()
+        p, m = PIT.build(CUT, 'T', 'test', root=r, out_dir=r / 'out')
+        _FIX.update(r=r, p=p, m=m)
+    return _FIX['r'], _FIX['p'], _FIX['m']
+
+
 def test_classification():
-    r = store()
-    p, m = PIT.build(CUT, 'T', 'test', root=r, out_dir=r / 'out')
+    r, p, m = _fixture()
     a, f = m['admitted'], m['refused']
     check('nfl/research/postgame/pbp_2026.aaaaaaaaaaaaaaaa.csv.gz' in a, 'capture retrieved before the cut: admitted')
     check(f.get('nfl/research/postgame/pbp_2026.bbbbbbbbbbbbbbbb.csv.gz', {}).get('reason') == 'REFUSED_AFTER_CUTOFF',
@@ -120,7 +133,9 @@ def test_classification():
     return r, p
 
 
-def test_seal_and_immutability(r, p):
+def test_seal_and_immutability(r=None, p=None):
+    if r is None:
+        r, p, _ = _fixture()
     bad = json.loads(p.read_text())
     bad['admitted']['nfl/research/postgame/pbp_2026.bbbbbbbbbbbbbbbb.csv.gz'] = {'sha256': 'x'}
     q = r / 'out/TAMPERED.json'
@@ -142,7 +157,9 @@ def test_seal_and_immutability(r, p):
         check(True, 'a cutoff without a stated basis refuses')
 
 
-def test_live_identity(r):
+def test_live_identity(r=None):
+    if r is None:
+        r, p, _ = _fixture()
     rc, out = child(r, None, "fs = sorted(str(x) for x in (R / 'nfl/research/postgame').glob('pbp_*.csv.gz'))\n"
                              "print(json.dumps([PIT.admit(fs) == fs, PIT.resolve(R / 'x/TEAM_GAME.json') == R / 'x/TEAM_GAME.json',"
                              " PIT.active() is None, open(R / 'nfl/warehouse/TEAM_GAME.json').read()]))")
@@ -155,7 +172,9 @@ READER = ("from nfl.tools import dst_model as D\nD.PBP_DIR = R / 'nfl/research/p
           "c = D._capture(2026)\nprint('PICK', c.name if c else None)\n")
 
 
-def test_injection_and_negative_control(r, p):
+def test_injection_and_negative_control(r=None, p=None):
+    if r is None:
+        r, p, _ = _fixture()
     rc, out = child(r, p, READER)
     check(rc == 0 and 'PICK pbp_2026.aaaaaaaaaaaaaaaa.csv.gz' in out,
           f'sealed run: dst_model._capture picks the pre-cut capture, not the larger post-lock one ({out.strip()[-40:]})')
@@ -169,6 +188,16 @@ def test_injection_and_negative_control(r, p):
     rc, out = child(r, None, READER)
     check(rc == 0 and 'PICK pbp_2026.dddddddddddddddd.csv.gz' in out,
           'NEGATIVE CONTROL: with no manifest the same injection DOES move the reader (the test can detect a leak)')
+    # REMOVAL CONTROL (owner OD-002): taking the post-cut capture away must not move a correctly sealed run either
+    post = r / 'nfl/research/postgame/pbp_2026.bbbbbbbbbbbbbbbb.csv.gz'
+    hold = post.read_bytes()
+    post.unlink()
+    try:
+        rc, out = child(r, p, READER)
+        check(rc == 0 and 'PICK pbp_2026.aaaaaaaaaaaaaaaa.csv.gz' in out,
+              'sealed run: removing the post-cut capture leaves the sealed pick unchanged')
+    finally:
+        post.write_bytes(hold)
     rc, out = child(r, p, "open(R / 'nfl/research/postgame/pbp_2026.dddddddddddddddd.csv.gz', 'rb').read()")
     check(rc != 0 and 'PIT_UNAUTHORIZED_READ' in out and 'NOT_IN_SEALED_MANIFEST' in out,
           'backstop: an unwired direct open of the injected capture refuses')
@@ -178,7 +207,9 @@ def test_injection_and_negative_control(r, p):
     check(rc == 0, 'backstop: an admitted capture opens')
 
 
-def test_tamper_and_resolve(r, p):
+def test_tamper_and_resolve(r=None, p=None):
+    if r is None:
+        r, p, _ = _fixture()
     rc, out = child(r, p, "print('TG', open(PIT.resolve(R / 'nfl/warehouse/TEAM_GAME.json')).read())")
     check(rc == 0 and 'TG {"v": "lock"}' in out, 'resolve(TEAM_GAME) yields the bytes committed at the cut')
     rc, out = child(r, p, "open(R / 'nfl/warehouse/TEAM_GAME.json').read()")

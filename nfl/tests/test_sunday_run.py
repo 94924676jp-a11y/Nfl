@@ -19,6 +19,13 @@ if str(_REPO) not in sys.path:
     sys.path.insert(0, str(_REPO))
 
 from nfl.production import readiness, sunday  # noqa: E402
+
+# TREE-D1 (2026-10-14): several functions here run the Sunday path, which rewrote the tracked READINESS.json and
+# SUNDAY_RUN_REPORT.json on every suite run. Both outputs are redirected for the whole module; checks read return values.
+import atexit as _atexit  # noqa: E402
+_TMP_OUT = pathlib.Path(tempfile.mkdtemp(prefix='sunday_out_'))
+_atexit.register(shutil.rmtree, str(_TMP_OUT), True)
+sunday.REPORT, readiness.OUT = _TMP_OUT / sunday.REPORT.name, _TMP_OUT / readiness.OUT.name
 from nfl.tools import xlsx_writer  # noqa: E402
 from sportsplatform.governance.outcome import State  # noqa: E402
 
@@ -44,14 +51,16 @@ def t_run():
     import tempfile
     from nfl.production import run_archive
     tmp = pathlib.Path(tempfile.mkdtemp())
-    saved = (run_archive.RUNS, run_archive.CURRENT)
+    saved = (run_archive.RUNS, run_archive.CURRENT, sunday.REPORT, readiness.OUT)
     try:
         run_archive.RUNS = tmp / 'runs'
         run_archive.CURRENT = run_archive.RUNS / 'CURRENT.json'
+        # TREE-D1 (2026-10-14): the run also rewrote the tracked READINESS.json and SUNDAY_RUN_REPORT.json
+        sunday.REPORT, readiness.OUT = tmp / sunday.REPORT.name, tmp / readiness.OUT.name
         o = sunday.run(archive=True)
         archived = sorted(x.name for x in (tmp / 'runs').iterdir()) if (tmp / 'runs').exists() else []
     finally:
-        run_archive.RUNS, run_archive.CURRENT = saved
+        run_archive.RUNS, run_archive.CURRENT, sunday.REPORT, readiness.OUT = saved
         shutil.rmtree(tmp, ignore_errors=True)
     assert any(n.startswith('DK_NFL_WEEK3') for n in archived), (
         f'archive=True produced no sealed directory: {archived}')

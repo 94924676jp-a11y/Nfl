@@ -60,6 +60,9 @@ from sportsplatform.governance.outcome import State                # noqa: E402
 
 PASSED = FAILED = 0
 NOT_EXECUTED = []
+#: run_suite.blocked_tally reads this int: a NOT_EXECUTED section is reported BLOCKED, never as a silent zero-check
+#: pass (ledger ZERO-D1, 2026-10-14).
+BLOCKED = 0
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 WORKFLOWS = ROOT / '.github' / 'workflows'
 CAPTURE_WORKFLOWS = ('nfl-capture.yml', 'nfl-t90.yml')
@@ -84,7 +87,9 @@ def check(label, cond, detail=''):
 
 
 def not_executed(label, why):
+    global BLOCKED
     NOT_EXECUTED.append((label, why))
+    BLOCKED += 1
     print(f'  ..   NOT_EXECUTED {label} -- {why}')
 
 

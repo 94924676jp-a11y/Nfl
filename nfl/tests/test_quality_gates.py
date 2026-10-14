@@ -44,6 +44,16 @@ from nfl.product import quality_gates as QG                        # noqa: E402
 from nfl.product import board_pointer as BP                        # noqa: E402
 from nfl.product import metrics as M                               # noqa: E402
 
+# TREE-D1 (2026-10-14): a swap in this module wrote the tracked nfl/research/v2/r5/active_board_pointer.json on every
+# suite run. The pointer's owned directory is redirected to a temporary copy holding the current pointer, so every
+# guard is exercised against the same content without touching the tracked file.
+import atexit as _atexit, shutil as _shutil, tempfile as _tempfile  # noqa: E401,E402
+_TMP_STATE = pathlib.Path(_tempfile.mkdtemp(prefix='bp_state_'))
+_atexit.register(_shutil.rmtree, str(_TMP_STATE), True)
+if BP.POINTER.exists():
+    _shutil.copy2(BP.POINTER, _TMP_STATE / BP.POINTER.name)
+BP.STATE_DIR, BP.POINTER = _TMP_STATE, _TMP_STATE / BP.POINTER.name
+
 PASSED = FAILED = BLOCKED = 0
 
 SEAL = (pathlib.Path(_ROOT) / 'nfl' / 'research' / 'live' / '2026_01_DEN_KC'

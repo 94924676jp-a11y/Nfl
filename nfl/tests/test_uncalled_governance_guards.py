@@ -129,9 +129,11 @@ def test_the_superseded_one_is_superseded_in_fact():
     rows = {r['guard']: r for r in cen['rows']}
     old = rows.get('assert_no_inactive_survived')
     new = rows.get('assert_no_inactive_in_playable')
-    check('the old one still has no caller',
-          old and old['reachability'] == 'NO_CALLER_AT_ALL',
-          old['reachability'] if old else 'absent')
+    # GOV-D1 (2026-10-14): the census counts TEST callers, so a superseded guard that tests still exercise is
+    # NO_PROD_CALLER, not NO_CALLER_AT_ALL. What SUPERSEDED requires is that nothing in production calls it.
+    check('the old one has no PRODUCTION caller (tests may still exercise it)',
+          old and old['reachability'] in ('NO_CALLER_AT_ALL', 'NO_PROD_CALLER') and not old.get('callers_prod'),
+          f"{old['reachability']} prod_callers={old.get('callers_prod')}" if old else 'absent')
     check('the successor is externally called',
           new and new['reachability'] == 'EXTERNALLY_CALLED',
           new['reachability'] if new else 'absent')

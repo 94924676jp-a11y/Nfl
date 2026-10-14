@@ -384,9 +384,12 @@ def _fx(**over):
     Q, rs = frame()
     e = [r for r in rs if Q.eligible(r, 2024)][:12]
     f = {'kickoff_utc': '2026-09-10T00:20:00Z',
-         'source_hashes': {'schedules': {'sha256': 'b' * 64,
-                                         'retrieved_at':
-                                             '2026-09-09T20:00:00Z'}},
+         # TEST-D9 (2026-10-14): capture_validation requires every source its layers select (DK-3, b8689aa1); the
+         # layers now select four. Declaring only schedules made EVERY run refuse at capture_validation before the QB
+         # stage, so the guard-deletion controls read that unrelated refusal as "the guard is not load-bearing".
+         'source_hashes': {n: {'sha256': c * 64, 'retrieved_at': '2026-09-09T20:00:00Z'}
+                           for n, c in (('schedules', 'b'), ('depth_charts', 'c'), ('injuries', 'd'),
+                                        ('weekly_rosters', 'e'))},
          'players': [{'gsis_id': r['gsis_id']} for r in e],
          'team_ids': ['NE', 'SEA'],
          'qb_rows': e, 'qb_allrows': rs, 'qb_draws': 30,
