@@ -1,0 +1,428 @@
+{
+ "artifact": "D2_DEV_2024",
+ "season": 2024,
+ "prereg": "PREREG_D2_APPEARANCE.md @554eb007",
+ "params": "D2_PARAMS.json @f8c5be88",
+ "status": "DEVELOPMENT: descriptive; 2024 diagnosed APPEAR-D1 and cannot confirm the fix",
+ "n_unconditional": 5637,
+ "n_appeared_rows": 3403,
+ "n_appearance_rows": 5637,
+ "mae_unconditional": {
+  "incumbent": 5.2639,
+  "NONE": 5.1279,
+  "CURRENT": 5.2639,
+  "SHRINK": 4.7632,
+  "ROLE": 4.5537
+ },
+ "appearance_incumbent": {
+  "brier": 0.37222,
+  "log_loss_clip_0_01": 1.68938
+ },
+ "naive_STD_U_mae": 4.5756,
+ "top_decile_wr_te_level_given_play": {
+  "incumbent": 1.3086,
+  "naive_control_STD": 1.231
+ },
+ "arms": {
+  "NONE": {
+   "unconditional_minus_incumbent": {
+    "diff": -0.136,
+    "ci95": [
+     -0.2853,
+     -0.0032
+    ],
+    "n_weeks": 14,
+    "n_rows": 5637
+   },
+   "appeared_rows_minus_incumbent_DIAGNOSTIC": {
+    "diff": -0.5647,
+    "ci95": [
+     -0.712,
+     -0.4305
+    ],
+    "n_weeks": 14,
+    "n_rows": 3403
+   },
+   "by_position_unconditional": {
+    "QB": {
+     "diff": 0.7204,
+     "ci95": [
+      0.2686,
+      1.0985
+     ],
+     "n_weeks": 14,
+     "n_rows": 801
+    },
+    "RB": {
+     "diff": -0.1712,
+     "ci95": [
+      -0.3916,
+      0.054
+     ],
+     "n_weeks": 14,
+     "n_rows": 1398
+    },
+    "WR": {
+     "diff": -0.3978,
+     "ci95": [
+      -0.5512,
+      -0.2526
+     ],
+     "n_weeks": 14,
+     "n_rows": 2186
+    },
+    "TE": {
+     "diff": -0.1873,
+     "ci95": [
+      -0.362,
+      -0.0137
+     ],
+     "n_weeks": 14,
+     "n_rows": 1252
+    }
+   },
+   "by_last_game_stratum_unconditional": {
+    "appeared_last_club_game": {
+     "diff": -0.4551,
+     "ci95": [
+      -0.6094,
+      -0.3142
+     ],
+     "n_weeks": 14,
+     "n_rows": 3756
+    },
+    "missed_last_club_game": {
+     "diff": 0.5012,
+     "ci95": [
+      0.303,
+      0.6869
+     ],
+     "n_weeks": 14,
+     "n_rows": 1881
+    }
+   },
+   "minus_naive_STD_U": {
+    "diff": 0.5523,
+    "ci95": [
+     0.4271,
+     0.6741
+    ],
+    "n_weeks": 14,
+    "n_rows": 5637
+   },
+   "top_decile_wr_te_level_given_play": 0.764
+  },
+  "CURRENT": {
+   "unconditional_minus_incumbent": {
+    "diff": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ],
+    "n_weeks": 14,
+    "n_rows": 5637
+   },
+   "appeared_rows_minus_incumbent_DIAGNOSTIC": {
+    "diff": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ],
+    "n_weeks": 14,
+    "n_rows": 3403
+   },
+   "by_position_unconditional": {
+    "QB": {
+     "diff": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "n_weeks": 14,
+     "n_rows": 801
+    },
+    "RB": {
+     "diff": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "n_weeks": 14,
+     "n_rows": 1398
+    },
+    "WR": {
+     "diff": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "n_weeks": 14,
+     "n_rows": 2186
+    },
+    "TE": {
+     "diff": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "n_weeks": 14,
+     "n_rows": 1252
+    }
+   },
+   "by_last_game_stratum_unconditional": {
+    "appeared_last_club_game": {
+     "diff": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "n_weeks": 14,
+     "n_rows": 3756
+    },
+    "missed_last_club_game": {
+     "diff": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "n_weeks": 14,
+     "n_rows": 1881
+    }
+   },
+   "minus_naive_STD_U": {
+    "diff": 0.6883,
+    "ci95": [
+     0.5735,
+     0.7987
+    ],
+    "n_weeks": 14,
+    "n_rows": 5637
+   },
+   "top_decile_wr_te_level_given_play": 1.3086,
+   "appearance": {
+    "brier": 0.37222,
+    "log_loss_clip_0_01": 1.68938,
+    "brier_minus_incumbent": {
+     "diff": 0.0,
+     "ci95": [
+      0.0,
+      0.0
+     ],
+     "n_weeks": 14,
+     "n_rows": 5637
+    }
+   }
+  },
+  "SHRINK": {
+   "unconditional_minus_incumbent": {
+    "diff": -0.5007,
+    "ci95": [
+     -0.6205,
+     -0.3928
+    ],
+    "n_weeks": 14,
+    "n_rows": 5637
+   },
+   "appeared_rows_minus_incumbent_DIAGNOSTIC": {
+    "diff": -0.8128,
+    "ci95": [
+     -0.9401,
+     -0.6857
+    ],
+    "n_weeks": 14,
+    "n_rows": 3403
+   },
+   "by_position_unconditional": {
+    "QB": {
+     "diff": 0.0182,
+     "ci95": [
+      -0.2369,
+      0.2489
+     ],
+     "n_weeks": 14,
+     "n_rows": 801
+    },
+    "RB": {
+     "diff": -0.4667,
+     "ci95": [
+      -0.656,
+      -0.2724
+     ],
+     "n_weeks": 14,
+     "n_rows": 1398
+    },
+    "WR": {
+     "diff": -0.7385,
+     "ci95": [
+      -0.8992,
+      -0.5922
+     ],
+     "n_weeks": 14,
+     "n_rows": 2186
+    },
+    "TE": {
+     "diff": -0.4554,
+     "ci95": [
+      -0.6015,
+      -0.3154
+     ],
+     "n_weeks": 14,
+     "n_rows": 1252
+    }
+   },
+   "by_last_game_stratum_unconditional": {
+    "appeared_last_club_game": {
+     "diff": -0.6154,
+     "ci95": [
+      -0.7495,
+      -0.495
+     ],
+     "n_weeks": 14,
+     "n_rows": 3756
+    },
+    "missed_last_club_game": {
+     "diff": -0.2718,
+     "ci95": [
+      -0.4214,
+      -0.121
+     ],
+     "n_weeks": 14,
+     "n_rows": 1881
+    }
+   },
+   "minus_naive_STD_U": {
+    "diff": 0.1875,
+    "ci95": [
+     0.1355,
+     0.2358
+    ],
+    "n_weeks": 14,
+    "n_rows": 5637
+   },
+   "top_decile_wr_te_level_given_play": 0.8472,
+   "appearance": {
+    "brier": 0.18874,
+    "log_loss_clip_0_01": 0.5611,
+    "brier_minus_incumbent": {
+     "diff": -0.1835,
+     "ci95": [
+      -0.1991,
+      -0.1679
+     ],
+     "n_weeks": 14,
+     "n_rows": 5637
+    }
+   }
+  },
+  "ROLE": {
+   "unconditional_minus_incumbent": {
+    "diff": -0.7102,
+    "ci95": [
+     -0.8265,
+     -0.6024
+    ],
+    "n_weeks": 14,
+    "n_rows": 5637
+   },
+   "appeared_rows_minus_incumbent_DIAGNOSTIC": {
+    "diff": -0.8886,
+    "ci95": [
+     -1.0199,
+     -0.7542
+    ],
+    "n_weeks": 14,
+    "n_rows": 3403
+   },
+   "by_position_unconditional": {
+    "QB": {
+     "diff": -0.6537,
+     "ci95": [
+      -0.8757,
+      -0.456
+     ],
+     "n_weeks": 14,
+     "n_rows": 801
+    },
+    "RB": {
+     "diff": -0.5685,
+     "ci95": [
+      -0.7524,
+      -0.383
+     ],
+     "n_weeks": 14,
+     "n_rows": 1398
+    },
+    "WR": {
+     "diff": -0.9105,
+     "ci95": [
+      -1.0553,
+      -0.7724
+     ],
+     "n_weeks": 14,
+     "n_rows": 2186
+    },
+    "TE": {
+     "diff": -0.555,
+     "ci95": [
+      -0.7028,
+      -0.4125
+     ],
+     "n_weeks": 14,
+     "n_rows": 1252
+    }
+   },
+   "by_last_game_stratum_unconditional": {
+    "appeared_last_club_game": {
+     "diff": -0.5966,
+     "ci95": [
+      -0.7326,
+      -0.4719
+     ],
+     "n_weeks": 14,
+     "n_rows": 3756
+    },
+    "missed_last_club_game": {
+     "diff": -0.9371,
+     "ci95": [
+      -1.0829,
+      -0.7955
+     ],
+     "n_weeks": 14,
+     "n_rows": 1881
+    }
+   },
+   "minus_naive_STD_U": {
+    "diff": -0.022,
+    "ci95": [
+     -0.0724,
+     0.0292
+    ],
+    "n_weeks": 14,
+    "n_rows": 5637
+   },
+   "top_decile_wr_te_level_given_play": 0.9278,
+   "appearance": {
+    "brier": 0.17145,
+    "log_loss_clip_0_01": 0.52309,
+    "brier_minus_incumbent": {
+     "diff": -0.2008,
+     "ci95": [
+      -0.2182,
+      -0.1832
+     ],
+     "n_weeks": 14,
+     "n_rows": 5637
+    }
+   }
+  }
+ },
+ "incumbent_minus_naive_STD_U": {
+  "diff": 0.6883,
+  "ci95": [
+   0.5735,
+   0.7987
+  ],
+  "n_weeks": 14,
+  "n_rows": 5637
+ }
+}
