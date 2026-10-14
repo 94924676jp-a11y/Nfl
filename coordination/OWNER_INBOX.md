@@ -136,3 +136,22 @@ DECISION, recorded by the engineering agent (the OWNER_DECISIONS.md entry is the
   forecasts.
 - EVERY progress report shows whether the complete football model beats a news-adjusted simple baseline.
 
+
+## Requests from mandate b0540a52 (engineering agent, 2026-10-14). AWAITING OWNER; nothing below is assumed
+
+Full board: `nfl/research/benchmark/OWNER_READINESS_BOARD.md`.
+
+**Headline.** With news on both sides (2026 W4–W5, 11 games, exploratory, interim), C beats the news-adjusted
+baselines: C − B1 −0.53 [−0.70, −0.37]. With no news on either side (2025 look), the D2 challenger beats the naive
+baseline, −0.05 [−0.10, −0.01], where the incumbent core loses by +0.56. D2 is not confirmed and not promoted.
+
+1. **Non-inferiority margin for challengers.** D1 failed on RB at +0.0007 DK MAE because no margin was declared.
+   Decide whether future pre-registrations may declare a per-position margin, and how large. This changes what counts
+   as evidence. Until you decide, the rule stays strict.
+2. **Autonomy cadence and budget.**
+   - The proposal is `nfl/research/benchmark/AUTONOMY_RUNBOOK.md`: about 200 runner-minutes a week, three jobs, no
+     publishing, no promotion.
+   - Approve or adjust it, set a monthly cap, and install `nfl-evaluation.yml`. That path is agent-denied.
+3. **Perplexity historical package.** It was not found in any upload or tree. Send it, or confirm that it is withdrawn.
+4. **RES-008..011.** These remain blocked on rights and network for the agents. Each one unblocks a named UNAVAILABLE
+   row on the board.
