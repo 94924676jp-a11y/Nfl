@@ -329,6 +329,18 @@ def main(argv=None):
     modules = None
     if '--modules' in argv:
         modules = [m.strip() for m in argv[argv.index('--modules') + 1].split(',') if m.strip()]
+    # `--gate` runs the PRODUCTION-CRITICAL GATE (owner OD-001, 2026-10-14: "a smaller, reliably green production-critical
+    # test gate"): exactly the modules declared in nfl/tests/PRODUCTION_GATE.json. It is stricter than a suite run -- a
+    # BLOCKED function fails the gate, because a release guard that could not run has not guarded anything -- and it is
+    # never a full-suite result. The full suite stays the authoritative baseline.
+    gate = None
+    if '--gate' in argv:
+        if modules:
+            print('REFUSED: --gate and --modules together: the gate is its declared list, nothing else')
+            return 2
+        with open(os.path.join(ROOT, 'nfl', 'tests', 'PRODUCTION_GATE.json'), encoding='utf-8') as fh:
+            gate = json.load(fh)
+        modules = [m['module'] for m in gate['modules']]
     shuffle_seed = None
     if '--shuffle' in argv:
         j = argv.index('--shuffle') + 1
@@ -357,6 +369,8 @@ def main(argv=None):
     order_note = 'discovered (sorted)'
     if modules:
         order_note = f'EXPLICIT --modules ({len(files)} of a full suite; NOT a suite result)'
+    if gate:
+        order_note = f'PRODUCTION GATE ({len(files)} declared modules; NOT a full-suite result)'
     if reverse:
         files = list(reversed(files))
         order_note = 'REVERSED'
@@ -703,6 +717,8 @@ def main(argv=None):
            + sum(p.startswith('DETECTORS UNVALIDATED') for p in problems)
            + sum(p.startswith('MODE_BOUNDARY_VIOLATED') for p in problems)
            + sum(p.startswith('TREE_WRITTEN') for p in problems))
+    if gate:
+        bad += n_fn_blocked
     # OWNER RULE 1 (2026-10-02). A run that executed nothing has not passed. Before this, an
     # `--only` pattern matching no module printed SUITE PASS on 0 modules and 0 checks, and the
     # log holds three such runs. NOT_EXECUTED is its own verdict with its own exit code (3), so
@@ -725,6 +741,9 @@ def main(argv=None):
     if verdict == 'NOT_EXECUTED':
         print(f'SUITE NOT_EXECUTED  ({len(files)} module(s), {n_executed} check(s) executed): '
               f'nothing ran, so nothing passed and nothing failed.')
+    elif gate:
+        print(f'PRODUCTION GATE {verdict}  ({len(files)} modules, {n_executed} checks, {n_fn_blocked} blocked; '
+              f'NOT a full-suite result)')
     else:
         print('SUITE ' + verdict)
     return rc

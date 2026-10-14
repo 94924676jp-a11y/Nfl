@@ -1,0 +1,159 @@
+{
+ "artifact": "NFL_PRODUCTION_GATE",
+ "schema": "nfl-production-gate-1",
+ "written_at_utc": "2026-10-14",
+ "directive": "owner OD-001 (2026-10-14), P0-B: \"a smaller, reliably green production-critical test gate\"",
+ "run": "python3.12 nfl/tests/run_suite.py --gate",
+ "IS_NOT": "a full-suite result. The full suite (python3.12 nfl/tests/run_suite.py) stays the authoritative baseline; the gate is the subset every production release must pass on its own head.",
+ "STRICTER_THAN_THE_SUITE": "a BLOCKED function fails the gate: a release guard that could not run has guarded nothing",
+ "admission_rule": "a module is admitted only when it guards a production release path and was green with zero BLOCKED functions in two consecutive gate runs on the same head; a module that depends on network or remote git state is not admitted, however important, because its colour would measure the environment",
+ "excluded_with_reason": {
+  "test_spending_gate": "ENV: asserts the local origin/main ref is current against the remote (red on 2026-10-14 with a stale ref, code unchanged); stays in the full suite",
+  "test_autonomy_transport": "ENV: same remote-ref dependence (ENV-D1); stays in the full suite",
+  "test_qb2_production": "TEST-D9 open: 5 failing checks on an incomplete draw-artifact fixture",
+  "test_field_model": "FIREWALL-D1 open: red on a real defect; admitted when fixed",
+  "test_dfs_eligibility": "guards nfl/dfs eligibility code that no production entrypoint imports (static call graph)",
+  "test_dfs_identity_crosswalk": "guards an identity crosswalk that no production entrypoint imports (static call graph)"
+ },
+ "modules": [
+  {
+   "module": "test_roster_eligibility",
+   "category": "ELIGIBILITY"
+  },
+  {
+   "module": "test_roster_eligibility_aliases",
+   "category": "ELIGIBILITY"
+  },
+  {
+   "module": "test_roster_eligibility_contract",
+   "category": "ELIGIBILITY"
+  },
+  {
+   "module": "test_release_roster_eligibility",
+   "category": "ELIGIBILITY"
+  },
+  {
+   "module": "test_classic_roster_gate",
+   "category": "ELIGIBILITY"
+  },
+  {
+   "module": "test_roster_reserve_absent",
+   "category": "ELIGIBILITY"
+  },
+  {
+   "module": "test_pit_fail_closed",
+   "category": "POINT_IN_TIME"
+  },
+  {
+   "module": "test_point_in_time",
+   "category": "POINT_IN_TIME"
+  },
+  {
+   "module": "test_pit_guard_is_load_bearing",
+   "category": "POINT_IN_TIME"
+  },
+  {
+   "module": "test_world_clock",
+   "category": "POINT_IN_TIME"
+  },
+  {
+   "module": "test_showdown_release_status",
+   "category": "RELEASE_AND_LOCK"
+  },
+  {
+   "module": "test_showdown_run_guards",
+   "category": "RELEASE_AND_LOCK"
+  },
+  {
+   "module": "test_classic_release",
+   "category": "RELEASE_AND_LOCK"
+  },
+  {
+   "module": "test_release_classification",
+   "category": "RELEASE_AND_LOCK"
+  },
+  {
+   "module": "test_classic_upload_verify",
+   "category": "RELEASE_AND_LOCK"
+  },
+  {
+   "module": "test_classic_portfolio",
+   "category": "LINEUP_RULES_AND_SELECTION"
+  },
+  {
+   "module": "test_exact_optimiser_and_warehouse",
+   "category": "LINEUP_RULES_AND_SELECTION"
+  },
+  {
+   "module": "test_dfs_portfolio_guard",
+   "category": "LINEUP_RULES_AND_SELECTION"
+  },
+  {
+   "module": "test_showdown_sel1_fill_repair",
+   "category": "LINEUP_RULES_AND_SELECTION"
+  },
+  {
+   "module": "test_fc_firewall_and_projection_source",
+   "category": "MARKET_AND_FC_FIREWALL"
+  },
+  {
+   "module": "test_leakage_guard_is_load_bearing",
+   "category": "MARKET_AND_FC_FIREWALL"
+  },
+  {
+   "module": "test_market_in_projection",
+   "category": "MARKET_AND_FC_FIREWALL"
+  },
+  {
+   "module": "test_showdown_identity_paths",
+   "category": "IDENTITY"
+  },
+  {
+   "module": "test_accounting_invariants",
+   "category": "ACCOUNTING"
+  },
+  {
+   "module": "test_world_accounting_check",
+   "category": "ACCOUNTING"
+  },
+  {
+   "module": "test_classic_slate_state",
+   "category": "STATE_BUILDERS"
+  },
+  {
+   "module": "test_sunday_prelock_p0",
+   "category": "STATE_BUILDERS"
+  },
+  {
+   "module": "test_mode_boundaries",
+   "category": "GOVERNANCE_AND_HARNESS"
+  },
+  {
+   "module": "test_suite_harness_tally",
+   "category": "GOVERNANCE_AND_HARNESS"
+  },
+  {
+   "module": "test_run_suite_tree_guard",
+   "category": "GOVERNANCE_AND_HARNESS"
+  },
+  {
+   "module": "test_issue_ledger",
+   "category": "GOVERNANCE_AND_HARNESS"
+  },
+  {
+   "module": "test_production_gate",
+   "category": "GOVERNANCE_AND_HARNESS"
+  }
+ ],
+ "categories": {
+  "ELIGIBILITY": "roster eligibility: three-state contract, withheld before projection, upload refusal (OD-001 decision 1)",
+  "POINT_IN_TIME": "no information after the cutoff reaches a forecast; replays declare themselves (PIT-D1)",
+  "RELEASE_AND_LOCK": "release status, kickoff refusal, diagnostic withholding, final upload verification (ENG-014/017)",
+  "LINEUP_RULES_AND_SELECTION": "DK roster rules, stacking, exposure caps and the governed selector",
+  "MARKET_AND_FC_FIREWALL": "no sportsbook, FC or DK AvgPoints input reaches a projection",
+  "IDENTITY": "the right game, club and player keys end to end",
+  "ACCOUNTING": "box-score laws on simulated worlds",
+  "STATE_BUILDERS": "Classic state builder and Sunday prelock fixtures",
+  "GOVERNANCE_AND_HARNESS": "mode boundaries, the runner's own counting and tree guard, the issue ledger"
+ }
+}
