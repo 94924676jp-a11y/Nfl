@@ -2071,6 +2071,29 @@
    "experiment": null,
    "source": "benchmark mandate 37cdd6dc (nfl/research/benchmark/MODEL_SCORECARD.json)",
    "reproducible_fixture": null
+  },
+  {
+   "id": "FC-D1",
+   "domain": "measurement",
+   "title": "forward_chain unconditional (DFS) rows zero-filled absent pool candidates from the PREVIOUS call's pool (empty on a process's first week)",
+   "user_visible_consequence": "unconditional held-out metrics depended on call order; headline barely moved after the fix (+0.68 -> +0.70 MAE vs naive)",
+   "evidence": [
+    "nfl/tools/forward_chain.py",
+    "nfl/research/benchmark/PLAYER_SCORECARD.json"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P2",
+   "production_path": "SHADOW",
+   "state": "FIXED",
+   "owner_gate": null,
+   "guard_test": "nfl/tests/test_forward_chain_vintage.py",
+   "test_type": "unit+mutation",
+   "blast_radius": "every forward_chain unconditional (dfs) figure recorded before 2026-10-14",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": null,
+   "source": "D1 golden test (w=0 not identical to the incumbent) 2026-10-14",
+   "reproducible_fixture": null
   }
  ]
 }

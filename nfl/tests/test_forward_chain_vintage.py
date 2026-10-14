@@ -78,6 +78,29 @@ def test_production_defaults_are_unchanged():
           'positional_rates default equals the explicit FIT_SEASONS fit')
 
 
+def test_unconditional_rows_do_not_depend_on_call_order():
+    """FC-D1: the zero-fill for absent pool candidates used the PREVIOUS call's pool (empty on a process's first week)."""
+    po = P.load_panel()
+
+    def run():
+        F.PER_PLAYER_SINK_DFS = []
+        F.evaluate(po.value, P.position_index(), [2024], [('PROD', 1.0, None)], max_weeks=2)
+        return list(F.PER_PLAYER_SINK_DFS)
+    saved = (F.POOL[0], F.PER_PLAYER_SINK_DFS)
+    try:
+        F.POOL[0] = set()          # a fresh process
+        first = run()
+        second = run()
+        check(first == second and len(first) > 0, f'two consecutive runs give identical unconditional rows ({len(first)}, {len(second)})')
+        absent = [r for r in first if not r[7]]
+        check(len(absent) > 0, f'the first run already zero-fills absent pool candidates ({len(absent)})')
+        F.D1_W[0] = 0.0
+        check(run() == first, 'D1 at w = 0 reproduces the incumbent rows exactly (golden)')
+    finally:
+        F.D1_W[0] = None
+        F.POOL[0], F.PER_PLAYER_SINK_DFS = saved
+
+
 def test_zz_every_check_passed():
     if FAILED:
         raise AssertionError(f'{FAILED} check(s) failed in this module')

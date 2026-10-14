@@ -17,20 +17,21 @@
   "player_means_held_out": {
    "source": "nfl/research/benchmark/PLAYER_SCORECARD.json",
    "replay": "nfl/research/benchmark/REPLAY_MANIFEST.json",
-   "sample": "2024-2025, 28 weeks, 9321 unconditional / 5816 conditional player-weeks",
+   "sample": "2024-2025, 28 weeks, 9496 unconditional (after FC-D1) player-weeks",
    "vintage": "STRICT (priors <= S-1, current season < W, TD rates/split/int rate <= S-1); positions not vintage-correct (L4-DEPTH)",
    "unconditional_mae": {
-    "incumbent": 5.5055,
-    "naive_STD_U": 4.8221,
+    "incumbent": 5.4888,
+    "naive_STD_U": 4.7897,
     "incumbent_minus_naive": {
-     "diff": 0.6834,
+     "diff": 0.6992,
      "ci95": [
-      0.6001,
-      0.7616
+      0.6216,
+      0.773
      ],
      "n_weeks": 28,
-     "n_rows": 9321
-    }
+     "n_rows": 9496
+    },
+    "note": "recomputed after FC-D1 (2026-10-14)"
    },
    "conditional_mae": {
     "incumbent_no_appearance": 5.4452,

@@ -414,6 +414,8 @@ def project_week(panel, pos_of, season, week, priors, depth, groups, bonus, ip, 
     for club, crows in by_club.items():
         tv = club_volume_before(panel, club, season, week, prior_games)
         V.allocate_opportunity(crows, tv, depth, groups, blend=blend, apply_appearance=APPLY_APPEARANCE[0])
+        if D1_W[0] is not None:
+            shrink_receiver_targets(crows, panel, club, season, week, D1_W[0])
         for r in crows:
             V.finalize(r)
         # club touchdown pool from the club's OWN measured touchdown rate -- no market input
@@ -471,6 +473,34 @@ PER_PLAYER_SINK_DFS = None
 #: Optional sink of projected COMPONENTS per player-week (targets, receptions, yards, TDs, points) for error
 #: decomposition. None = off.
 PROJ_COMPONENT_SINK = None
+
+#: D1 CHALLENGER (PREREG_D1_TARGET_SHRINK.md, opt-in research arm; None = the incumbent, byte-identical). The weight w of
+#: each pool WR/TE's OBSERVED target share (weeks before W) blended into his ALLOCATED share of the club's combined WR+TE
+#: targets. The combined total, and so every club identity, is preserved exactly.
+D1_W = [None]
+
+
+def shrink_receiver_targets(crows, panel, club, season, week, w):
+    """Blend allocated WR/TE target shares toward observed shares (D1). Mutates r['targets'] before finalize()."""
+    rec = [r for r in crows if r.get('position') in ('WR', 'TE') and r.get('targets') is not None]
+    total = sum(r['targets'] for r in rec)
+    if not rec or total <= 0 or not w:
+        return {'applied': False}
+    obs = {}
+    for r in rec:
+        cur, n = shares_before(panel, r['gsis'], club, r['position'], season, week)
+        if n and cur.get('target_share') is not None:
+            obs[r['gsis']] = cur['target_share']
+    if not obs:
+        return {'applied': False, 'reason': 'NO_OBSERVED_SHARES'}
+    alloc = {r['gsis']: r['targets'] / total for r in rec}
+    mass = sum(alloc[g] for g in obs)
+    osum = sum(obs.values())
+    for r in rec:
+        g = r['gsis']
+        if g in obs and osum > 0:
+            r['targets'] = ((1.0 - w) * alloc[g] + w * obs[g] / osum * mass) * total
+    return {'applied': True, 'n_receivers': len(rec), 'n_observed': len(obs)}
 
 
 def evaluate(panel, pos_of, seasons, arms, max_weeks=None):
@@ -555,8 +585,9 @@ def evaluate(panel, pos_of, seasons, arms, max_weeks=None):
                 if w and w.get('team'):
                     actual[gsis] = actual_dk(w)
                     actual_dfs[gsis] = actual[gsis]
-                elif gsis in POOL[0]:
-                    actual_dfs[gsis] = 0.0
+                # FC-D1 (2026-10-14): the zero for a pool candidate who did not play is filled AFTER project_week has
+                # built THIS week's pool (below). It was filled here from POOL[0], which still held the PREVIOUS
+                # call's pool -- empty on a process's first week -- so the unconditional rows depended on call order.
             if len(actual) < 50:
                 continue
             wk_row = {'season': season, 'week': week, 'n_players': len(actual), 'arms': {}, 'vintage': VINTAGE[0]}
@@ -567,6 +598,9 @@ def evaluate(panel, pos_of, seasons, arms, max_weeks=None):
                     label, arm, cap = str(spec), spec, None
                 proj = project_week(panel, season_pos, season, week, priors, depth, groups,
                                     bonus, ip, arm, prior_cap=cap)
+                for g_ in POOL[0]:                      # FC-D1: this week's pool, now that it exists
+                    if g_ not in actual and season_pos.get(g_) in SKILL and g_ not in excluded:
+                        actual_dfs[g_] = 0.0
                 common = [g for g in proj if g in actual and proj[g] is not None
                           and g in POOL[0]]
                 if len(common) < 50:

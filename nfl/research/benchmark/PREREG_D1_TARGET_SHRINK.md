@@ -44,3 +44,15 @@ the allocated target share becomes
 | **Failure** | Recorded, preserved, and not tuned. A different `w` or rule is a new pre-registration. |
 
 **Not authorized here.** Promotion. Any change to production defaults (D1 is an opt-in research arm).
+
+## AMENDMENT 1 (2026-10-14, before any D1 code ran; clarification, not a change of rule)
+
+**Touchdowns.** The club touchdown pool is unchanged. Within the club, touchdowns are allocated, as in the incumbent,
+by each player's opportunities. These follow the shrunk targets, so a receiver's TD share moves with his targets.
+"Untouched" in the rule above meant the TD **pool** and the TD **rates**.
+
+**Share space.**
+- The blend is applied among the club's pool WR and TE: each player's allocated share of their combined targets is
+  mixed with his observed share.
+- The observed shares are rescaled to the allocated mass of the players who have them.
+- The combined WR + TE target total, and so every club total, is preserved exactly.
