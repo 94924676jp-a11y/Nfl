@@ -426,6 +426,12 @@ def project_week(panel, pos_of, season, week, priors, depth, groups, bonus, ip, 
     for gsis, r in rows.items():
         pts, _items = V.dk_points(r, r.get('td'), bonus, ip)
         out[gsis] = pts
+        if PROJ_COMPONENT_SINK is not None:
+            td = r.get('td') or {}
+            PROJ_COMPONENT_SINK.append({'season': season, 'week': week, 'gsis': gsis, 'pos': r.get('position'), 'pts': pts,
+                                        **{k: r.get(k) for k in ('targets', 'receptions', 'rec_yards', 'carries',
+                                                                 'rush_yards', 'pass_attempts', 'pass_yards')},
+                                        'rec_td': td.get('rec_td'), 'rush_td': td.get('rush_td'), 'pass_td': td.get('pass_td')})
     return out
 
 
@@ -462,6 +468,9 @@ APPLY_APPEARANCE = [True]
 #: Optional sink for the UNCONDITIONAL (DFS) scoring rows: (season, week, label, gsis, pos, proj, actual_or_zero,
 #: appeared, pool club). None = off, as before.
 PER_PLAYER_SINK_DFS = None
+#: Optional sink of projected COMPONENTS per player-week (targets, receptions, yards, TDs, points) for error
+#: decomposition. None = off.
+PROJ_COMPONENT_SINK = None
 
 
 def evaluate(panel, pos_of, seasons, arms, max_weeks=None):

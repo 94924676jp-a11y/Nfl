@@ -54,6 +54,11 @@
     ],
     "n_weeks": 28,
     "n_rows": 11915
+   },
+   "diagnosis_2024_dev": {
+    "source": "nfl/research/benchmark/DECOMPOSE_2024.json",
+    "finding": "top-decile WR/TE over-projection is mainly TARGETS (+25%/+18%), efficiency secondary (WR yards/target +8%); excess over the naive regression-to-mean control +0.23 (WR), +0.29 (TE); QB none",
+    "challenger": "nfl/research/benchmark/PREREG_D1_TARGET_SHRINK.md"
    }
   },
   "prospective_prelock_2026": {
@@ -244,5 +249,106 @@
   "PROSPECTIVE_SCORECARD.json": "77c436916e1fc30d9f565218738fae1d89a9c2d36fad263222e1b37de9863477",
   "DATA_INVENTORY.json": "4fda5400d8bbf8f5bcd32c3cfc5245b205424fc2525b3c083c3b3286de3155df",
   "REPLAY_MANIFEST.json": "b6cfd19f2fdb9758ffcd362675bae8c95a88570258cf4a9ccbffa9c7e666d027"
+ },
+ "HEADLINE_FULL_MODEL_VS_NEWS_BASELINE": {
+  "owner_requirement": "OD-003: every report shows whether the complete football model beats a news-adjusted simple baseline",
+  "status": "INTERIM / NOT A DECISION (exploratory: 2026 W4-W5 slates inspected before pre-registration)",
+  "prereg": "nfl/research/benchmark/PREREG_FOUR_ARM.md (@0361f6de + amendment 1 @71122172); decision at 30 prospective games from W6",
+  "pooled_all_skill_players": {
+   "n_players": 503,
+   "n_games": 19,
+   "mae": {
+    "A": 3.0784,
+    "B1": 2.7925,
+    "B2": 3.2393,
+    "B3": 2.958,
+    "C": 2.2597
+   },
+   "C_minus_B1": {
+    "value": -0.5328,
+    "ci95": [
+     -0.804,
+     -0.2781
+    ],
+    "n_games": 19,
+    "n_players": 503
+   },
+   "C_minus_B2": {
+    "value": -0.9796,
+    "ci95": [
+     -1.3337,
+     -0.6761
+    ],
+    "n_games": 19,
+    "n_players": 503
+   },
+   "C_minus_B3": {
+    "value": -0.6983,
+    "ci95": [
+     -1.0141,
+     -0.4284
+    ],
+    "n_games": 19,
+    "n_players": 503
+   }
+  },
+  "players_with_2026_history": {
+   "n_players": 269,
+   "mae": {
+    "A": 5.1144,
+    "B1": 4.6371,
+    "B2": 4.7409,
+    "B3": 4.5878,
+    "C": 4.0114
+   },
+   "C_minus_B3": {
+    "value": -0.5765,
+    "ci95": [
+     -1.0126,
+     -0.1491
+    ],
+    "n_games": 19,
+    "n_players": 269
+   },
+   "by_position_C_minus_B3": {
+    "QB": {
+     "value": -1.4141,
+     "ci95": [
+      -2.5509,
+      -0.452
+     ],
+     "n_games": 19,
+     "n_players": 34
+    },
+    "RB": {
+     "value": -0.441,
+     "ci95": [
+      -1.0998,
+      0.1939
+     ],
+     "n_games": 19,
+     "n_players": 65
+    },
+    "WR": {
+     "value": -0.5462,
+     "ci95": [
+      -1.2147,
+      0.0669
+     ],
+     "n_games": 19,
+     "n_players": 109
+    },
+    "TE": {
+     "value": -0.308,
+     "ci95": [
+      -0.9055,
+      0.3044
+     ],
+     "n_games": 19,
+     "n_players": 61
+    }
+   }
+  },
+  "reading": "on these four inspected slates the full prelock model beats every news-adjusted baseline; with 2026 history the gain is clear only at QB (RB, WR, TE intervals include 0). Held-out on equal information the core does NOT beat naive (scorecards.player_means_held_out). The prospective test from W6 decides."
  }
 }

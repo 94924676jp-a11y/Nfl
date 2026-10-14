@@ -107,3 +107,32 @@ DECISION: approve the shared three-state eligibility contract, clarified (ELIG-D
 
 NOT AUTHORIZED: promoting forecast arms, altering real-money strategy, claiming production certification.
 
+## OD-003 · Benchmark follow-up: earn every layer (owner, 2026-10-14, relayed in chat)
+
+DECISION, recorded by the engineering agent (the OWNER_DECISIONS.md entry is the owner's to write):
+
+- AUTHORIZE ongoing research and evaluation.
+- NOT AUTHORIZED: automatic model promotion; changes to real-money submissions.
+- Compare on identical slates and information cutoffs:
+  - A: simple rolling average;
+  - B: A plus injuries/inactives;
+  - C: the current engine with the same news;
+  - D: a corrected challenger with the same news.
+
+  Stratify by position, expected workload, playing-time uncertainty, projection magnitude and slate format. If C cannot
+  consistently beat B, added simulation complexity is not earning itself.
+- Repair order: decompose projection errors into participation, opportunity and efficiency (no generic downward
+  adjustment); then hierarchical role forecasts with empirically fitted uncertainty; then calibrated joint simulations;
+  then independent historical promotion tests. Preserve failed challengers; do not tune repeatedly against the same games.
+- Continuous programme: ingest permitted data and verify freshness; score every completed slate against frozen prelock
+  predictions; diagnose; build small challengers on separated development/evaluation data; compare to the incumbent and
+  to news-adjusted baselines; reject and log weak results; propose promotion only on predefined criteria. Daily cycle
+  plus event triggers; heavy fitting on a controlled compute budget.
+- 2024–2025 may be used for development only under a fixed protocol that prevents repeated selection on the holdout;
+  Week 6 onward is prospective.
+- Resolve RES-008..RES-011 through the existing data and permissions workflows, and proceed with unaffected research
+  meanwhile.
+- Reconcile the Perplexity historical package for coverage and lawful use; do not assume it holds point-in-time
+  forecasts.
+- EVERY progress report shows whether the complete football model beats a news-adjusted simple baseline.
+
