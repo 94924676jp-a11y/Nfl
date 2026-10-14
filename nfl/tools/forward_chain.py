@@ -433,7 +433,9 @@ def project_week(panel, pos_of, season, week, priors, depth, groups, bonus, ip, 
             PROJ_COMPONENT_SINK.append({'season': season, 'week': week, 'gsis': gsis, 'pos': r.get('position'), 'pts': pts,
                                         **{k: r.get(k) for k in ('targets', 'receptions', 'rec_yards', 'carries',
                                                                  'rush_yards', 'pass_attempts', 'pass_yards')},
-                                        'rec_td': td.get('rec_td'), 'rush_td': td.get('rush_td'), 'pass_td': td.get('pass_td')})
+                                        'rec_td': td.get('rec_td'), 'rush_td': td.get('rush_td'), 'pass_td': td.get('pass_td'),
+                                        # the appearance probability the allocator applied (per volume field); None = none
+                                        'p_plays': dict(r.get('p_plays') or {}) or None, 'club': r.get('team')})
     return out
 
 

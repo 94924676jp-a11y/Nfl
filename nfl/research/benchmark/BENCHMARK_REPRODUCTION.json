@@ -1,0 +1,80 @@
+{
+ "artifact": "BENCHMARK_REPRODUCTION",
+ "head": "d82b74b8b8d0492a80a945e947451797882bd857",
+ "python": "3.12.3",
+ "steps": [
+  {
+   "step": "rows_STRICT_OFF",
+   "cmd": "nfl/research/benchmark/player_rows.py STRICT OFF /tmp/claude-0/repro/rows_STRICT_OFF.json",
+   "rc": 0,
+   "seconds": 29.2
+  },
+  {
+   "step": "rows_STRICT_ON",
+   "cmd": "nfl/research/benchmark/player_rows.py STRICT ON /tmp/claude-0/repro/rows_STRICT_ON.json",
+   "rc": 0,
+   "seconds": 29.4
+  },
+  {
+   "step": "rows_LEGACY_ON",
+   "cmd": "nfl/research/benchmark/player_rows.py LEGACY ON /tmp/claude-0/repro/rows_LEGACY_ON.json",
+   "rc": 0,
+   "seconds": 28.6
+  },
+  {
+   "step": "PLAYER_SCORECARD",
+   "cmd": "nfl/research/benchmark/player_scorecard.py /tmp/claude-0/repro/rows_STRICT_OFF.json /tmp/claude-0/repro/rows_STRICT_ON.json /tmp/claude-0/repro/rows_LEGACY_ON.json",
+   "rc": 0,
+   "seconds": 7.6,
+   "committed_sha256": "9a99695d5c38cc43041341dd5ded3771f55991db915a5c703c7e73952a0877c8",
+   "regenerated_sha256": "9a99695d5c38cc43041341dd5ded3771f55991db915a5c703c7e73952a0877c8",
+   "content_identical": true
+  },
+  {
+   "step": "PROSPECTIVE_SCORECARD",
+   "cmd": "nfl/research/benchmark/prospective_scorecard.py",
+   "rc": 0,
+   "seconds": 6.0,
+   "committed_sha256": "77c436916e1fc30d9f565218738fae1d89a9c2d36fad263222e1b37de9863477",
+   "regenerated_sha256": "77c436916e1fc30d9f565218738fae1d89a9c2d36fad263222e1b37de9863477",
+   "content_identical": true
+  },
+  {
+   "step": "FOUR_ARM",
+   "cmd": "nfl/research/benchmark/four_arm.py",
+   "rc": 0,
+   "seconds": 9.2,
+   "committed_sha256": "488553a7041bb67c67a991b45db387a3329db5754ed4e10f27d6b9ffe2a488a1",
+   "regenerated_sha256": "488553a7041bb67c67a991b45db387a3329db5754ed4e10f27d6b9ffe2a488a1",
+   "content_identical": true
+  },
+  {
+   "step": "DECOMPOSE_2024",
+   "cmd": "nfl/research/benchmark/decompose_dev.py",
+   "rc": 0,
+   "seconds": 13.6,
+   "committed_sha256": "adaf59219b1f6781db2c9bc5f2e0f1095533852c2a86a8598c73ecc888c99cd7",
+   "regenerated_sha256": "adaf59219b1f6781db2c9bc5f2e0f1095533852c2a86a8598c73ecc888c99cd7",
+   "content_identical": true
+  },
+  {
+   "step": "D1_ESTIMATE_2024",
+   "cmd": "nfl/research/benchmark/d1_estimate.py",
+   "rc": 0,
+   "seconds": 34.7,
+   "committed_sha256": "8c723122c089343fa7789ab532f727a5c54fa278d4aa740425f331d7b8b5f293",
+   "regenerated_sha256": "8c723122c089343fa7789ab532f727a5c54fa278d4aa740425f331d7b8b5f293",
+   "content_identical": true
+  },
+  {
+   "step": "D1_HOLDOUT_2025",
+   "cmd": "nfl/research/benchmark/d1_holdout.py",
+   "rc": 0,
+   "seconds": 20.2,
+   "committed_sha256": "e6150b64dc0d34b346da6625403c2751f79830b36877bb5a86d43d04fdab55a4",
+   "regenerated_sha256": "e6150b64dc0d34b346da6625403c2751f79830b36877bb5a86d43d04fdab55a4",
+   "content_identical": true
+  }
+ ],
+ "ALL_REPRODUCED": true
+}

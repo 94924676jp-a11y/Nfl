@@ -1,0 +1,591 @@
+{
+ "artifact": "FORECAST_ERROR_ATLAS",
+ "season": 2024,
+ "scope": "DEVELOPMENT ONLY; production settings; 2025 not read",
+ "appearance": {
+  "n": 5637,
+  "base_rate": 0.6037,
+  "REFERENCE_constant_base_rate_brier": 0.23925,
+  "REFERENCE_NOTE": "brier of forecasting the in-sample base rate for everyone; in-sample, so a reference, not an arm",
+  "share_of_rows_incumbent_p_plays_eq_1": 0.934,
+  "LOG_LOSS_NOTE": "log_loss clips at 1e-6, so a p=1 forecast for an absent player costs 13.8 nats; log_loss_clip_0_01 clips at 0.01",
+  "incumbent_p_plays": {
+   "brier": 0.37222,
+   "log_loss": 4.93829,
+   "log_loss_clip_0_01": 1.68938,
+   "calibration": {
+    "D1": {
+     "n": 563,
+     "mean_forecast": 0.411,
+     "observed_rate": 0.451
+    },
+    "D2": {
+     "n": 564,
+     "mean_forecast": 1.0,
+     "observed_rate": 0.642
+    },
+    "D3": {
+     "n": 564,
+     "mean_forecast": 1.0,
+     "observed_rate": 0.684
+    },
+    "D4": {
+     "n": 563,
+     "mean_forecast": 1.0,
+     "observed_rate": 0.655
+    },
+    "D5": {
+     "n": 564,
+     "mean_forecast": 1.0,
+     "observed_rate": 0.592
+    },
+    "D6": {
+     "n": 564,
+     "mean_forecast": 1.0,
+     "observed_rate": 0.596
+    },
+    "D7": {
+     "n": 563,
+     "mean_forecast": 1.0,
+     "observed_rate": 0.581
+    },
+    "D8": {
+     "n": 564,
+     "mean_forecast": 1.0,
+     "observed_rate": 0.629
+    },
+    "D9": {
+     "n": 564,
+     "mean_forecast": 1.0,
+     "observed_rate": 0.61
+    },
+    "D10": {
+     "n": 564,
+     "mean_forecast": 1.0,
+     "observed_rate": 0.596
+    }
+   }
+  },
+  "naive_rate_before_W": {
+   "brier": 0.19604,
+   "log_loss": 1.00161,
+   "log_loss_clip_0_01": 0.64132,
+   "calibration": {
+    "D1": {
+     "n": 563,
+     "mean_forecast": 0.114,
+     "observed_rate": 0.19
+    },
+    "D2": {
+     "n": 564,
+     "mean_forecast": 0.232,
+     "observed_rate": 0.287
+    },
+    "D3": {
+     "n": 564,
+     "mean_forecast": 0.379,
+     "observed_rate": 0.401
+    },
+    "D4": {
+     "n": 563,
+     "mean_forecast": 0.546,
+     "observed_rate": 0.533
+    },
+    "D5": {
+     "n": 564,
+     "mean_forecast": 0.692,
+     "observed_rate": 0.613
+    },
+    "D6": {
+     "n": 564,
+     "mean_forecast": 0.79,
+     "observed_rate": 0.704
+    },
+    "D7": {
+     "n": 563,
+     "mean_forecast": 0.876,
+     "observed_rate": 0.742
+    },
+    "D8": {
+     "n": 564,
+     "mean_forecast": 0.988,
+     "observed_rate": 0.809
+    },
+    "D9": {
+     "n": 564,
+     "mean_forecast": 1.0,
+     "observed_rate": 0.862
+    },
+    "D10": {
+     "n": 564,
+     "mean_forecast": 1.0,
+     "observed_rate": 0.895
+    }
+   }
+  },
+  "WHAT_P_PLAYS_IS": "proj_v1.depth_shares appearance_rate = share of club-weeks in which the club had at least k players with volume at the position (a SLOT occupancy rate, ranks taken from realised volume order); allocate_opportunity assigns it to the player predicted at rank k as his own P(plays). The two coincide only if the predicted rank-k player is always the one who fills slot k.",
+  "by_position": {
+   "QB": {
+    "n": 801,
+    "brier_incumbent": 0.2724,
+    "brier_naive": 0.20403
+   },
+   "RB": {
+    "n": 1398,
+    "brier_incumbent": 0.37267,
+    "brier_naive": 0.20086
+   },
+   "WR": {
+    "n": 2186,
+    "brier_incumbent": 0.39295,
+    "brier_naive": 0.18304
+   },
+   "TE": {
+    "n": 1252,
+    "brier_incumbent": 0.39936,
+    "brier_naive": 0.20826
+   }
+  }
+ },
+ "team_volume": {
+  "targets": {
+   "n_club_weeks": 416,
+   "mean_projected": 31.26,
+   "mean_actual": 31.65,
+   "ratio_of_sums": 0.9875,
+   "mae": 5.69
+  },
+  "carries": {
+   "n_club_weeks": 416,
+   "mean_projected": 27.02,
+   "mean_actual": 26.99,
+   "ratio_of_sums": 1.0011,
+   "mae": 5.8
+  },
+  "pass_attempts": {
+   "n_club_weeks": 416,
+   "mean_projected": 35.23,
+   "mean_actual": 35.57,
+   "ratio_of_sums": 0.9905,
+   "mae": 6.13
+  }
+ },
+ "share": {
+  "WR_top_decile": {
+   "n": 119,
+   "mean_projected_target_share": 0.3265,
+   "mean_actual_target_share": 0.2679,
+   "ratio": 1.2187
+  },
+  "WR_all": {
+   "n": 1327,
+   "mean_projected_target_share": 0.1202,
+   "mean_actual_target_share": 0.1662,
+   "ratio": 0.7235
+  },
+  "TE_top_decile": {
+   "n": 8,
+   "mean_projected_target_share": 0.3571,
+   "mean_actual_target_share": 0.2958,
+   "ratio": 1.2074
+  },
+  "TE_all": {
+   "n": 752,
+   "mean_projected_target_share": 0.1062,
+   "mean_actual_target_share": 0.1179,
+   "ratio": 0.9007
+  },
+  "RB_top_decile": {
+   "n": 108,
+   "mean_projected_target_share": 0.1525,
+   "mean_actual_target_share": 0.1136,
+   "ratio": 1.342
+  },
+  "RB_all": {
+   "n": 877,
+   "mean_projected_target_share": 0.061,
+   "mean_actual_target_share": 0.0698,
+   "ratio": 0.8733
+  }
+ },
+ "efficiency_given_play": {
+  "WR": {
+   "n": 1327,
+   "catch_rate": [
+    0.6494,
+    0.636
+   ],
+   "yards_per_target": [
+    8.189,
+    8.083
+   ],
+   "rec_td_per_target": [
+    0.0518,
+    0.0553
+   ],
+   "yards_per_carry": [
+    3.765,
+    4.959
+   ],
+   "rush_td_per_carry": [
+    0.0551,
+    0.0171
+   ],
+   "FORMAT": "[projected, actual], ratio of sums given play"
+  },
+  "TE": {
+   "n": 752,
+   "catch_rate": [
+    0.7244,
+    0.7268
+   ],
+   "yards_per_target": [
+    7.533,
+    7.455
+   ],
+   "rec_td_per_target": [
+    0.0539,
+    0.0522
+   ],
+   "yards_per_carry": [
+    0.018,
+    1.25
+   ],
+   "rush_td_per_carry": [
+    0.0162,
+    0.05
+   ],
+   "FORMAT": "[projected, actual], ratio of sums given play"
+  },
+  "RB": {
+   "n": 877,
+   "catch_rate": [
+    0.8112,
+    0.7962
+   ],
+   "yards_per_target": [
+    6.135,
+    5.962
+   ],
+   "rec_td_per_target": [
+    0.0292,
+    0.0306
+   ],
+   "yards_per_carry": [
+    4.502,
+    4.489
+   ],
+   "rush_td_per_carry": [
+    0.0321,
+    0.0335
+   ],
+   "FORMAT": "[projected, actual], ratio of sums given play"
+  },
+  "QB": {
+   "n": 447,
+   "catch_rate": [
+    0.0,
+    0.6667
+   ],
+   "yards_per_target": [
+    0.0,
+    0.333
+   ],
+   "rec_td_per_target": [
+    0.0,
+    0.6667
+   ],
+   "yards_per_carry": [
+    4.611,
+    4.814
+   ],
+   "rush_td_per_carry": [
+    0.0455,
+    0.0474
+   ],
+   "yards_per_attempt": [
+    6.731,
+    6.748
+   ],
+   "pass_td_per_attempt": [
+    0.045,
+    0.0449
+   ],
+   "FORMAT": "[projected, actual], ratio of sums given play"
+  }
+ },
+ "cold_start": {
+  "cold_start_lt2_prior": {
+   "n": 553,
+   "mae": 1.8293,
+   "bias": 0.1699
+  },
+  "established": {
+   "n": 5084,
+   "mae": 5.6375,
+   "bias": 0.3722
+  }
+ },
+ "unconditional_error_by_appearance_DIAGNOSTIC": {
+  "did_not_appear": {
+   "n": 2234,
+   "sum_abs_error": 8928.0,
+   "mean_projection": 3.996,
+   "share_of_total_abs_error": 0.3009
+  },
+  "appeared": {
+   "n": 3403,
+   "sum_abs_error": 20744.6,
+   "mean_projection": 7.828,
+   "share_of_total_abs_error": 0.6991
+  },
+  "LABEL": "DIAGNOSTIC: conditioned on the outcome; locates error, is not a score"
+ },
+ "cases_top_decile_receivers_largest_overprojection": [
+  {
+   "player": "Cooper Kupp",
+   "week": 15,
+   "pos": "WR",
+   "proj_pts": 21.3,
+   "actual_pts": 0.0,
+   "proj_targets": 11.75,
+   "actual_targets": 3,
+   "proj_rec_yards": 88.8,
+   "actual_rec_yards": 0.0,
+   "p_plays": 1.0
+  },
+  {
+   "player": "Jayden Reed",
+   "week": 7,
+   "pos": "WR",
+   "proj_pts": 22.62,
+   "actual_pts": 3.0,
+   "proj_targets": 8.41,
+   "actual_targets": 4,
+   "proj_rec_yards": 98.3,
+   "actual_rec_yards": 10.0,
+   "p_plays": 1.0
+  },
+  {
+   "player": "CeeDee Lamb",
+   "week": 13,
+   "pos": "WR",
+   "proj_pts": 25.51,
+   "actual_pts": 5.9,
+   "proj_targets": 13.7,
+   "actual_targets": 6,
+   "proj_rec_yards": 101.9,
+   "actual_rec_yards": 39.0,
+   "p_plays": 1.0
+  },
+  {
+   "player": "Deebo Samuel Sr.",
+   "week": 5,
+   "pos": "WR",
+   "proj_pts": 22.24,
+   "actual_pts": 3.0,
+   "proj_targets": 8.89,
+   "actual_targets": 3,
+   "proj_rec_yards": 82.9,
+   "actual_rec_yards": 11.0,
+   "p_plays": 1.0
+  },
+  {
+   "player": "Trey McBride",
+   "week": 16,
+   "pos": "TE",
+   "proj_pts": 23.82,
+   "actual_pts": 5.0,
+   "proj_targets": 11.73,
+   "actual_targets": 4,
+   "proj_rec_yards": 94.1,
+   "actual_rec_yards": 20.0,
+   "p_plays": 1.0
+  },
+  {
+   "player": "Terry McLaurin",
+   "week": 17,
+   "pos": "WR",
+   "proj_pts": 20.25,
+   "actual_pts": 1.5,
+   "proj_targets": 8.78,
+   "actual_targets": 7,
+   "proj_rec_yards": 90.1,
+   "actual_rec_yards": 5.0,
+   "p_plays": 1.0
+  },
+  {
+   "player": "Cooper Kupp",
+   "week": 13,
+   "pos": "WR",
+   "proj_pts": 22.73,
+   "actual_pts": 4.7,
+   "proj_targets": 12.25,
+   "actual_targets": 6,
+   "proj_rec_yards": 92.5,
+   "actual_rec_yards": 17.0,
+   "p_plays": 1.0
+  },
+  {
+   "player": "Justin Jefferson",
+   "week": 12,
+   "pos": "WR",
+   "proj_pts": 22.58,
+   "actual_pts": 4.7,
+   "proj_targets": 10.19,
+   "actual_targets": 5,
+   "proj_rec_yards": 107.7,
+   "actual_rec_yards": 27.0,
+   "p_plays": 1.0
+  },
+  {
+   "player": "Tee Higgins",
+   "week": 14,
+   "pos": "WR",
+   "proj_pts": 22.15,
+   "actual_pts": 4.3,
+   "proj_targets": 11.14,
+   "actual_targets": 5,
+   "proj_rec_yards": 93.9,
+   "actual_rec_yards": 23.0,
+   "p_plays": 1.0
+  },
+  {
+   "player": "Terry McLaurin",
+   "week": 11,
+   "pos": "WR",
+   "proj_pts": 19.7,
+   "actual_pts": 2.0,
+   "proj_targets": 8.75,
+   "actual_targets": 2,
+   "proj_rec_yards": 90.9,
+   "actual_rec_yards": 10.0,
+   "p_plays": 1.0
+  },
+  {
+   "player": "Amon-Ra St. Brown",
+   "week": 8,
+   "pos": "WR",
+   "proj_pts": 25.54,
+   "actual_pts": 8.7,
+   "proj_targets": 11.31,
+   "actual_targets": 2,
+   "proj_rec_yards": 92.9,
+   "actual_rec_yards": 7.0,
+   "p_plays": 1.0
+  },
+  {
+   "player": "Jerry Jeudy",
+   "week": 16,
+   "pos": "WR",
+   "proj_pts": 20.66,
+   "actual_pts": 4.0,
+   "proj_targets": 10.63,
+   "actual_targets": 3,
+   "proj_rec_yards": 100.7,
+   "actual_rec_yards": 20.0,
+   "p_plays": 1.0
+  },
+  {
+   "player": "CeeDee Lamb",
+   "week": 10,
+   "pos": "WR",
+   "proj_pts": 24.9,
+   "actual_pts": 8.4,
+   "proj_targets": 13.11,
+   "actual_targets": 10,
+   "proj_rec_yards": 106.4,
+   "actual_rec_yards": 21.0,
+   "p_plays": 1.0
+  },
+  {
+   "player": "Zay Flowers",
+   "week": 7,
+   "pos": "WR",
+   "proj_pts": 20.27,
+   "actual_pts": 4.0,
+   "proj_targets": 9.92,
+   "actual_targets": 1,
+   "proj_rec_yards": 80.1,
+   "actual_rec_yards": 11.0,
+   "p_plays": 1.0
+  },
+  {
+   "player": "A.J. Brown",
+   "week": 9,
+   "pos": "WR",
+   "proj_pts": 21.85,
+   "actual_pts": 5.6,
+   "proj_targets": 8.98,
+   "actual_targets": 4,
+   "proj_rec_yards": 109.9,
+   "actual_rec_yards": 36.0,
+   "p_plays": 1.0
+  },
+  {
+   "player": "Justin Jefferson",
+   "week": 18,
+   "pos": "WR",
+   "proj_pts": 22.8,
+   "actual_pts": 8.4,
+   "proj_targets": 10.42,
+   "actual_targets": 9,
+   "proj_rec_yards": 106.5,
+   "actual_rec_yards": 54.0,
+   "p_plays": 1.0
+  },
+  {
+   "player": "Cooper Kupp",
+   "week": 16,
+   "pos": "WR",
+   "proj_pts": 19.78,
+   "actual_pts": 5.4,
+   "proj_targets": 11.25,
+   "actual_targets": 3,
+   "proj_rec_yards": 82.5,
+   "actual_rec_yards": 24.0,
+   "p_plays": 1.0
+  },
+  {
+   "player": "Zay Flowers",
+   "week": 10,
+   "pos": "WR",
+   "proj_pts": 21.65,
+   "actual_pts": 7.4,
+   "proj_targets": 9.68,
+   "actual_targets": 6,
+   "proj_rec_yards": 90.1,
+   "actual_rec_yards": 34.0,
+   "p_plays": 1.0
+  },
+  {
+   "player": "Amon-Ra St. Brown",
+   "week": 14,
+   "pos": "WR",
+   "proj_pts": 24.2,
+   "actual_pts": 10.3,
+   "proj_targets": 10.25,
+   "actual_targets": 6,
+   "proj_rec_yards": 91.2,
+   "actual_rec_yards": 43.0,
+   "p_plays": 1.0
+  },
+  {
+   "player": "Nico Collins",
+   "week": 11,
+   "pos": "WR",
+   "proj_pts": 23.21,
+   "actual_pts": 9.4,
+   "proj_targets": 9.52,
+   "actual_targets": 7,
+   "proj_rec_yards": 113.8,
+   "actual_rec_yards": 54.0,
+   "p_plays": 1.0
+  }
+ ],
+ "UNSUPPORTED_FAMILIES": {
+  "snaps_routes": "no sourced per-game route or snap participation in the panel for 2024 (FTN participation is CC-BY-SA but injury-conditioning use unresolved)",
+  "air_yards_redzone": "air_yards / rz / gl present in the panel; not yet decomposed here",
+  "injury_news": "historical pregame designations withheld (RES-010)"
+ }
+}

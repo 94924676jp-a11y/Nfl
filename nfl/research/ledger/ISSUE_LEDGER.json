@@ -2095,6 +2095,31 @@
    "experiment": null,
    "source": "D1 golden test (w=0 not identical to the incumbent) 2026-10-14",
    "reproducible_fixture": null
+  },
+  {
+   "id": "APPEAR-D1",
+   "domain": "projection",
+   "title": "Player P(plays) is a depth-SLOT occupancy rate (club had >= k players at the position), assigned to the player predicted at rank k; on 2024 pool rows it is 1.0 for 93.4% while 60.4% appear (Brier 0.372 vs naive own-history 0.196, constant base rate 0.239)",
+   "user_visible_consequence": "absent-but-unflagged players keep a full share of club volume; the players who do play are short except the top claimant. In production, confirmed absences are removed by news, so the residual is the unflagged and unresolved players",
+   "evidence": [
+    "nfl/research/benchmark/FORECAST_ERROR_ATLAS.json",
+    "nfl/research/benchmark/FORECAST_ERROR_ATLAS.md",
+    "nfl/tools/proj_v1.py depth_shares (appearance_rate = n present / n club-weeks over realised volume ranks) and allocate_opportunity (appear[i] = row['appearance_rate'])"
+   ],
+   "verification": "VERIFIED",
+   "severity": "P1",
+   "production_path": "ALL",
+   "state": "OPEN",
+   "owner_gate": null,
+   "guard_test": null,
+   "test_type": "research",
+   "blast_radius": "every projection that applies appearance (Classic and Showdown)",
+   "data_rights": "OWN_CODE",
+   "depends_on": [],
+   "experiment": "nfl/research/benchmark/PREREG_D2_APPEARANCE.md",
+   "source": "mandate b0540a52 phase 2 (FORECAST_ERROR_ATLAS)",
+   "reproducible_fixture": "python3.12 nfl/research/benchmark/error_atlas.py",
+   "fix_note": null
   }
  ]
 }
