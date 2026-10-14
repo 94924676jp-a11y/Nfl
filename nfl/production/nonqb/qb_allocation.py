@@ -91,6 +91,34 @@ def dt_max():
     return _dt.datetime.max.replace(tzinfo=_dt.timezone.utc)
 
 
+_MANIFEST_CACHE = {}
+
+
+def _manifest_rows():
+    """(rows, json encodings) of the vintage manifest, encoded ONCE per manifest content (PERF-D1, 2026-10-14). The
+    lookup below matched a blob hash against json.dumps(row) for every row, for every blob, on every call: 99 MB and
+    12,883 rows x 78 depth-chart blobs took test_depth_chart_vintage_selection from about 5 minutes to over an hour.
+    The match is unchanged (the same substring test against the same encoding); only the re-encoding is cached, keyed
+    by the manifest's size and mtime so an appended capture is seen."""
+    import json as _json
+    man = _REPO / 'nfl' / 'vintage_manifest.jsonl'
+    if not man.exists():
+        return [], []
+    st = man.stat()
+    key = (str(man), st.st_size, st.st_mtime_ns)
+    if key not in _MANIFEST_CACHE:
+        rows = []
+        for line in man.read_text().splitlines():
+            if line.strip():
+                try:
+                    rows.append(_json.loads(line))
+                except ValueError:
+                    continue
+        _MANIFEST_CACHE.clear()
+        _MANIFEST_CACHE[key] = (rows, [_json.dumps(r) for r in rows])
+    return _MANIFEST_CACHE[key]
+
+
 def _depth_chart_vintages():
     """(retrieved_at, path) for every depth-chart capture, oldest first.
 
@@ -98,22 +126,13 @@ def _depth_chart_vintages():
     A blob with no manifest row is UNATTRIBUTABLE and is excluded rather than
     guessed at -- an unplaceable capture cannot be shown lawful for any cut.
     """
-    import json as _json
-    man = _REPO / 'nfl' / 'vintage_manifest.jsonl'
-    rows = []
-    if man.exists():
-        for line in man.read_text().splitlines():
-            if line.strip():
-                try:
-                    rows.append(_json.loads(line))
-                except ValueError:
-                    continue
+    rows, enc = _manifest_rows()
     out = []
     for p in sorted(glob.glob(str(_REPO / 'nfl' / 'vintage' / DEPTH_GLOB))):
         h = pathlib.Path(p).name.split('.')[1]
         when = None
-        for r in rows:
-            if h in _json.dumps(r):
+        for r, e in zip(rows, enc):
+            if h in e:
                 when = r.get('retrieved_at') or r.get('capture_id')
                 break
         if when:
