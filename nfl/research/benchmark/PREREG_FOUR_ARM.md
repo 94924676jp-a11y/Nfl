@@ -71,3 +71,21 @@ promotion until a challenger (D) clears C on this same rule.
 
 **Every progress report** carries the current C-versus-B result (owner requirement, OD-003), even before the analysis
 point, labelled INTERIM / NOT A DECISION.
+
+## AMENDMENT 1 (2026-10-14, before any Week 6 data exists; the decision rule is extended, not loosened)
+
+**Why.** The slate state's news includes more than absences: it records the captured QB depth rank (`depth_rank`).
+B1 and B2 use only absences. A starter-blind baseline would credit the engine with information any simple process also
+has.
+
+**New arm.**
+
+| arm | forecast |
+|---|---|
+| **B3** | B2, except a QB whose slate-state `depth_rank` is not 1 is 0 |
+
+**Decision rule, extended.** C earns its complexity only if the upper 95% bound of C − B1, C − B2 **and** C − B3 is below
+0 on the pooled primary metric. The other conditions are unchanged.
+
+**Already-inspected slates.** On 2026 W4–W5, B3 is computed as **exploratory**: those slates were inspected before this
+amendment, as they were before the pre-registration itself.
