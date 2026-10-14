@@ -35,6 +35,24 @@ position:
 - The two coincide only when the predicted rank-k player is always the one who fills slot k. Without news, he often is
   not. A club almost always fields five wide receivers, so slot 5 is about 1.0 even when the predicted WR2 is injured.
 
+**How much of this is the harness, and how much carries into production.** The chain's pool is every player with a
+row for the club earlier in the season. That includes players since released or placed on a reserve list, whom
+production's roster evidence removes (OD-002). A prediction-defined split separates the two:
+
+| stratum (known before the game) | n | observed rate | incumbent mean p | incumbent Brier | naive Brier |
+|---|---|---|---|---|---|
+| appeared in his club's most recent game | 3,756 | 0.772 | 0.968 | 0.226 | 0.182 |
+| did not | 1,881 | 0.268 | 0.887 | 0.663 | 0.224 |
+
+- **Most of the gap is in the second row**, which roster and injury news would largely handle in production.
+- **The first row shows the defect is not only an artefact.** Among players active the previous week, the incumbent says
+  0.97 against 0.77 observed, and still loses to the naive rate.
+- **What "appears" means here:** the player has a box-score row in the panel, i.e. at least one recorded statistic.
+  The depth table's slot rate uses the same definition, so the comparison is like for like. A dressed player with no
+  recorded statistic scores 0 DK points either way.
+- **Production magnitude is not measured by this file.** With news, the prospective four-arm (2026 W4–W5, exploratory)
+  has C ahead of every news-adjusted baseline.
+
 **What the error costs (diagnostic, split on the outcome).** Players who did not appear carry **30.1%** of the total
 unconditional absolute error, with a mean projection of 4.0 DK points each.
 

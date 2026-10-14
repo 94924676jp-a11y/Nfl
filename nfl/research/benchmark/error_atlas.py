@@ -63,12 +63,21 @@ def naive_rate(g, s, wk, club):
     return (n / played) if played else None
 
 
+def in_last_club_game(g, s, wk, club):
+    prev = [w for w in club_weeks[(club, s)] if w < wk]
+    if not prev:
+        return None
+    r = ((panel['players'].get(g) or {}).get(str(s)) or {}).get(str(max(prev))) or {}
+    return bool(r.get('team'))
+
+
 ap_rows = []
 for (s, wk, g, pos, pr, a, ap, club) in unc:
     p = p_appear(comp.get((s, wk, g)))
     q = naive_rate(g, s, wk, club)
     if p is not None and q is not None:
-        ap_rows.append((min(max(p, 1e-6), 1 - 1e-6), min(max(q, 1e-6), 1 - 1e-6), 1.0 if ap else 0.0, pos))
+        ap_rows.append((min(max(p, 1e-6), 1 - 1e-6), min(max(q, 1e-6), 1 - 1e-6), 1.0 if ap else 0.0, pos,
+                        in_last_club_game(g, s, wk, club)))
 
 
 def brier(rows, i):
@@ -106,7 +115,16 @@ appearance = {'n': len(ap_rows), 'base_rate': round(_base, 4),
                                   'own P(plays). The two coincide only if the predicted rank-k player is always the one who '
                                   'fills slot k.'),
               'by_position': {p: {'n': len(v), 'brier_incumbent': brier(v, 0), 'brier_naive': brier(v, 1)}
-                              for p, v in ((p, [r for r in ap_rows if r[3] == p]) for p in ('QB', 'RB', 'WR', 'TE')) if v}}
+                              for p, v in ((p, [r for r in ap_rows if r[3] == p]) for p in ('QB', 'RB', 'WR', 'TE')) if v},
+              # PREDICTION-DEFINED: did he appear in his club's most recent game before W? A player who did not is the
+              # one a roster capture (release, reserve list) most often removes in production; one who did is mostly
+              # an active player, so the incumbent's error there is not a harness artefact of the missing news.
+              'by_appeared_in_last_club_game': {
+                  str(k): {'n': len(v), 'observed_rate': round(statistics.fmean(r[2] for r in v), 4),
+                           'brier_incumbent': brier(v, 0), 'brier_naive': brier(v, 1),
+                           'mean_p_incumbent': round(statistics.fmean(r[0] for r in v), 4),
+                           'mean_p_naive': round(statistics.fmean(r[1] for r in v), 4)}
+                  for k, v in ((k, [r for r in ap_rows if r[4] is k]) for k in (True, False)) if v}}
 
 # ------------------------------------------------------------------ team volume
 proj_club = collections.defaultdict(lambda: collections.Counter())
