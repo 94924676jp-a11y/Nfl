@@ -2104,7 +2104,7 @@
    "evidence": [
     "nfl/research/benchmark/FORECAST_ERROR_ATLAS.json",
     "nfl/research/benchmark/FORECAST_ERROR_ATLAS.md",
-    "nfl/tools/proj_v1.py depth_shares (appearance_rate = n present / n club-weeks over realised volume ranks) and allocate_opportunity (appear[i] = row['appearance_rate'])"
+    "nfl/tools/proj_v1.py"
    ],
    "verification": "VERIFIED",
    "severity": "P1",
@@ -2119,7 +2119,8 @@
    "experiment": "nfl/research/benchmark/RESULT_D2.md",
    "source": "mandate b0540a52 phase 2 (FORECAST_ERROR_ATLAS)",
    "reproducible_fixture": "python3.12 nfl/research/benchmark/error_atlas.py",
-   "fix_note": "D2-ROLE (player-level beta-binomial appearance, role prior, fitted 2022-23): 2024 dev -0.71 DK MAE; 2025 one look (previously inspected season) PASS -0.61 [-0.71, -0.51], every position better, -0.05 [-0.10, -0.01] vs naive; appearance Brier 0.391 -> 0.173. NOT_CONFIRMED: needs a prelock prospective arm. Not promoted."
+   "fix_note": "D2-ROLE (player-level beta-binomial appearance, role prior, fitted 2022-23): 2024 dev -0.71 DK MAE; 2025 one look (previously inspected season) PASS -0.61 [-0.71, -0.51], every position better, -0.05 [-0.10, -0.01] vs naive; appearance Brier 0.391 -> 0.173. NOT_CONFIRMED: needs a prelock prospective arm. Not promoted.",
+   "code_reading": "proj_v1.depth_shares: appearance_rate = n present / n club-weeks over realised volume ranks; allocate_opportunity: appear[i] = row['appearance_rate']"
   },
   {
    "id": "BENCH-D4",
@@ -2129,14 +2130,15 @@
    "evidence": [
     "nfl/research/benchmark/FOUR_ARM_EXPLORATORY.json",
     "nfl/research/benchmark/PROSPECTIVE_SCORECARD.json",
-    "nfl/research/benchmark/MODEL_SCORECARD.json CORRECTION_BENCH_D4"
+    "nfl/research/benchmark/MODEL_SCORECARD.json",
+    "nfl/research/benchmark/clusters.py"
    ],
    "verification": "VERIFIED",
    "severity": "P2",
-   "production_path": "NONE (measurement only)",
+   "production_path": "SHADOW",
    "state": "FIXED",
    "owner_gate": null,
-   "guard_test": "club2game now reads the clubs from the game id and a club with no game raises KeyError (no club-sized fallback)",
+   "guard_test": "nfl/tests/test_benchmark_game_clusters.py",
    "test_type": "research",
    "blast_radius": "prospective benchmark intervals only",
    "data_rights": "OWN_CODE",

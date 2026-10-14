@@ -26,6 +26,7 @@ import numpy as np
 
 sys.path.insert(0, '.')
 from nfl.tools import forward_chain as F, player_prior as P  # noqa: E402
+from nfl.research.benchmark.clusters import club_to_game, game_of  # noqa: E402
 from nfl.tools.roster_eligibility import CLUB  # noqa: E402  (DK -> nflverse club codes)
 
 INC = [  # (slate, game_id, week, draws path, actual source)
@@ -104,13 +105,9 @@ def score_slate(slate, games, week, draws_p, actual_src):
                      'in50': bool(q[2] <= y <= q[3]), 'in80': bool(q[1] <= y <= q[4]), 'in90': bool(q[0] <= y <= q[5]),
                      'STD_U': baseline(g, club, week)})
     if games is None:   # Classic: one cluster per game, from the draws' per_game block
-        club2game = {}
-        for gid, v in (d.get('per_game') or {}).items():
-            for c in (v.get('away'), v.get('home'), *gid.split('_')[2:4]):   # BENCH-D4: clubs from the game id
-                if c:
-                    club2game[c] = gid
+        club2game = club_to_game(d.get('per_game'))   # BENCH-D4
         for r in rows:
-            r['game'] = club2game[r['club']]   # BENCH-D4: KeyError, never a club-sized cluster
+            r['game'] = game_of(club2game, r['club'])
     return rows, dict(skipped), {'n_sims': d.get('n_sims'), 'market_arm': d.get('market_arm'),
                                  'projection_sha256': d.get('projection_sha256')}
 

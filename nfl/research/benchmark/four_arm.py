@@ -16,6 +16,7 @@ import numpy as np
 
 sys.path.insert(0, '.')
 from nfl.tools import availability as AV, forward_chain as F, player_prior as P  # noqa: E402
+from nfl.research.benchmark.clusters import club_to_game, game_of  # noqa: E402
 from nfl.tools.roster_eligibility import CLUB  # noqa: E402
 
 EXPLORATORY = [  # (slate, format, week, state, draws, actuals, game_id or None)
@@ -86,11 +87,7 @@ def slate_rows(slate, fmt, week, state_p, draws_p, act_src, game_id):
     desig = {f"{p['name']}|{p['team']}": (p.get('current_availability') or {}).get('designation') for p in st['players'].values()}
     qb_rank = {f"{p['name']}|{p['team']}": p.get('depth_rank') for p in st['players'].values() if p.get('position') == 'QB'}
     post = json.load(open(act_src))['player_actuals'] if act_src != 'PANEL' else None
-    club2game = {}
-    for gid, v in (dr.get('per_game') or {}).items():
-        for c in (v.get('away'), v.get('home'), *gid.split('_')[2:4]):   # BENCH-D4: clubs from the game id
-            if c:
-                club2game[c] = gid
+    club2game = club_to_game(dr.get('per_game'))   # BENCH-D4
     rows, skipped = [], collections.Counter()
     keys = set(dr['draws']) | {k for k in status}          # players the forecast drew OR the state carried
     for key in sorted(keys):
@@ -112,7 +109,7 @@ def slate_rows(slate, fmt, week, state_p, draws_p, act_src, game_id):
         mean, rate, src = naive(g, club, week)
         absent = status.get(key) in AV.ABSENT_STATUSES
         x = dr['draws'].get(key)
-        rows.append({'slate': slate, 'format': fmt, 'game': game_id or club2game[club], 'player': key, 'pos': pos,
+        rows.append({'slate': slate, 'format': fmt, 'game': game_id or game_of(club2game, club), 'player': key, 'pos': pos,
                      'actual': y, 'status': status.get(key), 'designation': desig.get(key), 'naive_source': src,
                      'A': mean * rate, 'B1': 0.0 if absent else mean * rate, 'B2': 0.0 if absent else mean,
                      # AMENDMENT 1: the state's QB depth rank is news too; a QB not ranked 1 by the chart scores 0

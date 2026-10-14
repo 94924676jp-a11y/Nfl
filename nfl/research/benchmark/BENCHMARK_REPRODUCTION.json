@@ -1,31 +1,31 @@
 {
  "artifact": "BENCHMARK_REPRODUCTION",
- "head": "d82b74b8b8d0492a80a945e947451797882bd857",
+ "head": "37565c3ec7027a44f3f9e4b83836e28a551ca490",
  "python": "3.12.3",
  "steps": [
   {
    "step": "rows_STRICT_OFF",
-   "cmd": "nfl/research/benchmark/player_rows.py STRICT OFF /tmp/claude-0/repro/rows_STRICT_OFF.json",
+   "cmd": "nfl/research/benchmark/player_rows.py STRICT OFF /tmp/claude-0/repro2/rows_STRICT_OFF.json",
    "rc": 0,
-   "seconds": 29.2
+   "seconds": 30.7
   },
   {
    "step": "rows_STRICT_ON",
-   "cmd": "nfl/research/benchmark/player_rows.py STRICT ON /tmp/claude-0/repro/rows_STRICT_ON.json",
+   "cmd": "nfl/research/benchmark/player_rows.py STRICT ON /tmp/claude-0/repro2/rows_STRICT_ON.json",
    "rc": 0,
-   "seconds": 29.4
+   "seconds": 28.1
   },
   {
    "step": "rows_LEGACY_ON",
-   "cmd": "nfl/research/benchmark/player_rows.py LEGACY ON /tmp/claude-0/repro/rows_LEGACY_ON.json",
+   "cmd": "nfl/research/benchmark/player_rows.py LEGACY ON /tmp/claude-0/repro2/rows_LEGACY_ON.json",
    "rc": 0,
-   "seconds": 28.6
+   "seconds": 29.3
   },
   {
    "step": "PLAYER_SCORECARD",
-   "cmd": "nfl/research/benchmark/player_scorecard.py /tmp/claude-0/repro/rows_STRICT_OFF.json /tmp/claude-0/repro/rows_STRICT_ON.json /tmp/claude-0/repro/rows_LEGACY_ON.json",
+   "cmd": "nfl/research/benchmark/player_scorecard.py /tmp/claude-0/repro2/rows_STRICT_OFF.json /tmp/claude-0/repro2/rows_STRICT_ON.json /tmp/claude-0/repro2/rows_LEGACY_ON.json",
    "rc": 0,
-   "seconds": 7.6,
+   "seconds": 7.4,
    "committed_sha256": "9a99695d5c38cc43041341dd5ded3771f55991db915a5c703c7e73952a0877c8",
    "regenerated_sha256": "9a99695d5c38cc43041341dd5ded3771f55991db915a5c703c7e73952a0877c8",
    "content_identical": true
@@ -34,25 +34,25 @@
    "step": "PROSPECTIVE_SCORECARD",
    "cmd": "nfl/research/benchmark/prospective_scorecard.py",
    "rc": 0,
-   "seconds": 6.0,
-   "committed_sha256": "77c436916e1fc30d9f565218738fae1d89a9c2d36fad263222e1b37de9863477",
-   "regenerated_sha256": "77c436916e1fc30d9f565218738fae1d89a9c2d36fad263222e1b37de9863477",
+   "seconds": 4.4,
+   "committed_sha256": "8de7c5197bc7555ae317a3402a374037feaaca139f900686ac4e1f7e20caa70c",
+   "regenerated_sha256": "8de7c5197bc7555ae317a3402a374037feaaca139f900686ac4e1f7e20caa70c",
    "content_identical": true
   },
   {
    "step": "FOUR_ARM",
    "cmd": "nfl/research/benchmark/four_arm.py",
    "rc": 0,
-   "seconds": 9.2,
-   "committed_sha256": "488553a7041bb67c67a991b45db387a3329db5754ed4e10f27d6b9ffe2a488a1",
-   "regenerated_sha256": "488553a7041bb67c67a991b45db387a3329db5754ed4e10f27d6b9ffe2a488a1",
+   "seconds": 6.7,
+   "committed_sha256": "3ad40f09d0a89a1301bec7f7fa445bd25e899155c06d92e266d1a8236e060d98",
+   "regenerated_sha256": "3ad40f09d0a89a1301bec7f7fa445bd25e899155c06d92e266d1a8236e060d98",
    "content_identical": true
   },
   {
    "step": "DECOMPOSE_2024",
    "cmd": "nfl/research/benchmark/decompose_dev.py",
    "rc": 0,
-   "seconds": 13.6,
+   "seconds": 14.1,
    "committed_sha256": "adaf59219b1f6781db2c9bc5f2e0f1095533852c2a86a8598c73ecc888c99cd7",
    "regenerated_sha256": "adaf59219b1f6781db2c9bc5f2e0f1095533852c2a86a8598c73ecc888c99cd7",
    "content_identical": true
@@ -61,7 +61,7 @@
    "step": "D1_ESTIMATE_2024",
    "cmd": "nfl/research/benchmark/d1_estimate.py",
    "rc": 0,
-   "seconds": 34.7,
+   "seconds": 36.3,
    "committed_sha256": "8c723122c089343fa7789ab532f727a5c54fa278d4aa740425f331d7b8b5f293",
    "regenerated_sha256": "8c723122c089343fa7789ab532f727a5c54fa278d4aa740425f331d7b8b5f293",
    "content_identical": true
@@ -70,9 +70,63 @@
    "step": "D1_HOLDOUT_2025",
    "cmd": "nfl/research/benchmark/d1_holdout.py",
    "rc": 0,
-   "seconds": 20.2,
+   "seconds": 20.6,
    "committed_sha256": "e6150b64dc0d34b346da6625403c2751f79830b36877bb5a86d43d04fdab55a4",
    "regenerated_sha256": "e6150b64dc0d34b346da6625403c2751f79830b36877bb5a86d43d04fdab55a4",
+   "content_identical": true
+  },
+  {
+   "step": "FORECAST_ERROR_ATLAS",
+   "cmd": "nfl/research/benchmark/error_atlas.py",
+   "rc": 0,
+   "seconds": 14.4,
+   "committed_sha256": "0b70c7f7d5ba75cd1bd65a875150bebba0ad9ac85b9b3f4f111021b562101c3c",
+   "regenerated_sha256": "0b70c7f7d5ba75cd1bd65a875150bebba0ad9ac85b9b3f4f111021b562101c3c",
+   "content_identical": true
+  },
+  {
+   "step": "D2_PARAMS",
+   "cmd": "nfl/research/benchmark/d2_fit.py",
+   "rc": 0,
+   "seconds": 27.7,
+   "committed_sha256": "b757e833ac5252871c0b652096d4a66422e55c8f9d9b3872122d40e5b531c4b0",
+   "regenerated_sha256": "b757e833ac5252871c0b652096d4a66422e55c8f9d9b3872122d40e5b531c4b0",
+   "content_identical": true
+  },
+  {
+   "step": "D2_DEV_2024",
+   "cmd": "nfl/research/benchmark/d2_eval.py 2024",
+   "rc": 0,
+   "seconds": 30.3,
+   "committed_sha256": "dea1c06792287ecd89bfd4a7da2e1e888a37f93fe24e180412fb909c6a086128",
+   "regenerated_sha256": "dea1c06792287ecd89bfd4a7da2e1e888a37f93fe24e180412fb909c6a086128",
+   "content_identical": true
+  },
+  {
+   "step": "D2_LOOK_2025",
+   "cmd": "nfl/research/benchmark/d2_eval.py 2025",
+   "rc": 0,
+   "seconds": 21.0,
+   "committed_sha256": "f29b2aa4e76ceeb45c8b8e9782790cd25e394bfbed52c4ecba2bc9a8dd88cdb4",
+   "regenerated_sha256": "f29b2aa4e76ceeb45c8b8e9782790cd25e394bfbed52c4ecba2bc9a8dd88cdb4",
+   "content_identical": true
+  },
+  {
+   "step": "JOINT_CALIBRATION",
+   "cmd": "nfl/research/benchmark/joint_calibration.py",
+   "rc": 0,
+   "seconds": 2.4,
+   "committed_sha256": "82f3c203cc72752e09f03c5a84f9420fd0b8fbc489f004174057d11530391d18",
+   "regenerated_sha256": "82f3c203cc72752e09f03c5a84f9420fd0b8fbc489f004174057d11530391d18",
+   "content_identical": true
+  },
+  {
+   "step": "FAIR_BASELINE",
+   "cmd": "nfl/research/benchmark/fair_baseline_scorecard.py",
+   "rc": 0,
+   "seconds": 0.0,
+   "committed_sha256": "858c8db550e41c4147eece0f842c285b1c83ab3907165da8c673bc6dfd5b5a6e",
+   "regenerated_sha256": "858c8db550e41c4147eece0f842c285b1c83ab3907165da8c673bc6dfd5b5a6e",
    "content_identical": true
   }
  ],

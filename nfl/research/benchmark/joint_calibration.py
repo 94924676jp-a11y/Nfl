@@ -30,6 +30,7 @@ import numpy as np
 
 sys.path.insert(0, '.')
 from nfl.tools import forward_chain as F, player_prior as P  # noqa: E402
+from nfl.research.benchmark.clusters import club_to_game, game_of  # noqa: E402
 from nfl.tools.roster_eligibility import CLUB  # noqa: E402
 
 INC = [
@@ -78,11 +79,7 @@ units, pairs, skipped, meta = [], [], collections.Counter(), {}
 for slate, games, week, dp, src in INC:
     d = json.load(open(dp))
     post = json.load(open(src))['player_actuals'] if src != 'PANEL' else None
-    club2game = {}
-    for gid, v in (d.get('per_game') or {}).items():
-        for c in (v.get('away'), v.get('home'), *gid.split('_')[2:4]):   # BENCH-D4: clubs from the game id
-            if c:
-                club2game[c] = gid
+    club2game = club_to_game(d.get('per_game'))   # BENCH-D4
     by_club = collections.defaultdict(list)
     for key, x in d['draws'].items():
         name, club = key.rsplit('|', 1)
@@ -103,7 +100,7 @@ for slate, games, week, dp, src in INC:
         by_club[club].append({'key': key, 'pos': pos, 'x': np.asarray(x, float), 'y': y})
     meta[slate] = {'n_sims': d.get('n_sims'), 'n_clubs': len(by_club), 'draws': dp}
     for club, pl in by_club.items():
-        game = games[0] if games else club2game[club]   # BENCH-D4: never a club-sized cluster
+        game = games[0] if games else game_of(club2game, club)
         lens = {len(p['x']) for p in pl}
         assert len(lens) == 1, f'WORLDS_NOT_ALIGNED {slate} {club} {lens}'
         qbs = sorted([p for p in pl if p['pos'] == 'QB'], key=lambda p: -p['x'].mean())
